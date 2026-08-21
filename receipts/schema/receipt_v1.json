@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiable.io/schemas/vstd-0.1/receipt.json",
+  "title": "VSTD-0.1 Verification Receipt",
+  "description": "Schema for canonical VSTD-0.1 machine-readable verification receipts.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "canonical_digest",
+    "claim",
+    "evidence",
+    "target_result",
+    "independent_audit",
+    "provenance",
+    "reproducibility"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["VSTD-0.1"]
+    },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^VFY-[0-9]{6}$"
+    },
+    "canonical_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "claim": {
+      "type": "object",
+      "required": ["id", "title", "statement", "status", "scope", "limitations", "falsification_condition"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "statement": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DEMONSTRATED",
+            "BENCHMARKED",
+            "SUPPORTED",
+            "IMPLEMENTED_UNVALIDATED",
+            "INDETERMINATE",
+            "UNSUPPORTED",
+            "FALSIFIED",
+            "HYPOTHESIS",
+            "LONG_RANGE_OBJECTIVE"
+          ]
+        },
+        "scope": { "type": "string" },
+        "limitations": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "falsification_condition": { "type": "string" },
+        "last_verified": { "type": "string" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["domain", "input_text_or_formula", "n_vars", "clauses"],
+      "properties": {
+        "domain": { "type": "string" },
+        "input_text_or_formula": { "type": "string" },
+        "n_vars": { "type": "integer", "minimum": 0 },
+        "clauses": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "integer" }
+          }
+        },
+        "atomic_reasons": { "type": "array" },
+        "assumptions": { "type": "array", "items": { "type": "string" } },
+        "source_artifacts": { "type": "object" }
+      }
+    },
+    "target_result": {
+      "type": "object"
+    },
+    "independent_audit": {
+      "type": "object",
+      "required": ["overall_verdict", "sat_result", "grounding_result", "trusted_computing_base"],
+      "properties": {
+        "overall_verdict": {
+          "type": "string",
+          "enum": ["VERIFIED", "FALSIFIED", "INDETERMINATE", "UNSUPPORTED"]
+        },
+        "sat_result": { "type": "object" },
+        "grounding_result": { "type": "object" },
+        "structural_integrity_passed": { "type": "boolean" },
+        "trusted_computing_base": { "type": "object" },
+        "audit_notes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["target_name", "portable_repository_id", "git", "runtime", "captured_at_utc"],
+      "properties": {
+        "target_name": { "type": "string" },
+        "portable_repository_id": { "type": "string" },
+        "git": { "type": "object" },
+        "runtime": { "type": "object" },
+        "captured_at_utc": { "type": "string" },
+        "command_executed": { "type": "string" },
+        "source_file_hashes": { "type": "object" }
+      }
+    },
+    "reproducibility": {
+      "type": "object",
+      "required": ["highest_demonstrated_level"],
+      "properties": {
+        "highest_demonstrated_level": {
+          "type": "string",
+          "enum": [
+            "BITWISE_IDENTICAL",
+            "CONTENT_IDENTICAL",
+            "EVIDENCE_EQUIVALENT",
+            "RESULT_EQUIVALENT",
+            "SEMANTIC_REPRODUCTION"
+          ]
+        }
+      }
+    },
+    "execution_metadata": {
+      "type": ["object", "null"]
+    }
+  }
+}

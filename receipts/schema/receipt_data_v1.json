@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiable.io/schemas/vstd-data-0.1/receipt.json",
+  "title": "VSTD-DATA-0.1 Dataset Provenance Hypergraph Receipt",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "canonical_digest",
+    "dataset_spec",
+    "hypergraph",
+    "completeness_metrics",
+    "independent_audit",
+    "provenance",
+    "reproducibility"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["VSTD-DATA-0.1"]
+    },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^VFY-DATA-[0-9]{6}$"
+    },
+    "canonical_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "dataset_spec": {
+      "type": "object",
+      "required": ["dataset_id", "title", "description", "target_artifact_id", "status"],
+      "properties": {
+        "dataset_id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "target_artifact_id": { "type": "string" },
+        "status": { "type": "string" }
+      }
+    },
+    "hypergraph": {
+      "type": "object",
+      "required": ["artifacts", "transformations", "contributors", "rights"],
+      "properties": {
+        "artifacts": { "type": "array" },
+        "transformations": { "type": "array" },
+        "contributors": { "type": "array" },
+        "rights": { "type": "array" }
+      }
+    },
+    "completeness_metrics": {
+      "type": "object",
+      "required": [
+        "source_coverage",
+        "transformation_coverage",
+        "content_integrity",
+        "license_coverage",
+        "contributor_coverage",
+        "lineage_depth",
+        "overall_completeness"
+      ],
+      "properties": {
+        "source_coverage": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "transformation_coverage": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "content_integrity": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "license_coverage": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "contributor_coverage": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "lineage_depth": { "type": "integer", "minimum": 0 },
+        "overall_completeness": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      }
+    },
+    "policy_evaluations": {
+      "type": "array"
+    },
+    "independent_audit": {
+      "type": "object",
+      "required": ["overall_verdict", "acyclic_hypergraph", "integrity_passed", "trusted_computing_base"]
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["target_name", "git", "runtime", "captured_at_utc"]
+    },
+    "reproducibility": {
+      "type": "object",
+      "required": ["highest_demonstrated_level"]
+    }
+  }
+}

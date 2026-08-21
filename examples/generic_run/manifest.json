@@ -1,0 +1,43 @@
+{
+  "claim": {
+    "id": "RUN-000001",
+    "title": "Deterministic word-frequency computation over a fixed input corpus",
+    "statement": "Running compute.py against the declared input.txt deterministically produces output.json (a sorted word-frequency table) and metrics.json (a total-token-count metric), reproducing byte-identically on rerun.",
+    "scope": "A single, self-contained, dependency-free Python computation used to demonstrate the VERIFIABLE generic proof-carrying run primitive end-to-end: source -> inputs -> execution -> outputs -> claim -> receipt -> independent validation -> reproduction.",
+    "limitations": [
+      "This is a deliberately small worked example chosen for zero external dependencies and full determinism, not a claim about any production model, dataset, or benchmark.",
+      "Determinism is declared only for this exact recorded Python version and platform; the computation performs no floating point and no hash-order-dependent operations, so cross-run determinism is expected but not independently proven for other environments.",
+      "No external evaluation evidence is claimed anywhere in this receipt — it is a purely local, self-contained computation."
+    ],
+    "falsification_condition": "If `verifiable reproduce --rerun` regenerates output.json/metrics.json with a different SHA-256 digest than recorded, or `verifiable validate` finds the recomputed canonical_digest does not match receipt.json's recorded canonical_digest, this claim is falsified."
+  },
+  "command": ["python", "compute.py", "input.txt", "output.json", "metrics.json"],
+  "cwd": ".",
+  "repo_dir": "../..",
+  "target_name": "verifiable-generic-run-example",
+  "portable_repository_id": "github.com/TimeLordRaps/Verifiable",
+  "inputs": [
+    {"path": "input.txt", "role": "primary_input"},
+    {"path": "compute.py", "role": "entrypoint_source"}
+  ],
+  "outputs": [
+    {"path": "output.json", "role": "primary_output"},
+    {"path": "metrics.json", "role": "metrics"}
+  ],
+  "determinism_declared": "DETERMINISTIC",
+  "seed": null,
+  "evaluator_claims": [
+    {
+      "evaluator_name": "builtin_word_counter",
+      "metric_name": "total_tokens",
+      "read_from_output": {"path": "metrics.json", "json_pointer": "total_tokens"}
+    },
+    {
+      "evaluator_name": "builtin_word_counter",
+      "metric_name": "unique_tokens",
+      "read_from_output": {"path": "metrics.json", "json_pointer": "unique_tokens"}
+    }
+  ],
+  "external_evaluation": null,
+  "provenance_roots": []
+}

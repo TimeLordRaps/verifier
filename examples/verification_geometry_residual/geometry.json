@@ -1,0 +1,297 @@
+{
+  "coordinates": [
+    {
+      "coordinate_id": "coordinate:parse-functional",
+      "facet_id": "facet:functional",
+      "locus_id": "locus:parse"
+    },
+    {
+      "coordinate_id": "coordinate:render-functional",
+      "facet_id": "facet:functional",
+      "locus_id": "locus:render"
+    },
+    {
+      "coordinate_id": "coordinate:locale-provenance",
+      "facet_id": "facet:provenance",
+      "locus_id": "locus:locale"
+    },
+    {
+      "coordinate_id": "coordinate:geometry-sufficiency",
+      "facet_id": "facet:sufficiency",
+      "locus_id": "locus:geometry"
+    }
+  ],
+  "facets": [
+    {
+      "description": "Observed output matches the claim.",
+      "facet_id": "facet:functional",
+      "label": "functional correctness"
+    },
+    {
+      "description": "Inputs and dependencies have evidenced origin.",
+      "facet_id": "facet:provenance",
+      "label": "provenance"
+    },
+    {
+      "description": "The declared surface accounts for its obligations.",
+      "facet_id": "facet:sufficiency",
+      "label": "closure sufficiency"
+    }
+  ],
+  "focus_coordinate_ids": [
+    "coordinate:parse-functional",
+    "coordinate:render-functional"
+  ],
+  "geometry_id": "geometry:formatter-v1",
+  "horizons": [
+    {
+      "coordinate_id": null,
+      "description": "The original runtime locale was not captured and cannot be recovered.",
+      "horizon_id": "horizon:locale-observation",
+      "kind": "EVIDENCE",
+      "locus_id": "locus:locale",
+      "seam_id": "seam:locale-render"
+    }
+  ],
+  "judgments": [
+    {
+      "assumptions": [],
+      "coordinate_id": "coordinate:parse-functional",
+      "evidence_ids": [
+        "evidence:parse-test"
+      ],
+      "limitations": [],
+      "mechanism_ids": [
+        "mechanism:fixture-test"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "assumptions": [],
+      "coordinate_id": "coordinate:render-functional",
+      "evidence_ids": [
+        "evidence:render-test"
+      ],
+      "limitations": [
+        "runtime locale was not captured"
+      ],
+      "mechanism_ids": [
+        "mechanism:fixture-test"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "assumptions": [],
+      "coordinate_id": "coordinate:geometry-sufficiency",
+      "evidence_ids": [
+        "evidence:geometry-review"
+      ],
+      "limitations": [
+        "locale-state valence remains at a horizon"
+      ],
+      "mechanism_ids": [
+        "mechanism:geometry-review"
+      ],
+      "status": "INDETERMINATE"
+    }
+  ],
+  "loci": [
+    {
+      "address": "formatter",
+      "grain": "SUBJECT",
+      "kind": "PROCESS",
+      "label": "formatter",
+      "locus_id": "locus:formatter",
+      "parent_locus_id": null,
+      "stratum": "EXECUTION",
+      "subject_id": "subject:formatter"
+    },
+    {
+      "address": "formatter.py:parse",
+      "grain": "FUNCTION",
+      "kind": "FUNCTION",
+      "label": "parse number",
+      "locus_id": "locus:parse",
+      "parent_locus_id": "locus:formatter",
+      "stratum": "SOURCE",
+      "subject_id": "subject:formatter"
+    },
+    {
+      "address": "formatter.py:render",
+      "grain": "FUNCTION",
+      "kind": "FUNCTION",
+      "label": "render number",
+      "locus_id": "locus:render",
+      "parent_locus_id": "locus:formatter",
+      "stratum": "EXECUTION",
+      "subject_id": "subject:formatter"
+    },
+    {
+      "address": "process.environment.locale",
+      "grain": "SUBJECT",
+      "kind": "OBJECT",
+      "label": "runtime locale",
+      "locus_id": "locus:locale",
+      "parent_locus_id": "locus:formatter",
+      "stratum": "EXECUTION",
+      "subject_id": "subject:formatter"
+    },
+    {
+      "address": "geometry:formatter-v1",
+      "grain": "SUBJECT",
+      "kind": "VERIFICATION_GEOMETRY",
+      "label": "formatter verification geometry",
+      "locus_id": "locus:geometry",
+      "parent_locus_id": null,
+      "stratum": "VERIFICATION",
+      "subject_id": "subject:geometry"
+    }
+  ],
+  "mechanisms": [
+    {
+      "boundary_horizon_id": "horizon:locale-observation",
+      "label": "fixed formatter test",
+      "mechanism_id": "mechanism:fixture-test",
+      "post_verification_evidence_ids": [],
+      "post_verified": false,
+      "version": "1"
+    },
+    {
+      "boundary_horizon_id": "horizon:locale-observation",
+      "label": "verification geometry review",
+      "mechanism_id": "mechanism:geometry-review",
+      "post_verification_evidence_ids": [],
+      "post_verified": false,
+      "version": "1"
+    }
+  ],
+  "meta_focus_coordinate_ids": [
+    "coordinate:geometry-sufficiency"
+  ],
+  "novelties": [
+    {
+      "description": "The reconstruction residual required an environment-to-renderer seam.",
+      "kind": "SEAM",
+      "novelty_id": "novelty:locale-seam",
+      "residual_id": "residual:decimal-separator"
+    }
+  ],
+  "primary_subject_id": "subject:formatter",
+  "reconstructions": [
+    {
+      "method": "Replay parsed value through the declared renderer model.",
+      "observed_ref": "evidence:observed-output",
+      "reconstructed_ref": "evidence:reconstructed-output",
+      "reconstruction_id": "reconstruction:formatter",
+      "residual_ids": [
+        "residual:decimal-separator"
+      ],
+      "subject_id": "subject:formatter"
+    }
+  ],
+  "residuals": [
+    {
+      "coordinate_id": null,
+      "description": "Reconstruction predicts a period but the observed output contains a comma.",
+      "disposition": "HORIZON",
+      "horizon_id": "horizon:locale-observation",
+      "locus_id": null,
+      "material": true,
+      "observed": "1,5",
+      "represented_or_reconstructed": "1.5",
+      "residual_id": "residual:decimal-separator",
+      "residual_type": "BEHAVIORAL",
+      "seam_id": "seam:locale-render"
+    }
+  ],
+  "schema_version": "VSTD-0.2",
+  "seams": [
+    {
+      "label": "parsed value to renderer",
+      "relation": "DATA_FLOW",
+      "seam_id": "seam:parse-render",
+      "source_locus_id": "locus:parse",
+      "target_locus_id": "locus:render"
+    },
+    {
+      "label": "runtime locale to renderer",
+      "relation": "ENVIRONMENT_DEPENDENCY",
+      "seam_id": "seam:locale-render",
+      "source_locus_id": "locus:locale",
+      "target_locus_id": "locus:render"
+    }
+  ],
+  "secondary_subject_id": "subject:geometry",
+  "subjects": [
+    {
+      "label": "Number formatter",
+      "parent_subject_id": null,
+      "subject_id": "subject:formatter",
+      "version": "1.0"
+    },
+    {
+      "label": "Verification geometry for formatter",
+      "parent_subject_id": "subject:formatter",
+      "subject_id": "subject:geometry",
+      "version": "1.0"
+    }
+  ],
+  "surface": {
+    "coordinate_ids": [
+      "coordinate:parse-functional",
+      "coordinate:render-functional"
+    ],
+    "scope_statement": "Parse and render a decimal under the declared test fixture.",
+    "seam_ids": [
+      "seam:parse-render"
+    ],
+    "subject_id": "subject:formatter",
+    "surface_id": "surface:formatter"
+  },
+  "valences": [
+    {
+      "description": "The discovered environment seam requires a locale-state observation.",
+      "evidence_ids": [],
+      "horizon_id": "horizon:locale-observation",
+      "required_relation": "HAS_EVIDENCED_ENVIRONMENT_STATE",
+      "source_id": "seam:locale-render",
+      "source_kind": "SEAM",
+      "status": "HORIZON",
+      "valence_id": "valence:locale-state"
+    }
+  ],
+  "verification_layers": [
+    {
+      "coordinate_ids": [
+        "coordinate:parse-functional",
+        "coordinate:render-functional"
+      ],
+      "evidence_ids": [
+        "evidence:parse-test",
+        "evidence:render-test"
+      ],
+      "horizon_id": null,
+      "layer_id": "layer:v0",
+      "mechanism_ids": [
+        "mechanism:fixture-test"
+      ],
+      "order": 0,
+      "subject_id": "subject:formatter",
+      "verifies_layer_id": null
+    },
+    {
+      "coordinate_ids": [
+        "coordinate:geometry-sufficiency"
+      ],
+      "evidence_ids": [],
+      "horizon_id": "horizon:locale-observation",
+      "layer_id": "layer:v1",
+      "mechanism_ids": [
+        "mechanism:geometry-review"
+      ],
+      "order": 1,
+      "subject_id": "subject:geometry",
+      "verifies_layer_id": "layer:v0"
+    }
+  ]
+}

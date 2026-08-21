@@ -1,0 +1,235 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://verifiable.example/schemas/verification_geometry_v0_2.json",
+  "title": "VSTD-0.2 Verification Geometry",
+  "description": "Additive verification-geometry document. Semantic closure rules are enforced by verifiable.core.geometry.validate_geometry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "geometry_id",
+    "primary_subject_id",
+    "subjects",
+    "loci",
+    "facets",
+    "coordinates",
+    "surface"
+  ],
+  "properties": {
+    "schema_version": {"const": "VSTD-0.2"},
+    "geometry_id": {"$ref": "#/$defs/nonEmpty"},
+    "primary_subject_id": {"$ref": "#/$defs/nonEmpty"},
+    "secondary_subject_id": {"type": ["string", "null"]},
+    "subjects": {"type": "array", "items": {"$ref": "#/$defs/subject"}},
+    "loci": {"type": "array", "items": {"$ref": "#/$defs/locus"}},
+    "facets": {"type": "array", "items": {"$ref": "#/$defs/facet"}},
+    "coordinates": {"type": "array", "items": {"$ref": "#/$defs/coordinate"}},
+    "surface": {"$ref": "#/$defs/surface"},
+    "seams": {"type": "array", "items": {"$ref": "#/$defs/seam"}},
+    "mechanisms": {"type": "array", "items": {"$ref": "#/$defs/mechanism"}},
+    "judgments": {"type": "array", "items": {"$ref": "#/$defs/judgment"}},
+    "horizons": {"type": "array", "items": {"$ref": "#/$defs/horizon"}},
+    "residuals": {"type": "array", "items": {"$ref": "#/$defs/residual"}},
+    "valences": {"type": "array", "items": {"$ref": "#/$defs/valence"}},
+    "reconstructions": {"type": "array", "items": {"$ref": "#/$defs/reconstruction"}},
+    "verification_layers": {"type": "array", "items": {"$ref": "#/$defs/layer"}},
+    "novelties": {"type": "array", "items": {"$ref": "#/$defs/novelty"}},
+    "focus_coordinate_ids": {"$ref": "#/$defs/idArray"},
+    "meta_focus_coordinate_ids": {"$ref": "#/$defs/idArray"}
+  },
+  "$defs": {
+    "nonEmpty": {"type": "string", "minLength": 1},
+    "idArray": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/nonEmpty"},
+      "uniqueItems": true
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_id", "label", "version", "parent_subject_id"],
+      "properties": {
+        "subject_id": {"$ref": "#/$defs/nonEmpty"},
+        "label": {"$ref": "#/$defs/nonEmpty"},
+        "version": {"$ref": "#/$defs/nonEmpty"},
+        "parent_subject_id": {"type": ["string", "null"]}
+      }
+    },
+    "locus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["locus_id", "subject_id", "label", "kind", "grain", "stratum", "address", "parent_locus_id"],
+      "properties": {
+        "locus_id": {"$ref": "#/$defs/nonEmpty"},
+        "subject_id": {"$ref": "#/$defs/nonEmpty"},
+        "label": {"$ref": "#/$defs/nonEmpty"},
+        "kind": {
+          "enum": ["PROJECT", "REPOSITORY", "PACKAGE", "MODULE", "FILE", "OBJECT", "CLASS", "FUNCTION", "EXPRESSION", "STATEMENT", "AST_NODE", "INSTRUCTION", "DATASET", "ROW", "MODEL", "CHECKPOINT", "VISUALIZATION", "INTERFACE", "PROCESS", "RELATION", "VERIFICATION_GEOMETRY", "CUSTOM"]
+        },
+        "grain": {
+          "enum": ["SUBJECT", "REPOSITORY", "PACKAGE", "MODULE", "FILE", "CLASS", "FUNCTION", "STATEMENT", "EXPRESSION", "INSTRUCTION", "DATASET", "ROW", "MODEL", "CHECKPOINT", "CUSTOM"]
+        },
+        "stratum": {
+          "enum": ["REQUIREMENT", "SOURCE", "AST", "IR", "ASSEMBLY", "EXECUTION", "OUTPUT", "VERIFICATION", "CUSTOM"]
+        },
+        "address": {"$ref": "#/$defs/nonEmpty"},
+        "parent_locus_id": {"type": ["string", "null"]}
+      }
+    },
+    "facet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["facet_id", "label", "description"],
+      "properties": {
+        "facet_id": {"$ref": "#/$defs/nonEmpty"},
+        "label": {"$ref": "#/$defs/nonEmpty"},
+        "description": {"type": "string"}
+      }
+    },
+    "coordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coordinate_id", "locus_id", "facet_id"],
+      "properties": {
+        "coordinate_id": {"$ref": "#/$defs/nonEmpty"},
+        "locus_id": {"$ref": "#/$defs/nonEmpty"},
+        "facet_id": {"$ref": "#/$defs/nonEmpty"}
+      }
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface_id", "subject_id", "coordinate_ids", "seam_ids", "scope_statement"],
+      "properties": {
+        "surface_id": {"$ref": "#/$defs/nonEmpty"},
+        "subject_id": {"$ref": "#/$defs/nonEmpty"},
+        "coordinate_ids": {"$ref": "#/$defs/idArray"},
+        "seam_ids": {"$ref": "#/$defs/idArray"},
+        "scope_statement": {"type": "string"}
+      }
+    },
+    "seam": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["seam_id", "label", "source_locus_id", "target_locus_id", "relation"],
+      "properties": {
+        "seam_id": {"$ref": "#/$defs/nonEmpty"},
+        "label": {"$ref": "#/$defs/nonEmpty"},
+        "source_locus_id": {"$ref": "#/$defs/nonEmpty"},
+        "target_locus_id": {"$ref": "#/$defs/nonEmpty"},
+        "relation": {"$ref": "#/$defs/nonEmpty"}
+      }
+    },
+    "mechanism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mechanism_id", "label", "version", "post_verified", "post_verification_evidence_ids", "boundary_horizon_id"],
+      "properties": {
+        "mechanism_id": {"$ref": "#/$defs/nonEmpty"},
+        "label": {"$ref": "#/$defs/nonEmpty"},
+        "version": {"$ref": "#/$defs/nonEmpty"},
+        "post_verified": {"type": "boolean"},
+        "post_verification_evidence_ids": {"$ref": "#/$defs/idArray"},
+        "boundary_horizon_id": {"type": ["string", "null"]}
+      }
+    },
+    "judgment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coordinate_id", "status", "mechanism_ids", "evidence_ids", "assumptions", "limitations"],
+      "properties": {
+        "coordinate_id": {"$ref": "#/$defs/nonEmpty"},
+        "status": {"enum": ["PRE_VERIFIED", "VERIFIED", "FALSIFIED", "INDETERMINATE", "UNSUPPORTED", "STALE"]},
+        "mechanism_ids": {"$ref": "#/$defs/idArray"},
+        "evidence_ids": {"$ref": "#/$defs/idArray"},
+        "assumptions": {"type": "array", "items": {"type": "string"}},
+        "limitations": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "horizon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["horizon_id", "kind", "description", "locus_id", "coordinate_id", "seam_id"],
+      "properties": {
+        "horizon_id": {"$ref": "#/$defs/nonEmpty"},
+        "kind": {"enum": ["EVIDENCE", "REPRESENTATION", "MECHANISM", "GRAIN", "ONTOLOGY", "TRUST_ROOT"]},
+        "description": {"$ref": "#/$defs/nonEmpty"},
+        "locus_id": {"type": ["string", "null"]},
+        "coordinate_id": {"type": ["string", "null"]},
+        "seam_id": {"type": ["string", "null"]}
+      }
+    },
+    "residual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["residual_id", "residual_type", "description", "observed", "represented_or_reconstructed", "material", "disposition", "locus_id", "coordinate_id", "seam_id", "horizon_id"],
+      "properties": {
+        "residual_id": {"$ref": "#/$defs/nonEmpty"},
+        "residual_type": {"enum": ["STRUCTURAL", "BEHAVIORAL", "SEMANTIC", "ONTOLOGICAL"]},
+        "description": {"$ref": "#/$defs/nonEmpty"},
+        "observed": {"type": "string"},
+        "represented_or_reconstructed": {"type": "string"},
+        "material": {"type": "boolean"},
+        "disposition": {"enum": ["OPEN", "LOCALIZED", "RESOLVED", "HORIZON"]},
+        "locus_id": {"type": ["string", "null"]},
+        "coordinate_id": {"type": ["string", "null"]},
+        "seam_id": {"type": ["string", "null"]},
+        "horizon_id": {"type": ["string", "null"]}
+      }
+    },
+    "valence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["valence_id", "source_kind", "source_id", "required_relation", "description", "status", "evidence_ids", "horizon_id"],
+      "properties": {
+        "valence_id": {"$ref": "#/$defs/nonEmpty"},
+        "source_kind": {"enum": ["LOCUS", "COORDINATE", "SEAM", "SURFACE", "GEOMETRY"]},
+        "source_id": {"$ref": "#/$defs/nonEmpty"},
+        "required_relation": {"$ref": "#/$defs/nonEmpty"},
+        "description": {"$ref": "#/$defs/nonEmpty"},
+        "status": {"enum": ["OPEN", "DISCHARGED", "HORIZON"]},
+        "evidence_ids": {"$ref": "#/$defs/idArray"},
+        "horizon_id": {"type": ["string", "null"]}
+      }
+    },
+    "reconstruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reconstruction_id", "subject_id", "method", "observed_ref", "reconstructed_ref", "residual_ids"],
+      "properties": {
+        "reconstruction_id": {"$ref": "#/$defs/nonEmpty"},
+        "subject_id": {"$ref": "#/$defs/nonEmpty"},
+        "method": {"$ref": "#/$defs/nonEmpty"},
+        "observed_ref": {"$ref": "#/$defs/nonEmpty"},
+        "reconstructed_ref": {"$ref": "#/$defs/nonEmpty"},
+        "residual_ids": {"$ref": "#/$defs/idArray"}
+      }
+    },
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["layer_id", "order", "subject_id", "verifies_layer_id", "coordinate_ids", "mechanism_ids", "evidence_ids", "horizon_id"],
+      "properties": {
+        "layer_id": {"$ref": "#/$defs/nonEmpty"},
+        "order": {"type": "integer", "minimum": 0},
+        "subject_id": {"$ref": "#/$defs/nonEmpty"},
+        "verifies_layer_id": {"type": ["string", "null"]},
+        "coordinate_ids": {"$ref": "#/$defs/idArray"},
+        "mechanism_ids": {"$ref": "#/$defs/idArray"},
+        "evidence_ids": {"$ref": "#/$defs/idArray"},
+        "horizon_id": {"type": ["string", "null"]}
+      }
+    },
+    "novelty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["novelty_id", "kind", "residual_id", "description"],
+      "properties": {
+        "novelty_id": {"$ref": "#/$defs/nonEmpty"},
+        "kind": {"enum": ["GRAIN", "LOCUS", "FACET", "SEAM", "STRATUM", "MECHANISM", "ONTOLOGICAL"]},
+        "residual_id": {"$ref": "#/$defs/nonEmpty"},
+        "description": {"$ref": "#/$defs/nonEmpty"}
+      }
+    }
+  }
+}
