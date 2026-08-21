@@ -1,0 +1,214 @@
+"""Target-neutral VSTD-DATA receipt validation and mechanism replay."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from verifiable.core.checker import VerificationVerdict
+from verifiable.core.provenance import GitProvenance, ProvenanceRecord, RuntimeEnvironment
+from verifiable.data.models import (
+    ArtifactNode,
+    ArtifactStatus,
+    ArtifactType,
+    CompletenessMetrics,
+    HyperedgePort,
+    ProvenanceHypergraph,
+    TransformationHyperedge,
+    TransformationType,
+)
+from verifiable.data.policy import ProvenancePolicyVerifier
+from verifiable.data.receipt import (
+    DataIndependentAudit,
+    DatasetSpec,
+    VerifiableDataReceipt,
+    reproduce_data_receipt,
+    validate_data_receipt,
+)
+
+
+def _receipt() -> VerifiableDataReceipt:
+    graph = ProvenanceHypergraph()
+    graph.add_artifact(
+        ArtifactNode(
+            artifact_id="artifact:input",
+            label="declared input",
+            artifact_type=ArtifactType.RAW_SOURCE_FILE,
+            content_digest="0" * 64,
+            metadata_digest="1" * 64,
+            provenance_digest="2" * 64,
+            byte_size=0,
+            record_count=0,
+            mime_type="application/octet-stream",
+            storage_uris=(),
+            status=ArtifactStatus.UNKNOWN,
+        )
+    )
+    provenance = ProvenanceRecord(
+        target_name="public-test",
+        portable_repository_id="example.invalid/public-test",
+        local_repository_path=".",
+        git=GitProvenance(
+            commit_sha="0" * 40,
+            branch="main",
+            is_dirty=False,
+            dirty_files=(),
+            remote_origin="",
+            untracked_files=(),
+        ),
+        runtime=RuntimeEnvironment(
+            python_version="3.12",
+            platform_system="test",
+            platform_release="test",
+            platform_machine="test",
+            python_implementation="CPython",
+            hostname_masked="test",
+        ),
+        captured_at_utc="2026-08-20T00:00:00+00:00",
+        command_executed="test",
+        source_file_hashes={},
+    )
+    return VerifiableDataReceipt(
+        schema_version="VSTD-DATA-0.1",
+        receipt_id="VFY-DATA-PUBLIC-TEST",
+        dataset_spec=DatasetSpec(
+            dataset_id="dataset:test",
+            title="Public test",
+            description="Target-neutral receipt fixture.",
+            target_artifact_id="artifact:input",
+            status="IMPLEMENTED_UNVALIDATED",
+            falsification_condition="the stable receipt digest changes",
+            last_verified="2026-08-20",
+        ),
+        hypergraph=graph,
+        completeness_metrics=CompletenessMetrics(
+            source_coverage=0.0,
+            transformation_coverage=0.0,
+            content_integrity=1.0,
+            license_coverage=0.0,
+            contributor_coverage=0.0,
+            lineage_depth=0,
+            overall_completeness=0.25,
+        ),
+        policy_evaluations=[],
+        independent_audit=DataIndependentAudit(
+            overall_verdict=VerificationVerdict.INDETERMINATE,
+            acyclic_hypergraph=True,
+            integrity_passed=True,
+            root_sources_count=1,
+            terminal_outputs_count=1,
+            transformations_count=0,
+            trusted_computing_base={"runtime": "python-stdlib"},
+            audit_notes=["The source origin remains UNKNOWN."],
+        ),
+        provenance=provenance,
+        reproducibility={"highest_demonstrated_level": "CONTENT_IDENTICAL"},
+    )
+
+
+def test_public_data_receipt_round_trip(tmp_path: Path) -> None:
+    _receipt().save_to_directory(tmp_path)
+    assert validate_data_receipt(tmp_path) == 0
+    assert reproduce_data_receipt(tmp_path) == 0
+
+
+def test_public_data_receipt_tamper_fails(tmp_path: Path) -> None:
+    receipt_path = _receipt().save_to_directory(tmp_path)
+    receipt_path.write_text(receipt_path.read_text(encoding="utf-8") + " ", encoding="utf-8")
+    # Whitespace does not alter parsed stable content, so change a stable field too.
+    payload = receipt_path.read_text(encoding="utf-8").replace("public-test", "tampered", 1)
+    receipt_path.write_text(payload, encoding="utf-8")
+    assert validate_data_receipt(tmp_path) == 1
+
+
+def test_missing_artifact_status_defaults_to_unknown() -> None:
+    artifact = ArtifactNode(
+        artifact_id="artifact:unspecified",
+        label="unspecified status",
+        artifact_type=ArtifactType.RAW_SOURCE_FILE,
+        content_digest="a" * 64,
+    )
+    assert artifact.status == ArtifactStatus.UNKNOWN
+
+
+def test_completeness_rejects_non_hex_digest() -> None:
+    graph = ProvenanceHypergraph()
+    graph.add_artifact(
+        ArtifactNode(
+            artifact_id="artifact:bad-digest",
+            label="bad digest",
+            artifact_type=ArtifactType.RAW_SOURCE_FILE,
+            content_digest="z" * 64,
+        )
+    )
+    assert graph.compute_completeness().content_integrity == 0.0
+    assert graph.validate_structure() == [
+        "artifact artifact:bad-digest has an invalid content_digest"
+    ]
+
+
+def test_data_receipt_rejects_inflated_coverage_metrics(tmp_path: Path) -> None:
+    receipt = _receipt()
+    receipt.completeness_metrics = CompletenessMetrics(
+        source_coverage=1.0,
+        transformation_coverage=1.0,
+        content_integrity=1.0,
+        license_coverage=1.0,
+        contributor_coverage=1.0,
+        lineage_depth=99,
+        overall_completeness=1.0,
+    )
+    receipt.save_to_directory(tmp_path)
+    assert validate_data_receipt(tmp_path) == 1
+
+
+def test_data_receipt_rejects_dangling_hyperedge_reference(tmp_path: Path) -> None:
+    receipt = _receipt()
+    receipt.hypergraph.add_transformation(
+        TransformationHyperedge(
+            transformation_id="transform:dangling",
+            label="dangling input",
+            transformation_type=TransformationType.EVALUATION,
+            inputs=(HyperedgePort("artifact:missing", "INPUT"),),
+            outputs=(HyperedgePort("artifact:input", "OUTPUT"),),
+            software_provenance={"script": "evaluate.py"},
+            parameters={},
+            execution_environment={},
+        )
+    )
+    receipt.completeness_metrics = receipt.hypergraph.compute_completeness()
+    receipt.independent_audit = DataIndependentAudit(
+        overall_verdict=VerificationVerdict.INDETERMINATE,
+        acyclic_hypergraph=False,
+        integrity_passed=True,
+        root_sources_count=0,
+        terminal_outputs_count=1,
+        transformations_count=1,
+        trusted_computing_base={"runtime": "python-stdlib"},
+        audit_notes=["The input reference is missing."],
+    )
+    receipt.save_to_directory(tmp_path)
+    assert validate_data_receipt(tmp_path) == 1
+
+
+def test_no_revoked_policy_does_not_relabel_unknown_as_valid() -> None:
+    graph = ProvenanceHypergraph()
+    graph.add_artifact(
+        ArtifactNode(
+            artifact_id="artifact:unknown",
+            label="unknown root",
+            artifact_type=ArtifactType.RAW_SOURCE_FILE,
+            content_digest="a" * 64,
+        )
+    )
+
+    narrow = ProvenancePolicyVerifier.verify_no_revoked_ancestors(
+        graph, "artifact:unknown"
+    )
+    fail_closed = ProvenancePolicyVerifier.verify_all_ancestors_valid(
+        graph, "artifact:unknown"
+    )
+
+    assert narrow.passed is True
+    assert "does not establish" in narrow.explanation
+    assert fail_closed.passed is False
+    assert fail_closed.verdict == VerificationVerdict.FALSIFIED

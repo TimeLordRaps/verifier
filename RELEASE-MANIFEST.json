@@ -1,0 +1,239 @@
+{
+  "exclusions": [
+    "commercial and financial operations",
+    "client and prospect material",
+    "legal drafts",
+    "private research adapters and receipts",
+    "repository-specific generators and verifiers"
+  ],
+  "files": {
+    ".gitattributes": {
+      "byte_size": 127,
+      "sha256": "1d52ddfb779d976566c0b3a671748eddce273a1617d0f03292ae06898a876355"
+    },
+    ".github/workflows/ci.yml": {
+      "byte_size": 1084,
+      "sha256": "b7b77c9c3597460f90be665c76bfd9e46f90df573db74e3fba10e7029828106c"
+    },
+    ".gitignore": {
+      "byte_size": 337,
+      "sha256": "a1a0a542df8e1228a8ab6cfaf95a0d1e3c796bb3f0790792eba73c6e13bc9774"
+    },
+    ".zenodo.json": {
+      "byte_size": 523,
+      "sha256": "2ad03adc362a733eeb18deea82f1838cc3da96e2300cbd9209c7fd63eb1315b2"
+    },
+    "CHANGELOG.md": {
+      "byte_size": 1050,
+      "sha256": "0c728ba4284390ebb07ce5ec98a1b20cddd44258a43bffea4121c5c1012092db"
+    },
+    "CITATION.cff": {
+      "byte_size": 486,
+      "sha256": "778cec4e263ae0f27a1adaac497762694bd433a8bfba2b9e43f3a1e2f801a1a8"
+    },
+    "CLAIMS_AND_LIMITS.md": {
+      "byte_size": 7726,
+      "sha256": "7dc325ab838f690470b08a64f49844763767bbc49affd26579bdd49c05a24864"
+    },
+    "COMPETITION_EVALUATION_PROFILE.md": {
+      "byte_size": 4816,
+      "sha256": "dcf503ddf0a89d7b98be54255ab21407a552ced8d34c0143585e151fb5c1f035"
+    },
+    "CONTRIBUTING.md": {
+      "byte_size": 1096,
+      "sha256": "9ad031253045f75296ca33184db11a06d09ad4c63da49913e21cfa9e97c9ae95"
+    },
+    "GOVERNANCE.md": {
+      "byte_size": 2317,
+      "sha256": "0d151b41662f07b5fd29922d25cf45e686fa54bd9ec843f15c037d88147dd325"
+    },
+    "LICENSE": {
+      "byte_size": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "NOTICE": {
+      "byte_size": 46,
+      "sha256": "f625ecad59940a8bcdf63f2c0d64b715fbab9be86ae9609d594dd6a386e68db2"
+    },
+    "README.md": {
+      "byte_size": 4530,
+      "sha256": "187c4093424e764eb5299afc21077f220b4f3f347f3bd3db8f7fe700b8b2b797"
+    },
+    "RELEASING.md": {
+      "byte_size": 1303,
+      "sha256": "177ff24924927a49e700669b6c2e69d9dfb8362563c33570f0128df17823a6e9"
+    },
+    "SECURITY.md": {
+      "byte_size": 1068,
+      "sha256": "d9b9a84c5cc3caa198f4527d7ea3c79ec13eac530798635276473f73125cfd1e"
+    },
+    "examples/generic_run/compute.py": {
+      "byte_size": 1551,
+      "sha256": "9edbe095484b82e954851dafb38a7db693aa0e13e613d62516ae2b0daf011cf5"
+    },
+    "examples/generic_run/input.txt": {
+      "byte_size": 215,
+      "sha256": "5e3ad8f0aee997c386df51d919f8f05d8ad993ac54d3fa0563b606bb81e059e9"
+    },
+    "examples/generic_run/manifest.json": {
+      "byte_size": 2509,
+      "sha256": "139282a7130a11ba188334e94c48bdda90e72d932f41c50d041222885bb9b4ab"
+    },
+    "examples/logits_constraint_kernel/README.md": {
+      "byte_size": 1097,
+      "sha256": "48a26e6e60440793a67f572125da158b8dd1d0110195fc5777d59d1265e47747"
+    },
+    "examples/logits_constraint_kernel/demo.py": {
+      "byte_size": 1638,
+      "sha256": "029c09e3a7cd8a0cc91fd5a278ed67df28b125ba8c139b5ed90bb75b24dc3737"
+    },
+    "examples/logits_constraint_kernel/trace.json": {
+      "byte_size": 9152,
+      "sha256": "0840b4c98e31357f9439ca9e37e573e5fdc54446e591a955c0e55c859b974c0a"
+    },
+    "examples/verification_geometry_residual/README.md": {
+      "byte_size": 2554,
+      "sha256": "61bf3b9587c0ffb9f42748a3e411c8d2d94d43ae259e4a133514da520011c323"
+    },
+    "examples/verification_geometry_residual/geometry.json": {
+      "byte_size": 8446,
+      "sha256": "0455819631af831b332c7948fa250f4d79f6a87f4c1469dcefef04e36d1b8287"
+    },
+    "pyproject.toml": {
+      "byte_size": 1376,
+      "sha256": "1e5a593823203e14e30e2a663606bddff4a47b4aa890ff45332ce56b59847be5"
+    },
+    "receipts/schema/receipt_data_v1.json": {
+      "byte_size": 2792,
+      "sha256": "7dbaef6a7b61ac149a9a8b31822dd6f529cac1cf876eecf0d42d6c8472273048"
+    },
+    "receipts/schema/receipt_v1.json": {
+      "byte_size": 3964,
+      "sha256": "ee685cde6b4d03d00202990ce7fda592e4287bd791f763572d2638e0962c2d5c"
+    },
+    "receipts/schema/verification_geometry_v0_2.json": {
+      "byte_size": 10362,
+      "sha256": "39275d97da5741c9f2a26e18d0042afa6ef5d90084ad247a39721a6b75c8d432"
+    },
+    "src/verifiable/__init__.py": {
+      "byte_size": 1764,
+      "sha256": "fe498584d1ca790ab08f325f977489c2eb0c5ef6b73015def448d0a666ce08e2"
+    },
+    "src/verifiable/constraints/__init__.py": {
+      "byte_size": 3017,
+      "sha256": "b505c019db892278e88901090780a66409fb610f48a9dd892e4a6aeef33b1bac"
+    },
+    "src/verifiable/constraints/kernel.py": {
+      "byte_size": 7613,
+      "sha256": "3ea1f8e438d66fca68a6238176699e8d132939cad1da54bed7292c75d6419f90"
+    },
+    "src/verifiable/constraints/llguidance_backend.py": {
+      "byte_size": 13125,
+      "sha256": "d8e06846a42c48bb26153be0c627e1b3886cbbfd031c152d79d57a425ceb8c9d"
+    },
+    "src/verifiable/constraints/postvalidate.py": {
+      "byte_size": 1911,
+      "sha256": "513e9c774fa2724a9fd5d322d60daf5c6ce1bcde7c4f2da533bbbaa5ef5e8268"
+    },
+    "src/verifiable/constraints/torch_mask.py": {
+      "byte_size": 2677,
+      "sha256": "349bb6213c0d0e99ba43159a7b501e0a823552480d66b800f9e062a2d2e09b7c"
+    },
+    "src/verifiable/core/checker.py": {
+      "byte_size": 14498,
+      "sha256": "a12871d188d277621ef9f34d4562709ef4e09ae94a05e3694b07d02b2d4c011e"
+    },
+    "src/verifiable/core/geometry.py": {
+      "byte_size": 27421,
+      "sha256": "176874cb1aec0bde6680545153bd1a74e8d1262d7c67385b7fdb2ce476f520b5"
+    },
+    "src/verifiable/core/provenance.py": {
+      "byte_size": 7053,
+      "sha256": "2c000ddc916f55b310bbc138ac74f34bb07417e22c22661b7667c215898d5158"
+    },
+    "src/verifiable/core/receipt.py": {
+      "byte_size": 9995,
+      "sha256": "7a862cc2e32249b79545c15908cdae3948a77d11a047ba0d58e9c1f350f8b322"
+    },
+    "src/verifiable/core/reproducibility.py": {
+      "byte_size": 2489,
+      "sha256": "e92123ab3fa51146e9c6d12d111428128e5a8419e09ccb152656eb3472740fcb"
+    },
+    "src/verifiable/core/run.py": {
+      "byte_size": 46498,
+      "sha256": "810fcdbc3efa2e0f6af06fe9eebbc7b98f5b925d40c52aeef03acb40a31b6d05"
+    },
+    "src/verifiable/core/translation.py": {
+      "byte_size": 13990,
+      "sha256": "3da84fc6682fccadb0e38512cf0a37bef03d493619f5bb81ac8ff9190c72ee21"
+    },
+    "src/verifiable/data/__init__.py": {
+      "byte_size": 1024,
+      "sha256": "60e09b98a53e5a376ff5f05e92cd2bce0474ccd4923ee801a930eb640b7ea383"
+    },
+    "src/verifiable/data/models.py": {
+      "byte_size": 20329,
+      "sha256": "3f18a325c99d7fbea61687ca63344de5da2b5234742b50fef01068cd6f79efab"
+    },
+    "src/verifiable/data/policy.py": {
+      "byte_size": 7712,
+      "sha256": "12e731627dde19e78aa4ca3f1257f6d7add91434c740fb8753a1a35bd8451e37"
+    },
+    "src/verifiable/data/receipt.py": {
+      "byte_size": 21343,
+      "sha256": "119b1a72c42c5fa0c057ce6479c3208dc3836049f2c9a46402930fbc53d3cbc9"
+    },
+    "src/verifiable/runtime/__init__.py": {
+      "byte_size": 70,
+      "sha256": "1fd57da519f3468c79be2f8e703c27d30b97270d08784c9aca72b926c262001c"
+    },
+    "src/verifiable/runtime/public_cli.py": {
+      "byte_size": 11140,
+      "sha256": "6ba4248fc24d234c2ad1f9f6b1382b19b065fa39a7b8b5295a5a5970d1bcf21b"
+    },
+    "standard/VSTD-0.1.md": {
+      "byte_size": 8517,
+      "sha256": "9b815860089cfcb263dbb3b80a84ca11ba02d4c7cc46a7c1d9865015af057182"
+    },
+    "standard/VSTD-0.2.md": {
+      "byte_size": 13288,
+      "sha256": "9dc073b71ea13ca40a3408f77a1acf58cc441db56ca3f0923271c018280947fb"
+    },
+    "standard/VSTD-DATA-0.1.md": {
+      "byte_size": 8249,
+      "sha256": "dfb1d65b46d1b22965b24cd4d99cc49fae1f49fbf3d72cad9357132e189cb70c"
+    },
+    "tests/test_generic_run.py": {
+      "byte_size": 14309,
+      "sha256": "1d934e71535fecca402f2e5a18809df2ff792d97ca8b1d34526921aed12e845d"
+    },
+    "tests/test_independent_checker.py": {
+      "byte_size": 3587,
+      "sha256": "7ede2d485db5a1c957032f7855c579633c84d0362a9e77a8ae7d85c177da45d9"
+    },
+    "tests/test_logits_constraint_kernel.py": {
+      "byte_size": 8417,
+      "sha256": "4d37abac927daa6ce403d90e4acb006effd4f424978e9694fb957d6e9919884e"
+    },
+    "tests/test_public_cli.py": {
+      "byte_size": 2323,
+      "sha256": "5fca2ae97884664a3b3395ccd0502e311e937fe2fc16c0a2ae29c5ac5917e906"
+    },
+    "tests/test_public_data.py": {
+      "byte_size": 7425,
+      "sha256": "4903c7c4dfb8293ffa3a770d439876c2990dbd04061bc514e4d79761348007bf"
+    },
+    "tests/test_translation_boundary.py": {
+      "byte_size": 7855,
+      "sha256": "fcceffe7d411be235ea5f7de92986535f0a7fe052583329b07ed1e624d534410"
+    },
+    "tests/test_verification_geometry.py": {
+      "byte_size": 12905,
+      "sha256": "504d60267db506a257efd73b46a14260c8417267522c78fdf809382830ce3248"
+    }
+  },
+  "release": "0.1.0",
+  "schema_version": "VFY-PUBLIC-RELEASE-1.0",
+  "scope": "public VSTD specifications, schemas, target-neutral reference subset, examples, and tests",
+  "source_commit": "feb116749c064ce3839f0e1f160e15cdc61dfc76"
+}

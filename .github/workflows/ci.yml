@@ -1,0 +1,35 @@
+name: conformance
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install ".[test]"
+      - run: >-
+          python -m pytest -q
+          tests/test_independent_checker.py
+          tests/test_generic_run.py
+          tests/test_translation_boundary.py
+          tests/test_verification_geometry.py
+          tests/test_public_cli.py
+          tests/test_public_data.py
+
+  stdlib-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: PYTHONPATH=src python -S -c "import verifiable; from verifiable.core.run import load_manifest; print(verifiable.__version__)"

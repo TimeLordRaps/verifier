@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+
+examples/generic_run/logs/
+examples/generic_run/manifest.source.json
+examples/generic_run/metrics.json
+examples/generic_run/output.json
+examples/generic_run/receipt.json
+examples/generic_run/receipt_manifest.json
+examples/generic_run/report.md

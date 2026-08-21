@@ -1,0 +1,304 @@
+{
+  "accepted_output_digest": "2f686d9cb681913292bccec2ce1d4257d0b255e852533cae091a0aca5a976947",
+  "backend": {
+    "name": "llguidance",
+    "version": "1.8.0"
+  },
+  "compiled_constraint_digest": "db8bf2fd4b6297b5ace39f628a304c53475f25c881b3c2f33bc0134bb34460ad",
+  "constraint": {
+    "constraint_id": "pattern-properties-demo",
+    "kind": "JSON_SCHEMA",
+    "source": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x_": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "constraint_digest": "a4820c0bbda3b6da984d25a9e3903ec6aa0a274dbe8e5e0a13358bdfd272d528",
+  "format_version": "0.1-experimental",
+  "limitations": [
+    "The compiler and matcher implementation are identified dependencies, not post-verified by this trace.",
+    "A token-mask trace does not by itself establish source-to-grammar translation fidelity.",
+    "Model inference and sampling behavior outside the selected logits-mask seam are outside this trace."
+  ],
+  "mask_coverage_complete": true,
+  "mask_observations": [
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 1,
+      "packed_mask_sha256": "6c6e32508c3fbaee5c62940eec3af3e1469c57e179c920a841bccb2def222a74",
+      "prefix_token_count": 0,
+      "step": 0,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 6,
+      "packed_mask_sha256": "f09e919d61f77853fb40666f939dbae7a15df9841c6de2d088792f7c1813fcf5",
+      "prefix_token_count": 1,
+      "step": 1,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 1,
+      "packed_mask_sha256": "6df1261ebc7a4ef0245f7b6867b618a21ad0a8b50dfdadc06ff06f8b2de5ecf6",
+      "prefix_token_count": 2,
+      "step": 2,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 1,
+      "packed_mask_sha256": "85475ea55c0f47b4bda851a06b73b131ab245a4e6753130005b8ab3d30ca99f5",
+      "prefix_token_count": 3,
+      "step": 3,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 146,
+      "packed_mask_sha256": "9c7d9b3b5fe26880a0f2156ad969973af2ac410567f7fba78f045533494f927c",
+      "prefix_token_count": 4,
+      "step": 4,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 146,
+      "packed_mask_sha256": "9c7d9b3b5fe26880a0f2156ad969973af2ac410567f7fba78f045533494f927c",
+      "prefix_token_count": 5,
+      "step": 5,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 146,
+      "packed_mask_sha256": "9c7d9b3b5fe26880a0f2156ad969973af2ac410567f7fba78f045533494f927c",
+      "prefix_token_count": 6,
+      "step": 6,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 146,
+      "packed_mask_sha256": "9c7d9b3b5fe26880a0f2156ad969973af2ac410567f7fba78f045533494f927c",
+      "prefix_token_count": 7,
+      "step": 7,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 146,
+      "packed_mask_sha256": "9c7d9b3b5fe26880a0f2156ad969973af2ac410567f7fba78f045533494f927c",
+      "prefix_token_count": 8,
+      "step": 8,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 146,
+      "packed_mask_sha256": "9c7d9b3b5fe26880a0f2156ad969973af2ac410567f7fba78f045533494f927c",
+      "prefix_token_count": 9,
+      "step": 9,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 146,
+      "packed_mask_sha256": "9c7d9b3b5fe26880a0f2156ad969973af2ac410567f7fba78f045533494f927c",
+      "prefix_token_count": 10,
+      "step": 10,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 5,
+      "packed_mask_sha256": "56cb811edc4b170946e7ba73943483a072fb185952090fae302903bfd987bb80",
+      "prefix_token_count": 11,
+      "step": 11,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 15,
+      "packed_mask_sha256": "c112f2a2888ba6761c03b3db213b96ec90ada9f18e552244c3dfa97ed80a0f8d",
+      "prefix_token_count": 12,
+      "step": 12,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 16,
+      "packed_mask_sha256": "3c7d36f87a0b4dc7c5b7358286d91bbe8d86c2c1bf001cfb8d4f759923bc3ff7",
+      "prefix_token_count": 13,
+      "step": 13,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    },
+    {
+      "accepting_before_sample": false,
+      "allowed_token_count": 16,
+      "packed_mask_sha256": "3c7d36f87a0b4dc7c5b7358286d91bbe8d86c2c1bf001cfb8d4f759923bc3ff7",
+      "prefix_token_count": 14,
+      "step": 14,
+      "stopped_before_sample": false,
+      "vocabulary_size": 262
+    }
+  ],
+  "outcome": "POST_VALIDATED",
+  "post_validation": {
+    "constraint_source_digest": "a0621cdf9334602fdc9015190b491bd128de24826d915b28a768392e932bebf7",
+    "details": "Parsed output satisfies the declared Draft 2020-12 schema.",
+    "output_digest": "2f686d9cb681913292bccec2ce1d4257d0b255e852533cae091a0aca5a976947",
+    "passed": true,
+    "validator_name": "jsonschema.Draft202012Validator",
+    "validator_version": "4.25.1"
+  },
+  "record_digest": "57597bce54f1ebeda1143f4fffc7d5fadc0d64ddb601bc23647d1dde0bac8cdb",
+  "record_kind": "logits_constraint_trace",
+  "token_observations": [
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 0,
+      "stopped_after_token": false,
+      "token_id": 123
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 1,
+      "stopped_after_token": false,
+      "token_id": 34
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 2,
+      "stopped_after_token": false,
+      "token_id": 120
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 3,
+      "stopped_after_token": false,
+      "token_id": 95
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 4,
+      "stopped_after_token": false,
+      "token_id": 97
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 5,
+      "stopped_after_token": false,
+      "token_id": 110
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 6,
+      "stopped_after_token": false,
+      "token_id": 115
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 7,
+      "stopped_after_token": false,
+      "token_id": 119
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 8,
+      "stopped_after_token": false,
+      "token_id": 101
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 9,
+      "stopped_after_token": false,
+      "token_id": 114
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 10,
+      "stopped_after_token": false,
+      "token_id": 34
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 11,
+      "stopped_after_token": false,
+      "token_id": 58
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 12,
+      "stopped_after_token": false,
+      "token_id": 52
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": false,
+      "error": "",
+      "step": 13,
+      "stopped_after_token": false,
+      "token_id": 50
+    },
+    {
+      "accepted": true,
+      "accepting_after_token": true,
+      "error": "",
+      "step": 14,
+      "stopped_after_token": true,
+      "token_id": 125
+    }
+  ],
+  "tokenizer": {
+    "digest": "162eb97a5ddc15b81e617a71cb5acbb02faa2f1b9fec03c0355093f334de3976",
+    "identity": "llguidance:builtin-byte-tokenizer",
+    "vocabulary_size": 262
+  }
+}
