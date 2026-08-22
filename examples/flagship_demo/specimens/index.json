@@ -1,0 +1,51 @@
+{
+  "claim_boundary": "These are bounded reference-implementation checks over the included specimens, not a claim of empirical truth, complete provenance, or adoption.",
+  "demo": "VSTD-FLAGSHIP-1",
+  "scenario_count": 4,
+  "scenario_files": {
+    "honest-unknown": "honest-unknown.json",
+    "inflated-tier": "inflated-tier.json",
+    "poisoned-ancestor": "poisoned-ancestor.json",
+    "wrong-artifact": "wrong-artifact.json"
+  },
+  "scenarios": [
+    {
+      "details": "grounding rejected: clause 2 claims role 'member' is about 'artifact:somebody-else', but variable 2 is grounded in a fact about 'artifact:ancestor-1'",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "ok": true,
+      "question": "Does the grounded proof refer to the same artifact as the claim?",
+      "scenario": "wrong-artifact",
+      "title": "Valid-looking proof, wrong artifact"
+    },
+    {
+      "details": "indeterminacy transcript accepted: PROOF_BOUND_EXCEEDED",
+      "expected": "ACCEPTED/UNKNOWN",
+      "observed": "ACCEPTED/UNKNOWN",
+      "ok": true,
+      "question": "Can bounded exhaustion remain explicit instead of becoming PASS or FAIL?",
+      "scenario": "honest-unknown",
+      "title": "Bound exhausted without a false answer"
+    },
+    {
+      "details": "formula is Horn, so tier UP is admissible and therefore mandatory; certificate declares RES. A linear-time check may not be dressed in general-resolution machinery.",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "ok": true,
+      "question": "Can a linear Horn check be dressed up as general resolution?",
+      "scenario": "inflated-tier",
+      "title": "Inflated verification-cost claim"
+    },
+    {
+      "details": "collection:demo holds at graph level 0. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
+      "expected": "GRAPH-LEVEL-0; REVOKED blocker; checked refutation",
+      "observed": "GRAPH-LEVEL-0; REVOKED",
+      "ok": true,
+      "question": "Does a poisoned transitive ancestor cap the collection's graph level?",
+      "scenario": "poisoned-ancestor",
+      "title": "Revoked ancestor behind valid descendants"
+    }
+  ],
+  "status": "OK",
+  "successful_scenarios": 4
+}

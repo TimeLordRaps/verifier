@@ -33,6 +33,7 @@ from verifiable.runtime.hardware_cli import (
     handle_vstd3_command,
     parse_verification_keys,
 )
+from verifiable.runtime.demo import SCENARIOS, demo_report, emit_specimens, run_demo
 
 
 def _receipt_file(path_or_dir: Path) -> Path:
@@ -126,6 +127,23 @@ def build_parser() -> argparse.ArgumentParser:
         description="Target-neutral VSTD receipt and provenance reference runtime.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    demo_parser = subparsers.add_parser(
+        "demo",
+        help="Run the side-effect-free VSTD adversarial flagship demonstration.",
+    )
+    demo_parser.add_argument(
+        "--scenario",
+        choices=("all", *SCENARIOS),
+        default="all",
+        help="Run all scenarios or one named scenario.",
+    )
+    demo_parser.add_argument("--json", action="store_true")
+    demo_parser.add_argument(
+        "--emit-specimens",
+        metavar="DIR",
+        help="Write deterministic JSON specimens and observations to DIR.",
+    )
 
     run_parser = subparsers.add_parser(
         "run",
@@ -293,6 +311,30 @@ def _handle_data_command(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        if args.command == "demo":
+            results = run_demo(args.scenario)
+            report = demo_report(results)
+            if args.emit_specimens:
+                emit_specimens(results, Path(args.emit_specimens).resolve())
+            if args.json:
+                print(json.dumps(report, indent=2, sort_keys=True))
+            else:
+                print("VSTD flagship adversarial demo")
+                print(
+                    f"{report['successful_scenarios']}/{report['scenario_count']} "
+                    "scenarios behaved as required."
+                )
+                for result in results:
+                    marker = "DEMO OK" if result.ok else "DEMO FAILED"
+                    print(f"[{marker}] {result.title}")
+                    print(f"  expected: {result.expected}")
+                    print(f"  observed: {result.observed}")
+                    print(f"  detail:   {result.details}")
+                print(f"Boundary: {report['claim_boundary']}")
+                if args.emit_specimens:
+                    print(f"Specimens: {Path(args.emit_specimens).resolve()}")
+            return 0 if report["status"] == "OK" else 1
+
         if args.command == "plan":
             manifest_path = Path(args.manifest).resolve()
             manifest = load_manifest(manifest_path)

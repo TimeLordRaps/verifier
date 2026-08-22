@@ -1,4 +1,4 @@
-# VSTD-3 record migration and backward compatibility
+# VSTD-3 implementation compatibility
 
 VSTD-3 is additive. It does not reinterpret earlier receipt wire formats. For
 the historical filename and wire-identifier table, see
@@ -22,7 +22,7 @@ accounting, anchoring, and evidence-binding transformation types. Readers that r
 unknown enum values should upgrade before reading a hypergraph containing VSTD-3
 hardware nodes. Earlier graphs containing only earlier values round-trip unchanged.
 
-## Adding hardware evidence to a run
+## Attaching hardware evidence to a run
 
 1. Validate the VSTD-3 receipt with all required key resolvers.
 2. Identify pre-existing output artifact IDs in the VSTD-DATA graph.

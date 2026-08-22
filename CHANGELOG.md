@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.0 - 2026-08-22
+
+- Add `vstd demo`, a deterministic four-scenario adversarial demonstration that
+  rejects a proof grounded to the wrong artifact, preserves a checked `UNKNOWN`,
+  rejects verification-cost inflation, and exposes a revoked transitive ancestor.
+- Publish the replayable demo specimens, a newcomer quickstart, a public technical
+  roadmap, an ecosystem boundary map, and a focused project overview site.
+- Make `vstd` the canonical cross-platform command while retaining `verifier` and
+  `verifiable` as compatibility aliases. This avoids collision with Windows Driver
+  Verifier without breaking previously issued command references.
+- Replace the unused adopter-migration document name with an implementation
+  compatibility note; no external adoption or adopter migration is implied.
+- Add automated checks for documentation links, version agreement, public-boundary
+  language, packaged demo behavior, and checked-in specimen determinism.
+- Add repository-level instructions that keep automated contributors inside VSTD's
+  fail-closed claim, dependency, compatibility, and public/private boundaries.
+
 ## 1.0.1 - 2026-08-22
 
 - State explicitly that each VSTD layer requires its own evidence: layer 4 does not

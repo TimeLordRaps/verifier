@@ -1,207 +1,197 @@
-# VSTD / VERIFIABLE
+<div align="center">
 
-VSTD is an independent open project specification and reference implementation
-for attaching bounded, machine-checkable evidence to computational claims and
-provenance graphs.
+<img src="docs/assets/vstd-overview.svg" alt="VSTD object and graph verification layers remain separately evidenced" width="920">
 
-**Status:** founder-maintained alpha project specification. VSTD has no
-demonstrated external adoption, independent implementation, interoperability
-deployment, or third-party security review. It is not an accredited, consensus,
-IETF, ISO, or W3C standard. A `VERIFIED` result is always relative to the
-declared coordinate, evidence, mechanisms, bounds, and trust roots.
+# VSTD
 
-## Why VSTD exists
+**Portable, bounded, refutable evidence for computational claims.**
 
-A computational result usually arrives without a machine-readable answer to:
-*what exactly was claimed, which bytes and mechanisms support it, where does the
-claim stop, and what evidence would overturn it?* VSTD records those answers in
-bounded receipts and provenance graphs. It does not turn the record into empirical
-truth or global completeness.
+[![Conformance](https://github.com/TimeLordRaps/verifier/actions/workflows/ci.yml/badge.svg)](https://github.com/TimeLordRaps/verifier/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/TimeLordRaps/verifier?display_name=tag&sort=semver)](https://github.com/TimeLordRaps/verifier/releases/latest)
+[![Python 3.10–3.13](https://img.shields.io/badge/python-3.10%E2%80%933.13-3776AB.svg)](https://www.python.org/)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-2f7d6d.svg)](LICENSE)
+[![Status: alpha](https://img.shields.io/badge/status-founder--maintained%20alpha-d97706.svg)](#project-status)
 
-The smallest working example executes a deterministic word-count program, records its
-declared inputs and outputs, validates the resulting receipt, and reruns the command to
-test whether the outputs remain byte-identical. See
-[`examples/generic_run`](examples/generic_run).
+*A PASS is not enough. Show what passed, under which meaning, against which
+evidence, inside which bounds, and how somebody else can prove it wrong.*
 
-## The two-axis ladder
+[Run the demo](#see-it-fail-correctly) ·
+[Read the quickstart](docs/QUICKSTART.md) ·
+[Inspect the standard](standard/LADDER.md) ·
+[Challenge a claim](https://github.com/TimeLordRaps/verifier/discussions/8) ·
+[See the roadmap](ROADMAP.md)
 
-Specification numbers identify verification depth, not revisions:
+</div>
 
-Each row is a separately evidenced verification question. A higher-layer result never
-supplies a lower-layer result. An aggregate depth of `N` is permitted only when distinct
-evidence passes every layer from 1 through `N`.
+## See it fail correctly
 
-| Object mechanics | Closes | Graph dynamics |
-|---|---|---|
-| `VSTD-1` Claim mechanics | malformed or tampered statement | `VSTD-Graph-1` Recorded lineage |
-| `VSTD-2` Verification surface | verdict leaking outside its coordinate | `VSTD-Graph-2` Bounded collection surface |
-| `VSTD-3` Substrate accountability | lying or unaccountable evidence source | `VSTD-Graph-3` Accountable provenance closure |
-| `VSTD-4` Refutability | a claim that cannot leave its declarant and be challenged | `VSTD-Graph-4` Refutable transformation closure |
-| `VSTD-5` Witness corroboration | pseudo-independence | `VSTD-Graph-5` Corroborated verification network |
+```bash
+git clone https://github.com/TimeLordRaps/verifier.git
+cd verifier
+python -m pip install .
+vstd demo
+```
 
-Layers 1 through 4 are self-discernable. Layer 5 requires a second party to
-exist and act. VSTD-5 and the corresponding witness protocol remain **DRAFT** in
-this release.
+The side-effect-free flagship demo runs four adversarial specimens. Abridged output:
 
-Read [`standard/LADDER.md`](standard/LADDER.md) first and
-[`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md) for frozen wire
-identifiers and historical project filenames. Layers compose only through their
-separately checked results; they do not supply or replace one another.
+```text
+VSTD flagship adversarial demo
+4/4 scenarios behaved as required.
+[DEMO OK] Valid-looking proof, wrong artifact          → REJECTED
+[DEMO OK] Bound exhausted without a false answer       → ACCEPTED/UNKNOWN
+[DEMO OK] Inflated verification-cost claim             → REJECTED
+[DEMO OK] Revoked ancestor behind valid descendants    → GRAPH-LEVEL-0
+```
 
-## What v1.0.1 includes
+These are bounded checks over included specimens—not evidence of empirical truth,
+complete provenance, external adoption, or general AI safety. Run `vstd demo --json`
+for the complete machine-readable results or `vstd demo --emit-specimens PATH` to
+emit each specimen.
 
-- VSTD-1 through VSTD-4 specifications and a draft VSTD-5 interface;
-- VSTD-Graph-1 through VSTD-Graph-5 profiles;
-- a fourteen-rung VSTD-4 depth computation with a certificate explaining the
-  first unreachable rung;
-- `VSTD4-GDC-1`, a grounded three-valued decision certificate whose checker binds
-  the formula to the declared claim rather than checking syntax alone;
-- a trusted kernel physically isolated from solver and policy producers;
-- machine-readable refutation surfaces, precommitment, availability, challenge,
-  degradation, and composition records;
-- computed Graph levels over membership, complete provenance ancestry, admissible
-  status, and transformation-edge evidence;
-- VSTD-3 accelerator-accountability mechanisms and a 37-profile registry;
-- frozen compatibility for historical `VSTD-0.1`, `VSTD-0.2`, `VSTD-3.0`, and
-  `VSTD-DATA-0.1` receipt wire identifiers;
-- JSON Schemas, deterministic examples, and conformance tests.
+## What VSTD adds
 
-`VSTD4-GDC-1` is a project-defined format. The reference checker declares exactly
-which format fragment it implements; passing that checker is not external validation.
+Ordinary computational results often omit machine-readable answers to four questions:
 
-## Install this source release
+1. **What exactly was claimed?** The subject, predicate, parameters, and limits.
+2. **Which exact evidence supports it?** Digests, mechanisms, provenance, and trust roots.
+3. **Where does the verdict stop?** Explicit coordinates and resource bounds.
+4. **How can it change?** Reproduction, counterexample, challenge, and degradation rules.
+
+VSTD stores those answers in receipts and provenance hypergraphs. The reference
+implementation can validate stable receipt content, reproduce declared mechanisms,
+check grounded decision certificates, and compute collection-level ceilings from
+recorded ancestry and caller-supplied object and edge ratings.
+
+## Two axes; evidence never substitutes
+
+Specification numbers identify verification depth, not revisions. Every row is a
+different question with its own evidence. A higher-layer result does **not** supply,
+imply, upgrade, or repair a lower-layer result.
+
+| Depth | VSTD object mechanics | VSTD-Graph collection dynamics |
+|---:|---|---|
+| 1 | Claim mechanics | Recorded lineage |
+| 2 | Verification surface | Bounded collection surface |
+| 3 | Substrate accountability | Accountable provenance closure |
+| 4 | Refutability | Refutable transformation closure |
+| 5 | Witness corroboration | Corroborated verification network |
+
+An aggregate depth of `N` is valid only when distinct evidence passes every layer from
+1 through `N`. Layers 1–4 are self-discernable; layer 5 requires another party to
+exist, act, and be independent. VSTD-5 and its witness protocol remain **DRAFT**.
+
+Start with [`standard/LADDER.md`](standard/LADDER.md). Wire identifiers are frozen
+separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
+
+## Choose a path
+
+| If you want to… | Start here |
+|---|---|
+| Understand the claim model in ten minutes | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
+| Try to break the core claim | [`examples/flagship_demo`](examples/flagship_demo) |
+| Implement an independent checker | [`standard/VSTD-4.md`](standard/VSTD-4.md) and [`VSTD4-GDC-1` schema](receipts/schema/vstd4_certificate.json) |
+| Model a provenance collection | [`standard/VSTD-Graph-1.md`](standard/VSTD-Graph-1.md) |
+| Integrate accelerator evidence | [`docs/layers/vstd-3/vendor-integration.md`](docs/layers/vstd-3/vendor-integration.md) |
+| Use VSTD beside existing supply-chain/provenance systems | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| Review exact public claim limits | [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) |
+
+## Capture a generic computation
+
+**Security boundary:** a manifest contains an executable command. `vstd run` does not
+sandbox it. Inspect the plan first; run only a trusted manifest inside an operating
+system or container boundary appropriate to that command. Declared-path checks expose
+capture scope, not everything the subprocess can access.
+
+```bash
+vstd plan examples/generic_run/manifest.json --json
+vstd run examples/generic_run/manifest.json --output /tmp/vstd-receipt
+vstd inspect /tmp/vstd-receipt
+vstd validate /tmp/vstd-receipt
+vstd reproduce /tmp/vstd-receipt --rerun
+```
+
+`validate` checks stable receipt content. `reproduce --rerun` executes the recorded
+command again when permitted and compares the declared outputs. Neither operation
+widens the receipt into a claim about the unobserved world.
+
+## The grounded certificate
+
+`VSTD4-GDC-1` binds a decision to the claim and evidence it is supposed to describe:
+
+```text
+DecisionCertificate
+├── header       verdict, tightest cost tier, counts, binding digest
+├── formula      normalized finite clauses
+├── grounding    variables → facts; clauses → named encoding rules
+├── decision     model, proof, witness, or bounded UNKNOWN transcript
+└── hints        untrusted, optional, and strippable
+```
+
+The checker rejects over-budget headers before proof work, rejects cost-tier inflation,
+checks grounding before the decision block, and preserves `UNKNOWN` when a declared
+bound is exhausted. `VSTD4-GDC-1` is a VSTD project format; reference-kernel acceptance
+is not external validation.
+
+## Install and command names
+
+The distribution name is `verifiable-standard`; the base install has no required
+third-party runtime dependencies.
 
 ```bash
 python -m pip install .
+python -m pip install ".[yaml]"        # YAML manifests
+python -m pip install ".[jsonschema]"  # schema validation
+python -m pip install ".[llguidance]"  # optional constraint adapter
+python -m pip install ".[torch]"       # optional tensor adapter
 ```
 
-The distribution name is `verifiable-standard`. `verifier` is the canonical
-command. `verifiable` remains a permanent compatibility alias because issued
-receipts bind that command in their falsification instructions.
+`vstd` is the canonical cross-platform command. `verifier` remains an alias, but an
+unqualified `verifier` command on Windows commonly resolves to Windows Driver Verifier.
+`verifiable` remains a permanent compatibility alias because published project receipts
+may bind it in falsification instructions.
 
-The base install has no required third-party runtime dependencies. Install only
-the boundary you need:
-
-```bash
-python -m pip install ".[yaml]"
-python -m pip install ".[llguidance]"
-python -m pip install ".[torch]"
-python -m pip install ".[jsonschema]"
-```
+## Verify a release
 
 Release assets include an external manifest binding the exact public source ref,
-commit, archive digest, file set, and member bytes. GitHub artifact attestations bind
-the uploaded ZIP, wheel, and manifest to the release workflow:
+commit, archive digest, file set, and member bytes. GitHub/Sigstore artifact
+attestations bind the ZIP, wheel, and manifest to the release workflow:
 
 ```bash
 gh attestation verify PATH_TO_DOWNLOADED_ASSET --repo TimeLordRaps/verifier
 ```
 
-The release notes report the tag's signature status separately. An artifact attestation
-is not a tag signature.
+Release notes report the tag-signature status separately. An artifact attestation is
+not a tag signature. See [`RELEASING.md`](RELEASING.md) for the complete gate.
 
-## Capture and check a generic computation
+## Project status
 
-**Security boundary:** a manifest contains an executable command. `verifier run` does
-not sandbox it. Inspect the plan first and execute only a trusted manifest inside an
-appropriate operating-system or container isolation boundary. The plan exposes declared
-paths but cannot enumerate everything the subprocess may access.
+VSTD is a founder-maintained **alpha project specification**. There is no demonstrated
+external adoption, independent implementation, interoperability deployment, or
+third-party security review. It is not an accredited, consensus, IETF, ISO, or W3C
+standard. A `VERIFIED` result is always relative to declared coordinates, evidence,
+mechanisms, bounds, and trust roots.
 
-```bash
-verifier plan examples/generic_run/manifest.json --json
-verifier run examples/generic_run/manifest.json --output /tmp/vstd-receipt
-verifier inspect /tmp/vstd-receipt
-verifier validate /tmp/vstd-receipt
-verifier reproduce /tmp/vstd-receipt --rerun
-```
+Current public-review priorities are counterexamples to normative statements,
+ambiguous wire rules, independent parser results, interoperability failures, and
+receipts that pass when they should fail. Use the
+[issue forms](https://github.com/TimeLordRaps/verifier/issues/new/choose). Send sensitive
+findings through [`SECURITY.md`](SECURITY.md), not a public issue.
 
-`validate` checks stable receipt content. `reproduce --rerun` re-executes the
-declared command when permitted. These operations verify recorded execution and
-artifact relationships; they do not establish empirical truth outside the
-declared surface.
-
-## Review and feedback wanted
-
-The current goal is adversarial review, not an adoption claim. Useful public feedback
-includes a counterexample to a normative statement, an ambiguous wire-format rule, an
-independent parser result, an interoperability failure, or a receipt that passes when it
-should fail. Use the repository issue forms. Report sensitive security findings through
-the private route in [`SECURITY.md`](SECURITY.md), never in a public issue.
-
-## VSTD-4 certificates
-
-The certificate has four soundness-relevant blocks and one untrusted accelerator:
-
-```text
-DecisionCertificate (VSTD4-GDC-1)
-├── header       binding, verdict, cost tier, and declared counts
-├── formula      normalized clauses
-├── grounding    variables to facts; clauses to named rules
-├── decision     model, proof, witness, or bounded transcript
-└── hints        untrusted and strippable
-```
-
-The checker rejects over-budget headers before checking proof steps, rejects tier
-inflation, validates grounding before the decision block, and returns `UNKNOWN`
-when a declared bound is exhausted. A correct proof over a formula grounded to
-the wrong artifact is rejected.
-
-See [`standard/VSTD-4.md`](standard/VSTD-4.md) and
-[`receipts/schema/vstd4_certificate.json`](receipts/schema/vstd4_certificate.json).
-
-## Accelerator accountability
-
-List or inspect registry profiles:
-
-```bash
-vstd hardware list --json
-vstd hardware inspect nvidia.hopper --json
-```
-
-The included firmware emulator and HMAC fixtures are deterministic tests, not
-production hardware roots of trust. Read
-[`docs/layers/vstd-3/threat-model.md`](docs/layers/vstd-3/threat-model.md),
-[`docs/layers/vstd-3/vendor-integration.md`](docs/layers/vstd-3/vendor-integration.md),
-and [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) before publishing a
-hardware claim.
-
-## Predictive systems and scored evaluation
-
-[`docs/profiles/competition-evaluation.md`](docs/profiles/competition-evaluation.md)
-is a non-normative integration profile. It does not claim adoption or endorsement
-by any benchmark, conference, competition, or organizer.
-
-A receipt can bind the submission and scorer that produced a recorded result. It
-cannot by itself establish hidden-test integrity, outcome truth, absence of
-leakage, or leaderboard standing.
-
-## Claim boundaries
-
-Read [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) before using
-`VERIFIED`, `independent`, `provenance`, `complete`, `self-closed`, or
-`refutable` in public wording.
-
-VSTD can improve auditability, reproducibility, incident analysis, and challenge
-propagation over observable records. It cannot prove general AI safety, expose
-hidden model internals, establish physical-world completeness, or compensate for
-missing instrumentation.
-
-## Specification order
-
-1. `standard/LADDER.md`
-2. `standard/VSTD-1.md` through `standard/VSTD-5.md`
-3. `standard/VSTD-Graph-1.md` through `standard/VSTD-Graph-5.md`
-4. `receipts/schema/`
-5. `src/verifiable/core/kernel.py` and the producer modules
-6. the conformance tests
+VSTD may improve auditability, reproducibility, incident analysis, and challenge
+propagation over observable records. It cannot prove general AI safety, reveal hidden
+model internals, establish physical-world completeness, or compensate for missing
+instrumentation.
 
 ## Project process
 
-See `GOVERNANCE.md`, `CONTRIBUTING.md`, `SECURITY.md`, and `RELEASING.md`.
-Changes that strengthen a claim without stronger evidence are non-conforming.
+- Specification order: [`LADDER`](standard/LADDER.md) → layer documents → schemas →
+  independent checker → conformance tests.
+- Public technical direction: [`ROADMAP.md`](ROADMAP.md).
+- Contribution rules: [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- Automated-contributor rules: [`AGENTS.md`](AGENTS.md).
+- Governance and release authority: [`GOVERNANCE.md`](GOVERNANCE.md).
+- Security and disclosure: [`SECURITY.md`](SECURITY.md).
+- Release construction and attestations: [`RELEASING.md`](RELEASING.md).
 
-## License
-
-Apache License 2.0. See `LICENSE` and `NOTICE`. The license includes an express
-patent grant from contributors, subject to its terms. VSTD is not affiliated with
-or endorsed by the Apache Software Foundation.
+Apache License 2.0. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). VSTD is not
+affiliated with or endorsed by the Apache Software Foundation.

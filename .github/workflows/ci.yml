@@ -57,14 +57,26 @@ jobs:
       - run: python -m pip wheel --no-cache-dir --no-deps --wheel-dir dist .
       - run: python -m venv /tmp/vstd-wheel
       - run: /tmp/vstd-wheel/bin/python -m pip install --no-deps dist/*.whl
-      - run: /tmp/vstd-wheel/bin/verifier plan examples/generic_run/manifest.json --json
-      - run: /tmp/vstd-wheel/bin/verifier run examples/generic_run/manifest.json --output /tmp/vstd-receipt
-      - run: /tmp/vstd-wheel/bin/verifier validate /tmp/vstd-receipt
-      - run: /tmp/vstd-wheel/bin/verifier reproduce /tmp/vstd-receipt --rerun
+      - run: /tmp/vstd-wheel/bin/vstd demo --json
+      - run: /tmp/vstd-wheel/bin/vstd plan examples/generic_run/manifest.json --json
+      - run: /tmp/vstd-wheel/bin/vstd run examples/generic_run/manifest.json --output /tmp/vstd-receipt
+      - run: /tmp/vstd-wheel/bin/vstd validate /tmp/vstd-receipt
+      - run: /tmp/vstd-wheel/bin/vstd reproduce /tmp/vstd-receipt --rerun
+      - run: /tmp/vstd-wheel/bin/verifier demo --scenario honest-unknown --json
+
+  presentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: python scripts/check_presentation.py
+      - run: python scripts/build_pages.py --output _site
 
   conformance-gate:
     if: always()
-    needs: [base, stdlib-smoke, release-integrity, installed-wheel-smoke]
+    needs: [base, stdlib-smoke, release-integrity, installed-wheel-smoke, presentation]
     runs-on: ubuntu-latest
     steps:
       - name: Require every declared support and artifact check
@@ -73,8 +85,10 @@ jobs:
           STDLIB: ${{ needs.stdlib-smoke.result }}
           RELEASE: ${{ needs.release-integrity.result }}
           WHEEL: ${{ needs.installed-wheel-smoke.result }}
+          PRESENTATION: ${{ needs.presentation.result }}
         run: |
           test "$BASE" = success
           test "$STDLIB" = success
           test "$RELEASE" = success
           test "$WHEEL" = success
+          test "$PRESENTATION" = success
