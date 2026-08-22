@@ -116,6 +116,12 @@ corrections are additive only. See
 `src/verifiable/specifications/`. `tests/test_packaged_specifications.py` compares them
 byte-for-byte.
 
+**Schema `$id` is a live route.** Every `receipts/schema/*.json` must carry
+`"$id": "https://timelordraps.github.io/verifier/schemas/<filename>"`. `scripts/build_pages.py`
+refuses to assemble the site otherwise, and `tests/test_presentation_surface.py` checks that
+each schema deploys byte-identical under that route. Renaming a schema file means updating
+its `$id` in the same change.
+
 **LF line endings.** `.gitattributes` forces `eol=lf`, and the release verifier refuses
 CRLF/LF equivalence as byte identity. This matters when working on Windows.
 
@@ -146,6 +152,11 @@ types. Records are frozen dataclasses by default; verdicts and tiers are enums. 
 docstrings are normative — they state which ladder rung the code discharges, so update the
 docstring whenever behavior changes.
 
+`requires-python = ">=3.10"`, and CI runs the suite on 3.10 through 3.13. Everything under
+`scripts/` must run on 3.10 too: the presentation gate uses a bounded parser instead of
+Python 3.11's `tomllib` for exactly this reason. Do not use 3.11+ standard-library APIs
+anywhere in this repository.
+
 ## 8. Tests
 
 pytest only, using `tmp_path` and `capsys`; manifests and specimens are built inline. A
@@ -158,6 +169,10 @@ Work lands via pull request into `main`. `.github/PULL_REQUEST_TEMPLATE.md` requ
 Coordinate (layer, release, seam), a falsification condition, and compatibility plus
 frozen-wire impact. Commit subjects are short and imperative. Do not run release or tag
 workflows; [`RELEASING.md`](RELEASING.md) is a maintainer procedure.
+
+`.github/workflows/pages.yml` publishes the `scripts/build_pages.py` output to GitHub Pages
+on every push to `main`. Documentation and schema edits become public the moment they merge,
+so treat `docs/` and `receipts/schema/` as published surfaces rather than drafts.
 
 ## 10. Safety
 
