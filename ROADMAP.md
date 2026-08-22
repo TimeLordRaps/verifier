@@ -43,7 +43,7 @@ claim → evidence → bounded check → publish → challenge → adjudicate �
 ```
 
 No arrow in that loop upgrades one VSTD layer with another layer's evidence. Each
-layer remains separately evidenced; the loop only carries results and challenges.
+layer still requires its own evidence; the loop only carries results and challenges.
 
 ## Milestone 1 — make refutation the front door
 

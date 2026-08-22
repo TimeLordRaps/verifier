@@ -163,6 +163,28 @@ def check_visual_assets(errors: list[str]) -> None:
         errors.append("overview SVG must retain the 1200x630 presentation viewBox")
     if root.attrib.get("role") != "img":
         errors.append("overview SVG has no image accessibility role")
+    expected_status = {
+        "vstd-1": "REF. SUBSET",
+        "vstd-2": "EXPERIMENTAL",
+        "vstd-3": "IMPLEMENTED",
+        "vstd-4": "IMPLEMENTED",
+        "vstd-5": "DRAFT",
+        "graph-1": "REF. SUBSET",
+        "graph-2": "IMPLEMENTED",
+        "graph-3": "IMPLEMENTED",
+        "graph-4": "IMPLEMENTED",
+        "graph-5": "DRAFT",
+    }
+    observed_status = {
+        element.attrib["data-layer"]: "".join(element.itertext()).strip()
+        for element in root.iter()
+        if "data-layer" in element.attrib
+    }
+    if observed_status != expected_status:
+        errors.append(
+            "overview SVG status labels do not match the specification headers: "
+            f"{observed_status!r}"
+        )
     png = ROOT / "docs/assets/vstd-overview.png"
     try:
         data = png.read_bytes()

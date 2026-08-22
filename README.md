@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/vstd-overview.svg" alt="VSTD object and graph verification layers remain separately evidenced" width="920">
+<img src="docs/assets/vstd-overview.svg" alt="VSTD object and graph verification layers, each requiring its own separate evidence" width="920">
 
 # VSTD
 
