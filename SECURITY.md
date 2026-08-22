@@ -24,7 +24,7 @@ The reference implementation verifies declared receipt and provenance mechanisms
 does not sandbox arbitrary commands supplied to `verifiable run`; execute only manifests
 you trust, in an isolation boundary appropriate to the command.
 
-Use `verifier plan MANIFEST --json` to inspect the declared command, working directory,
+Use `vstd plan MANIFEST --json` to inspect the declared command, working directory,
 repository directory, and artifact paths without execution. This is a review aid, not a
 sandbox guarantee: a subprocess can access resources it does not declare. Paths reported
 outside the manifest directory may be intentional (for example, a manifest stored under

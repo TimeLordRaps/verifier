@@ -1,0 +1,58 @@
+"""The public first impression is a checked repository surface."""
+
+from __future__ import annotations
+
+import importlib.util
+import json
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_professional_presentation_surface_has_no_drift() -> None:
+    path = ROOT / "scripts/check_presentation.py"
+    spec = importlib.util.spec_from_file_location("check_presentation", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    assert module.run() == []
+
+
+def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None:
+    path = ROOT / "scripts/build_pages.py"
+    spec = importlib.util.spec_from_file_location("build_pages", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    output = tmp_path / "site"
+    copied = module.build(output)
+    assert (output / "index.html").is_file()
+    sources = sorted((ROOT / "receipts/schema").glob("*.json"))
+    assert [path.name for path in copied] == [path.name for path in sources]
+    for source, deployed in zip(sources, copied):
+        assert deployed.read_bytes() == source.read_bytes()
+        assert json.loads(deployed.read_text(encoding="utf-8"))["$id"].endswith(
+            f"/schemas/{deployed.name}"
+        )
+
+
+def test_pages_builder_refuses_to_merge_into_existing_content(tmp_path: Path) -> None:
+    path = ROOT / "scripts/build_pages.py"
+    spec = importlib.util.spec_from_file_location("build_pages_safety", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    output = tmp_path / "site"
+    output.mkdir()
+    marker = output / "keep.txt"
+    marker.write_text("keep\n", encoding="utf-8")
+    try:
+        module.build(output)
+    except module.PagesBuildError:
+        pass
+    else:
+        raise AssertionError("Pages builder merged into non-empty output")
+    assert marker.read_text(encoding="utf-8") == "keep\n"

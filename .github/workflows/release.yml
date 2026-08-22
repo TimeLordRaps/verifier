@@ -51,10 +51,11 @@ jobs:
         run: |
           python -m venv /tmp/vstd-release-wheel
           /tmp/vstd-release-wheel/bin/python -m pip install --no-deps dist/*.whl
-          /tmp/vstd-release-wheel/bin/verifier plan examples/generic_run/manifest.json --json
-          /tmp/vstd-release-wheel/bin/verifier run examples/generic_run/manifest.json --output /tmp/vstd-release-receipt
-          /tmp/vstd-release-wheel/bin/verifier validate /tmp/vstd-release-receipt
-          /tmp/vstd-release-wheel/bin/verifier reproduce /tmp/vstd-release-receipt --rerun
+          /tmp/vstd-release-wheel/bin/vstd demo --json
+          /tmp/vstd-release-wheel/bin/vstd plan examples/generic_run/manifest.json --json
+          /tmp/vstd-release-wheel/bin/vstd run examples/generic_run/manifest.json --output /tmp/vstd-release-receipt
+          /tmp/vstd-release-wheel/bin/vstd validate /tmp/vstd-release-receipt
+          /tmp/vstd-release-wheel/bin/vstd reproduce /tmp/vstd-release-receipt --rerun
           /tmp/vstd-release-wheel/bin/vstd hardware list --json >/dev/null
 
       - name: Attest every published artifact

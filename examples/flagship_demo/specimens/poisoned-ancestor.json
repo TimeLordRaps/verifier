@@ -1,0 +1,615 @@
+{
+  "details": "collection:demo holds at graph level 0. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
+  "expected": "GRAPH-LEVEL-0; REVOKED blocker; checked refutation",
+  "observed": "GRAPH-LEVEL-0; REVOKED",
+  "ok": true,
+  "question": "Does a poisoned transitive ancestor cap the collection's graph level?",
+  "scenario": "poisoned-ancestor",
+  "specimen": {
+    "binding": {
+      "bounds": {
+        "certificate_size_bound": 100000,
+        "memory_bound": 10000,
+        "verification_cost_bound": 10000
+      },
+      "claim": "compute the bounded graph level for collection:demo",
+      "coordinate": {
+        "parameters": {},
+        "predicate": "vstd_graph_level",
+        "subject": "collection:demo"
+      },
+      "evidence_root": "4cd50c61d6162451488a984b85a9a209e708095186132c33d1529adeeacd6ca5",
+      "policy_root": "e8e31ddeae93b0e85ec8cb26487489781efeab36ccef7676922a9e18b36155d8",
+      "prior_commitment": "",
+      "verifier": {
+        "certificate_format": "VSTD4-GDC-1",
+        "dependencies": [
+          "python-stdlib"
+        ],
+        "deterministic": true,
+        "format_fragment": "UP,WIDTH-K,RES",
+        "implementation_hash": "sha256:3ec1996a6f42d69a94234ad1e508a738a452b2ece2c5fb336d3d740e5feebaef",
+        "parser_hash": "sha256:a94bcd7aeb543bc94b573beddb5faab7ae4976253537dc3e3afe5de7eb6df04d",
+        "specification_hash": "sha256:14515b8f1662eacbeb8db34594ab2d52bf801e69249ad2dd9276cd0b6f8e4646"
+      }
+    },
+    "collection": {
+      "collection_id": "collection:demo",
+      "edge_levels": {
+        "transform:collect": 5,
+        "transform:extract": 5
+      },
+      "members": [
+        "artifact:corpus"
+      ],
+      "object_levels": {
+        "artifact:corpus": 5,
+        "artifact:intermediate": 5,
+        "artifact:source": 5
+      }
+    },
+    "fixture_boundary": "Object and edge levels are declared scenario inputs. This graph-level refutation does not establish or upgrade their separate evidence.",
+    "graph_result": {
+      "blocking_obligations": [
+        {
+          "kind": "STATUS_ADMISSIBILITY",
+          "level": 0,
+          "observed": "REVOKED",
+          "predicate": "artifact_status",
+          "subject": "artifact:source"
+        }
+      ],
+      "collection_id": "collection:demo",
+      "explanation": "collection:demo holds at graph level 0. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
+      "level": 0,
+      "max_level": 5,
+      "refutation_digest": "349c337c5d745ad47af05728b26e7830ffa822ed9735960ad6731c17cb3ac969",
+      "witness_digest": null
+    },
+    "hypergraph": {
+      "artifacts": [
+        {
+          "artifact_id": "artifact:source",
+          "artifact_type": "CORPUS",
+          "attributes": {},
+          "byte_size": 0,
+          "content_digest": "8e417bbcbed895740fc821889e812d65b9e37203d27dd86d3dcb7a692b04c59f",
+          "contributor_id": null,
+          "evidence_class": "DECLARED",
+          "label": "artifact:source",
+          "metadata_digest": "",
+          "mime_type": "application/octet-stream",
+          "provenance_digest": "",
+          "record_count": null,
+          "rights_id": null,
+          "status": "REVOKED",
+          "storage_uris": []
+        },
+        {
+          "artifact_id": "artifact:intermediate",
+          "artifact_type": "CORPUS",
+          "attributes": {},
+          "byte_size": 0,
+          "content_digest": "26f8032560dabdbcb400aa4aed1d3d979637a4b23371c4061b2911a968018163",
+          "contributor_id": null,
+          "evidence_class": "DECLARED",
+          "label": "artifact:intermediate",
+          "metadata_digest": "",
+          "mime_type": "application/octet-stream",
+          "provenance_digest": "",
+          "record_count": null,
+          "rights_id": null,
+          "status": "VALID",
+          "storage_uris": []
+        },
+        {
+          "artifact_id": "artifact:corpus",
+          "artifact_type": "CORPUS",
+          "attributes": {},
+          "byte_size": 0,
+          "content_digest": "8e79de272810d13fcb169659425e22e33634928869186d6acdbe4ff182f22a7d",
+          "contributor_id": null,
+          "evidence_class": "DECLARED",
+          "label": "artifact:corpus",
+          "metadata_digest": "",
+          "mime_type": "application/octet-stream",
+          "provenance_digest": "",
+          "record_count": null,
+          "rights_id": null,
+          "status": "VALID",
+          "storage_uris": []
+        }
+      ],
+      "contributors": [],
+      "rights": [],
+      "transformations": [
+        {
+          "evidence_class": "DECLARED",
+          "execution_environment": {},
+          "inputs": [
+            {
+              "artifact_id": "artifact:source",
+              "role": "INPUT"
+            }
+          ],
+          "label": "extract source",
+          "outputs": [
+            {
+              "artifact_id": "artifact:intermediate",
+              "role": "OUTPUT"
+            }
+          ],
+          "parameters": {},
+          "software_provenance": {},
+          "status": "COMPLETED",
+          "transformation_id": "transform:extract",
+          "transformation_type": "EXTRACTION"
+        },
+        {
+          "evidence_class": "DECLARED",
+          "execution_environment": {},
+          "inputs": [
+            {
+              "artifact_id": "artifact:intermediate",
+              "role": "INPUT"
+            }
+          ],
+          "label": "collect corpus",
+          "outputs": [
+            {
+              "artifact_id": "artifact:corpus",
+              "role": "OUTPUT"
+            }
+          ],
+          "parameters": {},
+          "software_provenance": {},
+          "status": "COMPLETED",
+          "transformation_id": "transform:collect",
+          "transformation_type": "COLLECTION"
+        }
+      ]
+    },
+    "refutation": {
+      "decision": {
+        "model": null,
+        "propagation": {
+          "conflict_clause_index": 12,
+          "steps": [
+            {
+              "clause_index": 0,
+              "forced": 1
+            },
+            {
+              "clause_index": 1,
+              "forced": 2
+            },
+            {
+              "clause_index": 3,
+              "forced": 3
+            },
+            {
+              "clause_index": 5,
+              "forced": 4
+            },
+            {
+              "clause_index": 7,
+              "forced": 5
+            },
+            {
+              "clause_index": 9,
+              "forced": 6
+            },
+            {
+              "clause_index": 11,
+              "forced": 7
+            }
+          ]
+        },
+        "resolution": null,
+        "transcript": null
+      },
+      "formula": [
+        [
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          3
+        ],
+        [
+          -1,
+          4
+        ],
+        [
+          4
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          5
+        ],
+        [
+          -1,
+          6
+        ],
+        [
+          6
+        ],
+        [
+          -1,
+          7
+        ],
+        [
+          -7
+        ],
+        [
+          -1,
+          8
+        ],
+        [
+          8
+        ],
+        [
+          -1,
+          9
+        ],
+        [
+          9
+        ]
+      ],
+      "grounding": {
+        "clauses": [
+          {
+            "bindings": {
+              "collection": 1
+            },
+            "clause_index": 0,
+            "rule_id": "RULE:GRAPH_ASSERT_COLLECTION",
+            "subjects": {
+              "collection": "collection:demo"
+            }
+          },
+          {
+            "bindings": {
+              "collection": 1,
+              "obligation": 2
+            },
+            "clause_index": 1,
+            "rule_id": "RULE:GRAPH_COLLECTION_REQUIRES",
+            "subjects": {
+              "collection": "collection:demo",
+              "obligation": "artifact:corpus"
+            }
+          },
+          {
+            "bindings": {
+              "obligation": 2
+            },
+            "clause_index": 2,
+            "rule_id": "RULE:GRAPH_OBLIGATION_MET",
+            "subjects": {
+              "obligation": "artifact:corpus"
+            }
+          },
+          {
+            "bindings": {
+              "collection": 1,
+              "obligation": 3
+            },
+            "clause_index": 3,
+            "rule_id": "RULE:GRAPH_COLLECTION_REQUIRES",
+            "subjects": {
+              "collection": "collection:demo",
+              "obligation": "artifact:intermediate"
+            }
+          },
+          {
+            "bindings": {
+              "obligation": 3
+            },
+            "clause_index": 4,
+            "rule_id": "RULE:GRAPH_OBLIGATION_MET",
+            "subjects": {
+              "obligation": "artifact:intermediate"
+            }
+          },
+          {
+            "bindings": {
+              "collection": 1,
+              "obligation": 4
+            },
+            "clause_index": 5,
+            "rule_id": "RULE:GRAPH_COLLECTION_REQUIRES",
+            "subjects": {
+              "collection": "collection:demo",
+              "obligation": "artifact:source"
+            }
+          },
+          {
+            "bindings": {
+              "obligation": 4
+            },
+            "clause_index": 6,
+            "rule_id": "RULE:GRAPH_OBLIGATION_MET",
+            "subjects": {
+              "obligation": "artifact:source"
+            }
+          },
+          {
+            "bindings": {
+              "collection": 1,
+              "obligation": 5
+            },
+            "clause_index": 7,
+            "rule_id": "RULE:GRAPH_COLLECTION_REQUIRES",
+            "subjects": {
+              "collection": "collection:demo",
+              "obligation": "artifact:corpus"
+            }
+          },
+          {
+            "bindings": {
+              "obligation": 5
+            },
+            "clause_index": 8,
+            "rule_id": "RULE:GRAPH_OBLIGATION_MET",
+            "subjects": {
+              "obligation": "artifact:corpus"
+            }
+          },
+          {
+            "bindings": {
+              "collection": 1,
+              "obligation": 6
+            },
+            "clause_index": 9,
+            "rule_id": "RULE:GRAPH_COLLECTION_REQUIRES",
+            "subjects": {
+              "collection": "collection:demo",
+              "obligation": "artifact:intermediate"
+            }
+          },
+          {
+            "bindings": {
+              "obligation": 6
+            },
+            "clause_index": 10,
+            "rule_id": "RULE:GRAPH_OBLIGATION_MET",
+            "subjects": {
+              "obligation": "artifact:intermediate"
+            }
+          },
+          {
+            "bindings": {
+              "collection": 1,
+              "obligation": 7
+            },
+            "clause_index": 11,
+            "rule_id": "RULE:GRAPH_COLLECTION_REQUIRES",
+            "subjects": {
+              "collection": "collection:demo",
+              "obligation": "artifact:source"
+            }
+          },
+          {
+            "bindings": {
+              "obligation": 7
+            },
+            "clause_index": 12,
+            "rule_id": "RULE:GRAPH_OBLIGATION_UNMET",
+            "subjects": {
+              "obligation": "artifact:source"
+            }
+          },
+          {
+            "bindings": {
+              "collection": 1,
+              "obligation": 8
+            },
+            "clause_index": 13,
+            "rule_id": "RULE:GRAPH_COLLECTION_REQUIRES",
+            "subjects": {
+              "collection": "collection:demo",
+              "obligation": "transform:collect"
+            }
+          },
+          {
+            "bindings": {
+              "obligation": 8
+            },
+            "clause_index": 14,
+            "rule_id": "RULE:GRAPH_OBLIGATION_MET",
+            "subjects": {
+              "obligation": "transform:collect"
+            }
+          },
+          {
+            "bindings": {
+              "collection": 1,
+              "obligation": 9
+            },
+            "clause_index": 15,
+            "rule_id": "RULE:GRAPH_COLLECTION_REQUIRES",
+            "subjects": {
+              "collection": "collection:demo",
+              "obligation": "transform:extract"
+            }
+          },
+          {
+            "bindings": {
+              "obligation": 9
+            },
+            "clause_index": 16,
+            "rule_id": "RULE:GRAPH_OBLIGATION_MET",
+            "subjects": {
+              "obligation": "transform:extract"
+            }
+          }
+        ],
+        "rules": [
+          {
+            "roles": [
+              "collection"
+            ],
+            "rule_id": "RULE:GRAPH_ASSERT_COLLECTION",
+            "template": [
+              [
+                1,
+                "collection"
+              ]
+            ]
+          },
+          {
+            "roles": [
+              "collection",
+              "obligation"
+            ],
+            "rule_id": "RULE:GRAPH_COLLECTION_REQUIRES",
+            "template": [
+              [
+                -1,
+                "collection"
+              ],
+              [
+                1,
+                "obligation"
+              ]
+            ]
+          },
+          {
+            "roles": [
+              "obligation"
+            ],
+            "rule_id": "RULE:GRAPH_OBLIGATION_MET",
+            "template": [
+              [
+                1,
+                "obligation"
+              ]
+            ]
+          },
+          {
+            "roles": [
+              "obligation"
+            ],
+            "rule_id": "RULE:GRAPH_OBLIGATION_UNMET",
+            "template": [
+              [
+                -1,
+                "obligation"
+              ]
+            ]
+          }
+        ],
+        "variables": [
+          {
+            "fact": {
+              "predicate": "vstd_graph_level>=1",
+              "subject": "collection:demo",
+              "value": "ASSERTED"
+            },
+            "var": 1
+          },
+          {
+            "fact": {
+              "predicate": "vstd_object_level",
+              "subject": "artifact:corpus",
+              "value": "5"
+            },
+            "var": 2
+          },
+          {
+            "fact": {
+              "predicate": "vstd_object_level",
+              "subject": "artifact:intermediate",
+              "value": "5"
+            },
+            "var": 3
+          },
+          {
+            "fact": {
+              "predicate": "vstd_object_level",
+              "subject": "artifact:source",
+              "value": "5"
+            },
+            "var": 4
+          },
+          {
+            "fact": {
+              "predicate": "artifact_status",
+              "subject": "artifact:corpus",
+              "value": "VALID"
+            },
+            "var": 5
+          },
+          {
+            "fact": {
+              "predicate": "artifact_status",
+              "subject": "artifact:intermediate",
+              "value": "VALID"
+            },
+            "var": 6
+          },
+          {
+            "fact": {
+              "predicate": "artifact_status",
+              "subject": "artifact:source",
+              "value": "REVOKED"
+            },
+            "var": 7
+          },
+          {
+            "fact": {
+              "predicate": "vstd_edge_evidence_level",
+              "subject": "transform:collect",
+              "value": "5"
+            },
+            "var": 8
+          },
+          {
+            "fact": {
+              "predicate": "vstd_edge_evidence_level",
+              "subject": "transform:extract",
+              "value": "5"
+            },
+            "var": 9
+          }
+        ]
+      },
+      "header": {
+        "binding": "a82b0149998ae7d23dadfebf81fcfe08eb48538c4587e51d49c27029f4a8f8ff",
+        "clause_count": 17,
+        "format": "VSTD4-GDC-1",
+        "literal_count": 25,
+        "n_vars": 9,
+        "step_count": 7,
+        "tier": "UP",
+        "verdict": "FAIL",
+        "width": 0
+      },
+      "hints": {}
+    },
+    "refutation_check": {
+      "details": "propagation refutation replayed in 7 steps without search",
+      "hints_present": false,
+      "literals_processed": 25,
+      "outcome": "ACCEPTED",
+      "reason": null,
+      "steps_checked": 7,
+      "verdict": "FAIL"
+    }
+  },
+  "title": "Revoked ancestor behind valid descendants"
+}

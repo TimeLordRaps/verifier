@@ -17,8 +17,9 @@ exact, publicly resolvable commit.
 3. Build a pre-tag candidate from the full commit SHA, not a working directory:
 
    ```bash
+   VERSION=1.1.0
    python scripts/release_artifacts.py build \
-     --ref FULL_PUBLIC_COMMIT_SHA --release 1.0.1 --output-dir dist/candidate
+     --ref FULL_PUBLIC_COMMIT_SHA --release "$VERSION" --output-dir dist/candidate
    ```
 
    The builder uses `git archive`, records exact Git-blob bytes, builds the wheel twice
@@ -40,9 +41,10 @@ exact, publicly resolvable commit.
    resulting digest:
 
    ```bash
-   git tag -s v1.0.1 FULL_PUBLIC_COMMIT_SHA
+   VERSION=1.1.0
+   git tag -s "v$VERSION" FULL_PUBLIC_COMMIT_SHA
    python scripts/release_artifacts.py build \
-     --ref refs/tags/v1.0.1 --release 1.0.1 --output-dir dist/tagged
+     --ref "refs/tags/v$VERSION" --release "$VERSION" --output-dir dist/tagged
    ```
 
    If tag signing is unavailable, an unsigned annotated tag is permitted only through
@@ -53,8 +55,9 @@ exact, publicly resolvable commit.
 7. Run the verifier independently before upload:
 
    ```bash
+   VERSION=1.1.0
    python scripts/release_artifacts.py verify \
-     dist/tagged/verifiable-standard-1.0.1.manifest.json
+     "dist/tagged/verifiable-standard-$VERSION.manifest.json"
    ```
 
    The manifest's source ref MUST resolve to its recorded public commit. The source ZIP

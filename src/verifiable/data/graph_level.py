@@ -1,8 +1,9 @@
 """``graph_level`` -- how far up the VSTD-Graph ladder a collection actually got.
 
 VSTD is verification *mechanics* over one object. VSTD-Graph is verification
-*dynamics* over a collection, and the two axes are coupled rather than parallel:
-a collection holds at Graph level ``N`` only when four conditions hold at once.
+*dynamics* over a collection.  The axes remain distinct: a collection holds at
+Graph level ``N`` only when four separately checked conditions over the supplied
+ratings and graph records hold at once.
 
 1. **Membership floor** -- every member object is at object level >= N.
 2. **Provenance closure** -- every ancestor reachable from any member is also
@@ -21,9 +22,9 @@ Then, exactly as on the object axis::
 
 computed by iterated SAT descending 5 -> 1, and **the UNSAT certificate at N+1
 is the explanation of why the collection cannot rate higher**. That certificate
-is a VSTD4-GDC-1 refutation, which is where the two axes close on each other:
-the object axis supplies the machinery the graph axis uses to justify its own
-ceiling.
+is a VSTD4-GDC-1 refutation.  That certificate is evidence for the graph-level
+ceiling only.  It does not supply, imply, upgrade, or repair evidence for any
+object or graph layer.
 
 Three independent opinions must agree before this module reports a level: the
 certified Horn encoding, :class:`MinimalIndependentDPLL`, and a direct Python

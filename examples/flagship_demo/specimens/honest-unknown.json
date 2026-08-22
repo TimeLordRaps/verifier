@@ -1,0 +1,183 @@
+{
+  "details": "indeterminacy transcript accepted: PROOF_BOUND_EXCEEDED",
+  "expected": "ACCEPTED/UNKNOWN",
+  "observed": "ACCEPTED/UNKNOWN",
+  "ok": true,
+  "question": "Can bounded exhaustion remain explicit instead of becoming PASS or FAIL?",
+  "scenario": "honest-unknown",
+  "specimen": {
+    "binding": {
+      "bounds": {
+        "certificate_size_bound": 10000,
+        "memory_bound": 1000,
+        "verification_cost_bound": 1000
+      },
+      "claim": "no ancestor is revoked",
+      "coordinate": {
+        "parameters": {},
+        "predicate": "no_revoked_ancestors",
+        "subject": "artifact:target"
+      },
+      "evidence_root": "1f502c33c82e67c574db05467ebb84b2ba91e9c183e8e896055ae8b79d72c370",
+      "policy_root": "8954d358f464745b4884fb09544f6e187ceadb56f0f762bbbf5ddc614e3b489a",
+      "prior_commitment": "",
+      "verifier": {
+        "certificate_format": "VSTD4-GDC-1",
+        "dependencies": [
+          "python-stdlib"
+        ],
+        "deterministic": true,
+        "format_fragment": "UP,WIDTH-K,RES",
+        "implementation_hash": "sha256:3ec1996a6f42d69a94234ad1e508a738a452b2ece2c5fb336d3d740e5feebaef",
+        "parser_hash": "sha256:a94bcd7aeb543bc94b573beddb5faab7ae4976253537dc3e3afe5de7eb6df04d",
+        "specification_hash": "sha256:14515b8f1662eacbeb8db34594ab2d52bf801e69249ad2dd9276cd0b6f8e4646"
+      }
+    },
+    "certificate": {
+      "decision": {
+        "model": null,
+        "propagation": null,
+        "resolution": null,
+        "transcript": {
+          "declared_bound": 3,
+          "detail": "deterministic demo exhaustion point",
+          "formula_digest": "8954d358f464745b4884fb09544f6e187ceadb56f0f762bbbf5ddc614e3b489a",
+          "observed_cost": 9,
+          "reason": "PROOF_BOUND_EXCEEDED",
+          "stopped_at_step": 3
+        }
+      },
+      "formula": [
+        [
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -2
+        ]
+      ],
+      "grounding": {
+        "clauses": [
+          {
+            "bindings": {
+              "target": 1
+            },
+            "clause_index": 0,
+            "rule_id": "ASSERT_TARGET",
+            "subjects": {
+              "target": "artifact:target"
+            }
+          },
+          {
+            "bindings": {
+              "member": 2,
+              "target": 1
+            },
+            "clause_index": 1,
+            "rule_id": "TARGET_REQUIRES",
+            "subjects": {
+              "member": "artifact:ancestor-1",
+              "target": "artifact:target"
+            }
+          },
+          {
+            "bindings": {
+              "member": 2
+            },
+            "clause_index": 2,
+            "rule_id": "MEMBER_VIOLATES",
+            "subjects": {
+              "member": "artifact:ancestor-1"
+            }
+          }
+        ],
+        "rules": [
+          {
+            "roles": [
+              "target"
+            ],
+            "rule_id": "ASSERT_TARGET",
+            "template": [
+              [
+                1,
+                "target"
+              ]
+            ]
+          },
+          {
+            "roles": [
+              "target",
+              "member"
+            ],
+            "rule_id": "TARGET_REQUIRES",
+            "template": [
+              [
+                -1,
+                "target"
+              ],
+              [
+                1,
+                "member"
+              ]
+            ]
+          },
+          {
+            "roles": [
+              "member"
+            ],
+            "rule_id": "MEMBER_VIOLATES",
+            "template": [
+              [
+                -1,
+                "member"
+              ]
+            ]
+          }
+        ],
+        "variables": [
+          {
+            "fact": {
+              "predicate": "policy_admissible",
+              "subject": "artifact:target",
+              "value": "ASSERTED"
+            },
+            "var": 1
+          },
+          {
+            "fact": {
+              "predicate": "clean",
+              "subject": "artifact:ancestor-1",
+              "value": "REVOKED"
+            },
+            "var": 2
+          }
+        ]
+      },
+      "header": {
+        "binding": "0b5dd9912a42147a0c2615c2d571603ee92a51a5bf7cce691888df4f3bf0f4b3",
+        "clause_count": 3,
+        "format": "VSTD4-GDC-1",
+        "literal_count": 4,
+        "n_vars": 2,
+        "step_count": 0,
+        "tier": "UP",
+        "verdict": "UNKNOWN",
+        "width": 0
+      },
+      "hints": {}
+    },
+    "kernel_result": {
+      "details": "indeterminacy transcript accepted: PROOF_BOUND_EXCEEDED",
+      "hints_present": false,
+      "literals_processed": 4,
+      "outcome": "ACCEPTED",
+      "reason": "PROOF_BOUND_EXCEEDED",
+      "steps_checked": 3,
+      "verdict": "UNKNOWN"
+    }
+  },
+  "title": "Bound exhausted without a false answer"
+}

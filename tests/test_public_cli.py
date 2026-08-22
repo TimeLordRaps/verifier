@@ -45,6 +45,36 @@ def test_public_parser_has_no_target_specific_generation_commands() -> None:
     assert parser.parse_args(["validate", "receipt.json"]).command == "validate"
     assert parser.parse_args(["data", "export", "receipt.json"]).data_command == "export"
     assert parser.parse_args(["plan", "manifest.json"]).command == "plan"
+    assert parser.parse_args(["demo"]).command == "demo"
+
+
+def test_public_cli_flagship_demo_is_side_effect_free_and_machine_readable(
+    tmp_path: Path, capsys
+) -> None:
+    assert main(["demo", "--json"]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["demo"] == "VSTD-FLAGSHIP-1"
+    assert report["status"] == "OK"
+    assert report["scenario_count"] == 4
+    assert report["successful_scenarios"] == 4
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_public_cli_can_emit_one_demo_specimen(tmp_path: Path, capsys) -> None:
+    assert main(
+        [
+            "demo",
+            "--scenario",
+            "honest-unknown",
+            "--emit-specimens",
+            str(tmp_path),
+        ]
+    ) == 0
+    assert "[DEMO OK]" in capsys.readouterr().out
+    assert sorted(path.name for path in tmp_path.iterdir()) == [
+        "honest-unknown.json",
+        "index.json",
+    ]
 
 
 def test_public_cli_plan_is_side_effect_free_and_reports_scope(

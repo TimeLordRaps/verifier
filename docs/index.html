@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="VSTD makes computational claims portable, bounded, and refutable.">
+  <meta property="og:title" content="VSTD — portable, bounded, refutable evidence">
+  <meta property="og:description" content="A project specification and reference implementation for bounded computational claims and provenance graphs.">
+  <meta property="og:image" content="https://timelordraps.github.io/verifier/assets/vstd-overview.png">
+  <meta property="og:type" content="website">
+  <title>VSTD — portable, bounded, refutable</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <header class="wrap">
+    <nav aria-label="Primary">
+      <a class="brand" href="#top">VSTD</a>
+      <div class="links">
+        <a href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Demo</a>
+        <a href="https://github.com/TimeLordRaps/verifier/blob/main/standard/LADDER.md">Standard</a>
+        <a href="https://github.com/TimeLordRaps/verifier/blob/main/ROADMAP.md">Roadmap</a>
+        <a href="https://github.com/TimeLordRaps/verifier">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <div class="wrap hero">
+      <div>
+        <div class="eyebrow">Verification language for computational work</div>
+        <h1>Make the claim challengeable.</h1>
+        <p class="lead">VSTD makes computational claims portable, bounded, and refutable—so a result travels with its meaning, evidence, limits, and failure route.</p>
+        <div class="actions">
+          <a class="button primary" href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Run the four-scenario demo</a>
+          <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/QUICKSTART.md">Read the quickstart</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <img src="assets/vstd-overview.svg" alt="The VSTD object and graph axes, with separate evidence at every layer">
+      </div>
+    </div>
+
+    <section>
+      <div class="wrap">
+        <div class="eyebrow">The review object</div>
+        <h2>A green check is not a complete explanation.</h2>
+        <p class="section-lead">VSTD records the minimum information another party needs to understand, reproduce, constrain, or overturn a computational claim.</p>
+        <div class="grid">
+          <article class="card"><div class="number">01 · CLAIM</div><h3>Exact meaning</h3><p>Subject, predicate, parameters, scope, and the statement that was actually checked.</p></article>
+          <article class="card"><div class="number">02 · EVIDENCE</div><h3>Bound bytes</h3><p>Inputs, outputs, mechanisms, provenance, checker identity, and trust roots.</p></article>
+          <article class="card"><div class="number">03 · LIMITS</div><h3>Declared boundary</h3><p>Coordinates, resource ceilings, missing visibility, and explicit unknowns.</p></article>
+          <article class="card"><div class="number">04 · CHALLENGE</div><h3>Failure route</h3><p>Reproduction, counterexample, adjudication, revocation, and downstream degradation.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="eyebrow">Executable first impression</div>
+        <h2>See it reject, preserve uncertainty, and degrade.</h2>
+        <p class="section-lead">The flagship demo is side-effect free. It runs checked specimens and exits successfully only when every defensive outcome matches its explicit invariant.</p>
+        <div class="terminal"><pre><code>$ git clone https://github.com/TimeLordRaps/verifier.git
+$ cd verifier &amp;&amp; python -m pip install .
+$ vstd demo
+
+<span class="ok">[DEMO OK]</span> Valid-looking proof, wrong artifact       → REJECTED
+<span class="unknown">[DEMO OK]</span> Bound exhausted without a false answer    → ACCEPTED/UNKNOWN
+<span class="ok">[DEMO OK]</span> Inflated verification-cost claim          → REJECTED
+<span class="ok">[DEMO OK]</span> Revoked ancestor behind valid descendants → GRAPH-LEVEL-0</code></pre></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="eyebrow">Boundaries</div>
+        <h2>Useful without pretending to be total.</h2>
+        <div class="boundary">
+          <article class="card"><h3>VSTD can help</h3><ul><li>carry exact claims and evidence between systems;</li><li>preserve PASS, FAIL, and UNKNOWN distinctly;</li><li>trace poisoned ancestry and downstream impact;</li><li>make challenge conditions machine-readable.</li></ul></article>
+          <article class="card"><h3>VSTD cannot establish</h3><ul><li>general AI safety, alignment, or intent;</li><li>hidden model state or unobserved tool context;</li><li>complete physical-world execution history;</li><li>truth outside the declared observation surface.</li></ul></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="eyebrow">Current status</div>
+        <h2>Built for adversarial review, not ceremonial adoption.</h2>
+        <p class="status">VSTD is a founder-maintained alpha project specification. It has no demonstrated external adoption, independent implementation, interoperability deployment, or third-party security review. VSTD-5 remains draft.</p>
+        <div class="actions">
+          <a class="button primary" href="https://github.com/TimeLordRaps/verifier/discussions/8">Challenge the design</a>
+          <a class="button" href="https://github.com/TimeLordRaps/verifier/issues/new/choose">Report a concrete issue</a>
+          <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/CLAIMS_AND_LIMITS.md">Read claim limits</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap">VSTD · Apache-2.0 · Project specification and Python reference implementation · No standards-body endorsement claimed.</div></footer>
+</body>
+</html>

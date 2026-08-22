@@ -50,16 +50,19 @@ standard/VSTD-DATA-0.1.md -> standard/VSTD-Graph-1.md
 VSTD3_THREAT_MODEL.md     -> docs/layers/vstd-3/threat-model.md
 VSTD3_VENDOR_INTEGRATION.md -> docs/layers/vstd-3/vendor-integration.md
 VSTD3_REFERENCES.md       -> docs/layers/vstd-3/references.md
-VSTD3_MIGRATION.md        -> docs/layers/vstd-3/migration.md
+VSTD3_MIGRATION.md        -> docs/layers/vstd-3/compatibility.md
 COMPETITION_EVALUATION_PROFILE.md -> docs/profiles/competition-evaluation.md
 CLAIMS_AND_LIMITS.md      -> docs/CLAIMS_AND_LIMITS.md
 ```
 
 ## 3. CLI compatibility
 
-`verifier` is the canonical CLI name. `verifiable` remains an alias because project
-release materials and receipt instructions may bind that executable name. Retaining
-the alias preserves those instructions; it is not evidence of external use.
+`vstd` is the canonical cross-platform CLI name. The `verifier` alias remains
+available, but Windows resolves the unqualified name to its built-in Driver Verifier
+utility on common `PATH` configurations. `verifiable` also remains an alias because
+project release materials and receipt instructions may bind that executable name.
+Retaining either alias preserves project compatibility; it is not evidence of
+external use.
 
 ## 4. Release versioning
 
