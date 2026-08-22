@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-from verifiable.runtime.public_cli import build_parser, main
+from verifier.runtime.public_cli import build_parser, main
 
 
 def _manifest(project: Path) -> Path:

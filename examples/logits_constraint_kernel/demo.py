@@ -7,7 +7,7 @@ from pathlib import Path
 
 import torch
 
-from verifiable.constraints import (
+from verifier.constraints import (
     ConstraintKind,
     ConstraintSpec,
     LLGuidanceBackend,

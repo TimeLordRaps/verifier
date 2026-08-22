@@ -44,7 +44,7 @@ history.
 
 ## Decision rights
 
-Until a neutral standards venue and contributor agreement are adopted, Tyler Roost is
+Until a neutral standards venue and contributor agreement are adopted, TimeLordRaps is
 the editor and release maintainer. This is a disclosed centralization boundary. The
 intended next governance step is independent implementation feedback followed by a
 venue with explicit copyright and patent terms.

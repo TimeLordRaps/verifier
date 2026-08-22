@@ -21,6 +21,10 @@ from typing import Any
 
 
 SCHEMA_VERSION = "VSTD-PUBLIC-RELEASE-1.1"
+# Archive stem for releases built from this tree. Releases up to and including v1.1.1
+# were published as `verifiable-standard-<release>.zip`; their manifests carry that
+# prefix and are still verified from the manifest itself.
+ARCHIVE_STEM = "verifier-standard"
 
 
 class ReleaseError(RuntimeError):
@@ -74,9 +78,9 @@ def build_source(repo: Path, ref: str, release: str, output_dir: Path) -> tuple[
     repo = repo.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     commit = _resolved_commit(repo, ref)
-    prefix = f"verifiable-standard-{release}/"
-    archive = output_dir / f"verifiable-standard-{release}.zip"
-    manifest_path = output_dir / f"verifiable-standard-{release}.manifest.json"
+    prefix = f"{ARCHIVE_STEM}-{release}/"
+    archive = output_dir / f"{ARCHIVE_STEM}-{release}.zip"
+    manifest_path = output_dir / f"{ARCHIVE_STEM}-{release}.manifest.json"
 
     _run(
         repo,
@@ -154,7 +158,7 @@ def build_all(repo: Path, ref: str, release: str, output_dir: Path) -> tuple[Pat
     archive, manifest_path = build_source(repo, ref, release, output_dir)
     commit = _resolved_commit(repo.resolve(), ref)
     epoch = _run(repo.resolve(), "git", "show", "-s", "--format=%ct", commit).decode().strip()
-    prefix = f"verifiable-standard-{release}/"
+    prefix = f"{ARCHIVE_STEM}-{release}/"
 
     with tempfile.TemporaryDirectory(prefix="vstd-wheel-builds-") as temporary:
         temporary_path = Path(temporary)
@@ -197,7 +201,15 @@ def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None =
         if not path.is_file() or _file_record(path) != expected:
             raise ReleaseError(f"artifact digest or byte size mismatch: {filename}")
 
-    archive_name = f"verifiable-standard-{manifest['release']}.zip"
+    # Derive the archive name from the manifest, not from the current stem: releases
+    # published before the package rename bind `verifiable-standard-<release>.zip`
+    # and MUST stay verifiable.
+    declared_prefix = str(source.get("archive_prefix", "")).rstrip("/")
+    archive_name = (
+        f"{declared_prefix}.zip"
+        if declared_prefix
+        else f"{ARCHIVE_STEM}-{manifest['release']}.zip"
+    )
     archive = artifact_dir / archive_name
     if archive_name not in artifacts or not archive.is_file():
         raise ReleaseError(f"source archive is not bound: {archive_name}")

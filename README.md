@@ -135,7 +135,7 @@ is not external validation.
 
 ## Install and command names
 
-The distribution name is `verifiable-standard`; the base install has no required
+The distribution name is `verifier-standard`; the base install has no required
 third-party runtime dependencies.
 
 ```bash

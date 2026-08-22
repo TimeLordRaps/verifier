@@ -16,16 +16,16 @@ import re
 from pathlib import Path
 from typing import Any, Mapping
 
-from verifiable.core.certificate import ClaimCoordinate, canonical_bytes, canonical_digest
-from verifiable.data.models import ArtifactStatus
-from verifiable.layer4.availability import (
+from verifier.core.certificate import ClaimCoordinate, canonical_bytes, canonical_digest
+from verifier.data.models import ArtifactStatus
+from verifier.layer4.availability import (
     ArtifactAvailability,
     AvailabilityLevel,
     RetentionPolicy,
     assess_bundle,
 )
-from verifiable.layer4.challenge import Challenge, ChallengeLedger
-from verifiable.layer4.surface import (
+from verifier.layer4.challenge import Challenge, ChallengeLedger
+from verifier.layer4.surface import (
     AdmissibleRefutation,
     ExcludedClaim,
     RefutationSurface,

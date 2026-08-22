@@ -3,7 +3,7 @@
 **Layer:** 1 of 5 on the graph axis (see `LADDER.md`)
 **Receipt wire format:** `schema_version = "VSTD-DATA-0.1"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** Project Specification with Implemented Reference Subset
-**Maintainer:** VERIFIABLE
+**Maintainer:** TimeLordRaps
 **Date:** 2026-08-21
 
 ---
@@ -23,7 +23,7 @@ links.
 This document is the first rung of the Graph axis. `VSTD-Graph-2.md` through
 `VSTD-Graph-5.md` apply progressively stronger object and transformation-edge
 requirements to the same closed collection. `LADDER.md` defines the computed
-level and its ceiling certificate; `verifiable.data.graph_level.graph_level`
+level and its ceiling certificate; `verifier.data.graph_level.graph_level`
 implements that computation.
 
 ---

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from verifiable.data.models import (
+from verifier.data.models import (
     ArtifactNode,
     ArtifactType,
     HyperedgePort,

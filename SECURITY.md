@@ -21,7 +21,7 @@ route is unavailable.
 ## Scope
 
 The reference implementation verifies declared receipt and provenance mechanisms. It
-does not sandbox arbitrary commands supplied to `verifiable run`; execute only manifests
+does not sandbox arbitrary commands supplied to `vstd run`; execute only manifests
 you trust, in an isolation boundary appropriate to the command.
 
 Use `vstd plan MANIFEST --json` to inspect the declared command, working directory,

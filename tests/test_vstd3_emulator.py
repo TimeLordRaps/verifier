@@ -5,10 +5,10 @@ from pathlib import Path
 
 import pytest
 
-from verifiable.hardware.anchors import AnchorError, FileAnchorProvider, LocalAnchorProvider
-from verifiable.hardware.continuity import verify_continuity
-from verifiable.hardware.emulator import FirmwareContractError, VirtualVSTDAccelerator
-from verifiable.hardware.models import (
+from verifier.hardware.anchors import AnchorError, FileAnchorProvider, LocalAnchorProvider
+from verifier.hardware.continuity import verify_continuity
+from verifier.hardware.emulator import FirmwareContractError, VirtualVSTDAccelerator
+from verifier.hardware.models import (
     AccountingExactness,
     AccountingMethod,
     AccountingQuantity,
@@ -18,12 +18,12 @@ from verifiable.hardware.models import (
     ExecutionIdentity,
     WorkloadIdentity,
 )
-from verifiable.hardware.receipt import (
+from verifier.hardware.receipt import (
     VSTD3ReceiptError,
     load_vstd3_receipt,
     save_vstd3_receipt,
 )
-from verifiable.hardware.validation import validate_vstd3_receipt
+from verifier.hardware.validation import validate_vstd3_receipt
 
 
 DEVICE_KEY = b"vstd3-emulator-device-key-32bytes"

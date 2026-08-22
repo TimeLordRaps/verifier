@@ -3,14 +3,16 @@
 **Layer:** 1 of 5 on the object axis (see `LADDER.md`)
 **Receipt wire format:** `schema_version = "VSTD-0.1"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** Project Specification with Implemented Reference Subset
-**Maintainer:** VERIFIABLE
+**Maintainer:** TimeLordRaps
 **Date:** 2026-08-21
 
 ---
 
 ## 1. Purpose & Thesis
 
-VERIFIABLE develops infrastructure for consequential computational claims to carry independently checkable evidence.
+VSTD specifies infrastructure for consequential computational claims to carry
+independently checkable evidence. Conformance is defined by this document, not by
+the identity of its maintainer.
 
 Modern AI systems, scientific simulators, and autonomous code generators routinely
 produce complex assertions without an attached, machine-checkable audit trail showing
@@ -32,7 +34,7 @@ accredited standard.
 - **AI & Autonomous Agents**: Bounded input/output constraints, zero-trust admission policies, and execution traces.
 - **Scientific Simulation**: Invariant checking, exactness bounds, and deterministic reproduction traces.
 
-### 2.2 What a VERIFIABLE Verification Claim Does NOT Imply
+### 2.2 What a VSTD Verification Claim Does NOT Imply
 1. **Universal Truth**: Verification is strictly relative to the declared formal system, input formula, and explicit scope.
 2. **Unbounded Safety**: A verified component does not guarantee overall system safety if surrounding orchestration or unmodeled environmental dynamics fail.
 3. **Semantic Infallibility of Unchecked Layers**: Non-extracted, unverified natural language outside the formal translation grammar is not certified.
@@ -41,7 +43,7 @@ accredited standard.
 
 ## 3. Epistemic Ontology & Claim Statuses
 
-Claims in the VERIFIABLE ecosystem must carry one of the following explicit status
+Claims conforming to this specification must carry one of the following explicit status
 labels. Producers and validators MUST downgrade or challenge a claim when applicable
 evidence is missing or falsified. A historical receipt is immutable: correction is an
 additive record rather than an in-place rewrite.
@@ -83,7 +85,7 @@ requirement for claims labeled independent:
 ```text
 Target System (Producer)
        ↓ (Generates derivation / CNF / artifacts)
-Independent VERIFIABLE Auditor
+Independent VSTD-Conformant Auditor
        ↓ (Runs independent DPLL solver + DAG grounding checker in isolated TCB)
 Structured VFY Receipt
 ```

@@ -32,7 +32,7 @@ def test_source_release_manifest_binds_head_and_exact_archive_bytes(tmp_path: Pa
     )
     assert result.returncode == 0, result.stderr
 
-    manifest_path = tmp_path / "verifiable-standard-test.manifest.json"
+    manifest_path = tmp_path / "verifier-standard-test.manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     expected_commit = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True

@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from verifiable.runtime.demo import demo_index, demo_report, emit_specimens, run_demo
+from verifier.runtime.demo import demo_index, demo_report, emit_specimens, run_demo
 
 
 EXPECTED_OBSERVATIONS = {

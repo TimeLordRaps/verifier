@@ -7,9 +7,9 @@ from typing import Callable
 import jsonschema
 import pytest
 
-from verifiable.hardware.models import VSTD3Receipt
-from verifiable.hardware.registry import load_builtin_registry
-from verifiable.hardware.schema import accelerator_profile_schema, receipt_schema
+from verifier.hardware.models import VSTD3Receipt
+from verifier.hardware.registry import load_builtin_registry
+from verifier.hardware.schema import accelerator_profile_schema, receipt_schema
 
 
 ROOT = Path(__file__).resolve().parents[1]

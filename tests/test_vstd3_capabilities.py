@@ -8,21 +8,21 @@ from pathlib import Path
 
 import pytest
 
-from verifiable.hardware.adapters.amd import AmdAdapter
-from verifiable.hardware.adapters.base import AdapterError, evidence_source_from_bytes
-from verifiable.hardware.adapters.generic import GenericFixtureAdapter
-from verifiable.hardware.adapters.intel import IntelGaudiAdapter
-from verifiable.hardware.adapters.nvidia import NvidiaAdapter
-from verifiable.hardware.adapters.provider import (
+from verifier.hardware.adapters.amd import AmdAdapter
+from verifier.hardware.adapters.base import AdapterError, evidence_source_from_bytes
+from verifier.hardware.adapters.generic import GenericFixtureAdapter
+from verifier.hardware.adapters.intel import IntelGaudiAdapter
+from verifier.hardware.adapters.nvidia import NvidiaAdapter
+from verifier.hardware.adapters.provider import (
     AwsNeuronProviderAdapter,
     GoogleTpuProviderAdapter,
     MicrosoftMaiaProviderAdapter,
     normalize_provider_evidence,
     sign_provider_fixture,
 )
-from verifiable.hardware.claims import ClaimContext, evaluate_claim
-from verifiable.hardware.fleet import aggregate_partition_accounting, verify_fleet_observation
-from verifiable.hardware.models import (
+from verifier.hardware.claims import ClaimContext, evaluate_claim
+from verifier.hardware.fleet import aggregate_partition_accounting, verify_fleet_observation
+from verifier.hardware.models import (
     AccountingExactness,
     AccountingMethod,
     AccountingQuantity,
@@ -38,7 +38,7 @@ from verifiable.hardware.models import (
     LogicalDeviceIdentity,
     VerificationState,
 )
-from verifiable.hardware.registry import AcceleratorRegistry, RegistryError, load_builtin_registry
+from verifier.hardware.registry import AcceleratorRegistry, RegistryError, load_builtin_registry
 
 
 def _write_fixture(path: Path, *, schema_version: str, profile_id: str) -> bytes:

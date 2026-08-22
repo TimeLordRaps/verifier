@@ -5,23 +5,23 @@ import json
 
 import pytest
 
-from verifiable.data.models import (
+from verifier.data.models import (
     ArtifactNode,
     ArtifactStatus,
     ArtifactType,
     ProvenanceHypergraph,
 )
-from verifiable.data.policy import ProvenancePolicyVerifier
-from verifiable.hardware.emulator import VirtualVSTDAccelerator
-from verifiable.hardware.adapters.provider import normalize_provider_evidence, sign_provider_fixture
-from verifiable.hardware.models import (
+from verifier.data.policy import ProvenancePolicyVerifier
+from verifier.hardware.emulator import VirtualVSTDAccelerator
+from verifier.hardware.adapters.provider import normalize_provider_evidence, sign_provider_fixture
+from verifier.hardware.models import (
     AccountingExactness,
     AccountingMethod,
     AccountingQuantity,
     ExecutionIdentity,
     WorkloadIdentity,
 )
-from verifiable.hardware.provenance import HardwareProvenanceError, attach_vstd3_receipt
+from verifier.hardware.provenance import HardwareProvenanceError, attach_vstd3_receipt
 
 
 KEY = b"vstd3-provenance-test-key-32bytes"

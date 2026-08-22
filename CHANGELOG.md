@@ -2,6 +2,30 @@
 
 ## 1.1.2 - 2026-08-22
 
+- Rename the import package `verifiable` to `verifier` and the distribution
+  `verifiable-standard` to `verifier-standard`, so no published name reuses the ordinary-English
+  adjective or the maintainer's former project name. The `vstd`, `verifier`, and
+  `verifiable` command names all continue to work; `verifiable` is a command name only
+  and no longer names an import package.
+- Derive the release source-archive name from the manifest during verification, so
+  manifests published through `v1.1.1` that bind `verifiable-standard-<release>.zip`
+  remain verifiable without republishing.
+- Record the import-package, distribution, and archive renames in
+  `WIRE_IDENTIFIERS.md`. No receipt wire identifier, schema `$id`, or canonical digest
+  changes.
+- Attribute the specifications, distribution metadata, and governance decision rights to
+  `TimeLordRaps`. The legal name remains the copyright holder in `NOTICE`.
+
+- Rename the VSTD-2 section 7 lifecycle term `VERIFIABLE` to `GEOMETRY_INSPECTABLE`
+  and record in `WIRE_IDENTIFIERS.md` that the section 7 vocabulary is prose-only, so
+  no status token reuses the maintainer's name and no wire value changes.
+- Label the reference emulator's synthetic accelerator descriptor `vendor` as
+  `EMULATED` instead of the maintainer's name, so fabricated hardware evidence cannot
+  read as maintainer attestation.
+- Remove maintainer-scoped phrasing from normative specification prose: conformance is
+  defined by the documents, and the independent auditor role is named by the standard
+  rather than by the maintainer.
+
 - Correct the SimulacraBench synthetic specimen additively: unobserved private
   artifacts now remain `IDENTIFIED`, and the public challenge stops at
   `CHALLENGED` without a founder-authored adjudication.

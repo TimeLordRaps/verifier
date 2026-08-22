@@ -1,5 +1,5 @@
 """Adversarial and lifecycle tests for the generic proof-carrying computational run
-primitive (`verifiable.core.run`).
+primitive (`verifier.core.run`).
 
 Covers the acceptance-test flow (capture -> validate -> inspect -> reproduce) plus a
 hostile-scrutiny mini-corpus: tampered receipts, tampered outputs, missing declared
@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from verifiable.core.run import (
+from verifier.core.run import (
     RunError,
     capture_run,
     find_run_receipts_impacted_by_revocation,
@@ -320,7 +320,7 @@ def test_provenance_linkage_against_real_vfy_data_receipt():
 
     data = json.loads((data_receipt_dir / "receipt.json").read_text(encoding="utf-8"))
     arts = data.get("hypergraph", {}).get("artifacts", [])
-    # Artifacts are serialized as a list of dicts on disk (see VerifiableDataReceipt.to_dict
+    # Artifacts are serialized as a list of dicts on disk (see VstdDataReceipt.to_dict
     # -> ProvenanceHypergraph.to_dict); normalize defensively in case that ever changes to a
     # dict keyed by artifact_id.
     if isinstance(arts, dict):
@@ -329,7 +329,7 @@ def test_provenance_linkage_against_real_vfy_data_receipt():
         artifact_ids = [a["artifact_id"] for a in arts]
     assert artifact_ids, "expected at least one artifact in VFY-DATA-000001's hypergraph"
 
-    from verifiable.core.run import _resolve_provenance_linkage
+    from verifier.core.run import _resolve_provenance_linkage
 
     linkage = _resolve_provenance_linkage(
         REPO_ROOT,

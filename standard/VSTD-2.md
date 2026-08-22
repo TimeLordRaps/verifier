@@ -3,7 +3,7 @@
 **Layer:** 2 of 5 on the object axis (see `LADDER.md`)
 **Receipt wire format:** `schema_version = "VSTD-0.2"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** Additive experimental standard with an implemented vertical slice
-**Maintainer:** VERIFIABLE
+**Maintainer:** TimeLordRaps
 **Date:** 2026-08-20
 
 ---
@@ -25,7 +25,7 @@ itself been verified?**
 
 The normative typed slice is implemented by:
 
-- `verifiable.core.geometry`;
+- `verifier.core.geometry`;
 - `receipts/schema/vstd2_receipt.json`; and
 - `tests/test_verification_geometry.py`.
 
@@ -249,8 +249,10 @@ next order is a horizon or open valence.
   declared limitations, freshness, and non-expansion.
 - `POST_VERIFIED`: a passing result is bound to a frozen, content-identified snapshot
   of the subject, evidence, mechanism state, and relevant environment.
-- `VERIFIABLE`: the declared situation has an inspectable geometry that represents
-  covered, unsupported, indeterminate, and horizon-bounded coordinates honestly.
+- `GEOMETRY_INSPECTABLE`: the declared situation has an inspectable geometry that
+  represents covered, unsupported, indeterminate, and horizon-bounded coordinates
+  honestly. This vocabulary is prose-only: it is not a wire value, and it is not a
+  member of the `CoordinateStatus` enumeration serialized in a VSTD-2 receipt.
 - `COMPLETELY_VERIFIED`: the declared closed surface satisfies self-closure. It never
   means universal truth, unbounded safety, or permanent validity.
 

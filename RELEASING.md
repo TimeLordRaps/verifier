@@ -57,7 +57,7 @@ exact, publicly resolvable commit.
    ```bash
    VERSION=1.1.2
    python scripts/release_artifacts.py verify \
-     "dist/tagged/verifiable-standard-$VERSION.manifest.json"
+     "dist/tagged/verifier-standard-$VERSION.manifest.json"
    ```
 
    The manifest's source ref MUST resolve to its recorded public commit. The source ZIP

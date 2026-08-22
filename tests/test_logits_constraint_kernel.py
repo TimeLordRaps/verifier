@@ -11,7 +11,7 @@ import pytest
 llguidance = pytest.importorskip("llguidance", reason="install the optional 'llguidance' extra")
 torch = pytest.importorskip("torch", reason="install the optional 'torch' extra")
 
-from verifiable.constraints import (  # noqa: E402
+from verifier.constraints import (  # noqa: E402
     ConstraintCompilationError,
     ConstraintKind,
     ConstraintSpec,
@@ -22,7 +22,7 @@ from verifiable.constraints import (  # noqa: E402
     apply_packed_token_mask_inplace,
     validate_json_schema_output,
 )
-from verifiable.constraints.kernel import canonical_digest  # noqa: E402
+from verifier.constraints.kernel import canonical_digest  # noqa: E402
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

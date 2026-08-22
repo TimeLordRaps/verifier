@@ -6,7 +6,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-from verifiable.core.geometry import (
+from verifier.core.geometry import (
     Coordinate,
     CoordinateJudgment,
     CoordinateStatus,

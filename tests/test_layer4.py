@@ -17,10 +17,10 @@ import hashlib
 
 import pytest
 
-from verifiable.core.certificate import ClaimCoordinate
-from verifiable.data.models import ArtifactStatus
-from verifiable.hardware.anchors import AnchorError, LocalAnchorProvider
-from verifiable.layer4.availability import (
+from verifier.core.certificate import ClaimCoordinate
+from verifier.data.models import ArtifactStatus
+from verifier.hardware.anchors import AnchorError, LocalAnchorProvider
+from verifier.layer4.availability import (
     ArtifactAvailability,
     AvailabilityLevel,
     RetrievalObservation,
@@ -29,7 +29,7 @@ from verifiable.layer4.availability import (
     rank,
     weakest,
 )
-from verifiable.layer4.challenge import (
+from verifier.layer4.challenge import (
     Adjudication,
     Challenge,
     ChallengeError,
@@ -39,14 +39,14 @@ from verifiable.layer4.challenge import (
     admissibility,
     most_degraded,
 )
-from verifiable.layer4.closure import (
+from verifier.layer4.closure import (
     InputBinding,
     Locus,
     RefutabilityClosure,
     RefutationMapping,
     cap_output_depth,
 )
-from verifiable.layer4.precommit import (
+from verifier.layer4.precommit import (
     Commitment,
     DegreeOfFreedom,
     ObservedSelection,
@@ -56,7 +56,7 @@ from verifiable.layer4.precommit import (
     REQUIRED_DEGREES,
     audit_selections,
 )
-from verifiable.layer4.surface import (
+from verifier.layer4.surface import (
     AdmissibleRefutation,
     ExcludedClaim,
     PHYSICAL_WORLD_COMPLETENESS,

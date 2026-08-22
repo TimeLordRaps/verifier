@@ -126,7 +126,7 @@ def check_versions(errors: list[str]) -> None:
         errors.append("pyproject.toml has no parseable [project] version")
         return
     expected = project_match.group(1)
-    init_text = (ROOT / "src/verifiable/__init__.py").read_text(encoding="utf-8")
+    init_text = (ROOT / "src/verifier/__init__.py").read_text(encoding="utf-8")
     init_match = re.search(r'^__version__ = "([^"]+)"$', init_text, re.MULTILINE)
     citation_match = re.search(
         r"^version:\s*([^\s]+)$",
@@ -136,7 +136,7 @@ def check_versions(errors: list[str]) -> None:
     zenodo = json.loads((ROOT / ".zenodo.json").read_text(encoding="utf-8"))
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     found = {
-        "src/verifiable/__init__.py": None if init_match is None else init_match.group(1),
+        "src/verifier/__init__.py": None if init_match is None else init_match.group(1),
         "CITATION.cff": None if citation_match is None else citation_match.group(1),
         ".zenodo.json": zenodo.get("version"),
     }

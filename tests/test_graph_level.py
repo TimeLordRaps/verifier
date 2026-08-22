@@ -14,15 +14,15 @@ import importlib
 
 import pytest
 
-from verifiable.core.certificate import (
+from verifier.core.certificate import (
     ClaimBinding,
     ClaimCoordinate,
     CostTier,
     ResourceBounds,
     Verdict,
 )
-from verifiable.core.kernel import KernelOutcome, check, is_horn, reference_descriptor
-from verifiable.data.graph_level import (
+from verifier.core.kernel import KernelOutcome, check, is_horn, reference_descriptor
+from verifier.data.graph_level import (
     GRAPH_MAX_LEVEL,
     GraphCollection,
     GraphEncodingError,
@@ -34,7 +34,7 @@ from verifiable.data.graph_level import (
     obligations,
 )
 
-from verifiable.data.models import (
+from verifier.data.models import (
     ArtifactNode,
     ArtifactStatus,
     ArtifactType,
@@ -44,7 +44,7 @@ from verifiable.data.models import (
     TransformationType,
 )
 
-graph_module = importlib.import_module("verifiable.data.graph_level")
+graph_module = importlib.import_module("verifier.data.graph_level")
 
 BUDGET = 10_000
 
