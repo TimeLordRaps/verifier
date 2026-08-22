@@ -1,0 +1,1785 @@
+{
+  "$defs": {
+    "AcceleratorDescriptor": {
+      "additionalProperties": false,
+      "properties": {
+        "architecture": {
+          "type": "string"
+        },
+        "attributes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/CanonicalValue"
+          },
+          "type": "object"
+        },
+        "deployment_class": {
+          "type": "string"
+        },
+        "descriptor_id": {
+          "type": "string"
+        },
+        "device_class": {
+          "$ref": "#/$defs/DeviceClass"
+        },
+        "discovery_method": {
+          "type": "string"
+        },
+        "family": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "profile_id": {
+          "type": "string"
+        },
+        "vendor": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "descriptor_id",
+        "profile_id",
+        "vendor",
+        "family",
+        "architecture",
+        "model",
+        "device_class",
+        "deployment_class",
+        "discovery_method",
+        "attributes"
+      ],
+      "type": "object"
+    },
+    "AcceleratorPartition": {
+      "additionalProperties": false,
+      "properties": {
+        "capacity_fraction_ppm": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "configuration_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "logical_device_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "parent_physical_device_id": {
+          "type": "string"
+        },
+        "partition_id": {
+          "type": "string"
+        },
+        "partition_mode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "partition_id",
+        "parent_physical_device_id",
+        "logical_device_ids",
+        "partition_mode",
+        "capacity_fraction_ppm",
+        "configuration_digest"
+      ],
+      "type": "object"
+    },
+    "AccountingEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "device_identity_id": {
+          "type": "string"
+        },
+        "epoch": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "event_payload_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "event_type": {
+          "$ref": "#/$defs/EventType"
+        },
+        "execution_id": {
+          "type": "string"
+        },
+        "partition_id": {
+          "type": "string"
+        },
+        "previous_root": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "rolling_root": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "sequence": {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "signature": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/SignatureEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "event_type",
+        "device_identity_id",
+        "partition_id",
+        "execution_id",
+        "epoch",
+        "sequence",
+        "timestamp",
+        "event_payload_digest",
+        "previous_root",
+        "rolling_root",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "AccountingExactness": {
+      "enum": [
+        "EXACT_FOR_DECLARED_SCOPE",
+        "ESTIMATE",
+        "UPPER_BOUND",
+        "UNKNOWN"
+      ],
+      "type": "string"
+    },
+    "AccountingMethod": {
+      "enum": [
+        "HARDWARE_COUNTER",
+        "FIRMWARE_COUNTER",
+        "COMPILER_EXACT",
+        "COMPILER_ESTIMATE",
+        "RUNTIME_ESTIMATE",
+        "MODEL_ESTIMATE",
+        "CAPACITY_TIME_UPPER_BOUND",
+        "PROVIDER_REPORT",
+        "SELF_REPORT",
+        "VENDOR_SPECIFIC",
+        "UNKNOWN"
+      ],
+      "type": "string"
+    },
+    "AccountingQuantity": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_source_id": {
+          "type": "string"
+        },
+        "exactness": {
+          "$ref": "#/$defs/AccountingExactness"
+        },
+        "method": {
+          "$ref": "#/$defs/AccountingMethod"
+        },
+        "name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "uncertainty": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "vendor_extension": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "method",
+        "evidence_source_id",
+        "scope",
+        "exactness",
+        "uncertainty",
+        "vendor_extension"
+      ],
+      "type": "object"
+    },
+    "AttestationChallenge": {
+      "additionalProperties": false,
+      "properties": {
+        "challenge_id": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string"
+        },
+        "issued_at": {
+          "type": "string"
+        },
+        "nonce_b64": {
+          "type": "string"
+        },
+        "verifier_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "challenge_id",
+        "nonce_b64",
+        "issued_at",
+        "expires_at",
+        "verifier_id"
+      ],
+      "type": "object"
+    },
+    "AttestationEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "challenge_id": {
+          "type": "string"
+        },
+        "demonstrated_capabilities": {
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "type": "array"
+        },
+        "device_certificate": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/DeviceCertificateEvidence"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_id": {
+          "type": "string"
+        },
+        "evidence_source_id": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string"
+        },
+        "firmware_measurements": {
+          "items": {
+            "$ref": "#/$defs/FirmwareMeasurement"
+          },
+          "type": "array"
+        },
+        "issued_at": {
+          "type": "string"
+        },
+        "nonce_b64": {
+          "type": "string"
+        },
+        "runtime_measurements": {
+          "items": {
+            "$ref": "#/$defs/RuntimeMeasurement"
+          },
+          "type": "array"
+        },
+        "signature": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/SignatureEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "subject_identity_id": {
+          "type": "string"
+        },
+        "verification_state": {
+          "$ref": "#/$defs/VerificationState"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "subject_identity_id",
+        "challenge_id",
+        "nonce_b64",
+        "issued_at",
+        "expires_at",
+        "evidence_source_id",
+        "firmware_measurements",
+        "runtime_measurements",
+        "device_certificate",
+        "signature",
+        "verification_state",
+        "demonstrated_capabilities"
+      ],
+      "type": "object"
+    },
+    "CanonicalValue": {
+      "description": "A deterministic signed value. JSON floating-point numbers are forbidden.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/CanonicalValue"
+          },
+          "type": "array"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/CanonicalValue"
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "Capability": {
+      "enum": [
+        "SELF_REPORTED",
+        "HOST_OBSERVED",
+        "EXECUTION_OBSERVED",
+        "SOFTWARE_SIGNED",
+        "PROVIDER_ATTESTED",
+        "DEVICE_IDENTITY_ATTESTED",
+        "FIRMWARE_ATTESTED",
+        "EXECUTION_ATTESTED",
+        "EXECUTION_ACCOUNTING_EVIDENCED",
+        "CONTINUITY_ATTESTED",
+        "COMPLETE_MEDIATION_ATTESTED",
+        "FLEET_BOUNDARY_ATTESTED"
+      ],
+      "type": "string"
+    },
+    "CapabilityDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "capability": {
+          "$ref": "#/$defs/Capability"
+        },
+        "evidence_method": {
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        }
+      },
+      "required": [
+        "capability",
+        "support",
+        "evidence_method",
+        "limitations"
+      ],
+      "type": "object"
+    },
+    "CapabilitySupport": {
+      "enum": [
+        "SUPPORTED",
+        "UNSUPPORTED",
+        "UNKNOWN"
+      ],
+      "type": "string"
+    },
+    "ClaimEvaluation": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "type": "string"
+        },
+        "claim_kind": {
+          "$ref": "#/$defs/ClaimKind"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "explanation": {
+          "type": "string"
+        },
+        "gap_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "observed_capabilities": {
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "type": "array"
+        },
+        "prohibited_inference": {
+          "type": "string"
+        },
+        "required_capabilities": {
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/$defs/ClaimStatus"
+        },
+        "subject_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_id",
+        "claim_kind",
+        "subject_id",
+        "status",
+        "required_capabilities",
+        "observed_capabilities",
+        "evidence_ids",
+        "gap_ids",
+        "explanation",
+        "prohibited_inference"
+      ],
+      "type": "object"
+    },
+    "ClaimKind": {
+      "enum": [
+        "DEVICE_IDENTITY",
+        "FIRMWARE_INTEGRITY",
+        "EXECUTION_OBSERVED",
+        "EXECUTION_ATTESTATION",
+        "EXECUTION_ACCOUNTING",
+        "ACCOUNTING_CONTINUITY",
+        "COMPLETE_MEDIATION",
+        "FLEET_COMPLETENESS",
+        "PHYSICAL_WORLD_COMPLETENESS"
+      ],
+      "type": "string"
+    },
+    "ClaimStatus": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN",
+        "UNSUPPORTED"
+      ],
+      "type": "string"
+    },
+    "ComponentKind": {
+      "enum": [
+        "PHYSICAL_DEVICE",
+        "LOGICAL_DEVICE",
+        "PARTITION",
+        "SWITCH",
+        "DPU",
+        "SMARTNIC",
+        "PCIE_FUNCTION",
+        "FABRIC_ADAPTER",
+        "MANAGEMENT_CONTROLLER",
+        "PACKAGE",
+        "CHIPLET",
+        "HOST",
+        "RACK",
+        "POD",
+        "CLUSTER",
+        "OTHER"
+      ],
+      "type": "string"
+    },
+    "ComputeAccountingObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "device_scope_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "evidence_source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "execution_id": {
+          "type": "string"
+        },
+        "observation_id": {
+          "type": "string"
+        },
+        "observed_at": {
+          "type": "string"
+        },
+        "quantities": {
+          "items": {
+            "$ref": "#/$defs/AccountingQuantity"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "observation_id",
+        "execution_id",
+        "device_scope_ids",
+        "observed_at",
+        "quantities",
+        "evidence_source_ids"
+      ],
+      "type": "object"
+    },
+    "ContinuityAnchor": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "type": "string"
+        },
+        "anchored_at": {
+          "type": "string"
+        },
+        "device_identity_id": {
+          "type": "string"
+        },
+        "epoch": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "rolling_root": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "sequence": {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "signature": {
+          "$ref": "#/$defs/SignatureEnvelope"
+        }
+      },
+      "required": [
+        "anchor_id",
+        "device_identity_id",
+        "epoch",
+        "sequence",
+        "rolling_root",
+        "anchored_at",
+        "provider_id",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "ContinuityRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "anchors": {
+          "items": {
+            "$ref": "#/$defs/ContinuityAnchor"
+          },
+          "type": "array"
+        },
+        "device_identity_id": {
+          "type": "string"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/$defs/AccountingEvent"
+          },
+          "type": "array"
+        },
+        "reset_epochs": {
+          "items": {
+            "$ref": "#/$defs/ResetEpoch"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "device_identity_id",
+        "events",
+        "reset_epochs",
+        "anchors"
+      ],
+      "type": "object"
+    },
+    "DeviceCertificateEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "certificate_chain_digest": {
+          "type": "string"
+        },
+        "checked_at": {
+          "type": "string"
+        },
+        "leaf_fingerprint": {
+          "type": "string"
+        },
+        "trust_anchor_id": {
+          "type": "string"
+        },
+        "verification_state": {
+          "$ref": "#/$defs/VerificationState"
+        }
+      },
+      "required": [
+        "certificate_chain_digest",
+        "leaf_fingerprint",
+        "trust_anchor_id",
+        "verification_state",
+        "checked_at"
+      ],
+      "type": "object"
+    },
+    "DeviceClass": {
+      "enum": [
+        "GPU",
+        "TPU",
+        "AI_ASIC",
+        "FPGA",
+        "ADAPTIVE_COMPUTE",
+        "INTEGRATED_NPU",
+        "ACCELERATOR_SWITCH",
+        "DPU",
+        "SMARTNIC",
+        "FABRIC_ADAPTER",
+        "MANAGEMENT_CONTROLLER",
+        "LOGICAL_ACCELERATOR",
+        "OTHER"
+      ],
+      "type": "string"
+    },
+    "EventType": {
+      "enum": [
+        "DEVICE_BOOT",
+        "EPOCH_START",
+        "EXEC_START",
+        "EXEC_OBSERVATION",
+        "EXEC_END",
+        "TOPOLOGY_CHANGE",
+        "PARTITION_CHANGE",
+        "ANCHOR",
+        "RESET"
+      ],
+      "type": "string"
+    },
+    "EvidenceGap": {
+      "additionalProperties": false,
+      "properties": {
+        "explanation": {
+          "type": "string"
+        },
+        "first_sequence": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gap_id": {
+          "type": "string"
+        },
+        "gap_type": {
+          "type": "string"
+        },
+        "last_sequence": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "subject_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "gap_id",
+        "gap_type",
+        "subject_id",
+        "explanation",
+        "first_sequence",
+        "last_sequence"
+      ],
+      "type": "object"
+    },
+    "EvidenceProducer": {
+      "enum": [
+        "SOFTWARE_COLLECTOR",
+        "HOST_RUNTIME",
+        "PROVIDER_CONTROL_PLANE",
+        "DEVICE",
+        "FIRMWARE",
+        "EXTERNAL_VERIFIER",
+        "TEST_EMULATOR"
+      ],
+      "type": "string"
+    },
+    "EvidenceSource": {
+      "additionalProperties": false,
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/CanonicalValue"
+          },
+          "type": "object"
+        },
+        "capabilities": {
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "mechanism": {
+          "type": "string"
+        },
+        "media_type": {
+          "type": "string"
+        },
+        "observed_at": {
+          "type": "string"
+        },
+        "original_format": {
+          "type": "string"
+        },
+        "producer": {
+          "$ref": "#/$defs/EvidenceProducer"
+        },
+        "raw_evidence_b64": {
+          "type": "string"
+        },
+        "raw_evidence_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "verification_state": {
+          "$ref": "#/$defs/VerificationState"
+        }
+      },
+      "required": [
+        "source_id",
+        "producer",
+        "mechanism",
+        "observed_at",
+        "capabilities",
+        "raw_evidence_b64",
+        "raw_evidence_digest",
+        "media_type",
+        "original_format",
+        "verification_state",
+        "limitations",
+        "attributes"
+      ],
+      "type": "object"
+    },
+    "ExecutionEnd": {
+      "additionalProperties": false,
+      "properties": {
+        "completed_at": {
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "execution_id": {
+          "type": "string"
+        },
+        "outcome": {
+          "$ref": "#/$defs/ExecutionOutcome"
+        },
+        "output_commitments": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "execution_id",
+        "event_id",
+        "completed_at",
+        "outcome",
+        "output_commitments"
+      ],
+      "type": "object"
+    },
+    "ExecutionIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "execution_id": {
+          "type": "string"
+        },
+        "logical_device_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "submitted_at": {
+          "type": "string"
+        },
+        "topology_snapshot_id": {
+          "type": "string"
+        },
+        "workload": {
+          "$ref": "#/$defs/WorkloadIdentity"
+        }
+      },
+      "required": [
+        "execution_id",
+        "workload",
+        "logical_device_ids",
+        "topology_snapshot_id",
+        "submitted_at"
+      ],
+      "type": "object"
+    },
+    "ExecutionObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "accounting_observation_id": {
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "execution_id": {
+          "type": "string"
+        },
+        "observed_at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "execution_id",
+        "event_id",
+        "accounting_observation_id",
+        "observed_at"
+      ],
+      "type": "object"
+    },
+    "ExecutionOutcome": {
+      "enum": [
+        "COMPLETED",
+        "FAILED",
+        "INTERRUPTED",
+        "UNKNOWN"
+      ],
+      "type": "string"
+    },
+    "ExecutionStart": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "type": "string"
+        },
+        "execution_id": {
+          "type": "string"
+        },
+        "started_at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "execution_id",
+        "event_id",
+        "started_at"
+      ],
+      "type": "object"
+    },
+    "FirmwareMeasurement": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "type": "string"
+        },
+        "comparison": {
+          "$ref": "#/$defs/VerificationState"
+        },
+        "component": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "string"
+        },
+        "reference_value_digest": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "digest",
+        "algorithm",
+        "version",
+        "reference_value_digest",
+        "comparison"
+      ],
+      "type": "object"
+    },
+    "FleetBoundary": {
+      "additionalProperties": false,
+      "properties": {
+        "accelerator_set": {
+          "type": "string"
+        },
+        "boundary_id": {
+          "type": "string"
+        },
+        "cluster": {
+          "type": "string"
+        },
+        "enrollment_completeness_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "host": {
+          "type": "string"
+        },
+        "organization": {
+          "type": "string"
+        },
+        "rack": {
+          "type": "string"
+        },
+        "site": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "boundary_id",
+        "organization",
+        "site",
+        "cluster",
+        "rack",
+        "host",
+        "accelerator_set",
+        "enrollment_completeness_evidence_ids"
+      ],
+      "type": "object"
+    },
+    "FleetManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "boundary": {
+          "$ref": "#/$defs/FleetBoundary"
+        },
+        "effective_at": {
+          "type": "string"
+        },
+        "evidence_source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "manifest_id": {
+          "type": "string"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/FleetMember"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "manifest_id",
+        "boundary",
+        "members",
+        "effective_at",
+        "evidence_source_ids"
+      ],
+      "type": "object"
+    },
+    "FleetMember": {
+      "additionalProperties": false,
+      "properties": {
+        "enrolled_at": {
+          "type": "string"
+        },
+        "expected_profile_id": {
+          "type": "string"
+        },
+        "logical_device_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "member_id": {
+          "type": "string"
+        },
+        "physical_device_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "replacement_member_id": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/FleetMemberStatus"
+        }
+      },
+      "required": [
+        "member_id",
+        "physical_device_ids",
+        "logical_device_ids",
+        "expected_profile_id",
+        "enrolled_at",
+        "status",
+        "replacement_member_id"
+      ],
+      "type": "object"
+    },
+    "FleetMemberStatus": {
+      "enum": [
+        "ENROLLED",
+        "RETIRED",
+        "REPLACED"
+      ],
+      "type": "string"
+    },
+    "FleetObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "interval_end": {
+          "type": "string"
+        },
+        "interval_start": {
+          "type": "string"
+        },
+        "last_anchor_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "manifest_id": {
+          "type": "string"
+        },
+        "missing_member_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "observation_id": {
+          "type": "string"
+        },
+        "observed_member_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "topology_snapshot_id": {
+          "type": "string"
+        },
+        "unexpected_device_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "observation_id",
+        "manifest_id",
+        "interval_start",
+        "interval_end",
+        "observed_member_ids",
+        "missing_member_ids",
+        "unexpected_device_ids",
+        "last_anchor_ids",
+        "topology_snapshot_id",
+        "evidence_source_ids"
+      ],
+      "type": "object"
+    },
+    "LogicalDeviceIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "capacity_fraction_ppm": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "evidence_source_id": {
+          "type": "string"
+        },
+        "logical_id": {
+          "type": "string"
+        },
+        "parent_physical_device_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "partition_id": {
+          "type": "string"
+        },
+        "virtualization_mode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "logical_id",
+        "parent_physical_device_ids",
+        "partition_id",
+        "virtualization_mode",
+        "capacity_fraction_ppm",
+        "evidence_source_id"
+      ],
+      "type": "object"
+    },
+    "PhysicalDeviceIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "certificate_digest": {
+          "type": "string"
+        },
+        "descriptor_id": {
+          "type": "string"
+        },
+        "evidence_source_id": {
+          "type": "string"
+        },
+        "hardware_revision": {
+          "type": "string"
+        },
+        "identity_id": {
+          "type": "string"
+        },
+        "serial_commitment": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity_id",
+        "descriptor_id",
+        "serial_commitment",
+        "certificate_digest",
+        "hardware_revision",
+        "evidence_source_id"
+      ],
+      "type": "object"
+    },
+    "ProviderEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "claims": {
+          "additionalProperties": {
+            "$ref": "#/$defs/CanonicalValue"
+          },
+          "type": "object"
+        },
+        "evidence_id": {
+          "type": "string"
+        },
+        "evidence_source_id": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string"
+        },
+        "hardware_evidence_refs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "issued_at": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "resource_id": {
+          "type": "string"
+        },
+        "signature": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/SignatureEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verification_state": {
+          "$ref": "#/$defs/VerificationState"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "provider",
+        "resource_id",
+        "issued_at",
+        "expires_at",
+        "claims",
+        "evidence_source_id",
+        "signature",
+        "verification_state",
+        "hardware_evidence_refs"
+      ],
+      "type": "object"
+    },
+    "ResetEpoch": {
+      "additionalProperties": false,
+      "properties": {
+        "boot_id": {
+          "type": "string"
+        },
+        "device_identity_id": {
+          "type": "string"
+        },
+        "epoch": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "external_anchor_id": {
+          "type": "string"
+        },
+        "prior_epoch": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "prior_rolling_root": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "device_identity_id",
+        "epoch",
+        "boot_id",
+        "reason",
+        "prior_epoch",
+        "prior_rolling_root",
+        "external_anchor_id"
+      ],
+      "type": "object"
+    },
+    "RuntimeMeasurement": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "type": "string"
+        },
+        "comparison": {
+          "$ref": "#/$defs/VerificationState"
+        },
+        "component": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "digest",
+        "algorithm",
+        "version",
+        "comparison"
+      ],
+      "type": "object"
+    },
+    "SignatureEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "type": "string"
+        },
+        "key_id": {
+          "type": "string"
+        },
+        "signature_b64": {
+          "type": "string"
+        },
+        "signed_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "algorithm",
+        "key_id",
+        "signed_digest",
+        "signature_b64"
+      ],
+      "type": "object"
+    },
+    "TopologyLink": {
+      "additionalProperties": false,
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/CanonicalValue"
+          },
+          "type": "object"
+        },
+        "link_type": {
+          "type": "string"
+        },
+        "source_node_id": {
+          "type": "string"
+        },
+        "target_node_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_node_id",
+        "target_node_id",
+        "link_type",
+        "attributes"
+      ],
+      "type": "object"
+    },
+    "TopologyNode": {
+      "additionalProperties": false,
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/CanonicalValue"
+          },
+          "type": "object"
+        },
+        "component_kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "logical_identity_id": {
+          "type": "string"
+        },
+        "node_id": {
+          "type": "string"
+        },
+        "parent_node_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "physical_identity_id": {
+          "type": "string"
+        },
+        "profile_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "component_kind",
+        "profile_id",
+        "physical_identity_id",
+        "logical_identity_id",
+        "parent_node_ids",
+        "attributes"
+      ],
+      "type": "object"
+    },
+    "TopologySnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "boundary_id": {
+          "type": "string"
+        },
+        "completeness_claimed": {
+          "type": "boolean"
+        },
+        "evidence_source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/$defs/TopologyLink"
+          },
+          "type": "array"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/TopologyNode"
+          },
+          "type": "array"
+        },
+        "observed_at": {
+          "type": "string"
+        },
+        "snapshot_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "snapshot_id",
+        "boundary_id",
+        "observed_at",
+        "nodes",
+        "links",
+        "evidence_source_ids",
+        "completeness_claimed"
+      ],
+      "type": "object"
+    },
+    "VSTD3Receipt": {
+      "additionalProperties": false,
+      "properties": {
+        "accounting_observations": {
+          "items": {
+            "$ref": "#/$defs/ComputeAccountingObservation"
+          },
+          "type": "array"
+        },
+        "attestation_challenges": {
+          "items": {
+            "$ref": "#/$defs/AttestationChallenge"
+          },
+          "type": "array"
+        },
+        "attestation_evidence": {
+          "items": {
+            "$ref": "#/$defs/AttestationEvidence"
+          },
+          "type": "array"
+        },
+        "canonical_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "capability_declarations": {
+          "items": {
+            "$ref": "#/$defs/CapabilityDeclaration"
+          },
+          "type": "array"
+        },
+        "claim_evaluations": {
+          "items": {
+            "$ref": "#/$defs/ClaimEvaluation"
+          },
+          "type": "array"
+        },
+        "continuity_records": {
+          "items": {
+            "$ref": "#/$defs/ContinuityRecord"
+          },
+          "type": "array"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "descriptors": {
+          "items": {
+            "$ref": "#/$defs/AcceleratorDescriptor"
+          },
+          "type": "array"
+        },
+        "evidence_gaps": {
+          "items": {
+            "$ref": "#/$defs/EvidenceGap"
+          },
+          "type": "array"
+        },
+        "evidence_sources": {
+          "items": {
+            "$ref": "#/$defs/EvidenceSource"
+          },
+          "type": "array"
+        },
+        "execution_ends": {
+          "items": {
+            "$ref": "#/$defs/ExecutionEnd"
+          },
+          "type": "array"
+        },
+        "execution_observations": {
+          "items": {
+            "$ref": "#/$defs/ExecutionObservation"
+          },
+          "type": "array"
+        },
+        "execution_starts": {
+          "items": {
+            "$ref": "#/$defs/ExecutionStart"
+          },
+          "type": "array"
+        },
+        "executions": {
+          "items": {
+            "$ref": "#/$defs/ExecutionIdentity"
+          },
+          "type": "array"
+        },
+        "fleet_manifests": {
+          "items": {
+            "$ref": "#/$defs/FleetManifest"
+          },
+          "type": "array"
+        },
+        "fleet_observations": {
+          "items": {
+            "$ref": "#/$defs/FleetObservation"
+          },
+          "type": "array"
+        },
+        "logical_identities": {
+          "items": {
+            "$ref": "#/$defs/LogicalDeviceIdentity"
+          },
+          "type": "array"
+        },
+        "partitions": {
+          "items": {
+            "$ref": "#/$defs/AcceleratorPartition"
+          },
+          "type": "array"
+        },
+        "physical_identities": {
+          "items": {
+            "$ref": "#/$defs/PhysicalDeviceIdentity"
+          },
+          "type": "array"
+        },
+        "provenance_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "provider_evidence": {
+          "items": {
+            "$ref": "#/$defs/ProviderEvidence"
+          },
+          "type": "array"
+        },
+        "receipt_id": {
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "VSTD-3.0"
+        },
+        "topology_snapshots": {
+          "items": {
+            "$ref": "#/$defs/TopologySnapshot"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "receipt_id",
+        "created_at",
+        "descriptors",
+        "physical_identities",
+        "logical_identities",
+        "partitions",
+        "topology_snapshots",
+        "capability_declarations",
+        "evidence_sources",
+        "attestation_challenges",
+        "attestation_evidence",
+        "executions",
+        "execution_starts",
+        "execution_observations",
+        "execution_ends",
+        "accounting_observations",
+        "continuity_records",
+        "provider_evidence",
+        "fleet_manifests",
+        "fleet_observations",
+        "evidence_gaps",
+        "claim_evaluations",
+        "provenance_artifact_ids",
+        "canonical_digest"
+      ],
+      "type": "object"
+    },
+    "VerificationState": {
+      "enum": [
+        "VERIFIED",
+        "FAILED",
+        "NOT_VERIFIED",
+        "UNKNOWN"
+      ],
+      "type": "string"
+    },
+    "WorkloadIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "accelerator_runtime": {
+          "type": "string"
+        },
+        "cloud_resource_id": {
+          "type": "string"
+        },
+        "compiler": {
+          "type": "string"
+        },
+        "container_image_digest": {
+          "type": "string"
+        },
+        "dataset_commitments": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "driver": {
+          "type": "string"
+        },
+        "environment_digest": {
+          "type": "string"
+        },
+        "executable_digest": {
+          "type": "string"
+        },
+        "input_commitments": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "invocation_commitment": {
+          "type": "string"
+        },
+        "kernel_commitments": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "libraries_digest": {
+          "type": "string"
+        },
+        "model_commitments": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "orchestrator_job_id": {
+          "type": "string"
+        },
+        "parent_run_id": {
+          "type": "string"
+        },
+        "source_tree_digest": {
+          "type": "string"
+        },
+        "tenant_commitment": {
+          "type": "string"
+        },
+        "workload_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "workload_id",
+        "executable_digest",
+        "source_tree_digest",
+        "container_image_digest",
+        "model_commitments",
+        "input_commitments",
+        "dataset_commitments",
+        "environment_digest",
+        "compiler",
+        "accelerator_runtime",
+        "driver",
+        "libraries_digest",
+        "kernel_commitments",
+        "invocation_commitment",
+        "orchestrator_job_id",
+        "cloud_resource_id",
+        "tenant_commitment",
+        "parent_run_id"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd3_receipt.json",
+  "$ref": "#/$defs/VSTD3Receipt",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Normative VSTD 3 signed-record schema. Unknown dataclass fields are rejected; semantic and cryptographic verification is additionally required.",
+  "title": "VSTD 3 Universal Accelerator Accountability Receipt"
+}

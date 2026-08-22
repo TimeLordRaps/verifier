@@ -1,0 +1,239 @@
+{
+  "$defs": {
+    "AcceleratorProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "anti_replay_support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        },
+        "architecture": {
+          "type": "string"
+        },
+        "attestation_protocols": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "capability_declarations": {
+          "items": {
+            "$ref": "#/$defs/CapabilityDeclaration"
+          },
+          "type": "array"
+        },
+        "cloud_provider_evidence_support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        },
+        "confidence": {
+          "type": "string"
+        },
+        "deployment_classes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "device_class": {
+          "$ref": "#/$defs/DeviceClass"
+        },
+        "discovery_methods": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "documentation_refs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "evidence_methods": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "execution_accounting_support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        },
+        "family": {
+          "type": "string"
+        },
+        "firmware_identity_support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        },
+        "hardware_identity_support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        },
+        "models": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "monotonic_state_support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        },
+        "native_complete_mediation_support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "partition_modes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "profile_id": {
+          "type": "string"
+        },
+        "topology_attestation_support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        },
+        "trusted_reset_support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        },
+        "vendor": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "profile_id",
+        "vendor",
+        "family",
+        "architecture",
+        "models",
+        "device_class",
+        "deployment_classes",
+        "discovery_methods",
+        "partition_modes",
+        "evidence_methods",
+        "attestation_protocols",
+        "firmware_identity_support",
+        "hardware_identity_support",
+        "anti_replay_support",
+        "monotonic_state_support",
+        "execution_accounting_support",
+        "topology_attestation_support",
+        "trusted_reset_support",
+        "cloud_provider_evidence_support",
+        "native_complete_mediation_support",
+        "capability_declarations",
+        "documentation_refs",
+        "confidence",
+        "notes"
+      ],
+      "type": "object"
+    },
+    "CanonicalValue": {
+      "description": "A deterministic signed value. JSON floating-point numbers are forbidden.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/CanonicalValue"
+          },
+          "type": "array"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/CanonicalValue"
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "Capability": {
+      "enum": [
+        "SELF_REPORTED",
+        "HOST_OBSERVED",
+        "EXECUTION_OBSERVED",
+        "SOFTWARE_SIGNED",
+        "PROVIDER_ATTESTED",
+        "DEVICE_IDENTITY_ATTESTED",
+        "FIRMWARE_ATTESTED",
+        "EXECUTION_ATTESTED",
+        "EXECUTION_ACCOUNTING_EVIDENCED",
+        "CONTINUITY_ATTESTED",
+        "COMPLETE_MEDIATION_ATTESTED",
+        "FLEET_BOUNDARY_ATTESTED"
+      ],
+      "type": "string"
+    },
+    "CapabilityDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "capability": {
+          "$ref": "#/$defs/Capability"
+        },
+        "evidence_method": {
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "support": {
+          "$ref": "#/$defs/CapabilitySupport"
+        }
+      },
+      "required": [
+        "capability",
+        "support",
+        "evidence_method",
+        "limitations"
+      ],
+      "type": "object"
+    },
+    "CapabilitySupport": {
+      "enum": [
+        "SUPPORTED",
+        "UNSUPPORTED",
+        "UNKNOWN"
+      ],
+      "type": "string"
+    },
+    "DeviceClass": {
+      "enum": [
+        "GPU",
+        "TPU",
+        "AI_ASIC",
+        "FPGA",
+        "ADAPTIVE_COMPUTE",
+        "INTEGRATED_NPU",
+        "ACCELERATOR_SWITCH",
+        "DPU",
+        "SMARTNIC",
+        "FABRIC_ADAPTER",
+        "MANAGEMENT_CONTROLLER",
+        "LOGICAL_ACCELERATOR",
+        "OTHER"
+      ],
+      "type": "string"
+    }
+  },
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd3_accelerator_profile.json",
+  "$ref": "#/$defs/AcceleratorProfile",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Normative VSTD 3 signed-record schema. Unknown dataclass fields are rejected; semantic and cryptographic verification is additionally required.",
+  "title": "VSTD 3 Accelerator Registry Profile"
+}

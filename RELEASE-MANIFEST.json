@@ -12,28 +12,28 @@
       "sha256": "1d52ddfb779d976566c0b3a671748eddce273a1617d0f03292ae06898a876355"
     },
     ".github/workflows/ci.yml": {
-      "byte_size": 1084,
-      "sha256": "b7b77c9c3597460f90be665c76bfd9e46f90df573db74e3fba10e7029828106c"
+      "byte_size": 829,
+      "sha256": "4c25e57eae1f71deade1cd4268de94974614357434f2e7b4ff7e44cc0b53ffe5"
     },
     ".gitignore": {
       "byte_size": 337,
       "sha256": "a1a0a542df8e1228a8ab6cfaf95a0d1e3c796bb3f0790792eba73c6e13bc9774"
     },
     ".zenodo.json": {
-      "byte_size": 523,
-      "sha256": "2ad03adc362a733eeb18deea82f1838cc3da96e2300cbd9209c7fd63eb1315b2"
+      "byte_size": 577,
+      "sha256": "d4072747a176c00e8467f19b8127dce5a4840094df226bac10440963b511ac84"
     },
     "CHANGELOG.md": {
-      "byte_size": 1050,
-      "sha256": "0c728ba4284390ebb07ce5ec98a1b20cddd44258a43bffea4121c5c1012092db"
+      "byte_size": 2364,
+      "sha256": "2d1ce644d096791709c31030f0cfec43690e964c58ef367312791d0b88d70030"
     },
     "CITATION.cff": {
-      "byte_size": 486,
-      "sha256": "778cec4e263ae0f27a1adaac497762694bd433a8bfba2b9e43f3a1e2f801a1a8"
+      "byte_size": 528,
+      "sha256": "55cc0c8f991714a9e2ae9d957bc4fe02d73ab65ca90a5994e17e59b43e4e1fb7"
     },
     "CLAIMS_AND_LIMITS.md": {
-      "byte_size": 7726,
-      "sha256": "7dc325ab838f690470b08a64f49844763767bbc49affd26579bdd49c05a24864"
+      "byte_size": 15522,
+      "sha256": "d6e3ee54792e389e75b7e6d33dda8def4db5d10be4b3957bd41afad005816793"
     },
     "COMPETITION_EVALUATION_PROFILE.md": {
       "byte_size": 4816,
@@ -44,8 +44,8 @@
       "sha256": "9ad031253045f75296ca33184db11a06d09ad4c63da49913e21cfa9e97c9ae95"
     },
     "GOVERNANCE.md": {
-      "byte_size": 2317,
-      "sha256": "0d151b41662f07b5fd29922d25cf45e686fa54bd9ec843f15c037d88147dd325"
+      "byte_size": 2581,
+      "sha256": "8056af07e65b35e8a9c412bc3eed23abb6ba5539bf3b68cbc1bef6093dca591d"
     },
     "LICENSE": {
       "byte_size": 11357,
@@ -56,16 +56,32 @@
       "sha256": "f625ecad59940a8bcdf63f2c0d64b715fbab9be86ae9609d594dd6a386e68db2"
     },
     "README.md": {
-      "byte_size": 4530,
-      "sha256": "187c4093424e764eb5299afc21077f220b4f3f347f3bd3db8f7fe700b8b2b797"
+      "byte_size": 6078,
+      "sha256": "08c9ce900cb61aa1e381de163df391156af8f11828c0510a7431341db98cbd5e"
     },
     "RELEASING.md": {
-      "byte_size": 1303,
-      "sha256": "177ff24924927a49e700669b6c2e69d9dfb8362563c33570f0128df17823a6e9"
+      "byte_size": 1633,
+      "sha256": "2140df25c49f3b033cc43e27c1f89be9e44b418d9eb10ac2cebeebdb1ed45c12"
     },
     "SECURITY.md": {
-      "byte_size": 1068,
-      "sha256": "d9b9a84c5cc3caa198f4527d7ea3c79ec13eac530798635276473f73125cfd1e"
+      "byte_size": 1576,
+      "sha256": "6822248aa648a87edf285abd9545d7d908d62e2a2b413e344b439809e0880363"
+    },
+    "VSTD3_MIGRATION.md": {
+      "byte_size": 1900,
+      "sha256": "00c7e1e759cb1fad8cbbec3713ac1eb408a3e36df176978326683593032b988e"
+    },
+    "VSTD3_REFERENCES.md": {
+      "byte_size": 3478,
+      "sha256": "c9cb80f3292455c20743fa32b70c0e3baef092dbe940a4df04711528606e7b25"
+    },
+    "VSTD3_THREAT_MODEL.md": {
+      "byte_size": 7335,
+      "sha256": "e2d4dfabe352839b5eb01110bbd34c6e5641fb7c539c3df819e71d565fe665c7"
+    },
+    "VSTD3_VENDOR_INTEGRATION.md": {
+      "byte_size": 5334,
+      "sha256": "9fbe58c363b788fd4be880d04329d686ec277e8a860460faea7a5adffe7e119c"
     },
     "examples/generic_run/compute.py": {
       "byte_size": 1551,
@@ -100,8 +116,8 @@
       "sha256": "0455819631af831b332c7948fa250f4d79f6a87f4c1469dcefef04e36d1b8287"
     },
     "pyproject.toml": {
-      "byte_size": 1376,
-      "sha256": "1e5a593823203e14e30e2a663606bddff4a47b4aa890ff45332ce56b59847be5"
+      "byte_size": 1485,
+      "sha256": "85efe5eab5ab1a348f7315e77e7a5c73b4bff0c895492df708d1a8c558609efe"
     },
     "receipts/schema/receipt_data_v1.json": {
       "byte_size": 2792,
@@ -115,9 +131,17 @@
       "byte_size": 10362,
       "sha256": "39275d97da5741c9f2a26e18d0042afa6ef5d90084ad247a39721a6b75c8d432"
     },
+    "receipts/schema/vstd3_accelerator_profile.json": {
+      "byte_size": 6140,
+      "sha256": "84d368aab0135f4e0c9ba87a64ef20f95692b1ca616b03a77c0d1e454cc3c60b"
+    },
+    "receipts/schema/vstd3_receipt.json": {
+      "byte_size": 41819,
+      "sha256": "174fd813596023b959885601e68f66793a15db0f14ed1c97a06b319099f6d423"
+    },
     "src/verifiable/__init__.py": {
       "byte_size": 1764,
-      "sha256": "fe498584d1ca790ab08f325f977489c2eb0c5ef6b73015def448d0a666ce08e2"
+      "sha256": "48682d4eb2fd473ec140ea4c72d5d297468a7ecb89445f8bcbacabe5537bf1dc"
     },
     "src/verifiable/constraints/__init__.py": {
       "byte_size": 3017,
@@ -172,8 +196,8 @@
       "sha256": "60e09b98a53e5a376ff5f05e92cd2bce0474ccd4923ee801a930eb640b7ea383"
     },
     "src/verifiable/data/models.py": {
-      "byte_size": 20329,
-      "sha256": "3f18a325c99d7fbea61687ca63344de5da2b5234742b50fef01068cd6f79efab"
+      "byte_size": 21063,
+      "sha256": "c8e62bdd45f07421868194731394dad8ab545d5cd91cabf45dbed1e208b52696"
     },
     "src/verifiable/data/policy.py": {
       "byte_size": 7712,
@@ -183,13 +207,113 @@
       "byte_size": 21343,
       "sha256": "119b1a72c42c5fa0c057ce6479c3208dc3836049f2c9a46402930fbc53d3cbc9"
     },
+    "src/verifiable/hardware/__init__.py": {
+      "byte_size": 1253,
+      "sha256": "f99b5daf44b837bea934717756aefe173c6ca38f243fa134a66ad20dfb88d389"
+    },
+    "src/verifiable/hardware/accelerator_registry.json": {
+      "byte_size": 69292,
+      "sha256": "2ced293364103cebdde2dab73050afb18f4130e97f3d2bc9b085f810b77c8a5e"
+    },
+    "src/verifiable/hardware/adapters/__init__.py": {
+      "byte_size": 731,
+      "sha256": "35458a1e94ce5e94a22730b7a32c7da108d5d93cca656ce02a6769f61ca7eff8"
+    },
+    "src/verifiable/hardware/adapters/amd.py": {
+      "byte_size": 5492,
+      "sha256": "470556685bf7014a735f69d25c7239efc19533296846ff5b08cb115444e84b62"
+    },
+    "src/verifiable/hardware/adapters/base.py": {
+      "byte_size": 5325,
+      "sha256": "75d5c45e782fb5a58bb2d1c77c1a552b05baedc048f5903f2a714b231509d2c9"
+    },
+    "src/verifiable/hardware/adapters/generic.py": {
+      "byte_size": 11585,
+      "sha256": "72e50fb02227be1735af5b1333d4e0381e175fb901a6396a151bb9a03e90b559"
+    },
+    "src/verifiable/hardware/adapters/intel.py": {
+      "byte_size": 1090,
+      "sha256": "4ff6c522688a05a0150c9309f02fbed647e8ea54c744589a22867e5d5d9efe27"
+    },
+    "src/verifiable/hardware/adapters/nvidia.py": {
+      "byte_size": 9926,
+      "sha256": "46e9959e3ab29b481b02f297e9d5465a11cdfcac9a7de1689393e33f6006ac9b"
+    },
+    "src/verifiable/hardware/adapters/provider.py": {
+      "byte_size": 6256,
+      "sha256": "9b150162f47135e93398c587414f33419c78ae577c87645ff10660e0f509cfec"
+    },
+    "src/verifiable/hardware/anchors.py": {
+      "byte_size": 3824,
+      "sha256": "7ff61afe3517b122bf2c019bb7602328eb4fbebfd9e62bea63a7d5e9bf8434b7"
+    },
+    "src/verifiable/hardware/attestation.py": {
+      "byte_size": 3419,
+      "sha256": "fca64d1beae42755aec913b359db278efaad31550e25a0b407b994716fd7775b"
+    },
+    "src/verifiable/hardware/canonical.py": {
+      "byte_size": 6223,
+      "sha256": "3e2934437156aa5d2fb8d57f1bb37c8f18529aed25615963972e5df6119b6ca5"
+    },
+    "src/verifiable/hardware/claims.py": {
+      "byte_size": 9092,
+      "sha256": "15e9e02351d44e8af7f33ce0848b0b6551ec88d780bba030991aa3bc207a340a"
+    },
+    "src/verifiable/hardware/conformance.py": {
+      "byte_size": 4903,
+      "sha256": "6c00b5f033fc6484ec255144c8be9033eef0d8fa33ced7bb8cb58e4a044b1471"
+    },
+    "src/verifiable/hardware/continuity.py": {
+      "byte_size": 14181,
+      "sha256": "858ccf2b0d56cab6948cf85e0e6be68631a3e05e01e6ada30dc0b3723cfa5530"
+    },
+    "src/verifiable/hardware/emulator.py": {
+      "byte_size": 26004,
+      "sha256": "81e6395d0655e8443cd7cc054de14adb6700bf61d44f2aff548f9c5b0d7ca5b4"
+    },
+    "src/verifiable/hardware/fleet.py": {
+      "byte_size": 4742,
+      "sha256": "168d605d8ee9c1c773647f7c9e6decd76afa43ad34e034e38b67cc2dd7811360"
+    },
+    "src/verifiable/hardware/models.py": {
+      "byte_size": 23399,
+      "sha256": "cb0a03af16e1c7edfa7cc1d03a11f9ac3e28984a3961134690101afd707e64b4"
+    },
+    "src/verifiable/hardware/provenance.py": {
+      "byte_size": 25035,
+      "sha256": "6a1071a65e706a6812d725583e6f4cc44d0e75d290a36ef3ae18c51b565bf195"
+    },
+    "src/verifiable/hardware/provider_evidence.py": {
+      "byte_size": 2302,
+      "sha256": "1fa4a22773b63408ede8c95e32e6edd25703ab537bf9be6336dd1c5b06000a71"
+    },
+    "src/verifiable/hardware/receipt.py": {
+      "byte_size": 1526,
+      "sha256": "e28c2e74ea45cd4675581cdea6fdc71502a05c05ebfa662234324df469329dbb"
+    },
+    "src/verifiable/hardware/registry.py": {
+      "byte_size": 3589,
+      "sha256": "fdc5f37b72004f0adb9f0c5132eaa9ccb51e781d8163e99701cea98d106b8f8c"
+    },
+    "src/verifiable/hardware/schema.py": {
+      "byte_size": 5547,
+      "sha256": "6badbd9d4d930dc018a73f64e274dd73e65a07492d059be5b22bd0a780125cfb"
+    },
+    "src/verifiable/hardware/validation.py": {
+      "byte_size": 33592,
+      "sha256": "e00d854cb5d1d4e4521d50cdc18344df438285003a500dd4983f2c3d37bd77eb"
+    },
     "src/verifiable/runtime/__init__.py": {
       "byte_size": 70,
       "sha256": "1fd57da519f3468c79be2f8e703c27d30b97270d08784c9aca72b926c262001c"
     },
+    "src/verifiable/runtime/hardware_cli.py": {
+      "byte_size": 21808,
+      "sha256": "b25a96bf8141e6fc286c397ca6eb33ddd86246c888f62c93f6eb63e82f950a90"
+    },
     "src/verifiable/runtime/public_cli.py": {
-      "byte_size": 11140,
-      "sha256": "6ba4248fc24d234c2ad1f9f6b1382b19b065fa39a7b8b5295a5a5970d1bcf21b"
+      "byte_size": 13277,
+      "sha256": "364cb412da1a86deb9f558d73d96563c271ad00f72a17beeb3289f62a4aaa707"
     },
     "standard/VSTD-0.1.md": {
       "byte_size": 8517,
@@ -198,6 +322,10 @@
     "standard/VSTD-0.2.md": {
       "byte_size": 13288,
       "sha256": "9dc073b71ea13ca40a3408f77a1acf58cc441db56ca3f0923271c018280947fb"
+    },
+    "standard/VSTD-3.0.md": {
+      "byte_size": 18828,
+      "sha256": "3a5b6bcf123cb4e11f4ff70c98f803dc1155d4d4c1e42a2770d44bd2842c9069"
     },
     "standard/VSTD-DATA-0.1.md": {
       "byte_size": 8249,
@@ -230,10 +358,34 @@
     "tests/test_verification_geometry.py": {
       "byte_size": 12905,
       "sha256": "504d60267db506a257efd73b46a14260c8417267522c78fdf809382830ce3248"
+    },
+    "tests/test_vstd3_backward_compatibility.py": {
+      "byte_size": 1548,
+      "sha256": "a359ee1e3e44c7d5ff2c33855145f385017cea7c348651b6f5e48a836659cce6"
+    },
+    "tests/test_vstd3_capabilities.py": {
+      "byte_size": 16023,
+      "sha256": "ca6380128b70f06c7e31aa9bef2bbc036110594f37a377a18cd6b29a5a1524d4"
+    },
+    "tests/test_vstd3_cli.py": {
+      "byte_size": 5648,
+      "sha256": "498d21149853c0832fbb03dd996c7689b7a98d83ef519c4ac3db2ed06680d2c8"
+    },
+    "tests/test_vstd3_emulator.py": {
+      "byte_size": 16157,
+      "sha256": "3c176e7f1485d9ed46e96bf1d1717d5df4c695103fe72172f8f307e69ad8755f"
+    },
+    "tests/test_vstd3_provenance.py": {
+      "byte_size": 6181,
+      "sha256": "3c57e71492dae8e0b840c4594b8478c726c17681a3698360e40ecb7783d7ac8e"
+    },
+    "tests/test_vstd3_schema.py": {
+      "byte_size": 2541,
+      "sha256": "4dd3577485317f986a49bd36e75a96e2df9e7ca5b7b75a362164255564a275cb"
     }
   },
-  "release": "0.1.0",
+  "release": "0.2.0",
   "schema_version": "VFY-PUBLIC-RELEASE-1.0",
   "scope": "public VSTD specifications, schemas, target-neutral reference subset, examples, and tests",
-  "source_commit": "feb116749c064ce3839f0e1f160e15cdc61dfc76"
+  "source_commit": "e410c8a85995f9d2974677a3573fbb1db9f3b048"
 }

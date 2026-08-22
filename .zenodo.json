@@ -4,15 +4,16 @@
       "name": "Roost, Tyler"
     }
   ],
-  "description": "An independent open specification and reference implementation for bounded, machine-checkable computational claims, provenance hypergraphs, and verification geometry.",
+  "description": "An independent open specification and reference implementation for bounded computational claims, provenance hypergraphs, verification geometry, and accelerator accountability.",
   "keywords": [
     "verification",
     "provenance",
     "reproducibility",
     "artificial intelligence",
-    "software supply chain"
+    "software supply chain",
+    "accelerator accountability"
   ],
   "license": "Apache-2.0",
-  "title": "VSTD: Bounded Verification Receipts and Provenance Geometry",
+  "title": "VSTD: Bounded Verification, Provenance, and Accelerator Accountability",
   "upload_type": "software"
 }

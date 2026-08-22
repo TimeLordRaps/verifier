@@ -5,8 +5,8 @@ from __future__ import annotations
 from importlib import import_module
 from typing import TYPE_CHECKING, Any
 
-__version__ = "0.1.0"
-__standard__ = "VSTD-0.1"
+__version__ = "0.2.0"
+__standard__ = "VSTD-3.0"
 
 _LAZY_EXPORTS = {
     "VerificationVerdict": ("verifiable.core.checker", "VerificationVerdict"),

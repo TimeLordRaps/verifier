@@ -1,0 +1,44 @@
+# Migration and backward compatibility for VSTD 3
+
+VSTD 3 is additive. It does not reinterpret earlier receipts.
+
+## Existing receipts
+
+- `VSTD-0.1` receipt validators keep their existing semantics.
+- `VSTD-DATA-0.1` hypergraphs remain readable.
+- experimental `VSTD-0.2` geometry remains a separate versioned surface.
+- The public `validate`, `inspect`, `reproduce`, `data`, and `impact` commands retain
+  their earlier behavior.
+
+Historical receipts do not gain hardware claims merely because a VSTD 3 implementation
+reads them.
+
+## Additive hypergraph values
+
+VSTD 3 adds hardware/provider artifact types and discovery, attestation, execution,
+accounting, anchoring, and evidence-binding transformation types. Readers that reject
+unknown enum values should upgrade before reading a hypergraph containing VSTD 3
+hardware nodes. Earlier graphs containing only earlier values round-trip unchanged.
+
+## Adding hardware evidence to a run
+
+1. Validate the VSTD 3 receipt with all required key resolvers.
+2. Identify pre-existing output artifact IDs in the VSTD-DATA graph.
+3. Call `attach_vstd3_receipt` with those IDs or record them in
+   `provenance_artifact_ids`.
+4. Validate graph structure and acyclicity.
+5. Re-run blast-radius and relevant provenance policies.
+
+The composition is transactional. A missing output, invalid receipt, overclaimed
+`PASS`, collision, structural error, or cycle leaves the original graph unchanged.
+
+## No automatic claim upgrade
+
+Host-observed inventory stays host-observed. Provider evidence stays provider evidence.
+Firmware measurement stays distinct from execution evidence. Existing declared
+execution records are not converted into device attestation without new evidence.
+
+## Schema/version dispatch
+
+Dispatch by exact `schema_version`. VSTD 3 receipts use `VSTD-3.0`. Unknown versions
+must fail closed. Do not guess a compatible decoder from field similarity.

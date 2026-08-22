@@ -13,12 +13,19 @@ surface, mechanisms, evidence, and trust boundaries.
 - `VSTD-DATA-0.1`: content-addressed dataset and computational provenance hypergraphs;
 - experimental `VSTD-0.2`: loci, facets, coordinates, seams, residuals, horizons, and
   bounded self-closure;
+- `VSTD-3.0`: accelerator-neutral device/firmware evidence, execution accounting,
+  authenticated continuity, partitions/topology, provider evidence, and bounded fleet
+  claims;
 - JSON Schemas for the implemented receipt and geometry documents;
 - a zero-required-dependency Python reference subset;
 - an optional logits-level constraint kernel using one grammar engine at its boundary;
 - deterministic examples and conformance tests.
 - a non-normative competition-evaluation profile for predictive systems and other
   scored submissions.
+
+VSTD 3 includes a 37-profile data-driven accelerator registry, strict NVIDIA/AMD/
+generic offline normalization, provider fixture boundaries, and a virtual firmware
+contract emulator. Current commodity adapters do **not** claim complete mediation.
 
 The public reference package deliberately excludes private operational material and
 repository-specific adapters. Those adapters must declare their own observable seams,
@@ -55,6 +62,36 @@ generic-run command when the manifest permits it. These operations verify record
 execution and artifact relationships; they do not establish empirical truth outside
 the declared surface.
 
+## Accelerator accountability
+
+List or inspect registry profiles:
+
+```bash
+vstd hardware list --json
+vstd hardware inspect nvidia.hopper --json
+```
+
+Run the test-only firmware contract emulator, then independently verify its receipt:
+
+```bash
+vstd hardware emulate \
+  --output /tmp/vstd3/receipt.json \
+  --created-at 2026-08-21T20:00:00Z \
+  --key-id demo-key \
+  --key-hex 1111111111111111111111111111111111111111111111111111111111111111
+
+vstd hardware verify /tmp/vstd3/receipt.json \
+  --key demo-key=1111111111111111111111111111111111111111111111111111111111111111
+vstd continuity verify /tmp/vstd3/receipt.json \
+  --key demo-key=1111111111111111111111111111111111111111111111111111111111111111
+vstd claims evaluate /tmp/vstd3/receipt.json \
+  --key demo-key=1111111111111111111111111111111111111111111111111111111111111111
+```
+
+The HMAC key is a deterministic test fixture, not a production secret or physical root
+of trust. Read `VSTD3_THREAT_MODEL.md`, `VSTD3_VENDOR_INTEGRATION.md`, and
+`CLAIMS_AND_LIMITS.md` before publishing a hardware claim.
+
 ## Predictive-AI and competition evaluation
 
 [`COMPETITION_EVALUATION_PROFILE.md`](COMPETITION_EVALUATION_PROFILE.md) maps the
@@ -89,8 +126,9 @@ missing instrumentation.
 1. Read `standard/VSTD-0.1.md` for the base receipt contract.
 2. Read `standard/VSTD-DATA-0.1.md` for provenance hypergraphs.
 3. Read `standard/VSTD-0.2.md` for the experimental verification geometry.
-4. Inspect `receipts/schema/` and the reference modules under `src/verifiable/`.
-5. Run the tests before claiming conformance.
+4. Read `standard/VSTD-3.0.md` for accelerator accountability.
+5. Inspect `receipts/schema/` and the reference modules under `src/verifiable/`.
+6. Run the tests before claiming conformance.
 
 ## Project process
 
