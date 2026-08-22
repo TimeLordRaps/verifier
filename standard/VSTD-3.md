@@ -1,7 +1,7 @@
 # VSTD-3 — Substrate Accountability
 
 **Layer:** 3 of 5 on the object axis (see `LADDER.md`)
-**Receipt wire format:** `schema_version = "VSTD-3.0"` — frozen; see `MIGRATION.md`
+**Receipt wire format:** `schema_version = "VSTD-3.0"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** implemented project specification
 **Editor:** Tyler Roost
 **License:** Apache-2.0

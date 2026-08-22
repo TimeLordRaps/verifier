@@ -1,0 +1,34 @@
+name: Independent implementation report
+description: Report an external parser, checker, integration attempt, or interoperability result.
+title: "[implementation]: "
+labels: ["implementation", "interoperability"]
+body:
+  - type: markdown
+    attributes:
+      value: An implementation report is evidence of an attempt, not endorsement, adoption, certification, or conformance unless the stated tests establish that bounded result.
+  - type: input
+    id: implementation
+    attributes:
+      label: Implementation
+      description: Public repository or exact description if no link can be shared.
+    validations:
+      required: true
+  - type: input
+    id: coordinate
+    attributes:
+      label: VSTD coordinate
+      description: Release, layer, wire identifier, and supported profile.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Tests attempted and observed results
+    validations:
+      required: true
+  - type: textarea
+    id: differences
+    attributes:
+      label: Ambiguities, incompatibilities, or unsupported features
+    validations:
+      required: true

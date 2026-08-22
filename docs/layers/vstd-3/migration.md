@@ -1,7 +1,8 @@
 # VSTD-3 record migration and backward compatibility
 
 VSTD-3 is additive. It does not reinterpret earlier receipt wire formats. For
-the integer-layer filename migration, see `../../../standard/MIGRATION.md`.
+the historical filename and wire-identifier table, see
+`../../../standard/WIRE_IDENTIFIERS.md`.
 
 ## Existing receipts
 

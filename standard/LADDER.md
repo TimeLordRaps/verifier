@@ -12,18 +12,21 @@ foundation.
 
 ## 1. The governing idea
 
-> Each layer detects an unknown unknown from the layer before — something not
-> recognizable as knowable at the layer below.
+Each layer names a distinct verification question and a distinct failure class. The
+ordering is a composition rule, not logical entailment between layers.
 
-This is a **reflection principle**, not a metaphor. By Tarski's undefinability theorem,
-a truth predicate for a language is not definable within that language; it requires a
-metalanguage. Each VSTD layer supplies exactly the predicate the layer beneath it cannot
-express about itself. Layer *N+1* is the metalanguage of layer *N*.
+**Evidence for one layer never supplies evidence for another layer.** In particular,
+layer-4 evidence does not supply, imply, upgrade, or repair layer 3, 2, or 1. A reported
+depth of `N` is only shorthand for `N` separately checked results, one for each layer
+from 1 through `N`.
 
-The consequence that matters in practice: **a layer's blind spot is not a gap it could
-close with more care.** It is structurally invisible from inside that layer. No amount of
-rigor at layer 3 discovers a layer-4 failure, because layer 3 has no vocabulary in which
-that failure is a statement.
+Reflection and metalanguage are useful design analogies for asking what a given
+verification surface leaves unexamined. VSTD does not claim that Tarski's
+undefinability theorem proves this ladder, that adjacent layers form formal
+metalanguages, or that a lower-layer implementation is logically incapable of
+describing another layer's failure. The normative requirement is narrower: an
+implementation MUST NOT treat success on one question as evidence for a different
+question.
 
 ---
 
@@ -32,7 +35,7 @@ that failure is a statement.
 VSTD proper governs the verification of **one object**. Call this verification
 *mechanics*.
 
-| Layer | Name | Closes | Cannot see |
+| Layer | Name | Closes | Does not establish |
 |---|---|---|---|
 | **1** | Claim mechanics | A malformed or tampered statement | Whether the claim applies where it is being applied |
 | **2** | Verification surface | A verdict leaking beyond the coordinate actually verified | Whether the evidence behind it is real |
@@ -101,33 +104,39 @@ that certificate is a declaration and is non-conforming.
 The decision procedure is not incidental to the design. Three consequences follow, and
 the third is the load-bearing one.
 
-### 4.1 Receipts are certificates
+### 4.1 Some receipt fields are checkable certificates
 
-A VSTD receipt is an NP certificate: expensive to produce, cheap to check. That
-asymmetry is the entire reason proof-carrying verification is worth doing. If checking
-cost the same as producing, a verifier would simply redo the work and the receipt would
-be decoration.
+VSTD does not classify every receipt as an NP certificate. Specific bounded formats,
+including `VSTD4-GDC-1`, define a finite decision problem, a certificate language, and
+an independent checker. Complexity claims apply only to such a defined formal problem.
+Other receipt fields may be signed declarations, hashes, measurements, or references
+whose meaning depends on explicitly named trust roots.
 
-### 4.2 Admission is CNF, and CNF is 3-SAT
+The useful engineering asymmetry is concrete rather than universal: when a result can
+carry a smaller independently checkable artifact instead of requiring the original
+computation, VSTD preserves that artifact and its verification bounds.
 
-Policy admission is encoded as bounded CNF. 3-SAT is the canonical NP-complete form, so
-any such policy reduces to it, and Graph-layer computation is an optimization over it.
+### 4.2 Bounded admission uses CNF
 
-### 4.3 Completeness is impossible, and this is a theorem
+The reference admission procedures encode finite, bounded policy questions as CNF.
+CNF is not identical to 3-SAT. A finite CNF satisfiability instance can be transformed
+in polynomial time into an equisatisfiable 3-CNF instance, using auxiliary variables
+where required. VSTD does not need that transformation for every checker and does not
+infer a physical-world claim from the complexity of the encoded formula.
 
-"Here is a valid computation" is a satisfying assignment — a short certificate.
+### 4.3 Global completeness is outside the observation boundary
 
-"There is **no** undeclared computation" is a universal negative. That is co-NP, where no
-short certificate is known to exist, and in the physical world the clause set cannot even
-be enumerated.
+`PHYSICAL_WORLD_COMPLETENESS: UNSUPPORTED` in VSTD-3 §16 means exactly that ordinary
+VSTD evidence does not enumerate every physical execution that could exist. That is an
+observational and claim-coordinate limit. It is not presented as a consequence of
+Tarski's theorem, as a generic co-NP classification, or as a proof that a future,
+explicitly finite observation system is impossible.
 
-Therefore `PHYSICAL_WORLD_COMPLETENESS: UNSUPPORTED` in VSTD-3 §16 **is not a limitation
-of this implementation. It records both a complexity-theoretic barrier and the
-non-enumerability of the physical clause set.** No future layer silently removes
-it. A general short-certificate claim would require an explicitly stated result
-such as NP = co-NP rather than being smuggled in as a stronger label.
+A future claim may cover a finite enumerated world if its observation boundary and
+completeness mechanism are declared and checked. It still MUST NOT be widened into a
+claim about unobserved physical activity.
 
-This is why the ladder tops out at corroboration rather than proof of absence. Layer 5
+This is why the ladder tops out at corroboration rather than proof of global absence. Layer 5
 does not detect hidden work. It makes the *independence status* of declared work legible,
 and leaves the undeclared remainder named and quantified rather than silent.
 
@@ -135,7 +144,8 @@ and leaves the undeclared remainder named and quantified rather than silent.
 
 ## 5. Certificates for refusals
 
-A direct corollary of §4.1, and the core requirement of layer 4.
+This section applies to the finite propositional decision procedures used by the
+reference layer-4 implementation.
 
 A satisfiable result already carries its certificate: the model. Anyone can evaluate it
 against the clause set without a solver.
@@ -147,11 +157,11 @@ whose passes are checkable and whose refusals are not has its assurance backward
 Layer 4 therefore requires a refutation certificate — a clausal proof, verifiable by
 reverse unit propagation, checkable without re-solving.
 
-Because such proofs are worst-case exponential (§4.3 again, from the other side), a
-conforming implementation MUST declare a bound and MUST answer `UNKNOWN` when it is
-exceeded. **Fail-closed under resource exhaustion is a conformance requirement, not an
-implementation shortcut.** An `UNKNOWN` is never a pass and never an unsatisfiability
-claim.
+Resolution proofs have exponential lower bounds for some formula families. A
+conforming implementation therefore MUST declare a bound and MUST answer `UNKNOWN`
+when the implemented search or proof check exceeds that bound. **Fail-closed under
+resource exhaustion is a conformance requirement, not an implementation shortcut.**
+An `UNKNOWN` is never a pass and never an unsatisfiability claim.
 
 Reference implementation: `verifiable.core.refutation`.
 
@@ -172,16 +182,19 @@ claim to any VSTD-5 procedure. See `VSTD-4.md` for the normative rung graph and
 
 ---
 
-## 6. Composition — layers do not substitute
+## 6. Composition — layers do not supply or substitute
 
-Layers compose upward. They do not replace one another.
+Layer results may be composed into a depth report. They do not replace, entail, or
+supply one another.
 
 - Layer 4 without layer 3 certifies a claim whose evidence source is unaccountable.
 - Layer 5 without layer 4 solicits witnesses for a claim no witness could check.
 - Layer 2 without layer 1 scopes a statement whose integrity is unestablished.
 
-An implementation claiming conformance at layer *N* MUST also conform at every layer
-below *N*. Conformance profiles are declared per layer, following VSTD-3 §7.
+An implementation reporting aggregate depth *N* MUST present separately checkable
+evidence for every layer from 1 through *N*. Conformance may also be reported for an
+individual layer without claiming aggregate depth. Conformance profiles are declared
+per layer, following VSTD-3 §7.
 
 "Higher is more protected" is true only in the sense that more classes of failure are
 closed. It never means the lower layers became unnecessary.
@@ -194,4 +207,4 @@ closed. It never means the lower layers became unnecessary.
 - **Repository releases use semantic versioning** and are independent of layer numbers.
 
 A release version never implies a layer, and a layer never implies a release. See
-`MIGRATION.md` for the mapping from the superseded `0.x` specification filenames.
+`WIRE_IDENTIFIERS.md` for frozen wire identifiers and the historical public filenames.

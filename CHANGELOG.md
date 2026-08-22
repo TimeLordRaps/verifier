@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.0.1 - 2026-08-22
+
+- State explicitly that each VSTD layer requires its own evidence: layer 4 does not
+  supply, entail, upgrade, or repair layers 3, 2, or 1.
+- Replace unsupported Tarski, generic NP-certificate, CNF-equals-3-SAT, and
+  physical-world co-NP claims with bounded statements tied to implemented formal
+  languages and declared observation surfaces.
+- Replace adopter-migration framing with a frozen wire-identifier and historical
+  project-filename registry; no external adoption is claimed.
+- Generate source releases from exact public Git objects and publish a separate
+  manifest binding the resolvable ref, commit, archive digest, file set, and member
+  bytes. Line-ending equivalence is not accepted as byte identity.
+- Add a side-effect-free manifest plan command and make unsandboxed execution visible
+  at the CLI and README boundary without pretending declared-path checks sandbox the
+  subprocess.
+- Test the advertised Python 3.10 through 3.13 range, add release-integrity and
+  installed-wheel jobs, and expose one required conformance gate for branch protection.
+- Add structured ambiguity, counterexample, and implementation feedback surfaces plus
+  public conduct and pull-request consequence checks.
+
 ## 1.0.0 - 2026-08-22
 
 - Redesign specification numbers as verification-depth layers: VSTD-1 through

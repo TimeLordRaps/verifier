@@ -190,7 +190,7 @@ def test_physical_world_completeness_has_a_machine_readable_home():
     assert surface.validate().accepted is True
     excluded = surface.excludes(PHYSICAL_WORLD_COMPLETENESS)
     assert excluded is not None
-    assert "co-NP" in excluded.reason
+    assert "outside the declared observation boundary" in excluded.reason
 
 
 def test_duplicate_declarations_are_refused():
@@ -426,7 +426,7 @@ def test_a_challenge_against_an_excluded_claim_quotes_the_exclusion():
     )
     verdict = admissibility(excluded, _surface())
     assert verdict.admitted is False
-    assert "co-NP" in verdict.details
+    assert "outside the declared observation boundary" in verdict.details
 
 
 def test_a_challenge_with_no_counterevidence_is_refused():

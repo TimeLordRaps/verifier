@@ -14,13 +14,15 @@ consequential output, that asymmetry is backwards. This module closes it by
 emitting a clausal resolution refutation and providing a checker that validates
 that refutation **without re-solving**.
 
-The asymmetry being corrected is not incidental to this implementation.
-Satisfiability is in NP: a positive instance has a short certificate.
-Unsatisfiability is in co-NP, where no short certificate is known to exist.
-Resolution refutations are therefore worst-case exponential in the size of the
-formula, and a bounded checker MUST be permitted to answer ``UNKNOWN`` rather
-than silently report a pass. Fail-closed under resource exhaustion is a
-conformance requirement of layer 4, not an implementation shortcut.
+For the finite CNF language checked here, a satisfying assignment is checkable
+in polynomial time and UNSAT is co-NP-complete. Polynomial-size certificates for
+every UNSAT formula under a polynomial-time checker are not known; their general
+existence would imply NP = co-NP. More specifically, resolution has proven
+exponential lower bounds for some formula families. The implemented producer and
+checker are therefore bounded and MUST answer ``UNKNOWN`` when their declared
+bound is exhausted rather than silently report a pass. This complexity statement
+is limited to the formal CNF problem; it is not a claim about unenumerated
+physical-world activity.
 
 Proof format
 ------------

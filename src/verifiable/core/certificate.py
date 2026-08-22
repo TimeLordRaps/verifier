@@ -381,10 +381,10 @@ class ResolutionProof:
 class IndeterminacyTranscript:
     """Rung 4.1's third arm.
 
-    This does **not** assert that no proof exists -- that is the co-NP wall and
-    it is not certifiable. It asserts the far weaker and honest claim that *the
-    declared budget was exhausted at this exact deterministic point*, which a
-    checker confirms by replaying to that point and observing the stop.
+    This does **not** assert that no proof exists. It asserts the far weaker and
+    checkable claim that *the declared budget was exhausted at this exact
+    deterministic point*, which a checker confirms by replaying to that point
+    and observing the stop.
     """
 
     reason: IndeterminacyReason
