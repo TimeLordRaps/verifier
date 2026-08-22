@@ -1,6 +1,8 @@
 # Release procedure
 
 1. Run the declared conformance tests from a clean checkout.
+   For a VSTD 3 release this includes schema regeneration parity, emulator/adversarial
+   tests, adapter epistemic tests, provenance blast radius, and CLI JSON/human smoke.
 2. Build the source release with the internal allowlist builder and verify its SHA-256.
 3. Extract that release into a new repository worktree; do not push the internal
    development repository or its history.
@@ -17,6 +19,8 @@
 5. Build twice in clean directories and require identical wheel SHA-256 values.
 6. Install the wheel with `--no-deps`, run the stdlib lifecycle smoke, then test each
    optional profile independently.
+   Also run `vstd hardware list --json` and the deterministic virtual probe/verification
+   lifecycle; never place the test HMAC key in a committed fixture.
 7. Create the GitHub tag and release only after the public tree, hashes, version, and
    claim boundaries match.
 8. Let Zenodo archive the GitHub release, then record the issued DOI additively.

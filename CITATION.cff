@@ -1,11 +1,11 @@
 cff-version: 1.2.0
 message: "If you use VSTD or the VERIFIABLE reference implementation, cite this release."
-title: "VSTD: Bounded Verification Receipts and Provenance Geometry"
+title: "VSTD: Bounded Verification, Provenance, and Accelerator Accountability"
 type: software
 authors:
   - family-names: Roost
     given-names: Tyler
-version: 0.1.0
+version: 0.2.0
 date-released: 2026-08-21
 license: Apache-2.0
 repository-code: "https://github.com/TimeLordRaps/verifier"
@@ -15,3 +15,4 @@ keywords:
   - reproducibility
   - artificial intelligence
   - software supply chain
+  - accelerator accountability

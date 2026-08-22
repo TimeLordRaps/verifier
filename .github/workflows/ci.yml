@@ -16,14 +16,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install ".[test]"
-      - run: >-
-          python -m pytest -q
-          tests/test_independent_checker.py
-          tests/test_generic_run.py
-          tests/test_translation_boundary.py
-          tests/test_verification_geometry.py
-          tests/test_public_cli.py
-          tests/test_public_data.py
+      - run: python -m pytest -q
 
   stdlib-smoke:
     runs-on: ubuntu-latest

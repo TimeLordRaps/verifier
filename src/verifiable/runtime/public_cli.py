@@ -25,6 +25,13 @@ from verifiable.core.run import (
 )
 from verifiable.data.models import ProvenanceHypergraph
 from verifiable.data.receipt import reproduce_data_receipt, validate_data_receipt
+from verifiable.hardware.receipt import is_vstd3_receipt, load_vstd3_receipt
+from verifiable.hardware.validation import validate_vstd3_receipt
+from verifiable.runtime.hardware_cli import (
+    add_vstd3_parsers,
+    handle_vstd3_command,
+    parse_verification_keys,
+)
 
 
 def _receipt_file(path_or_dir: Path) -> Path:
@@ -130,6 +137,11 @@ def build_parser() -> argparse.ArgumentParser:
     ):
         command_parser = subparsers.add_parser(command, help=help_text)
         command_parser.add_argument("receipt", help="Receipt directory or receipt.json.")
+        command_parser.add_argument("--json", action="store_true")
+        if command in {"validate", "inspect"}:
+            command_parser.add_argument(
+                "--key", action="append", default=[], metavar="KEY_ID=HEX"
+            )
         if command == "reproduce":
             command_parser.add_argument(
                 "--rerun",
@@ -159,6 +171,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     export_parser = data_commands.add_parser("export")
     export_parser.add_argument("receipt")
+    add_vstd3_parsers(subparsers)
     return parser
 
 
@@ -185,6 +198,36 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
             print("[FAIL] --rerun is not defined for stored VSTD-DATA receipts", file=sys.stderr)
             return 1
         return reproduce_data_receipt(receipt_path)
+
+    if is_vstd3_receipt(payload):
+        receipt = load_vstd3_receipt(receipt_path)
+        if args.command == "reproduce":
+            print(
+                "[UNSUPPORTED] A stored hardware receipt cannot replay physical execution; "
+                "use its declared emulator or vendor collection mechanism.",
+                file=sys.stderr,
+            )
+            return 2
+        resolver, _ = parse_verification_keys(args.key)
+        validation = validate_vstd3_receipt(receipt, key_resolver=resolver)
+        result = {
+            "status": validation.status.value,
+            "schema_version": receipt.schema_version,
+            "receipt_id": receipt.receipt_id,
+            "canonical_digest": receipt.canonical_digest,
+            "errors": list(validation.errors),
+            "warnings": list(validation.warnings),
+            "claims": [claim.to_dict() for claim in receipt.claim_evaluations],
+        }
+        if args.json:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        else:
+            print(f"[{result['status']}] VSTD 3 receipt {receipt.receipt_id}")
+            print(f"  Canonical digest: {receipt.canonical_digest}")
+            print(f"  Claims: {len(receipt.claim_evaluations)}")
+            for message in (*validation.errors, *validation.warnings):
+                print(f"  - {message}")
+        return 0 if validation.status.value == "PASS" else (1 if validation.status.value == "FAIL" else 2)
 
     print("[FAIL] Unsupported receipt kind or schema", file=sys.stderr)
     return 1
@@ -269,6 +312,8 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.command == "data":
             return _handle_data_command(args)
+        if args.command in {"hardware", "continuity", "fleet", "evidence", "claims"}:
+            return handle_vstd3_command(args)
     except (OSError, RunError, ValueError, KeyError) as exc:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 1

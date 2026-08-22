@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verifiable-standard"
-version = "0.1.0"
+version = "0.2.0"
 description = "Reference implementation for bounded verification receipts and provenance."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -36,6 +36,10 @@ test = ["pytest>=8.0", "pyyaml>=6.0", "jsonschema>=4.18"]
 
 [project.scripts]
 verifiable = "verifiable.runtime.public_cli:main"
+vstd = "verifiable.runtime.public_cli:main"
+
+[tool.setuptools.package-data]
+verifiable = ["hardware/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

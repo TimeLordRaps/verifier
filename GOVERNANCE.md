@@ -6,6 +6,11 @@ VSTD is founder-maintained project specification work. Publication makes the tex
 reference implementation inspectable; it does not manufacture multi-stakeholder
 consensus or standards-body recognition.
 
+VSTD-3.0 is implemented for its typed model, strict schema/validator, reference
+emulator, offline adapters, provenance composition, and conformance suite. It is not a
+claim that accelerator vendors implemented the firmware contract or accepted the
+specification.
+
 ## Version states
 
 - **Implemented base:** a version has a published specification, schema or typed model,
