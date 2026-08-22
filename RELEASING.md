@@ -34,7 +34,10 @@ exact, publicly resolvable commit.
    credentials, and personal email addresses.
 6. Create the release tag locally at the exact tested commit. Prefer a cryptographically
    signed annotated tag when the maintainer's signing key is registered and available.
-   Rebuild using the tag coordinate and compare the new artifacts with the candidate:
+   Rebuild using the tag coordinate. The source ZIP and wheel MUST be byte-identical to
+   the commit-coordinate candidate. The external manifest MUST differ only where its
+   `source.ref` changes from the full commit SHA to the tag ref, plus the manifest's own
+   resulting digest:
 
    ```bash
    git tag -s v1.0.1 FULL_PUBLIC_COMMIT_SHA
