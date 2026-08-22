@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.2 - 2026-08-22
+
+- Correct the SimulacraBench synthetic specimen additively: unobserved private
+  artifacts now remain `IDENTIFIED`, and the public challenge stops at
+  `CHALLENGED` without a founder-authored adjudication.
+- Require content-bound observed bytes before deriving `AVAILABLE` or `PORTABLE`;
+  locator and retention declarations alone no longer elevate availability.
+- Expand the public presentation gate to reject drive-qualified paths, private
+  locator schemes, deployment fields, local model artifact filenames, business
+  operations identifiers, common secret shapes, and email addresses.
+
 ## 1.1.1 - 2026-08-22
 
 - Replace the overview's generic maturity badges with the exact status of every

@@ -4,6 +4,7 @@ from .availability import (
     ArtifactAvailability,
     AvailabilityAssessment,
     AvailabilityLevel,
+    RetrievalObservation,
     RetentionPolicy,
     assess_bundle,
 )
@@ -56,6 +57,7 @@ __all__ = [
     "RefutationMapping",
     "RefutationSurface",
     "RefutationType",
+    "RetrievalObservation",
     "RetentionPolicy",
     "assess_bundle",
     "audit_selections",

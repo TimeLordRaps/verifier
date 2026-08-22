@@ -19,6 +19,23 @@ def test_professional_presentation_surface_has_no_drift() -> None:
     assert module.run() == []
 
 
+def test_public_boundary_catches_private_coordinates_without_naming_them() -> None:
+    path = ROOT / "scripts" / "check_presentation.py"
+    spec = importlib.util.spec_from_file_location("check_presentation_boundaries", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    drive_path = "E:" + "\\" + "private-workspace" + "\\" + "plan.md"
+    private_locator = "evaluator" + "-vault://artifact"
+    local_artifact = "private-model" + ".gguf"
+    deployment_field = "model" + "_path"
+    assert "drive-qualified local path" in module.public_boundary_violations(drive_path)
+    assert "synthetic private locator" in module.public_boundary_violations(private_locator)
+    assert "local model artifact filename" in module.public_boundary_violations(local_artifact)
+    assert "private deployment field" in module.public_boundary_violations(deployment_field)
+
+
 def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None:
     path = ROOT / "scripts/build_pages.py"
     spec = importlib.util.spec_from_file_location("build_pages", path)

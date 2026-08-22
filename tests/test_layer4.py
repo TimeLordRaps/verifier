@@ -13,6 +13,8 @@ Each test here pins one of the challenge-theater prohibitions:
 
 from __future__ import annotations
 
+import hashlib
+
 import pytest
 
 from verifiable.core.certificate import ClaimCoordinate
@@ -21,6 +23,7 @@ from verifiable.hardware.anchors import AnchorError, LocalAnchorProvider
 from verifiable.layer4.availability import (
     ArtifactAvailability,
     AvailabilityLevel,
+    RetrievalObservation,
     RetentionPolicy,
     assess_bundle,
     rank,
@@ -108,32 +111,110 @@ def test_a_hash_alone_is_only_identified():
     assert assess_bundle([bare]).accepted is False
 
 
-def test_the_ladder_is_monotone_in_what_it_requires():
-    embedded = ArtifactAvailability("proof", "sha256:aa", embedded_bytes=b"proof")
+def test_locator_and_retention_declarations_do_not_prove_retrieval():
     retained = ArtifactAvailability(
         "data",
         "sha256:bb",
         locator="https://example.invalid/bb",
         retention=RetentionPolicy("2030-01-01T00:00:00Z", "archive", 3),
     )
+    assert retained.assess() is AvailabilityLevel.IDENTIFIED
+    assert assess_bundle([retained]).accepted is False
+
+
+def test_the_ladder_is_monotone_in_what_it_requires():
+    proof_bytes = b"proof"
+    data_bytes = b"retained data"
+    index_bytes = b"portable index"
+    embedded = ArtifactAvailability(
+        "proof",
+        f"sha256:{hashlib.sha256(proof_bytes).hexdigest()}",
+        embedded_bytes=proof_bytes,
+    )
+    retained = ArtifactAvailability(
+        "data",
+        f"sha256:{hashlib.sha256(data_bytes).hexdigest()}",
+        locator="https://example.invalid/bb",
+        retention=RetentionPolicy("2030-01-01T00:00:00Z", "archive", 3),
+    )
     anonymous = ArtifactAvailability(
         "index",
-        "sha256:cc",
+        f"sha256:{hashlib.sha256(index_bytes).hexdigest()}",
         locator="https://example.invalid/cc",
         anonymous_access=True,
         retrieval_procedure="GET, no credential",
         retention=RetentionPolicy("2030-01-01T00:00:00Z", "archive", 3),
     )
+    observations = {
+        "data": RetrievalObservation(
+            "data", retained.locator, "2026-08-22T20:00:00Z", "checker-a", data_bytes
+        ),
+        "index": RetrievalObservation(
+            "index", anonymous.locator, "2026-08-22T20:00:01Z", "checker-b", index_bytes
+        ),
+    }
     assert embedded.assess() is AvailabilityLevel.SELF_CONTAINED
-    assert retained.assess() is AvailabilityLevel.AVAILABLE
-    assert anonymous.assess() is AvailabilityLevel.PORTABLE
+    assert retained.assess(observations["data"]) is AvailabilityLevel.AVAILABLE
+    assert anonymous.assess(observations["index"]) is AvailabilityLevel.PORTABLE
     assert rank(AvailabilityLevel.SELF_CONTAINED) > rank(AvailabilityLevel.PORTABLE)
-    assert weakest([embedded.assess(), retained.assess()]) is AvailabilityLevel.AVAILABLE
+    result = assess_bundle([embedded, retained], observations=observations)
+    assert result.level is AvailabilityLevel.AVAILABLE
+    assert result.accepted is True
+    serialized = result.to_dict()
+    retained_record = next(
+        item for item in serialized["artifacts"] if item["artifact_id"] == "data"
+    )
+    assert retained_record["assessed_level"] == "AVAILABLE"
+    assert retained_record["retrieval_observation"]["observer"] == "checker-a"
+
+
+def test_failed_or_mismatched_retrieval_observation_does_not_elevate():
+    artifact = ArtifactAvailability(
+        "data",
+        f"sha256:{hashlib.sha256(b'expected').hexdigest()}",
+        locator="https://example.invalid/data",
+        retention=RetentionPolicy("2030-01-01T00:00:00Z", "archive"),
+    )
+    wrong_bytes = RetrievalObservation(
+        "data", artifact.locator, "2026-08-22T20:00:00Z", "checker", b"wrong"
+    )
+    wrong_locator = RetrievalObservation(
+        "data", "https://example.invalid/other", "2026-08-22T20:00:00Z", "checker", b"expected"
+    )
+    assert artifact.assess(wrong_bytes) is AvailabilityLevel.IDENTIFIED
+    assert artifact.assess(wrong_locator) is AvailabilityLevel.IDENTIFIED
+
+
+def test_malformed_retention_declaration_does_not_elevate():
+    data = b"expected"
+    artifact = ArtifactAvailability(
+        "data",
+        f"sha256:{hashlib.sha256(data).hexdigest()}",
+        locator="https://example.invalid/data",
+        retention=RetentionPolicy("2030-01-01T00:00:00Z", "", 0),
+    )
+    observation = RetrievalObservation(
+        "data", artifact.locator, "2026-08-22T20:00:00Z", "checker", data
+    )
+    assert artifact.assess(observation) is AvailabilityLevel.IDENTIFIED
+
+
+def test_embedded_bytes_must_match_the_content_address():
+    artifact = ArtifactAvailability(
+        "proof",
+        f"sha256:{hashlib.sha256(b'expected').hexdigest()}",
+        embedded_bytes=b"wrong",
+    )
+    assert artifact.assess() is AvailabilityLevel.IDENTIFIED
 
 
 def test_one_unobtainable_artifact_caps_the_whole_bundle():
     """Averaging would be a category error: a checker needs every one of them."""
-    good = ArtifactAvailability("proof", "sha256:aa", embedded_bytes=b"proof")
+    good = ArtifactAvailability(
+        "proof",
+        f"sha256:{hashlib.sha256(b'proof').hexdigest()}",
+        embedded_bytes=b"proof",
+    )
     missing = ArtifactAvailability("logs", "sha256:cc")
     result = assess_bundle([good, missing])
     assert result.level is AvailabilityLevel.IDENTIFIED
@@ -142,7 +223,11 @@ def test_one_unobtainable_artifact_caps_the_whole_bundle():
 
 
 def test_a_non_critical_artifact_does_not_cap_the_bundle():
-    good = ArtifactAvailability("proof", "sha256:aa", embedded_bytes=b"proof")
+    good = ArtifactAvailability(
+        "proof",
+        f"sha256:{hashlib.sha256(b'proof').hexdigest()}",
+        embedded_bytes=b"proof",
+    )
     aside = ArtifactAvailability("notes", "sha256:cc", verdict_critical=False)
     assert assess_bundle([good, aside]).level is AvailabilityLevel.SELF_CONTAINED
 

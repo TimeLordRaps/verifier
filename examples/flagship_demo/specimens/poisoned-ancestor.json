@@ -30,7 +30,7 @@
         "format_fragment": "UP,WIDTH-K,RES",
         "implementation_hash": "sha256:3ec1996a6f42d69a94234ad1e508a738a452b2ece2c5fb336d3d740e5feebaef",
         "parser_hash": "sha256:a94bcd7aeb543bc94b573beddb5faab7ae4976253537dc3e3afe5de7eb6df04d",
-        "specification_hash": "sha256:14515b8f1662eacbeb8db34594ab2d52bf801e69249ad2dd9276cd0b6f8e4646"
+        "specification_hash": "sha256:6aaff3c1e4a32f6a937fee41548e7f77262b843a7af6270e3165eb5b9c02bf5e"
       }
     },
     "collection": {
@@ -63,7 +63,7 @@
       "explanation": "collection:demo holds at graph level 0. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
       "level": 0,
       "max_level": 5,
-      "refutation_digest": "349c337c5d745ad47af05728b26e7830ffa822ed9735960ad6731c17cb3ac969",
+      "refutation_digest": "5bfb6a9f1bb21feab1131640801e005cb2546f95a86c4273b10e154fa9d76ced",
       "witness_digest": null
     },
     "hypergraph": {
@@ -589,7 +589,7 @@
         ]
       },
       "header": {
-        "binding": "a82b0149998ae7d23dadfebf81fcfe08eb48538c4587e51d49c27029f4a8f8ff",
+        "binding": "b1837d053a31f216bf6a0e5a77d5b618c55555a1afd951fe5523426dd05c4a12",
         "clause_count": 17,
         "format": "VSTD4-GDC-1",
         "literal_count": 25,

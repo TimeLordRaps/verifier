@@ -163,6 +163,13 @@ A digest alone establishes only `IDENTIFIED`. VSTD-4 requires at least
 artifact. A declared level that its retrieval and retention evidence cannot
 support MUST be rejected.
 
+A locator and retention declaration alone are not retrieval evidence. `AVAILABLE`
+requires a successful retrieval observation bound to the artifact identifier, declared
+locator, observed bytes, observation time, and observer. The observed bytes MUST match
+the content address. `PORTABLE` additionally requires anonymous access and a declared
+retrieval procedure. A retrieval observation is scoped to its named trust root; it does
+not by itself establish independent retrieval.
+
 ### 2.9 Disclosure-safe checkability
 
 Confidential evidence MUST still expose a declared verification interface. The
