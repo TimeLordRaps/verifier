@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.1 - 2026-08-22
+
+- Replace the overview's generic maturity badges with the exact status of every
+  object and graph layer, so the presentation cannot imply evidence or
+  implementation maturity that the specifications do not establish.
+- Enforce those visual labels in the presentation gate and publish canonical
+  receipt schemas at their declared GitHub Pages `$id` routes.
+- Add contributor guardrails for the live schema routes, the Python 3.10 floor,
+  and the immediate-publication consequences of edits to Pages content.
+
 ## 1.1.0 - 2026-08-22
 
 - Add `vstd demo`, a deterministic four-scenario adversarial demonstration that
