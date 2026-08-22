@@ -4,13 +4,32 @@ VSTD is an independent open project specification and reference implementation
 for attaching bounded, machine-checkable evidence to computational claims and
 provenance graphs.
 
-**Status:** project specification. VSTD is not an accredited, consensus, IETF,
-ISO, or W3C standard. A `VERIFIED` result is always relative to the declared
-coordinate, evidence, mechanisms, bounds, and trust roots.
+**Status:** founder-maintained alpha project specification. VSTD has no
+demonstrated external adoption, independent implementation, interoperability
+deployment, or third-party security review. It is not an accredited, consensus,
+IETF, ISO, or W3C standard. A `VERIFIED` result is always relative to the
+declared coordinate, evidence, mechanisms, bounds, and trust roots.
+
+## Why VSTD exists
+
+A computational result usually arrives without a machine-readable answer to:
+*what exactly was claimed, which bytes and mechanisms support it, where does the
+claim stop, and what evidence would overturn it?* VSTD records those answers in
+bounded receipts and provenance graphs. It does not turn the record into empirical
+truth or global completeness.
+
+The smallest working example executes a deterministic word-count program, records its
+declared inputs and outputs, validates the resulting receipt, and reruns the command to
+test whether the outputs remain byte-identical. See
+[`examples/generic_run`](examples/generic_run).
 
 ## The two-axis ladder
 
 Specification numbers identify verification depth, not revisions:
+
+Each row is a separately evidenced verification question. A higher-layer result never
+supplies a lower-layer result. An aggregate depth of `N` is permitted only when distinct
+evidence passes every layer from 1 through `N`.
 
 | Object mechanics | Closes | Graph dynamics |
 |---|---|---|
@@ -25,11 +44,11 @@ exist and act. VSTD-5 and the corresponding witness protocol remain **DRAFT** in
 this release.
 
 Read [`standard/LADDER.md`](standard/LADDER.md) first and
-[`standard/MIGRATION.md`](standard/MIGRATION.md) for the historical name and
-wire-format mapping. Higher layers require all lower layers; they do not replace
-them.
+[`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md) for frozen wire
+identifiers and historical project filenames. Layers compose only through their
+separately checked results; they do not supply or replace one another.
 
-## What v1.0.0 includes
+## What v1.0.1 includes
 
 - VSTD-1 through VSTD-4 specifications and a draft VSTD-5 interface;
 - VSTD-Graph-1 through VSTD-Graph-5 profiles;
@@ -47,10 +66,8 @@ them.
   `VSTD-DATA-0.1` receipt wire identifiers;
 - JSON Schemas, deterministic examples, and conformance tests.
 
-`VSTD4-GDC-1` is a new project format. No external tooling, independent
-implementation, interoperability deployment, or third-party attack has been
-demonstrated. The reference checker declares exactly which format fragment it
-implements.
+`VSTD4-GDC-1` is a project-defined format. The reference checker declares exactly
+which format fragment it implements; passing that checker is not external validation.
 
 ## Install this source release
 
@@ -74,7 +91,13 @@ python -m pip install ".[jsonschema]"
 
 ## Capture and check a generic computation
 
+**Security boundary:** a manifest contains an executable command. `verifier run` does
+not sandbox it. Inspect the plan first and execute only a trusted manifest inside an
+appropriate operating-system or container isolation boundary. The plan exposes declared
+paths but cannot enumerate everything the subprocess may access.
+
 ```bash
+verifier plan examples/generic_run/manifest.json --json
 verifier run examples/generic_run/manifest.json --output /tmp/vstd-receipt
 verifier inspect /tmp/vstd-receipt
 verifier validate /tmp/vstd-receipt
@@ -85,6 +108,14 @@ verifier reproduce /tmp/vstd-receipt --rerun
 declared command when permitted. These operations verify recorded execution and
 artifact relationships; they do not establish empirical truth outside the
 declared surface.
+
+## Review and feedback wanted
+
+The current goal is adversarial review, not an adoption claim. Useful public feedback
+includes a counterexample to a normative statement, an ambiguous wire-format rule, an
+independent parser result, an interoperability failure, or a receipt that passes when it
+should fail. Use the repository issue forms. Report sensitive security findings through
+the private route in [`SECURITY.md`](SECURITY.md), never in a public issue.
 
 ## VSTD-4 certificates
 

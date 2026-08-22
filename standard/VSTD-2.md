@@ -1,7 +1,7 @@
 # VSTD-2 — Verification Surface
 
 **Layer:** 2 of 5 on the object axis (see `LADDER.md`)
-**Receipt wire format:** `schema_version = "VSTD-0.2"` — frozen; see `MIGRATION.md`
+**Receipt wire format:** `schema_version = "VSTD-0.2"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** Additive experimental standard with an implemented vertical slice
 **Maintainer:** VERIFIABLE
 **Date:** 2026-08-20

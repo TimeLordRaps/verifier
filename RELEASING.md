@@ -1,33 +1,65 @@
 # Release procedure
 
-1. Run the declared conformance tests from a clean checkout. For the integer-layer
-   release this includes grounded-certificate, tier, bounded-refusal, depth, Graph,
-   schema, emulator/adversarial, provenance-blast-radius, and CLI smoke tests.
-2. Build the source release with the internal allowlist builder and verify its SHA-256.
-3. Extract that release into a new repository worktree; do not push the internal
-   development repository or its history.
-4. Set the reproducible-build timestamp before building distributions:
+Public releases are built only from a commit already present in the public repository.
+The release manifest is published beside the source ZIP rather than tracked inside the
+source tree. This avoids a self-referential commit field and lets the manifest bind an
+exact, publicly resolvable commit.
+
+1. Merge the versioned release change through the public pull-request workflow. Require
+   every protected conformance check on the exact candidate commit.
+2. From a clean checkout of that commit, run:
 
    ```bash
-   export SOURCE_DATE_EPOCH=1787270400
-   python -m pip wheel --no-cache-dir --no-deps --wheel-dir dist .
+   python -m pytest -q
+   python -m compileall -q src
    ```
 
-   The release build backend is pinned in `pyproject.toml` to
-   `setuptools==84.0.0` and `wheel==0.48.0`.
+3. Build a pre-tag candidate from the full commit SHA, not a working directory:
 
-5. Build twice in clean directories and require identical wheel SHA-256 values.
-6. Install the wheel with `--no-deps`, run the stdlib lifecycle smoke, then test each
-   optional profile independently.
-   Also run `vstd hardware list --json` and the deterministic virtual probe/verification
-   lifecycle; never place the test HMAC key in a committed fixture.
-7. Require a zero-match boundary scan for private project names, local or home-directory
-   paths, credentials, and personal email addresses.
-8. Create the GitHub tag and release only after the public tree, hashes, version, and
-   claim boundaries match. Existing release tags remain untouched.
-9. Let Zenodo archive the GitHub release, then record the issued DOI additively.
-10. Configure PyPI Trusted Publishing against the exact repository and workflow. Require
-   manual approval on the production `pypi` environment.
+   ```bash
+   python scripts/release_artifacts.py build \
+     --ref FULL_PUBLIC_COMMIT_SHA --release 1.0.1 --output-dir dist/candidate
+   ```
 
-Do not reuse a wheel built without the fixed `SOURCE_DATE_EPOCH`; ordinary wheel ZIP
-metadata can otherwise differ across builds even when the source is identical.
+   The builder uses `git archive`, records exact Git-blob bytes, builds the wheel twice
+   from separate source extractions with `SOURCE_DATE_EPOCH` set to the commit timestamp,
+   and fails unless the wheels are byte-identical.
+
+4. Install the candidate wheel with `--no-deps`. Run the generic receipt lifecycle,
+   `vstd hardware list --json`, and the deterministic virtual probe/verification
+   lifecycle. Test each optional dependency profile independently; never place a test
+   HMAC key in a committed fixture.
+5. Require a zero-match boundary scan of the candidate source archive and wheel for
+   private project names, proprietary model identifiers, local or home-directory paths,
+   credentials, and personal email addresses.
+6. Create the release tag locally at the exact tested commit. Prefer a cryptographically
+   signed annotated tag when the maintainer's signing key is available. Rebuild using the
+   tag coordinate and compare the new artifacts with the candidate:
+
+   ```bash
+   git tag -s v1.0.1 FULL_PUBLIC_COMMIT_SHA
+   python scripts/release_artifacts.py build \
+     --ref refs/tags/v1.0.1 --release 1.0.1 --output-dir dist/tagged
+   ```
+
+   If signing is unavailable, stop and record that the tag itself is unsigned; do not
+   describe a GitHub-verified commit or build attestation as a signed tag.
+7. Run the verifier independently before upload:
+
+   ```bash
+   python scripts/release_artifacts.py verify \
+     dist/tagged/verifiable-standard-1.0.1.manifest.json
+   ```
+
+   The manifest's source ref MUST resolve to its recorded public commit. The source ZIP
+   file set and every member byte MUST match that commit. CRLF/LF equivalence is not
+   accepted as byte identity.
+8. Push the tag only after all preceding checks pass. Publish exactly the tested source
+   ZIP, wheel, and external release manifest. Existing tags and release assets remain
+   untouched; corrections are additive.
+9. If build provenance attestations are enabled, bind them to the exact uploaded asset
+   digests. An attestation complements but does not replace the release manifest or tag
+   signature.
+10. Let Zenodo archive the GitHub release, then record the issued DOI additively.
+11. Configure PyPI Trusted Publishing against the exact repository and workflow. Require
+    manual approval on the production `pypi` environment.

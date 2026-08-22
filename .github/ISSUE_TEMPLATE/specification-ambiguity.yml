@@ -1,0 +1,36 @@
+name: Specification ambiguity
+description: Report wording that permits incompatible implementations or claim meanings.
+title: "[spec ambiguity]: "
+labels: ["specification", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets or vulnerability details. Use private vulnerability reporting for security-sensitive findings.
+  - type: input
+    id: coordinate
+    attributes:
+      label: Exact coordinate
+      description: File, section, schema field, layer, and release or commit.
+      placeholder: standard/VSTD-4.md section 2.10 at v1.0.1
+    validations:
+      required: true
+  - type: textarea
+    id: readings
+    attributes:
+      label: Conflicting readings
+      description: State at least two materially different interpretations.
+    validations:
+      required: true
+  - type: textarea
+    id: consequence
+    attributes:
+      label: Observable consequence
+      description: Explain how receipts, checkers, or claims diverge under those readings.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_test
+    attributes:
+      label: Proposed falsification or conformance test
+    validations:
+      required: false

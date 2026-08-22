@@ -1,7 +1,7 @@
 # VSTD-Graph-1 — Recorded Lineage
 
 **Layer:** 1 of 5 on the graph axis (see `LADDER.md`)
-**Receipt wire format:** `schema_version = "VSTD-DATA-0.1"` — frozen; see `MIGRATION.md`
+**Receipt wire format:** `schema_version = "VSTD-DATA-0.1"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** Project Specification with Implemented Reference Subset
 **Maintainer:** VERIFIABLE
 **Date:** 2026-08-21

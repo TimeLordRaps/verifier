@@ -16,6 +16,7 @@ from typing import Any
 from verifiable.core.run import (
     RunError,
     capture_run,
+    describe_run_plan,
     find_run_receipts_impacted_by_revocation,
     inspect_run_receipt,
     is_generic_run_receipt,
@@ -127,11 +128,18 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     run_parser = subparsers.add_parser(
-        "run", help="Execute a declarative manifest and capture a generic VSTD receipt."
+        "run",
+        help="Execute a trusted manifest without sandboxing and capture a VSTD receipt.",
     )
     run_parser.add_argument("manifest", help="JSON or YAML run manifest.")
     run_parser.add_argument("--output", help="Receipt output directory.")
     run_parser.add_argument("--receipt-id", help="Override the manifest claim id.")
+
+    plan_parser = subparsers.add_parser(
+        "plan", help="Show a manifest's declared command and paths without executing it."
+    )
+    plan_parser.add_argument("manifest", help="JSON or YAML run manifest.")
+    plan_parser.add_argument("--json", action="store_true")
 
     for command, help_text in (
         ("validate", "Validate a generic-run or VSTD-Graph receipt."),
@@ -285,9 +293,34 @@ def _handle_data_command(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        if args.command == "plan":
+            manifest_path = Path(args.manifest).resolve()
+            manifest = load_manifest(manifest_path)
+            plan = describe_run_plan(manifest, manifest_path.parent)
+            if args.json:
+                print(json.dumps(plan, indent=2, sort_keys=True))
+            else:
+                print("[NO EXECUTION] Manifest plan")
+                print(f"  Command: {' '.join(plan['command'])}")
+                print(f"  CWD:     {plan['cwd']['resolved']}")
+                print(f"  Repo:    {plan['repo_dir']['resolved']}")
+                print("  Warning: execution is not sandboxed; declared paths are capture scope only.")
+                external = [
+                    item
+                    for item in (plan["cwd"], plan["repo_dir"], *plan["inputs"], *plan["outputs"])
+                    if item["outside_manifest_directory"]
+                ]
+                print(f"  Declared paths outside manifest directory: {len(external)}")
+            return 0
+
         if args.command == "run":
             manifest_path = Path(args.manifest).resolve()
             manifest = load_manifest(manifest_path)
+            print(
+                "[UNSANDBOXED EXECUTION] Run only trusted manifests inside an "
+                "isolation boundary appropriate to the declared command.",
+                file=sys.stderr,
+            )
             receipt = capture_run(
                 manifest,
                 manifest_dir=manifest_path.parent,

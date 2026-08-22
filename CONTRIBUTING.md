@@ -7,7 +7,8 @@ claims.
 ## Required for a normative change
 
 - identify the affected VSTD layer, repository release, and coordinate or seam;
-- state compatibility and migration effects;
+- state compatibility effects, including any frozen wire identifiers or historical
+  receipts affected;
 - include a falsification condition;
 - update machine-readable schemas or typed models where applicable;
 - add tests that fail before the change and pass after it;
@@ -21,3 +22,10 @@ inclusion in this repository is provided under the Apache License 2.0, including
 Section 3 patent terms and Section 5 contribution terms. The project does not yet have
 a separate contributor license agreement or standards-venue patent policy; this is a
 known boundary for future standards-venue work.
+
+## Feedback that does not require a proposed patch
+
+Use the structured issue forms for specification ambiguities, counterexamples or
+unsound claims, and independent implementation reports. A failed implementation or
+interoperability attempt is useful evidence and is not treated as endorsement or
+adoption. Send vulnerability details only through the private route in `SECURITY.md`.

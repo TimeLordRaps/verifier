@@ -23,7 +23,8 @@ interoperability. VSTD-5 remains draft and has no shipped witness procedure.
 - **Experimental:** the vocabulary and a bounded vertical slice exist, but independent
   implementations or broader interoperability evidence are still missing.
 - **Challenged:** current evidence no longer supports a previously published claim.
-- **Superseded:** an additive correction or migration replaces a bounded document.
+- **Superseded:** an additive correction replaces a bounded document while historical
+  release bytes and wire identifiers remain unchanged.
 
 Specification layers use integer names; repository releases use semantic versions.
 Released artifacts are frozen. Corrections are additive and identify the affected

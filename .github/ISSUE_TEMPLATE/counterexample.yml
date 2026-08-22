@@ -1,0 +1,35 @@
+name: Counterexample or unsound claim
+description: Challenge a normative statement, checker decision, or public project claim.
+title: "[counterexample]: "
+labels: ["counterexample", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Public counterexamples are welcome. Do not publish exploit details or sensitive data; use private vulnerability reporting when appropriate.
+  - type: input
+    id: claim
+    attributes:
+      label: Challenged claim and coordinate
+      placeholder: File/section or checker output, plus release or commit
+    validations:
+      required: true
+  - type: textarea
+    id: counterexample
+    attributes:
+      label: Counterexample
+      description: Provide the smallest artifact, formula, receipt, or reasoning that contradicts the claim.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected bounded result
+      description: State PASS, FAIL, UNKNOWN, UNSUPPORTED, or corrected wording and why.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction procedure
+    validations:
+      required: false

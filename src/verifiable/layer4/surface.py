@@ -19,9 +19,9 @@ refused. A claim nobody is permitted to refute is not a strong claim, it is an
 unfalsifiable one, and layer 4 exists to say so out loud.
 
 ``excluded_claims`` is the other half, and it is not a disclaimer. It gives
-``PHYSICAL_WORLD_COMPLETENESS`` a permanent machine-readable home -- the co-NP
-wall of ``LADDER.md`` §4.3 stated as a field rather than as a footnote nobody
-reads.
+``PHYSICAL_WORLD_COMPLETENESS`` a permanent machine-readable home: ordinary
+VSTD evidence has no observation boundary that enumerates all physical
+execution worldwide.
 """
 
 from __future__ import annotations
@@ -48,8 +48,8 @@ class RefutationType(str, Enum):
 
 
 PHYSICAL_WORLD_COMPLETENESS = "physical_world_completeness"
-"""The permanent exclusion. See ``LADDER.md`` §4.3: this is a complexity-theoretic
-fact wearing a spec field, not an implementation gap that a later layer closes."""
+"""The ordinary-profile exclusion. See ``LADDER.md`` §4.3: no implemented
+observation boundary enumerates all physical execution worldwide."""
 
 
 @dataclass(frozen=True)
@@ -181,9 +181,10 @@ def default_exclusions() -> tuple[ExcludedClaim, ...]:
     return (
         ExcludedClaim(
             PHYSICAL_WORLD_COMPLETENESS,
-            "absence of undeclared computation is a universal negative; it is co-NP "
-            "and its clause set is not enumerable in the physical world. No VSTD "
-            "layer removes this -- one that claimed to would be claiming NP = co-NP.",
+            "ordinary VSTD evidence does not enumerate all physical execution "
+            "worldwide; the claim is outside the declared observation boundary. "
+            "A finite, explicitly enumerated world requires its own checked "
+            "completeness mechanism and cannot be widened beyond that coordinate.",
         ),
     )
 
