@@ -89,6 +89,7 @@ separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
 |---|---|
 | Understand the claim model in ten minutes | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
 | Try to break the core claim | [`examples/flagship_demo`](examples/flagship_demo) |
+| Inspect a disclosure-bounded closed evaluation | [`examples/simulacrabench_synthetic`](examples/simulacrabench_synthetic) |
 | Implement an independent checker | [`standard/VSTD-4.md`](standard/VSTD-4.md) and [`VSTD4-GDC-1` schema](receipts/schema/vstd4_certificate.json) |
 | Model a provenance collection | [`standard/VSTD-Graph-1.md`](standard/VSTD-Graph-1.md) |
 | Integrate accelerator evidence | [`docs/layers/vstd-3/vendor-integration.md`](docs/layers/vstd-3/vendor-integration.md) |
