@@ -36,14 +36,14 @@ def _reseal(document: dict, field: str) -> None:
 def test_public_packet_and_non_disclosing_challenge_verify() -> None:
     result = MODULE.verify_all()
     assert result["packet"] == {
-        "packet_id": "VSTD-SB-SYNTH-001",
-        "packet_digest": "sha256:f182bfce5a5ae8e7137795300d42e285f365e6707b7c3517b3cee7b02331963b",
-        "availability_floor": "AVAILABLE",
+        "packet_id": "VSTD-SB-SYNTH-002",
+        "packet_digest": "sha256:6f64a1bfa97a83e10b3a3c034c7d397b853e8dba9baa2db256be0abcfd299296",
+        "availability_floor": "IDENTIFIED",
         "public_reproduction": "UNAVAILABLE",
         "claim_status": "RECORDED_UNDER_DECLARED_SYNTHETIC_EVALUATOR",
     }
     assert result["challenge"]["after_public_filing"] == "CHALLENGED"
-    assert result["challenge"]["after_authorized_adjudication"] == "REVOKED"
+    assert result["challenge"]["adjudicated"] is False
     assert result["challenge"]["records_disclosed"] == 0
 
 
@@ -60,11 +60,16 @@ def test_public_packet_excludes_private_score_detail_and_local_locations() -> No
     assert {"raw_skill", "log_score", "by_item", "std_error"}.isdisjoint(keys(packet))
     for prohibited in ("e:\\\\", "c:\\\\users"):
         assert prohibited not in public_text
+    for item in packet["evidence_inventory"]:
+        if item["disclosure"] == "access-controlled":
+            assert item["locator"] == ""
+            assert item["assessed_level"] == "IDENTIFIED"
     assert packet["reported_result"]["privacy_policy"]["raw_skill_disclosed"] is False
     assert packet["availability_summary"]["public_reproduction"] == "UNAVAILABLE"
+    assert packet["availability_summary"]["accepted"] is False
 
 
-def test_digest_only_private_artifact_cannot_remain_available() -> None:
+def test_locator_declaration_without_retrieval_observation_cannot_be_available() -> None:
     packet = _load("public_packet.json")
     mutant = copy.deepcopy(packet)
     hidden = next(
@@ -72,19 +77,28 @@ def test_digest_only_private_artifact_cannot_remain_available() -> None:
         for item in mutant["evidence_inventory"]
         if item["artifact_id"] == "hidden-synthetic-fixture"
     )
-    hidden["locator"] = ""
+    hidden["locator"] = "https://example.invalid/private-artifact"
+    hidden["declared_level"] = "AVAILABLE"
+    hidden["assessed_level"] = "AVAILABLE"
     _reseal(mutant, "packet_digest")
-    with pytest.raises(MODULE.PacketError, match="assessed level"):
+    with pytest.raises(MODULE.PacketError, match="evidence policy"):
         MODULE.verify_packet(mutant)
 
 
 def test_private_retention_and_packet_staleness_cannot_diverge() -> None:
     packet = _load("public_packet.json")
     mutant = copy.deepcopy(packet)
-    mutant["limits"]["stale_after"] = "2026-10-01T00:00:00Z"
+    mutant["limits"]["retention_declaration_horizon"] = "2026-10-01T00:00:00Z"
     _reseal(mutant, "packet_digest")
-    with pytest.raises(MODULE.PacketError, match="stale_after"):
+    with pytest.raises(MODULE.PacketError, match="retention_declaration_horizon"):
         MODULE.verify_packet(mutant)
+
+
+def test_public_challenge_contains_no_private_transcript_or_adjudication() -> None:
+    challenge = _load("challenge_demo.json")
+    assert "authorized_transcript" not in challenge
+    assert challenge["transitions"] == {"after_public_filing": "CHALLENGED"}
+    assert challenge["trust"]["adjudicated"] is False
 
 
 def test_challenge_cannot_disclose_a_hidden_record() -> None:

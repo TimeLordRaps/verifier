@@ -1,35 +1,44 @@
 # SimulacraBench synthetic closed-evaluation packet
 
-This non-normative example maps one local, synthetic run of the pinned
-SimulacraBench public evaluator into VSTD's availability, disclosure, and challenge
-mechanisms. It is a concrete test of the case where verdict-critical bytes are available
-to a declared evaluator but cannot be published to arbitrary reviewers.
+> **Corrected specimen:** packet `VSTD-SB-SYNTH-002` supersedes the challenged
+> `VSTD-SB-SYNTH-001` specimen. See [`CORRECTION.md`](CORRECTION.md).
 
-## Bounded claim
+This non-normative example maps one recorded local, synthetic run of the pinned
+SimulacraBench public evaluator into VSTD's disclosure and challenge mechanisms. It
+demonstrates what a public packet can honestly retain when verdict-critical private bytes
+are not available to the public checker.
 
-The pinned phase-1 scorer evaluated the pinned marginal-counts baseline against a
-committed 12,000-respondent **synthetic** sandbox in a local rehearsal with scoring seed
-`20260822`. It returned `PASS` and the exact participant-visible reported skill `0.33`.
+## Bounded recorded claim
 
-That sentence is about the participant-visible, privacy-processed output. The private
-organizer log contains additional score detail and is deliberately not part of the public
-packet.
+Under one founder-operated trust root, the pinned phase-1 scorer was recorded as
+evaluating the pinned marginal-counts baseline against a committed 12,000-respondent
+**synthetic** sandbox with scoring seed `20260822`. The saved participant-visible output
+is `PASS` with reported skill `0.33`.
 
-## Private-data boundary statement
+The public package establishes the identity and internal binding of the public artifacts
+and that saved aggregate. It does **not** rerun the score. It does not establish a
+protected-data run, hosted runner parity, leaderboard entry, organizer review, or
+independent verification.
 
-The aggregate result establishes only what the declared local synthetic evaluator
-observed at the coordinate in `public_packet.json`. It does not establish a protected-data
-run, hosted runner parity, a leaderboard entry, public score recomputation, organizer
-review, or independent verification.
+## Availability result
 
-The public packet binds every verdict-critical artifact. Canonical upstream Git-blob
-bytes, the exact submission archive, an LF-normalized public rendering of the generated
-schema, and the aggregate result accompany the packet. The exact scored schema, hidden
-synthetic respondent table, organizer log, and execution transcript have content
-addresses, evaluator-only locators, and a retention commitment through
-`2026-09-30T23:59:59Z`. Their derived level is `AVAILABLE`, not `PORTABLE`. If that
-commitment is not renewed, the packet becomes stale; a digest alone cannot keep it
-available.
+The exact scored schema, hidden synthetic respondent table, organizer log, execution
+transcript, and generator seed have content addresses and a declared retention horizon.
+They have no public locator and no executed retrieval observation in this packet.
+Therefore their derived level is `IDENTIFIED`, not `AVAILABLE`.
+
+The bundle's public availability assessment is consequently:
+
+```text
+required: AVAILABLE
+derived floor: IDENTIFIED
+accepted: false
+public score reproduction: UNAVAILABLE
+```
+
+A retention promise is not retrieval evidence. An authorized party could later publish
+an additive retrieval observation, but that observation would remain scoped to its named
+trust root and would not automatically become independent verification.
 
 ## Verify the public view
 
@@ -44,30 +53,28 @@ The verifier performs no network access and receives no hidden records. It check
 
 - canonical packet and challenge digests;
 - byte identity of the bundled upstream snapshot and public artifacts;
-- the declared availability floor and its limiting private artifacts;
-- the explicit disclosure and trust boundaries;
-- a non-disclosing challenge transition from `CHALLENGED` to `REVOKED` under the
-  declared founder-operated evaluator.
+- the `IDENTIFIED` availability floor and its limiting private artifacts;
+- the explicit disclosure, correction, and trust boundaries; and
+- admission of a non-disclosing challenge, which ends at `CHALLENGED`.
 
-The last transition demonstrates structural challenge handling. It is not an independent
-challenge and does not create a VSTD-5 witness.
+It does not accept a private transcript, execute a retrieval, adjudicate the challenge,
+or move the mutant claim to `REVOKED`.
 
-## Public and evaluator views
+## Public and private views
 
 | View | Can inspect | Can conclude | Cannot conclude |
 | :-- | :-- | :-- | :-- |
-| Public | Pinned source bytes, exact submission ZIP, generated schema, commitments, participant-visible result, challenge record | The public packet is internally bound; private evidence is declared `AVAILABLE`; the synthetic challenge is structurally effective | The hidden-fixture score was publicly recomputed; private artifacts are portable; the evaluator is independent |
-| Authorized evaluator | Everything in the public view plus the committed synthetic fixture, raw organizer log, and execution transcript | Whether the committed private bytes produce the declared participant-visible aggregate | Organizer endorsement, hosted parity, protected-data performance, or independent verification |
+| Public | Pinned source bytes, exact submission ZIP, generated schema view, commitments, saved participant-visible result, challenge filing | The corrected packet is internally bound; the private artifacts are identified; the mutant filing is `CHALLENGED` | The hidden-fixture score was recomputed; private bytes are available; the challenge was adjudicated; the evaluator is independent |
+| Private holder | Private bytes in addition to the public view | Only what a separately executed, recorded check actually observes under its declared trust root | Organizer endorsement, hosted parity, protected-data performance, public reproducibility, or independent verification |
 
-The deliberate mutant changes only the reported skill from `0.33` to `0.34`. Its public
-filing makes that mutant claim `CHALLENGED`; the authorized aggregate-only transcript
-revokes it without disclosing an individual record, item identifier, label, raw
-prediction, or traceback. Other commitments are not revoked by that localized mismatch.
+The deliberate mutant changes only the saved reported skill from `0.33` to `0.34`. Filing
+the declared mismatch challenge changes the mutant claim to `CHALLENGED`. No public
+artifact in this package authorizes an adjudication, so the verifier stops there.
 
 ## What VSTD does not claim
 
 VSTD is not accredited or a consensus standard, and this mapping does not claim
-SimulacraBench adoption, endorsement, or independent implementation.
+SimulacraBench adoption, endorsement, protected-data use, or independent implementation.
 
 See [`CROSSWALK.md`](CROSSWALK.md) for the source-to-VSTD mapping and
 [`UPSTREAM.md`](UPSTREAM.md) for exact provenance and licensing.

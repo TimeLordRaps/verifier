@@ -34,6 +34,37 @@ LOCAL_WINDOWS_PATH = re.compile(
     r"(?i)(?:[A-Za-z]:[\\/](?:Users|Documents and Settings)[\\/]|"
     r"\\\\Users[\\/]|[\\/]\.codex[\\/])"
 )
+DRIVE_QUALIFIED_PATH = re.compile(
+    r"(?i)(?<![A-Za-z0-9_%])(?:[A-Za-z]:(?:\\\\|[\\/])[A-Za-z0-9._-]{2,})"
+)
+PUBLIC_BOUNDARY_PATTERNS = (
+    ("local user or home path", LOCAL_WINDOWS_PATH),
+    ("drive-qualified local path", DRIVE_QUALIFIED_PATH),
+    ("synthetic private locator", re.compile(r"(?i)evaluator" r"-vault://")),
+    (
+        "private deployment field",
+        re.compile(
+            r"(?i)\b(?:model_path|launcher_path|mmproj_path|server_path|"
+            r"private_target_manifest)\b"
+        ),
+    ),
+    ("local model artifact filename", re.compile(r"(?i)\b[^\s/\\]+\.gguf\b")),
+    (
+        "business operations identifier",
+        re.compile(
+            r"(?i)(?:\bPRO" r"SP-[A-Z0-9-]+\b|FIRST" r"_REVENUE|sales[\\/])"
+        ),
+    ),
+    ("private key block", re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")),
+    ("GitHub token shape", re.compile(r"\bgh[pousr]_[A-Za-z0-9_]{20,}\b")),
+    ("PyPI token shape", re.compile(r"\bpypi-[A-Za-z0-9_-]{20,}\b")),
+    ("AWS access key shape", re.compile(r"\bAKIA[0-9A-Z]{16}\b")),
+    ("OpenAI-style secret shape", re.compile(r"\bsk-[A-Za-z0-9_-]{32,}\b")),
+    (
+        "email address",
+        re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"),
+    ),
+)
 
 
 class LinkCollector(HTMLParser):
@@ -140,15 +171,23 @@ def check_claim_boundaries(errors: list[str]) -> None:
         errors.append("obsolete adopter-migration path has reappeared")
 
 
+def public_boundary_violations(text: str) -> list[str]:
+    return [label for label, pattern in PUBLIC_BOUNDARY_PATTERNS if pattern.search(text)]
+
+
 def check_public_paths(errors: list[str]) -> None:
+    checker = Path(__file__).resolve()
     for path in _public_files():
+        if path.resolve() == checker:
+            continue
         text = path.read_text(encoding="utf-8")
-        match = LOCAL_WINDOWS_PATH.search(text)
-        if match:
-            line = text.count("\n", 0, match.start()) + 1
-            errors.append(
-                f"local Windows path leaked into {path.relative_to(ROOT)}:{line}"
-            )
+        for label, pattern in PUBLIC_BOUNDARY_PATTERNS:
+            match = pattern.search(text)
+            if match:
+                line = text.count("\n", 0, match.start()) + 1
+                errors.append(
+                    f"{label} leaked into {path.relative_to(ROOT)}:{line}"
+                )
 
 
 def check_visual_assets(errors: list[str]) -> None:

@@ -17,7 +17,7 @@ exact, publicly resolvable commit.
 3. Build a pre-tag candidate from the full commit SHA, not a working directory:
 
    ```bash
-   VERSION=1.1.1
+   VERSION=1.1.2
    python scripts/release_artifacts.py build \
      --ref FULL_PUBLIC_COMMIT_SHA --release "$VERSION" --output-dir dist/candidate
    ```
@@ -41,7 +41,7 @@ exact, publicly resolvable commit.
    resulting digest:
 
    ```bash
-   VERSION=1.1.1
+   VERSION=1.1.2
    git tag -s "v$VERSION" FULL_PUBLIC_COMMIT_SHA
    python scripts/release_artifacts.py build \
      --ref "refs/tags/v$VERSION" --release "$VERSION" --output-dir dist/tagged
@@ -55,7 +55,7 @@ exact, publicly resolvable commit.
 7. Run the verifier independently before upload:
 
    ```bash
-   VERSION=1.1.1
+   VERSION=1.1.2
    python scripts/release_artifacts.py verify \
      "dist/tagged/verifiable-standard-$VERSION.manifest.json"
    ```

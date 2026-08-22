@@ -22,9 +22,10 @@ through rung 4.8 -- weakening evidence cannot leave a verdict where it was.
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional, Sequence
+from typing import Any, Mapping, Optional, Sequence
 
 
 class AvailabilityLevel(str, Enum):
@@ -77,8 +78,61 @@ class RetentionPolicy:
 
     replicas: int = 1
 
+    def valid(self) -> bool:
+        return (
+            isinstance(self.horizon, str)
+            and bool(self.horizon.strip())
+            and isinstance(self.custodian, str)
+            and bool(self.custodian.strip())
+            and type(self.replicas) is int
+            and self.replicas > 0
+        )
+
     def to_dict(self) -> dict[str, Any]:
         return {"horizon": self.horizon, "custodian": self.custodian, "replicas": self.replicas}
+
+
+def _sha256_address(data: bytes) -> str:
+    return f"sha256:{hashlib.sha256(data).hexdigest()}"
+
+
+@dataclass(frozen=True)
+class RetrievalObservation:
+    """Bytes actually observed through a declared locator.
+
+    This is a trust-root-scoped observation, not proof of independent retrieval. The
+    availability checker validates that the observed bytes, artifact ID, and locator are
+    bound to the availability record. A locator or retention promise without this
+    observed-byte binding remains only ``IDENTIFIED``.
+    """
+
+    artifact_id: str
+    locator: str
+    observed_at: str
+    observer: str
+    retrieved_bytes: bytes = field(repr=False)
+
+    def matches(self, artifact: "ArtifactAvailability") -> bool:
+        return (
+            self.artifact_id == artifact.artifact_id
+            and isinstance(self.observed_at, str)
+            and bool(self.observed_at.strip())
+            and isinstance(self.observer, str)
+            and bool(self.observer.strip())
+            and isinstance(self.locator, str)
+            and bool(self.locator.strip())
+            and self.locator == artifact.locator
+            and _sha256_address(self.retrieved_bytes) == artifact.content_address
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "artifact_id": self.artifact_id,
+            "locator": self.locator,
+            "observed_at": self.observed_at,
+            "observer": self.observer,
+            "observed_content_address": _sha256_address(self.retrieved_bytes),
+        }
 
 
 @dataclass(frozen=True)
@@ -100,23 +154,42 @@ class ArtifactAvailability:
     retention: Optional[RetentionPolicy] = None
     declared_level: Optional[AvailabilityLevel] = None
 
-    def assess(self) -> AvailabilityLevel:
+    def assess(
+        self, observation: Optional[RetrievalObservation] = None
+    ) -> AvailabilityLevel:
         if self.embedded_bytes is not None:
-            return AvailabilityLevel.SELF_CONTAINED
-        if not self.locator or self.retention is None:
+            if _sha256_address(self.embedded_bytes) == self.content_address:
+                return AvailabilityLevel.SELF_CONTAINED
             return AvailabilityLevel.IDENTIFIED
-        if self.anonymous_access and self.retrieval_procedure:
+        if (
+            not isinstance(self.locator, str)
+            or not self.locator.strip()
+            or self.retention is None
+            or not self.retention.valid()
+            or observation is None
+            or not observation.matches(self)
+        ):
+            return AvailabilityLevel.IDENTIFIED
+        if (
+            self.anonymous_access
+            and isinstance(self.retrieval_procedure, str)
+            and self.retrieval_procedure.strip()
+        ):
             return AvailabilityLevel.PORTABLE
         return AvailabilityLevel.AVAILABLE
 
-    def overstated(self) -> bool:
+    def overstated(
+        self, observation: Optional[RetrievalObservation] = None
+    ) -> bool:
         """True when the record claims more availability than its fields support."""
         if self.declared_level is None:
             return False
-        return rank(self.declared_level) > rank(self.assess())
+        return rank(self.declared_level) > rank(self.assess(observation))
 
-    def to_dict(self) -> dict[str, Any]:
-        return {
+    def to_dict(
+        self, observation: Optional[RetrievalObservation] = None
+    ) -> dict[str, Any]:
+        result = {
             "artifact_id": self.artifact_id,
             "content_address": self.content_address,
             "verdict_critical": self.verdict_critical,
@@ -126,8 +199,11 @@ class ArtifactAvailability:
             "retrieval_procedure": self.retrieval_procedure,
             "retention": None if self.retention is None else self.retention.to_dict(),
             "declared_level": None if self.declared_level is None else self.declared_level.value,
-            "assessed_level": self.assess().value,
+            "assessed_level": self.assess(observation).value,
         }
+        if observation is not None:
+            result["retrieval_observation"] = observation.to_dict()
+        return result
 
 
 @dataclass(frozen=True)
@@ -137,14 +213,18 @@ class AvailabilityAssessment:
     limiting_artifacts: tuple[str, ...]
     details: str
     artifacts: tuple[ArtifactAvailability, ...] = field(default_factory=tuple)
+    observations: tuple[RetrievalObservation, ...] = field(default_factory=tuple)
 
     def to_dict(self) -> dict[str, Any]:
+        observed = {item.artifact_id: item for item in self.observations}
         return {
             "level": self.level.value,
             "accepted": self.accepted,
             "limiting_artifacts": list(self.limiting_artifacts),
             "details": self.details,
-            "artifacts": [item.to_dict() for item in self.artifacts],
+            "artifacts": [
+                item.to_dict(observed.get(item.artifact_id)) for item in self.artifacts
+            ],
         }
 
 
@@ -152,6 +232,7 @@ def assess_bundle(
     artifacts: Sequence[ArtifactAvailability],
     *,
     required: AvailabilityLevel = AvailabilityLevel.AVAILABLE,
+    observations: Optional[Mapping[str, RetrievalObservation]] = None,
 ) -> AvailabilityAssessment:
     """Assess a certificate's evidence bundle. The bundle is its weakest member.
 
@@ -161,7 +242,17 @@ def assess_bundle(
     """
     critical = [item for item in artifacts if item.verdict_critical]
 
-    overstated = [item.artifact_id for item in artifacts if item.overstated()]
+    observed = {} if observations is None else observations
+    used_observations = tuple(
+        observed[item.artifact_id]
+        for item in artifacts
+        if item.artifact_id in observed
+    )
+    overstated = [
+        item.artifact_id
+        for item in artifacts
+        if item.overstated(observed.get(item.artifact_id))
+    ]
     if overstated:
         return AvailabilityAssessment(
             AvailabilityLevel.IDENTIFIED,
@@ -169,6 +260,7 @@ def assess_bundle(
             tuple(overstated),
             "availability is overstated for: " + ", ".join(overstated),
             tuple(artifacts),
+            used_observations,
         )
 
     if not critical:
@@ -179,9 +271,10 @@ def assess_bundle(
             "no artifact is marked verdict-critical; a claim with no critical "
             "evidence has nothing for an outside party to obtain",
             tuple(artifacts),
+            used_observations,
         )
 
-    levels = [item.assess() for item in critical]
+    levels = [item.assess(observed.get(item.artifact_id)) for item in critical]
     floor = weakest(levels)
     limiting = tuple(
         item.artifact_id for item, level in zip(critical, levels) if level is floor
@@ -198,4 +291,5 @@ def assess_bundle(
             else f"bundle is {floor.value} across {len(critical)} verdict-critical artifacts"
         ),
         tuple(artifacts),
+        used_observations,
     )

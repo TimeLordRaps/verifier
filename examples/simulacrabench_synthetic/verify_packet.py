@@ -1,9 +1,10 @@
 """Verify the public SimulacraBench synthetic closed-evaluation packet.
 
 This verifier performs no network access and never receives the hidden synthetic
-respondent fixture.  It checks the public commitments, the declared availability
-floor, the disclosure interface, and the structural challenge transition.  It
-does not recompute the private-data score or create an independent trust root.
+respondent fixture. It checks public commitments, derives an ``IDENTIFIED`` floor for
+the unobserved private artifacts, and admits a structural challenge. It does not
+recompute the private-data score, execute retrieval, adjudicate the challenge, or create
+an independent trust root.
 """
 
 from __future__ import annotations
@@ -23,7 +24,7 @@ from verifiable.layer4.availability import (
     RetentionPolicy,
     assess_bundle,
 )
-from verifiable.layer4.challenge import Adjudication, Challenge, ChallengeLedger, ChallengeOutcome
+from verifiable.layer4.challenge import Challenge, ChallengeLedger
 from verifiable.layer4.surface import (
     AdmissibleRefutation,
     ExcludedClaim,
@@ -75,11 +76,11 @@ EVIDENCE_POLICY = {
     ),
     "submission-archive": (True, "public", "SELF_CONTAINED"),
     "public-sandbox-schema-view": (False, "public", "SELF_CONTAINED"),
-    "scored-sandbox-schema": (True, "access-controlled", "AVAILABLE"),
-    "hidden-synthetic-fixture": (True, "access-controlled", "AVAILABLE"),
-    "organizer-log": (True, "access-controlled", "AVAILABLE"),
-    "execution-transcript": (True, "access-controlled", "AVAILABLE"),
-    "generator-seed": (False, "access-controlled", "AVAILABLE"),
+    "scored-sandbox-schema": (True, "access-controlled", "IDENTIFIED"),
+    "hidden-synthetic-fixture": (True, "access-controlled", "IDENTIFIED"),
+    "organizer-log": (True, "access-controlled", "IDENTIFIED"),
+    "execution-transcript": (True, "access-controlled", "IDENTIFIED"),
+    "generator-seed": (False, "access-controlled", "IDENTIFIED"),
     "participant-visible-result": (True, "public", "SELF_CONTAINED"),
 }
 
@@ -252,19 +253,43 @@ def verify_packet(document: dict[str, Any]) -> dict[str, Any]:
         "refutation_surface",
         "trust",
         "limits",
+        "correction",
         "packet_digest",
     }
     _record(document, required, "packet")
-    if document["packet_format"] != "VSTD-CLOSED-EVALUATION-PROFILE-0.1":
+    if document["packet_format"] != "VSTD-CLOSED-EVALUATION-PROFILE-0.2":
         raise PacketError("unexpected packet format")
-    if document["packet_id"] != "VSTD-SB-SYNTH-001":
+    if document["packet_id"] != "VSTD-SB-SYNTH-002":
         raise PacketError("unexpected packet ID")
     _verify_document_digest(document, "packet_digest")
+
+    correction = _record(
+        document["correction"],
+        {
+            "supersedes_packet_id",
+            "supersedes_packet_digest",
+            "historical_commit",
+            "reason",
+        },
+        "correction",
+    )
+    if correction["supersedes_packet_id"] != "VSTD-SB-SYNTH-001":
+        raise PacketError("correction does not name the superseded packet")
+    if correction["supersedes_packet_digest"] != (
+        "sha256:f182bfce5a5ae8e7137795300d42e285f365e6707b7c3517b3cee7b02331963b"
+    ):
+        raise PacketError("correction does not bind the superseded packet digest")
+    if correction["historical_commit"] != (
+        "a37e6128fc6eccb66160a2f7c3af2f43341c227e"
+    ):
+        raise PacketError("correction does not bind the historical public commit")
+    if not str(correction["reason"]).strip():
+        raise PacketError("correction reason is empty")
 
     profile = _record(document["profile"], {"name", "version", "normative"}, "profile")
     if profile != {
         "name": "SimulacraBench synthetic closed-evaluation crosswalk",
-        "version": "0.1",
+        "version": "0.2",
         "normative": False,
     }:
         raise PacketError("the target-specific profile must remain non-normative")
@@ -313,7 +338,7 @@ def verify_packet(document: dict[str, Any]) -> dict[str, Any]:
     )
     if claim["status"] != "RECORDED_UNDER_DECLARED_SYNTHETIC_EVALUATOR":
         raise PacketError("claim status exceeds the synthetic evaluator boundary")
-    if claim["claim_id"] != "VSTD-SB-SYNTH-001-RESULT":
+    if claim["claim_id"] != "VSTD-SB-SYNTH-002-RESULT":
         raise PacketError("unexpected claim ID")
     if not claim["does_not_establish"]:
         raise PacketError("claim must state explicit exclusions")
@@ -403,17 +428,22 @@ def verify_packet(document: dict[str, Any]) -> dict[str, Any]:
 
     limits = _record(
         document["limits"],
-        {"vstd4_depth_claim", "reason", "stale_after"},
+        {"vstd4_depth_claim", "reason", "retention_declaration_horizon"},
         "limits",
     )
     if limits["vstd4_depth_claim"] is not None:
         raise PacketError("component checks do not establish an aggregate VSTD-4 depth")
-    if limits["stale_after"] != RETENTION_HORIZON:
-        raise PacketError(f"stale_after must equal the private-artifact retention horizon")
+    if limits["retention_declaration_horizon"] != RETENTION_HORIZON:
+        raise PacketError(
+            "retention_declaration_horizon must equal the private-artifact declaration"
+        )
     for artifact in artifacts:
-        if artifact.retention is not None and artifact.retention.horizon != limits["stale_after"]:
+        if (
+            artifact.retention is not None
+            and artifact.retention.horizon != limits["retention_declaration_horizon"]
+        ):
             raise PacketError(
-                f"{artifact.artifact_id} retention does not match packet stale_after"
+                f"{artifact.artifact_id} retention does not match the packet declaration"
             )
 
     return {
@@ -476,7 +506,6 @@ def verify_challenge(packet: dict[str, Any], document: dict[str, Any]) -> dict[s
         "deliberate_mutation",
         "refutation_surface",
         "filing",
-        "authorized_transcript",
         "transitions",
         "localized_effect",
         "leak_check",
@@ -484,9 +513,9 @@ def verify_challenge(packet: dict[str, Any], document: dict[str, Any]) -> dict[s
         "challenge_digest",
     }
     _record(document, required, "challenge_demo")
-    if document["challenge_format"] != "VSTD-CLOSED-EVALUATION-CHALLENGE-0.1":
+    if document["challenge_format"] != "VSTD-CLOSED-EVALUATION-CHALLENGE-0.2":
         raise PacketError("unexpected challenge format")
-    if document["challenge_id"] != "VSTD-SB-SYNTH-001-CHALLENGE-001":
+    if document["challenge_id"] != "VSTD-SB-SYNTH-002-CHALLENGE-001":
         raise PacketError("unexpected challenge ID")
     _verify_document_digest(document, "challenge_digest")
     if document["target_packet_digest"] != packet["packet_digest"]:
@@ -534,7 +563,7 @@ def verify_challenge(packet: dict[str, Any], document: dict[str, Any]) -> dict[s
         str(filing["filed_at"]),
         str(filing["challenge_certificate"]),
     )
-    if challenge.target_claim_id != "VSTD-SB-SYNTH-001-RESULT-MUTANT":
+    if challenge.target_claim_id != "VSTD-SB-SYNTH-002-RESULT-MUTANT":
         raise PacketError("challenge does not target the declared mutant claim")
     if challenge.target_certificate_id != packet["packet_id"]:
         raise PacketError("challenge target certificate differs from the packet")
@@ -546,64 +575,15 @@ def verify_challenge(packet: dict[str, Any], document: dict[str, Any]) -> dict[s
         raise PacketError(admission.details)
     public_status = ledger.status(challenge.target_claim_id)
 
-    transcript = _record(
-        document["authorized_transcript"],
-        {
-            "transcript_id",
-            "committed_hidden_fixture",
-            "committed_scored_schema",
-            "committed_organizer_log",
-            "expected_reported_skill",
-            "challenged_reported_skill",
-            "match",
-            "records_disclosed",
-            "publicly_reproducible",
-        },
-        "authorized_transcript",
-    )
-    if transcript["expected_reported_skill"] != mutation["original"]:
-        raise PacketError("authorized transcript expected score mismatch")
-    if transcript["challenged_reported_skill"] != mutation["mutated"]:
-        raise PacketError("authorized transcript challenged score mismatch")
-    if transcript["match"] is not False or transcript["records_disclosed"] != 0:
-        raise PacketError("challenge transcript does not preserve the intended boundary")
-    if transcript["publicly_reproducible"] is not False:
-        raise PacketError("private-data recomputation is not publicly reproducible")
-    inventory_addresses = {
-        str(item["artifact_id"]): str(item["content_address"])
-        for item in packet["evidence_inventory"]
-    }
-    if transcript["committed_hidden_fixture"] != inventory_addresses.get("hidden-synthetic-fixture"):
-        raise PacketError("authorized transcript is not bound to the hidden synthetic fixture")
-    if transcript["committed_scored_schema"] != inventory_addresses.get("scored-sandbox-schema"):
-        raise PacketError("authorized transcript is not bound to the exact scored schema")
-    if transcript["committed_organizer_log"] != inventory_addresses.get("organizer-log"):
-        raise PacketError("authorized transcript is not bound to the organizer log")
-
-    ledger.adjudicate(
-        Adjudication(
-            challenge.challenge_id,
-            ChallengeOutcome.ACCEPTED,
-            "Founder-operated synthetic evaluator recomputed the participant-visible "
-            "aggregate from the committed private fixture; this is not independent review.",
-            "2026-08-22T19:00:00Z",
-            f"sha256:{canonical_digest(transcript)}",
-        )
-    )
-    authorized_status = ledger.status(challenge.target_claim_id)
     transitions = _record(
         document["transitions"],
-        {"after_public_filing", "after_authorized_adjudication"},
+        {"after_public_filing"},
         "transitions",
     )
     if transitions["after_public_filing"] != public_status.status.value:
         raise PacketError("public filing transition mismatch")
-    if transitions["after_authorized_adjudication"] != authorized_status.status.value:
-        raise PacketError("authorized adjudication transition mismatch")
     if public_status.status is not ArtifactStatus.CHALLENGED:
         raise PacketError("public filing must leave the aggregate claim CHALLENGED")
-    if authorized_status.status is not ArtifactStatus.REVOKED:
-        raise PacketError("accepted aggregate mismatch must revoke the mutated claim")
 
     leak = _record(
         document["leak_check"],
@@ -612,16 +592,24 @@ def verify_challenge(packet: dict[str, Any], document: dict[str, Any]) -> dict[s
     )
     if any(value not in (0, False) for value in leak.values()):
         raise PacketError("challenge demo leaks a prohibited hidden-data field")
-    trust = _record(document["trust"], {"independent", "vstd5_witness"}, "challenge.trust")
-    if trust["independent"] is not False or trust["vstd5_witness"] is not False:
-        raise PacketError("synthetic self-challenge is structural VSTD-4 evidence only")
+    trust = _record(
+        document["trust"],
+        {"independent", "vstd5_witness", "adjudicated"},
+        "challenge.trust",
+    )
+    if (
+        trust["independent"] is not False
+        or trust["vstd5_witness"] is not False
+        or trust["adjudicated"] is not False
+    ):
+        raise PacketError("public filing is neither independent nor adjudicated")
     localized = _record(
         document["localized_effect"],
-        {"revoked", "unchanged"},
+        {"challenged", "unchanged"},
         "localized_effect",
     )
-    if localized["revoked"] != ["mutated aggregate-result claim"]:
-        raise PacketError("challenge revocation is not localized to the mutated aggregate")
+    if localized["challenged"] != ["mutated aggregate-result claim"]:
+        raise PacketError("challenge filing is not localized to the mutated aggregate")
     if not localized["unchanged"]:
         raise PacketError("challenge demo must name the evidence left unchanged")
 
@@ -629,7 +617,7 @@ def verify_challenge(packet: dict[str, Any], document: dict[str, Any]) -> dict[s
         "challenge_id": document["challenge_id"],
         "challenge_digest": document["challenge_digest"],
         "after_public_filing": public_status.status.value,
-        "after_authorized_adjudication": authorized_status.status.value,
+        "adjudicated": trust["adjudicated"],
         "records_disclosed": leak["individual_records"],
     }
 
@@ -664,8 +652,8 @@ def main() -> int:
         )
         print(
             "[PASS] non-disclosing challenge: "
-            f"{result['challenge']['after_public_filing']} -> "
-            f"{result['challenge']['after_authorized_adjudication']}, "
+            f"status={result['challenge']['after_public_filing']}, "
+            f"adjudicated={result['challenge']['adjudicated']}, "
             f"records_disclosed={result['challenge']['records_disclosed']}"
         )
     return 0
