@@ -17,6 +17,9 @@
   subprocess.
 - Test the advertised Python 3.10 through 3.13 range, add release-integrity and
   installed-wheel jobs, and expose one required conformance gate for branch protection.
+- Add a tag-triggered release workflow that refuses non-main or unconformed commits,
+  rebuilds and smoke-tests exact artifacts, records tag signature status without
+  relabeling it, and creates GitHub/Sigstore attestations for every uploaded asset.
 - Add structured ambiguity, counterexample, and implementation feedback surfaces plus
   public conduct and pull-request consequence checks.
 

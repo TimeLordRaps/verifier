@@ -1,0 +1,101 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  checks: read
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Require a protected-main commit and matching package version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          test "$(git rev-parse "${GITHUB_REF}^{commit}")" = "$GITHUB_SHA"
+          VERSION="${GITHUB_REF_NAME#v}"
+          PACKAGE_VERSION="$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
+          test "$VERSION" = "$PACKAGE_VERSION"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs" --jq '[.check_runs[] | select(.name == "conformance-gate" and .conclusion == "success")] | length')" -ge 1
+
+      - name: Re-run conformance on the tagged checkout
+        run: |
+          python -m pip install ".[test]"
+          python -m pytest -q
+          python -m compileall -q src scripts
+
+      - name: Build exact source, reproducible wheel, and external manifest
+        run: |
+          python scripts/release_artifacts.py build \
+            --ref "$GITHUB_REF" \
+            --release "${GITHUB_REF_NAME#v}" \
+            --output-dir dist
+
+      - name: Smoke-test the exact wheel
+        run: |
+          python -m venv /tmp/vstd-release-wheel
+          /tmp/vstd-release-wheel/bin/python -m pip install --no-deps dist/*.whl
+          /tmp/vstd-release-wheel/bin/verifier plan examples/generic_run/manifest.json --json
+          /tmp/vstd-release-wheel/bin/verifier run examples/generic_run/manifest.json --output /tmp/vstd-release-receipt
+          /tmp/vstd-release-wheel/bin/verifier validate /tmp/vstd-release-receipt
+          /tmp/vstd-release-wheel/bin/verifier reproduce /tmp/vstd-release-receipt --rerun
+          /tmp/vstd-release-wheel/bin/vstd hardware list --json >/dev/null
+
+      - name: Attest every published artifact
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: |
+            dist/*.zip
+            dist/*.whl
+            dist/*.manifest.json
+
+      - name: Write bounded release notes
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if git verify-tag "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            TAG_STATUS="SIGNED_AND_LOCALLY_VERIFIED"
+          else
+            TAG_STATUS="UNSIGNED"
+          fi
+          {
+            echo "Source tag signature status: **$TAG_STATUS**."
+            echo
+            echo "Every uploaded asset is bound to the exact public commit by the external release manifest and a GitHub artifact attestation. Verify an asset with:"
+            echo
+            echo '```bash'
+            echo "gh attestation verify PATH_TO_ASSET --repo $GITHUB_REPOSITORY"
+            echo '```'
+            echo
+            awk -v version="$VERSION" '
+              $0 ~ "^## " version " " {printing=1; next}
+              printing && /^## / {exit}
+              printing {print}
+            ' CHANGELOG.md
+          } > release-notes.md
+
+      - name: Publish only the tested and attested artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            dist/*.zip dist/*.whl dist/*.manifest.json \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --title "VSTD ${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md

@@ -89,6 +89,17 @@ python -m pip install ".[torch]"
 python -m pip install ".[jsonschema]"
 ```
 
+Release assets include an external manifest binding the exact public source ref,
+commit, archive digest, file set, and member bytes. GitHub artifact attestations bind
+the uploaded ZIP, wheel, and manifest to the release workflow:
+
+```bash
+gh attestation verify PATH_TO_DOWNLOADED_ASSET --repo TimeLordRaps/verifier
+```
+
+The release notes report the tag's signature status separately. An artifact attestation
+is not a tag signature.
+
 ## Capture and check a generic computation
 
 **Security boundary:** a manifest contains an executable command. `verifier run` does
