@@ -24,7 +24,7 @@ reported as unavailable rather than as a plausible-looking constant."""
 
 
 def _source_digest(*candidates: Any) -> str:
-    """SHA-256 of the first candidate file that exists, relative to the repo root.
+    """SHA-256 of the first candidate available in source or an installed wheel.
 
     Several candidates are accepted because specification filenames move as the
     ladder is renumbered, and a descriptor that breaks on a rename would push
@@ -32,12 +32,14 @@ def _source_digest(*candidates: Any) -> str:
     """
     for candidate in candidates:
         path = Path(candidate)
-        if not path.is_absolute():
-            path = _REPO_ROOT / path
-        try:
-            return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
-        except OSError:
-            continue
+        paths = [path] if path.is_absolute() else [_REPO_ROOT / path, Path.cwd() / path]
+        if not path.is_absolute() and path.parts and path.parts[0] == "standard":
+            paths.append(_MODULE_PATH.parents[1] / "specifications" / path.name)
+        for resolved in paths:
+            try:
+                return "sha256:" + hashlib.sha256(resolved.read_bytes()).hexdigest()
+            except OSError:
+                continue
     return f"{UNAVAILABLE_PREFIX}{candidates[0] if candidates else ''}"
 
 
@@ -401,7 +403,7 @@ class IndependentVerifiableAuditor:
         return VerifierDescriptor(
             specification_hash=_source_digest("standard/VSTD-3.md"),
             implementation_hash=_source_digest(_MODULE_PATH),
-            parser_hash=_source_digest("src/verifiable/core/receipt.py"),
+            parser_hash=_source_digest(_MODULE_PATH.with_name("receipt.py")),
             certificate_format="VSTD3-INDEPENDENT-AUDIT",
             format_fragment="SAT,GROUNDING,ACYCLICITY",
             dependencies=("python-stdlib",),

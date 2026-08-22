@@ -641,13 +641,18 @@ def reference_descriptor() -> VerifierDescriptor:
 
     def digest(*candidates: str) -> str:
         for name in candidates:
-            path = here.parent / name
-            if not path.exists():
-                path = here.parents[3] / name
-            try:
-                return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
-            except OSError:
-                continue
+            relative = Path(name)
+            paths = (
+                here.parent / relative,
+                Path.cwd() / relative,
+                here.parents[3] / relative,
+                here.parents[1] / "specifications" / relative.name,
+            )
+            for path in paths:
+                try:
+                    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+                except OSError:
+                    continue
         return f"UNAVAILABLE:{candidates[0] if candidates else ''}"
 
     return VerifierDescriptor(

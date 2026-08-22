@@ -45,7 +45,7 @@ verifiable = "verifiable.runtime.public_cli:main"
 vstd = "verifiable.runtime.public_cli:main"
 
 [tool.setuptools.package-data]
-verifiable = ["hardware/*.json"]
+verifiable = ["hardware/*.json", "specifications/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
