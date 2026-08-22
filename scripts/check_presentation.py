@@ -9,7 +9,6 @@ from pathlib import Path
 import re
 import struct
 import sys
-import tomllib
 from urllib.parse import unquote
 import xml.etree.ElementTree as ET
 
@@ -88,8 +87,14 @@ def check_local_links(errors: list[str]) -> None:
 
 
 def check_versions(errors: list[str]) -> None:
-    package = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-    expected = package["project"]["version"]
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    project_section = pyproject.split("[project]", 1)
+    project_text = "" if len(project_section) != 2 else project_section[1].split("\n[", 1)[0]
+    project_match = re.search(r'^version\s*=\s*"([^"]+)"$', project_text, re.MULTILINE)
+    if project_match is None:
+        errors.append("pyproject.toml has no parseable [project] version")
+        return
+    expected = project_match.group(1)
     init_text = (ROOT / "src/verifiable/__init__.py").read_text(encoding="utf-8")
     init_match = re.search(r'^__version__ = "([^"]+)"$', init_text, re.MULTILINE)
     citation_match = re.search(
