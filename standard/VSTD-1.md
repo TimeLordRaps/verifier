@@ -1,6 +1,7 @@
-# VSTD-0.1 — VERIFIABLE Standard for Computational and Formal Claims
+# VSTD-1 — Claim Mechanics
 
-**Version:** `VSTD-0.1`
+**Layer:** 1 of 5 on the object axis (see `LADDER.md`)
+**Receipt wire format:** `schema_version = "VSTD-0.1"` — frozen; see `MIGRATION.md`
 **Status:** Project Specification with Implemented Reference Subset
 **Maintainer:** VERIFIABLE
 **Date:** 2026-08-21
@@ -13,7 +14,7 @@ VERIFIABLE develops infrastructure for consequential computational claims to car
 
 Modern AI systems, scientific simulators, and autonomous code generators routinely
 produce complex assertions without an attached, machine-checkable audit trail showing
-what evidence is offered for those claims. **VSTD-0.1** is a versioned project
+what evidence is offered for those claims. **VSTD-1** is a project
 specification for representing claims, capturing runtime provenance, structuring
 machine-readable verification receipts, defining reproducibility levels, and
 separating trusted computing bases from untrusted outputs. It is not a consensus or
@@ -23,7 +24,7 @@ accredited standard.
 
 ## 2. Scope & Boundaries
 
-### 2.1 What VSTD-0.1 Covers
+### 2.1 What VSTD-1 Covers
 - **Software Artifacts**: Deterministic test execution, static invariant validation, schema conformance.
 - **Formal & Logic Artifacts**: Bounded propositional entailment, derivation graphs,
   acyclicity checks, and grounding invariants. The current reference subset implements
@@ -76,7 +77,7 @@ A canonical claim record contains:
 ## 5. Independent Verification & Trusted Computing Base (TCB)
 
 To prevent self-referential confirmation bias (systems verifying their own uninspected
-outputs), VSTD-0.1 defines an **Independent Verification Layer** as a conformance
+outputs), VSTD-1 defines an **Independent Verification Layer** as a conformance
 requirement for claims labeled independent:
 
 ```text
@@ -102,7 +103,7 @@ result is still inspectable but MUST NOT be labeled independent on that seam.
 
 ## 6. Reproducibility Taxonomy
 
-VSTD-0.1 defines a five-tier reproducibility taxonomy:
+VSTD-1 defines a five-tier reproducibility taxonomy:
 
 1. `BITWISE_IDENTICAL`: Byte-for-byte exact match across all generated files, logs, and artifacts.
 2. `CONTENT_IDENTICAL`: Canonical JSON representation of stable verification payload matches exactly, ignoring volatile execution fields (timestamps, elapsed wall-clock ms, hostnames).
@@ -114,7 +115,8 @@ VSTD-0.1 defines a five-tier reproducibility taxonomy:
 
 ## 7. Canonical Receipt Specification & Hashing
 
-A VSTD-0.1 receipt separates **stable verification content** from **volatile execution metadata**:
+A VSTD-1 receipt separates **stable verification content** from **volatile execution metadata**.
+Its historical wire identifier remains frozen:
 
 ```
 receipt.json
@@ -132,10 +134,10 @@ receipt.json
 
 ### Canonicalization Algorithm
 1. Extract stable fields (`schema_version`, `receipt_id`, `claim`, `evidence`, `target_result`, `independent_audit`, `provenance_stable`, `reproducibility`).
-2. Serialize the VSTD-0.1 JSON subset with alphabetically sorted object keys, compact
+2. Serialize the VSTD-1 JSON subset with alphabetically sorted object keys, compact
    separators `","` and `":"`, UTF-8 encoding, and no non-finite numbers. This
    project-specific canonicalization is deterministic for the supported value subset;
-   VSTD-0.1 does not claim full RFC 8785 conformance.
+   VSTD-1 does not claim full RFC 8785 conformance.
 3. Compute `SHA-256` digest over the serialized bytes.
 4. The digest remains invariant across directory moves, path changes, and reformatting of human-readable reports.
 
@@ -157,5 +159,5 @@ receipt.json
   derivation-graph acyclicity and grounding checks, Git/runtime provenance capture,
   stable-payload digest validation, generic command receipts, and bounded
   reproducibility comparison.
-- **Additive Experimental Extension (VSTD-0.2)**: Verification geometry, residual-driven deconstruction, horizons, valences, and bounded self-closure. VSTD-0.2 does not reinterpret existing VSTD-0.1 receipts.
+- **VSTD-2 — Verification Surface**: verification geometry, residual-driven deconstruction, horizons, valences, and bounded self-closure. VSTD-2 does not reinterpret existing receipts whose wire identifier is `VSTD-0.1`.
 - **Unassigned Future Work**: Additional proof mechanisms, execution-environment binding, and cross-institutional proof-carrying software gates require separate scoped proposals and evidence. No future version number is reserved here.

@@ -1,0 +1,185 @@
+"""Published JSON Schema coverage for the integer-layer release.
+
+JSON Schema checks document shape.  The independent kernel remains authoritative
+for grounding, tier, count, binding, and proof semantics.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from jsonschema import Draft202012Validator, FormatChecker
+from referencing import Registry, Resource
+
+from verifiable.core.certificate import (
+    ClaimBinding,
+    ClaimCoordinate,
+    ClauseGrounding,
+    EncodingRule,
+    GroundedFact,
+    Grounding,
+    ResourceBounds,
+    VariableGrounding,
+    canonical_digest,
+)
+from verifiable.core.kernel import check, reference_descriptor
+from verifiable.core.refutation import build_horn_certificate
+
+
+SCHEMA_DIR = Path(__file__).resolve().parents[1] / "receipts" / "schema"
+PUBLISHED_SCHEMAS = (
+    "vstd1_receipt.json",
+    "vstd2_receipt.json",
+    "vstd3_receipt.json",
+    "vstd4_receipt.json",
+    "vstd5_receipt.json",
+    "vstd4_certificate.json",
+    "vstd_graph_receipt.json",
+    "vstd3_accelerator_profile.json",
+)
+HEX = "a" * 64
+
+
+def _load(name: str) -> dict:
+    return json.loads((SCHEMA_DIR / name).read_text(encoding="utf-8"))
+
+
+def _certificate():
+    formula = ((1,),)
+    rule = EncodingRule("RULE:ASSERT", ("claim",), ((1, "claim"),))
+    grounding = Grounding(
+        variables=(
+            VariableGrounding(
+                1,
+                GroundedFact("artifact:sha256:" + HEX, "declared", "ASSERTED"),
+            ),
+        ),
+        clauses=(
+            ClauseGrounding(
+                0,
+                rule.rule_id,
+                {"claim": 1},
+                {"claim": "artifact:sha256:" + HEX},
+            ),
+        ),
+        rules=(rule,),
+    )
+    binding = ClaimBinding(
+        claim="the declared artifact exists",
+        coordinate=ClaimCoordinate(
+            "artifact:sha256:" + HEX, "declared", {"scope": "fixture"}
+        ),
+        policy_root=canonical_digest([list(clause) for clause in formula]),
+        evidence_root=HEX,
+        verifier=reference_descriptor(),
+        bounds=ResourceBounds(100, 100, 10000),
+        prior_commitment=HEX,
+    )
+    certificate = build_horn_certificate(formula, grounding, binding)
+    assert check(certificate, binding=binding).accepted
+    return certificate, binding
+
+
+def _registry() -> Registry:
+    certificate_schema = _load("vstd4_certificate.json")
+    return Registry().with_resource(
+        certificate_schema["$id"], Resource.from_contents(certificate_schema)
+    )
+
+
+def test_every_published_schema_is_valid_draft_2020_12() -> None:
+    for name in PUBLISHED_SCHEMAS:
+        Draft202012Validator.check_schema(_load(name))
+
+
+def test_vstd4_gdc_certificate_matches_its_published_schema() -> None:
+    certificate, _binding = _certificate()
+    Draft202012Validator(_load("vstd4_certificate.json")).validate(
+        certificate.to_dict()
+    )
+
+
+def test_vstd4_receipt_requires_the_computed_ceiling_certificate() -> None:
+    certificate, binding = _certificate()
+    schema = _load("vstd4_receipt.json")
+    validator = Draft202012Validator(schema, registry=_registry())
+    receipt = {
+        "schema_version": "VSTD-4",
+        "receipt_id": "VFY-4-SCHEMA-TEST",
+        "claim_id": "claim:schema-test",
+        "binding": binding.to_dict(),
+        "vstd4_depth": 13,
+        "rung_evidence": {f"4.{index}": f"sha256:{HEX}" for index in range(1, 14)},
+        "witness": certificate.to_dict(),
+        "ceiling_refutation": certificate.to_dict(),
+        "blocking_rungs": ["4.14"],
+        "status": "VALID",
+    }
+    validator.validate(receipt)
+
+    receipt["ceiling_refutation"] = None
+    errors = list(validator.iter_errors(receipt))
+    assert errors
+    assert any("not of type 'object'" in error.message for error in errors)
+
+
+def test_vstd5_draft_schema_enforces_the_vstd4_entry_gate() -> None:
+    schema = _load("vstd5_receipt.json")
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    receipt = {
+        "schema_version": "VSTD-5-DRAFT",
+        "status": "DRAFT",
+        "receipt_id": "VFY-5-SCHEMA-TEST",
+        "claim_id": "claim:schema-test",
+        "claim_binding": HEX,
+        "entry_vstd4_depth": 14,
+        "witnesses": [
+            {
+                "witness_id": "witness:test",
+                "identity_evidence": "sha256:" + HEX,
+                "independence": {
+                    "shared_control": "UNKNOWN",
+                    "shared_code": "UNKNOWN",
+                    "shared_trust_root": "UNKNOWN",
+                    "shared_evidence_source": "UNKNOWN",
+                    "shared_infrastructure": "UNKNOWN",
+                    "financial_dependence": "UNKNOWN",
+                    "jurisdictional_dependence": "UNKNOWN",
+                    "evidence": [],
+                },
+            }
+        ],
+        "corroborations": [
+            {
+                "corroboration_id": "corroboration:test",
+                "witness_id": "witness:test",
+                "class": "PHYSICAL_INSPECTION",
+                "vstd4_certificate_digest": HEX,
+                "checker_descriptor_digest": HEX,
+                "observed_evidence": [HEX],
+                "result": "UNKNOWN",
+                "observed_at": "2026-08-22T12:00:00Z",
+            }
+        ],
+        "disagreements": [],
+        "computed_independence": "UNKNOWN",
+    }
+    validator.validate(receipt)
+
+    receipt["entry_vstd4_depth"] = 13
+    errors = list(validator.iter_errors(receipt))
+    assert errors
+    assert any("14 was expected" in error.message for error in errors)
+
+
+def test_layer_filenames_do_not_change_historical_wire_identifiers() -> None:
+    assert _load("vstd1_receipt.json")["properties"]["schema_version"]["enum"] == [
+        "VSTD-0.1"
+    ]
+    assert _load("vstd2_receipt.json")["properties"]["schema_version"]["const"] == (
+        "VSTD-0.2"
+    )
+    assert _load("vstd_graph_receipt.json")["properties"]["schema_version"][
+        "enum"
+    ] == ["VSTD-DATA-0.1"]

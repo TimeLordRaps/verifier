@@ -6,7 +6,7 @@ claims.
 
 ## Required for a normative change
 
-- identify the affected VSTD version and coordinate or seam;
+- identify the affected VSTD layer, repository release, and coordinate or seam;
 - state compatibility and migration effects;
 - include a falsification condition;
 - update machine-readable schemas or typed models where applicable;

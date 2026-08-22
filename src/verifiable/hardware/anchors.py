@@ -21,6 +21,16 @@ class AnchorProvider(Protocol):
 
     def anchor(self, event: AccountingEvent, *, anchored_at: str) -> ContinuityAnchor: ...
 
+    def anchor_content(
+        self,
+        content_id: str,
+        content_digest: str,
+        *,
+        epoch: int,
+        sequence: int,
+        anchored_at: str,
+    ) -> ContinuityAnchor: ...
+
     def get(self, anchor_id: str) -> Optional[ContinuityAnchor]: ...
 
     def verify(self, anchor: ContinuityAnchor) -> bool: ...
@@ -36,17 +46,35 @@ class LocalAnchorProvider:
         self._anchors: dict[str, ContinuityAnchor] = {}
 
     def anchor(self, event: AccountingEvent, *, anchored_at: str) -> ContinuityAnchor:
-        anchor_id = f"anchor:{self.provider_id}:{event.device_identity_id}:{event.epoch}:{event.sequence}"
-        candidate = ContinuityAnchor(
-            anchor_id=anchor_id,
-            device_identity_id=event.device_identity_id,
+        return self.anchor_content(
+            event.device_identity_id,
+            event.rolling_root,
             epoch=event.epoch,
             sequence=event.sequence,
-            rolling_root=event.rolling_root,
+            anchored_at=anchored_at,
+        )
+
+    def anchor_content(
+        self,
+        content_id: str,
+        content_digest: str,
+        *,
+        epoch: int,
+        sequence: int,
+        anchored_at: str,
+    ) -> ContinuityAnchor:
+        """Anchor non-device content through the same provider and trust root."""
+        anchor_id = f"anchor:{self.provider_id}:{content_id}:{epoch}:{sequence}"
+        candidate = ContinuityAnchor(
+            anchor_id=anchor_id,
+            device_identity_id=content_id,
+            epoch=epoch,
+            sequence=sequence,
+            rolling_root=content_digest,
             anchored_at=anchored_at,
             provider_id=self.provider_id,
             signature=hmac_sign_digest(
-                event.rolling_root,
+                content_digest,
                 key_id=self.key_id,
                 key=self.signing_key,
             ),
@@ -89,12 +117,25 @@ class FileAnchorProvider(LocalAnchorProvider):
                 raise AnchorError(f"anchor fork in file for {anchor.anchor_id}")
             self._anchors[anchor.anchor_id] = anchor
 
-    def anchor(self, event: AccountingEvent, *, anchored_at: str) -> ContinuityAnchor:
-        anchor = super().anchor(event, anchored_at=anchored_at)
+    def anchor_content(
+        self,
+        content_id: str,
+        content_digest: str,
+        *,
+        epoch: int,
+        sequence: int,
+        anchored_at: str,
+    ) -> ContinuityAnchor:
+        anchor = super().anchor_content(
+            content_id,
+            content_digest,
+            epoch=epoch,
+            sequence=sequence,
+            anchored_at=anchored_at,
+        )
         self.path.parent.mkdir(parents=True, exist_ok=True)
         existing_lines = self.path.read_text(encoding="utf-8").splitlines() if self.path.exists() else []
         if not any(json.loads(line).get("anchor_id") == anchor.anchor_id for line in existing_lines if line):
             with self.path.open("ab") as handle:
                 handle.write(canonical_json_bytes(anchor) + b"\n")
         return anchor
-

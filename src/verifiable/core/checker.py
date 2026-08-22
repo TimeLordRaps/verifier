@@ -9,7 +9,72 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+import hashlib
+from pathlib import Path
 from typing import Any, Mapping, Optional, Sequence
+
+from .certificate import VerifierDescriptor
+
+_MODULE_PATH = Path(__file__).resolve()
+_REPO_ROOT = _MODULE_PATH.parents[3]
+
+UNAVAILABLE_PREFIX = "UNAVAILABLE:"
+"""House idiom, matching ``translation.py``. A hash that cannot be computed is
+reported as unavailable rather than as a plausible-looking constant."""
+
+
+def _source_digest(*candidates: Any) -> str:
+    """SHA-256 of the first candidate available in source or an installed wheel.
+
+    Several candidates are accepted because specification filenames move as the
+    ladder is renumbered, and a descriptor that breaks on a rename would push
+    implementers back toward hardcoding.
+    """
+    for candidate in candidates:
+        path = Path(candidate)
+        paths = [path] if path.is_absolute() else [_REPO_ROOT / path, Path.cwd() / path]
+        if not path.is_absolute() and path.parts and path.parts[0] == "standard":
+            paths.append(_MODULE_PATH.parents[1] / "specifications" / path.name)
+        for resolved in paths:
+            try:
+                return "sha256:" + hashlib.sha256(resolved.read_bytes()).hexdigest()
+            except OSError:
+                continue
+    return f"{UNAVAILABLE_PREFIX}{candidates[0] if candidates else ''}"
+
+
+def unit_propagation_conflict(
+    clauses: Sequence[Sequence[int]],
+) -> Optional[int]:
+    """Index of a clause unit propagation genuinely falsifies, or ``None``.
+
+    Used so that ``conflicting_clause`` reports a conflict that actually
+    occurred. Returning ``None`` when propagation alone reaches no conflict is
+    the honest answer: it means search was required, and no single clause is
+    *the* reason the formula failed.
+    """
+    assignment: dict[int, bool] = {}
+    while True:
+        unit: Optional[int] = None
+        for index, clause in enumerate(clauses):
+            unassigned: list[int] = []
+            satisfied = False
+            for literal in clause:
+                value = assignment.get(abs(literal))
+                if value is None:
+                    unassigned.append(literal)
+                elif (literal > 0) == value:
+                    satisfied = True
+                    break
+            if satisfied:
+                continue
+            if not unassigned:
+                return index
+            if unit is None and len(unassigned) == 1:
+                unit = unassigned[0]
+        if unit is None:
+            return None
+        assignment[abs(unit)] = unit > 0
 
 
 class VerificationVerdict(str, Enum):
@@ -319,14 +384,48 @@ class IndependentGroundingChecker:
 class IndependentVerifiableAuditor:
     """Top-level independent auditor that evaluates claims and derivation artifacts."""
 
-    TCB = {
-        "verifier_name": "verifiable.core.checker.IndependentVerifiableAuditor",
-        "verifier_version": "0.1.0",
-        "solver": "MinimalIndependentDPLL (pure Python, stdlib-only, zero external dependencies)",
-        "grounding_checker": "IndependentGroundingChecker",
-        "runtime_dependencies": "Python standard library (hashlib, json, dataclasses)",
-        "isolation": "Zero shared code with target solver",
-    }
+    @classmethod
+    def verifier_descriptor(cls) -> VerifierDescriptor:
+        """This auditor's trust boundary, in hashes rather than in promises.
+
+        Rung 4.7. The previous form of this was a hardcoded dict asserting
+        ``"isolation": "Zero shared code with target solver"`` -- a claim about
+        the code, made by the code, checkable by nobody. The hashes below are
+        read from files on disk, so mutating this module changes
+        ``implementation_hash`` and any receipt pinning the old value stops
+        matching.
+
+        ``certificate_format`` deliberately does **not** say ``VSTD4-GDC-1``.
+        This auditor emits an ``IndependentAuditReport``, which is a different
+        artifact, and claiming a format one does not implement is the
+        format-level form of the semantic mismatch rung 4.2 prohibits.
+        """
+        return VerifierDescriptor(
+            specification_hash=_source_digest("standard/VSTD-3.md"),
+            implementation_hash=_source_digest(_MODULE_PATH),
+            parser_hash=_source_digest(_MODULE_PATH.with_name("receipt.py")),
+            certificate_format="VSTD3-INDEPENDENT-AUDIT",
+            format_fragment="SAT,GROUNDING,ACYCLICITY",
+            dependencies=("python-stdlib",),
+            deterministic=True,
+        )
+
+    @classmethod
+    def tcb(cls) -> dict[str, str]:
+        """Flattened descriptor, for the report field and the receipt renderers."""
+        descriptor = cls.verifier_descriptor()
+        return {
+            "verifier_name": "verifiable.core.checker.IndependentVerifiableAuditor",
+            "solver": "MinimalIndependentDPLL (pure Python, stdlib-only)",
+            "grounding_checker": "IndependentGroundingChecker",
+            "runtime_dependencies": "Python standard library (hashlib, json, dataclasses)",
+            "specification_hash": descriptor.specification_hash,
+            "implementation_hash": descriptor.implementation_hash,
+            "parser_hash": descriptor.parser_hash,
+            "certificate_format": descriptor.certificate_format,
+            "format_fragment": descriptor.format_fragment,
+            "deterministic": str(descriptor.deterministic).lower(),
+        }
 
     @classmethod
     def audit_claim_derivation(
@@ -344,11 +443,19 @@ class IndependentVerifiableAuditor:
         sat_passed = (is_sat == expected_satisfiable)
         sat_verdict = VerificationVerdict.VERIFIED if sat_passed else VerificationVerdict.FALSIFIED
 
+        # Rung 4.2. This used to report ``clauses[0]`` -- the *first clause of
+        # the formula*, presented as the conflict. It was not a conflict
+        # analysis and was unrelated to why the formula failed, which is
+        # certificate/claim semantic mismatch with a nice field name. Report the
+        # clause propagation actually falsifies, or nothing.
+        conflict_index = None if is_sat else unit_propagation_conflict(clauses)
+        conflicting_clause = None if conflict_index is None else list(clauses[conflict_index])
+
         sat_result = IndependentSatResult(
             satisfiable=is_sat,
             verdict=sat_verdict,
             model=model,
-            conflicting_clause=None if is_sat else (list(clauses[0]) if clauses else None),
+            conflicting_clause=conflicting_clause,
             decisions_count=solver.decisions,
             propagations_count=solver.propagations,
         )
@@ -373,6 +480,13 @@ class IndependentVerifiableAuditor:
             f"Grounding audit status: {grounding_result.grounding_status.value} ({grounding_result.details}).",
             f"Acyclicity verified: cycle_detected={grounding_result.cycle_detected}.",
         ]
+        if not is_sat:
+            notes.append(
+                f"Conflict clause index {conflict_index} falsified by unit propagation."
+                if conflict_index is not None
+                else "No unit-propagation conflict exists; search was required, so no "
+                "single clause is reportable as the reason for unsatisfiability."
+            )
 
         return IndependentAuditReport(
             claim_id=claim_id,
@@ -380,6 +494,6 @@ class IndependentVerifiableAuditor:
             grounding_result=grounding_result,
             structural_integrity_passed=structural_passed,
             overall_verdict=overall,
-            trusted_computing_base=dict(cls.TCB),
+            trusted_computing_base=cls.tcb(),
             audit_notes=notes,
         )

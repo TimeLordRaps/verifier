@@ -1,4 +1,7 @@
-"""Dataset Provenance Hypergraph Receipt Model and Canonical Serialization for VSTD-DATA-0.1."""
+"""VSTD-Graph receipt model and canonical serialization.
+
+Graph-1 receipts retain the frozen ``VSTD-DATA-0.1`` wire identifier.
+"""
 
 from __future__ import annotations
 

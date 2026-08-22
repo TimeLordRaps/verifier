@@ -3,10 +3,217 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Sequence
+from typing import Any, Mapping, Optional, Sequence
 
+from verifiable.core.certificate import (
+    ClaimBinding,
+    ClaimCoordinate,
+    ClauseGrounding,
+    DecisionCertificate,
+    EncodingRule,
+    GroundedFact,
+    Grounding,
+    ResourceBounds,
+    VariableGrounding,
+    normalize_clause,
+)
 from verifiable.core.checker import MinimalIndependentDPLL, VerificationVerdict
+from verifiable.core.kernel import check as kernel_check, reference_descriptor
+from verifiable.core.refutation import build_horn_certificate
 from verifiable.data.models import ArtifactStatus, ProvenanceHypergraph
+
+
+class PolicyEncodingError(RuntimeError):
+    """The CNF encoding and the direct computation disagree about a policy.
+
+    This used to be impossible to observe. Each verifier below computed
+    ``passed = bool(sat and not violations)`` -- hedging the SAT result against
+    a Python list comprehension, so the operative verdict came from the list and
+    the certificate was decoration. If the encoding and the list ever diverged,
+    which is precisely what an encoding bug produces, nothing detected it.
+
+    Now the CNF is authoritative and divergence is a hard error carrying the
+    certificate the CNF actually supports, so a reader can see which of the two
+    is lying rather than being handed the one that happened to be preferred.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        certificate: Optional[DecisionCertificate] = None,
+        cnf_satisfiable: bool = False,
+        direct_result: bool = False,
+    ) -> None:
+        super().__init__(message)
+        self.certificate = certificate
+        self.cnf_satisfiable = cnf_satisfiable
+        self.direct_result = direct_result
+
+
+# --------------------------------------------------------------------------
+# VSTD4-GDC-1 grounding for policy CNFs
+# --------------------------------------------------------------------------
+#
+# Every clause these verifiers emit has one of four shapes, and each shape is
+# one named encoding rule. Matching them back is not merely bookkeeping: a
+# clause shape the grounding does not recognize raises, so an encoder that
+# later emits something new cannot slip past unexamined.
+
+RULE_ASSERT_TARGET = EncodingRule("RULE:POLICY_ASSERT_TARGET", ("target",), ((1, "target"),))
+RULE_TARGET_REQUIRES = EncodingRule(
+    "RULE:POLICY_TARGET_REQUIRES", ("target", "member"), ((-1, "target"), (1, "member"))
+)
+RULE_MEMBER_SATISFIES = EncodingRule(
+    "RULE:POLICY_MEMBER_SATISFIES", ("member",), ((1, "member"),)
+)
+RULE_MEMBER_VIOLATES = EncodingRule(
+    "RULE:POLICY_MEMBER_VIOLATES", ("member",), ((-1, "member"),)
+)
+POLICY_RULES = (
+    RULE_ASSERT_TARGET,
+    RULE_TARGET_REQUIRES,
+    RULE_MEMBER_SATISFIES,
+    RULE_MEMBER_VIOLATES,
+)
+
+
+def _policy_subjects(
+    var_map: Mapping[str, int], target_artifact_id: str
+) -> dict[int, tuple[str, str]]:
+    """Index -> (subject, predicate), read out of the variable map."""
+    subjects: dict[int, tuple[str, str]] = {}
+    for name, index in var_map.items():
+        if index == 1:
+            subjects[index] = (target_artifact_id, name.lower())
+            continue
+        prefix, _, member = name.partition("_")
+        if not member:
+            raise PolicyEncodingError(
+                f"variable {name!r} names no subject, so nothing grounds variable {index}"
+            )
+        subjects[index] = (member, prefix.lower())
+    return subjects
+
+
+def ground_policy_cnf(
+    clauses: Sequence[Sequence[int]],
+    var_map: Mapping[str, int],
+    target_artifact_id: str,
+    *,
+    member_value: Optional[Mapping[str, str]] = None,
+) -> Grounding:
+    """Bind every variable to a content-addressed fact and every clause to a rule."""
+    subjects = _policy_subjects(var_map, target_artifact_id)
+    values = dict(member_value or {})
+
+    variables = tuple(
+        VariableGrounding(
+            index,
+            GroundedFact(subject, predicate, values.get(subject, "ASSERTED")),
+        )
+        for index, (subject, predicate) in sorted(subjects.items())
+    )
+
+    target_subject = subjects[1][0]
+    groundings: list[ClauseGrounding] = []
+    for position, clause in enumerate(clauses):
+        literals = normalize_clause(clause)
+        if literals == (1,):
+            rule, bindings = RULE_ASSERT_TARGET, {"target": 1}
+        elif len(literals) == 2 and literals[0] == -1 and literals[1] > 1:
+            rule, bindings = RULE_TARGET_REQUIRES, {"target": 1, "member": literals[1]}
+        elif len(literals) == 1 and literals[0] > 1:
+            rule, bindings = RULE_MEMBER_SATISFIES, {"member": literals[0]}
+        elif len(literals) == 1 and literals[0] < -1:
+            rule, bindings = RULE_MEMBER_VIOLATES, {"member": -literals[0]}
+        else:
+            raise PolicyEncodingError(
+                f"clause {position} {list(literals)} matches no declared policy encoding "
+                "rule, so it cannot be grounded and its meaning is unstated"
+            )
+        clause_subjects = {
+            role: (target_subject if role == "target" else subjects[bindings[role]][0])
+            for role in rule.roles
+        }
+        groundings.append(ClauseGrounding(position, rule.rule_id, bindings, clause_subjects))
+
+    return Grounding(variables, tuple(groundings), POLICY_RULES)
+
+
+def _policy_binding(
+    policy_id: str, target_artifact_id: str, clauses: Sequence[Sequence[int]]
+) -> ClaimBinding:
+    from verifiable.core.certificate import canonical_digest
+
+    return ClaimBinding(
+        claim=policy_id,
+        coordinate=ClaimCoordinate(target_artifact_id, policy_id),
+        policy_root=canonical_digest([list(clause) for clause in clauses]),
+        evidence_root=canonical_digest(sorted({policy_id, target_artifact_id})),
+        verifier=reference_descriptor(),
+        bounds=ResourceBounds(
+            verification_cost_bound=sum(len(clause) for clause in clauses) + len(clauses),
+            memory_bound=len(clauses),
+            certificate_size_bound=0,
+        ),
+    )
+
+
+def certify_policy_cnf(
+    *,
+    satisfiable: bool,
+    direct_result: bool,
+    policy_id: str,
+    target_artifact_id: str,
+    clauses: Sequence[Sequence[int]],
+    var_map: Mapping[str, int],
+    member_value: Optional[Mapping[str, str]] = None,
+) -> tuple[bool, DecisionCertificate]:
+    """Make the CNF authoritative, and prove it rather than assert it.
+
+    Returns the verdict the *encoding* supports, together with a certificate
+    :mod:`verifiable.core.kernel` accepts. Divergence between the encoding and
+    the direct computation raises :class:`PolicyEncodingError` with that
+    certificate attached -- silently preferring either branch is what made the
+    certificate decorative in the first place.
+    """
+    grounding = ground_policy_cnf(
+        clauses, var_map, target_artifact_id, member_value=member_value
+    )
+    binding = _policy_binding(policy_id, target_artifact_id, clauses)
+    certificate = build_horn_certificate(clauses, grounding, binding)
+
+    verdict = kernel_check(certificate, binding=binding)
+    if not verdict.accepted:
+        raise PolicyEncodingError(
+            f"{policy_id}: the kernel refused this policy's own certificate: "
+            f"{verdict.details}",
+            certificate=certificate,
+            cnf_satisfiable=satisfiable,
+            direct_result=direct_result,
+        )
+
+    cnf_passed = certificate.header.verdict.value == "PASS"
+    if cnf_passed != satisfiable:
+        raise PolicyEncodingError(
+            f"{policy_id}: the certified encoding says {cnf_passed} but the solver "
+            f"said {satisfiable}",
+            certificate=certificate,
+            cnf_satisfiable=satisfiable,
+            direct_result=direct_result,
+        )
+    if cnf_passed != direct_result:
+        raise PolicyEncodingError(
+            f"{policy_id}: CNF encoding and direct computation disagree for "
+            f"{target_artifact_id} -- encoding says {cnf_passed}, direct "
+            f"computation says {direct_result}. One of them is wrong and the "
+            "certificate attached shows what the encoding actually proves.",
+            certificate=certificate,
+            cnf_satisfiable=satisfiable,
+            direct_result=direct_result,
+        )
+    return cnf_passed, certificate
 
 
 @dataclass(frozen=True)
@@ -73,7 +280,15 @@ class ProvenancePolicyVerifier:
         solver = MinimalIndependentDPLL(n_vars=idx - 1, clauses=test_clauses)
         sat, model = solver.solve()
 
-        passed = bool(sat and not revoked_nodes)
+        passed, _certificate = certify_policy_cnf(
+            satisfiable=sat,
+            direct_result=not revoked_nodes,
+            policy_id="POL-NO-REVOKED-ANCESTORS",
+            target_artifact_id=target_artifact_id,
+            clauses=test_clauses,
+            var_map=var_map,
+            member_value={a_id: "REVOKED" for a_id in revoked_nodes},
+        )
         verdict = VerificationVerdict.VERIFIED if passed else VerificationVerdict.FALSIFIED
 
         if passed:
@@ -123,7 +338,15 @@ class ProvenancePolicyVerifier:
             clauses=test_clauses,
         )
         sat, _ = solver.solve()
-        passed = bool(sat and not inadmissible)
+        passed, _certificate = certify_policy_cnf(
+            satisfiable=sat,
+            direct_result=not inadmissible,
+            policy_id="POL-ALL-ANCESTORS-VALID",
+            target_artifact_id=target_artifact_id,
+            clauses=test_clauses,
+            var_map=var_map,
+            member_value={artifact_id: "NOT_VALID" for artifact_id in inadmissible},
+        )
         verdict = VerificationVerdict.VERIFIED if passed else VerificationVerdict.FALSIFIED
         if passed:
             explanation = (
@@ -179,7 +402,15 @@ class ProvenancePolicyVerifier:
         solver = MinimalIndependentDPLL(n_vars=idx - 1, clauses=test_clauses)
         sat, _ = solver.solve()
 
-        passed = bool(sat and not unapproved)
+        passed, _certificate = certify_policy_cnf(
+            satisfiable=sat,
+            direct_result=not unapproved,
+            policy_id="POL-APPROVED-LICENSES",
+            target_artifact_id=target_artifact_id,
+            clauses=test_clauses,
+            var_map=var_map,
+            member_value={r_id: "UNAPPROVED" for r_id in unapproved},
+        )
         verdict = VerificationVerdict.VERIFIED if passed else VerificationVerdict.FALSIFIED
 
         if passed:

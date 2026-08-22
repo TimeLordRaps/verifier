@@ -1,4 +1,10 @@
-"""Target-neutral VSTD-DATA reference types and receipt mechanisms."""
+"""Target-neutral VSTD-Graph reference types and receipt mechanisms."""
+
+from verifiable.data.graph_level import (
+    GraphCollection,
+    GraphLevelResult,
+    graph_level,
+)
 
 from verifiable.data.models import (
     ArtifactNode,
@@ -32,6 +38,9 @@ __all__ = [
     "RightsSpec",
     "TransformationHyperedge",
     "TransformationType",
+    "GraphCollection",
+    "GraphLevelResult",
+    "graph_level",
     "PolicyEvaluationResult",
     "ProvenancePolicyVerifier",
     "DataIndependentAudit",

@@ -1,6 +1,7 @@
-# VSTD-0.2 — Verification Geometry and Bounded Self-Closure
+# VSTD-2 — Verification Surface
 
-**Version:** `VSTD-0.2`
+**Layer:** 2 of 5 on the object axis (see `LADDER.md`)
+**Receipt wire format:** `schema_version = "VSTD-0.2"` — frozen; see `MIGRATION.md`
 **Status:** Additive experimental standard with an implemented vertical slice
 **Maintainer:** VERIFIABLE
 **Date:** 2026-08-20
@@ -9,14 +10,15 @@
 
 ## 1. Relationship to earlier standards
 
-VSTD-0.2 adds a verification-geometry ontology to VSTD-0.1. It does not replace or
-reinterpret existing VSTD-0.1 or VSTD-DATA-0.1 receipts. A document conforms to this
+VSTD-2 adds a verification-geometry ontology to VSTD-1. It does not replace or
+reinterpret historical receipts whose wire identifiers are `VSTD-0.1` or
+`VSTD-DATA-0.1`. A document conforms to this
 extension only when it declares `schema_version = "VSTD-0.2"`; older validators may
 continue to process their existing receipt kinds unchanged.
 
-VSTD-0.1 answers how a bounded claim carries evidence, provenance, an independent
-judgment, and reproducibility information. VSTD-DATA-0.1 answers how artifacts and
-transformations compose into a provenance hypergraph. VSTD-0.2 answers a different
+VSTD-1 answers how a bounded claim carries evidence, provenance, an independent
+judgment, and reproducibility information. VSTD-Graph-1 answers how artifacts and
+transformations compose into a provenance hypergraph. VSTD-2 answers a different
 question: **what geometry was selected for verification, what did reconstruction
 expose that the geometry missed, and has the sufficiency of the declared closure
 itself been verified?**
@@ -24,7 +26,7 @@ itself been verified?**
 The normative typed slice is implemented by:
 
 - `verifiable.core.geometry`;
-- `receipts/schema/verification_geometry_v0_2.json`; and
+- `receipts/schema/vstd2_receipt.json`; and
 - `tests/test_verification_geometry.py`.
 
 ---
@@ -291,7 +293,7 @@ not evidence of their correctness.
 
 ## 9. Reprogramming compatibility
 
-VSTD-0.2 reserves no universal transformation engine. It remains compatible with the
+VSTD-2 reserves no universal transformation engine. It remains compatible with the
 following future pattern:
 
 ```text
@@ -312,9 +314,9 @@ S1.
 
 ## 10. Conformance and present limits
 
-A VSTD-0.2 geometry document conforms to the implemented vertical slice when:
+A VSTD-2 geometry document conforms to the implemented vertical slice when:
 
-1. it validates against `verification_geometry_v0_2.json`;
+1. it validates against `vstd2_receipt.json`;
 2. `validate_geometry` returns no errors;
 3. every `VERIFIED` judgment cites evidence and a known mechanism;
 4. references and containment are internally consistent;

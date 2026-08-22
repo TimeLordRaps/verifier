@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://verifiable.io/schemas/vstd-data-0.1/receipt.json",
-  "title": "VSTD-DATA-0.1 Dataset Provenance Hypergraph Receipt",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd_graph_receipt.json",
+  "title": "VSTD-Graph Provenance Hypergraph Receipt",
+  "description": "VSTD-Graph receipt. The VSTD-DATA-0.1 wire identifier is frozen for historical Graph-1 receipts; computed_graph_level records the independently computed 1-5 profile when present.",
   "type": "object",
   "required": [
     "schema_version",
@@ -83,6 +84,20 @@
     "reproducibility": {
       "type": "object",
       "required": ["highest_demonstrated_level"]
+    },
+    "computed_graph_level": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["collection_id", "level", "max_level", "blocking_obligations", "witness_digest", "refutation_digest"],
+      "properties": {
+        "collection_id": {"type": "string", "minLength": 1},
+        "level": {"type": "integer", "minimum": 0, "maximum": 5},
+        "max_level": {"const": 5},
+        "blocking_obligations": {"type": "array", "items": {"type": "object"}},
+        "witness_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "refutation_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "explanation": {"type": "string"}
+      }
     }
   }
 }

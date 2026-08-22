@@ -1,6 +1,6 @@
-# VSTD 3 threat model
+# VSTD-3 threat model
 
-**Version:** VSTD-3.0  
+**Layer:** VSTD-3; historical receipt wire identifier `VSTD-3.0`
 **Purpose:** defensive verification and conformance; not offensive exploit guidance
 
 ## Boundary
@@ -80,7 +80,7 @@ mere lack of access.
 
 ## Explicit non-goals
 
-VSTD 3 does not prove global absence of undeclared compute, physical tamper resistance,
+VSTD-3 does not prove global absence of undeclared compute, physical tamper resistance,
 correct model behavior, accurate UTC, legal authorization, confidentiality, vendor
 endorsement, complete fleet enrollment, or safety. Those require separately evidenced
 mechanisms and policies.

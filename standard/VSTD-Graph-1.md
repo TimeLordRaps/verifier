@@ -1,6 +1,7 @@
-# VSTD-DATA-0.1 — VERIFIABLE Standard for Dataset & Computational Hypergraph Provenance
+# VSTD-Graph-1 — Recorded Lineage
 
-**Version:** `VSTD-DATA-0.1`
+**Layer:** 1 of 5 on the graph axis (see `LADDER.md`)
+**Receipt wire format:** `schema_version = "VSTD-DATA-0.1"` — frozen; see `MIGRATION.md`
 **Status:** Project Specification with Implemented Reference Subset
 **Maintainer:** VERIFIABLE
 **Date:** 2026-08-21
@@ -11,13 +12,19 @@
 
 > **Dataset and training provenance is the foundational substrate of computational verifiability: data sits directly upstream of training runs, checkpoints, fine-tuned adapters, evaluations, model behavior, downstream software products, licensing, and attribution.**
 
-`VSTD-DATA-0.1` establishes a content-addressed **Hypergraph Specification** for
+`VSTD-Graph-1` establishes a content-addressed **Hypergraph Specification** for
 capturing recorded and evidenced lineage of datasets, neural weights, and computational
 outputs within a declared observation boundary. It does not infer unobserved history or
 prove that the recorded graph is complete in the real world. Transformations are
 first-class **N-ary Hyperedges**, which represent many-to-many merges, sharding, and
 multi-input processing without flattening those relationships into ambiguous binary
 links.
+
+This document is the first rung of the Graph axis. `VSTD-Graph-2.md` through
+`VSTD-Graph-5.md` apply progressively stronger object and transformation-edge
+requirements to the same closed collection. `LADDER.md` defines the computed
+level and its ceiling certificate; `verifiable.data.graph_level.graph_level`
+implements that computation.
 
 ---
 
@@ -64,7 +71,7 @@ Represents an N-ary causal process consuming inputs and producing outputs:
 
 ## 3. Provenance Completeness Dimensions
 
-`VSTD-DATA-0.1` rejects treating a monolithic score as proof. The reference subset
+`VSTD-Graph-1` rejects treating a monolithic score as proof. The reference subset
 reports six descriptive dimensions plus a disclosed weighted summary:
 
 $$\mathbf{C} = \langle C_{\text{src}}, C_{\text{trans}}, C_{\text{integ}}, C_{\text{lic}}, C_{\text{contrib}}, C_{\text{lineage}} \rangle$$
@@ -128,7 +135,7 @@ When an upstream source $S$ is marked `REVOKED` (e.g. due to copyright claim, da
   bytes can establish whether those bytes match a recorded digest at that observation
   time. Receipt validation alone does not access unbundled upstream files.
 
-### What `VSTD-DATA-0.1` Does NOT Guarantee
+### What `VSTD-Graph-1` Does NOT Guarantee
 - **Real-World Ground Truth**: A hash proves byte identity; it does not prove the data is empirically accurate.
 - **Legal Copyright Validity**: A declared SPDX license string records claimed provenance; it is not a judicial copyright ruling.
 - **Authenticity of declarations**: A digest binds bytes or fields; it does not prove
@@ -136,7 +143,7 @@ When an upstream source $S$ is marked `REVOKED` (e.g. due to copyright claim, da
 - **Complete real-world lineage**: Missing instrumentation, hidden inputs, pre-observation
   contamination, and out-of-band transformations remain outside the graph unless
   independently evidenced.
-- **Automatic physical-file checking**: A stored VSTD-DATA receipt validates its own
+- **Automatic physical-file checking**: A stored VSTD-Graph receipt validates its own
   stable content. It flags a physical-file mismatch only when an adapter supplies and
   rehashes that file.
 - **Translation completeness**: SAT success establishes the encoded formula, not the

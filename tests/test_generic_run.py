@@ -83,12 +83,61 @@ def test_full_lifecycle_capture_validate_inspect_reproduce(tmp_path, capsys):
     data = json.loads(receipt_file.read_text(encoding="utf-8"))
     assert is_generic_run_receipt(data)
     assert data["canonical_digest"] == receipt.canonical_digest
+    layer4 = data["layer4_binding"]
+    assert layer4["verifier"]["implementation_hash"].startswith("sha256:")
+    assert layer4["verifier"]["parser_hash"].startswith("sha256:")
+    assert layer4["resource_bounds"] == {
+        "verification_cost_bound": 0,
+        "memory_bound": 0,
+        "certificate_size_bound": 0,
+    }
+    assert layer4["prior_commitment"] == ""
+    assert layer4["refutation_surface"]["admissible_refutations"] == []
+    assert "PHYSICAL_WORLD_COMPLETENESS" in layer4["refutation_surface"][
+        "excluded_claims"
+    ]
 
     assert validate_run_receipt(out_dir) == 0
     assert inspect_run_receipt(out_dir) == 0
 
     # Default reproduce: artifact rehash only, no side effects.
     assert reproduce_run_receipt(out_dir) == 0
+
+
+def test_new_run_receipt_binds_precommitment_bounds_and_refutation_surface(tmp_path):
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    manifest["prior_commitment"] = "sha256:" + "a" * 64
+    manifest["resource_bounds"] = {
+        "verification_cost_bound": 1000,
+        "memory_bound": 100,
+        "certificate_size_bound": 10000,
+    }
+    manifest["refutation_surface"] = {
+        "admissible_refutations": ["evidence_hash_mismatch"],
+        "excluded_claims": ["PHYSICAL_WORLD_COMPLETENESS"],
+    }
+    receipt = capture_run(manifest, manifest_dir=proj)
+    before = receipt.canonical_digest
+    layer4 = receipt.get_stable_payload()["layer4_binding"]
+    assert layer4["prior_commitment"] == manifest["prior_commitment"]
+    assert layer4["resource_bounds"] == manifest["resource_bounds"]
+    assert layer4["refutation_surface"]["admissible_refutations"] == [
+        "evidence_hash_mismatch"
+    ]
+
+    layer4["prior_commitment"] = "sha256:" + "b" * 64
+    receipt.layer4_binding = layer4
+    assert receipt.compute_and_set_digest() != before
+
+
+def test_historical_generic_run_digest_is_unchanged_by_optional_layer4_block():
+    receipt_path = REPO_ROOT / "examples" / "generic_run" / "receipt.json"
+    if not receipt_path.exists():
+        pytest.skip("historical private-path receipt is intentionally excluded publicly")
+    data = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert "layer4_binding" not in data
+    assert validate_run_receipt(receipt_path) == 0
 
 
 def test_missing_input_fails_closed_without_executing(tmp_path):

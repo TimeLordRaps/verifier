@@ -347,7 +347,7 @@ def test_geometry_digest_is_deterministic() -> None:
 
 def test_typed_geometry_matches_the_published_json_schema() -> None:
     schema = json.loads(
-        Path("receipts/schema/verification_geometry_v0_2.json").read_text(encoding="utf-8")
+        Path("receipts/schema/vstd2_receipt.json").read_text(encoding="utf-8")
     )
     Draft202012Validator.check_schema(schema)
 

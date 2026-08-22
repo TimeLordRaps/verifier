@@ -1,8 +1,8 @@
 # Release procedure
 
-1. Run the declared conformance tests from a clean checkout.
-   For a VSTD 3 release this includes schema regeneration parity, emulator/adversarial
-   tests, adapter epistemic tests, provenance blast radius, and CLI JSON/human smoke.
+1. Run the declared conformance tests from a clean checkout. For the integer-layer
+   release this includes grounded-certificate, tier, bounded-refusal, depth, Graph,
+   schema, emulator/adversarial, provenance-blast-radius, and CLI smoke tests.
 2. Build the source release with the internal allowlist builder and verify its SHA-256.
 3. Extract that release into a new repository worktree; do not push the internal
    development repository or its history.
@@ -21,10 +21,12 @@
    optional profile independently.
    Also run `vstd hardware list --json` and the deterministic virtual probe/verification
    lifecycle; never place the test HMAC key in a committed fixture.
-7. Create the GitHub tag and release only after the public tree, hashes, version, and
-   claim boundaries match.
-8. Let Zenodo archive the GitHub release, then record the issued DOI additively.
-9. Configure PyPI Trusted Publishing against the exact repository and workflow. Require
+7. Require a zero-match boundary scan for private project names, local or home-directory
+   paths, credentials, and personal email addresses.
+8. Create the GitHub tag and release only after the public tree, hashes, version, and
+   claim boundaries match. Existing release tags remain untouched.
+9. Let Zenodo archive the GitHub release, then record the issued DOI additively.
+10. Configure PyPI Trusted Publishing against the exact repository and workflow. Require
    manual approval on the production `pypi` environment.
 
 Do not reuse a wheel built without the fixed `SOURCE_DATE_EPOCH`; ordinary wheel ZIP

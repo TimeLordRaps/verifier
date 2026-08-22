@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd4_certificate.json",
+  "title": "VSTD4-GDC-1 Decision Certificate",
+  "description": "Grounded decision certificate for PASS, FAIL, or bounded UNKNOWN. Semantic and proof checks remain mandatory in the independent kernel.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["header", "formula", "grounding", "decision", "hints"],
+  "properties": {
+    "header": {"$ref": "#/$defs/header"},
+    "formula": {"$ref": "#/$defs/formula"},
+    "grounding": {"$ref": "#/$defs/grounding"},
+    "decision": {"$ref": "#/$defs/decision"},
+    "hints": {"type": "object"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "positiveInteger": {"type": "integer", "minimum": 1},
+    "nonNegativeInteger": {"type": "integer", "minimum": 0},
+    "literal": {"type": "integer", "not": {"const": 0}},
+    "clause": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/literal"},
+      "uniqueItems": true
+    },
+    "formula": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/clause"}
+    },
+    "header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "verdict", "tier", "width", "n_vars", "clause_count", "literal_count", "step_count", "binding"],
+      "properties": {
+        "format": {"const": "VSTD4-GDC-1"},
+        "verdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "tier": {"enum": ["UP", "WIDTH-K", "RES", "SAT-PRESERVING"]},
+        "width": {"$ref": "#/$defs/nonNegativeInteger"},
+        "n_vars": {"$ref": "#/$defs/nonNegativeInteger"},
+        "clause_count": {"$ref": "#/$defs/nonNegativeInteger"},
+        "literal_count": {"$ref": "#/$defs/nonNegativeInteger"},
+        "step_count": {"$ref": "#/$defs/nonNegativeInteger"},
+        "binding": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject", "predicate", "value"],
+      "properties": {
+        "subject": {"type": "string", "minLength": 1},
+        "predicate": {"type": "string", "minLength": 1},
+        "value": {"type": "string"}
+      }
+    },
+    "variableGrounding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["var", "fact"],
+      "properties": {
+        "var": {"$ref": "#/$defs/positiveInteger"},
+        "fact": {"$ref": "#/$defs/fact"}
+      }
+    },
+    "encodingRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_id", "roles", "template"],
+      "properties": {
+        "rule_id": {"type": "string", "pattern": "^RULE:"},
+        "roles": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "template": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [{"enum": [-1, 1]}, {"type": "string", "minLength": 1}],
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      }
+    },
+    "clauseGrounding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clause_index", "rule_id", "bindings", "subjects"],
+      "properties": {
+        "clause_index": {"$ref": "#/$defs/nonNegativeInteger"},
+        "rule_id": {"type": "string", "pattern": "^RULE:"},
+        "bindings": {"type": "object", "additionalProperties": {"$ref": "#/$defs/positiveInteger"}},
+        "subjects": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}}
+      }
+    },
+    "grounding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["variables", "clauses", "rules"],
+      "properties": {
+        "variables": {"type": "array", "items": {"$ref": "#/$defs/variableGrounding"}},
+        "clauses": {"type": "array", "items": {"$ref": "#/$defs/clauseGrounding"}},
+        "rules": {"type": "array", "items": {"$ref": "#/$defs/encodingRule"}}
+      }
+    },
+    "propagationStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clause_index", "forced"],
+      "properties": {
+        "clause_index": {"$ref": "#/$defs/nonNegativeInteger"},
+        "forced": {"$ref": "#/$defs/literal"}
+      }
+    },
+    "propagation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["steps", "conflict_clause_index"],
+      "properties": {
+        "steps": {"type": "array", "items": {"$ref": "#/$defs/propagationStep"}},
+        "conflict_clause_index": {"$ref": "#/$defs/nonNegativeInteger"}
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["steps"],
+      "properties": {"steps": {"type": "array", "items": {"$ref": "#/$defs/clause"}}}
+    },
+    "transcript": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "formula_digest", "declared_bound", "observed_cost", "stopped_at_step", "detail"],
+      "properties": {
+        "reason": {"enum": ["PROOF_BOUND_EXCEEDED", "DEPTH_BOUND_EXCEEDED", "DEPENDENCY_UNAVAILABLE", "DISCLOSURE_UNSATISFIABLE", "ARTIFACT_UNRETRIEVABLE", "VERIFIER_UNAVAILABLE"]},
+        "formula_digest": {"$ref": "#/$defs/digest"},
+        "declared_bound": {"$ref": "#/$defs/nonNegativeInteger"},
+        "observed_cost": {"$ref": "#/$defs/nonNegativeInteger"},
+        "stopped_at_step": {"$ref": "#/$defs/nonNegativeInteger"},
+        "detail": {"type": "string"}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "propagation", "resolution", "transcript"],
+      "properties": {
+        "model": {
+          "type": ["object", "null"],
+          "propertyNames": {"pattern": "^[1-9][0-9]*$"},
+          "additionalProperties": {"type": "boolean"}
+        },
+        "propagation": {"anyOf": [{"$ref": "#/$defs/propagation"}, {"type": "null"}]},
+        "resolution": {"anyOf": [{"$ref": "#/$defs/resolution"}, {"type": "null"}]},
+        "transcript": {"anyOf": [{"$ref": "#/$defs/transcript"}, {"type": "null"}]}
+      }
+    }
+  }
+}

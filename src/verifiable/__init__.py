@@ -5,8 +5,8 @@ from __future__ import annotations
 from importlib import import_module
 from typing import TYPE_CHECKING, Any
 
-__version__ = "0.2.0"
-__standard__ = "VSTD-3.0"
+__version__ = "1.0.0"
+__standard__ = "VSTD-4"
 
 _LAZY_EXPORTS = {
     "VerificationVerdict": ("verifiable.core.checker", "VerificationVerdict"),
@@ -16,6 +16,13 @@ _LAZY_EXPORTS = {
     "capture_run": ("verifiable.core.run", "capture_run"),
     "validate_run_receipt": ("verifiable.core.run", "validate_run_receipt"),
     "VerificationGeometry": ("verifiable.core.geometry", "VerificationGeometry"),
+    "DecisionCertificate": ("verifiable.core.certificate", "DecisionCertificate"),
+    "certificate_from_canonical_bytes": (
+        "verifiable.core.certificate",
+        "certificate_from_canonical_bytes",
+    ),
+    "vstd4_depth": ("verifiable.core.depth", "vstd4_depth"),
+    "require_vstd5_entry": ("verifiable.core.depth", "require_vstd5_entry"),
 }
 
 __all__ = list(_LAZY_EXPORTS)
@@ -38,6 +45,14 @@ def __dir__() -> list[str]:
 if TYPE_CHECKING:
     from verifiable.core.checker import VerificationVerdict as VerificationVerdict
     from verifiable.core.geometry import VerificationGeometry as VerificationGeometry
+    from verifiable.core.certificate import (
+        DecisionCertificate as DecisionCertificate,
+        certificate_from_canonical_bytes as certificate_from_canonical_bytes,
+    )
+    from verifiable.core.depth import (
+        require_vstd5_entry as require_vstd5_entry,
+        vstd4_depth as vstd4_depth,
+    )
     from verifiable.core.receipt import (
         VerifiableReceipt as VerifiableReceipt,
         compute_canonical_digest as compute_canonical_digest,

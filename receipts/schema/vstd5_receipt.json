@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd5_receipt.json",
+  "title": "VSTD-5 Witness Corroboration Receipt (DRAFT)",
+  "$comment": "Draft interface only. A document matching this schema is not proof of independent corroboration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "receipt_id", "claim_id", "claim_binding", "entry_vstd4_depth", "witnesses", "corroborations", "disagreements", "computed_independence"],
+  "properties": {
+    "schema_version": {"const": "VSTD-5-DRAFT"},
+    "status": {"const": "DRAFT"},
+    "receipt_id": {"type": "string", "pattern": "^VFY-5-[A-Za-z0-9._:-]+$"},
+    "claim_id": {"type": "string", "minLength": 1},
+    "claim_binding": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "entry_vstd4_depth": {"const": 14},
+    "witnesses": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/witness"}},
+    "corroborations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/corroboration"}},
+    "disagreements": {"type": "array", "items": {"$ref": "#/$defs/disagreement"}},
+    "computed_independence": {"enum": ["INDEPENDENT", "PARTIALLY_INDEPENDENT", "NOT_INDEPENDENT", "UNKNOWN", "CONFLICTED"]}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"},
+    "witness": {
+      "type": "object", "additionalProperties": false,
+      "required": ["witness_id", "identity_evidence", "independence"],
+      "properties": {
+        "witness_id": {"type": "string", "minLength": 1},
+        "identity_evidence": {"$ref": "#/$defs/digest"},
+        "independence": {
+          "type": "object", "additionalProperties": false,
+          "required": ["shared_control", "shared_code", "shared_trust_root", "shared_evidence_source", "shared_infrastructure", "financial_dependence", "jurisdictional_dependence", "evidence"],
+          "properties": {
+            "shared_control": {"$ref": "#/$defs/triState"}, "shared_code": {"$ref": "#/$defs/triState"},
+            "shared_trust_root": {"$ref": "#/$defs/triState"}, "shared_evidence_source": {"$ref": "#/$defs/triState"},
+            "shared_infrastructure": {"$ref": "#/$defs/triState"}, "financial_dependence": {"$ref": "#/$defs/triState"},
+            "jurisdictional_dependence": {"$ref": "#/$defs/triState"}, "evidence": {"type": "array", "items": {"$ref": "#/$defs/digest"}}
+          }
+        }
+      }
+    },
+    "triState": {"enum": ["YES", "NO", "UNKNOWN"]},
+    "corroboration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["corroboration_id", "witness_id", "class", "vstd4_certificate_digest", "checker_descriptor_digest", "observed_evidence", "result", "observed_at"],
+      "properties": {
+        "corroboration_id": {"type": "string", "minLength": 1}, "witness_id": {"type": "string", "minLength": 1},
+        "class": {"enum": ["PROCUREMENT", "POWER_THERMAL_ENVELOPE", "NETWORK_EGRESS", "VENDOR_TELEMETRY", "FINANCIAL_ATTESTATION", "PHYSICAL_INSPECTION"]},
+        "vstd4_certificate_digest": {"$ref": "#/$defs/digest"}, "checker_descriptor_digest": {"$ref": "#/$defs/digest"},
+        "observed_evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/digest"}},
+        "result": {"enum": ["CORROBORATED", "REFUTED", "UNKNOWN"]}, "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "disagreement": {
+      "type": "object", "additionalProperties": false,
+      "required": ["disagreement_id", "corroboration_ids", "status_effect", "recorded_at"],
+      "properties": {
+        "disagreement_id": {"type": "string", "minLength": 1},
+        "corroboration_ids": {"type": "array", "minItems": 2, "items": {"type": "string"}, "uniqueItems": true},
+        "status_effect": {"enum": ["CHALLENGED", "REVOKED", "UNKNOWN", "CONFLICTED"]},
+        "recorded_at": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

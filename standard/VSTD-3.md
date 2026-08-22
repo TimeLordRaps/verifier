@@ -1,8 +1,10 @@
-# VSTD 3.0 — Universal Accelerator Accountability
+# VSTD-3 — Substrate Accountability
 
-**Status:** implemented project specification  
-**Editor:** Tyler Roost  
-**License:** Apache-2.0  
+**Layer:** 3 of 5 on the object axis (see `LADDER.md`)
+**Receipt wire format:** `schema_version = "VSTD-3.0"` — frozen; see `MIGRATION.md`
+**Status:** implemented project specification
+**Editor:** Tyler Roost
+**License:** Apache-2.0
 **Canonical schema:** `receipts/schema/vstd3_receipt.json`
 
 VSTD is an independent project specification. It is not an accredited, consensus,
@@ -11,7 +13,7 @@ do not imply vendor participation, certification, or endorsement.
 
 ## 1. Scope
 
-VSTD 3 defines an accelerator-neutral evidence path:
+VSTD-3 defines an accelerator-neutral evidence path:
 
 ```text
 Accelerator -> EvidenceSource -> Attestation -> ExecutionAccounting
@@ -302,7 +304,7 @@ exact enrolled member identifiers with observed, missing, and unexpected identif
 > observation interval T.
 
 The completeness of enrollment itself requires separate evidence.
-`PHYSICAL_WORLD_COMPLETENESS` is always `UNSUPPORTED` in ordinary VSTD 3 receipts.
+`PHYSICAL_WORLD_COMPLETENESS` is always `UNSUPPORTED` in ordinary VSTD-3 receipts.
 
 ## 17. Claim lattice and outcomes
 
@@ -342,10 +344,10 @@ attestation; it is an explicit gap or `UNSUPPORTED` result.
 
 Validated hardware sources, identities, measurements, topology, execution,
 accounting, continuity, provider evidence, and receipts become artifact nodes in the
-existing VSTD-DATA hypergraph. Transformations connect those artifacts to existing
+existing VSTD-Graph hypergraph. Transformations connect those artifacts to existing
 model, checkpoint, dataset, evaluation, or deployment artifacts. Revoking upstream
 hardware or firmware evidence therefore reaches downstream artifacts through the
-existing blast-radius algorithm. VSTD 3 does not create a second lineage graph.
+existing blast-radius algorithm. VSTD-3 does not create a second lineage graph.
 
 Composition is transactional and refuses receipts whose recorded `PASS` claims cannot
 be independently reproduced.
@@ -378,21 +380,21 @@ not itself provide access control, encryption at rest, or legal authorization.
 
 ## 22. Interoperability boundary
 
-VSTD 3 can wrap or reference SPDM, DICE/DPE, Caliptra-rooted evidence, RATS/EAT,
+VSTD-3 can wrap or reference SPDM, DICE/DPE, Caliptra-rooted evidence, RATS/EAT,
 PCIe TDISP/IDE state, and vendor formats. It does not reproduce restricted
 specification text. Format support must name the exact parser/verifier version and
 trust anchors. Merely labeling bytes `SPDM`, `EAT`, or `DICE` is not verification.
 
 ## 23. Compatibility
 
-VSTD 3 adds record and enum values. It does not reinterpret VSTD-0.1,
-VSTD-DATA-0.1, VSTD-0.2, or their historical receipts. Existing readers remain valid
-for their versioned surfaces. VSTD 3 hardware nodes use additive artifact and
+VSTD-3 adds record and enum values. It does not reinterpret VSTD-1, VSTD-Graph-1,
+VSTD-2, or their historical wire identifiers. Existing readers remain valid
+for their versioned surfaces. VSTD-3 hardware nodes use additive artifact and
 transformation enum values in the existing hypergraph.
 
 ## 24. Falsification conditions
 
-VSTD 3 conformance is falsified for a claimed surface if any of these occurs:
+VSTD-3 conformance is falsified for a claimed surface if any of these occurs:
 
 - a weak source produces a strong accepted claim;
 - signed bytes or normalized semantic fields can change without detection;
@@ -406,5 +408,5 @@ VSTD 3 conformance is falsified for a claimed surface if any of these occurs:
 - global absence of undeclared compute is derived from an ordinary receipt.
 
 Implementation limitations and the complete threat model are in
-`VSTD3_THREAT_MODEL.md`; vendor requirements are in
-`VSTD3_VENDOR_INTEGRATION.md`.
+`../docs/layers/vstd-3/threat-model.md`; vendor requirements are in
+`../docs/layers/vstd-3/vendor-integration.md`.
