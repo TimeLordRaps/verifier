@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verifiable-standard"
-version = "1.1.0"
+version = "1.1.1"
 description = "Reference implementation for bounded verification receipts and provenance."
 readme = "README.md"
 requires-python = ">=3.10"
