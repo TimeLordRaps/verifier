@@ -33,8 +33,8 @@ exact, publicly resolvable commit.
    private project names, proprietary model identifiers, local or home-directory paths,
    credentials, and personal email addresses.
 6. Create the release tag locally at the exact tested commit. Prefer a cryptographically
-   signed annotated tag when the maintainer's signing key is available. Rebuild using the
-   tag coordinate and compare the new artifacts with the candidate:
+   signed annotated tag when the maintainer's signing key is registered and available.
+   Rebuild using the tag coordinate and compare the new artifacts with the candidate:
 
    ```bash
    git tag -s v1.0.1 FULL_PUBLIC_COMMIT_SHA
@@ -42,8 +42,11 @@ exact, publicly resolvable commit.
      --ref refs/tags/v1.0.1 --release 1.0.1 --output-dir dist/tagged
    ```
 
-   If signing is unavailable, stop and record that the tag itself is unsigned; do not
-   describe a GitHub-verified commit or build attestation as a signed tag.
+   If tag signing is unavailable, an unsigned annotated tag is permitted only through
+   `.github/workflows/release.yml`. That workflow records `UNSIGNED` in the release
+   notes and MUST create GitHub/Sigstore artifact attestations for the source ZIP,
+   wheel, and external manifest. An artifact attestation is not described as a tag
+   signature.
 7. Run the verifier independently before upload:
 
    ```bash
@@ -54,12 +57,20 @@ exact, publicly resolvable commit.
    The manifest's source ref MUST resolve to its recorded public commit. The source ZIP
    file set and every member byte MUST match that commit. CRLF/LF equivalence is not
    accepted as byte identity.
-8. Push the tag only after all preceding checks pass. Publish exactly the tested source
-   ZIP, wheel, and external release manifest. Existing tags and release assets remain
-   untouched; corrections are additive.
-9. If build provenance attestations are enabled, bind them to the exact uploaded asset
-   digests. An attestation complements but does not replace the release manifest or tag
-   signature.
+8. Push the tag only after all preceding checks pass. The tag-triggered release workflow
+   rechecks protected-main ancestry, package version, the successful `conformance-gate`,
+   the full test suite, deterministic build, installed wheel, and artifact manifest.
+   It then attests and publishes exactly the tested source ZIP, wheel, and external
+   release manifest. Existing tags and release assets remain untouched; corrections are
+   additive.
+9. Verify each downloaded asset with both the external manifest and:
+
+   ```bash
+   gh attestation verify PATH_TO_ASSET --repo TimeLordRaps/verifier
+   ```
+
+   An attestation complements but does not replace the release manifest, and it does not
+   turn an unsigned tag into a signed tag.
 10. Let Zenodo archive the GitHub release, then record the issued DOI additively.
 11. Configure PyPI Trusted Publishing against the exact repository and workflow. Require
     manual approval on the production `pypi` environment.
