@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.0.0 - 2026-08-22
+
+- Redesign specification numbers as verification-depth layers: VSTD-1 through
+  VSTD-5 on the object axis and VSTD-Graph-1 through VSTD-Graph-5 on the
+  collection axis.
+- Hard-rename the historical specification paths while preserving issued receipt
+  wire identifiers and the `v0.1.0` and `v0.2.0` release history.
+- Implement the fourteen-rung VSTD-4 refutability ladder and compute depth by
+  iterated satisfiability rather than accepting a declared level.
+- Add the `VSTD4-GDC-1` grounded decision-certificate format, independent bounded
+  checker, Horn/unit-propagation tier, width-bounded and general-resolution tiers,
+  and evidence-bearing `UNKNOWN` results on exhaustion.
+- Add machine-readable refutation surfaces, precommitment envelopes, availability
+  assessment, append-only challenge adjudication, monotonic degradation, and
+  refutability closure.
+- Compute VSTD-Graph level from membership, provenance closure, status, and edge
+  evidence, with a certificate explaining the next unreachable level.
+- Replace fabricated conflict evidence, literal trust-boundary claims, and
+  decorative policy certificates with checked evidence and fail-closed divergence.
+- Publish a draft VSTD-5 witness-corroboration interface. No independent witness
+  implementation or interoperability claim is included.
+- Move layer-specific and profile documentation under `docs/` and publish schemas
+  with stable layer-oriented filenames.
+
 ## 0.2.0 - 2026-08-21
 
 - Implement VSTD-3.0 Universal Accelerator Accountability without changing earlier

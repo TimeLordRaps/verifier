@@ -24,7 +24,7 @@ The reference implementation verifies declared receipt and provenance mechanisms
 does not sandbox arbitrary commands supplied to `verifiable run`; execute only manifests
 you trust, in an isolation boundary appropriate to the command.
 
-For VSTD 3, report parser ambiguity, signature/nonce bypass, canonicalization mismatch,
+For VSTD-3, report parser ambiguity, signature/nonce bypass, canonicalization mismatch,
 continuity fork/replay acceptance, claim-strength escalation, provenance blast-radius
 failure, or accidental credential/raw-evidence disclosure. The HMAC emulator and local
 anchor keys are explicitly test-only and are not production cryptography. Vendor or

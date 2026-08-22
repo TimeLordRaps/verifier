@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verifiable-standard"
-version = "0.2.0"
+version = "1.0.0"
 description = "Reference implementation for bounded verification receipts and provenance."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,6 +35,12 @@ jsonschema = ["jsonschema>=4.18"]
 test = ["pytest>=8.0", "pyyaml>=6.0", "jsonschema>=4.18"]
 
 [project.scripts]
+# `verifier` is the canonical CLI name, matching the repository and project title.
+verifier = "verifiable.runtime.public_cli:main"
+# `verifiable` is retained as a deprecated alias and MUST NOT be removed: published
+# VSTD receipts bind falsification conditions that invoke it by name (see
+# examples/generic_run/receipt.json). Removing it would render already-published
+# refutation instructions unrunnable.
 verifiable = "verifiable.runtime.public_cli:main"
 vstd = "verifiable.runtime.public_cli:main"
 

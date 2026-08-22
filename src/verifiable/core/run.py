@@ -62,6 +62,68 @@ _SNIPPET_LIMIT = 4000
 _DEFAULT_TIMEOUT_SECONDS = 300
 
 
+def _digest_if_available(path: Path, label: str) -> str:
+    try:
+        return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError:
+        return f"UNAVAILABLE:{label}"
+
+
+def _run_layer4_binding(
+    manifest: Mapping[str, Any],
+    *,
+    falsification_condition: str,
+) -> dict[str, Any]:
+    """Bind the verifier, bounds, precommitment, and refutation surface.
+
+    Historical generic-run receipts omit this block and retain their canonical
+    digests. New captures always include it, including explicit empty or
+    undeclared values; absence is evidence of a missing rung, not permission to
+    infer that a bound or precommitment existed.
+    """
+    raw_bounds = manifest.get("resource_bounds", {})
+    if not isinstance(raw_bounds, Mapping):
+        raise RunError("resource_bounds must be an object")
+    bounds: dict[str, int] = {}
+    for name in (
+        "verification_cost_bound",
+        "memory_bound",
+        "certificate_size_bound",
+    ):
+        value = raw_bounds.get(name, 0)
+        if type(value) is not int or value < 0:
+            raise RunError(f"resource_bounds.{name} must be a non-negative integer")
+        bounds[name] = value
+
+    raw_surface = manifest.get("refutation_surface")
+    if raw_surface is not None and not isinstance(raw_surface, Mapping):
+        raise RunError("refutation_surface must be an object")
+    surface = dict(raw_surface or {})
+    surface.setdefault("admissible_refutations", [])
+    surface.setdefault("excluded_claims", ["PHYSICAL_WORLD_COMPLETENESS"])
+    surface.setdefault("legacy_falsification_condition", falsification_condition)
+
+    here = Path(__file__).resolve()
+    specification = here.parents[3] / "standard" / "VSTD-1.md"
+    verifier = {
+        "specification_hash": _digest_if_available(
+            specification, "standard/VSTD-1.md"
+        ),
+        "implementation_hash": _digest_if_available(here, "core/run.py"),
+        "parser_hash": _digest_if_available(here, "core/run.py"),
+        "certificate_format": "VSTD1-GENERIC-RUN",
+        "format_fragment": "CAPTURE,VALIDATE,REPRODUCE",
+        "dependencies": ["python-stdlib"],
+        "deterministic": True,
+    }
+    return {
+        "verifier": verifier,
+        "resource_bounds": bounds,
+        "prior_commitment": str(manifest.get("prior_commitment", "")),
+        "refutation_surface": surface,
+    }
+
+
 class RunError(RuntimeError):
     """Raised for manifest or capture errors that must fail closed."""
 
@@ -235,7 +297,7 @@ class ExternalEvaluationEvidence:
 
 @dataclass(frozen=True)
 class ProvenanceLinkage:
-    """Link from this run to a VSTD-DATA provenance hypergraph artifact.
+    """Link from this run to a VSTD-Graph provenance hypergraph artifact.
 
     Answers "which exact source artifacts and transformations causally
     contributed to this run" by reusing the existing Dataset Provenance
@@ -329,6 +391,7 @@ class GenericRunReceipt:
     claims: RunClaims
     provenance_linkage: tuple[ProvenanceLinkage, ...]
     reproducibility: dict[str, Any]
+    layer4_binding: Optional[dict[str, Any]] = None
     canonical_digest: str = ""
 
     def get_stable_payload(self) -> dict[str, Any]:
@@ -340,7 +403,7 @@ class GenericRunReceipt:
         The exact stdout/stderr SHA-256 hashes ARE included: they are exact
         evidence of execution content, not volatile presentation.
         """
-        return {
+        payload = {
             "schema_version": self.schema_version,
             "receipt_kind": self.receipt_kind,
             "receipt_id": self.receipt_id,
@@ -377,6 +440,9 @@ class GenericRunReceipt:
             "provenance_linkage": [p.to_dict() for p in self.provenance_linkage],
             "reproducibility": self.reproducibility,
         }
+        if self.layer4_binding is not None:
+            payload["layer4_binding"] = self.layer4_binding
+        return payload
 
     def compute_and_set_digest(self) -> str:
         self.canonical_digest = compute_canonical_digest(self.get_stable_payload())
@@ -388,7 +454,7 @@ class GenericRunReceipt:
     def to_dict(self) -> dict[str, Any]:
         if not self.canonical_digest:
             self.compute_and_set_digest()
-        return {
+        payload = {
             "schema_version": self.schema_version,
             "receipt_kind": self.receipt_kind,
             "receipt_id": self.receipt_id,
@@ -406,6 +472,9 @@ class GenericRunReceipt:
             "provenance_linkage": [p.to_dict() for p in self.provenance_linkage],
             "reproducibility": self.reproducibility,
         }
+        if self.layer4_binding is not None:
+            payload["layer4_binding"] = self.layer4_binding
+        return payload
 
     def save_to_directory(self, out_dir: Path) -> Path:
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -843,6 +912,12 @@ def capture_run(
             "supported_levels": supported_levels,
             "reproduction_command": "verifiable reproduce <receipt-dir>",
         },
+        layer4_binding=_run_layer4_binding(
+            manifest,
+            falsification_condition=str(
+                claim_block.get("falsification_condition", "")
+            ),
+        ),
     )
     receipt.compute_and_set_digest()
     return receipt
@@ -850,7 +925,7 @@ def capture_run(
 
 def _rebuild_stable_payload_from_dict(data: Mapping[str, Any]) -> dict[str, Any]:
     src = data.get("source_state", {})
-    return {
+    payload = {
         "schema_version": data.get("schema_version"),
         "receipt_kind": data.get("receipt_kind"),
         "receipt_id": data.get("receipt_id"),
@@ -887,6 +962,9 @@ def _rebuild_stable_payload_from_dict(data: Mapping[str, Any]) -> dict[str, Any]
         "provenance_linkage": data.get("provenance_linkage", []),
         "reproducibility": data.get("reproducibility", {}),
     }
+    if "layer4_binding" in data:
+        payload["layer4_binding"] = data.get("layer4_binding")
+    return payload
 
 
 def is_generic_run_receipt(data: Mapping[str, Any]) -> bool:
@@ -1026,7 +1104,7 @@ def reproduce_run_receipt(receipt_path_or_dir: Path, rerun: bool = False) -> int
 def compute_blast_radius_impacted_artifacts(dataset_receipt_file: Path, revoked_artifact_id: str) -> set[str]:
     """Forward blast radius of a revoked/invalidated artifact, plus the artifact itself.
 
-    Reuses ``ProvenanceHypergraph.blast_radius`` from the existing VSTD-DATA-0.1
+    Reuses ``ProvenanceHypergraph.blast_radius`` from the existing VSTD-Graph-1
     runtime rather than reimplementing graph traversal here.
     """
     from verifiable.data.models import ProvenanceHypergraph

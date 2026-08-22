@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://verifiable.example/schemas/verification_geometry_v0_2.json",
-  "title": "VSTD-0.2 Verification Geometry",
-  "description": "Additive verification-geometry document. Semantic closure rules are enforced by verifiable.core.geometry.validate_geometry.",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd2_receipt.json",
+  "title": "VSTD-2 Verification Surface Receipt",
+  "description": "VSTD-2 verification-surface document. The VSTD-0.2 wire identifier is frozen; semantic closure rules are enforced by verifiable.core.geometry.validate_geometry.",
   "type": "object",
   "additionalProperties": false,
   "required": [

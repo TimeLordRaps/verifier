@@ -1,4 +1,7 @@
-"""Dataset Provenance Hypergraph Data Models & Graph Algorithms for VSTD-DATA-0.1."""
+"""VSTD-Graph provenance models and algorithms.
+
+Graph-1 receipts retain the frozen ``VSTD-DATA-0.1`` wire identifier.
+"""
 
 from __future__ import annotations
 

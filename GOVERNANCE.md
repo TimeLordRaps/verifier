@@ -6,22 +6,28 @@ VSTD is founder-maintained project specification work. Publication makes the tex
 reference implementation inspectable; it does not manufacture multi-stakeholder
 consensus or standards-body recognition.
 
-VSTD-3.0 is implemented for its typed model, strict schema/validator, reference
+VSTD-3 is implemented for its typed model, strict schema/validator, reference
 emulator, offline adapters, provenance composition, and conformance suite. It is not a
 claim that accelerator vendors implemented the firmware contract or accepted the
 specification.
 
-## Version states
+VSTD-4 is implemented for the declared grounded-certificate, computed-depth,
+availability, precommitment, challenge, degradation, and composition surfaces.
+`VSTD4-GDC-1` has no demonstrated independent implementation or external
+interoperability. VSTD-5 remains draft and has no shipped witness procedure.
 
-- **Implemented base:** a version has a published specification, schema or typed model,
+## Layer and release states
+
+- **Implemented base:** a layer has a published specification, schema or typed model,
   executable reference path, and passing conformance tests for its declared surface.
 - **Experimental:** the vocabulary and a bounded vertical slice exist, but independent
   implementations or broader interoperability evidence are still missing.
 - **Challenged:** current evidence no longer supports a previously published claim.
-- **Superseded:** a later version replaces the document through an explicit migration.
+- **Superseded:** an additive correction or migration replaces a bounded document.
 
-Released versions are frozen. Corrections are additive and identify the affected
-version, claim, evidence, and downstream impact.
+Specification layers use integer names; repository releases use semantic versions.
+Released artifacts are frozen. Corrections are additive and identify the affected
+layer, release, claim, evidence, and downstream impact.
 
 ## Change process
 
@@ -32,7 +38,7 @@ version, claim, evidence, and downstream impact.
 5. Obtain maintainer review before merging normative changes.
 
 Normative changes require a versioned proposal. Editorial corrections that do not
-change meaning may be merged without a new standard version but remain visible in
+change meaning may be merged in an additive repository release and remain visible in
 history.
 
 ## Decision rights
@@ -50,5 +56,5 @@ policy or a separate contributor agreement.
 ## Conformance and marks
 
 No organization is currently an accredited VSTD certifier. Implementers may state the
-exact VSTD version, receipt type, tests, and evidence they support. They must not imply
+exact VSTD layer, repository release, receipt type, tests, and evidence they support. They must not imply
 endorsement, comprehensive safety, or verification beyond that surface.

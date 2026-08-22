@@ -1,35 +1,56 @@
 # VSTD / VERIFIABLE
 
-VSTD is an independent open specification and reference implementation for attaching
-bounded, machine-checkable evidence to computational claims and provenance graphs.
+VSTD is an independent open project specification and reference implementation
+for attaching bounded, machine-checkable evidence to computational claims and
+provenance graphs.
 
-**Status:** project specification. VSTD is not an accredited, consensus, IETF, ISO,
-or W3C standard. A `VERIFIED` result is always relative to the declared verification
-surface, mechanisms, evidence, and trust boundaries.
+**Status:** project specification. VSTD is not an accredited, consensus, IETF,
+ISO, or W3C standard. A `VERIFIED` result is always relative to the declared
+coordinate, evidence, mechanisms, bounds, and trust roots.
 
-## What is included
+## The two-axis ladder
 
-- `VSTD-0.1`: claim receipts, independent judgments, provenance, and reproduction levels;
-- `VSTD-DATA-0.1`: content-addressed dataset and computational provenance hypergraphs;
-- experimental `VSTD-0.2`: loci, facets, coordinates, seams, residuals, horizons, and
-  bounded self-closure;
-- `VSTD-3.0`: accelerator-neutral device/firmware evidence, execution accounting,
-  authenticated continuity, partitions/topology, provider evidence, and bounded fleet
-  claims;
-- JSON Schemas for the implemented receipt and geometry documents;
-- a zero-required-dependency Python reference subset;
-- an optional logits-level constraint kernel using one grammar engine at its boundary;
-- deterministic examples and conformance tests.
-- a non-normative competition-evaluation profile for predictive systems and other
-  scored submissions.
+Specification numbers identify verification depth, not revisions:
 
-VSTD 3 includes a 37-profile data-driven accelerator registry, strict NVIDIA/AMD/
-generic offline normalization, provider fixture boundaries, and a virtual firmware
-contract emulator. Current commodity adapters do **not** claim complete mediation.
+| Object mechanics | Closes | Graph dynamics |
+|---|---|---|
+| `VSTD-1` Claim mechanics | malformed or tampered statement | `VSTD-Graph-1` Recorded lineage |
+| `VSTD-2` Verification surface | verdict leaking outside its coordinate | `VSTD-Graph-2` Bounded collection surface |
+| `VSTD-3` Substrate accountability | lying or unaccountable evidence source | `VSTD-Graph-3` Accountable provenance closure |
+| `VSTD-4` Refutability | a claim that cannot leave its declarant and be challenged | `VSTD-Graph-4` Refutable transformation closure |
+| `VSTD-5` Witness corroboration | pseudo-independence | `VSTD-Graph-5` Corroborated verification network |
 
-The public reference package deliberately excludes private operational material and
-repository-specific adapters. Those adapters must declare their own observable seams,
-evidence, and horizons rather than being silently treated as part of VSTD.
+Layers 1 through 4 are self-discernable. Layer 5 requires a second party to
+exist and act. VSTD-5 and the corresponding witness protocol remain **DRAFT** in
+this release.
+
+Read [`standard/LADDER.md`](standard/LADDER.md) first and
+[`standard/MIGRATION.md`](standard/MIGRATION.md) for the historical name and
+wire-format mapping. Higher layers require all lower layers; they do not replace
+them.
+
+## What v1.0.0 includes
+
+- VSTD-1 through VSTD-4 specifications and a draft VSTD-5 interface;
+- VSTD-Graph-1 through VSTD-Graph-5 profiles;
+- a fourteen-rung VSTD-4 depth computation with a certificate explaining the
+  first unreachable rung;
+- `VSTD4-GDC-1`, a grounded three-valued decision certificate whose checker binds
+  the formula to the declared claim rather than checking syntax alone;
+- a trusted kernel physically isolated from solver and policy producers;
+- machine-readable refutation surfaces, precommitment, availability, challenge,
+  degradation, and composition records;
+- computed Graph levels over membership, complete provenance ancestry, admissible
+  status, and transformation-edge evidence;
+- VSTD-3 accelerator-accountability mechanisms and a 37-profile registry;
+- frozen compatibility for historical `VSTD-0.1`, `VSTD-0.2`, `VSTD-3.0`, and
+  `VSTD-DATA-0.1` receipt wire identifiers;
+- JSON Schemas, deterministic examples, and conformance tests.
+
+`VSTD4-GDC-1` is a new project format. No external tooling, independent
+implementation, interoperability deployment, or third-party attack has been
+demonstrated. The reference checker declares exactly which format fragment it
+implements.
 
 ## Install this source release
 
@@ -37,9 +58,12 @@ evidence, and horizons rather than being silently treated as part of VSTD.
 python -m pip install .
 ```
 
-The distribution name is `verifiable-standard`; the import package and command remain
-`verifiable`. The base install has no required third-party runtime dependencies.
-Install only the boundary you need:
+The distribution name is `verifiable-standard`. `verifier` is the canonical
+command. `verifiable` remains a permanent compatibility alias because issued
+receipts bind that command in their falsification instructions.
+
+The base install has no required third-party runtime dependencies. Install only
+the boundary you need:
 
 ```bash
 python -m pip install ".[yaml]"
@@ -51,16 +75,37 @@ python -m pip install ".[jsonschema]"
 ## Capture and check a generic computation
 
 ```bash
-verifiable run examples/generic_run/manifest.json --output /tmp/vstd-receipt
-verifiable inspect /tmp/vstd-receipt
-verifiable validate /tmp/vstd-receipt
-verifiable reproduce /tmp/vstd-receipt --rerun
+verifier run examples/generic_run/manifest.json --output /tmp/vstd-receipt
+verifier inspect /tmp/vstd-receipt
+verifier validate /tmp/vstd-receipt
+verifier reproduce /tmp/vstd-receipt --rerun
 ```
 
-`validate` checks the receipt's stable content. `reproduce --rerun` re-executes a
-generic-run command when the manifest permits it. These operations verify recorded
-execution and artifact relationships; they do not establish empirical truth outside
-the declared surface.
+`validate` checks stable receipt content. `reproduce --rerun` re-executes the
+declared command when permitted. These operations verify recorded execution and
+artifact relationships; they do not establish empirical truth outside the
+declared surface.
+
+## VSTD-4 certificates
+
+The certificate has four soundness-relevant blocks and one untrusted accelerator:
+
+```text
+DecisionCertificate (VSTD4-GDC-1)
+├── header       binding, verdict, cost tier, and declared counts
+├── formula      normalized clauses
+├── grounding    variables to facts; clauses to named rules
+├── decision     model, proof, witness, or bounded transcript
+└── hints        untrusted and strippable
+```
+
+The checker rejects over-budget headers before checking proof steps, rejects tier
+inflation, validates grounding before the decision block, and returns `UNKNOWN`
+when a declared bound is exhausted. A correct proof over a formula grounded to
+the wrong artifact is rejected.
+
+See [`standard/VSTD-4.md`](standard/VSTD-4.md) and
+[`receipts/schema/vstd4_certificate.json`](receipts/schema/vstd4_certificate.json).
 
 ## Accelerator accountability
 
@@ -71,72 +116,50 @@ vstd hardware list --json
 vstd hardware inspect nvidia.hopper --json
 ```
 
-Run the test-only firmware contract emulator, then independently verify its receipt:
+The included firmware emulator and HMAC fixtures are deterministic tests, not
+production hardware roots of trust. Read
+[`docs/layers/vstd-3/threat-model.md`](docs/layers/vstd-3/threat-model.md),
+[`docs/layers/vstd-3/vendor-integration.md`](docs/layers/vstd-3/vendor-integration.md),
+and [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) before publishing a
+hardware claim.
 
-```bash
-vstd hardware emulate \
-  --output /tmp/vstd3/receipt.json \
-  --created-at 2026-08-21T20:00:00Z \
-  --key-id demo-key \
-  --key-hex 1111111111111111111111111111111111111111111111111111111111111111
+## Predictive systems and scored evaluation
 
-vstd hardware verify /tmp/vstd3/receipt.json \
-  --key demo-key=1111111111111111111111111111111111111111111111111111111111111111
-vstd continuity verify /tmp/vstd3/receipt.json \
-  --key demo-key=1111111111111111111111111111111111111111111111111111111111111111
-vstd claims evaluate /tmp/vstd3/receipt.json \
-  --key demo-key=1111111111111111111111111111111111111111111111111111111111111111
-```
+[`docs/profiles/competition-evaluation.md`](docs/profiles/competition-evaluation.md)
+is a non-normative integration profile. It does not claim adoption or endorsement
+by any benchmark, conference, competition, or organizer.
 
-The HMAC key is a deterministic test fixture, not a production secret or physical root
-of trust. Read `VSTD3_THREAT_MODEL.md`, `VSTD3_VENDOR_INTEGRATION.md`, and
-`CLAIMS_AND_LIMITS.md` before publishing a hardware claim.
+A receipt can bind the submission and scorer that produced a recorded result. It
+cannot by itself establish hidden-test integrity, outcome truth, absence of
+leakage, or leaderboard standing.
 
-## Predictive-AI and competition evaluation
+## Claim boundaries
 
-[`COMPETITION_EVALUATION_PROFILE.md`](COMPETITION_EVALUATION_PROFILE.md) maps the
-existing VSTD primitives onto a scored-evaluation chain: dataset snapshot, model or
-agent build, prediction timestamp, submission artifact, evaluator version, outcome
-resolution, and score report. It is a non-normative integration profile, not a claim
-that any conference, competition, benchmark, or organizer has adopted or endorsed
-VSTD.
+Read [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) before using
+`VERIFIED`, `independent`, `provenance`, `complete`, `self-closed`, or
+`refutable` in public wording.
 
-This is where the bounded semantics matter most: a receipt can bind the submission and
-scorer that produced a recorded result, but it cannot by itself establish hidden-test
-integrity, outcome truth, absence of leakage, or leaderboard standing.
-
-## Exactly what claims mean
-
-Read [`CLAIMS_AND_LIMITS.md`](CLAIMS_AND_LIMITS.md) before using `VERIFIED`,
-`independent`, `provenance`, `complete`, or `self-closed` in public wording. It gives a
-plain-language translation for each supported claim, the evidence required, and the
-stronger conclusion that does not follow.
-
-## Why this exists
-
-AI-generated software increases the rate at which code, models, data transformations,
-and claims are produced. VSTD makes their observable lineage and verification boundary
-more inspectable. It can improve auditability, reproducibility, incident analysis, and
-downstream challenge propagation when integrated. It cannot by itself prove general AI
-safety, expose hidden model internals, prevent catastrophic behavior, or compensate for
+VSTD can improve auditability, reproducibility, incident analysis, and challenge
+propagation over observable records. It cannot prove general AI safety, expose
+hidden model internals, establish physical-world completeness, or compensate for
 missing instrumentation.
 
 ## Specification order
 
-1. Read `standard/VSTD-0.1.md` for the base receipt contract.
-2. Read `standard/VSTD-DATA-0.1.md` for provenance hypergraphs.
-3. Read `standard/VSTD-0.2.md` for the experimental verification geometry.
-4. Read `standard/VSTD-3.0.md` for accelerator accountability.
-5. Inspect `receipts/schema/` and the reference modules under `src/verifiable/`.
-6. Run the tests before claiming conformance.
+1. `standard/LADDER.md`
+2. `standard/VSTD-1.md` through `standard/VSTD-5.md`
+3. `standard/VSTD-Graph-1.md` through `standard/VSTD-Graph-5.md`
+4. `receipts/schema/`
+5. `src/verifiable/core/kernel.py` and the producer modules
+6. the conformance tests
 
 ## Project process
 
-See `GOVERNANCE.md`, `CONTRIBUTING.md`, and `SECURITY.md`. Changes that strengthen a
-claim without stronger evidence are non-conforming.
+See `GOVERNANCE.md`, `CONTRIBUTING.md`, `SECURITY.md`, and `RELEASING.md`.
+Changes that strengthen a claim without stronger evidence are non-conforming.
 
 ## License
 
 Apache License 2.0. See `LICENSE` and `NOTICE`. The license includes an express
-patent grant from contributors, subject to its terms. VSTD is not affiliated with or
-endorsed by the Apache Software Foundation.
+patent grant from contributors, subject to its terms. VSTD is not affiliated with
+or endorsed by the Apache Software Foundation.

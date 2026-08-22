@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://verifiable.io/schemas/vstd-0.1/receipt.json",
-  "title": "VSTD-0.1 Verification Receipt",
-  "description": "Schema for canonical VSTD-0.1 machine-readable verification receipts.",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd1_receipt.json",
+  "title": "VSTD-1 Claim Mechanics Receipt",
+  "description": "Schema for VSTD-1 claim-mechanics receipts. The VSTD-0.1 wire identifier is frozen for compatibility.",
   "type": "object",
   "required": [
     "schema_version",

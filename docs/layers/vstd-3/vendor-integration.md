@@ -1,7 +1,7 @@
-# VSTD 3 accelerator vendor integration kit
+# VSTD-3 accelerator vendor integration kit
 
 This is the minimum review surface for a firmware or silicon security team evaluating
-VSTD 3. It does not require adopting VSTD product names in firmware.
+VSTD-3. It does not require adopting VSTD product names in firmware.
 
 ## 1. Select the honest profile
 

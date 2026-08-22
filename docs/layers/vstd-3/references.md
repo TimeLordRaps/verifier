@@ -1,4 +1,4 @@
-# VSTD 3 official public references
+# VSTD-3 official public references
 
 **Retrieved:** 2026-08-21
 

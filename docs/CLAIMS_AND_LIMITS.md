@@ -1,6 +1,6 @@
 # Claims and limits in plain language
 
-**Status:** normative interpretation guide for VSTD-0.1, VSTD-DATA-0.1, and VSTD-3.0
+**Status:** normative interpretation guide for the VSTD object and Graph ladders
 
 This guide translates VSTD claim language into ordinary language. When a short claim
 conflicts with the bounded wording here, the bounded wording controls.
@@ -22,7 +22,7 @@ safe, complete, permanent, legally authorized, or endorsed.
 |---|---|---|---|---|
 | “This receipt's stable content has not changed.” | **Yes, after validation passes.** | The validator recomputes the canonical digest over the specified stable fields and compares it with the recorded digest. | Receipt bytes, canonicalization version, recorded digest, passing validator result. | The statements inside the receipt are true or authentic. |
 | “These observed bytes match this SHA-256 digest.” | **Yes, conditionally.** | A named mechanism can hash accessible bytes at an observation time and compare them with the recorded digest. | The bytes, hashing mechanism, observation time, expected digest, comparison result. | The bytes came from the claimed source, existed before observation, are uncontaminated, or are legally usable. |
-| “VSTD-DATA records this lineage graph.” | **Yes.** | The receipt binds the stored artifact nodes, transformation edges, roles, statuses, and declarations. | Valid receipt and structurally valid hypergraph. | The graph contains every real-world input or transformation. |
+| “VSTD-Graph records this lineage graph.” | **Yes.** | The receipt binds the stored artifact nodes, transformation edges, roles, statuses, and declarations. Historical Graph-1 receipts retain the `VSTD-DATA-0.1` wire identifier. | Valid receipt and structurally valid hypergraph. | The graph contains every real-world input or transformation. |
 | “This is the complete provenance of the model or dataset.” | **No, unless completeness is independently evidenced for the declared boundary.** | A graph cannot infer hidden inputs, pre-observation history, out-of-band processing, or missing instrumentation. | Independent coverage evidence for every declared boundary plus explicit horizons outside it. | That a high coverage summary proves complete real-world lineage. |
 | “This transformation actually ran and produced this output.” | **Only with execution evidence.** | Software, parameters, and environment fields are declarations until a run trace, rerun, attestation, or equivalent evidence binds execution to the output. | Identified inputs and outputs, execution trace or rerun, software identity, parameters, environment, and evidence classification. | Recording a script name or commit proves execution. |
 | “The recorded Boolean provenance policy passed.” | **Yes, when the policy result validates.** | The reference solver evaluates the recorded CNF formula. | Formula, variable map, graph snapshot, solver identity, passing result. | The prose-to-formula translation was complete, the external facts were true, or broader policy compliance was established. |
@@ -31,11 +31,31 @@ safe, complete, permanent, legally authorized, or endorsed.
 | “The recorded SPDX metadata matches the allowlist.” | **Yes, if the exact metadata policy passes.** | The policy compares recorded license identifiers with the declared allowlist. | Rights records, roots, allowlist, passing policy result. | Copyright ownership, license authenticity, compatibility, fair use, or a legal ruling. |
 | “This result reproduced bitwise.” | **Yes, for the declared outputs after a passing rerun.** | The rerun produced byte-identical declared output artifacts. | Original receipt, runnable command, captured inputs, environment boundary, rerun outputs, byte comparison. | All environments will reproduce it or the computation is empirically correct. |
 | “This was independently verified.” | **Only when the relevant independence seam is demonstrated.** | Independence requires separation from the producer's relevant state and logic plus a declared trusted computing base. | Producer/auditor boundary, TCB, source identities, isolation evidence, independent result. | Running the bundled verifier on its own output is automatically independent. |
-| “This verification surface is self-closed.” | **Only if every VSTD-0.2 self-closure condition passes.** | Self-closure requires ordinary closure, resolved material residuals, discharged valences, post-verified mechanisms, no unresolved trust-root horizon, and contiguous verification orders. | Complete geometry document and passing closure assessment with no blockers. | Universal truth, infinite regress closure, permanent validity, or verification outside the surface. |
+| “This verification surface is self-closed.” | **Only if every VSTD-2 self-closure condition passes.** | Self-closure requires ordinary closure, resolved material residuals, discharged valences, post-verified mechanisms, no unresolved trust-root horizon, and contiguous verification orders. | Complete geometry document and passing closure assessment with no blockers. | Universal truth, infinite regress closure, permanent validity, or verification outside the surface. |
 | “This competition submission and score are bound together.” | **Yes, conditionally.** | A receipt can bind identified submission bytes, evaluator version, raw metrics, and deterministic score derivation. | Submission digest, evaluator/scorer identity, environment, raw metrics, score rule, receipt. | Hidden-test integrity, no leakage, leaderboard ranking, prize eligibility, or organizer acceptance. |
 | “A challenge to this recorded ancestor affects these recorded descendants.” | **Yes.** | Blast radius is forward reachability over the stored graph. | Challenged artifact ID and bound hypergraph. | Historical receipts were automatically mutated or that unrecorded downstream systems were found. |
 
-## VSTD 3 accelerator claim translations
+## VSTD-4 grounded-decision claim translations
+
+`VSTD4-GDC-1` makes a decision certificate independently checkable against an
+explicit claim coordinate, formula, grounding map, verifier identity, resource
+bounds, and prior commitment. It does not make the certificate independent of
+the evidence source or make the grounded claim true outside that coordinate.
+
+| Claim | Bounded translation | Required qualification | Prohibited stronger inference |
+|---|---|---|---|
+| “This VSTD4-GDC-1 certificate was accepted.” | The identified reference kernel accepted the exact canonical certificate under the declared claim binding, fragment, verifier, and resource bounds. | Name the certificate digest, implementation commit, claim coordinate, cost tier, bounds, and kernel result. | The underlying evidence is authentic, the policy captured every intended condition, or the claim is globally true. |
+| “This decision is grounded.” | Every variable and clause in the accepted certificate maps to declared subjects, predicates, values, and encoding rules whose roots are bound by the certificate. | Preserve the evidence root, policy root, grounding map, and exclusions. | Unrecorded evidence does not exist, the grounding source is independent, or the physical world is completely represented. |
+| “`vstd4_depth = k`.” | Rungs `1..k` have accepted evidence in dependency order and, when `k < 14`, an accepted ceiling certificate refutes or blocks rung `k+1`. | Name the rung profile, witness certificates, ceiling certificate, budgets, and horizons. | Rungs above `k` are universally impossible or no proof can ever be found. |
+| “The result is refutable.” | The published result exposes a machine-checkable falsification surface and admissible counterevidence within the declared boundary. | Name that surface, the admissible counterevidence, exclusions, and decision rule. | A separate party actually attempted refutation or independently witnessed the evidence. |
+| “The verifier returned `UNKNOWN`.” | The declared check could not establish `PASS` or `FAIL` within the implemented fragment, available evidence, or resource bound. | Preserve the indeterminacy reason and transcript. | The proposition is false, no proof exists, or a larger bound could not decide it. |
+| “The artifact is ready for VSTD-5 evaluation.” | The VSTD-4 result reached depth 14 with an accepted `PASS` witness and no ceiling refutation. | This is only the mechanical entry gate implemented by `require_vstd5_entry`. | VSTD-5 conformance, independent witnessing, or external certification has occurred. |
+
+The public reference implementation and its tests are one implementation. This
+release does not claim an external implementation, interoperability result,
+security audit, independent witness, or third-party certification.
+
+## VSTD-3 accelerator claim translations
 
 Every `PASS` below is conditional on full receipt validation with the required trust
 keys and appraisal inputs. A recorded `verification_state: VERIFIED` is not enough by
@@ -86,19 +106,36 @@ claim.
 
 ## Safe claim template
 
-> Using VSTD-DATA-0.1 at commit `<commit>`, receipt `<receipt-id>` validated the stored
+> Using VSTD-Graph-1 at commit `<commit>`, receipt `<receipt-id>` validated the stored
 > provenance graph and replayed its declared graph mechanisms for target `<artifact>`.
 > This establishes receipt integrity and the stated recorded-graph results. It does not
 > establish complete real-world lineage, legal rights, physical-file identity without a
 > rehashing adapter, or truth outside the declared surface.
 
-VSTD 3 safe template:
+VSTD-3 safe template:
 
-> Using VSTD-3.0 at commit `<commit>`, verifier `<mechanism/version>` validated receipt
+> Using VSTD-3 at commit `<commit>`, verifier `<mechanism/version>` validated receipt
 > `<receipt-id>` for device/logical boundary `<boundary>` and interval `<interval>`.
 > Claim `<claim>` returned `<PASS|FAIL|UNKNOWN|UNSUPPORTED>` using evidence
 > `<evidence-ids>`. This says `<bounded translation>`. It does not say
 > `<prohibited inference>`.
+
+VSTD-4 safe template:
+
+> Using VSTD4-GDC-1 at commit `<commit>`, kernel `<descriptor>` accepted
+> certificate `<digest>` for claim coordinate `<coordinate>` at tier `<tier>`
+> within bounds `<bounds>`. The result was `<PASS|FAIL|UNKNOWN>` and its
+> machine-checkable refutation surface was `<surface>`. This establishes only
+> the grounded decision within the bound roots and exclusions; it does not
+> establish evidence authenticity, complete policy coverage, independent
+> witnessing, or truth outside the coordinate.
+
+VSTD-5 draft boundary template:
+
+> The artifact passed the implemented VSTD-5 entry gate because its VSTD-4
+> result reached depth 14 with an accepted `PASS` witness. VSTD-5 remains a
+> draft specification and this release implements no VSTD-5 witness procedure.
+> Therefore no VSTD-5 conformance or independent-witness claim is made.
 
 ## Prohibited shortcuts
 
@@ -108,6 +145,10 @@ Do not publish any of these without the missing qualification:
 - “VSTD proves the dataset is clean.”
 - “VSTD proves the license is valid.”
 - “VSTD independently verifies itself.”
+- “A VSTD-4 result is independently verified” when no separate witnessing seam was
+  demonstrated.
+- “`UNKNOWN` proves no proof exists” or “the next rung is impossible.”
+- “VSTD-5 verified” based only on passing the VSTD-5 entry gate.
 - “VSTD proves the model is safe.”
 - “VSTD verifies the competition result.”
 - “Completely verified” when any material residual, valence, mechanism, order, or trust

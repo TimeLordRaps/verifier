@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json",
+  "title": "VSTD-4 Refutability Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "receipt_id", "claim_id", "binding", "vstd4_depth", "rung_evidence", "witness", "ceiling_refutation", "blocking_rungs", "status"],
+  "properties": {
+    "schema_version": {"const": "VSTD-4"},
+    "receipt_id": {"type": "string", "pattern": "^VFY-4-[A-Za-z0-9._:-]+$"},
+    "claim_id": {"type": "string", "minLength": 1},
+    "binding": {"$ref": "#/$defs/binding"},
+    "vstd4_depth": {"type": "integer", "minimum": 0, "maximum": 14},
+    "rung_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "4.1": {"$ref": "#/$defs/evidenceRef"}, "4.2": {"$ref": "#/$defs/evidenceRef"},
+        "4.3": {"$ref": "#/$defs/evidenceRef"}, "4.4": {"$ref": "#/$defs/evidenceRef"},
+        "4.5": {"$ref": "#/$defs/evidenceRef"}, "4.6": {"$ref": "#/$defs/evidenceRef"},
+        "4.7": {"$ref": "#/$defs/evidenceRef"}, "4.8": {"$ref": "#/$defs/evidenceRef"},
+        "4.9": {"$ref": "#/$defs/evidenceRef"}, "4.10": {"$ref": "#/$defs/evidenceRef"},
+        "4.11": {"$ref": "#/$defs/evidenceRef"}, "4.12": {"$ref": "#/$defs/evidenceRef"},
+        "4.13": {"$ref": "#/$defs/evidenceRef"}, "4.14": {"$ref": "#/$defs/evidenceRef"}
+      }
+    },
+    "witness": {"anyOf": [{"$ref": "vstd4_certificate.json"}, {"type": "null"}]},
+    "ceiling_refutation": {"anyOf": [{"$ref": "vstd4_certificate.json"}, {"type": "null"}]},
+    "blocking_rungs": {"type": "array", "items": {"pattern": "^4\\.(?:[1-9]|1[0-4])$"}, "uniqueItems": true},
+    "status": {"enum": ["VALID", "CHALLENGED", "REVOKED", "STALE", "UNKNOWN"]},
+    "refutation_surface": {"type": "object"},
+    "precommitment_envelope": {"type": "object"},
+    "availability": {"type": "array", "items": {"type": "object"}},
+    "challenge_records": {"type": "array", "items": {"type": "object"}},
+    "refutability_closure": {"type": ["object", "null"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"vstd4_depth": {"const": 14}}},
+      "then": {"properties": {"witness": {"type": "object"}, "ceiling_refutation": {"type": "null"}}},
+      "else": {"properties": {"ceiling_refutation": {"type": "object"}}}
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"},
+    "evidenceRef": {"type": "string", "minLength": 1},
+    "coordinate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["subject", "predicate", "parameters"],
+      "properties": {"subject": {"type": "string", "minLength": 1}, "predicate": {"type": "string", "minLength": 1}, "parameters": {"type": "object", "additionalProperties": {"type": "string"}}}
+    },
+    "bounds": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verification_cost_bound", "memory_bound", "certificate_size_bound"],
+      "properties": {"verification_cost_bound": {"type": "integer", "minimum": 0}, "memory_bound": {"type": "integer", "minimum": 0}, "certificate_size_bound": {"type": "integer", "minimum": 0}}
+    },
+    "verifier": {
+      "type": "object", "additionalProperties": false,
+      "required": ["specification_hash", "implementation_hash", "parser_hash", "certificate_format", "format_fragment", "dependencies", "deterministic"],
+      "properties": {
+        "specification_hash": {"$ref": "#/$defs/digest"}, "implementation_hash": {"$ref": "#/$defs/digest"}, "parser_hash": {"$ref": "#/$defs/digest"},
+        "certificate_format": {"const": "VSTD4-GDC-1"}, "format_fragment": {"type": "string", "minLength": 1}, "dependencies": {"type": "array", "items": {"type": "string"}}, "deterministic": {"const": true}
+      }
+    },
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim", "coordinate", "policy_root", "evidence_root", "verifier", "bounds", "prior_commitment"],
+      "properties": {
+        "claim": {"type": "string", "minLength": 1}, "coordinate": {"$ref": "#/$defs/coordinate"},
+        "policy_root": {"$ref": "#/$defs/digest"}, "evidence_root": {"$ref": "#/$defs/digest"},
+        "verifier": {"$ref": "#/$defs/verifier"}, "bounds": {"$ref": "#/$defs/bounds"}, "prior_commitment": {"type": "string"}
+      }
+    }
+  }
+}
