@@ -2,14 +2,15 @@
   "authorized_transcript": {
     "challenged_reported_skill": 0.34,
     "committed_hidden_fixture": "sha256:6dd95a59a115fa3bd6e1bee79949d482158f29bb8e4bf94702cc7c161fe7ebf2",
-    "committed_organizer_log": "sha256:a4606ee3b56b3bf564e4cf2595e1e371fe310aaf580fb2a53803a3b51bf1e4b7",
+    "committed_organizer_log": "sha256:3116827beaf96ad9b31b064b8a48fa8b55fbc8a030adf914f92e347bf674423a",
+    "committed_scored_schema": "sha256:93862e714744038052a7cd9e4e9be15506ec607ebb9d9de97944499c65f82a67",
     "expected_reported_skill": 0.33,
     "match": false,
     "publicly_reproducible": false,
     "records_disclosed": 0,
     "transcript_id": "VSTD-SB-SYNTH-001-AUTHORIZED-001"
   },
-  "challenge_digest": "sha256:4f7b91a84ebbdbd38790e0682125083660b1bf7d484ffedb61a2f065720f8ab0",
+  "challenge_digest": "sha256:9ce25775826ef90f3eea0abdaa62268c4e5ce34092e63e2cc6cc88248a9395d6",
   "challenge_format": "VSTD-CLOSED-EVALUATION-CHALLENGE-0.1",
   "challenge_id": "VSTD-SB-SYNTH-001-CHALLENGE-001",
   "deliberate_mutation": {
@@ -19,7 +20,7 @@
     "purpose": "Exercise the declared aggregate-result refutation without revealing hidden records."
   },
   "filing": {
-    "challenge_certificate": "sha256:9fac89c4b192cbb70a860a34d0d5d3373e2d7abb6ccf2892dce7ad8d0aaf5084",
+    "challenge_certificate": "sha256:bf0cfa74a902600fb69eb0d161a78b109f7276b3a4620658f969c781d1ec7321",
     "challenge_type": "metric_recomputation_mismatch",
     "challenged_predicate": "participant_visible_phase_1_score",
     "counterevidence": "The authorized transcript bound to the committed hidden fixture and organizer log returns participant-visible reported skill 0.33 rather than the mutant value 0.34.",
@@ -115,7 +116,7 @@
       }
     ]
   },
-  "target_packet_digest": "sha256:07daaefacbd6edd986ecbb4c13a0d90f423dd993469bcc3ca61aa109b0a7036e",
+  "target_packet_digest": "sha256:f182bfce5a5ae8e7137795300d42e285f365e6707b7c3517b3cee7b02331963b",
   "transitions": {
     "after_authorized_adjudication": "REVOKED",
     "after_public_filing": "CHALLENGED"

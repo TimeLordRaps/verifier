@@ -22,10 +22,11 @@ observed at the coordinate in `public_packet.json`. It does not establish a prot
 run, hosted runner parity, a leaderboard entry, public score recomputation, organizer
 review, or independent verification.
 
-The public packet binds every verdict-critical artifact. Public source, the exact
-submission archive, the generated schema, and the aggregate result accompany the packet.
-The hidden synthetic respondent table, organizer log, and execution transcript have
-content addresses, evaluator-only locators, and a retention commitment through
+The public packet binds every verdict-critical artifact. Canonical upstream Git-blob
+bytes, the exact submission archive, an LF-normalized public rendering of the generated
+schema, and the aggregate result accompany the packet. The exact scored schema, hidden
+synthetic respondent table, organizer log, and execution transcript have content
+addresses, evaluator-only locators, and a retention commitment through
 `2026-09-30T23:59:59Z`. Their derived level is `AVAILABLE`, not `PORTABLE`. If that
 commitment is not renewed, the packet becomes stale; a digest alone cannot keep it
 available.

@@ -74,7 +74,8 @@ EVIDENCE_POLICY = {
         "SELF_CONTAINED",
     ),
     "submission-archive": (True, "public", "SELF_CONTAINED"),
-    "generated-sandbox-schema": (True, "public", "SELF_CONTAINED"),
+    "public-sandbox-schema-view": (False, "public", "SELF_CONTAINED"),
+    "scored-sandbox-schema": (True, "access-controlled", "AVAILABLE"),
     "hidden-synthetic-fixture": (True, "access-controlled", "AVAILABLE"),
     "organizer-log": (True, "access-controlled", "AVAILABLE"),
     "execution-transcript": (True, "access-controlled", "AVAILABLE"),
@@ -352,7 +353,7 @@ def verify_packet(document: dict[str, Any]) -> dict[str, Any]:
     if (
         reported["status"] != "PASS"
         or reported["reported_skill"] != 0.33
-        or reported["printed_result"] != "PASS  0.3300  (35.2s)"
+        or reported["printed_result"] != "PASS  0.3300  (35.7s)"
         or reported["phase"] != 1
     ):
         raise PacketError("reported result is malformed")
@@ -550,6 +551,7 @@ def verify_challenge(packet: dict[str, Any], document: dict[str, Any]) -> dict[s
         {
             "transcript_id",
             "committed_hidden_fixture",
+            "committed_scored_schema",
             "committed_organizer_log",
             "expected_reported_skill",
             "challenged_reported_skill",
@@ -573,6 +575,8 @@ def verify_challenge(packet: dict[str, Any], document: dict[str, Any]) -> dict[s
     }
     if transcript["committed_hidden_fixture"] != inventory_addresses.get("hidden-synthetic-fixture"):
         raise PacketError("authorized transcript is not bound to the hidden synthetic fixture")
+    if transcript["committed_scored_schema"] != inventory_addresses.get("scored-sandbox-schema"):
+        raise PacketError("authorized transcript is not bound to the exact scored schema")
     if transcript["committed_organizer_log"] != inventory_addresses.get("organizer-log"):
         raise PacketError("authorized transcript is not bound to the organizer log")
 

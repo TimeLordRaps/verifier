@@ -37,7 +37,7 @@ def test_public_packet_and_non_disclosing_challenge_verify() -> None:
     result = MODULE.verify_all()
     assert result["packet"] == {
         "packet_id": "VSTD-SB-SYNTH-001",
-        "packet_digest": "sha256:07daaefacbd6edd986ecbb4c13a0d90f423dd993469bcc3ca61aa109b0a7036e",
+        "packet_digest": "sha256:f182bfce5a5ae8e7137795300d42e285f365e6707b7c3517b3cee7b02331963b",
         "availability_floor": "AVAILABLE",
         "public_reproduction": "UNAVAILABLE",
         "claim_status": "RECORDED_UNDER_DECLARED_SYNTHETIC_EVALUATOR",

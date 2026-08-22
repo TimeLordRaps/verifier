@@ -7,7 +7,8 @@ The source snapshot in this example is copied from:
 - License: MIT, reproduced byte-for-byte at [`source_snapshot/LICENSE`](source_snapshot/LICENSE)
 
 `public_packet.json` records the SHA-256 digest, byte length, pinned source URL, and local
-snapshot path for every copied file. `verify_packet.py` refuses any mismatch.
+snapshot path for every copied file. Each snapshot is the canonical Git-blob byte stream,
+not a platform newline conversion. `verify_packet.py` refuses any mismatch.
 
 The copied files are:
 
