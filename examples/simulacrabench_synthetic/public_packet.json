@@ -1,0 +1,549 @@
+{
+  "availability_summary": {
+    "accepted": true,
+    "derived_floor": "AVAILABLE",
+    "limiting_artifacts": [
+      "scored-sandbox-schema",
+      "hidden-synthetic-fixture",
+      "organizer-log",
+      "execution-transcript"
+    ],
+    "public_reproduction": "UNAVAILABLE",
+    "required": "AVAILABLE"
+  },
+  "claim": {
+    "claim_id": "VSTD-SB-SYNTH-001-RESULT",
+    "coordinate": {
+      "parameters": {
+        "execution_mode": "local synthetic rehearsal",
+        "network_control": "score.py in-process socket denial",
+        "phase": "1",
+        "sandbox_size": "12000 synthetic respondents",
+        "schema": "data/sample.json",
+        "scoring_seed": "20260822",
+        "source_commit": "1bb2d46026fe0d91979448c3d916506be0608513"
+      },
+      "predicate": "participant_visible_phase_1_score",
+      "subject": "SimulacraBench marginal-counts baseline on a committed synthetic fixture"
+    },
+    "does_not_establish": [
+      "a run on SimulacraBench protected data",
+      "hosted runner or hardware parity",
+      "a leaderboard entry",
+      "public recomputation of the hidden-fixture score",
+      "organizer adoption, endorsement, or review",
+      "independent verification or a VSTD-5 witness",
+      "an aggregate VSTD-4 depth claim"
+    ],
+    "statement": "The pinned SimulacraBench phase-1 scorer evaluated the pinned marginal-counts baseline against the committed 12,000-respondent synthetic sandbox in a local rehearsal with scoring seed 20260822 and returned PASS with participant-visible reported skill 0.33.",
+    "status": "RECORDED_UNDER_DECLARED_SYNTHETIC_EVALUATOR"
+  },
+  "disclosure_interface": {
+    "checker_receives": [
+      "the declared evaluator receives all committed bytes",
+      "the public checker receives commitments, public source, the exact submission archive, and aggregate output only"
+    ],
+    "checker_returns": [
+      "match or mismatch for the participant-visible aggregate",
+      "artifact availability or hash failure",
+      "no record-level data"
+    ],
+    "committed": [
+      "submission archive and source",
+      "official scorer and configuration",
+      "synthetic fixture",
+      "organizer log",
+      "execution transcript",
+      "participant-visible result"
+    ],
+    "does_not_follow": [
+      "A public reader cannot recompute the hidden-fixture score.",
+      "Availability to the declared evaluator is not portability to arbitrary reviewers.",
+      "A digest alone does not prove the committed private bytes are retrievable or correct."
+    ],
+    "predicate_checked": "Whether the committed scorer, submission, phase, seed, and hidden synthetic fixture produce the committed participant-visible status and reported skill."
+  },
+  "evidence_inventory": [
+    {
+      "anonymous_access": false,
+      "artifact_id": "upstream-01-README-md",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "source_snapshot/README.md",
+      "content_address": "sha256:a552ccd52d88607ee3e2da8c8ad46d8a01b0187a61b526ae9a8486e0ead58371",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read source_snapshot/README.md from this example.",
+      "role": "upstream protocol documentation",
+      "verdict_critical": false
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "upstream-02-LICENSE",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "source_snapshot/LICENSE",
+      "content_address": "sha256:f38d690effe75689378dd6cb4376ac4204e41cac540990fa4a5800d15d4f5663",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read source_snapshot/LICENSE from this example.",
+      "role": "upstream license",
+      "verdict_critical": false
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "upstream-03-config-yml",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "source_snapshot/config.yml",
+      "content_address": "sha256:1257f878c9345225c4904108f7d83e6fa680ef2efde1809a0a2d5d4907fbd474",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read source_snapshot/config.yml from this example.",
+      "role": "runner and phase configuration",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "upstream-04-data-sample-json",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "source_snapshot/data/sample.json",
+      "content_address": "sha256:49a159de7082ba661bf7f642f4758207f74bf7a94ef62cca10c95b653502c4dc",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read source_snapshot/data/sample.json from this example.",
+      "role": "public schema source",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "upstream-05-make_sandbox-py",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "source_snapshot/make_sandbox.py",
+      "content_address": "sha256:7121c6e0fb6e5e7e1d0810126969c3273f37f0c3f1a9adf675772b6763ace98b",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read source_snapshot/make_sandbox.py from this example.",
+      "role": "synthetic fixture generator",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "upstream-06-score-py",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "source_snapshot/score.py",
+      "content_address": "sha256:d1853f2af6630d3cace2a57c94be51e7b317ff697b531b21553aea21c11f8090",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read source_snapshot/score.py from this example.",
+      "role": "official phase scorer",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "upstream-07-baseline-marginal_counts-main-py",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "source_snapshot/baseline/marginal_counts/main.py",
+      "content_address": "sha256:a283c391b2598bc1cb4c108e02fc9f96e019a5fdcec23880bd0458c1ae1308e7",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read source_snapshot/baseline/marginal_counts/main.py from this example.",
+      "role": "submitted baseline program",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "upstream-08-baseline-marginal_counts-requirements-txt",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "source_snapshot/baseline/marginal_counts/requirements.txt",
+      "content_address": "sha256:21fd07ab6f4f4ce9795aeb82fc039e44ca0d32c553894099c121bb8e840227ac",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read source_snapshot/baseline/marginal_counts/requirements.txt from this example.",
+      "role": "submitted dependency declaration",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "upstream-09-tools-check_submission_zip-py",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "source_snapshot/tools/check_submission_zip.py",
+      "content_address": "sha256:e1f7316642f440ece2aedd6e149f5f0a47c108fc836c602815fdd026aeee3d8f",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read source_snapshot/tools/check_submission_zip.py from this example.",
+      "role": "official submission archive checker",
+      "verdict_critical": false
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "submission-archive",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "artifacts/marginal_counts_submission.zip",
+      "content_address": "sha256:81cf1a7300431176a7546349580343401732f181f234f62e8f61ada2b25408a8",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read artifacts/marginal_counts_submission.zip from this example.",
+      "role": "exact submitted ZIP accepted by the pinned official archive checker",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "public-sandbox-schema-view",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "artifacts/sandbox_schema.json",
+      "content_address": "sha256:a1436f8d21626de77f3ee4ad2ac31954d33fa005a72f1633e1698c82f13009ba",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read artifacts/sandbox_schema.json from this example.",
+      "role": "LF-normalized public rendering of the generated sandbox schema",
+      "verdict_critical": false
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "scored-sandbox-schema",
+      "assessed_level": "AVAILABLE",
+      "bundle_path": "",
+      "content_address": "sha256:93862e714744038052a7cd9e4e9be15506ec607ebb9d9de97944499c65f82a67",
+      "declared_level": "AVAILABLE",
+      "disclosure": "access-controlled",
+      "embedded": false,
+      "locator": "evaluator-vault://simulacrabench-synthetic/VSTD-SB-SYNTH-001/sandbox/schema.json",
+      "retention": {
+        "custodian": "VSTD synthetic evaluator; founder-operated; not independent",
+        "horizon": "2026-09-30T23:59:59Z",
+        "replicas": 1
+      },
+      "retrieval_procedure": "The declared evaluator retrieves the artifact by packet ID and content address; no public credential or record-level response is issued.",
+      "role": "exact schema bytes materialized into the scored synthetic sandbox",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "hidden-synthetic-fixture",
+      "assessed_level": "AVAILABLE",
+      "bundle_path": "",
+      "content_address": "sha256:6dd95a59a115fa3bd6e1bee79949d482158f29bb8e4bf94702cc7c161fe7ebf2",
+      "declared_level": "AVAILABLE",
+      "disclosure": "access-controlled",
+      "embedded": false,
+      "locator": "evaluator-vault://simulacrabench-synthetic/VSTD-SB-SYNTH-001/sandbox/respondents.parquet",
+      "retention": {
+        "custodian": "VSTD synthetic evaluator; founder-operated; not independent",
+        "horizon": "2026-09-30T23:59:59Z",
+        "replicas": 1
+      },
+      "retrieval_procedure": "The declared evaluator retrieves the artifact by packet ID and content address; no public credential or record-level response is issued.",
+      "role": "synthetic respondent table used by the local evaluator",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "organizer-log",
+      "assessed_level": "AVAILABLE",
+      "bundle_path": "",
+      "content_address": "sha256:3116827beaf96ad9b31b064b8a48fa8b55fbc8a030adf914f92e347bf674423a",
+      "declared_level": "AVAILABLE",
+      "disclosure": "access-controlled",
+      "embedded": false,
+      "locator": "evaluator-vault://simulacrabench-synthetic/VSTD-SB-SYNTH-001/organizer_log.json",
+      "retention": {
+        "custodian": "VSTD synthetic evaluator; founder-operated; not independent",
+        "horizon": "2026-09-30T23:59:59Z",
+        "replicas": 1
+      },
+      "retrieval_procedure": "The declared evaluator retrieves the artifact by packet ID and content address; no public credential or record-level response is issued.",
+      "role": "raw evaluator log containing non-public score detail",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "execution-transcript",
+      "assessed_level": "AVAILABLE",
+      "bundle_path": "",
+      "content_address": "sha256:1df317e2a67c574c40d3d4534739e4e4171690f86a65eec9653949677fb00cb6",
+      "declared_level": "AVAILABLE",
+      "disclosure": "access-controlled",
+      "embedded": false,
+      "locator": "evaluator-vault://simulacrabench-synthetic/VSTD-SB-SYNTH-001/execution_transcript.txt",
+      "retention": {
+        "custodian": "VSTD synthetic evaluator; founder-operated; not independent",
+        "horizon": "2026-09-30T23:59:59Z",
+        "replicas": 1
+      },
+      "retrieval_procedure": "The declared evaluator retrieves the artifact by packet ID and content address; no public credential or record-level response is issued.",
+      "role": "local scorer transcript containing evaluator-local locations and raw log output",
+      "verdict_critical": true
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "generator-seed",
+      "assessed_level": "AVAILABLE",
+      "bundle_path": "",
+      "content_address": "sha256:ce566dfde785baa481e550316633c0a42aadc4b10afef89525ab779512ea17c1",
+      "declared_level": "AVAILABLE",
+      "disclosure": "access-controlled",
+      "embedded": false,
+      "locator": "evaluator-vault://simulacrabench-synthetic/VSTD-SB-SYNTH-001/generator_seed.txt",
+      "retention": {
+        "custodian": "VSTD synthetic evaluator; founder-operated; not independent",
+        "horizon": "2026-09-30T23:59:59Z",
+        "replicas": 1
+      },
+      "retrieval_procedure": "The declared evaluator retrieves the artifact by packet ID and content address; no public credential or record-level response is issued.",
+      "role": "high-entropy seed retained to regenerate the synthetic fixture",
+      "verdict_critical": false
+    },
+    {
+      "anonymous_access": false,
+      "artifact_id": "participant-visible-result",
+      "assessed_level": "SELF_CONTAINED",
+      "bundle_path": "",
+      "content_address": "sha256:f49bba1d5df20d195b9d58ee890fd544a815ba7cc565ec198d1d1bf0b04ed7e6",
+      "declared_level": "SELF_CONTAINED",
+      "disclosure": "public",
+      "embedded": true,
+      "locator": "",
+      "retention": null,
+      "retrieval_procedure": "Read reported_result in public_packet.json.",
+      "role": "exact participant-visible aggregate returned by the pinned scorer",
+      "verdict_critical": true
+    }
+  ],
+  "execution": {
+    "mode": "LOCAL_SYNTHETIC_REHEARSAL",
+    "observed_local_controls": {
+      "held_out_respondents": 1900,
+      "network_control": "in-process socket denial from pinned score.py",
+      "official_source_bytes_pinned": true,
+      "phase_view_respondents": 9900,
+      "predict_timeout_seconds": 900,
+      "scored_cells": 7600,
+      "scoring_seed": 20260822,
+      "submission_archive_checker": "PASS",
+      "synthetic_respondents": 12000
+    },
+    "official_policy": {
+      "development_rows_scored": true,
+      "network_removed_before_submission_import": true,
+      "organizer_retains_raw_log": true,
+      "participant_return": [
+        "reported score",
+        "runtime"
+      ],
+      "phase": 1,
+      "predict_timeout_seconds": 900,
+      "training_rows_visible": true
+    },
+    "prior_commitment": {
+      "externally_timestamped": false,
+      "fixture_frozen_before_execution": true,
+      "limitation": "Content addresses were recorded after the local run; the package does not claim an externally witnessed prior commitment."
+    },
+    "unobserved_hosted_controls": [
+      "H100 GPU, 8 CPU, and 16 GB hosted allocation",
+      "container-level network isolation",
+      "protected benchmark data",
+      "submission API and leaderboard path"
+    ]
+  },
+  "limits": {
+    "reason": "The package demonstrates selected VSTD-4 mechanisms but lacks an externally timestamped precommitment and a publicly reproducible private-data check.",
+    "stale_after": "2026-09-30T23:59:59Z",
+    "vstd4_depth_claim": null
+  },
+  "packet_digest": "sha256:f182bfce5a5ae8e7137795300d42e285f365e6707b7c3517b3cee7b02331963b",
+  "packet_format": "VSTD-CLOSED-EVALUATION-PROFILE-0.1",
+  "packet_id": "VSTD-SB-SYNTH-001",
+  "profile": {
+    "name": "SimulacraBench synthetic closed-evaluation crosswalk",
+    "normative": false,
+    "version": "0.1"
+  },
+  "refutation_surface": {
+    "admissible_refutations": [
+      {
+        "applies_to": [
+          "phase",
+          "scoring_seed",
+          "source_commit"
+        ],
+        "overturning_evidence": "An authorized evaluator binds the committed submission, fixture, scorer, and seed, then obtains a different participant-visible status or reported skill.",
+        "refutation_type": "metric_recomputation_mismatch",
+        "resulting_status": "REVOKED"
+      },
+      {
+        "applies_to": [
+          "source_commit"
+        ],
+        "overturning_evidence": "Bytes retrieved or bundled for any verdict-critical artifact do not match its declared SHA-256 content address.",
+        "refutation_type": "evidence_hash_mismatch",
+        "resulting_status": "REVOKED"
+      },
+      {
+        "applies_to": [
+          "execution_mode",
+          "network_control"
+        ],
+        "overturning_evidence": "The declared evaluator shows that the committed transcript or organizer log does not record the stated local controls or result.",
+        "refutation_type": "invalid_execution_receipt",
+        "resulting_status": "REVOKED"
+      },
+      {
+        "applies_to": [],
+        "overturning_evidence": "A verdict-critical private artifact cannot be retrieved by the declared evaluator under its stated locator and unexpired retention commitment.",
+        "refutation_type": "availability_failure",
+        "resulting_status": "STALE"
+      }
+    ],
+    "coordinate": {
+      "parameters": {
+        "execution_mode": "local synthetic rehearsal",
+        "network_control": "score.py in-process socket denial",
+        "phase": "1",
+        "sandbox_size": "12000 synthetic respondents",
+        "schema": "data/sample.json",
+        "scoring_seed": "20260822",
+        "source_commit": "1bb2d46026fe0d91979448c3d916506be0608513"
+      },
+      "predicate": "participant_visible_phase_1_score",
+      "subject": "SimulacraBench marginal-counts baseline on a committed synthetic fixture"
+    },
+    "excluded_claims": [
+      {
+        "claim_id": "physical_world_completeness",
+        "reason": "The observation boundary is this declared local synthetic run only."
+      },
+      {
+        "claim_id": "hosted_competition_equivalence",
+        "reason": "Hosted hardware, container, protected-data, API, and leaderboard behavior were not observed."
+      },
+      {
+        "claim_id": "organizer_adoption_or_endorsement",
+        "reason": "The example was produced independently and has not been reviewed by the organizers."
+      },
+      {
+        "claim_id": "independent_verification",
+        "reason": "The evaluator and challenger are founder-operated under the same trust root."
+      }
+    ]
+  },
+  "reported_result": {
+    "phase": 1,
+    "printed_result": "PASS  0.3300  (35.7s)",
+    "privacy_policy": {
+      "epsilon": 10.0,
+      "item_scores_disclosed": false,
+      "laplace_noise": true,
+      "raw_skill_disclosed": false,
+      "round_to": 0.01
+    },
+    "reported_skill": 0.33,
+    "status": "PASS"
+  },
+  "source": {
+    "artifacts": [
+      {
+        "bundle_path": "source_snapshot/README.md",
+        "bytes": 31507,
+        "path": "README.md",
+        "sha256": "a552ccd52d88607ee3e2da8c8ad46d8a01b0187a61b526ae9a8486e0ead58371",
+        "url": "https://github.com/SituatedEvals/public/blob/1bb2d46026fe0d91979448c3d916506be0608513/README.md"
+      },
+      {
+        "bundle_path": "source_snapshot/LICENSE",
+        "bytes": 1132,
+        "path": "LICENSE",
+        "sha256": "f38d690effe75689378dd6cb4376ac4204e41cac540990fa4a5800d15d4f5663",
+        "url": "https://github.com/SituatedEvals/public/blob/1bb2d46026fe0d91979448c3d916506be0608513/LICENSE"
+      },
+      {
+        "bundle_path": "source_snapshot/config.yml",
+        "bytes": 2884,
+        "path": "config.yml",
+        "sha256": "1257f878c9345225c4904108f7d83e6fa680ef2efde1809a0a2d5d4907fbd474",
+        "url": "https://github.com/SituatedEvals/public/blob/1bb2d46026fe0d91979448c3d916506be0608513/config.yml"
+      },
+      {
+        "bundle_path": "source_snapshot/data/sample.json",
+        "bytes": 3025,
+        "path": "data/sample.json",
+        "sha256": "49a159de7082ba661bf7f642f4758207f74bf7a94ef62cca10c95b653502c4dc",
+        "url": "https://github.com/SituatedEvals/public/blob/1bb2d46026fe0d91979448c3d916506be0608513/data/sample.json"
+      },
+      {
+        "bundle_path": "source_snapshot/make_sandbox.py",
+        "bytes": 15241,
+        "path": "make_sandbox.py",
+        "sha256": "7121c6e0fb6e5e7e1d0810126969c3273f37f0c3f1a9adf675772b6763ace98b",
+        "url": "https://github.com/SituatedEvals/public/blob/1bb2d46026fe0d91979448c3d916506be0608513/make_sandbox.py"
+      },
+      {
+        "bundle_path": "source_snapshot/score.py",
+        "bytes": 32101,
+        "path": "score.py",
+        "sha256": "d1853f2af6630d3cace2a57c94be51e7b317ff697b531b21553aea21c11f8090",
+        "url": "https://github.com/SituatedEvals/public/blob/1bb2d46026fe0d91979448c3d916506be0608513/score.py"
+      },
+      {
+        "bundle_path": "source_snapshot/baseline/marginal_counts/main.py",
+        "bytes": 1686,
+        "path": "baseline/marginal_counts/main.py",
+        "sha256": "a283c391b2598bc1cb4c108e02fc9f96e019a5fdcec23880bd0458c1ae1308e7",
+        "url": "https://github.com/SituatedEvals/public/blob/1bb2d46026fe0d91979448c3d916506be0608513/baseline/marginal_counts/main.py"
+      },
+      {
+        "bundle_path": "source_snapshot/baseline/marginal_counts/requirements.txt",
+        "bytes": 294,
+        "path": "baseline/marginal_counts/requirements.txt",
+        "sha256": "21fd07ab6f4f4ce9795aeb82fc039e44ca0d32c553894099c121bb8e840227ac",
+        "url": "https://github.com/SituatedEvals/public/blob/1bb2d46026fe0d91979448c3d916506be0608513/baseline/marginal_counts/requirements.txt"
+      },
+      {
+        "bundle_path": "source_snapshot/tools/check_submission_zip.py",
+        "bytes": 24437,
+        "path": "tools/check_submission_zip.py",
+        "sha256": "e1f7316642f440ece2aedd6e149f5f0a47c108fc836c602815fdd026aeee3d8f",
+        "url": "https://github.com/SituatedEvals/public/blob/1bb2d46026fe0d91979448c3d916506be0608513/tools/check_submission_zip.py"
+      }
+    ],
+    "commit": "1bb2d46026fe0d91979448c3d916506be0608513",
+    "repository": "https://github.com/SituatedEvals/public"
+  },
+  "trust": {
+    "evaluator": "VSTD synthetic evaluator; founder-operated; not independent",
+    "independent": false,
+    "organizer_affiliation": "NONE",
+    "vstd5_witness": false
+  }
+}

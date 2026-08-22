@@ -1,0 +1,128 @@
+{
+  "authorized_transcript": {
+    "challenged_reported_skill": 0.34,
+    "committed_hidden_fixture": "sha256:6dd95a59a115fa3bd6e1bee79949d482158f29bb8e4bf94702cc7c161fe7ebf2",
+    "committed_organizer_log": "sha256:3116827beaf96ad9b31b064b8a48fa8b55fbc8a030adf914f92e347bf674423a",
+    "committed_scored_schema": "sha256:93862e714744038052a7cd9e4e9be15506ec607ebb9d9de97944499c65f82a67",
+    "expected_reported_skill": 0.33,
+    "match": false,
+    "publicly_reproducible": false,
+    "records_disclosed": 0,
+    "transcript_id": "VSTD-SB-SYNTH-001-AUTHORIZED-001"
+  },
+  "challenge_digest": "sha256:9ce25775826ef90f3eea0abdaa62268c4e5ce34092e63e2cc6cc88248a9395d6",
+  "challenge_format": "VSTD-CLOSED-EVALUATION-CHALLENGE-0.1",
+  "challenge_id": "VSTD-SB-SYNTH-001-CHALLENGE-001",
+  "deliberate_mutation": {
+    "field": "reported_result.reported_skill",
+    "mutated": 0.34,
+    "original": 0.33,
+    "purpose": "Exercise the declared aggregate-result refutation without revealing hidden records."
+  },
+  "filing": {
+    "challenge_certificate": "sha256:bf0cfa74a902600fb69eb0d161a78b109f7276b3a4620658f969c781d1ec7321",
+    "challenge_type": "metric_recomputation_mismatch",
+    "challenged_predicate": "participant_visible_phase_1_score",
+    "counterevidence": "The authorized transcript bound to the committed hidden fixture and organizer log returns participant-visible reported skill 0.33 rather than the mutant value 0.34.",
+    "filed_at": "2026-08-22T18:55:00Z",
+    "target_certificate_id": "VSTD-SB-SYNTH-001",
+    "target_claim_id": "VSTD-SB-SYNTH-001-RESULT-MUTANT"
+  },
+  "leak_check": {
+    "hidden_item_ids": 0,
+    "hidden_item_text": 0,
+    "individual_records": 0,
+    "labels": 0,
+    "raw_predictions": 0,
+    "raw_traceback": 0
+  },
+  "localized_effect": {
+    "revoked": [
+      "mutated aggregate-result claim"
+    ],
+    "unchanged": [
+      "source commitments",
+      "submission commitment",
+      "synthetic fixture commitment",
+      "existence of the local run",
+      "original aggregate-result claim"
+    ]
+  },
+  "refutation_surface": {
+    "admissible_refutations": [
+      {
+        "applies_to": [
+          "phase",
+          "scoring_seed",
+          "source_commit"
+        ],
+        "overturning_evidence": "An authorized evaluator binds the committed submission, fixture, scorer, and seed, then obtains a different participant-visible status or reported skill.",
+        "refutation_type": "metric_recomputation_mismatch",
+        "resulting_status": "REVOKED"
+      },
+      {
+        "applies_to": [
+          "source_commit"
+        ],
+        "overturning_evidence": "Bytes retrieved or bundled for any verdict-critical artifact do not match its declared SHA-256 content address.",
+        "refutation_type": "evidence_hash_mismatch",
+        "resulting_status": "REVOKED"
+      },
+      {
+        "applies_to": [
+          "execution_mode",
+          "network_control"
+        ],
+        "overturning_evidence": "The declared evaluator shows that the committed transcript or organizer log does not record the stated local controls or result.",
+        "refutation_type": "invalid_execution_receipt",
+        "resulting_status": "REVOKED"
+      },
+      {
+        "applies_to": [],
+        "overturning_evidence": "A verdict-critical private artifact cannot be retrieved by the declared evaluator under its stated locator and unexpired retention commitment.",
+        "refutation_type": "availability_failure",
+        "resulting_status": "STALE"
+      }
+    ],
+    "coordinate": {
+      "parameters": {
+        "execution_mode": "local synthetic rehearsal",
+        "network_control": "score.py in-process socket denial",
+        "phase": "1",
+        "sandbox_size": "12000 synthetic respondents",
+        "schema": "data/sample.json",
+        "scoring_seed": "20260822",
+        "source_commit": "1bb2d46026fe0d91979448c3d916506be0608513"
+      },
+      "predicate": "participant_visible_phase_1_score",
+      "subject": "SimulacraBench marginal-counts baseline on a committed synthetic fixture"
+    },
+    "excluded_claims": [
+      {
+        "claim_id": "physical_world_completeness",
+        "reason": "The observation boundary is this declared local synthetic run only."
+      },
+      {
+        "claim_id": "hosted_competition_equivalence",
+        "reason": "Hosted hardware, container, protected-data, API, and leaderboard behavior were not observed."
+      },
+      {
+        "claim_id": "organizer_adoption_or_endorsement",
+        "reason": "The example was produced independently and has not been reviewed by the organizers."
+      },
+      {
+        "claim_id": "independent_verification",
+        "reason": "The evaluator and challenger are founder-operated under the same trust root."
+      }
+    ]
+  },
+  "target_packet_digest": "sha256:f182bfce5a5ae8e7137795300d42e285f365e6707b7c3517b3cee7b02331963b",
+  "transitions": {
+    "after_authorized_adjudication": "REVOKED",
+    "after_public_filing": "CHALLENGED"
+  },
+  "trust": {
+    "independent": false,
+    "vstd5_witness": false
+  }
+}
