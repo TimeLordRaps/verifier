@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.1.3 - 2026-08-22
+
+- Canonicalize source ZIP timestamps in UTC and remove host ZIP metadata, so the
+  same Git coordinate produces byte-identical source archives on Windows and Linux.
+- Canonicalize generated wheel and source-distribution newlines, archive member
+  order, modes, timestamps, and ownership. Rebuild wheel `RECORD` after normalization
+  and use compression-independent ZIP members plus a stable USTAR/gzip container.
+- Normalize common HTTPS and SSH spellings of the Git origin before recording the
+  public repository coordinate in a release manifest.
+- Require CI to build the complete release artifact set independently on Windows and
+  Linux and fail the conformance gate unless every resulting byte is identical.
+- Record that `v1.1.2` remained a signed, tested, and attested GitHub-only release:
+  its protected PyPI deployment was cancelled after cross-platform build differences
+  were detected, before any Python distribution was uploaded.
+
 ## 1.1.2 - 2026-08-22
 
 - Rename the import package `verifiable` to `verifier` and the distribution

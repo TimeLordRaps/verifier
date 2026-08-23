@@ -8,7 +8,10 @@ both exact and publicly resolvable.
 from __future__ import annotations
 
 import argparse
+import base64
 from configparser import ConfigParser
+import csv
+from datetime import datetime, timezone
 from email import policy
 from email.parser import BytesParser
 import gzip
@@ -18,6 +21,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
@@ -38,6 +42,13 @@ CONSOLE_SCRIPTS = {
     "verifiable": "verifier.runtime.public_cli:main",
     "verifier": "verifier.runtime.public_cli:main",
     "vstd": "verifier.runtime.public_cli:main",
+}
+
+_GENERATED_WHEEL_TEXT_NAMES = {
+    "METADATA",
+    "WHEEL",
+    "entry_points.txt",
+    "top_level.txt",
 }
 
 
@@ -68,8 +79,143 @@ def _resolved_commit(repo: Path, ref: str) -> str:
     return _run(repo, "git", "rev-parse", f"{ref}^{{commit}}").decode().strip()
 
 
+def _canonical_repository_url(value: str) -> str:
+    """Return one stable public coordinate for common Git remote spellings."""
+
+    candidate = value.strip().rstrip("/")
+    scp_match = re.fullmatch(r"git@([^:]+):(.+)", candidate)
+    ssh_match = re.fullmatch(r"ssh://git@([^/]+)/(.+)", candidate)
+    if scp_match:
+        candidate = f"https://{scp_match.group(1)}/{scp_match.group(2)}"
+    elif ssh_match:
+        candidate = f"https://{ssh_match.group(1)}/{ssh_match.group(2)}"
+    if candidate.endswith(".git"):
+        candidate = candidate[:-4]
+    if not candidate:
+        raise ReleaseError("origin repository URL is empty")
+    return candidate
+
+
 def _repository_url(repo: Path) -> str:
-    return _run(repo, "git", "remote", "get-url", "origin").decode().strip()
+    raw = _run(repo, "git", "remote", "get-url", "origin").decode()
+    return _canonical_repository_url(raw)
+
+
+def _zip_timestamp(epoch: str) -> tuple[int, int, int, int, int, int]:
+    timestamp = datetime.fromtimestamp(int(epoch), timezone.utc)
+    if timestamp.year < 1980 or timestamp.year > 2107:
+        raise ReleaseError(f"commit timestamp is outside the ZIP range: {epoch}")
+    return (
+        timestamp.year,
+        timestamp.month,
+        timestamp.day,
+        timestamp.hour,
+        timestamp.minute,
+        timestamp.second - (timestamp.second % 2),
+    )
+
+
+def _canonical_zip_info(name: str, epoch: str, *, is_dir: bool) -> zipfile.ZipInfo:
+    info = zipfile.ZipInfo(name, date_time=_zip_timestamp(epoch))
+    info.create_system = 3
+    info.create_version = 20
+    info.extract_version = 20
+    info.flag_bits = 0
+    info.compress_type = zipfile.ZIP_STORED
+    info.comment = b""
+    info.extra = b""
+    info.internal_attr = 0
+    mode = (stat.S_IFDIR | 0o755) if is_dir else (stat.S_IFREG | 0o644)
+    info.external_attr = mode << 16
+    if is_dir:
+        info.external_attr |= 0x10
+    return info
+
+
+def _write_canonical_zip(
+    destination: Path,
+    members: dict[str, tuple[bytes, bool]],
+    epoch: str,
+) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(
+        destination, "w", compression=zipfile.ZIP_STORED, allowZip64=True
+    ) as bundle:
+        for name in sorted(members):
+            data, is_dir = members[name]
+            if (
+                not name
+                or name.startswith("/")
+                or "\\" in name
+                or ".." in Path(name).parts
+            ):
+                raise ReleaseError(f"unsafe ZIP member name: {name}")
+            if is_dir and not name.endswith("/"):
+                raise ReleaseError(f"ZIP directory lacks trailing slash: {name}")
+            info = _canonical_zip_info(name, epoch, is_dir=is_dir)
+            bundle.writestr(info, b"" if is_dir else data)
+
+
+def _normalize_source_archive(source: Path, destination: Path, epoch: str) -> None:
+    """Rewrite ``git archive`` output without host timezone or ZIP metadata."""
+
+    with zipfile.ZipFile(source) as bundle:
+        members: dict[str, tuple[bytes, bool]] = {}
+        for info in bundle.infolist():
+            if info.filename in members:
+                raise ReleaseError(f"duplicate source ZIP member: {info.filename}")
+            members[info.filename] = (bundle.read(info), info.is_dir())
+    _write_canonical_zip(destination, members, epoch)
+
+
+def _normalize_newlines(data: bytes) -> bytes:
+    return data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+
+
+def _record_digest(data: bytes) -> str:
+    encoded = base64.urlsafe_b64encode(hashlib.sha256(data).digest()).rstrip(b"=")
+    return "sha256=" + encoded.decode("ascii")
+
+
+def _normalize_wheel(source: Path, destination: Path, epoch: str) -> None:
+    """Canonicalize generated metadata, RECORD, member order, modes, and timestamps."""
+
+    with zipfile.ZipFile(source) as bundle:
+        infos = bundle.infolist()
+        record_paths = [
+            info.filename for info in infos if info.filename.endswith(".dist-info/RECORD")
+        ]
+        signature_paths = [
+            info.filename
+            for info in infos
+            if info.filename.endswith((".dist-info/RECORD.jws", ".dist-info/RECORD.p7s"))
+        ]
+        if len(record_paths) != 1:
+            raise ReleaseError(f"wheel must contain exactly one RECORD: {source}")
+        if signature_paths:
+            raise ReleaseError("normalization does not accept pre-signed wheel RECORD files")
+        record_path = record_paths[0]
+        members: dict[str, tuple[bytes, bool]] = {}
+        for info in infos:
+            if info.filename == record_path:
+                continue
+            if info.filename in members:
+                raise ReleaseError(f"duplicate wheel member: {info.filename}")
+            data = bundle.read(info)
+            leaf = info.filename.rsplit("/", 1)[-1]
+            if ".dist-info/" in info.filename and leaf in _GENERATED_WHEEL_TEXT_NAMES:
+                data = _normalize_newlines(data)
+            members[info.filename] = (data, info.is_dir())
+
+    rows = io.StringIO(newline="")
+    writer = csv.writer(rows, lineterminator="\n")
+    for name in sorted(members):
+        data, is_dir = members[name]
+        if not is_dir:
+            writer.writerow((name, _record_digest(data), str(len(data))))
+    writer.writerow((record_path, "", ""))
+    members[record_path] = (rows.getvalue().encode("utf-8"), False)
+    _write_canonical_zip(destination, members, epoch)
 
 
 def _archive_inventory(archive: Path, prefix: str) -> dict[str, dict[str, Any]]:
@@ -83,6 +229,8 @@ def _archive_inventory(archive: Path, prefix: str) -> dict[str, dict[str, Any]]:
             relative = info.filename[len(prefix) :]
             if not relative:
                 raise ReleaseError("archive contains an empty relative path")
+            if relative in result:
+                raise ReleaseError(f"archive contains duplicate member: {relative}")
             data = bundle.read(info)
             result[relative] = {"byte_size": len(data), "sha256": _sha256(data)}
     return dict(sorted(result.items()))
@@ -102,12 +250,13 @@ def _metadata_identity(payload: bytes, *, artifact: str) -> tuple[str, str]:
 
 
 def _normalize_sdist(source: Path, destination: Path, epoch: str) -> None:
-    """Rewrite an sdist with stable gzip and tar metadata.
+    """Rewrite an sdist with stable generated text, gzip, and tar metadata.
 
     Setuptools emits valid source distributions whose tar and gzip timestamps vary
-    across clean builds. The file bytes and paths are the meaningful payload here, so
-    the release builder fixes timestamps to the source commit, clears host ownership,
-    normalizes modes, and sorts members before comparing two independent builds.
+    across clean builds. Its generated metadata also follows the host newline convention.
+    The release builder canonicalizes those generated files, fixes timestamps to the
+    source commit, clears host ownership, normalizes modes, and sorts members before
+    comparing independent builds.
     """
 
     timestamp = int(epoch)
@@ -126,6 +275,13 @@ def _normalize_sdist(source: Path, destination: Path, epoch: str) -> None:
                 if extracted is None:
                     raise ReleaseError(f"sdist member is unreadable: {member.name}")
                 data = extracted.read()
+                relative = member.name.split("/", 1)[1] if "/" in member.name else ""
+                generated = (
+                    relative in {"PKG-INFO", "setup.cfg"}
+                    or ".egg-info/" in relative
+                )
+                if generated:
+                    data = _normalize_newlines(data)
             else:
                 raise ReleaseError(
                     f"sdist contains unsupported non-file member: {member.name}"
@@ -135,10 +291,10 @@ def _normalize_sdist(source: Path, destination: Path, epoch: str) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("wb") as raw:
         with gzip.GzipFile(
-            filename="", mode="wb", fileobj=raw, compresslevel=9, mtime=timestamp
+            filename="", mode="wb", fileobj=raw, compresslevel=0, mtime=timestamp
         ) as compressed:
             with tarfile.open(
-                fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT
+                fileobj=compressed, mode="w", format=tarfile.USTAR_FORMAT
             ) as normalized:
                 for original, data in materialized:
                     member = tarfile.TarInfo(original.name)
@@ -233,16 +389,20 @@ def build_source(repo: Path, ref: str, release: str, output_dir: Path) -> tuple[
     prefix = f"{ARCHIVE_STEM}-{release}/"
     archive = output_dir / f"{ARCHIVE_STEM}-{release}.zip"
     manifest_path = output_dir / f"{ARCHIVE_STEM}-{release}.manifest.json"
+    epoch = _run(repo, "git", "show", "-s", "--format=%ct", commit).decode().strip()
 
-    _run(
-        repo,
-        "git",
-        "archive",
-        "--format=zip",
-        f"--prefix={prefix}",
-        f"--output={archive}",
-        commit,
-    )
+    with tempfile.TemporaryDirectory(prefix="vstd-source-archive-") as temporary:
+        raw_archive = Path(temporary) / "raw.zip"
+        _run(
+            repo,
+            "git",
+            "archive",
+            "--format=zip",
+            f"--prefix={prefix}",
+            f"--output={raw_archive}",
+            commit,
+        )
+        _normalize_source_archive(raw_archive, archive, epoch)
 
     manifest = {
         "schema_version": SCHEMA_VERSION,
@@ -256,7 +416,9 @@ def build_source(repo: Path, ref: str, release: str, output_dir: Path) -> tuple[
             "ref": ref,
             "commit": commit,
             "archive_prefix": prefix,
-            "byte_semantics": "exact Git blob bytes as emitted by git archive",
+            "byte_semantics": (
+                "exact Git blob member bytes in a platform-independent canonical ZIP"
+            ),
         },
         "distribution": {
             "name": DISTRIBUTION_NAME,
@@ -281,6 +443,7 @@ def _build_wheel_once(source_archive: Path, prefix: str, destination: Path, epoc
         with zipfile.ZipFile(source_archive) as bundle:
             bundle.extractall(temporary_path)
         source = temporary_path / prefix.rstrip("/")
+        raw_output = temporary_path / "raw"
         env = dict(os.environ)
         env["SOURCE_DATE_EPOCH"] = epoch
         completed = subprocess.run(
@@ -293,7 +456,7 @@ def _build_wheel_once(source_archive: Path, prefix: str, destination: Path, epoc
                 "--no-cache-dir",
                 "--no-deps",
                 "--wheel-dir",
-                str(destination),
+                str(raw_output),
                 str(source),
             ],
             env=env,
@@ -305,10 +468,12 @@ def _build_wheel_once(source_archive: Path, prefix: str, destination: Path, epoc
                 "wheel build failed: "
                 + completed.stderr.decode("utf-8", errors="replace").strip()
             )
-    wheels = sorted(destination.glob("*.whl"))
-    if len(wheels) != 1:
-        raise ReleaseError(f"expected one wheel, found {len(wheels)} in {destination}")
-    return wheels[0]
+        wheels = sorted(raw_output.glob("*.whl"))
+        if len(wheels) != 1:
+            raise ReleaseError(f"expected one raw wheel, found {len(wheels)} in {raw_output}")
+        normalized = destination / wheels[0].name
+        _normalize_wheel(wheels[0], normalized, epoch)
+    return normalized
 
 
 def _build_sdist_once(
@@ -390,6 +555,40 @@ def build_all(
     )
     verify_manifest(repo, manifest_path, output_dir)
     return archive, wheel, sdist, manifest_path
+
+
+def compare_artifact_directories(first: Path, second: Path) -> int:
+    """Fail unless two build directories contain the same byte-identical files."""
+
+    first = first.resolve()
+    second = second.resolve()
+    first_files = {
+        path.relative_to(first).as_posix(): path
+        for path in first.rglob("*")
+        if path.is_file()
+    }
+    second_files = {
+        path.relative_to(second).as_posix(): path
+        for path in second.rglob("*")
+        if path.is_file()
+    }
+    if set(first_files) != set(second_files):
+        missing_first = sorted(set(second_files) - set(first_files))
+        missing_second = sorted(set(first_files) - set(second_files))
+        raise ReleaseError(
+            "artifact file sets differ: "
+            f"missing from first={missing_first}, missing from second={missing_second}"
+        )
+    if not first_files:
+        raise ReleaseError("artifact directories are empty")
+    for name in sorted(first_files):
+        first_record = _file_record(first_files[name])
+        second_record = _file_record(second_files[name])
+        if first_record != second_record:
+            raise ReleaseError(
+                f"artifact bytes differ for {name}: {first_record} != {second_record}"
+            )
+    return len(first_files)
 
 
 def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None = None) -> None:
@@ -475,6 +674,10 @@ def _parser() -> argparse.ArgumentParser:
     verify = commands.add_parser("verify")
     verify.add_argument("manifest", type=Path)
     verify.add_argument("--artifact-dir", type=Path)
+
+    compare = commands.add_parser("compare")
+    compare.add_argument("first", type=Path)
+    compare.add_argument("second", type=Path)
     return parser
 
 
@@ -494,9 +697,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[PASS] reproducible wheel: {wheel}")
             print(f"[PASS] reproducible sdist: {sdist}")
             print(f"[PASS] release manifest: {manifest}")
-        else:
+        elif args.command == "verify":
             verify_manifest(args.repo, args.manifest, args.artifact_dir)
             print(f"[PASS] release manifest verified: {args.manifest}")
+        else:
+            count = compare_artifact_directories(args.first, args.second)
+            print(f"[PASS] {count} release artifacts are byte-identical")
     except (OSError, ReleaseError, json.JSONDecodeError, zipfile.BadZipFile) as exc:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 1
