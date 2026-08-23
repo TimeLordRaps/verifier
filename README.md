@@ -139,7 +139,7 @@ The distribution name is `verifier-standard`; the base install has no required
 third-party runtime dependencies.
 
 ```bash
-python -m pip install "verifier-standard==1.1.2"  # tagged v1.1.2 release
+python -m pip install "verifier-standard==1.1.3"  # after v1.1.3 is listed on PyPI
 python -m pip install .
 python -m pip install ".[yaml]"        # YAML manifests
 python -m pip install ".[jsonschema]"  # schema validation
@@ -161,7 +161,9 @@ distribution name and use `vstd` as the command.
 
 Release assets include an external manifest binding the exact public source ref,
 commit, archive digest, file set, and member bytes. The release builder produces a
-byte-reproducible wheel and normalized source distribution from that source coordinate.
+platform-independent canonical source ZIP, wheel, and source distribution from that
+source coordinate. CI independently builds the full set on Windows and Linux and fails
+unless every artifact is byte-identical.
 GitHub/Sigstore artifact attestations bind the ZIP, wheel, source distribution, and
 manifest to the release workflow:
 
@@ -170,9 +172,10 @@ gh attestation verify PATH_TO_DOWNLOADED_ASSET --repo TimeLordRaps/verifier
 ```
 
 Release notes report the tag-signature status separately. An artifact attestation is
-not a tag signature. Starting with `v1.1.2`, the exact tested wheel and source
-distribution are also published through PyPI Trusted Publishing after approval in the
-protected `pypi` environment. See [`RELEASING.md`](RELEASING.md) for the complete gate.
+not a tag signature. The signed `v1.1.2` GitHub release was not uploaded to PyPI because
+its Windows and Linux builds differed. PyPI publication now requires the cross-platform
+equality gate plus approval in the protected `pypi` environment. See
+[`RELEASING.md`](RELEASING.md) for the complete gate.
 
 ## Project status
 

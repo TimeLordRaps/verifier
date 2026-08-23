@@ -17,18 +17,24 @@ exact, publicly resolvable commit.
 3. Build a pre-tag candidate from the full commit SHA, not a working directory:
 
    ```bash
-   VERSION=1.1.2
+   VERSION=1.1.3
    python scripts/release_artifacts.py build \
      --ref FULL_PUBLIC_COMMIT_SHA --release "$VERSION" --output-dir dist/candidate
    ```
 
-   The builder uses `git archive`, records exact Git-blob bytes, and builds both the
-   wheel and standard source distribution twice from separate source extractions with
-   `SOURCE_DATE_EPOCH` set to the commit timestamp. Setuptools sdist tar and gzip metadata
-   are normalized to that timestamp, zero ownership, stable modes, and sorted members.
-   The build fails unless each pair is byte-identical and both distributions declare
-   `verifier-standard`, version `1.1.2`, import package `verifier`, and the frozen three
-   console scripts.
+   The builder uses `git archive`, records exact Git-blob member bytes, and rewrites the
+   source ZIP with a UTC commit timestamp, stable Unix modes, sorted members, and stored
+   compression. It builds both the wheel and standard source distribution twice from
+   separate source extractions with `SOURCE_DATE_EPOCH` set to the commit timestamp.
+   Generated packaging text is normalized to LF; wheel `RECORD` is rebuilt after
+   normalization; ZIP metadata, tar metadata, gzip metadata, ownership, modes, and member
+   order are canonical. The build fails unless each pair is byte-identical and both
+   distributions declare `verifier-standard`, version `1.1.3`, import package `verifier`,
+   and the frozen three console scripts.
+
+   The protected conformance gate separately builds this complete artifact set on
+   Windows and Linux and compares every byte. Do not prepare a tag unless that
+   cross-platform comparison passed on the exact candidate commit.
 
 4. Run `twine check` on the candidate wheel and source distribution. Install the
    candidate wheel with `--no-deps`. Run the generic receipt lifecycle,
@@ -47,7 +53,7 @@ exact, publicly resolvable commit.
    plus the manifest's own resulting digest:
 
    ```bash
-   VERSION=1.1.2
+   VERSION=1.1.3
    git tag -s "v$VERSION" FULL_PUBLIC_COMMIT_SHA
    python scripts/release_artifacts.py build \
      --ref "refs/tags/v$VERSION" --release "$VERSION" --output-dir dist/tagged
@@ -61,7 +67,7 @@ exact, publicly resolvable commit.
 7. Run the verifier independently before upload:
 
    ```bash
-   VERSION=1.1.2
+   VERSION=1.1.3
    python scripts/release_artifacts.py verify \
      "dist/tagged/verifier-standard-$VERSION.manifest.json"
    ```
@@ -86,7 +92,7 @@ exact, publicly resolvable commit.
    An attestation complements but does not replace the release manifest, and it does not
    turn an unsigned tag into a signed tag.
 10. Let Zenodo archive the GitHub release, then record the issued DOI additively.
-11. Confirm that `https://pypi.org/project/verifier-standard/1.1.2/` lists the same wheel
+11. Confirm that `https://pypi.org/project/verifier-standard/1.1.3/` lists the same wheel
     and source-distribution SHA-256 values as the GitHub release and external manifest.
     PyPI ownership establishes control of the distribution coordinate only; it does not
     establish adoption, consensus, certification, or exclusive control of the Python
