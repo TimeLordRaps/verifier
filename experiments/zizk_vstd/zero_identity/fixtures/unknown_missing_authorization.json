@@ -1,0 +1,60 @@
+{
+  "expected": {
+    "properties": {
+      "accountability": "ATTESTED",
+      "authentication": "SUPPORTED",
+      "authority_active": "UNKNOWN",
+      "authorization": "UNKNOWN",
+      "civil_identity": "UNSUPPORTED_BY_DESIGN",
+      "freshness": "SUPPORTED",
+      "recovery": "ATTESTED",
+      "uniqueness": "UNKNOWN",
+      "unlinkability": "UNKNOWN",
+      "verifier_independence": "UNKNOWN"
+    },
+    "verdict": "UNKNOWN"
+  },
+  "falsification_question": "Can a missing grant be read as permission?",
+  "fixture_id": "unknown_missing_authorization",
+  "intent": "A record with no authorization grant stays UNKNOWN and never fails open.",
+  "record": {
+    "actor": {
+      "civil_identity": "withheld",
+      "key_binding": {
+        "key_id": "key:alpha-1",
+        "signature_verified": true,
+        "trust_root": "root:issuer-a"
+      },
+      "pseudonym": "pseudonym:alpha"
+    },
+    "claim_scope": "vstd4-refutation-run",
+    "claimed_properties": [
+      "authorization"
+    ],
+    "conflicts": [],
+    "escalation_authority": "root:issuer-a",
+    "evaluated_at": "2026-08-23T00:00:00Z",
+    "freshness": {
+      "challenge_source": "verifier:v1",
+      "nonce": "challenge:0001",
+      "previously_observed_nonces": [],
+      "required": true
+    },
+    "independence_evidence": [],
+    "peer_receipts": [],
+    "profile": "zizk-vstd/zero-identity/experimental-0",
+    "record_id": "zi-unknown-authorization",
+    "recovery": {
+      "mechanism": "issuer reissue on quorum of two custodians"
+    },
+    "revocation": {
+      "checked_at": "2026-08-23T00:00:00Z",
+      "source": "root:issuer-a/status",
+      "state": "active"
+    },
+    "trust_roots": [
+      "root:issuer-a"
+    ],
+    "uniqueness_evidence": []
+  }
+}

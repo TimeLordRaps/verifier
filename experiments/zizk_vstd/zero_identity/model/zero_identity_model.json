@@ -1,0 +1,134 @@
+{
+  "model_id": "zizk-vstd/zero-identity/experimental-0",
+  "status": "EXPERIMENTAL",
+  "normative": false,
+  "wire_identifier": null,
+  "notes": [
+    "This model is experimental and carries no wire identifier, no schema $id route, and no receipt digest.",
+    "It does not alter, extend, or reinterpret any frozen VSTD wire identifier.",
+    "Nothing in this model asserts a cryptographic guarantee. Cryptographic mechanisms named here are inputs whose verification is performed elsewhere and asserted as evidence."
+  ],
+  "terminology_decision": {
+    "public_label_zero_identity": "REJECTED_AS_UNQUALIFIED_PUBLIC_LABEL",
+    "accepted_label": "bounded identity disclosure",
+    "rationale": "The profile never removes identity; it withholds civil identity while retaining cryptographic and authorization coordinates. Calling that 'zero identity' overstates the privacy property and understates the retained coordinates."
+  },
+  "identity_dimensions": [
+    "civil_identity",
+    "persistent_public_identity",
+    "key_or_credential_coordinate",
+    "authentication",
+    "authorization",
+    "accountability",
+    "attribution",
+    "uniqueness",
+    "verifier_independence",
+    "revocation_or_expiry",
+    "confidentiality",
+    "unlinkability",
+    "anonymity_or_pseudonymity"
+  ],
+  "property_statuses": [
+    "SUPPORTED",
+    "ATTESTED",
+    "ASSUMED",
+    "UNKNOWN",
+    "CONFLICTED",
+    "REFUTED",
+    "UNSUPPORTED_BY_DESIGN"
+  ],
+  "verdicts": ["ACCEPTED_BOUNDED", "UNKNOWN", "CONFLICTED", "REJECTED"],
+  "verdict_precedence": ["REJECTED", "CONFLICTED", "UNKNOWN", "ACCEPTED_BOUNDED"],
+  "minimum_public_actor_coordinates": [
+    "actor.pseudonym",
+    "actor.key_binding.key_id",
+    "actor.key_binding.signature_verified",
+    "actor.key_binding.trust_root",
+    "authorization.grant_id",
+    "authorization.issuer",
+    "authorization.scope",
+    "authorization.not_before",
+    "authorization.not_after",
+    "revocation.source",
+    "revocation.state",
+    "revocation.checked_at",
+    "trust_roots"
+  ],
+  "prohibited_inferences": [
+    "absent civil identity implies anonymity",
+    "absent civil identity implies unlinkability",
+    "a pseudonym implies a distinct actor",
+    "a shared pseudonym implies a single actor",
+    "two distinct pseudonyms imply two independent actors",
+    "a verified signature implies authorization",
+    "an authorization grant implies that authority is currently active",
+    "absent revocation evidence implies active authority",
+    "absent uniqueness evidence implies Sybil resistance",
+    "hashing, redaction, encryption, omission, or pseudonymity alone implies zero identity",
+    "disclosure minimization preserves the original claim boundary",
+    "missing evidence implies safety"
+  ],
+  "properties": {
+    "civil_identity": {
+      "profile_intent": "withheld",
+      "attainable_statuses": ["UNSUPPORTED_BY_DESIGN", "CONFLICTED"]
+    },
+    "authentication": {
+      "attainable_statuses": ["SUPPORTED", "REFUTED", "UNKNOWN", "CONFLICTED"],
+      "requires": ["actor.key_binding.signature_verified", "resolvable trust_root"]
+    },
+    "authority_active": {
+      "attainable_statuses": ["SUPPORTED", "REFUTED", "UNKNOWN", "CONFLICTED"],
+      "requires": ["revocation.state", "revocation.source", "validity window containing evaluated_at"]
+    },
+    "authorization": {
+      "attainable_statuses": ["SUPPORTED", "REFUTED", "UNKNOWN", "CONFLICTED"],
+      "requires": ["authentication SUPPORTED", "authority_active SUPPORTED", "scope covers claim_scope"]
+    },
+    "attribution": {
+      "attainable_statuses": ["ATTESTED", "UNKNOWN", "CONFLICTED"],
+      "bound_to": "pseudonymous coordinate only, never civil identity"
+    },
+    "uniqueness": {
+      "attainable_statuses": ["ATTESTED", "UNKNOWN", "CONFLICTED"],
+      "default_when_absent": "UNKNOWN"
+    },
+    "verifier_independence": {
+      "attainable_statuses": ["ATTESTED", "REFUTED", "UNKNOWN", "CONFLICTED"],
+      "default_when_absent": "UNKNOWN"
+    },
+    "freshness": {
+      "attainable_statuses": ["SUPPORTED", "REFUTED", "UNKNOWN"],
+      "fail_closed_when_required_and_absent": true
+    },
+    "unlinkability": {
+      "attainable_statuses": ["ASSUMED", "UNKNOWN", "REFUTED"],
+      "never": "SUPPORTED",
+      "reason": "This model observes one record at a time and cannot observe the adversary's full correlation surface."
+    },
+    "accountability": {
+      "attainable_statuses": ["ATTESTED", "UNKNOWN"],
+      "requires": ["a named escalation authority that can act on the pseudonymous coordinate"]
+    },
+    "confidentiality": {
+      "attainable_statuses": ["ASSUMED", "UNKNOWN"],
+      "reason": "Transport and storage confidentiality are outside this record."
+    },
+    "recovery": {
+      "attainable_statuses": ["ATTESTED", "UNKNOWN"],
+      "default_when_absent": "UNKNOWN"
+    }
+  },
+  "rules": [
+    {"id": "ZI-R1", "statement": "A missing coordinate yields UNKNOWN, never a favourable status."},
+    {"id": "ZI-R2", "statement": "CONFLICTED is terminal for the property and propagates to the record verdict."},
+    {"id": "ZI-R3", "statement": "Revoked or expired authority is REFUTED, never UNKNOWN."},
+    {"id": "ZI-R4", "statement": "A shared pseudonymous coordinate across two receipts REFUTES independence."},
+    {"id": "ZI-R5", "statement": "Distinct pseudonymous coordinates leave both independence and actor-distinctness UNKNOWN."},
+    {"id": "ZI-R6", "statement": "A minimization request that removes a required trust-root coordinate makes the record unevaluable and is REJECTED."},
+    {"id": "ZI-R7", "statement": "When freshness is required, an absent challenge coordinate fails closed and a replayed challenge is REFUTED."},
+    {"id": "ZI-R8", "statement": "A claim boundary may only narrow under minimization; widening is REJECTED."},
+    {"id": "ZI-R9", "statement": "A key marked compromised for the signing interval REFUTES authentication."},
+    {"id": "ZI-R10", "statement": "unlinkability is never SUPPORTED by this model; at best it is ASSUMED under declared assumptions."}
+  ]
+}

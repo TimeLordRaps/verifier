@@ -1,0 +1,67 @@
+{
+  "expected": {
+    "properties": {
+      "accountability": "ATTESTED",
+      "authentication": "SUPPORTED",
+      "authority_active": "SUPPORTED",
+      "authorization": "SUPPORTED",
+      "civil_identity": "UNSUPPORTED_BY_DESIGN",
+      "freshness": "REFUTED",
+      "recovery": "ATTESTED",
+      "uniqueness": "UNKNOWN",
+      "unlinkability": "UNKNOWN",
+      "verifier_independence": "UNKNOWN"
+    },
+    "verdict": "REJECTED"
+  },
+  "falsification_question": "Does an absent nonce read as freshness?",
+  "fixture_id": "rejected_missing_challenge",
+  "intent": "Required freshness with no challenge coordinate fails closed.",
+  "record": {
+    "actor": {
+      "civil_identity": "withheld",
+      "key_binding": {
+        "key_id": "key:alpha-1",
+        "signature_verified": true,
+        "trust_root": "root:issuer-a"
+      },
+      "pseudonym": "pseudonym:alpha"
+    },
+    "authorization": {
+      "grant_id": "grant:alpha-1",
+      "issuer": "root:issuer-a",
+      "not_after": "2026-12-31T00:00:00Z",
+      "not_before": "2026-01-01T00:00:00Z",
+      "scope": [
+        "vstd4-refutation-run"
+      ]
+    },
+    "claim_scope": "vstd4-refutation-run",
+    "claimed_properties": [
+      "authorization"
+    ],
+    "conflicts": [],
+    "escalation_authority": "root:issuer-a",
+    "evaluated_at": "2026-08-23T00:00:00Z",
+    "freshness": {
+      "previously_observed_nonces": [],
+      "required": true
+    },
+    "independence_evidence": [],
+    "peer_receipts": [],
+    "profile": "zizk-vstd/zero-identity/experimental-0",
+    "record_id": "zi-missing-challenge",
+    "recovery": {
+      "mechanism": "issuer reissue on quorum of two custodians"
+    },
+    "revocation": {
+      "checked_at": "2026-08-23T00:00:00Z",
+      "source": "root:issuer-a/status",
+      "state": "active"
+    },
+    "trust_roots": [
+      "root:issuer-a"
+    ],
+    "uniqueness_evidence": []
+  }
+}
