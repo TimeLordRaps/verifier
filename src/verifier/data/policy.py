@@ -298,7 +298,10 @@ class ProvenancePolicyVerifier:
                 "ancestor is VALID."
             )
         else:
-            expl = f"Falsified: Found {len(revoked_nodes)} revoked ancestor(s) in causal lineage: {', '.join(revoked_nodes)}."
+            expl = (
+                f"Falsified: Found {len(revoked_nodes)} revoked ancestor(s) in "
+                f"recorded lineage: {', '.join(revoked_nodes)}."
+            )
 
         return PolicyEvaluationResult(
             policy_id="POL-NO-REVOKED-ANCESTORS",

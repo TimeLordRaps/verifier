@@ -139,7 +139,7 @@ The distribution name is `verifier-standard`; the base install has no required
 third-party runtime dependencies.
 
 ```bash
-python -m pip install "verifier-standard==1.1.3"  # after v1.1.3 is listed on PyPI
+python -m pip install "verifier-standard==1.1.3"
 python -m pip install .
 python -m pip install ".[yaml]"        # YAML manifests
 python -m pip install ".[jsonschema]"  # schema validation

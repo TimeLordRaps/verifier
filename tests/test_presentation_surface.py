@@ -36,6 +36,31 @@ def test_public_boundary_catches_private_coordinates_without_naming_them() -> No
     assert "private deployment field" in module.public_boundary_violations(deployment_field)
 
 
+def test_lineage_claim_gate_rejects_causal_upgrades_without_blocking_boundaries() -> None:
+    path = ROOT / "scripts" / "check_presentation.py"
+    spec = importlib.util.spec_from_file_location("check_presentation_lineage", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    causal_lineage = "causal" + " lineage"
+    causal_ancestors = "causal" + " ancestors"
+    causal_process = "causal" + " process"
+    causal_contribution = "causally" + " contributed"
+    for phrase in (
+        causal_lineage,
+        causal_ancestors,
+        causal_process,
+        causal_contribution,
+    ):
+        assert module.lineage_causality_violations(phrase)
+
+    assert module.lineage_causality_violations("recorded lineage") == []
+    assert module.lineage_causality_violations(
+        "The recorded edge does not establish causal influence."
+    ) == []
+
+
 def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None:
     path = ROOT / "scripts/build_pages.py"
     spec = importlib.util.spec_from_file_location("build_pages", path)

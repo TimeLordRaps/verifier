@@ -48,7 +48,8 @@ Represents any discrete, inspectable data object or model state:
 - `status`: `VALID`, `CHALLENGED`, `STALE`, `SUPERSEDED`, `REVOKED`, `UNKNOWN`.
 
 ### 2.2 Transformation Hyperedges ($\mathcal{T}$)
-Represents an N-ary causal process consuming inputs and producing outputs:
+Represents a declared N-ary transformation relationship consuming inputs and producing
+outputs. The edge records ancestry; it does not by itself establish causal influence:
 - `transformation_id`: Unique process identifier.
 - `transformation_type`: `COLLECTION`, `EXTRACTION`, `FILTERING`, `DEDUPLICATION`, `NORMALIZATION`, `AUGMENTATION`, `SYNTHETIC_GENERATION`, `TOKENIZATION`, `TRAINING`, `FINE_TUNING`, `DISTILLATION`, `QUANTIZATION`, `EVALUATION`.
 - `inputs`: List of input artifact references with role bindings (e.g. `TRAINING_SPLIT`, `BASE_WEIGHTS`, `CONFIG`).

@@ -65,6 +65,20 @@ PUBLIC_BOUNDARY_PATTERNS = (
         re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"),
     ),
 )
+LINEAGE_CAUSALITY_PATTERNS = (
+    (
+        "recorded lineage described as causal",
+        re.compile(r"(?i)\bcausal\s+(?:lineage|ancestor(?:s)?)\b"),
+    ),
+    (
+        "recorded transformation described as causal",
+        re.compile(r"(?i)\bcausal\s+process\b"),
+    ),
+    (
+        "recorded ancestry described as causal contribution",
+        re.compile(r"(?i)\bcausally\s+contribut(?:e|ed|es|ing)\b"),
+    ),
+)
 
 
 class LinkCollector(HTMLParser):
@@ -175,6 +189,12 @@ def public_boundary_violations(text: str) -> list[str]:
     return [label for label, pattern in PUBLIC_BOUNDARY_PATTERNS if pattern.search(text)]
 
 
+def lineage_causality_violations(text: str) -> list[str]:
+    """Reject phrases that silently upgrade recorded ancestry into causality."""
+
+    return [label for label, pattern in LINEAGE_CAUSALITY_PATTERNS if pattern.search(text)]
+
+
 def check_public_paths(errors: list[str]) -> None:
     checker = Path(__file__).resolve()
     for path in _public_files():
@@ -188,6 +208,19 @@ def check_public_paths(errors: list[str]) -> None:
                 errors.append(
                     f"{label} leaked into {path.relative_to(ROOT)}:{line}"
                 )
+
+
+def check_lineage_claims(errors: list[str]) -> None:
+    checker = Path(__file__).resolve()
+    for path in _public_files():
+        if path.resolve() == checker:
+            continue
+        text = path.read_text(encoding="utf-8")
+        for label, pattern in LINEAGE_CAUSALITY_PATTERNS:
+            match = pattern.search(text)
+            if match:
+                line = text.count("\n", 0, match.start()) + 1
+                errors.append(f"{label} in {path.relative_to(ROOT)}:{line}")
 
 
 def check_visual_assets(errors: list[str]) -> None:
@@ -245,6 +278,7 @@ def run() -> list[str]:
     check_versions(errors)
     check_claim_boundaries(errors)
     check_public_paths(errors)
+    check_lineage_claims(errors)
     check_visual_assets(errors)
     return errors
 

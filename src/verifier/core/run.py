@@ -299,9 +299,10 @@ class ExternalEvaluationEvidence:
 class ProvenanceLinkage:
     """Link from this run to a VSTD-Graph provenance hypergraph artifact.
 
-    Answers "which exact source artifacts and transformations causally
-    contributed to this run" by reusing the existing Dataset Provenance
-    Hypergraph runtime rather than a parallel lineage system.
+    Answers "which exact source artifacts and transformations are recorded as
+    upstream of this run" by reusing the existing Dataset Provenance Hypergraph
+    runtime rather than a parallel lineage system. A linkage does not by itself
+    establish causal influence.
     """
 
     dataset_receipt_path: str
@@ -557,7 +558,7 @@ def generate_run_receipt_markdown(receipt: GenericRunReceipt) -> str:
     linkage_md = "\n".join(
         f"- `{p.artifact_id}` in `{p.dataset_receipt_path}`: "
         f"{'FOUND' if p.found_in_hypergraph else 'NOT FOUND'}"
-        + (f", {p.ancestor_count} causal ancestors" if p.found_in_hypergraph else "")
+        + (f", {p.ancestor_count} recorded ancestors" if p.found_in_hypergraph else "")
         for p in receipt.provenance_linkage
     ) or "_(no provenance roots declared)_"
 
