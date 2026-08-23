@@ -43,6 +43,15 @@ def test_source_release_manifest_binds_head_and_exact_archive_bytes(tmp_path: Pa
     assert manifest["source"]["byte_semantics"] == (
         "exact Git blob bytes as emitted by git archive"
     )
+    assert manifest["distribution"] == {
+        "name": "verifier-standard",
+        "import_package": "verifier",
+        "console_scripts": {
+            "verifiable": "verifier.runtime.public_cli:main",
+            "verifier": "verifier.runtime.public_cli:main",
+            "vstd": "verifier.runtime.public_cli:main",
+        },
+    }
 
     verify = subprocess.run(
         [
