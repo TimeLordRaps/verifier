@@ -1,4 +1,4 @@
-"""Unit tests for verifiable.core.translation -- the translation-boundary
+"""Unit tests for verifier.core.translation -- the translation-boundary
 assurance module.
 
 These tests use synthetic, dependency-free "translators" (plain Python
@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from verifiable.core.translation import (
+from verifier.core.translation import (
     AMBIGUOUS,
     FAIL_CLOSED_UNSUPPORTED_SEMANTICS,
     DOWNGRADED_PARTIAL_COVERAGE,

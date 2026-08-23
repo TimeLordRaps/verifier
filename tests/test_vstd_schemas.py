@@ -12,7 +12,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator, FormatChecker
 from referencing import Registry, Resource
 
-from verifiable.core.certificate import (
+from verifier.core.certificate import (
     ClaimBinding,
     ClaimCoordinate,
     ClauseGrounding,
@@ -23,8 +23,8 @@ from verifiable.core.certificate import (
     VariableGrounding,
     canonical_digest,
 )
-from verifiable.core.kernel import check, reference_descriptor
-from verifiable.core.refutation import build_horn_certificate
+from verifier.core.kernel import check, reference_descriptor
+from verifier.core.refutation import build_horn_certificate
 
 
 SCHEMA_DIR = Path(__file__).resolve().parents[1] / "receipts" / "schema"

@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-from verifiable.core.certificate import (
+from verifier.core.certificate import (
     CertificateHeader,
     ClaimBinding,
     ClaimCoordinate,
@@ -45,8 +45,8 @@ from verifiable.core.certificate import (
     certificate_from_canonical_bytes,
     normalize_clause,
 )
-from verifiable.core.grounding import verify_grounding
-from verifiable.core.kernel import (
+from verifier.core.grounding import verify_grounding
+from verifier.core.kernel import (
     KernelOutcome,
     check,
     is_horn,
@@ -54,7 +54,7 @@ from verifiable.core.kernel import (
     tightest_tier,
     violating_subjects,
 )
-from verifiable.data.models import (
+from verifier.data.models import (
     ArtifactNode,
     ArtifactStatus,
     ArtifactType,
@@ -64,7 +64,7 @@ from verifiable.data.models import (
     TransformationHyperedge,
     TransformationType,
 )
-from verifiable.data.policy import (
+from verifier.data.policy import (
     PolicyEncodingError,
     ProvenancePolicyVerifier,
     certify_policy_cnf,
@@ -523,7 +523,7 @@ def test_kernel_shares_no_code_with_any_verdict_producer():
     """The isolation claim that ``TCB`` used to make only in prose."""
     forbidden = {"checker", "refutation", "policy", "run", "receipt", "builder"}
     for module in ("kernel.py", "certificate.py", "grounding.py"):
-        path = REPO_ROOT / "src" / "verifiable" / "core" / module
+        path = REPO_ROOT / "src" / "verifier" / "core" / module
         for imported in _imported_modules(path):
             tail = imported.lstrip(".").split(".")[-1]
             assert tail not in forbidden, f"{module} imports {imported}"
@@ -531,7 +531,7 @@ def test_kernel_shares_no_code_with_any_verdict_producer():
 
 def test_kernel_stays_small_enough_to_reimplement():
     """Rung 4.7 is a size claim as much as a semantic one."""
-    source = (REPO_ROOT / "src" / "verifiable" / "core" / "kernel.py").read_text(
+    source = (REPO_ROOT / "src" / "verifier" / "core" / "kernel.py").read_text(
         encoding="utf-8"
     )
     tree = ast.parse(source)
@@ -550,10 +550,10 @@ def test_kernel_stays_small_enough_to_reimplement():
 
 def test_conflicting_clause_is_never_just_the_first_clause():
     """Was: ``conflicting_clause = list(clauses[0])`` on any UNSAT result."""
-    from verifiable.core.checker import IndependentVerifiableAuditor
+    from verifier.core.checker import IndependentAuditor
 
     # Horn, and the genuine conflict is the LAST clause, not the first.
-    report = IndependentVerifiableAuditor.audit_claim_derivation(
+    report = IndependentAuditor.audit_claim_derivation(
         "claim", 2, [[1], [-1, 2], [-2]], [], expected_satisfiable=False
     )
     assert report.sat_result.conflicting_clause == [-2]
@@ -561,7 +561,7 @@ def test_conflicting_clause_is_never_just_the_first_clause():
 
     # Where propagation reaches no conflict, the honest answer is None -- not
     # an arbitrary clause dressed up as a conflict analysis.
-    searched = IndependentVerifiableAuditor.audit_claim_derivation(
+    searched = IndependentAuditor.audit_claim_derivation(
         "claim", 2, [[1, 2], [1, -2], [-1, 2], [-1, -2]], [], expected_satisfiable=False
     )
     assert searched.sat_result.conflicting_clause is None
@@ -570,14 +570,14 @@ def test_conflicting_clause_is_never_just_the_first_clause():
 
 def test_trusted_computing_base_is_hashes_not_a_literal_dict():
     """Was: a hardcoded dict asserting its own isolation."""
-    from verifiable.core import checker
-    from verifiable.core.checker import IndependentVerifiableAuditor
+    from verifier.core import checker
+    from verifier.core.checker import IndependentAuditor
 
-    assert not hasattr(IndependentVerifiableAuditor, "TCB"), (
+    assert not hasattr(IndependentAuditor, "TCB"), (
         "the self-reported TCB dict is back"
     )
 
-    descriptor = IndependentVerifiableAuditor.verifier_descriptor()
+    descriptor = IndependentAuditor.verifier_descriptor()
     assert descriptor.implementation_hash.startswith("sha256:")
     assert descriptor.specification_hash.startswith("sha256:")
 
@@ -591,7 +591,7 @@ def test_trusted_computing_base_is_hashes_not_a_literal_dict():
 
     # And it declares what it actually implements, not VSTD4-GDC-1.
     assert descriptor.certificate_format != FORMAT
-    assert "isolation" not in IndependentVerifiableAuditor.tcb()
+    assert "isolation" not in IndependentAuditor.tcb()
 
 
 def _graph_with_revoked_ancestor() -> ProvenanceHypergraph:

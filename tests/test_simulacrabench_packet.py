@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from verifiable.core.certificate import canonical_digest
+from verifier.core.certificate import canonical_digest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

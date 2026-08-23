@@ -12,8 +12,8 @@ import random
 
 import pytest
 
-from verifiable.core.checker import MinimalIndependentDPLL
-from verifiable.core.refutation import (
+from verifier.core.checker import MinimalIndependentDPLL
+from verifier.core.refutation import (
     DEFAULT_MAX_PROOF_STEPS,
     REFUTATION_FORMAT,
     ProofProducingDPLL,

@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from verifiable.core.checker import VerificationVerdict
-from verifiable.core.provenance import GitProvenance, ProvenanceRecord, RuntimeEnvironment
-from verifiable.data.models import (
+from verifier.core.checker import VerificationVerdict
+from verifier.core.provenance import GitProvenance, ProvenanceRecord, RuntimeEnvironment
+from verifier.data.models import (
     ArtifactNode,
     ArtifactStatus,
     ArtifactType,
@@ -16,17 +16,17 @@ from verifiable.data.models import (
     TransformationHyperedge,
     TransformationType,
 )
-from verifiable.data.policy import ProvenancePolicyVerifier
-from verifiable.data.receipt import (
+from verifier.data.policy import ProvenancePolicyVerifier
+from verifier.data.receipt import (
     DataIndependentAudit,
     DatasetSpec,
-    VerifiableDataReceipt,
+    VstdDataReceipt,
     reproduce_data_receipt,
     validate_data_receipt,
 )
 
 
-def _receipt() -> VerifiableDataReceipt:
+def _receipt() -> VstdDataReceipt:
     graph = ProvenanceHypergraph()
     graph.add_artifact(
         ArtifactNode(
@@ -67,7 +67,7 @@ def _receipt() -> VerifiableDataReceipt:
         command_executed="test",
         source_file_hashes={},
     )
-    return VerifiableDataReceipt(
+    return VstdDataReceipt(
         schema_version="VSTD-DATA-0.1",
         receipt_id="VFY-DATA-PUBLIC-TEST",
         dataset_spec=DatasetSpec(

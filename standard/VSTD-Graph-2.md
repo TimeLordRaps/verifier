@@ -9,7 +9,7 @@ layer only when every member and provenance ancestor is at object layer 2 or
 higher, every reachable status is admissible, and every transformation hyperedge
 carries layer-2 edge evidence.
 
-The level is computed by `verifiable.data.graph_level`; it is never declared.
+The level is computed by `verifier.data.graph_level`; it is never declared.
 The `FAIL` certificate for Graph layer 2 names the member, ancestor, status, or
 edge obligation that prevents admission.
 

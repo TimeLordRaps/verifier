@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from verifiable.runtime.public_cli import build_parser, main
+from verifier.runtime.public_cli import build_parser, main
 
 
 KEY_ID = "cli-test-key"

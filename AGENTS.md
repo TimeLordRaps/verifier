@@ -5,8 +5,8 @@ Working rules for automated contributors to VSTD. Read this before editing anyth
 ## 1. What this repository is
 
 VSTD is a **specification** plus its **reference implementation** for portable, bounded,
-refutable evidence about computational claims. The distribution is `verifiable-standard`,
-the import package is `verifiable`, and `vstd` is the canonical command.
+refutable evidence about computational claims. The distribution is `verifier-standard`,
+the import package is `verifier`, and `vstd` is the canonical command.
 
 Two independent axes: `VSTD-1..5` (object mechanics) and `VSTD-Graph-1..5` (collection
 dynamics). Layers 1-4 are implemented; **layer 5 is DRAFT**. An aggregate depth of `N`
@@ -47,14 +47,14 @@ python -m compileall -q src scripts
 Stdlib-purity smoke, mirroring the `stdlib-smoke` CI job:
 
 ```bash
-PYTHONPATH=src python -S -c "import verifiable; from verifiable.core.run import load_manifest; print(verifiable.__version__)"
+PYTHONPATH=src python -S -c "import verifier; from verifier.core.run import load_manifest; print(verifier.__version__)"
 ```
 
 Local release-integrity pair, mirroring the `release-integrity` job:
 
 ```bash
 python scripts/release_artifacts.py source --ref HEAD --release ci --output-dir /tmp/vstd-release
-python scripts/release_artifacts.py verify /tmp/vstd-release/verifiable-standard-ci.manifest.json
+python scripts/release_artifacts.py verify /tmp/vstd-release/verifier-standard-ci.manifest.json
 ```
 
 **No linter, formatter, or typechecker is configured.** There is no ruff, black, mypy,
@@ -62,12 +62,12 @@ flake8, pre-commit, Makefile, or tox. Do not run one, and do not add one unpromp
 only `[tool.*]` sections in `pyproject.toml` are setuptools package-data and pytest.
 
 **Shadowed-install trap.** If another checkout of this package is installed in the active
-interpreter, `import verifiable` silently resolves to it and the suite fails with
+interpreter, `import verifier` silently resolves to it and the suite fails with
 confusing `ModuleNotFoundError` or missing-file errors that are not repository bugs.
 Check before believing a failure:
 
 ```bash
-python -c "import verifiable; print(verifiable.__file__, verifiable.__version__)"
+python -c "import verifier; print(verifier.__file__, verifier.__version__)"
 ```
 
 If that path is not inside this repository, prefix commands with `PYTHONPATH=src`.
@@ -75,17 +75,17 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 ## 4. Layout
 
 - `standard/` — normative layer documents plus the frozen `WIRE_IDENTIFIERS.md`.
-- `src/verifiable/core/` — receipt, checker, certificate, grounding, kernel, run.
-- `src/verifiable/constraints/`, `hardware/`, `layer4/`, `data/` — layer surfaces.
-- `src/verifiable/runtime/` — `public_cli.py` (every CLI entry point) and `demo.py`.
-- `src/verifiable/specifications/` — byte-identical copies of normative spec files.
+- `src/verifier/core/` — receipt, checker, certificate, grounding, kernel, run.
+- `src/verifier/constraints/`, `hardware/`, `layer4/`, `data/` — layer surfaces.
+- `src/verifier/runtime/` — `public_cli.py` (every CLI entry point) and `demo.py`.
+- `src/verifier/specifications/` — byte-identical copies of normative spec files.
 - `receipts/schema/` — JSON Schemas. `examples/` — runnable specimens.
 - `scripts/` — `check_presentation.py`, `release_artifacts.py`, `build_pages.py`.
 - `tests/` — flat `tests/test_*.py`, no `conftest.py`.
 
 ## 5. Invariants that must not be refactored away
 
-**Kernel isolation (rung 4.7).** `src/verifiable/core/kernel.py` deliberately duplicates
+**Kernel isolation (rung 4.7).** `src/verifier/core/kernel.py` deliberately duplicates
 unit propagation from `core/refutation.py`. A producer and a checker agreeing because they
 share a function is not agreement. `tests/test_gdc_certificate.py` enforces both halves:
 `kernel.py`, `certificate.py`, and `grounding.py` may not import anything whose module tail
@@ -97,11 +97,11 @@ specification alone. Do not deduplicate it, and do not grow it.
 smoke job. Anything new belongs in an optional extra in `pyproject.toml`, imported lazily
 behind that extra. A new third-party import on the base path breaks the build.
 
-**Lazy exports.** `_LAZY_EXPORTS` plus module `__getattr__` in `src/verifiable/__init__.py`
+**Lazy exports.** `_LAZY_EXPORTS` plus module `__getattr__` in `src/verifier/__init__.py`
 keeps import cost near zero. Do not convert these into eager imports.
 
 **Console scripts.** `vstd`, `verifier`, and `verifiable` all map to
-`verifiable.runtime.public_cli:main`. `vstd` is canonical because an unqualified `verifier`
+`verifier.runtime.public_cli:main`. `vstd` is canonical because an unqualified `verifier`
 on Windows commonly resolves to Windows Driver Verifier. `verifiable` is a **permanent**
 alias: published receipts bind it in falsification instructions, so removing it would
 render already-published refutation steps unrunnable.
@@ -113,7 +113,7 @@ corrections are additive only. See
 
 **Packaged specification bytes.** Editing `LADDER.md`, `VSTD-3.md`, `VSTD-4.md`, or
 `WIRE_IDENTIFIERS.md` under `standard/` requires copying the exact bytes into
-`src/verifiable/specifications/`. `tests/test_packaged_specifications.py` compares them
+`src/verifier/specifications/`. `tests/test_packaged_specifications.py` compares them
 byte-for-byte.
 
 **Schema `$id` is a live route.** Every `receipts/schema/*.json` must carry
@@ -132,7 +132,7 @@ CRLF/LF equivalence as byte identity. This matters when working on Windows.
 **including this one** — and fails closed on:
 
 - a markdown or HTML link whose local target does not exist;
-- a version disagreement across `pyproject.toml`, `src/verifiable/__init__.py`,
+- a version disagreement across `pyproject.toml`, `src/verifier/__init__.py`,
   `CITATION.cff`, `.zenodo.json`, and a dated `## X.Y.Z - YYYY-MM-DD` heading in
   `CHANGELOG.md` — bump all five together or the gate fails;
 - a missing required boundary phrase in `README.md`, `ROADMAP.md`, or

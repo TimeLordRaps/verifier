@@ -2,7 +2,7 @@
 
 **Layer:** 5 of 5 on the object axis (see `LADDER.md`)
 **Status:** DRAFT — not implemented
-**Editor:** Tyler Roost
+**Editor:** TimeLordRaps
 **License:** Apache-2.0
 **Date:** 2026-08-22
 

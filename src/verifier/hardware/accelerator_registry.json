@@ -1,0 +1,2182 @@
+{
+  "profiles": [
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "unknown-future",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-placeholder",
+      "deployment_classes": [
+        "unknown"
+      ],
+      "device_class": "GPU",
+      "discovery_methods": [
+        "adapter-declared"
+      ],
+      "documentation_refs": [
+        "https://rocm.docs.amd.com/projects/amdsmi/en/latest/how-to/amdsmi-cli-tool.html"
+      ],
+      "evidence_methods": [
+        "preserve-raw-evidence"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Future CDNA",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "future AMD/CDNA architectures"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [],
+      "partition_modes": [
+        "adapter-declared"
+      ],
+      "profile_id": "amd.cdna-future",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "AMD"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "CDNA 3",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "vendor or operating-system discovery",
+          "limitations": [
+            "Host administrators can alter or suppress this evidence."
+          ],
+          "support": "SUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-discovery-docs",
+      "deployment_classes": [
+        "datacenter",
+        "cloud"
+      ],
+      "device_class": "GPU",
+      "discovery_methods": [
+        "AMD SMI",
+        "ROCm",
+        "PCI enumeration"
+      ],
+      "documentation_refs": [
+        "https://rocm.docs.amd.com/projects/amdsmi/en/latest/how-to/amdsmi-cli-tool.html",
+        "https://rocm.docs.amd.com/projects/amdsmi/en/latest/conceptual/partition.html"
+      ],
+      "evidence_methods": [
+        "AMD SMI metadata",
+        "firmware version inventory"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Instinct",
+      "firmware_identity_support": "SUPPORTED",
+      "hardware_identity_support": "SUPPORTED",
+      "models": [
+        "MI300A",
+        "MI300X"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "AMD SMI identity and firmware inventory are host-observed unless separately attested."
+      ],
+      "partition_modes": [
+        "whole-device",
+        "compute-partition",
+        "memory-partition",
+        "SR-IOV"
+      ],
+      "profile_id": "amd.instinct-mi300",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "AMD"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "CDNA 3",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "vendor or operating-system discovery",
+          "limitations": [
+            "Host administrators can alter or suppress this evidence."
+          ],
+          "support": "SUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-discovery-docs",
+      "deployment_classes": [
+        "datacenter",
+        "cloud"
+      ],
+      "device_class": "GPU",
+      "discovery_methods": [
+        "AMD SMI",
+        "ROCm",
+        "PCI enumeration"
+      ],
+      "documentation_refs": [
+        "https://rocm.docs.amd.com/projects/amdsmi/en/latest/how-to/amdsmi-cli-tool.html",
+        "https://rocm.docs.amd.com/projects/amdsmi/en/latest/conceptual/partition.html"
+      ],
+      "evidence_methods": [
+        "AMD SMI metadata",
+        "firmware version inventory"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Instinct",
+      "firmware_identity_support": "SUPPORTED",
+      "hardware_identity_support": "SUPPORTED",
+      "models": [
+        "MI325X"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "AMD SMI identity and firmware inventory are host-observed unless separately attested."
+      ],
+      "partition_modes": [
+        "whole-device",
+        "compute-partition",
+        "memory-partition",
+        "SR-IOV"
+      ],
+      "profile_id": "amd.instinct-mi325",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "AMD"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "CDNA 4",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "vendor or operating-system discovery",
+          "limitations": [
+            "Host administrators can alter or suppress this evidence."
+          ],
+          "support": "SUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-discovery-docs",
+      "deployment_classes": [
+        "datacenter",
+        "cloud"
+      ],
+      "device_class": "GPU",
+      "discovery_methods": [
+        "AMD SMI",
+        "ROCm",
+        "PCI enumeration"
+      ],
+      "documentation_refs": [
+        "https://rocm.docs.amd.com/projects/amdsmi/en/latest/how-to/amdsmi-cli-tool.html",
+        "https://rocm.docs.amd.com/projects/amdsmi/en/latest/conceptual/partition.html"
+      ],
+      "evidence_methods": [
+        "AMD SMI metadata",
+        "firmware version inventory"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Instinct",
+      "firmware_identity_support": "SUPPORTED",
+      "hardware_identity_support": "SUPPORTED",
+      "models": [
+        "MI350X",
+        "MI355X"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "AMD SMI identity and firmware inventory are host-observed unless separately attested."
+      ],
+      "partition_modes": [
+        "whole-device",
+        "compute-partition",
+        "memory-partition",
+        "SR-IOV"
+      ],
+      "profile_id": "amd.instinct-mi350",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "AMD"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "FPGA/ACAP",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "ADAPTIVE_COMPUTE",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Adaptive Compute",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "AMD/Xilinx accelerator families"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "bitstream-region",
+        "whole-device"
+      ],
+      "profile_id": "amd.xilinx",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "AMD/Xilinx"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "NeuronCore",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "vendor or operating-system discovery",
+          "limitations": [
+            "Host administrators can alter or suppress this evidence."
+          ],
+          "support": "SUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-product-docs",
+      "deployment_classes": [
+        "cloud",
+        "instance"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "neuron-ls",
+        "Neuron DRA",
+        "provider control plane"
+      ],
+      "documentation_refs": [
+        "https://docs.aws.amazon.com/eks/latest/userguide/device-management-neuron.html"
+      ],
+      "evidence_methods": [
+        "runtime telemetry",
+        "provider metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Inferentia",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Inferentia",
+        "Inferentia2",
+        "future Inferentia"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [],
+      "partition_modes": [
+        "NeuronDevice",
+        "Logical NeuronCore"
+      ],
+      "profile_id": "aws.inferentia",
+      "topology_attestation_support": "SUPPORTED",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "AWS"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "NeuronCore",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "vendor or operating-system discovery",
+          "limitations": [
+            "Host administrators can alter or suppress this evidence."
+          ],
+          "support": "SUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-product-docs",
+      "deployment_classes": [
+        "cloud",
+        "instance",
+        "ultraserver"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "neuron-ls",
+        "Neuron DRA",
+        "provider control plane"
+      ],
+      "documentation_refs": [
+        "https://docs.aws.amazon.com/eks/latest/userguide/device-management-neuron.html"
+      ],
+      "evidence_methods": [
+        "runtime telemetry",
+        "provider metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Trainium",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Trainium",
+        "Trainium2",
+        "Trainium3",
+        "future Trainium"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "Neuron discovery and topology do not establish device-originated attestation."
+      ],
+      "partition_modes": [
+        "NeuronDevice",
+        "Logical NeuronCore",
+        "instance allocation"
+      ],
+      "profile_id": "aws.trainium",
+      "topology_attestation_support": "SUPPORTED",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "AWS"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "Wafer Scale Engine",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "WSE/CS",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "WSE",
+        "WSE-2",
+        "WSE-3",
+        "CS systems"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "system",
+        "cluster"
+      ],
+      "profile_id": "cerebras.wse",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Cerebras"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "integrated NPU",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "INTEGRATED_NPU",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "XDNA/NPU",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "AMD XDNA",
+        "AMD NPU"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "logical-runtime-device"
+      ],
+      "profile_id": "edge.amd-xdna",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "AMD"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "integrated NPU",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "INTEGRATED_NPU",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Neural Engine",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Apple Neural Engine"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "logical-runtime-device"
+      ],
+      "profile_id": "edge.apple-ane",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Apple"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "integrated ASIC",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "INTEGRATED_NPU",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Edge TPU",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Google Edge TPU"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "device"
+      ],
+      "profile_id": "edge.google-tpu",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Google"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "integrated NPU",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "INTEGRATED_NPU",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "NPU",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Intel NPU"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "logical-runtime-device"
+      ],
+      "profile_id": "edge.intel-npu",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Intel"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "integrated GPU",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "GPU",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [
+        "https://docs.nvidia.com/attestation/quick-start-guide/latest/attestation-examples/collecting_evidence.html"
+      ],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Jetson",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "NVIDIA Jetson family"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "whole-device",
+        "runtime-device"
+      ],
+      "profile_id": "edge.nvidia-jetson",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "NVIDIA"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "integrated NPU",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "INTEGRATED_NPU",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Hexagon/NPU",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Qualcomm Hexagon",
+        "Qualcomm NPU"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "logical-runtime-device"
+      ],
+      "profile_id": "edge.qualcomm-hexagon",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Qualcomm"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "programmable fabric",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "FPGA",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "FPGA/adaptive compute",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "FPGA",
+        "adaptive-compute device"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "bitstream-region",
+        "virtual-function",
+        "whole-device"
+      ],
+      "profile_id": "fpga.generic",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "unassigned"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "open",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Generic AI ASIC",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "generic AI ASIC",
+        "unknown future accelerator"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "adapter-declared"
+      ],
+      "profile_id": "generic.ai-asic",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "unassigned"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "infrastructure accelerator",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "DPU",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [
+        "https://www.dmtf.org/standards/spdm"
+      ],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "DPU/SmartNIC",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "DPU",
+        "SmartNIC",
+        "PCIe device",
+        "fabric adapter"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "physical-function",
+        "virtual-function"
+      ],
+      "profile_id": "generic.dpu-smartnic",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "unassigned"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "supporting trust device",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "OTHER",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [
+        "https://www.dmtf.org/standards/spdm"
+      ],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Management/fabric component",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "management controller",
+        "fabric adapter",
+        "multi-chip package",
+        "chiplet"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "component",
+        "logical-component"
+      ],
+      "profile_id": "generic.management-controller",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "unassigned"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "unknown-future",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "vendor or operating-system discovery",
+          "limitations": [
+            "Host administrators can alter or suppress this evidence."
+          ],
+          "support": "SUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-product-docs",
+      "deployment_classes": [
+        "cloud",
+        "pod",
+        "slice"
+      ],
+      "device_class": "TPU",
+      "discovery_methods": [
+        "cloud control plane",
+        "framework device enumeration"
+      ],
+      "documentation_refs": [
+        "https://docs.cloud.google.com/tpu/docs/tpu7x"
+      ],
+      "evidence_methods": [
+        "provider metadata",
+        "runtime telemetry"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Cloud TPU",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "future TPU generations"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "Tenant-visible provider metadata is not equated with firmware attestation."
+      ],
+      "partition_modes": [
+        "slice",
+        "pod",
+        "chiplet-exposed logical device"
+      ],
+      "profile_id": "google.tpu-future",
+      "topology_attestation_support": "SUPPORTED",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Google"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "TPU v5p",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "vendor or operating-system discovery",
+          "limitations": [
+            "Host administrators can alter or suppress this evidence."
+          ],
+          "support": "SUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-product-docs",
+      "deployment_classes": [
+        "cloud",
+        "pod",
+        "slice"
+      ],
+      "device_class": "TPU",
+      "discovery_methods": [
+        "cloud control plane",
+        "framework device enumeration"
+      ],
+      "documentation_refs": [
+        "https://docs.cloud.google.com/tpu/docs/tpu7x"
+      ],
+      "evidence_methods": [
+        "provider metadata",
+        "runtime telemetry"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Cloud TPU",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "TPU v5p"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "Tenant-visible provider metadata is not equated with firmware attestation."
+      ],
+      "partition_modes": [
+        "slice",
+        "pod",
+        "chiplet-exposed logical device"
+      ],
+      "profile_id": "google.tpu-v5p",
+      "topology_attestation_support": "SUPPORTED",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Google"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "Trillium",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "vendor or operating-system discovery",
+          "limitations": [
+            "Host administrators can alter or suppress this evidence."
+          ],
+          "support": "SUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-product-docs",
+      "deployment_classes": [
+        "cloud",
+        "pod",
+        "slice"
+      ],
+      "device_class": "TPU",
+      "discovery_methods": [
+        "cloud control plane",
+        "framework device enumeration"
+      ],
+      "documentation_refs": [
+        "https://docs.cloud.google.com/tpu/docs/tpu7x"
+      ],
+      "evidence_methods": [
+        "provider metadata",
+        "runtime telemetry"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Cloud TPU",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "TPU v6e",
+        "Trillium"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "Tenant-visible provider metadata is not equated with firmware attestation."
+      ],
+      "partition_modes": [
+        "slice",
+        "pod",
+        "chiplet-exposed logical device"
+      ],
+      "profile_id": "google.tpu-v6e",
+      "topology_attestation_support": "SUPPORTED",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Google"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "Ironwood",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "vendor or operating-system discovery",
+          "limitations": [
+            "Host administrators can alter or suppress this evidence."
+          ],
+          "support": "SUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-product-docs",
+      "deployment_classes": [
+        "cloud",
+        "pod",
+        "slice"
+      ],
+      "device_class": "TPU",
+      "discovery_methods": [
+        "cloud control plane",
+        "framework device enumeration"
+      ],
+      "documentation_refs": [
+        "https://docs.cloud.google.com/tpu/docs/tpu7x"
+      ],
+      "evidence_methods": [
+        "provider metadata",
+        "runtime telemetry"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Cloud TPU",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "TPU7x",
+        "Ironwood"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "Tenant-visible provider metadata is not equated with firmware attestation."
+      ],
+      "partition_modes": [
+        "slice",
+        "pod",
+        "chiplet-exposed logical device"
+      ],
+      "profile_id": "google.tpu7x",
+      "topology_attestation_support": "SUPPORTED",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Google"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "LPU",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "LPU",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Groq LPU family"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "device",
+        "rack"
+      ],
+      "profile_id": "groq.lpu",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Groq"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "Da Vinci",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Ascend",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Ascend family"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "whole-device",
+        "virtual-device"
+      ],
+      "profile_id": "huawei.ascend",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Huawei"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "programmable fabric",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "FPGA",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "FPGA",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Intel/Altera accelerator families"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "bitstream-region",
+        "whole-device"
+      ],
+      "profile_id": "intel.altera",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Intel/Altera"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "Gaudi",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Gaudi",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Gaudi",
+        "Gaudi2",
+        "Gaudi3",
+        "future Gaudi"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "whole-device",
+        "virtual-device"
+      ],
+      "profile_id": "intel.gaudi",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Intel"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "MTIA",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "MTIA",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "MTIA family"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "logical-device"
+      ],
+      "profile_id": "meta.mtia",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Meta"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "Maia",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-product-docs",
+      "deployment_classes": [
+        "cloud",
+        "managed-service"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "provider control plane"
+      ],
+      "documentation_refs": [
+        "https://azure.microsoft.com/en-us/blog/azure-maia-for-the-era-of-ai-from-silicon-to-software-to-systems/",
+        "https://blogs.microsoft.com/blog/2026/01/26/maia-200-the-ai-accelerator-built-for-inference/"
+      ],
+      "evidence_methods": [
+        "provider metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Maia",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Maia 100",
+        "Maia 200",
+        "future Maia"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [],
+      "partition_modes": [
+        "cloud slice"
+      ],
+      "profile_id": "microsoft.maia",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Microsoft"
+    },
+    {
+      "anti_replay_support": "SUPPORTED",
+      "architecture": "Blackwell",
+      "attestation_protocols": [
+        "DMTF SPDM",
+        "vendor signed evidence"
+      ],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "NVML or nvidia-smi",
+          "limitations": [
+            "Host telemetry is not firmware attestation."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "DEVICE_IDENTITY_ATTESTED",
+          "evidence_method": "verified NVIDIA device certificate and SPDM evidence",
+          "limitations": [
+            "Requires supported device, verifier, certificate validation, and retained raw evidence."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "FIRMWARE_ATTESTED",
+          "evidence_method": "verified SPDM measurements compared with authenticated RIM values",
+          "limitations": [
+            "Firmware attestation does not prove that every execution was logged."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "EXECUTION_ATTESTED",
+          "evidence_method": "no public per-execution VSTD event interface identified",
+          "limitations": [
+            "Device state attestation is not execution attestation."
+          ],
+          "support": "UNSUPPORTED"
+        },
+        {
+          "capability": "EXECUTION_ACCOUNTING_EVIDENCED",
+          "evidence_method": "no complete authenticated accounting interface identified",
+          "limitations": [],
+          "support": "UNSUPPORTED"
+        },
+        {
+          "capability": "COMPLETE_MEDIATION_ATTESTED",
+          "evidence_method": "no public complete-mediation contract identified",
+          "limitations": [],
+          "support": "UNSUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-docs-mapped",
+      "deployment_classes": [
+        "datacenter",
+        "cloud"
+      ],
+      "device_class": "GPU",
+      "discovery_methods": [
+        "NVML",
+        "nvidia-smi",
+        "NVIDIA Attestation tools"
+      ],
+      "documentation_refs": [
+        "https://docs.nvidia.com/attestation/quick-start-guide/latest/attestation-examples/collecting_evidence.html",
+        "https://docs.nvidia.com/attestation/advanced-documentation/latest/claims-guide/gpu_claims.html",
+        "https://www.dmtf.org/standards/spdm"
+      ],
+      "evidence_methods": [
+        "NVML metadata",
+        "SPDM measurements",
+        "device certificate chain",
+        "RIM comparison"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Datacenter GPU",
+      "firmware_identity_support": "SUPPORTED",
+      "hardware_identity_support": "SUPPORTED",
+      "models": [
+        "B100",
+        "B200",
+        "GB200"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "Corelib SPDM collection is documented for Blackwell."
+      ],
+      "partition_modes": [
+        "MIG",
+        "virtual-function",
+        "whole-device"
+      ],
+      "profile_id": "nvidia.blackwell",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "NVIDIA"
+    },
+    {
+      "anti_replay_support": "SUPPORTED",
+      "architecture": "Blackwell Ultra",
+      "attestation_protocols": [
+        "DMTF SPDM",
+        "vendor signed evidence"
+      ],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "NVML or nvidia-smi",
+          "limitations": [
+            "Host telemetry is not firmware attestation."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "DEVICE_IDENTITY_ATTESTED",
+          "evidence_method": "verified NVIDIA device certificate and SPDM evidence",
+          "limitations": [
+            "Requires supported device, verifier, certificate validation, and retained raw evidence."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "FIRMWARE_ATTESTED",
+          "evidence_method": "verified SPDM measurements compared with authenticated RIM values",
+          "limitations": [
+            "Firmware attestation does not prove that every execution was logged."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "EXECUTION_ATTESTED",
+          "evidence_method": "no public per-execution VSTD event interface identified",
+          "limitations": [
+            "Device state attestation is not execution attestation."
+          ],
+          "support": "UNSUPPORTED"
+        },
+        {
+          "capability": "EXECUTION_ACCOUNTING_EVIDENCED",
+          "evidence_method": "no complete authenticated accounting interface identified",
+          "limitations": [],
+          "support": "UNSUPPORTED"
+        },
+        {
+          "capability": "COMPLETE_MEDIATION_ATTESTED",
+          "evidence_method": "no public complete-mediation contract identified",
+          "limitations": [],
+          "support": "UNSUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-docs-mapped",
+      "deployment_classes": [
+        "datacenter",
+        "cloud"
+      ],
+      "device_class": "GPU",
+      "discovery_methods": [
+        "NVML",
+        "nvidia-smi",
+        "NVIDIA Attestation tools"
+      ],
+      "documentation_refs": [
+        "https://docs.nvidia.com/attestation/quick-start-guide/latest/attestation-examples/collecting_evidence.html",
+        "https://docs.nvidia.com/attestation/advanced-documentation/latest/claims-guide/gpu_claims.html",
+        "https://www.dmtf.org/standards/spdm"
+      ],
+      "evidence_methods": [
+        "NVML metadata",
+        "SPDM measurements",
+        "device certificate chain",
+        "RIM comparison"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Datacenter GPU",
+      "firmware_identity_support": "SUPPORTED",
+      "hardware_identity_support": "SUPPORTED",
+      "models": [
+        "B300",
+        "GB300"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "Registry coverage does not establish product-specific attestation availability."
+      ],
+      "partition_modes": [
+        "MIG",
+        "virtual-function",
+        "whole-device"
+      ],
+      "profile_id": "nvidia.blackwell-ultra",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "NVIDIA"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "unknown-future",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-placeholder",
+      "deployment_classes": [
+        "unknown"
+      ],
+      "device_class": "GPU",
+      "discovery_methods": [
+        "adapter-declared"
+      ],
+      "documentation_refs": [
+        "https://docs.nvidia.com/attestation/quick-start-guide/latest/attestation-examples/collecting_evidence.html"
+      ],
+      "evidence_methods": [
+        "preserve-raw-evidence"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Future architecture",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "future NVIDIA architectures"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "Unknown architecture is representable without changing VSTD core."
+      ],
+      "partition_modes": [
+        "adapter-declared"
+      ],
+      "profile_id": "nvidia.future",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "NVIDIA"
+    },
+    {
+      "anti_replay_support": "SUPPORTED",
+      "architecture": "Hopper",
+      "attestation_protocols": [
+        "DMTF SPDM",
+        "vendor signed evidence"
+      ],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "NVML or nvidia-smi",
+          "limitations": [
+            "Host telemetry is not firmware attestation."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "DEVICE_IDENTITY_ATTESTED",
+          "evidence_method": "verified NVIDIA device certificate and SPDM evidence",
+          "limitations": [
+            "Requires supported device, verifier, certificate validation, and retained raw evidence."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "FIRMWARE_ATTESTED",
+          "evidence_method": "verified SPDM measurements compared with authenticated RIM values",
+          "limitations": [
+            "Firmware attestation does not prove that every execution was logged."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "EXECUTION_ATTESTED",
+          "evidence_method": "no public per-execution VSTD event interface identified",
+          "limitations": [
+            "Device state attestation is not execution attestation."
+          ],
+          "support": "UNSUPPORTED"
+        },
+        {
+          "capability": "EXECUTION_ACCOUNTING_EVIDENCED",
+          "evidence_method": "no complete authenticated accounting interface identified",
+          "limitations": [],
+          "support": "UNSUPPORTED"
+        },
+        {
+          "capability": "COMPLETE_MEDIATION_ATTESTED",
+          "evidence_method": "no public complete-mediation contract identified",
+          "limitations": [],
+          "support": "UNSUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "official-docs-mapped",
+      "deployment_classes": [
+        "datacenter",
+        "cloud"
+      ],
+      "device_class": "GPU",
+      "discovery_methods": [
+        "NVML",
+        "nvidia-smi",
+        "NVIDIA Attestation tools"
+      ],
+      "documentation_refs": [
+        "https://docs.nvidia.com/attestation/quick-start-guide/latest/attestation-examples/collecting_evidence.html",
+        "https://docs.nvidia.com/attestation/advanced-documentation/latest/claims-guide/gpu_claims.html",
+        "https://www.dmtf.org/standards/spdm"
+      ],
+      "evidence_methods": [
+        "NVML metadata",
+        "SPDM measurements",
+        "device certificate chain",
+        "RIM comparison"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Datacenter GPU",
+      "firmware_identity_support": "SUPPORTED",
+      "hardware_identity_support": "SUPPORTED",
+      "models": [
+        "H100",
+        "H200",
+        "GH200"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [],
+      "partition_modes": [
+        "MIG",
+        "virtual-function",
+        "whole-device"
+      ],
+      "profile_id": "nvidia.hopper",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "NVIDIA"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "accelerator switch",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "ACCELERATOR_SWITCH",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [
+        "https://docs.nvidia.com/attestation/quick-start-guide/latest/attestation-examples/collecting_evidence.html"
+      ],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "NVSwitch",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "NVSwitch family"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "switch",
+        "fabric"
+      ],
+      "profile_id": "nvidia.nvswitch",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "NVIDIA"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "Cloud AI",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "Cloud AI",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Qualcomm Cloud AI accelerators"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "device",
+        "card"
+      ],
+      "profile_id": "qualcomm.cloud-ai",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Qualcomm"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "RDU",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "RDU",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "SambaNova RDU family"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "device",
+        "system"
+      ],
+      "profile_id": "sambanova.rdu",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "SambaNova"
+    },
+    {
+      "anti_replay_support": "UNKNOWN",
+      "architecture": "manycore",
+      "attestation_protocols": [],
+      "capability_declarations": [
+        {
+          "capability": "HOST_OBSERVED",
+          "evidence_method": "adapter-specific discovery",
+          "limitations": [
+            "No core guarantee is inferred from registry membership."
+          ],
+          "support": "UNKNOWN"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNKNOWN",
+      "confidence": "registry-coverage",
+      "deployment_classes": [
+        "datacenter",
+        "cloud",
+        "edge"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "vendor adapter",
+        "operating-system enumeration",
+        "fixture"
+      ],
+      "documentation_refs": [],
+      "evidence_methods": [
+        "preserve-raw-evidence",
+        "host metadata"
+      ],
+      "execution_accounting_support": "UNKNOWN",
+      "family": "AI accelerator",
+      "firmware_identity_support": "UNKNOWN",
+      "hardware_identity_support": "UNKNOWN",
+      "models": [
+        "Tenstorrent accelerator families"
+      ],
+      "monotonic_state_support": "UNSUPPORTED",
+      "native_complete_mediation_support": "UNSUPPORTED",
+      "notes": [
+        "No strong attestation capability is inferred from product identity alone."
+      ],
+      "partition_modes": [
+        "device",
+        "chiplet",
+        "system"
+      ],
+      "profile_id": "tenstorrent.accelerator",
+      "topology_attestation_support": "UNKNOWN",
+      "trusted_reset_support": "UNSUPPORTED",
+      "vendor": "Tenstorrent"
+    },
+    {
+      "anti_replay_support": "SUPPORTED",
+      "architecture": "reference-emulator",
+      "attestation_protocols": [
+        "VSTD3-FIRMWARE-CONTRACT-1"
+      ],
+      "capability_declarations": [
+        {
+          "capability": "DEVICE_IDENTITY_ATTESTED",
+          "evidence_method": "test HMAC device identity",
+          "limitations": [
+            "Test-only root of trust; not physical hardware."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "FIRMWARE_ATTESTED",
+          "evidence_method": "deterministic measured-boot emulator",
+          "limitations": [
+            "Emulated evidence only."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "EXECUTION_ATTESTED",
+          "evidence_method": "firmware-contract event state machine",
+          "limitations": [
+            "Bounded to emulator-submitted executions."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "EXECUTION_ACCOUNTING_EVIDENCED",
+          "evidence_method": "firmware-counter emulator",
+          "limitations": [
+            "Synthetic deterministic counters."
+          ],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "CONTINUITY_ATTESTED",
+          "evidence_method": "signed rolling hash chain",
+          "limitations": [],
+          "support": "SUPPORTED"
+        },
+        {
+          "capability": "COMPLETE_MEDIATION_ATTESTED",
+          "evidence_method": "emulator refuses execution without events",
+          "limitations": [
+            "Bounded only to the emulator API."
+          ],
+          "support": "SUPPORTED"
+        }
+      ],
+      "cloud_provider_evidence_support": "UNSUPPORTED",
+      "confidence": "reference-implementation",
+      "deployment_classes": [
+        "test",
+        "emulator"
+      ],
+      "device_class": "AI_ASIC",
+      "discovery_methods": [
+        "vstd3-emulator"
+      ],
+      "documentation_refs": [
+        "https://github.com/TimeLordRaps/verifier/tree/main/standard"
+      ],
+      "evidence_methods": [
+        "signed-event-export",
+        "rolling-state",
+        "local-anchor"
+      ],
+      "execution_accounting_support": "SUPPORTED",
+      "family": "VirtualVSTDAccelerator",
+      "firmware_identity_support": "SUPPORTED",
+      "hardware_identity_support": "SUPPORTED",
+      "models": [
+        "VirtualVSTDAccelerator"
+      ],
+      "monotonic_state_support": "SUPPORTED",
+      "native_complete_mediation_support": "SUPPORTED",
+      "notes": [
+        "Demonstrates the future contract without claiming commodity hardware support."
+      ],
+      "partition_modes": [
+        "logical-partition"
+      ],
+      "profile_id": "vstd.virtual-firmware-1",
+      "topology_attestation_support": "SUPPORTED",
+      "trusted_reset_support": "SUPPORTED",
+      "vendor": "EMULATED"
+    }
+  ],
+  "registry_version": "2026-08-21",
+  "schema_version": "VSTD3-ACCELERATOR-REGISTRY-1.0"
+}

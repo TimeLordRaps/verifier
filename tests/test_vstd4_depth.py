@@ -16,14 +16,14 @@ from __future__ import annotations
 
 import pytest
 
-from verifiable.core.certificate import (
+from verifier.core.certificate import (
     ClaimBinding,
     ClaimCoordinate,
     CostTier,
     ResourceBounds,
     Verdict,
 )
-from verifiable.core.depth import (
+from verifier.core.depth import (
     BY_ID,
     MAX_DEPTH,
     RUNGS,
@@ -32,7 +32,7 @@ from verifiable.core.depth import (
     require_vstd5_entry,
     vstd4_depth,
 )
-from verifiable.core.kernel import KernelOutcome, check, is_horn, reference_descriptor
+from verifier.core.kernel import KernelOutcome, check, is_horn, reference_descriptor
 
 CLAIM = "claim:accuracy-0.95"
 BUDGET = 10_000

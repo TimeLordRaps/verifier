@@ -1,11 +1,11 @@
-"""Unit tests for the independent VERIFIABLE SAT solver and Grounding checker."""
+"""Unit tests for the independent VSTD SAT solver and Grounding checker."""
 
 from __future__ import annotations
 
-from verifiable.core.checker import (
+from verifier.core.checker import (
     GroundingVerdict,
     IndependentGroundingChecker,
-    IndependentVerifiableAuditor,
+    IndependentAuditor,
     MinimalIndependentDPLL,
     VerificationVerdict,
 )
@@ -109,7 +109,7 @@ def test_independent_auditor_end_to_end() -> None:
         }
     ]
     clauses = [[-1, 2], [1]]  # A -> B, A => SAT
-    audit = IndependentVerifiableAuditor.audit_claim_derivation(
+    audit = IndependentAuditor.audit_claim_derivation(
         claim_id="TEST-001",
         n_vars=2,
         clauses=clauses,
