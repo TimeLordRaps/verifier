@@ -17,6 +17,10 @@ METADATA_NAMES = {"METADATA", "PKG-INFO", "entry_points.txt", "top_level.txt"}
 
 def _should_scan(name: str) -> bool:
     path = PurePosixPath(name)
+    if path.as_posix().endswith("/scripts/check_presentation.py"):
+        # This file is the canonical source of the forbidden-pattern definitions.
+        # Scanning the definitions as if they were leaked values is self-matching.
+        return False
     return path.suffix.lower() in TEXT_SUFFIXES or path.name in METADATA_NAMES
 
 
