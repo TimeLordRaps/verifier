@@ -15,6 +15,15 @@
   changes.
 - Attribute the specifications, distribution metadata, and governance decision rights to
   `TimeLordRaps`. The legal name remains the copyright holder in `NOTICE`.
+- Add a normalized, byte-reproducible Python source distribution beside the reproducible
+  wheel; verify their name, version, import package, and frozen console-script set before
+  release.
+- Publish only the tested wheel and source distribution through PyPI Trusted Publishing
+  after explicit approval in the protected `pypi` environment. The GitHub release keeps
+  the full source ZIP and external byte manifest as the public provenance coordinate.
+- Document that the unrelated PyPI project named `verifier` shares the same import name
+  and must not be co-installed; this is an ecosystem collision boundary, not a claim to
+  that distribution coordinate.
 
 - Rename the VSTD-2 section 7 lifecycle term `VERIFIABLE` to `GEOMETRY_INSPECTABLE`
   and record in `WIRE_IDENTIFIERS.md` that the section 7 vocabulary is prose-only, so

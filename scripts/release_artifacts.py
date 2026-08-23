@@ -8,12 +8,19 @@ both exact and publicly resolvable.
 from __future__ import annotations
 
 import argparse
+from configparser import ConfigParser
+from email import policy
+from email.parser import BytesParser
+import gzip
 import hashlib
+import io
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import zipfile
 from pathlib import Path
@@ -25,6 +32,13 @@ SCHEMA_VERSION = "VSTD-PUBLIC-RELEASE-1.1"
 # were published as `verifiable-standard-<release>.zip`; their manifests carry that
 # prefix and are still verified from the manifest itself.
 ARCHIVE_STEM = "verifier-standard"
+DISTRIBUTION_NAME = "verifier-standard"
+IMPORT_PACKAGE = "verifier"
+CONSOLE_SCRIPTS = {
+    "verifiable": "verifier.runtime.public_cli:main",
+    "verifier": "verifier.runtime.public_cli:main",
+    "vstd": "verifier.runtime.public_cli:main",
+}
 
 
 class ReleaseError(RuntimeError):
@@ -74,6 +88,144 @@ def _archive_inventory(archive: Path, prefix: str) -> dict[str, dict[str, Any]]:
     return dict(sorted(result.items()))
 
 
+def _canonical_distribution_name(value: str) -> str:
+    return re.sub(r"[-_.]+", "-", value).lower()
+
+
+def _metadata_identity(payload: bytes, *, artifact: str) -> tuple[str, str]:
+    metadata = BytesParser(policy=policy.default).parsebytes(payload)
+    name = str(metadata.get("Name", ""))
+    version = str(metadata.get("Version", ""))
+    if not name or not version:
+        raise ReleaseError(f"distribution metadata lacks Name or Version: {artifact}")
+    return name, version
+
+
+def _normalize_sdist(source: Path, destination: Path, epoch: str) -> None:
+    """Rewrite an sdist with stable gzip and tar metadata.
+
+    Setuptools emits valid source distributions whose tar and gzip timestamps vary
+    across clean builds. The file bytes and paths are the meaningful payload here, so
+    the release builder fixes timestamps to the source commit, clears host ownership,
+    normalizes modes, and sorts members before comparing two independent builds.
+    """
+
+    timestamp = int(epoch)
+    with tarfile.open(source, "r:gz") as bundle:
+        members = sorted(bundle.getmembers(), key=lambda item: item.name)
+        roots = {member.name.split("/", 1)[0] for member in members if member.name}
+        if len(roots) != 1:
+            raise ReleaseError(f"sdist must contain exactly one root directory: {source}")
+
+        materialized: list[tuple[tarfile.TarInfo, bytes | None]] = []
+        for member in members:
+            if member.isdir():
+                data = None
+            elif member.isfile():
+                extracted = bundle.extractfile(member)
+                if extracted is None:
+                    raise ReleaseError(f"sdist member is unreadable: {member.name}")
+                data = extracted.read()
+            else:
+                raise ReleaseError(
+                    f"sdist contains unsupported non-file member: {member.name}"
+                )
+            materialized.append((member, data))
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open("wb") as raw:
+        with gzip.GzipFile(
+            filename="", mode="wb", fileobj=raw, compresslevel=9, mtime=timestamp
+        ) as compressed:
+            with tarfile.open(
+                fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT
+            ) as normalized:
+                for original, data in materialized:
+                    member = tarfile.TarInfo(original.name)
+                    member.mtime = timestamp
+                    member.uid = 0
+                    member.gid = 0
+                    member.uname = ""
+                    member.gname = ""
+                    if data is None:
+                        member.type = tarfile.DIRTYPE
+                        member.mode = 0o755
+                        member.size = 0
+                        normalized.addfile(member)
+                    else:
+                        member.type = tarfile.REGTYPE
+                        member.mode = 0o644
+                        member.size = len(data)
+                        normalized.addfile(member, io.BytesIO(data))
+
+
+def _verify_python_distributions(wheel: Path, sdist: Path, release: str) -> None:
+    expected_name = _canonical_distribution_name(DISTRIBUTION_NAME)
+
+    with zipfile.ZipFile(wheel) as bundle:
+        names = bundle.namelist()
+        metadata_paths = [name for name in names if name.endswith(".dist-info/METADATA")]
+        entry_paths = [
+            name for name in names if name.endswith(".dist-info/entry_points.txt")
+        ]
+        if len(metadata_paths) != 1 or len(entry_paths) != 1:
+            raise ReleaseError("wheel must contain one METADATA and one entry_points.txt")
+        name, version = _metadata_identity(
+            bundle.read(metadata_paths[0]), artifact=wheel.name
+        )
+        parser = ConfigParser(interpolation=None)
+        parser.read_string(bundle.read(entry_paths[0]).decode("utf-8"))
+        scripts = (
+            dict(parser["console_scripts"])
+            if parser.has_section("console_scripts")
+            else {}
+        )
+        if f"{IMPORT_PACKAGE}/__init__.py" not in names:
+            raise ReleaseError(f"wheel lacks import package {IMPORT_PACKAGE}")
+        if any(path.startswith("verifiable/") for path in names):
+            raise ReleaseError("wheel reintroduces the retired import package")
+
+    if _canonical_distribution_name(name) != expected_name or version != release:
+        raise ReleaseError(
+            f"wheel identity mismatch: expected {DISTRIBUTION_NAME} {release}, "
+            f"found {name} {version}"
+        )
+    if scripts != CONSOLE_SCRIPTS:
+        raise ReleaseError(f"wheel console scripts differ from the frozen set: {scripts}")
+
+    with tarfile.open(sdist, "r:gz") as bundle:
+        members = bundle.getmembers()
+        names = [member.name for member in members]
+        roots = {path.split("/", 1)[0] for path in names if path}
+        if len(roots) != 1:
+            raise ReleaseError("sdist must contain exactly one root directory")
+        root = next(iter(roots))
+        metadata_members = [
+            member for member in members if member.name == f"{root}/PKG-INFO"
+        ]
+        if len(metadata_members) != 1:
+            raise ReleaseError("sdist must contain one root PKG-INFO")
+        metadata_file = bundle.extractfile(metadata_members[0])
+        if metadata_file is None:
+            raise ReleaseError("sdist PKG-INFO is unreadable")
+        sdist_name, sdist_version = _metadata_identity(
+            metadata_file.read(), artifact=sdist.name
+        )
+        if f"{root}/src/{IMPORT_PACKAGE}/__init__.py" not in names:
+            raise ReleaseError(f"sdist lacks import package {IMPORT_PACKAGE}")
+        if any(path.startswith(f"{root}/src/verifiable/") for path in names):
+            raise ReleaseError("sdist reintroduces the retired import package")
+
+    if (
+        _canonical_distribution_name(sdist_name) != expected_name
+        or sdist_version != release
+    ):
+        raise ReleaseError(
+            f"sdist identity mismatch: expected {DISTRIBUTION_NAME} {release}, "
+            f"found {sdist_name} {sdist_version}"
+        )
+
+
 def build_source(repo: Path, ref: str, release: str, output_dir: Path) -> tuple[Path, Path]:
     repo = repo.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -105,6 +257,11 @@ def build_source(repo: Path, ref: str, release: str, output_dir: Path) -> tuple[
             "commit": commit,
             "archive_prefix": prefix,
             "byte_semantics": "exact Git blob bytes as emitted by git archive",
+        },
+        "distribution": {
+            "name": DISTRIBUTION_NAME,
+            "import_package": IMPORT_PACKAGE,
+            "console_scripts": dict(sorted(CONSOLE_SCRIPTS.items())),
         },
         "artifacts": {
             archive.name: _file_record(archive),
@@ -154,7 +311,53 @@ def _build_wheel_once(source_archive: Path, prefix: str, destination: Path, epoc
     return wheels[0]
 
 
-def build_all(repo: Path, ref: str, release: str, output_dir: Path) -> tuple[Path, Path, Path]:
+def _build_sdist_once(
+    source_archive: Path,
+    prefix: str,
+    destination: Path,
+    epoch: str,
+) -> Path:
+    destination.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="vstd-sdist-") as temporary:
+        temporary_path = Path(temporary)
+        with zipfile.ZipFile(source_archive) as bundle:
+            bundle.extractall(temporary_path / "source")
+        source = temporary_path / "source" / prefix.rstrip("/")
+        raw_output = temporary_path / "raw"
+        env = dict(os.environ)
+        env["SOURCE_DATE_EPOCH"] = epoch
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "build",
+                "--sdist",
+                "--outdir",
+                str(raw_output),
+                str(source),
+            ],
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        if completed.returncode:
+            raise ReleaseError(
+                "sdist build failed: "
+                + completed.stderr.decode("utf-8", errors="replace").strip()
+            )
+        sdists = sorted(raw_output.glob("*.tar.gz"))
+        if len(sdists) != 1:
+            raise ReleaseError(
+                f"expected one raw sdist, found {len(sdists)} in {raw_output}"
+            )
+        normalized = destination / sdists[0].name
+        _normalize_sdist(sdists[0], normalized, epoch)
+    return normalized
+
+
+def build_all(
+    repo: Path, ref: str, release: str, output_dir: Path
+) -> tuple[Path, Path, Path, Path]:
     archive, manifest_path = build_source(repo, ref, release, output_dir)
     commit = _resolved_commit(repo.resolve(), ref)
     epoch = _run(repo.resolve(), "git", "show", "-s", "--format=%ct", commit).decode().strip()
@@ -169,13 +372,24 @@ def build_all(repo: Path, ref: str, release: str, output_dir: Path) -> tuple[Pat
         wheel = output_dir / first.name
         shutil.copy2(first, wheel)
 
+    with tempfile.TemporaryDirectory(prefix="vstd-sdist-builds-") as temporary:
+        temporary_path = Path(temporary)
+        first = _build_sdist_once(archive, prefix, temporary_path / "first", epoch)
+        second = _build_sdist_once(archive, prefix, temporary_path / "second", epoch)
+        if first.name != second.name or first.read_bytes() != second.read_bytes():
+            raise ReleaseError("two normalized clean sdist builds were not byte-identical")
+        sdist = output_dir / first.name
+        shutil.copy2(first, sdist)
+
+    _verify_python_distributions(wheel, sdist, release)
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest["artifacts"][wheel.name] = _file_record(wheel)
+    manifest["artifacts"][sdist.name] = _file_record(sdist)
     manifest_path.write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
     )
     verify_manifest(repo, manifest_path, output_dir)
-    return archive, wheel, manifest_path
+    return archive, wheel, sdist, manifest_path
 
 
 def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None = None) -> None:
@@ -200,6 +414,24 @@ def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None =
         path = artifact_dir / filename
         if not path.is_file() or _file_record(path) != expected:
             raise ReleaseError(f"artifact digest or byte size mismatch: {filename}")
+
+    distribution = manifest.get("distribution")
+    if distribution is not None:
+        expected_distribution = {
+            "name": DISTRIBUTION_NAME,
+            "import_package": IMPORT_PACKAGE,
+            "console_scripts": dict(sorted(CONSOLE_SCRIPTS.items())),
+        }
+        if distribution != expected_distribution:
+            raise ReleaseError("release manifest distribution identity is not canonical")
+        wheels = [artifact_dir / name for name in artifacts if name.endswith(".whl")]
+        sdists = [artifact_dir / name for name in artifacts if name.endswith(".tar.gz")]
+        if wheels or sdists:
+            if len(wheels) != 1 or len(sdists) != 1:
+                raise ReleaseError(
+                    "a Python distribution release must bind one wheel and one sdist"
+                )
+            _verify_python_distributions(wheels[0], sdists[0], str(manifest["release"]))
 
     # Derive the archive name from the manifest, not from the current stem: releases
     # published before the package rename bind `verifiable-standard-<release>.zip`
@@ -255,11 +487,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[PASS] source archive: {archive}")
             print(f"[PASS] release manifest: {manifest}")
         elif args.command == "build":
-            archive, wheel, manifest = build_all(
+            archive, wheel, sdist, manifest = build_all(
                 args.repo, args.ref, args.release, args.output_dir
             )
             print(f"[PASS] source archive: {archive}")
             print(f"[PASS] reproducible wheel: {wheel}")
+            print(f"[PASS] reproducible sdist: {sdist}")
             print(f"[PASS] release manifest: {manifest}")
         else:
             verify_manifest(args.repo, args.manifest, args.artifact_dir)
