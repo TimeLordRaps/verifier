@@ -83,10 +83,10 @@ def test_expired_authority_is_refuted() -> None:
     assert outcome.properties["authority_active"] == REFUTED
 
 
-def test_shared_pseudonym_refutes_independence() -> None:
-    outcome = result("rejected_shared_pseudonym_independence")
-    assert outcome.properties["verifier_independence"] == REFUTED
-    assert outcome.verdict == REJECTED
+def test_shared_pseudonym_does_not_establish_actor_independence_or_nonindependence() -> None:
+    outcome = result("unknown_shared_pseudonym_independence")
+    assert outcome.properties["verifier_independence"] == UNKNOWN
+    assert outcome.verdict == UNKNOWN
 
 
 def test_distinct_pseudonyms_do_not_establish_distinct_actors() -> None:
@@ -99,7 +99,14 @@ def test_minimization_cannot_delete_a_required_trust_root() -> None:
     outcome = result("rejected_unlinkability_erases_trust_root")
     assert outcome.verdict == REJECTED
     assert outcome.properties["authority_active"] == UNKNOWN
-    assert any("trust-root" in reason for reason in outcome.reasons)
+    assert any("revocation.source" in reason for reason in outcome.reasons)
+
+
+def test_minimization_cannot_bypass_a_protected_leaf_by_deleting_its_parent() -> None:
+    outcome = result("rejected_minimization_erases_key_binding")
+    assert outcome.verdict == REJECTED
+    assert outcome.properties["authentication"] == UNKNOWN
+    assert any("actor.key_binding" in reason for reason in outcome.reasons)
 
 
 def test_replayed_challenge_is_detected() -> None:
@@ -177,6 +184,27 @@ def test_unknown_trust_root_does_not_authenticate() -> None:
     assert outcome.verdict == UNKNOWN
 
 
+@pytest.mark.parametrize("coordinate", ["pseudonym", "key_id", "issuer"])
+def test_required_public_identity_coordinates_cannot_be_omitted(coordinate: str) -> None:
+    record = load("positive_bounded_authorization")["record"]
+    if coordinate == "pseudonym":
+        record["actor"].pop("pseudonym")
+    elif coordinate == "key_id":
+        record["actor"]["key_binding"].pop("key_id")
+    else:
+        record["authorization"].pop("issuer")
+    outcome = evaluate(record)
+    assert outcome.verdict == UNKNOWN
+
+
+def test_undeclared_issuer_does_not_authorize() -> None:
+    record = load("positive_bounded_authorization")["record"]
+    record["authorization"]["issuer"] = "root:undeclared"
+    outcome = evaluate(record)
+    assert outcome.properties["authorization"] == UNKNOWN
+    assert outcome.verdict == UNKNOWN
+
+
 def test_scope_mismatch_is_refuted() -> None:
     record = load("positive_bounded_authorization")["record"]
     record["claim_scope"] = "vstd4-availability-run"
@@ -200,6 +228,13 @@ def test_declared_degree_must_agree_with_recorded_delegation_hops() -> None:
     outcome = result("conflicted_authorship_degree_vs_chain")
     assert outcome.properties["authorship_degree"] == CONFLICTED
     assert outcome.verdict == CONFLICTED
+
+
+@pytest.mark.parametrize("degree", [True, -1])
+def test_authorship_degree_must_be_a_nonnegative_integer(degree: object) -> None:
+    record = load("positive_bounded_authorization")["record"]
+    record["authorship"]["degree"] = degree
+    assert evaluate(record).properties["authorship_degree"] == UNKNOWN
 
 
 def test_unattested_ancestry_link_is_not_a_verified_chain() -> None:
@@ -254,6 +289,8 @@ def test_model_declares_the_terminology_decision_and_prohibited_inferences() -> 
     assert model["wire_identifier"] is None
     decision = model["terminology_decision"]["public_label_zero_identity"]
     assert decision == "REJECTED_AS_UNQUALIFIED_PUBLIC_LABEL"
+    assert "verdict_aggregation" in model
+    assert "verdict_precedence" not in model
     assert len(model["prohibited_inferences"]) >= 10
 
 

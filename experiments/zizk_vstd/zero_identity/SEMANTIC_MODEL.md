@@ -40,35 +40,43 @@ These are distinct properties. None implies another.
 `REFUTED` — a positive negative result: the property is contradicted by evidence.
 `UNSUPPORTED_BY_DESIGN` — the profile deliberately withholds the coordinate.
 
-Record verdicts are `ACCEPTED_BOUNDED`, `UNKNOWN`, `CONFLICTED`, `REJECTED`, in the
-precedence `REJECTED > CONFLICTED > UNKNOWN > ACCEPTED_BOUNDED`. `ACCEPTED_BOUNDED`
-asserts exactly one thing: authentication and authorization hold for the declared claim
-scope at the declared instant. It asserts nothing about uniqueness, independence,
-unlinkability, or the actor behind the coordinate.
+Record verdicts are `ACCEPTED_BOUNDED`, `UNKNOWN`, `CONFLICTED`, and `REJECTED`. They are
+aggregated without erasing property-level uncertainty: any `REFUTED` property makes the
+record `REJECTED`; otherwise any `CONFLICTED` property makes it `CONFLICTED`.
+`ACCEPTED_BOUNDED` requires `SUPPORTED` authentication and authorization plus satisfaction
+of every explicitly claimed property. An `UNKNOWN` ancillary property remains visible but
+does not widen or erase that bounded authorization result. Every other record is `UNKNOWN`.
+`ACCEPTED_BOUNDED` therefore asserts exactly one thing: authentication and authorization
+hold for the declared claim scope at the declared instant. It asserts nothing about
+uniqueness, independence, unlinkability, or the actor behind the coordinate.
 
 ## 3. Minimum public actor coordinates
 
-Bounded reverification without civil identity needs all of:
+Bounded authorization reverification without civil identity needs all of:
 
 - `actor.pseudonym` — the coordinate a verdict attaches to;
 - `actor.key_binding.key_id`, `.signature_verified`, `.trust_root`;
 - `authorization.grant_id`, `.issuer`, `.scope`, `.not_before`, `.not_after`;
 - `revocation.source`, `.state`, `.checked_at`;
-- `trust_roots` — the roots the reader must already accept;
-- `authorship.role`, `.degree`, `.attested_by` — who authored the claim and at what remove;
-- `credential_ancestry[].parent`, `.child`, `.link_type`, `.attested_by` — how the signing
-  key obtained its authority.
+- `trust_roots` — the roots the reader must already accept.
+
+The provenance extension may additionally disclose:
+
+- `authorship.role`, `.degree`, `.attested_by` — the asserted author role and remove;
+- `credential_ancestry[].parent`, `.child`, `.link_type`, `.attested_by` — the recorded path
+  by which the signing key obtained its authority.
 
 Authorship degree and credential ancestry are distinct from authorization. Authorization
 asks whether this key was permitted this scope; authorship asks who is speaking and at what
 remove; ancestry asks how the key came to hold the authority at all. A record can be fully
 authorized while its authorship is `UNKNOWN`, and that combination is reported, not merged.
 
-Remove any of the trust-root coordinates and the dependent property becomes `UNKNOWN`;
-remove `revocation.source`, `authorization.issuer`, or `actor.key_binding.trust_root`
-under a minimization request and the record is `REJECTED` as unevaluable. Minimization is
-enforced, not trusted: `evaluate.py` deletes each withheld coordinate before evaluating,
-so a coordinate an actor asked to withhold cannot quietly still be read.
+Remove a required coordinate from an ordinary record and the dependent property becomes
+`UNKNOWN`. Remove a required coordinate under a minimization request — whether by naming
+the leaf or a parent path — and the record is `REJECTED` as unevaluable. Minimization is
+enforced, not trusted: `evaluate.py` checks the requested paths and then deletes every
+withheld coordinate before evaluating, so a coordinate an actor asked to withhold cannot
+quietly still be read.
 
 ## 4. Prohibited inferences
 

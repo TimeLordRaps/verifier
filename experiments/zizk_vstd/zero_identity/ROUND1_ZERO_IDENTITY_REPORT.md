@@ -2,12 +2,18 @@
 
 **Status:** experimental result. Non-normative. No adoption is claimed or implied.
 
+Reading rule for this report: where evidence is insufficient the result is `UNKNOWN`, and
+where evidence contradicts itself the result is `CONFLICTED`. Both are retained as results.
+Neither is a gap to be filled, and neither may be read as authorization, independence,
+uniqueness, Sybil resistance, privacy, or safety.
+
 ## 1. Coordinates
 
 - Base commit: `598c545be3833d6d81bb7e252ca5837f3bb2a449`
 - Branch: `claude/zizk-zero-identity`
-- Worktree: `verifier-worktrees/zizk-zi-claude` (isolated; the primary checkout and the
-  separate ZIZK roadmap worktree were not modified)
+- Worktree label: `zizk-zi-claude` (isolated; its absolute host path is intentionally
+  excluded from this public report; the primary checkout and separate ZIZK roadmap
+  worktree were not modified)
 - Remote: `github.com/TimeLordRaps/verifier`
 - Layer: none. This experiment discharges no ladder rung.
 - Seam: `experiments/zizk_vstd/zero_identity/` only.
@@ -30,21 +36,21 @@ profile is pseudonymous, and a stable pseudonym is a correlation handle.
 
 ## 3. Identity properties this profile supports
 
-| Property | Best attainable | Basis |
+| Property | Best attainable here | Basis and boundary |
 |---|---|---|
-| Authentication | `SUPPORTED` | asserted signature verification against a declared trust root |
-| Authorization | `SUPPORTED` | grant covering the claim scope, from an active authority, by an authenticated key |
-| Authority liveness | `SUPPORTED` / `REFUTED` | revocation state plus validity window against the evaluation instant |
+| Authentication | `SUPPORTED` | semantic result over an asserted external signature check and a declared trust root; no signature is verified here |
+| Authorization | `SUPPORTED` | semantic result over authentication, an asserted grant, liveness inputs, and scope coverage |
+| Authority liveness | `SUPPORTED` / `REFUTED` | semantic result over asserted revocation state plus validity window against the evaluation instant |
 | Freshness | `SUPPORTED` / `REFUTED` | challenge coordinate and verifier-held nonce history |
-| Attribution | `ATTESTED` | binds a pseudonymous coordinate, never a person |
+| Attribution | not separately evaluated | the record binds a pseudonymous coordinate; any real-world actor binding is `ATTESTED` at best, never inferred |
 | Authorship degree | `ATTESTED` / `REFUTED` | declared role and remove, checked against the recorded delegation hops |
 | Credential ancestry | `ATTESTED` / `REFUTED` | recorded chain from a declared trust root to the signing key |
 | Accountability | `ATTESTED` | a declared escalation authority that can act on the coordinate |
 | Uniqueness / Sybil resistance | `ATTESTED` | only with an attested mechanism; default `UNKNOWN` |
-| Verifier independence | `ATTESTED` / `REFUTED` | attested distinct trust roots; refuted by a shared pseudonym |
+| Verifier independence | `ATTESTED` | only from named attested evidence; shared or distinct pseudonyms alone leave actor independence `UNKNOWN` |
 | Recovery | `ATTESTED` | a declared credential-loss mechanism; strength not evaluated |
 | Unlinkability | `ASSUMED` | never `SUPPORTED`; assumptions must be declared |
-| Confidentiality | `ASSUMED` | out of scope for the record |
+| Confidentiality | not evaluated | out of scope; any declaration remains an assumption, not an evaluator result |
 | Civil identity | `UNSUPPORTED_BY_DESIGN` | withheld deliberately |
 
 `ACCEPTED_BOUNDED` means exactly: this key was authorized for this claim scope at this
@@ -59,6 +65,25 @@ how the key came to hold the authority. A record can be fully authorized with `U
 authorship, and that pairing is reported rather than merged. Neither new property can ever
 reach `SUPPORTED`: both are assertions about the world outside the record, so `ATTESTED` is
 their ceiling.
+
+### 3.1 Evidence classes, kept separate
+
+The four classes below are never merged, and no verdict promotes one into another. A
+reader who collapses them recovers exactly the overclaim this experiment exists to block.
+
+| Class | What it means | Handling in this experiment | Ceiling in this model |
+|---|---|---|---|
+| Semantic result | decided by the stated rules from coordinates present in the record | any reader running `evaluate.py` on the record | `SUPPORTED`, `REFUTED`, `UNKNOWN`, `CONFLICTED` |
+| External attestation | a named third party asserts a fact this model records but does not check | a deployment may authenticate it under an external protocol; this evaluator does neither that nor truth validation | `ATTESTED` |
+| Declared assumption | the record states a condition it needs and cannot demonstrate | carried unchanged and never established by this record | `ASSUMED` |
+| Protocol guarantee | whatever an actual named cryptographic protocol provides | absent here; it would be checked under that protocol outside this evaluator | not represented; enters only as an input |
+
+Concretely: `authentication` is a semantic result *about an asserted signature check*, not
+a cryptographic guarantee — this model never verifies a signature. `uniqueness`,
+`verifier_independence`, `authorship_degree`, and `credential_ancestry` are attestations at
+their ceiling. `unlinkability` is an assumption at its ceiling; `confidentiality` is not an
+evaluator output at all. No protocol guarantee is claimed anywhere, because no protocol is
+bound yet.
 
 ## 4. Prohibited inferences
 
@@ -102,19 +127,21 @@ accepts an `ACCEPTED_BOUNDED` verdict is accepting, at minimum:
 
 Recorded ancestry increases the number of parties a reader depends on rather than reducing
 it, and the report states that plainly: each delegation hop adds an attestor whose honesty
-is assumed. A chain is refused when an ancestor is revoked or when a delegation carries a
-scope its ancestor never held; it stays `UNKNOWN` when any link is unattested, when it does
-not begin at a declared trust root, or when it does not terminate at the signing key. A
-truncated chain therefore cannot be laundered into a clean one.
+is assumed. A chain is refused when an ancestor is recorded as revoked or when a delegation
+carries a scope its ancestor never held; it stays `UNKNOWN` when any link is unattested,
+when it does not begin at a declared trust root, or when it does not terminate at the
+signing key. A truncated chain therefore cannot be laundered into a clean one without also
+declaring the shorter root as trusted; the model cannot establish whether that declaration
+is honest.
 
 Revocation is a liveness dependency with a staleness bound, not a one-time check. A
 record whose revocation source is absent is `UNKNOWN`; a record whose minimization request
 deleted that source is `REJECTED` as unevaluable. Minimization is enforced by deletion
 before evaluation, so a withheld coordinate cannot be silently read anyway.
 
-## 6. Privacy leak analysis
+## 6. Privacy and correlation leak analysis
 
-Retained and observable in every conforming record: the pseudonymous coordinate, the key
+Retained and observable in every `ACCEPTED_BOUNDED` record: the pseudonymous coordinate, the key
 identifier, the trust root, the issuer, the scope name, the validity window, the
 evaluation instant, and the revocation source. Any two of these are joinable across
 records. Publication timing and volume are not addressed at all.
@@ -128,20 +155,67 @@ unlinkability are therefore in direct tension. This experiment resolves the tens
 provenance and reports the cost rather than claiming both.
 
 Consequence: an observer who sees two records under one pseudonym learns they share an
-actor coordinate; an observer who sees two records under one issuer learns they share a
-root. Withholding civil identity does not weaken either observation. Coercion risk is not
-removed either — it moves to the issuer, which still holds the civil binding. This is a
-displacement of risk, not a reduction, and the experiment reports it as such.
+actor coordinate, not that they share one natural person. An observer who sees two records
+under one issuer learns that they name the same issuer, not necessarily the same trust
+root. Withholding civil identity does not remove either correlation handle. Coercion risk
+is not removed either — it may move to an issuer that holds a civil binding. This is a
+displacement of risk, not a demonstrated reduction, and the experiment reports it as such.
 
 ## 7. Test results
 
-Both suites pass at the committed state.
+All required checks pass at the committed state. **Failed tests: none.** No assertion was
+weakened, skipped, or marked expected-failure to reach this state.
 
-- `python experiments/zizk_vstd/zero_identity/run_validation.py` — 21 fixtures, 0 failures.
-- `python -m pytest experiments/zizk_vstd/zero_identity/tests -q` — 57 passed.
-- `python -m pytest -q` (repository suite) — unchanged and passing; the experiment is not
-  collected, because an experiment must not gate conformance.
-- `python scripts/check_presentation.py` — passes.
+| Check | Result |
+|---|---|
+| `python experiments/zizk_vstd/zero_identity/run_validation.py` | 22 fixtures, 0 failures |
+| `python -m pytest experiments/zizk_vstd/zero_identity/tests -q` | 65 passed |
+| `python -m pytest -q` (repository suite) | 255 passed, 3 skipped |
+| `python scripts/check_presentation.py` | passes |
+
+The repository suite sets `testpaths = ["tests"]` and does not collect this directory. That
+is deliberate: an experiment must not gate conformance. The 3 skips are pre-existing and
+unrelated to this work. On a machine where another checkout of the package is installed,
+the repository suite needs the `PYTHONPATH=src` prefix described in `AGENTS.md` section 3;
+that is an environment condition, not a repository defect.
+
+### 7.1 Diff inspection
+
+The complete diff against the base is confined to `experiments/zizk_vstd/zero_identity/`:
+30 files, 3734 added lines, **zero files changed outside that directory**. A pattern scan
+over every added line reports:
+
+| Category | Findings |
+|---|---|
+| Private filesystem paths | none |
+| Private model identifiers | none |
+| Credentials or secrets | none |
+| Email addresses | none |
+| Business plans | none |
+| Unsupported adoption claims | none |
+| Unsupported privacy or anonymity claims | none in assertion position |
+| Recorded ancestry described as causal | none |
+| CRLF line endings | none |
+
+Literal pattern hits were adjudicated and retained deliberately, because each occurs
+in negating or guarding position rather than as a claim: the word *untraceable* appears
+only in section 10 as a prohibited claim; the four frozen wire identifiers appear only in a
+test asserting that no fixture may bind one; and `$id` appears only in prose stating that
+none is introduced.
+
+### 7.2 Non-regression of frozen surfaces
+
+Verified directly against the base commit, not assumed:
+
+- `pyproject.toml` is byte-unchanged, and `dependencies = []` still holds. The evaluator
+  imports only `copy`, `dataclasses`, `json`, `pathlib`, and `typing`; `pytest` appears
+  only in the experiment's own tests, which the repository suite does not collect.
+- Zero files changed under `standard/`, `receipts/schema/`, `src/`, `examples/`, or
+  `scripts/`. No frozen wire identifier, schema `$id`, receipt digest, console alias, or
+  lifecycle token is added, renamed, or rebound.
+- The stdlib-purity smoke check (`python -S -c "import verifier; ..."`) reports `1.1.3`.
+- Existing conformance behavior is untouched: this experiment adds no code path that any
+  shipped module imports.
 
 Fixture coverage, one per required case:
 
@@ -155,11 +229,12 @@ Fixture coverage, one per required case:
 | `conflicted_identity_evidence` | `CONFLICTED` |
 | `rejected_revoked_authority` | `REJECTED` |
 | `rejected_expired_authority` | `REJECTED` |
-| `rejected_shared_pseudonym_independence` | `REJECTED` |
+| `unknown_shared_pseudonym_independence` | `UNKNOWN` |
 | `rejected_unlinkability_erases_trust_root` | `REJECTED` |
 | `rejected_replayed_challenge` | `REJECTED` |
 | `rejected_missing_challenge` | `REJECTED` |
 | `rejected_minimization_widens_boundary` | `REJECTED` |
+| `rejected_minimization_erases_key_binding` | `REJECTED` |
 | `rejected_key_compromise` | `REJECTED` |
 | `unknown_absent_authorship` | `UNKNOWN` |
 | `unknown_unattested_ancestry_link` | `UNKNOWN` |
@@ -169,7 +244,10 @@ Fixture coverage, one per required case:
 | `rejected_revoked_ancestor` | `REJECTED` |
 | `rejected_delegation_widens_scope` | `REJECTED` |
 
-No test failed. No assertion was weakened to obtain a green suite.
+No final test failed. No assertion was weakened to obtain a green suite. Validation instead
+closed two fail-open surfaces: a minimizer cannot evade a protected leaf by deleting its
+parent object, and a shared pseudonym no longer becomes a claim about how many actors use
+that credential.
 
 ## 8. Unresolved assumptions
 
@@ -198,8 +276,9 @@ No test failed. No assertion was weakened to obtain a green suite.
 
 ## 9. Public claims currently justified
 
-- "Civil identity can be withheld while authorization for a bounded claim scope stays
-  reverifiable against a declared trust root."
+- "Civil identity can be withheld while the evaluator can recompute a bounded
+  authorization result from public coordinates, conditional on asserted external checks
+  and declared trust roots."
 - "Missing identity evidence yields `UNKNOWN`; conflicting identity evidence yields
   `CONFLICTED`; revoked or expired authority yields a refutation."
 - "The experiment enumerates the identity coordinates that remain, rather than implying
@@ -209,7 +288,8 @@ No test failed. No assertion was weakened to obtain a green suite.
   revoked ancestor is refused."
 - "A recorded ancestry chain is recorded ancestry, not proof that authority survived every
   hop."
-- "The evaluator adds no dependency and touches no frozen wire identifier."
+- "The experiment adds no required package dependency and the complete base-to-branch diff
+  does not modify a frozen wire identifier or conformance implementation."
 
 ## 10. Public claims still prohibited
 

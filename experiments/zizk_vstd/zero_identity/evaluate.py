@@ -32,9 +32,10 @@ UNSUPPORTED_BY_DESIGN = "UNSUPPORTED_BY_DESIGN"
 ACCEPTED_BOUNDED = "ACCEPTED_BOUNDED"
 REJECTED = "REJECTED"
 
-VERDICT_PRECEDENCE = (REJECTED, CONFLICTED, UNKNOWN, ACCEPTED_BOUNDED)
-
-REQUIRED_TRUST_ROOT_COORDINATES = (
+REQUIRED_PUBLIC_COORDINATES = (
+    "trust_roots",
+    "actor.pseudonym",
+    "actor.key_binding.key_id",
     "actor.key_binding.trust_root",
     "authorization.issuer",
     "revocation.source",
@@ -101,6 +102,12 @@ def _evaluate_authentication(record: dict[str, Any], reasons: list[str]) -> str:
     if not isinstance(binding, dict):
         reasons.append("authentication: no key binding coordinate")
         return UNKNOWN
+    if not _get(record, "actor.pseudonym"):
+        reasons.append("authentication: no pseudonymous actor coordinate")
+        return UNKNOWN
+    if not binding.get("key_id"):
+        reasons.append("authentication: no signing-key coordinate")
+        return UNKNOWN
     if binding.get("key_compromised_during_interval") is True:
         reasons.append("authentication: signing key reported compromised for the interval")
         return REFUTED
@@ -162,6 +169,13 @@ def _evaluate_authorization(
     if not isinstance(grant, dict) or not grant.get("grant_id"):
         reasons.append("authorization: no grant coordinate; missing authorization stays UNKNOWN")
         return UNKNOWN
+    issuer = grant.get("issuer")
+    if not issuer:
+        reasons.append("authorization: no issuer coordinate")
+        return UNKNOWN
+    if issuer not in (record.get("trust_roots") or []):
+        reasons.append("authorization: issuer is not among the declared trust roots")
+        return UNKNOWN
     if authority == REFUTED:
         reasons.append("authorization: refuted because the authority is not active")
         return REFUTED
@@ -222,9 +236,11 @@ def _evaluate_independence(record: dict[str, Any], reasons: list[str]) -> str:
     for peer in peers:
         if peer.get("pseudonym") == own:
             reasons.append(
-                "verifier_independence: peer shares this pseudonymous coordinate; not independent"
+                "verifier_independence: peer shares this pseudonymous coordinate; the "
+                "coordinate cannot supply independent corroboration, but credential sharing "
+                "means actor independence remains UNKNOWN"
             )
-            return REFUTED
+            return UNKNOWN
     evidence = record.get("independence_evidence") or []
     attested = [
         entry
@@ -260,7 +276,7 @@ def _evaluate_authorship_degree(record: dict[str, Any], reasons: list[str]) -> s
         return UNKNOWN
     role = authorship.get("role")
     degree = authorship.get("degree")
-    if role not in AUTHORSHIP_ROLES or not isinstance(degree, int):
+    if role not in AUTHORSHIP_ROLES or type(degree) is not int or degree < 0:
         reasons.append("authorship_degree: role or degree absent or unrecognised")
         return UNKNOWN
     if (role == "ORIGINATOR") != (degree == 0):
@@ -408,17 +424,37 @@ def _apply_minimization(record: dict[str, Any]) -> dict[str, Any]:
     return reduced
 
 
+def _removes_coordinate(withheld: str, required: str) -> bool:
+    """Return whether withholding a path removes a required coordinate.
+
+    Withholding ``actor.key_binding`` removes its ``trust_root`` child just as surely as
+    naming the leaf itself. Descendant paths do not remove their parent coordinate.
+    """
+
+    return withheld == required or required.startswith(withheld + ".")
+
+
 def _check_structural_rejections(record: dict[str, Any], reasons: list[str]) -> list[str]:
     """Return the reasons that make a record unevaluable, that is, REJECTED outright."""
 
     fatal: list[str] = []
     request = record.get("disclosure_minimization") or {}
     withheld = set(request.get("withheld_coordinates") or [])
-    for coordinate in REQUIRED_TRUST_ROOT_COORDINATES:
-        if coordinate in withheld:
+    for coordinate in REQUIRED_PUBLIC_COORDINATES:
+        removing_path = next(
+            (
+                path
+                for path in withheld
+                if isinstance(path, str) and _removes_coordinate(path, coordinate)
+            ),
+            None,
+        )
+        if removing_path is not None:
             fatal.append(
-                f"minimization removed required trust-root coordinate {coordinate}; "
-                "an unlinkability request does not erase trust roots"
+                f"minimization path {removing_path} removed required public coordinate "
+                f"{coordinate}; "
+                "disclosure minimization cannot erase coordinates required for bounded "
+                "reverification"
             )
     before = request.get("claim_boundary_before")
     after = request.get("claim_boundary_after")
@@ -437,8 +473,8 @@ def evaluate(record: dict[str, Any]) -> Evaluation:
     """Evaluate one bounded disclosure record, failing closed on missing coordinates."""
 
     reasons: list[str] = []
-    record = _apply_minimization(record)
     fatal = _check_structural_rejections(record, reasons)
+    record = _apply_minimization(record)
 
     properties: dict[str, str] = {}
     properties["civil_identity"] = _evaluate_civil_identity(record, reasons)

@@ -45,12 +45,15 @@
     "CONFLICTED",
     "REJECTED"
   ],
-  "verdict_precedence": [
-    "REJECTED",
-    "CONFLICTED",
-    "UNKNOWN",
-    "ACCEPTED_BOUNDED"
-  ],
+  "verdict_aggregation": {
+    "terminal_property_results": [
+      "any REFUTED property makes the record REJECTED",
+      "otherwise any CONFLICTED property makes the record CONFLICTED"
+    ],
+    "acceptance_boundary": "otherwise authentication and authorization must both be SUPPORTED and every explicitly claimed property must be SUPPORTED or ATTESTED",
+    "ancillary_unknowns": "UNKNOWN on an unclaimed ancillary property remains visible and does not widen the ACCEPTED_BOUNDED authorization result",
+    "otherwise": "UNKNOWN"
+  },
   "minimum_public_actor_coordinates": [
     "actor.pseudonym",
     "actor.key_binding.key_id",
@@ -64,7 +67,9 @@
     "revocation.source",
     "revocation.state",
     "revocation.checked_at",
-    "trust_roots",
+    "trust_roots"
+  ],
+  "optional_provenance_coordinates": [
     "authorship.role",
     "authorship.degree",
     "authorship.attested_by",
@@ -159,7 +164,6 @@
     "verifier_independence": {
       "attainable_statuses": [
         "ATTESTED",
-        "REFUTED",
         "UNKNOWN",
         "CONFLICTED"
       ],
@@ -249,7 +253,7 @@
     },
     {
       "id": "ZI-R4",
-      "statement": "A shared pseudonymous coordinate across two receipts REFUTES independence."
+      "statement": "A shared pseudonymous coordinate cannot supply independent corroboration, but it leaves actor independence UNKNOWN because multiple actors may share one credential."
     },
     {
       "id": "ZI-R5",
@@ -257,7 +261,7 @@
     },
     {
       "id": "ZI-R6",
-      "statement": "A minimization request that removes a required trust-root coordinate makes the record unevaluable and is REJECTED."
+      "statement": "A minimization request that removes a required public coordinate, whether directly or through a parent path, makes the record unevaluable and is REJECTED."
     },
     {
       "id": "ZI-R7",

@@ -2,23 +2,23 @@
   "expected": {
     "properties": {
       "accountability": "ATTESTED",
-      "authentication": "SUPPORTED",
+      "authentication": "UNKNOWN",
       "authority_active": "SUPPORTED",
-      "authorization": "SUPPORTED",
+      "authorization": "UNKNOWN",
       "authorship_degree": "ATTESTED",
       "civil_identity": "UNSUPPORTED_BY_DESIGN",
-      "credential_ancestry": "ATTESTED",
+      "credential_ancestry": "UNKNOWN",
       "freshness": "SUPPORTED",
       "recovery": "ATTESTED",
       "uniqueness": "UNKNOWN",
-      "unlinkability": "UNKNOWN",
-      "verifier_independence": "REFUTED"
+      "unlinkability": "ASSUMED",
+      "verifier_independence": "UNKNOWN"
     },
     "verdict": "REJECTED"
   },
-  "falsification_question": "Does a repeated pseudonym supply independent corroboration?",
-  "fixture_id": "rejected_shared_pseudonym_independence",
-  "intent": "Two receipts under one pseudonymous coordinate are not independent.",
+  "falsification_question": "Can minimization bypass a protected leaf by deleting its parent object?",
+  "fixture_id": "rejected_minimization_erases_key_binding",
+  "intent": "Withholding actor.key_binding removes required key coordinates and is rejected.",
   "record": {
     "actor": {
       "civil_identity": "withheld",
@@ -45,7 +45,7 @@
     },
     "claim_scope": "vstd4-refutation-run",
     "claimed_properties": [
-      "verifier_independence"
+      "authorization"
     ],
     "conflicts": [],
     "credential_ancestry": [
@@ -56,6 +56,21 @@
         "parent": "root:issuer-a"
       }
     ],
+    "disclosure_minimization": {
+      "claim_boundary_after": [
+        "vstd4-refutation-run"
+      ],
+      "claim_boundary_before": [
+        "vstd4-refutation-run"
+      ],
+      "declared_assumptions": [
+        "issuer does not collude with the verifier"
+      ],
+      "requested_by": "actor",
+      "withheld_coordinates": [
+        "actor.key_binding"
+      ]
+    },
     "escalation_authority": "root:issuer-a",
     "evaluated_at": "2026-08-23T00:00:00Z",
     "freshness": {
@@ -65,14 +80,9 @@
       "required": true
     },
     "independence_evidence": [],
-    "peer_receipts": [
-      {
-        "pseudonym": "pseudonym:alpha",
-        "receipt_id": "peer:1"
-      }
-    ],
+    "peer_receipts": [],
     "profile": "zizk-vstd/zero-identity/experimental-0",
-    "record_id": "zi-independence-shared",
+    "record_id": "zi-minimization-parent-path",
     "recovery": {
       "mechanism": "issuer reissue on quorum of two custodians"
     },
