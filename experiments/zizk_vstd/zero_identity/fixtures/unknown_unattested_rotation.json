@@ -7,23 +7,23 @@
       "authorization": "SUPPORTED",
       "authorship_degree": "ATTESTED",
       "civil_identity": "UNSUPPORTED_BY_DESIGN",
-      "credential_ancestry": "ATTESTED",
-      "freshness": "REFUTED",
+      "credential_ancestry": "UNKNOWN",
+      "freshness": "SUPPORTED",
       "recovery": "ATTESTED",
       "uniqueness": "UNKNOWN",
       "unlinkability": "UNKNOWN",
       "verifier_independence": "UNKNOWN"
     },
-    "verdict": "REJECTED"
+    "verdict": "UNKNOWN"
   },
-  "falsification_question": "Is a reused challenge indistinguishable from a fresh one?",
-  "fixture_id": "rejected_replayed_challenge",
-  "intent": "A previously observed challenge value is a detected replay.",
+  "falsification_question": "Do two keys become one actor because a rotation was recorded?",
+  "fixture_id": "unknown_unattested_rotation",
+  "intent": "An unattested rotation does not merge two key coordinates into one actor.",
   "record": {
     "actor": {
       "civil_identity": "withheld",
       "key_binding": {
-        "key_id": "key:alpha-1",
+        "key_id": "key:alpha-2",
         "signature_verified": true,
         "trust_root": "root:issuer-a"
       },
@@ -45,7 +45,7 @@
     },
     "claim_scope": "vstd4-refutation-run",
     "claimed_properties": [
-      "authorization"
+      "credential_ancestry"
     ],
     "conflicts": [],
     "credential_ancestry": [
@@ -54,6 +54,12 @@
         "child": "key:alpha-1",
         "link_type": "issuance",
         "parent": "root:issuer-a"
+      },
+      {
+        "attested_by": "root:issuer-a",
+        "child": "key:alpha-2",
+        "link_type": "rotation",
+        "parent": "key:alpha-1"
       }
     ],
     "escalation_authority": "root:issuer-a",
@@ -61,15 +67,13 @@
     "freshness": {
       "challenge_source": "verifier:v1",
       "nonce": "challenge:0001",
-      "previously_observed_nonces": [
-        "challenge:0001"
-      ],
+      "previously_observed_nonces": [],
       "required": true
     },
     "independence_evidence": [],
     "peer_receipts": [],
     "profile": "zizk-vstd/zero-identity/experimental-0",
-    "record_id": "zi-replay",
+    "record_id": "zi-ancestry-rotation",
     "recovery": {
       "mechanism": "issuer reissue on quorum of two custodians"
     },

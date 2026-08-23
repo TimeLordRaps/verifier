@@ -5,7 +5,9 @@
       "authentication": "SUPPORTED",
       "authority_active": "SUPPORTED",
       "authorization": "SUPPORTED",
+      "authorship_degree": "ATTESTED",
       "civil_identity": "CONFLICTED",
+      "credential_ancestry": "ATTESTED",
       "freshness": "SUPPORTED",
       "recovery": "ATTESTED",
       "uniqueness": "UNKNOWN",
@@ -36,6 +38,11 @@
         "vstd4-refutation-run"
       ]
     },
+    "authorship": {
+      "attested_by": "root:issuer-a",
+      "degree": 0,
+      "role": "ORIGINATOR"
+    },
     "claim_scope": "vstd4-refutation-run",
     "claimed_properties": [
       "authorization"
@@ -47,6 +54,14 @@
           "operator attestation binds the same pseudonym to a different subject"
         ],
         "property": "civil_identity"
+      }
+    ],
+    "credential_ancestry": [
+      {
+        "attested_by": "root:issuer-a",
+        "child": "key:alpha-1",
+        "link_type": "issuance",
+        "parent": "root:issuer-a"
       }
     ],
     "escalation_authority": "root:issuer-a",

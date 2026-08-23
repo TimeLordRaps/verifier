@@ -25,7 +25,10 @@ schemes; where a key fails, it fails by compromise or misuse, not by cryptanalys
 | T10 | Unverifiable claims of independence | `verifier_independence` never becomes `SUPPORTED`; a claim of it that lacks evidence downgrades the record verdict to `UNKNOWN` | Attestation quality is outside the model |
 | T11 | Missing authorization | A record with no grant is `UNKNOWN`; it never fails open | A verifier that treats `UNKNOWN` as permission defeats this. The verdict is honest; the deployment must respect it |
 | T12 | Recovery after credential loss | `recovery` is `ATTESTED` only when a mechanism is declared, otherwise `UNKNOWN` | Any recovery path is also an impersonation path. The model records that a path exists; it does not evaluate its strength |
-| T13 | Privacy laundering through minimization | A minimization request that removes a required trust root makes the record `REJECTED`; a request that widens the claim boundary is `REJECTED` | An actor can still choose to publish less and accept a weaker verdict, which is the intended trade |
+| T13 | Authorship inflation: a relay or aggregator presenting a claim as its own | Role and degree are asserted and checked for internal consistency; a non-originator that claims origination is `REFUTED`; an absent role stays `UNKNOWN` | The role itself is an assertion about the world. A dishonest originator claim that is internally consistent is not detectable from the record |
+| T14 | Delegation laundering: manufacturing authority the issuer never granted | A delegation whose scope exceeds its ancestor scope is `REFUTED`; a chain from a revoked ancestor is `REFUTED`; an unattested link stays `UNKNOWN` | Ancestor state is as fresh as the evidence supplied. A chain can be truncated before publication, which is why a chain that misses a declared trust root stays `UNKNOWN` |
+| T15 | Identity merge through key rotation | An unattested rotation leaves the chain `UNKNOWN`; two key coordinates are not merged into one actor without attestation | The inverse also holds and is unaddressed: an actor can rotate to escape a reputation history, which this model cannot detect |
+| T16 | Privacy laundering through minimization | A minimization request that removes a required trust root makes the record `REJECTED`; a request that widens the claim boundary is `REJECTED` | An actor can still choose to publish less and accept a weaker verdict, which is the intended trade |
 
 ## Falsification conditions
 
@@ -33,12 +36,14 @@ This experiment is refuted if any of the following can be demonstrated:
 
 - a record reaches `ACCEPTED_BOUNDED` while any property is `REFUTED`;
 - a `CONFLICTED` property is resolved to a favourable status by adding no new evidence;
-- `unlinkability` reaches `SUPPORTED`;
+- `unlinkability`, `authorship_degree`, or `credential_ancestry` reaches `SUPPORTED`;
+- a non-originator role is read as first-party authorship;
+- a chain containing a revoked ancestor evaluates as anything other than a refutation;
 - absence of a coordinate produces anything other than `UNKNOWN`, `REFUTED`, or `REJECTED`;
 - a minimization request removes a required trust-root coordinate and the record still evaluates.
 
-The first four are asserted directly in
-[`tests/test_zero_identity.py`](tests/test_zero_identity.py); the fifth is
+All but the last are asserted directly in
+[`tests/test_zero_identity.py`](tests/test_zero_identity.py); the last is
 [`fixtures/rejected_unlinkability_erases_trust_root.json`](fixtures/rejected_unlinkability_erases_trust_root.json).
 
 ## What this threat model does not claim

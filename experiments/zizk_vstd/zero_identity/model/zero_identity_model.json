@@ -21,6 +21,8 @@
     "authorization",
     "accountability",
     "attribution",
+    "authorship_degree",
+    "credential_ancestry",
     "uniqueness",
     "verifier_independence",
     "revocation_or_expiry",
@@ -37,8 +39,18 @@
     "REFUTED",
     "UNSUPPORTED_BY_DESIGN"
   ],
-  "verdicts": ["ACCEPTED_BOUNDED", "UNKNOWN", "CONFLICTED", "REJECTED"],
-  "verdict_precedence": ["REJECTED", "CONFLICTED", "UNKNOWN", "ACCEPTED_BOUNDED"],
+  "verdicts": [
+    "ACCEPTED_BOUNDED",
+    "UNKNOWN",
+    "CONFLICTED",
+    "REJECTED"
+  ],
+  "verdict_precedence": [
+    "REJECTED",
+    "CONFLICTED",
+    "UNKNOWN",
+    "ACCEPTED_BOUNDED"
+  ],
   "minimum_public_actor_coordinates": [
     "actor.pseudonym",
     "actor.key_binding.key_id",
@@ -52,7 +64,14 @@
     "revocation.source",
     "revocation.state",
     "revocation.checked_at",
-    "trust_roots"
+    "trust_roots",
+    "authorship.role",
+    "authorship.degree",
+    "authorship.attested_by",
+    "credential_ancestry[].parent",
+    "credential_ancestry[].child",
+    "credential_ancestry[].link_type",
+    "credential_ancestry[].attested_by"
   ],
   "prohibited_inferences": [
     "absent civil identity implies anonymity",
@@ -66,69 +85,223 @@
     "absent uniqueness evidence implies Sybil resistance",
     "hashing, redaction, encryption, omission, or pseudonymity alone implies zero identity",
     "disclosure minimization preserves the original claim boundary",
-    "missing evidence implies safety"
+    "missing evidence implies safety",
+    "a signer is the author of the claim",
+    "a relayed or delegated claim is first-party authorship",
+    "an absent authorship role means degree zero",
+    "a recorded ancestry chain establishes that authority survived every hop",
+    "no ancestor marked revoked means every ancestor is valid",
+    "a key rotation link merges two key coordinates into one actor",
+    "a delegation may carry a scope its ancestor did not hold"
   ],
   "properties": {
     "civil_identity": {
       "profile_intent": "withheld",
-      "attainable_statuses": ["UNSUPPORTED_BY_DESIGN", "CONFLICTED"]
+      "attainable_statuses": [
+        "UNSUPPORTED_BY_DESIGN",
+        "CONFLICTED"
+      ]
     },
     "authentication": {
-      "attainable_statuses": ["SUPPORTED", "REFUTED", "UNKNOWN", "CONFLICTED"],
-      "requires": ["actor.key_binding.signature_verified", "resolvable trust_root"]
+      "attainable_statuses": [
+        "SUPPORTED",
+        "REFUTED",
+        "UNKNOWN",
+        "CONFLICTED"
+      ],
+      "requires": [
+        "actor.key_binding.signature_verified",
+        "resolvable trust_root"
+      ]
     },
     "authority_active": {
-      "attainable_statuses": ["SUPPORTED", "REFUTED", "UNKNOWN", "CONFLICTED"],
-      "requires": ["revocation.state", "revocation.source", "validity window containing evaluated_at"]
+      "attainable_statuses": [
+        "SUPPORTED",
+        "REFUTED",
+        "UNKNOWN",
+        "CONFLICTED"
+      ],
+      "requires": [
+        "revocation.state",
+        "revocation.source",
+        "validity window containing evaluated_at"
+      ]
     },
     "authorization": {
-      "attainable_statuses": ["SUPPORTED", "REFUTED", "UNKNOWN", "CONFLICTED"],
-      "requires": ["authentication SUPPORTED", "authority_active SUPPORTED", "scope covers claim_scope"]
+      "attainable_statuses": [
+        "SUPPORTED",
+        "REFUTED",
+        "UNKNOWN",
+        "CONFLICTED"
+      ],
+      "requires": [
+        "authentication SUPPORTED",
+        "authority_active SUPPORTED",
+        "scope covers claim_scope"
+      ]
     },
     "attribution": {
-      "attainable_statuses": ["ATTESTED", "UNKNOWN", "CONFLICTED"],
+      "attainable_statuses": [
+        "ATTESTED",
+        "UNKNOWN",
+        "CONFLICTED"
+      ],
       "bound_to": "pseudonymous coordinate only, never civil identity"
     },
     "uniqueness": {
-      "attainable_statuses": ["ATTESTED", "UNKNOWN", "CONFLICTED"],
+      "attainable_statuses": [
+        "ATTESTED",
+        "UNKNOWN",
+        "CONFLICTED"
+      ],
       "default_when_absent": "UNKNOWN"
     },
     "verifier_independence": {
-      "attainable_statuses": ["ATTESTED", "REFUTED", "UNKNOWN", "CONFLICTED"],
+      "attainable_statuses": [
+        "ATTESTED",
+        "REFUTED",
+        "UNKNOWN",
+        "CONFLICTED"
+      ],
       "default_when_absent": "UNKNOWN"
     },
     "freshness": {
-      "attainable_statuses": ["SUPPORTED", "REFUTED", "UNKNOWN"],
+      "attainable_statuses": [
+        "SUPPORTED",
+        "REFUTED",
+        "UNKNOWN"
+      ],
       "fail_closed_when_required_and_absent": true
     },
     "unlinkability": {
-      "attainable_statuses": ["ASSUMED", "UNKNOWN", "REFUTED"],
+      "attainable_statuses": [
+        "ASSUMED",
+        "UNKNOWN",
+        "REFUTED"
+      ],
       "never": "SUPPORTED",
       "reason": "This model observes one record at a time and cannot observe the adversary's full correlation surface."
     },
     "accountability": {
-      "attainable_statuses": ["ATTESTED", "UNKNOWN"],
-      "requires": ["a named escalation authority that can act on the pseudonymous coordinate"]
+      "attainable_statuses": [
+        "ATTESTED",
+        "UNKNOWN"
+      ],
+      "requires": [
+        "a named escalation authority that can act on the pseudonymous coordinate"
+      ]
     },
     "confidentiality": {
-      "attainable_statuses": ["ASSUMED", "UNKNOWN"],
+      "attainable_statuses": [
+        "ASSUMED",
+        "UNKNOWN"
+      ],
       "reason": "Transport and storage confidentiality are outside this record."
     },
     "recovery": {
-      "attainable_statuses": ["ATTESTED", "UNKNOWN"],
+      "attainable_statuses": [
+        "ATTESTED",
+        "UNKNOWN"
+      ],
       "default_when_absent": "UNKNOWN"
+    },
+    "authorship_degree": {
+      "attainable_statuses": [
+        "ATTESTED",
+        "REFUTED",
+        "UNKNOWN",
+        "CONFLICTED"
+      ],
+      "never": "SUPPORTED",
+      "roles": [
+        "ORIGINATOR",
+        "DELEGATE",
+        "RELAY",
+        "AGGREGATOR"
+      ],
+      "default_when_absent": "UNKNOWN",
+      "reason": "Authorship distance is an assertion about the world outside the record; this model can check it for internal consistency but cannot observe who wrote a claim."
+    },
+    "credential_ancestry": {
+      "attainable_statuses": [
+        "ATTESTED",
+        "REFUTED",
+        "UNKNOWN",
+        "CONFLICTED"
+      ],
+      "never": "SUPPORTED",
+      "default_when_absent": "UNKNOWN",
+      "reason": "The chain records ancestry. It does not by itself establish that authority survived every hop, mirroring the recorded-lineage discipline of VSTD-Graph-1."
     }
   },
   "rules": [
-    {"id": "ZI-R1", "statement": "A missing coordinate yields UNKNOWN, never a favourable status."},
-    {"id": "ZI-R2", "statement": "CONFLICTED is terminal for the property and propagates to the record verdict."},
-    {"id": "ZI-R3", "statement": "Revoked or expired authority is REFUTED, never UNKNOWN."},
-    {"id": "ZI-R4", "statement": "A shared pseudonymous coordinate across two receipts REFUTES independence."},
-    {"id": "ZI-R5", "statement": "Distinct pseudonymous coordinates leave both independence and actor-distinctness UNKNOWN."},
-    {"id": "ZI-R6", "statement": "A minimization request that removes a required trust-root coordinate makes the record unevaluable and is REJECTED."},
-    {"id": "ZI-R7", "statement": "When freshness is required, an absent challenge coordinate fails closed and a replayed challenge is REFUTED."},
-    {"id": "ZI-R8", "statement": "A claim boundary may only narrow under minimization; widening is REJECTED."},
-    {"id": "ZI-R9", "statement": "A key marked compromised for the signing interval REFUTES authentication."},
-    {"id": "ZI-R10", "statement": "unlinkability is never SUPPORTED by this model; at best it is ASSUMED under declared assumptions."}
+    {
+      "id": "ZI-R1",
+      "statement": "A missing coordinate yields UNKNOWN, never a favourable status."
+    },
+    {
+      "id": "ZI-R2",
+      "statement": "CONFLICTED is terminal for the property and propagates to the record verdict."
+    },
+    {
+      "id": "ZI-R3",
+      "statement": "Revoked or expired authority is REFUTED, never UNKNOWN."
+    },
+    {
+      "id": "ZI-R4",
+      "statement": "A shared pseudonymous coordinate across two receipts REFUTES independence."
+    },
+    {
+      "id": "ZI-R5",
+      "statement": "Distinct pseudonymous coordinates leave both independence and actor-distinctness UNKNOWN."
+    },
+    {
+      "id": "ZI-R6",
+      "statement": "A minimization request that removes a required trust-root coordinate makes the record unevaluable and is REJECTED."
+    },
+    {
+      "id": "ZI-R7",
+      "statement": "When freshness is required, an absent challenge coordinate fails closed and a replayed challenge is REFUTED."
+    },
+    {
+      "id": "ZI-R8",
+      "statement": "A claim boundary may only narrow under minimization; widening is REJECTED."
+    },
+    {
+      "id": "ZI-R9",
+      "statement": "A key marked compromised for the signing interval REFUTES authentication."
+    },
+    {
+      "id": "ZI-R10",
+      "statement": "unlinkability is never SUPPORTED by this model; at best it is ASSUMED under declared assumptions."
+    },
+    {
+      "id": "ZI-R11",
+      "statement": "Authorship degree is asserted, never inferred; an absent role stays UNKNOWN and never defaults to ORIGINATOR."
+    },
+    {
+      "id": "ZI-R12",
+      "statement": "A relay, delegate, or aggregator that claims origination is REFUTED."
+    },
+    {
+      "id": "ZI-R13",
+      "statement": "A revoked recorded ancestor REFUTES the chain; authority does not survive delegation from a revoked ancestor."
+    },
+    {
+      "id": "ZI-R14",
+      "statement": "A delegation whose scope exceeds its ancestor scope is REFUTED."
+    },
+    {
+      "id": "ZI-R15",
+      "statement": "An unattested link, a chain that misses a declared trust root, or a chain that misses the signing key stays UNKNOWN."
+    },
+    {
+      "id": "ZI-R16",
+      "statement": "An unattested rotation does not merge two key coordinates into one actor."
+    },
+    {
+      "id": "ZI-R17",
+      "statement": "A declared degree that disagrees with the recorded chain length is CONFLICTED."
+    }
   ]
 }

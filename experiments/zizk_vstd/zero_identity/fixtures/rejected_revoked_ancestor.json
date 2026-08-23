@@ -7,8 +7,8 @@
       "authorization": "SUPPORTED",
       "authorship_degree": "ATTESTED",
       "civil_identity": "UNSUPPORTED_BY_DESIGN",
-      "credential_ancestry": "ATTESTED",
-      "freshness": "REFUTED",
+      "credential_ancestry": "REFUTED",
+      "freshness": "SUPPORTED",
       "recovery": "ATTESTED",
       "uniqueness": "UNKNOWN",
       "unlinkability": "UNKNOWN",
@@ -16,14 +16,14 @@
     },
     "verdict": "REJECTED"
   },
-  "falsification_question": "Is a reused challenge indistinguishable from a fresh one?",
-  "fixture_id": "rejected_replayed_challenge",
-  "intent": "A previously observed challenge value is a detected replay.",
+  "falsification_question": "Does a revoked ancestor leave its descendants merely uncertain?",
+  "fixture_id": "rejected_revoked_ancestor",
+  "intent": "Authority does not survive delegation from a revoked ancestor.",
   "record": {
     "actor": {
       "civil_identity": "withheld",
       "key_binding": {
-        "key_id": "key:alpha-1",
+        "key_id": "key:delegate-1",
         "signature_verified": true,
         "trust_root": "root:issuer-a"
       },
@@ -40,8 +40,8 @@
     },
     "authorship": {
       "attested_by": "root:issuer-a",
-      "degree": 0,
-      "role": "ORIGINATOR"
+      "degree": 1,
+      "role": "DELEGATE"
     },
     "claim_scope": "vstd4-refutation-run",
     "claimed_properties": [
@@ -54,6 +54,19 @@
         "child": "key:alpha-1",
         "link_type": "issuance",
         "parent": "root:issuer-a"
+      },
+      {
+        "attested_by": "root:issuer-a",
+        "child": "key:delegate-1",
+        "child_scope": [
+          "vstd4-refutation-run"
+        ],
+        "link_type": "delegation",
+        "parent": "key:alpha-1",
+        "parent_scope": [
+          "vstd4-refutation-run"
+        ],
+        "parent_state": "revoked"
       }
     ],
     "escalation_authority": "root:issuer-a",
@@ -61,15 +74,13 @@
     "freshness": {
       "challenge_source": "verifier:v1",
       "nonce": "challenge:0001",
-      "previously_observed_nonces": [
-        "challenge:0001"
-      ],
+      "previously_observed_nonces": [],
       "required": true
     },
     "independence_evidence": [],
     "peer_receipts": [],
     "profile": "zizk-vstd/zero-identity/experimental-0",
-    "record_id": "zi-replay",
+    "record_id": "zi-ancestry-revoked",
     "recovery": {
       "mechanism": "issuer reissue on quorum of two custodians"
     },

@@ -28,7 +28,7 @@ Full reasoning and the exact claims that are and are not justified:
 | Path | What it is |
 |---|---|
 | [`SEMANTIC_MODEL.md`](SEMANTIC_MODEL.md) | term separation, statuses, minimum coordinates, prohibited inferences |
-| [`THREAT_MODEL.md`](THREAT_MODEL.md) | thirteen threats, mitigations, residual risk, falsification conditions |
+| [`THREAT_MODEL.md`](THREAT_MODEL.md) | sixteen threats, mitigations, residual risk, falsification conditions |
 | [`model/zero_identity_model.json`](model/zero_identity_model.json) | the machine-readable model |
 | [`evaluate.py`](evaluate.py) | standard-library evaluator over one disclosure record |
 | [`fixtures/`](fixtures) | positive, negative, `UNKNOWN`, and `CONFLICTED` records with expected results |

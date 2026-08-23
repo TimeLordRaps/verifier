@@ -239,6 +239,119 @@ def _evaluate_independence(record: dict[str, Any], reasons: list[str]) -> str:
     return ATTESTED
 
 
+AUTHORSHIP_ROLES = ("ORIGINATOR", "DELEGATE", "RELAY", "AGGREGATOR")
+
+
+def _evaluate_authorship_degree(record: dict[str, Any], reasons: list[str]) -> str:
+    """Decide how far the signing party sits from the origin of the claim.
+
+    Degree is asserted, never inferred. An absent role does not default to
+    ORIGINATOR, and a relay is never readable as first-party authorship.
+    """
+
+    if _conflicted(record, "authorship_degree"):
+        reasons.append("authorship_degree: conflicting evidence retained as CONFLICTED")
+        return CONFLICTED
+    authorship = record.get("authorship")
+    if not isinstance(authorship, dict):
+        reasons.append(
+            "authorship_degree: no authorship coordinate; a signer is not assumed to be an author"
+        )
+        return UNKNOWN
+    role = authorship.get("role")
+    degree = authorship.get("degree")
+    if role not in AUTHORSHIP_ROLES or not isinstance(degree, int):
+        reasons.append("authorship_degree: role or degree absent or unrecognised")
+        return UNKNOWN
+    if (role == "ORIGINATOR") != (degree == 0):
+        reasons.append("authorship_degree: declared role and declared degree disagree")
+        return CONFLICTED
+    chain = record.get("credential_ancestry") or []
+    delegations = [link for link in chain if link.get("link_type") == "delegation"]
+    if chain and degree != len(delegations):
+        reasons.append(
+            "authorship_degree: declared degree disagrees with the number of recorded "
+            "delegation hops"
+        )
+        return CONFLICTED
+    if role != "ORIGINATOR" and "authorship_origination" in (
+        record.get("claimed_properties") or []
+    ):
+        reasons.append(
+            f"authorship_degree: a {role} record claims origination; relayed authorship "
+            "is not first-party authorship"
+        )
+        return REFUTED
+    if not authorship.get("attested_by"):
+        reasons.append("authorship_degree: role is declared but not attested")
+        return UNKNOWN
+    return ATTESTED
+
+
+def _evaluate_credential_ancestry(record: dict[str, Any], reasons: list[str]) -> str:
+    """Decide what the recorded chain from a trust root to this credential supports.
+
+    The chain records ancestry; it does not by itself establish that authority
+    survived every hop. An unattested link stays UNKNOWN, and a revoked ancestor
+    refutes the chain rather than leaving it merely uncertain.
+    """
+
+    if _conflicted(record, "credential_ancestry"):
+        reasons.append("credential_ancestry: conflicting evidence retained as CONFLICTED")
+        return CONFLICTED
+    chain = record.get("credential_ancestry")
+    if not chain:
+        reasons.append(
+            "credential_ancestry: no recorded chain; an authority origin is not assumed"
+        )
+        return UNKNOWN
+    for link in chain:
+        if link.get("parent_state") == "revoked":
+            reasons.append(
+                "credential_ancestry: a recorded ancestor is revoked; authority does not "
+                "survive delegation from a revoked ancestor"
+            )
+            return REFUTED
+        parent_scope = link.get("parent_scope")
+        child_scope = link.get("child_scope")
+        if parent_scope is not None and child_scope is not None:
+            if not set(child_scope) <= set(parent_scope):
+                reasons.append(
+                    "credential_ancestry: a delegation widens scope beyond its ancestor"
+                )
+                return REFUTED
+    if not all(link.get("attested_by") for link in chain):
+        reasons.append(
+            "credential_ancestry: a recorded link is unattested; an unattested chain is "
+            "not a verified chain"
+        )
+        return UNKNOWN
+    if chain[0].get("parent") not in (record.get("trust_roots") or []):
+        reasons.append(
+            "credential_ancestry: the chain does not begin at a declared trust root"
+        )
+        return UNKNOWN
+    for older, newer in zip(chain, chain[1:]):
+        if older.get("child") != newer.get("parent"):
+            reasons.append("credential_ancestry: the recorded chain is not contiguous")
+            return CONFLICTED
+    if chain[-1].get("child") != _get(record, "actor.key_binding.key_id"):
+        reasons.append(
+            "credential_ancestry: the chain does not terminate at the signing key"
+        )
+        return UNKNOWN
+    if any(
+        link.get("link_type") == "rotation" and not link.get("same_actor_attested_by")
+        for link in chain
+    ):
+        reasons.append(
+            "credential_ancestry: an unattested rotation does not merge two key "
+            "coordinates into one actor"
+        )
+        return UNKNOWN
+    return ATTESTED
+
+
 def _evaluate_unlinkability(record: dict[str, Any], reasons: list[str]) -> str:
     request = record.get("disclosure_minimization") or {}
     if not request:
@@ -338,6 +451,8 @@ def evaluate(record: dict[str, Any]) -> Evaluation:
     properties["uniqueness"] = _evaluate_uniqueness(record, reasons)
     properties["verifier_independence"] = _evaluate_independence(record, reasons)
     properties["unlinkability"] = _evaluate_unlinkability(record, reasons)
+    properties["authorship_degree"] = _evaluate_authorship_degree(record, reasons)
+    properties["credential_ancestry"] = _evaluate_credential_ancestry(record, reasons)
     properties["accountability"] = _evaluate_accountability(record, reasons)
     properties["recovery"] = _evaluate_recovery(record, reasons)
 

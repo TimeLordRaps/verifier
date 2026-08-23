@@ -184,6 +184,70 @@ def test_scope_mismatch_is_refuted() -> None:
     assert outcome.properties["authorization"] == REFUTED
 
 
+def test_signing_is_not_authorship() -> None:
+    outcome = result("unknown_absent_authorship")
+    assert outcome.properties["authorship_degree"] == UNKNOWN
+    assert outcome.verdict == UNKNOWN
+
+
+def test_relayed_claim_is_not_first_party_authorship() -> None:
+    outcome = result("rejected_relay_claims_origination")
+    assert outcome.properties["authorship_degree"] == REFUTED
+    assert outcome.verdict == REJECTED
+
+
+def test_declared_degree_must_agree_with_recorded_delegation_hops() -> None:
+    outcome = result("conflicted_authorship_degree_vs_chain")
+    assert outcome.properties["authorship_degree"] == CONFLICTED
+    assert outcome.verdict == CONFLICTED
+
+
+def test_unattested_ancestry_link_is_not_a_verified_chain() -> None:
+    outcome = result("unknown_unattested_ancestry_link")
+    assert outcome.properties["credential_ancestry"] == UNKNOWN
+
+
+def test_authority_does_not_survive_a_revoked_ancestor() -> None:
+    outcome = result("rejected_revoked_ancestor")
+    assert outcome.properties["credential_ancestry"] == REFUTED
+    assert outcome.verdict == REJECTED
+
+
+def test_delegation_may_not_widen_scope_beyond_its_ancestor() -> None:
+    outcome = result("rejected_delegation_widens_scope")
+    assert outcome.properties["credential_ancestry"] == REFUTED
+
+
+def test_unattested_rotation_does_not_merge_two_key_coordinates() -> None:
+    outcome = result("unknown_unattested_rotation")
+    assert outcome.properties["credential_ancestry"] == UNKNOWN
+
+
+def test_absent_ancestry_chain_stays_unknown() -> None:
+    record = load("positive_bounded_authorization")["record"]
+    record.pop("credential_ancestry")
+    assert evaluate(record).properties["credential_ancestry"] == UNKNOWN
+
+
+def test_chain_must_terminate_at_the_signing_key() -> None:
+    record = load("positive_bounded_authorization")["record"]
+    record["credential_ancestry"][0]["child"] = "key:someone-else"
+    assert evaluate(record).properties["credential_ancestry"] == UNKNOWN
+
+
+def test_chain_must_begin_at_a_declared_trust_root() -> None:
+    record = load("positive_bounded_authorization")["record"]
+    record["credential_ancestry"][0]["parent"] = "root:undeclared"
+    assert evaluate(record).properties["credential_ancestry"] == UNKNOWN
+
+
+def test_authorship_and_ancestry_are_never_supported() -> None:
+    for path in FIXTURES:
+        outcome = evaluate(json.loads(path.read_text(encoding="utf-8"))["record"])
+        assert outcome.properties["authorship_degree"] != SUPPORTED
+        assert outcome.properties["credential_ancestry"] != SUPPORTED
+
+
 def test_model_declares_the_terminology_decision_and_prohibited_inferences() -> None:
     model = load_model()
     assert model["status"] == "EXPERIMENTAL"

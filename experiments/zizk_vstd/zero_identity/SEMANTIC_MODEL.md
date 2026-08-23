@@ -21,6 +21,8 @@ These are distinct properties. None implies another.
 | Authorization | evidence that the signer was permitted this claim scope | evaluable, may be `SUPPORTED` |
 | Accountability | a named authority that can act on the pseudonymous coordinate | at best `ATTESTED` |
 | Attribution | binding a record to a pseudonymous coordinate, never to a person | at best `ATTESTED` |
+| Authorship degree | how far the signing party sits from the origin of the claim: originator, delegate, relay, aggregator | at best `ATTESTED`, default `UNKNOWN` |
+| Credential ancestry | the recorded chain of issuance, delegation, and rotation links from a trust root to the signing key | at best `ATTESTED`, refutable |
 | Uniqueness / Sybil resistance | evidence that one coordinate corresponds to one actor | at best `ATTESTED`, default `UNKNOWN` |
 | Verifier independence | evidence that two receipts came from actors that do not share a root | at best `ATTESTED`, refutable |
 | Revocation and expiry | current liveness of a grant | evaluable, refutable |
@@ -52,7 +54,15 @@ Bounded reverification without civil identity needs all of:
 - `actor.key_binding.key_id`, `.signature_verified`, `.trust_root`;
 - `authorization.grant_id`, `.issuer`, `.scope`, `.not_before`, `.not_after`;
 - `revocation.source`, `.state`, `.checked_at`;
-- `trust_roots` — the roots the reader must already accept.
+- `trust_roots` — the roots the reader must already accept;
+- `authorship.role`, `.degree`, `.attested_by` — who authored the claim and at what remove;
+- `credential_ancestry[].parent`, `.child`, `.link_type`, `.attested_by` — how the signing
+  key obtained its authority.
+
+Authorship degree and credential ancestry are distinct from authorization. Authorization
+asks whether this key was permitted this scope; authorship asks who is speaking and at what
+remove; ancestry asks how the key came to hold the authority at all. A record can be fully
+authorized while its authorship is `UNKNOWN`, and that combination is reported, not merged.
 
 Remove any of the trust-root coordinates and the dependent property becomes `UNKNOWN`;
 remove `revocation.source`, `authorization.issuer`, or `actor.key_binding.trust_root`
@@ -75,6 +85,18 @@ Encoded in the model and each guarded by a test:
 9. Hashing, redaction, encryption, omission, or pseudonymity alone implies zero identity.
 10. Disclosure minimization preserves the original claim boundary.
 11. Missing evidence implies safety.
+12. A signer is the author of the claim.
+13. A relayed, delegated, or aggregated claim is first-party authorship.
+14. An absent authorship role means degree zero.
+15. A recorded ancestry chain establishes that authority survived every hop.
+16. No ancestor marked revoked means every ancestor is valid.
+17. A rotation link merges two key coordinates into one actor.
+18. A delegation may carry a scope its ancestor did not hold.
+
+Inferences 15 and 16 mirror the recorded-lineage discipline of
+[`../../../standard/VSTD-Graph-1.md`](../../../standard/VSTD-Graph-1.md): an edge records
+ancestry, and a clean-ancestor policy must require validity explicitly rather than reading
+it out of the absence of a revocation mark.
 
 ## 5. Relationship to cryptography
 

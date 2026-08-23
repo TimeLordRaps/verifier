@@ -5,25 +5,25 @@
       "authentication": "SUPPORTED",
       "authority_active": "SUPPORTED",
       "authorization": "SUPPORTED",
-      "authorship_degree": "ATTESTED",
+      "authorship_degree": "CONFLICTED",
       "civil_identity": "UNSUPPORTED_BY_DESIGN",
       "credential_ancestry": "ATTESTED",
-      "freshness": "REFUTED",
+      "freshness": "SUPPORTED",
       "recovery": "ATTESTED",
       "uniqueness": "UNKNOWN",
       "unlinkability": "UNKNOWN",
       "verifier_independence": "UNKNOWN"
     },
-    "verdict": "REJECTED"
+    "verdict": "CONFLICTED"
   },
-  "falsification_question": "Is a reused challenge indistinguishable from a fresh one?",
-  "fixture_id": "rejected_replayed_challenge",
-  "intent": "A previously observed challenge value is a detected replay.",
+  "falsification_question": "Is the more convenient of two disagreeing degree claims preferred?",
+  "fixture_id": "conflicted_authorship_degree_vs_chain",
+  "intent": "A declared degree that disagrees with the recorded chain stays CONFLICTED.",
   "record": {
     "actor": {
       "civil_identity": "withheld",
       "key_binding": {
-        "key_id": "key:alpha-1",
+        "key_id": "key:delegate-1",
         "signature_verified": true,
         "trust_root": "root:issuer-a"
       },
@@ -40,8 +40,8 @@
     },
     "authorship": {
       "attested_by": "root:issuer-a",
-      "degree": 0,
-      "role": "ORIGINATOR"
+      "degree": 2,
+      "role": "DELEGATE"
     },
     "claim_scope": "vstd4-refutation-run",
     "claimed_properties": [
@@ -54,6 +54,18 @@
         "child": "key:alpha-1",
         "link_type": "issuance",
         "parent": "root:issuer-a"
+      },
+      {
+        "attested_by": "root:issuer-a",
+        "child": "key:delegate-1",
+        "child_scope": [
+          "vstd4-refutation-run"
+        ],
+        "link_type": "delegation",
+        "parent": "key:alpha-1",
+        "parent_scope": [
+          "vstd4-refutation-run"
+        ]
       }
     ],
     "escalation_authority": "root:issuer-a",
@@ -61,15 +73,13 @@
     "freshness": {
       "challenge_source": "verifier:v1",
       "nonce": "challenge:0001",
-      "previously_observed_nonces": [
-        "challenge:0001"
-      ],
+      "previously_observed_nonces": [],
       "required": true
     },
     "independence_evidence": [],
     "peer_receipts": [],
     "profile": "zizk-vstd/zero-identity/experimental-0",
-    "record_id": "zi-replay",
+    "record_id": "zi-authorship-degree-conflict",
     "recovery": {
       "mechanism": "issuer reissue on quorum of two custodians"
     },

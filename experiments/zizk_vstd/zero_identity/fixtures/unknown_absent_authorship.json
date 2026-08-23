@@ -5,20 +5,20 @@
       "authentication": "SUPPORTED",
       "authority_active": "SUPPORTED",
       "authorization": "SUPPORTED",
-      "authorship_degree": "ATTESTED",
+      "authorship_degree": "UNKNOWN",
       "civil_identity": "UNSUPPORTED_BY_DESIGN",
       "credential_ancestry": "ATTESTED",
-      "freshness": "REFUTED",
+      "freshness": "SUPPORTED",
       "recovery": "ATTESTED",
       "uniqueness": "UNKNOWN",
       "unlinkability": "UNKNOWN",
       "verifier_independence": "UNKNOWN"
     },
-    "verdict": "REJECTED"
+    "verdict": "UNKNOWN"
   },
-  "falsification_question": "Is a reused challenge indistinguishable from a fresh one?",
-  "fixture_id": "rejected_replayed_challenge",
-  "intent": "A previously observed challenge value is a detected replay.",
+  "falsification_question": "Does signing a record make you its author?",
+  "fixture_id": "unknown_absent_authorship",
+  "intent": "A signer is not assumed to be the author of the claim.",
   "record": {
     "actor": {
       "civil_identity": "withheld",
@@ -38,14 +38,9 @@
         "vstd4-refutation-run"
       ]
     },
-    "authorship": {
-      "attested_by": "root:issuer-a",
-      "degree": 0,
-      "role": "ORIGINATOR"
-    },
     "claim_scope": "vstd4-refutation-run",
     "claimed_properties": [
-      "authorization"
+      "authorship_degree"
     ],
     "conflicts": [],
     "credential_ancestry": [
@@ -61,15 +56,13 @@
     "freshness": {
       "challenge_source": "verifier:v1",
       "nonce": "challenge:0001",
-      "previously_observed_nonces": [
-        "challenge:0001"
-      ],
+      "previously_observed_nonces": [],
       "required": true
     },
     "independence_evidence": [],
     "peer_receipts": [],
     "profile": "zizk-vstd/zero-identity/experimental-0",
-    "record_id": "zi-replay",
+    "record_id": "zi-authorship-absent",
     "recovery": {
       "mechanism": "issuer reissue on quorum of two custodians"
     },
