@@ -18,6 +18,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = REPO_ROOT / "scripts" / "release_artifacts.py"
+RELEASE_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "release.yml"
 
 SPEC = importlib.util.spec_from_file_location("vstd_release_artifacts", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
@@ -292,3 +293,12 @@ def test_artifact_directory_comparison_fails_closed(tmp_path: Path) -> None:
     (second / "artifact.bin").write_bytes(b"different")
     with pytest.raises(release_artifacts.ReleaseError, match="artifact bytes differ"):
         release_artifacts.compare_artifact_directories(first, second)
+
+
+def test_release_notes_use_the_github_tag_object_verification() -> None:
+    workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
+    assert 'git/tags/$TAG_OBJECT' in workflow
+    assert ".verification.verified" in workflow
+    assert ".verification.reason" in workflow
+    assert "SIGNED_AND_GITHUB_VERIFIED" in workflow
+    assert 'git verify-tag "$GITHUB_REF_NAME"' not in workflow

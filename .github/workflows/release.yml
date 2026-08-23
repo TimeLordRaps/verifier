@@ -72,15 +72,20 @@ jobs:
             dist/*.manifest.json
 
       - name: Write bounded release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          if git verify-tag "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            TAG_STATUS="SIGNED_AND_LOCALLY_VERIFIED"
+          TAG_OBJECT="$(git rev-parse "$GITHUB_REF_NAME")"
+          TAG_VERIFIED="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$TAG_OBJECT" --jq '.verification.verified')"
+          TAG_REASON="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$TAG_OBJECT" --jq '.verification.reason')"
+          if test "$TAG_VERIFIED" = true; then
+            TAG_STATUS="SIGNED_AND_GITHUB_VERIFIED"
           else
-            TAG_STATUS="UNSIGNED"
+            TAG_STATUS="NOT_GITHUB_VERIFIED"
           fi
           {
-            echo "Source tag signature status: **$TAG_STATUS**."
+            printf 'Source tag signature status: **%s** (`%s`).\n' "$TAG_STATUS" "$TAG_REASON"
             echo
             echo "Every uploaded asset is bound to the exact public commit by the external release manifest and a GitHub artifact attestation. The wheel and source distribution published to PyPI are the same tested files attached here. Verify a GitHub asset with:"
             echo

@@ -60,10 +60,10 @@ exact, publicly resolvable commit.
    ```
 
    If tag signing is unavailable, an unsigned annotated tag is permitted only through
-   `.github/workflows/release.yml`. That workflow records `UNSIGNED` in the release
-   notes and MUST create GitHub/Sigstore artifact attestations for the source ZIP,
-   wheel, source distribution, and external manifest. An artifact attestation is not
-   described as a tag signature.
+   `.github/workflows/release.yml`. That workflow records the GitHub tag-object
+   verification result and reason in the release notes and MUST create GitHub/Sigstore
+   artifact attestations for the source ZIP, wheel, source distribution, and external
+   manifest. An artifact attestation is not described as a tag signature.
 7. Run the verifier independently before upload:
 
    ```bash
