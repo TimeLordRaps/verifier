@@ -1,5 +1,7 @@
 # Competition evaluation profile
 
+> Reader aid: [concept glossary and primary precedents](../CONCEPTS_AND_PRECEDENTS.md).
+
 **Status:** non-normative VSTD-1/VSTD-Graph integration profile
 **Version:** 0.1
 **Date:** 2026-08-21

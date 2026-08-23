@@ -1,5 +1,7 @@
 # VSTD-4 — Refutability
 
+> Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
+
 **Layer:** 4 of 5 on the object axis (see `LADDER.md`)
 **Certificate format:** `VSTD4-GDC-1`
 **Status:** implemented project specification

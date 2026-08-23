@@ -1,5 +1,7 @@
 # VSTD-3 implementation compatibility
 
+> Reader aid: [concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
+
 VSTD-3 is additive. It does not reinterpret earlier receipt wire formats. For
 the historical filename and wire-identifier table, see
 `../../../standard/WIRE_IDENTIFIERS.md`.

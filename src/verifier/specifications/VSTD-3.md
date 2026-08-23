@@ -1,5 +1,7 @@
 # VSTD-3 — Substrate Accountability
 
+> Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
+
 **Layer:** 3 of 5 on the object axis (see `LADDER.md`)
 **Receipt wire format:** `schema_version = "VSTD-3.0"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** implemented project specification

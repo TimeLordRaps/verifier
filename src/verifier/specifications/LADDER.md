@@ -4,6 +4,8 @@
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
 
+**Reader context:** [`Concept guide and intellectual precedents`](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md)
+
 VSTD specification numbers are **layers of verification depth**, not revisions of a single
 document. VSTD-3 does not supersede VSTD-1 any more than a floor supersedes its
 foundation.
@@ -15,14 +17,23 @@ foundation.
 Each layer names a distinct verification question and a distinct failure class. The
 ordering is a composition rule, not logical entailment between layers.
 
+The nearest familiar security analogy is
+[defense in depth](https://en.wikipedia.org/wiki/Defense_in_depth_%28computing%29 "Wikipedia orientation; primary references are mapped below"),
+but the analogy is limited: VSTD layers are separately evidenced questions, not
+interchangeable controls whose mere quantity establishes assurance. Decomposing assurance
+into named components also has precedent in the Common Criteria, while VSTD deliberately
+uses different layers, evidence rules, and conformance semantics.
+
 **Evidence for one layer never supplies evidence for another layer.** In particular,
 layer-4 evidence does not supply, imply, upgrade, or repair layer 3, 2, or 1. A reported
 depth of `N` is only shorthand for `N` separately checked results, one for each layer
 from 1 through `N`.
 
-Reflection and metalanguage are useful design analogies for asking what a given
+Reflection and [metalanguage](https://en.wikipedia.org/wiki/Metalogic "Wikipedia orientation; not a proof of the VSTD ladder")
+are useful design analogies for asking what a given
 verification surface leaves unexamined. VSTD does not claim that Tarski's
-undefinability theorem proves this ladder, that adjacent layers form formal
+[undefinability theorem](https://en.wikipedia.org/wiki/Tarski%27s_undefinability_theorem "Wikipedia orientation; the theorem does not derive this ladder")
+proves this ladder, that adjacent layers form formal
 metalanguages, or that a lower-layer implementation is logically incapable of
 describing another layer's failure. The normative requirement is narrower: an
 implementation MUST NOT treat success on one question as evidence for a different
@@ -65,7 +76,10 @@ VSTD-Graph governs the verification of a **collection** of objects. Call this
 verification *dynamics*.
 
 The two axes are parallel but coupled: a collection's dynamics are constrained by its
-members' mechanics, and by the provenance edges between them.
+members' mechanics, and by the
+[provenance](https://en.wikipedia.org/wiki/Data_provenance "Wikipedia orientation; see W3C PROV-DM and supply-chain references below")
+edges between them. The implemented N-ary representation is a
+[hypergraph](https://en.wikipedia.org/wiki/Hypergraph "Wikipedia orientation; not a claim of complete real-world lineage").
 
 | Layer | Name | Collection-level closure |
 |---|---|---|
@@ -118,7 +132,10 @@ computation, VSTD preserves that artifact and its verification bounds.
 
 ### 4.2 Bounded admission uses CNF
 
-The reference admission procedures encode finite, bounded policy questions as CNF.
+The reference admission procedures encode finite, bounded policy questions as
+[conjunctive normal form](https://en.wikipedia.org/wiki/Conjunctive_normal_form "Wikipedia orientation; the implemented format is finite CNF")
+(CNF) for the
+[Boolean satisfiability problem](https://en.wikipedia.org/wiki/Boolean_satisfiability_problem "Wikipedia orientation; SAT success establishes only the encoded formula").
 CNF is not identical to 3-SAT. A finite CNF satisfiability instance can be transformed
 in polynomial time into an equisatisfiable 3-CNF instance, using auxiliary variables
 where required. VSTD does not need that transformation for every checker and does not
@@ -155,7 +172,11 @@ An unsatisfiable result, by default, carries nothing but the solver's word.
 For a fail-closed standard, **refusals are the most consequential output**. A standard
 whose passes are checkable and whose refusals are not has its assurance backwards.
 Layer 4 therefore requires a refutation certificate — a clausal proof, verifiable by
-reverse unit propagation, checkable without re-solving.
+[reverse unit propagation](https://en.wikipedia.org/wiki/Unit_propagation "Wikipedia orientation; VSTD implements a bounded RUP checker"),
+checkable without re-solving. This follows the same producer-certificate/consumer-checker
+engineering asymmetry as
+[proof-carrying code](https://en.wikipedia.org/wiki/Proof-carrying_code "Wikipedia orientation; VSTD does not inherit PCC's safety theorem"),
+while using a narrower certificate language.
 
 Resolution proofs have exponential lower bounds for some formula families. A
 conforming implementation therefore MUST declare a bound and MUST answer `UNKNOWN`
@@ -204,7 +225,34 @@ closed. It never means the lower layers became unnecessary.
 ## 7. Numbering
 
 - **Specification layers are integers**: VSTD-1 … VSTD-5, VSTD-Graph-1 … VSTD-Graph-5.
-- **Repository releases use semantic versioning** and are independent of layer numbers.
+- **Repository releases use [semantic versioning](https://semver.org/)** and are independent
+  of layer numbers.
 
 A release version never implies a layer, and a layer never implies a release. See
 `WIRE_IDENTIFIERS.md` for frozen wire identifiers and the historical public filenames.
+
+---
+
+## 8. Intellectual lineage and adjacent precedents
+
+The ladder is VSTD project architecture; no cited work proves that these five layers are
+necessary, sufficient, complete, or uniquely ordered. The references below show that its
+individual design pressures have established precedents in security engineering,
+provenance, reproducible systems, and proof checking. The
+[`concept guide`](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md) provides definitions, additional
+sources, and explicit non-equivalences.
+
+| VSTD pressure | Adjacent precedent | What the precedent contributes—and does not |
+|---|---|---|
+| Separate failure surfaces and fail-closed defaults | Saltzer and Schroeder, [*The Protection of Information in Computer Systems*](https://web.mit.edu/Saltzer/www/publications/pubs.html) | Classic principles include fail-safe defaults, complete mediation, separation of privilege, and least common mechanism. They motivate separation; they do not derive VSTD's layer count. |
+| Named assurance components | Common Criteria, [Part 3: Security assurance components](https://www.commoncriteriaportal.org/files/ccfiles/CC2022PART3R1.pdf) | Demonstrates established componentized assurance and assurance packages. VSTD is not a Common Criteria evaluation or an Evaluation Assurance Level. |
+| Stable cryptographic representations | [RFC 8785: JSON Canonicalization Scheme](https://www.rfc-editor.org/rfc/rfc8785.html) | Shows why JSON used as cryptographic input needs invariant representation. VSTD formats retain their own declared canonicalization rules. |
+| Recorded entities, activities, and agents | W3C [PROV-DM](https://www.w3.org/TR/prov-dm/) | Supplies an interoperable provenance model adjacent to the Graph axis. VSTD-Graph is not a PROV implementation and does not infer complete history. |
+| Software materials, builders, steps, and products | [in-toto specification v1.0](https://in-toto.io/docs/specs/) and [SLSA v1.2](https://slsa.dev/spec/v1.2/) | Establish supply-chain provenance and attestation precedents. VSTD may bind their evidence but cannot manufacture their authorization or assurance level. |
+| Preserved release and provenance evidence | NIST [SP 800-218 SSDF 1.1](https://doi.org/10.6028/NIST.SP.800-218) | Practices PS.3.1 and PS.3.2 call for preserving releases and provenance and enabling integrity verification. They do not certify a VSTD receipt. |
+| Independent recreation | Reproducible Builds, [formal definition](https://reproducible-builds.org/docs/definition/) | Grounds the special case where another party recreates specified artifacts from declared inputs and instructions. Reproducibility does not establish every semantic claim. |
+| Producer-supplied portable certificates | Necula, [*Proof-Carrying Code*](https://doi.org/10.1145/263699.263712) | Establishes the pattern of an untrusted producer supplying a proof checked under a declared policy. VSTD uses the pattern beyond code safety without inheriting PCC's theorem. |
+| Independently checked UNSAT results | Wetzler, Heule, and Hunt, [*DRAT-trim*](https://www.cs.cmu.edu/~mheule/publications/drat-trim.pdf) | Establishes practical checking of clausal unsatisfiability proofs rather than trusting solver output. VSTD's implemented RUP format is narrower than DRAT. |
+| A first-class refusal to fabricate a Boolean answer | [SMT-LIB Standard 2.7](https://smt-lib.org/papers/smt-lib-reference-v2.7-r2025-04-09.pdf) | Its response grammar includes `sat`, `unsat`, and `unknown`. VSTD independently defines a richer status system with the same fail-closed pressure. |
+| Append-only public evidence and detectable equivocation | [RFC 9162: Certificate Transparency Version 2.0](https://www.rfc-editor.org/rfc/rfc9162.html) | Merkle proofs make log inclusion and consistency auditable while preserving explicit split-view limitations. VSTD additive receipts are analogous, not a CT implementation. |
+| Freshness, rollback, freeze, and compromise recovery | [The Update Framework specification](https://theupdateframework.github.io/specification/latest/) | Demonstrates that authentic old data is not automatically current data. VSTD does not implement TUF, but likewise keeps freshness and revocation distinct from byte identity. |

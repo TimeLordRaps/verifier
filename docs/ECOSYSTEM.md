@@ -1,5 +1,7 @@
 # Ecosystem boundary map
 
+> Reader aid: [concept glossary and primary precedents](CONCEPTS_AND_PRECEDENTS.md).
+
 **Status:** non-normative positioning note
 **Reviewed:** 2026-08-22
 

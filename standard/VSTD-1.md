@@ -1,5 +1,7 @@
 # VSTD-1 — Claim Mechanics
 
+> Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
+
 **Layer:** 1 of 5 on the object axis (see `LADDER.md`)
 **Receipt wire format:** `schema_version = "VSTD-0.1"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** Project Specification with Implemented Reference Subset

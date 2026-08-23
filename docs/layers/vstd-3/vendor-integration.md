@@ -1,5 +1,7 @@
 # VSTD-3 accelerator vendor integration kit
 
+> Reader aid: [concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
+
 This is the minimum review surface for a firmware or silicon security team evaluating
 VSTD-3. It does not require adopting VSTD product names in firmware.
 

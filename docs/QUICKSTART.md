@@ -1,5 +1,7 @@
 # VSTD quickstart
 
+> Reader aid: [concept glossary and primary precedents](CONCEPTS_AND_PRECEDENTS.md).
+
 ## 1. Install the public source
 
 VSTD requires Python 3.10–3.13. The base runtime has no required third-party

@@ -1,5 +1,7 @@
 # VSTD-Graph-5 — Corroborated Verification Network
 
+> Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
+
 **Layer:** 5 of 5 on the graph axis (see `LADDER.md`)
 **Status:** DRAFT profile; computation is implemented, witness protocol is not
 **License:** Apache-2.0
