@@ -15,6 +15,14 @@
 *A PASS is not enough. Show what passed, under which meaning, against which
 evidence, inside which bounds, and how somebody else can prove it wrong.*
 
+VSTD gives different verification tools a shared way to say **what they checked,
+how they checked it, where the result stops, and what would overturn it**. Verification
+time is limited, so the roadmap also asks a practical next question: **what should we
+check first?** The intended direction is to record why verification work was selected,
+spend bounded verification effort where it matters most, and make artifacts easier to
+check and refute—without turning priority, confidence, or a tool's native result into a
+stronger claim than the evidence supports.
+
 [Run the demo](#see-it-fail-correctly) ·
 [Read the quickstart](docs/QUICKSTART.md) ·
 [Inspect the standard](standard/LADDER.md) ·
@@ -49,6 +57,12 @@ for the complete machine-readable results or `vstd demo --emit-specimens PATH` t
 emit each specimen.
 
 ## What VSTD adds
+
+VSTD is a verification domain language and interchange layer. It does not replace domain
+verifiers, proof engines, signatures, identity systems, transparency logs, or provenance
+formats. Those systems keep producing their native results; VSTD standardizes the claim
+boundary and portable result semantics used to map them across systems without silently
+upgrading what they establish.
 
 Ordinary computational results often omit machine-readable answers to four questions:
 
@@ -92,6 +106,7 @@ separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
 | Inspect a disclosure-bounded closed evaluation | [`examples/simulacrabench_synthetic`](examples/simulacrabench_synthetic) |
 | Implement an independent checker | [`standard/VSTD-4.md`](standard/VSTD-4.md) and [`VSTD4-GDC-1` schema](receipts/schema/vstd4_certificate.json) |
 | Model a provenance collection | [`standard/VSTD-Graph-1.md`](standard/VSTD-Graph-1.md) |
+| Record and allocate bounded experimental work | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) and [`experiments/INDEX.md`](experiments/INDEX.md) |
 | Integrate accelerator evidence | [`docs/layers/vstd-3/vendor-integration.md`](docs/layers/vstd-3/vendor-integration.md) |
 | Use VSTD beside existing supply-chain/provenance systems | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
 | Review exact public claim limits | [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) |

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from html.parser import HTMLParser
+import importlib.util
 import json
 from pathlib import Path
 import re
@@ -272,6 +273,58 @@ def check_visual_assets(errors: list[str]) -> None:
             )
 
 
+def check_generated_reference(errors: list[str]) -> None:
+    """The published CLI/API reference must still match the importable package."""
+
+    path = ROOT / "scripts/build_reference.py"
+    spec = importlib.util.spec_from_file_location("build_reference", path)
+    if spec is None or spec.loader is None:
+        errors.append("cannot load scripts/build_reference.py")
+        return
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+        rendered = module.render()
+    except Exception as exc:  # noqa: BLE001 - any failure is a presentation failure
+        errors.append(f"reference page cannot be generated: {exc}")
+        return
+    target = ROOT / "docs/reference.html"
+    if not target.is_file():
+        errors.append("docs/reference.html is missing; run python scripts/build_reference.py")
+        return
+    if target.read_text(encoding="utf-8") != rendered:
+        errors.append(
+            "docs/reference.html drifted from the implementation; "
+            "run python scripts/build_reference.py"
+        )
+    index = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+    if '<a href="reference.html">Docs</a>' not in index:
+        errors.append("docs/index.html no longer links the generated reference from its nav")
+
+
+def check_experiment_index(errors: list[str]) -> None:
+    """Profile manifests, bound repo artifacts, and the public index must agree."""
+
+    path = ROOT / "scripts/build_experiment_index.py"
+    spec = importlib.util.spec_from_file_location("build_experiment_index", path)
+    if spec is None or spec.loader is None:
+        errors.append("cannot load scripts/build_experiment_index.py")
+        return
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+        rendered = module.render(module.discover(ROOT))
+    except Exception as exc:  # the gate reports any bounded generation failure
+        errors.append(f"experiment index cannot be generated: {exc}")
+        return
+    target = ROOT / "experiments/INDEX.md"
+    if not target.is_file() or target.read_text(encoding="utf-8") != rendered:
+        errors.append(
+            "experiments/INDEX.md drifted from profile manifests; "
+            "run python scripts/build_experiment_index.py"
+        )
+
+
 def run() -> list[str]:
     errors: list[str] = []
     check_local_links(errors)
@@ -280,6 +333,8 @@ def run() -> list[str]:
     check_public_paths(errors)
     check_lineage_claims(errors)
     check_visual_assets(errors)
+    check_generated_reference(errors)
+    check_experiment_index(errors)
     return errors
 
 
@@ -289,7 +344,10 @@ def main() -> int:
         for error in errors:
             print(f"[PRESENTATION FAIL] {error}", file=sys.stderr)
         return 1
-    print("[PRESENTATION OK] links, versions, boundaries, paths, and visual assets")
+    print(
+        "[PRESENTATION OK] links, versions, boundaries, paths, visual assets, "
+        "generated reference, and experiment index"
+    )
     return 0
 
 

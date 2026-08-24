@@ -7,6 +7,12 @@ VSTD is designed to compose with established provenance, software-supply-chain, 
 artifact-authentication systems. It does not rename their guarantees as its own and
 does not claim to replace them.
 
+In this composition, VSTD supplies the common operator vocabulary: claim coordinates,
+evidence references, bounds, native outcomes, and degradation rules. A domain verifier
+or proof system remains the orchestrated mechanism that performs the actual domain check.
+An adapter maps between those roles; it does not transfer the native verifier's authority
+to VSTD or let a VSTD result strengthen the native result.
+
 | System | Its documented center of gravity | What VSTD may bind or add | What VSTD must not claim |
 |---|---|---|---|
 | [SLSA v1.2](https://slsa.dev/spec/v1.2/) | Levels and tracks for incrementally improving software supply-chain security, including recommended provenance and verification-summary formats. | A SLSA statement or verification summary as evidence under an explicit VSTD claim coordinate; separate refutation and degradation conditions. | That a VSTD receipt establishes a SLSA level without satisfying and assessing the relevant SLSA requirements. |

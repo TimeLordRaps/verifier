@@ -9,9 +9,9 @@ conflicts with the bounded wording here, the bounded wording controls.
 
 A VSTD result always has this form:
 
-> For this identified subject snapshot, this declared verification surface passed this
-> identified mechanism using this bound evidence, subject to these limitations, trust
-> roots, and horizons.
+> For this **identified subject snapshot**, this **identified mechanism** returned this
+> **bounded result** over this **declared verification surface**, using this
+> **bound evidence**, subject to these **limitations**, **trust roots**, and **horizons**.
 
 Omitting any bolded idea changes the claim. `VERIFIED` never means universally true,
 safe, complete, permanent, legally authorized, or endorsed.
@@ -33,6 +33,7 @@ safe, complete, permanent, legally authorized, or endorsed.
 | “This was independently verified.” | **Only when the relevant independence seam is demonstrated.** | Independence requires separation from the producer's relevant state and logic plus a declared trusted computing base. | Producer/auditor boundary, TCB, source identities, isolation evidence, independent result. | Running the bundled verifier on its own output is automatically independent. |
 | “This verification surface is self-closed.” | **Only if every VSTD-2 self-closure condition passes.** | Self-closure requires ordinary closure, resolved material residuals, discharged valences, post-verified mechanisms, no unresolved trust-root horizon, and contiguous verification orders. | Complete geometry document and passing closure assessment with no blockers. | Universal truth, infinite regress closure, permanent validity, or verification outside the surface. |
 | “This competition submission and score are bound together.” | **Yes, conditionally.** | A receipt can bind identified submission bytes, evaluator version, raw metrics, and deterministic score derivation. | Submission digest, evaluator/scorer identity, environment, raw metrics, score rule, receipt. | Hidden-test integrity, no leakage, leaderboard ranking, prize eligibility, or organizer acceptance. |
+| “This native verifier result was mapped into VSTD.” | **Yes, when the mapping preserves the native object, result, trust roots, bounds, and unsupported fields.** | VSTD can standardize the claim boundary and portable result semantics around a domain verifier without performing that verifier's native work. | Native object and version, native verifier implementation/version, native result, field-level mapping, information-loss declaration, VSTD coordinate, adapter tests. | VSTD replaced or reimplemented the native verifier, strengthened its result, inherited its authority, or established conformance to the source standard. |
 | “A challenge to this recorded ancestor affects these recorded descendants.” | **Yes.** | Blast radius is forward reachability over the stored graph. | Challenged artifact ID and bound hypergraph. | Historical receipts were automatically mutated or that unrecorded downstream systems were found. |
 
 ## VSTD-4 grounded-decision claim translations

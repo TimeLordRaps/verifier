@@ -76,5 +76,10 @@ artifact in this package authorizes an adjudication, so the verifier stops there
 VSTD is not accredited or a consensus standard, and this mapping does not claim
 SimulacraBench adoption, endorsement, protected-data use, or independent implementation.
 
+The general integration checklist is
+[`docs/profiles/competition-evaluation.md`](../../docs/profiles/competition-evaluation.md),
+and the bounded public wording is in
+[`docs/CLAIMS_AND_LIMITS.md`](../../docs/CLAIMS_AND_LIMITS.md#claim-translation-table).
+
 See [`CROSSWALK.md`](CROSSWALK.md) for the source-to-VSTD mapping and
 [`UPSTREAM.md`](UPSTREAM.md) for exact provenance and licensing.

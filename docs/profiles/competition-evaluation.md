@@ -9,6 +9,10 @@ scientific-ML, agent, and other scored evaluations. It does not add a new VSTD v
 and does not claim adoption, affiliation, certification, or endorsement by any
 conference, competition, benchmark, or organizer.
 
+The bounded public wording in
+[`docs/CLAIMS_AND_LIMITS.md`](../CLAIMS_AND_LIMITS.md#claim-translation-table) controls if
+a shorter phrase in this non-normative profile could be read more broadly.
+
 ## 1. Evaluation surface
 
 An integration declares the exact surface before it reports a verified result:

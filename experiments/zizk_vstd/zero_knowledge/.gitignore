@@ -1,0 +1,4 @@
+target/
+local-artifacts/
+private-witness.json
+private-*.json
