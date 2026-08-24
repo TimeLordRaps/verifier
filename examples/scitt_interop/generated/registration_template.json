@@ -1,0 +1,174 @@
+{
+  "payload": {
+    "mapping_version": "0.1",
+    "profile": "vstd-scitt-interop-experimental-0.1",
+    "receipt_media_type": "application/vnd.verifier.vstd-receipt+json",
+    "receipt_sha256": "10dace7e0fc4bbea53ee7e26965ae1e7b2f4b11e15e64b6d83ccf96742adbf41",
+    "vstd_coordinates": {
+      "artifact_digests": {
+        "primary": "39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341"
+      },
+      "claim_coordinate": {
+        "parameters": {
+          "algorithm": "sha-256",
+          "digest": "39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341"
+        },
+        "predicate": "content_digest_matches",
+        "subject": "artifact:sha256:39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341"
+      },
+      "claim_id": "SCITT-INTEROP-DEMO-DIGEST",
+      "evidence_bounds": {
+        "certificate_size_bound": 20000,
+        "memory_bound": 10,
+        "verification_cost_bound": 100
+      },
+      "native_canonical_digest": "10dace7e0fc4bbea53ee7e26965ae1e7b2f4b11e15e64b6d83ccf96742adbf41",
+      "native_result": "PASS",
+      "provenance_references": [
+        "urn:example:vstd-scitt-demo:artifact"
+      ],
+      "receipt_id": "VFY-4-scitt-interop-demo",
+      "schema_version": "VSTD-4"
+    },
+    "vstd_receipt": {
+      "binding": {
+        "bounds": {
+          "certificate_size_bound": 20000,
+          "memory_bound": 10,
+          "verification_cost_bound": 100
+        },
+        "claim": "the named artifact bytes have the declared SHA-256 digest",
+        "coordinate": {
+          "parameters": {
+            "algorithm": "sha-256",
+            "digest": "39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341"
+          },
+          "predicate": "content_digest_matches",
+          "subject": "artifact:sha256:39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341"
+        },
+        "evidence_root": "39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341",
+        "policy_root": "418c69bf2c7e119d75936d599903f860acaf5d3689817ae4ab9881d4659e6b2a",
+        "prior_commitment": "",
+        "verifier": {
+          "certificate_format": "VSTD4-GDC-1",
+          "dependencies": [
+            "python-stdlib"
+          ],
+          "deterministic": true,
+          "format_fragment": "UP,WIDTH-K,RES",
+          "implementation_hash": "sha256:49afe96d327f99b12a518529d47b1b68c16228c4688be14eca279ea3e5b14d5b",
+          "parser_hash": "sha256:a49fc58d15ec1b925b4e2bd48f5dfb350d9e9fca28044c5a0fa9ff051dc70c01",
+          "specification_hash": "sha256:f2420f7826531ffdfadb1fcb9c0d3317d330d47a1cc367328ebd1c6921af36eb"
+        }
+      },
+      "blocking_rungs": [],
+      "ceiling_refutation": null,
+      "claim_id": "SCITT-INTEROP-DEMO-DIGEST",
+      "receipt_id": "VFY-4-scitt-interop-demo",
+      "refutation_surface": {
+        "admissible_refutations": [
+          "artifact bytes hash to a value other than the bound digest",
+          "the VSTD decision certificate fails independent checking"
+        ],
+        "excluded_claims": [
+          "artifact safety",
+          "issuer authorization",
+          "truth outside the bounded digest predicate"
+        ]
+      },
+      "rung_evidence": {
+        "4.1": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.1",
+        "4.10": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.10",
+        "4.11": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.11",
+        "4.12": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.12",
+        "4.13": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.13",
+        "4.14": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.14",
+        "4.2": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.2",
+        "4.3": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.3",
+        "4.4": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.4",
+        "4.5": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.5",
+        "4.6": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.6",
+        "4.7": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.7",
+        "4.8": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.8",
+        "4.9": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.9"
+      },
+      "schema_version": "VSTD-4",
+      "status": "VALID",
+      "vstd4_depth": 14,
+      "witness": {
+        "decision": {
+          "model": {
+            "1": true
+          },
+          "propagation": null,
+          "resolution": null,
+          "transcript": null
+        },
+        "formula": [
+          [
+            1
+          ]
+        ],
+        "grounding": {
+          "clauses": [
+            {
+              "bindings": {
+                "artifact": 1
+              },
+              "clause_index": 0,
+              "rule_id": "RULE:ASSERT_DIGEST_MATCH",
+              "subjects": {
+                "artifact": "artifact:sha256:39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341"
+              }
+            }
+          ],
+          "rules": [
+            {
+              "roles": [
+                "artifact"
+              ],
+              "rule_id": "RULE:ASSERT_DIGEST_MATCH",
+              "template": [
+                [
+                  1,
+                  "artifact"
+                ]
+              ]
+            }
+          ],
+          "variables": [
+            {
+              "fact": {
+                "predicate": "content_digest_matches",
+                "subject": "artifact:sha256:39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341",
+                "value": "MATCH"
+              },
+              "var": 1
+            }
+          ]
+        },
+        "header": {
+          "binding": "0a544c944e0ecd14a40b74bacd3ffb3a443a978780e554c28cf9be0e657fda10",
+          "clause_count": 1,
+          "format": "VSTD4-GDC-1",
+          "literal_count": 1,
+          "n_vars": 1,
+          "step_count": 0,
+          "tier": "UP",
+          "verdict": "PASS",
+          "width": 0
+        },
+        "hints": {}
+      }
+    }
+  },
+  "payload_sha256": "38a21c5d1a5aa9feb99626d7631a626d5b140f39486117a9954afb54ae2fb661",
+  "representation": "normalized-registration-input-not-cose",
+  "required_protected_header_projection": {
+    "content_type": "application/vnd.verifier.vstd-receipt+json",
+    "issuer": "https://issuer.example/vstd-scitt-demo",
+    "payload_hash_algorithm": "sha-256",
+    "subject": "artifact:sha256:39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341",
+    "type": "vstd-scitt-interop-experimental-0.1"
+  }
+}

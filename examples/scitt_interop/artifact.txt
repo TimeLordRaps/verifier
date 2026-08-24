@@ -1,0 +1,1 @@
+VSTD and SCITT compose without semantic upgrading.
