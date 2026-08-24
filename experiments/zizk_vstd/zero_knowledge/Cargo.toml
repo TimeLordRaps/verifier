@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = ["host", "methods", "types"]
+
+# RISC Zero guest builds are prohibitively slow without optimization.
+[profile.dev]
+opt-level = 3
+
+[profile.release]
+debug = 1
+lto = true
