@@ -93,22 +93,23 @@ claim → evidence → bounded check → publish → challenge → adjudicate �
 No arrow in that loop upgrades one VSTD layer with another layer's evidence. Each
 layer still requires its own evidence; the loop only carries results and challenges.
 
-## Current branch-backed development tracks
+## Current experimental development tracks
 
-This dated register records substantive local work as of **2026-08-24**. These branches
-are not merged into `main`, pushed for public review, normative, released, or evidence of
-adoption merely because they exist. Branch names are operational coordinates, not
-experiment identities; the experimental-workflow profile is intended to replace this
-manual table with portable manifests and a generated index.
+This dated register records substantive work as of **2026-08-24**. A committed experiment,
+local branch, passing test, or generated index is not normative, released, independently
+reproduced, or evidence of adoption merely because it exists. Branch names are operational
+coordinates rather than experiment identities. Profile manifests and the generated
+[`experiments/INDEX.md`](experiments/INDEX.md) are the portable experiment register when
+intentional experiment artifacts are present.
 
 | Track | Local branch or branches | Current boundary | Roadmap disposition |
 |---|---|---|---|
 | Public surface and reserved `.vstd` lockfile | `codex/public-surface-lockfile-audit` | Uncommitted local draft at `main`; mixed changes must be separated and audited before integration. | Review the specification as reserved and non-normative; do not imply an implemented lockfile. |
 | Documentation lineage and precedents | `codex/documentation-lineage` | One signed local commit; unmerged and unpublished. | Review source accuracy and merge only compatibility-preserving documentation. |
 | SCITT interoperability | `codex/scitt-interop` | One signed local commit; experimental adapter, examples, adversarial tests, and audit; unmerged and unpublished. | Preserve SCITT as an adjacent transparency/receipt substrate and VSTD as bounded verification semantics. |
-| ZIZK experiments | `codex/zizk-zero-knowledge`, `claude/zizk-zero-identity`, `claude/zizk-reverification` | Signed local experiment chain; unmerged and unpublished. | Keep zero knowledge, identity minimization, and reverification experimental until their claim boundaries and trustless substrate survive joint review. |
+| ZIZK experiments | [`experiments/zizk_vstd/experiment.json`](experiments/zizk_vstd/experiment.json) | Integrated experimental code, reports, fixtures, bounded workflow manifest, and unresolved horizons; not a normative ZIZK profile or completed protocol. | Keep zero knowledge, identity minimization, and reverification experimental until their claim boundaries and trustless substrate survive joint review. |
 | Verifier-guided SAT routing | `codex/verifier-guided-sat` | Real SAT/native-verifier baseline infrastructure exists locally, but the required live LM evaluation is hard-blocked and no result commit exists. | Preserve the blocker; do not substitute fake LM evidence or claim speed/generalization. |
-| Verification allocation and experimental workflows | `codex/verification-allocation-roadmap` | Roadmap definition only; no allocation engine or profile conformance claim. | Specify the platform-independent profile, then a GitHub adapter, then dogfood it on the SCITT, ZIZK, and SAT tracks. |
+| Verification allocation and experimental workflows | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Experimental profile 0.1, strict validator, schema, verdict-neutral GitHub adapter, generated index, and ZIZK dogfood manifest are implemented. No allocation engine, optimality claim, or independent consumer exists. | Add non-GitHub adapters and index SCITT and SAT only when their intentional artifacts and blockers are ready to bind. |
 
 Historical release branches, pre-rename branches, and already-merged branches are
 repository-maintenance concerns rather than active roadmap tracks. Their continued local
@@ -144,7 +145,7 @@ existence does not make their older semantics candidates for reintegration.
 
 ## Milestone 3 — experimental-workflow and agent-work profiles
 
-**Build**
+**Implemented in experimental profile 0.1**
 
 - a platform-independent, non-normative experimental-workflow profile for questions,
   hypotheses, preregistration, interventions, observations, native-verifier results,
@@ -153,6 +154,11 @@ existence does not make their older semantics candidates for reintegration.
   and merges without treating repository state as a verification verdict;
 - bounded verification-allocation records that preserve the policy, reason, budget,
   deferred surface, and native outcome without assigning truth by priority;
+- deterministic canonicalization, repository-artifact binding, a generated experiment
+  index, adversarial tests, and a ZIZK dogfood manifest.
+
+**Still build**
+
 - an agent-harness specialization for observable user, agent, and tool messages;
 - bindings for repository state, patches, file reads, commands, outputs, tests,
   failures, retries, and final claims;

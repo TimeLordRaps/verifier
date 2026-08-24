@@ -58,6 +58,12 @@ emit each specimen.
 
 ## What VSTD adds
 
+VSTD is a verification domain language and interchange layer. It does not replace domain
+verifiers, proof engines, signatures, identity systems, transparency logs, or provenance
+formats. Those systems keep producing their native results; VSTD standardizes the claim
+boundary and portable result semantics used to map them across systems without silently
+upgrading what they establish.
+
 Ordinary computational results often omit machine-readable answers to four questions:
 
 1. **What exactly was claimed?** The subject, predicate, parameters, and limits.
@@ -100,6 +106,7 @@ separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
 | Inspect a disclosure-bounded closed evaluation | [`examples/simulacrabench_synthetic`](examples/simulacrabench_synthetic) |
 | Implement an independent checker | [`standard/VSTD-4.md`](standard/VSTD-4.md) and [`VSTD4-GDC-1` schema](receipts/schema/vstd4_certificate.json) |
 | Model a provenance collection | [`standard/VSTD-Graph-1.md`](standard/VSTD-Graph-1.md) |
+| Record and allocate bounded experimental work | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) and [`experiments/INDEX.md`](experiments/INDEX.md) |
 | Integrate accelerator evidence | [`docs/layers/vstd-3/vendor-integration.md`](docs/layers/vstd-3/vendor-integration.md) |
 | Use VSTD beside existing supply-chain/provenance systems | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
 | Review exact public claim limits | [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) |

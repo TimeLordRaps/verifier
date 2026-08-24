@@ -23,6 +23,13 @@ Section 3 patent terms and Section 5 contribution terms. The project does not ye
 a separate contributor license agreement or standards-venue patent policy; this is a
 known boundary for future standards-venue work.
 
+## Commits
+
+Commits in this repository are GPG-signed (`git commit -S`). Pull requests are expected to
+carry signed commits, and automated contributors must never bypass signing. A commit
+signature binds bytes to a signing key; it does not establish the signer's identity, the
+change's correctness, independence, authorization, or safety.
+
 ## Feedback that does not require a proposed patch
 
 Use the structured issue forms for specification ambiguities, counterexamples or

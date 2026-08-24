@@ -1,0 +1,326 @@
+{
+  "profile": {
+    "id": "vstd.experimental-workflow",
+    "version": "0.1",
+    "status": "EXPERIMENTAL_NON_NORMATIVE"
+  },
+  "experiment": {
+    "id": "experiment-zizk-vstd",
+    "title": "ZIZK-VSTD bounded disclosure and trustless reverification",
+    "question": "Can optional VSTD profiles prove bounded predicates while minimizing witness and actor disclosure without allowing reverification to accumulate unearned trust?",
+    "state": "RUNNING",
+    "started_at": "2026-08-23T00:00:00Z"
+  },
+  "hypotheses": [
+    {
+      "id": "hypothesis-hidden-witness",
+      "statement": "A real proof can establish the fixed experiment predicate without publishing the private witness bytes.",
+      "falsification_condition": "The accepted public artifacts disclose the witness bytes or a documented verifier accepts a proof not bound to the fixed predicate and program identifier.",
+      "state": "SUPPORTED"
+    },
+    {
+      "id": "hypothesis-identity-boundary",
+      "statement": "The bounded identity evaluator preserves UNKNOWN and CONFLICTED rather than inferring uniqueness, independence, or authorization from absent identity information.",
+      "falsification_condition": "A fixture with absent or contradictory identity evidence produces an unqualified accepted identity inference.",
+      "state": "SUPPORTED"
+    },
+    {
+      "id": "hypothesis-trustless-reverification",
+      "statement": "Reverification can reproduce a verdict over bound public coordinates without accumulating actor reputation or historical trust.",
+      "falsification_condition": "The proposed substrate requires actor identity or prior reputation to reproduce the bounded verdict, or repeated identical receipts increase epistemic strength without new evidence.",
+      "state": "OPEN"
+    }
+  ],
+  "preregistration": {
+    "state": "AMENDED",
+    "recorded_at": "2026-08-24T00:00:00Z",
+    "artifact_id": "artifact-round2-design",
+    "limitations": [
+      "Round 2 is a design synthesis rather than a completed trustless protocol.",
+      "The zero-identity study is semantic and does not itself provide cryptographic anonymity or unlinkability."
+    ]
+  },
+  "artifacts": [
+    {
+      "id": "artifact-zk-report",
+      "role": "round-1-zero-knowledge-report",
+      "media_type": "text/markdown",
+      "digest": "sha256:63dd96f2f80c915ee937e9e68159f730000933fffece0b334cd368823c96fff4",
+      "locator": "repo:experiments/zizk_vstd/zero_knowledge/ROUND1_ZERO_KNOWLEDGE_REPORT.md"
+    },
+    {
+      "id": "artifact-zi-report",
+      "role": "round-1-zero-identity-report",
+      "media_type": "text/markdown",
+      "digest": "sha256:345426819cd03e1a4e850923c66de6d50732966efddacf5a1f1d90acdb469ad2",
+      "locator": "repo:experiments/zizk_vstd/zero_identity/ROUND1_ZERO_IDENTITY_REPORT.md"
+    },
+    {
+      "id": "artifact-round2-design",
+      "role": "round-2-reverification-design",
+      "media_type": "text/markdown",
+      "digest": "sha256:a1af087fe53485443a1ed4019e1e3a595485e6f4eb4b4e57c944a1ecd2adbc4e",
+      "locator": "repo:experiments/zizk_vstd/reverification/ROUND2_DESIGN_NOTE.md"
+    }
+  ],
+  "budgets": [
+    {
+      "id": "budget-zk-proof",
+      "resource": "real-proof-runs",
+      "limit": 1,
+      "consumed": 1,
+      "unit": "proof-run",
+      "scope": "RISC Zero round-1 self-test"
+    },
+    {
+      "id": "budget-identity-fixtures",
+      "resource": "semantic-fixture-evaluations",
+      "limit": 22,
+      "consumed": 22,
+      "unit": "fixture",
+      "scope": "bounded identity round-1 fixture corpus"
+    },
+    {
+      "id": "budget-round2-design",
+      "resource": "design-synthesis",
+      "limit": 1,
+      "consumed": 1,
+      "unit": "bounded-review",
+      "scope": "trustless reverification round-2 note"
+    }
+  ],
+  "actions": [
+    {
+      "id": "action-zk-proof",
+      "kind": "CRYPTOGRAPHIC_PROOF_EXPERIMENT",
+      "target": "fixed hidden-evidence predicate and public VSTD-facing coordinates",
+      "state": "COMPLETED",
+      "priority": 1,
+      "selected_because": "A zero-knowledge claim required a real proof and independent verification rather than a commitment-only or development-mode substitute.",
+      "selection_evidence_ids": [
+        "hypothesis-hidden-witness"
+      ],
+      "alternatives_considered": [
+        "full disclosure",
+        "commitment-only evidence"
+      ],
+      "budget_ids": [
+        "budget-zk-proof"
+      ],
+      "depends_on": [],
+      "triggered_by": [],
+      "expected_artifact_effect": "Produce a bounded claim report and real proof implementation without changing core VSTD receipts.",
+      "substrate": {
+        "kind": "proof-engine",
+        "name": "RISC Zero zkVM",
+        "version": "3.0.6",
+        "coordinate": "repo:experiments/zizk_vstd/zero_knowledge"
+      },
+      "native_result_ids": [
+        "result-zk-proof"
+      ],
+      "produced_artifact_ids": [
+        "artifact-zk-report"
+      ]
+    },
+    {
+      "id": "action-identity-evaluation",
+      "kind": "SEMANTIC_NEGATIVE_TESTING",
+      "target": "identity minimization, authorization boundaries, ancestry, and prohibited inferences",
+      "state": "COMPLETED",
+      "priority": 2,
+      "selected_because": "Identity minimization needed explicit negative fixtures before any operational protocol could be justified.",
+      "selection_evidence_ids": [
+        "hypothesis-identity-boundary"
+      ],
+      "alternatives_considered": [
+        "actor reputation scoring",
+        "implicit identity inference"
+      ],
+      "budget_ids": [
+        "budget-identity-fixtures"
+      ],
+      "depends_on": [],
+      "triggered_by": [],
+      "expected_artifact_effect": "Expose UNKNOWN, CONFLICTED, and rejected identity inferences in a reproducible fixture corpus.",
+      "substrate": {
+        "kind": "semantic-evaluator",
+        "name": "ZIZK zero-identity fixture evaluator",
+        "version": "round-1",
+        "coordinate": "repo:experiments/zizk_vstd/zero_identity"
+      },
+      "native_result_ids": [
+        "result-identity-fixtures"
+      ],
+      "produced_artifact_ids": [
+        "artifact-zi-report"
+      ]
+    },
+    {
+      "id": "action-reverification-synthesis",
+      "kind": "DESIGN_SYNTHESIS",
+      "target": "trustless reverification substrate",
+      "state": "COMPLETED",
+      "priority": 3,
+      "selected_because": "The proof and identity studies exposed a need to separate reproducible artifact verdicts from actor reputation and accumulated trust.",
+      "selection_evidence_ids": [
+        "observation-zk-proof",
+        "observation-identity-boundary"
+      ],
+      "alternatives_considered": [
+        "identity-bound trust",
+        "reputation accumulation"
+      ],
+      "budget_ids": [
+        "budget-round2-design"
+      ],
+      "depends_on": [
+        "action-zk-proof",
+        "action-identity-evaluation"
+      ],
+      "triggered_by": [
+        "observation-zk-proof",
+        "observation-identity-boundary"
+      ],
+      "expected_artifact_effect": "Produce an explicit protocol boundary and unresolved implementation requirements for a later round.",
+      "substrate": {
+        "kind": "design-review",
+        "name": "ZIZK reverification synthesis",
+        "version": "round-2",
+        "coordinate": "repo:experiments/zizk_vstd/reverification"
+      },
+      "native_result_ids": [],
+      "produced_artifact_ids": [
+        "artifact-round2-design"
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "id": "observation-zk-proof",
+      "action_id": "action-zk-proof",
+      "recorded_at": "2026-08-23T00:00:00Z",
+      "statement": "The recorded round-1 run generated and independently verified one real RISC Zero receipt and exercised the declared negative cases.",
+      "status": "OBSERVED",
+      "evidence_artifact_ids": [
+        "artifact-zk-report"
+      ],
+      "limitations": [
+        "The committed report is the bound public record; generated private witness and local proof artifacts are intentionally excluded."
+      ]
+    },
+    {
+      "id": "observation-identity-boundary",
+      "action_id": "action-identity-evaluation",
+      "recorded_at": "2026-08-24T00:00:00Z",
+      "statement": "The recorded fixture suite preserved bounded acceptance, rejection, UNKNOWN, and CONFLICTED outcomes across the declared cases.",
+      "status": "OBSERVED",
+      "evidence_artifact_ids": [
+        "artifact-zi-report"
+      ],
+      "limitations": [
+        "Semantic fixture behavior is not a cryptographic privacy, anonymity, authorization, or Sybil-resistance guarantee."
+      ]
+    }
+  ],
+  "native_results": [
+    {
+      "id": "result-zk-proof",
+      "action_id": "action-zk-proof",
+      "verifier": {
+        "kind": "proof-verifier",
+        "name": "RISC Zero Receipt::verify",
+        "version": "3.0.6",
+        "coordinate": "repo:experiments/zizk_vstd/zero_knowledge"
+      },
+      "native_status": "REAL_RECEIPT_VERIFIED_AND_NEGATIVE_CASES_REJECTED",
+      "result_artifact_id": "artifact-zk-report",
+      "mapping": {
+        "status": "NOT_EVALUATED",
+        "vstd_verdict": null,
+        "mapping_profile": null,
+        "receipt_artifact_id": null,
+        "reason": "The proof engine's native result is recorded without inventing a VSTD receipt mapping."
+      }
+    },
+    {
+      "id": "result-identity-fixtures",
+      "action_id": "action-identity-evaluation",
+      "verifier": {
+        "kind": "fixture-evaluator",
+        "name": "zero_identity.evaluate",
+        "version": "round-1",
+        "coordinate": "repo:experiments/zizk_vstd/zero_identity/evaluate.py"
+      },
+      "native_status": "22_FIXTURES_0_FAILURES",
+      "result_artifact_id": "artifact-zi-report",
+      "mapping": {
+        "status": "NOT_EVALUATED",
+        "vstd_verdict": null,
+        "mapping_profile": null,
+        "receipt_artifact_id": null,
+        "reason": "Fixture validation is preserved as its native result and does not become a core VSTD verdict."
+      }
+    }
+  ],
+  "adaptations": [
+    {
+      "id": "adaptation-round2-trustless-boundary",
+      "trigger_ids": [
+        "observation-zk-proof",
+        "observation-identity-boundary"
+      ],
+      "decision": "Separate reproducible artifact verdicts from actor reputation and make non-accumulation of trust an explicit Round 2 requirement.",
+      "reason": "Proof verification and identity minimization address different risks; joining them through actor trust would contradict the trustless objective.",
+      "action_ids": [
+        "action-reverification-synthesis"
+      ],
+      "artifact_ids": [
+        "artifact-round2-design"
+      ]
+    }
+  ],
+  "amendments": [
+    {
+      "id": "amendment-round2-design",
+      "recorded_at": "2026-08-24T00:00:00Z",
+      "reason": "Round 1 findings narrowed the design from identity-bound trust to artifact-bound trustless reverification.",
+      "supersedes": [
+        "hypothesis-trustless-reverification"
+      ],
+      "artifact_id": "artifact-round2-design"
+    }
+  ],
+  "challenges": [],
+  "horizons": [
+    {
+      "id": "horizon-operational-protocol",
+      "status": "UNKNOWN",
+      "description": "End-to-end trustless reverification protocol",
+      "reason": "Round 2 records a design substrate; no complete operational protocol or independent implementation is included."
+    },
+    {
+      "id": "horizon-anonymity",
+      "status": "OUT_OF_SCOPE",
+      "description": "Universal anonymity or unlinkability",
+      "reason": "Neither experiment establishes anonymity, unlinkability, identity uniqueness, or resistance to correlation outside its declared predicate."
+    },
+    {
+      "id": "horizon-independent-reimplementation",
+      "status": "UNKNOWN",
+      "description": "Independent implementation by an unrelated party",
+      "reason": "No independent implementation has been demonstrated."
+    }
+  ],
+  "publication": {
+    "state": "CANDIDATE",
+    "artifact_ids": [
+      "artifact-zk-report",
+      "artifact-zi-report",
+      "artifact-round2-design"
+    ]
+  },
+  "workflow_events": [],
+  "interventions": [],
+  "manifest_digest": "sha256:fda6eb1e909341d895b44f8d73a38d5c9843df2314b4dffc1c906a7c50ea2c17"
+}

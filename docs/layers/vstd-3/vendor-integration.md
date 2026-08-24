@@ -3,6 +3,11 @@
 This is the minimum review surface for a firmware or silicon security team evaluating
 VSTD-3. It does not require adopting VSTD product names in firmware.
 
+Before selecting a profile, read the centralized
+[`current-adapter claim boundary`](../../CLAIMS_AND_LIMITS.md#what-the-current-adapters-can-say).
+Host-visible metadata is not device attestation, and the virtual accelerator establishes
+only its emulator-scoped claims.
+
 ## 1. Select the honest profile
 
 Implement only the profiles the device can demonstrate:

@@ -1,0 +1,19 @@
+# Experimental work index
+
+> **Experimental and non-normative.** Inclusion means that a profile manifest
+> is structurally valid and its `repo:` artifacts match their bound digests. It
+> does not establish a hypothesis, verifier, publication, or VSTD verdict.
+
+Regenerate or check this file with:
+
+```bash
+PYTHONPATH=src python scripts/build_experiment_index.py --check
+```
+
+| Experiment | State | Question | Publication | Open horizons | Manifest |
+|---|---|---|---|---:|---|
+| experiment-zizk-vstd | RUNNING | Can optional VSTD profiles prove bounded predicates while minimizing witness and actor disclosure without allowing reverification to accumulate unearned trust? | CANDIDATE | 2 | [`experiments/zizk_vstd/experiment.json`](zizk_vstd/experiment.json)<br>`sha256:fda6eb1e909341d895b44f8d73a38d5c9843df2314b4dffc1c906a7c50ea2c17` |
+
+Platform events, including successful workflows and merges, retain
+`verification_effect = NONE` unless a separate native result is explicitly
+mapped through a bound VSTD receipt.

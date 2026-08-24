@@ -16,8 +16,10 @@
     <nav aria-label="Primary">
       <a class="brand" href="#top">VSTD</a>
       <div class="links">
+        <a href="reference.html">Docs</a>
         <a href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Demo</a>
         <a href="https://github.com/TimeLordRaps/verifier/blob/main/standard/LADDER.md">Standard</a>
+        <a href="profiles/experimental-workflow.md">Experiments</a>
         <a href="https://github.com/TimeLordRaps/verifier/blob/main/ROADMAP.md">Roadmap</a>
         <a href="https://github.com/TimeLordRaps/verifier">GitHub</a>
       </div>
@@ -29,7 +31,16 @@
       <div>
         <div class="eyebrow">Verification language for computational work</div>
         <h1>Make the claim challengeable.</h1>
-        <p class="lead">VSTD makes computational claims portable, bounded, and refutable—so a result travels with its meaning, evidence, limits, and failure route.</p>
+        <p class="lead">VSTD makes computational claims:</p>
+        <dl class="lead-defs">
+          <dt>Portable:</dt>
+          <dd>checkable without post-verdict cooperation from the declarant, using included or content-addressed evidence under an explicit availability boundary.</dd>
+          <dt>Bounded:</dt>
+          <dd>carrying their own claim coordinates and resource ceilings, so exhausted work remains <code>UNKNOWN</code> rather than being answered outside the checked boundary.</dd>
+          <dt>Refutable:</dt>
+          <dd>exposing falsification conditions, admissible counterevidence, exclusions, and decision rules so another party can challenge the exact result.</dd>
+        </dl>
+        <p class="lead lead-close">A result travels with its meaning, evidence, limits, and failure routes so downstream humans and agents can draw conclusions without silently widening it.</p>
         <div class="actions">
           <a class="button primary" href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Run the four-scenario demo</a>
           <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/QUICKSTART.md">Read the quickstart</a>

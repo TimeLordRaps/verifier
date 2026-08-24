@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Generated CLI and API reference for the VSTD reference implementation.">
+  <title>VSTD docs &mdash; CLI and API reference</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <header class="wrap">
+    <nav aria-label="Primary">
+      <a class="brand" href="index.html">VSTD</a>
+      <div class="links">
+        <a href="index.html">Overview</a>
+        <a href="reference.html">Docs</a>
+        <a href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Demo</a>
+        <a href="https://github.com/TimeLordRaps/verifier/blob/main/standard/LADDER.md">Standard</a>
+        <a href="profiles/experimental-workflow.md">Experiments</a>
+        <a href="https://github.com/TimeLordRaps/verifier/blob/main/ROADMAP.md">Roadmap</a>
+        <a href="https://github.com/TimeLordRaps/verifier">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <div class="wrap ref-hero">
+      <div class="eyebrow">Reference &middot; verifier-standard 1.1.3 &middot; VSTD-4</div>
+      <h1>Inspect the whole pipeline.</h1>
+      <p class="lead">Every command, argument, public export, and dispatch edge below is read
+      out of the installed package when this page is built, by
+      <code>scripts/build_reference.py</code>, and the presentation tests fail closed when the
+      committed page drifts &mdash; so it cannot describe behaviour the implementation no
+      longer has.</p>
+      <p class="status">This page states the declared public surface of one implementation. It
+      does not establish that any individual claim checked by these commands is true, nor that
+      an external implementation exists.</p>
+      <div class="actions">
+        <a class="button primary" href="#pipeline">Pipeline map</a>
+        <a class="button" href="#cli">CLI reference</a>
+        <a class="button" href="#api">API reference</a>
+        <a class="button" href="#wire">Wire and schemas</a>
+      </div>
+    </div>
+
+    <section id="pipeline">
+      <div class="wrap">
+        <div class="eyebrow">Pipeline</div>
+        <h2>Command to implementation, without a gap.</h2>
+        <p class="section-lead">Each entry point below is imported while this page is built. A
+        rename, move, or deletion fails the build instead of publishing a stale map.</p>
+        <div class="ref-table"><table><thead><tr><th>Command</th><th>What it does</th><th>Implementation entry points</th></tr></thead><tbody>
+<tr><td><code>vstd demo</code></td><td>Runs the four adversarial specimens in-process and reports whether each defensive outcome matched its declared invariant.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:run_demo</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:demo_report</code></a></td></tr>
+<tr><td><code>vstd plan</code></td><td>Resolves a manifest's command and declared paths without executing anything.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:describe_run_plan</code></a></td></tr>
+<tr><td><code>vstd run</code></td><td>Executes a trusted manifest without sandboxing, captures the observed execution, and writes a canonically digested receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:capture_run</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt:compute_canonical_digest</code></a></td></tr>
+<tr><td><code>vstd validate</code></td><td>Dispatches on the receipt's frozen wire identifier and validates it against the matching canonical schema and checks.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:validate_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:validate_data_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
+<tr><td><code>vstd inspect</code></td><td>Prints the claim coordinate, digest, and verdict surface of a stored receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:inspect_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/receipt.py"><code>verifier.hardware.receipt:load_vstd3_receipt</code></a></td></tr>
+<tr><td><code>vstd reproduce</code></td><td>Replays only the mechanisms a stored receipt actually carries; physical hardware execution is refused rather than simulated.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:reproduce_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:reproduce_data_receipt</code></a></td></tr>
+<tr><td><code>vstd impact</code></td><td>Finds stored run receipts whose recorded ancestry reaches a revoked provenance artifact.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:find_run_receipts_impacted_by_revocation</code></a></td></tr>
+<tr><td><code>vstd data</code></td><td>Traces, renders, or exports the provenance hypergraph carried by a VSTD-Graph receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/models.py"><code>verifier.data.models:ProvenanceHypergraph</code></a></td></tr>
+<tr><td><code>vstd hardware / continuity / fleet / evidence / claims</code></td><td>Evaluates VSTD-3 substrate-accountability receipts, their continuity and fleet evidence, and their declared claims.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/hardware_cli.py"><code>verifier.runtime.hardware_cli:handle_vstd3_command</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
+</tbody></table></div>
+      </div>
+    </section>
+
+    <section id="cli">
+      <div class="wrap">
+        <div class="eyebrow">CLI</div>
+        <h2>The <code>vstd</code> command reference.</h2>
+        <p class="section-lead">Extracted from the live argument parser in
+        <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/public_cli.py"><code>verifier.runtime.public_cli</code></a>.
+        <code>vstd</code> is the canonical cross-platform command; <code>verifier</code> is
+        retained as an alias only on platforms where it is unambiguous.</p>
+        <div class="ref-list"><article class="ref-item" id="cli-vstd">
+<h3><code>vstd</code></h3>
+<p class="ref-help">Subcommand group.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-demo">
+<h3><code>vstd demo</code></h3>
+<p class="ref-help">Run the side-effect-free VSTD adversarial flagship demonstration.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--scenario</code></td><td>optional</td><td>Run all scenarios or one named scenario. (one of: all, wrong-artifact, honest-unknown, inflated-tier, poisoned-ancestor) [default: all]</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--emit-specimens</code></td><td>optional</td><td>Write deterministic JSON specimens and observations to DIR.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-run">
+<h3><code>vstd run</code></h3>
+<p class="ref-help">Execute a trusted manifest without sandboxing and capture a VSTD receipt.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>manifest</code></td><td>positional</td><td>JSON or YAML run manifest.</td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>Receipt output directory.</td></tr>
+<tr><td><code>--receipt-id</code></td><td>optional</td><td>Override the manifest claim id.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-plan">
+<h3><code>vstd plan</code></h3>
+<p class="ref-help">Show a manifest's declared command and paths without executing it.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>manifest</code></td><td>positional</td><td>JSON or YAML run manifest.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-validate">
+<h3><code>vstd validate</code></h3>
+<p class="ref-help">Validate a generic-run or VSTD-Graph receipt.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td>Receipt directory or receipt.json.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--key</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-inspect">
+<h3><code>vstd inspect</code></h3>
+<p class="ref-help">Inspect a generic-run or VSTD-Graph receipt.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td>Receipt directory or receipt.json.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--key</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-reproduce">
+<h3><code>vstd reproduce</code></h3>
+<p class="ref-help">Replay the mechanisms available in a stored receipt.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td>Receipt directory or receipt.json.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--rerun</code></td><td>optional</td><td>Generic-run receipts only: execute the recorded command again.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-impact">
+<h3><code>vstd impact</code></h3>
+<p class="ref-help">Find run receipts affected by a provenance-artifact revocation.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>dataset_receipt</code></td><td>positional</td><td></td></tr>
+<tr><td><code>artifact_id</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--search-root</code></td><td>optional</td><td>[default: receipts]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-data">
+<h3><code>vstd data</code></h3>
+<p class="ref-help">Inspect a stored VSTD-Graph hypergraph.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-data-trace">
+<h3><code>vstd data trace</code></h3>
+<p class="ref-help">Subcommand group.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>artifact_id</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--receipt</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--direction</code></td><td>optional</td><td>(one of: ancestors, descendants, blast_radius) [default: ancestors]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-data-graph">
+<h3><code>vstd data graph</code></h3>
+<p class="ref-help">Subcommand group.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-data-export">
+<h3><code>vstd data export</code></h3>
+<p class="ref-help">Subcommand group.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-hardware">
+<h3><code>vstd hardware</code></h3>
+<p class="ref-help">Discover or emulate accelerator evidence.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-hardware-list">
+<h3><code>vstd hardware list</code></h3>
+<p class="ref-help">List accelerator profiles.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--vendor</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-hardware-inspect">
+<h3><code>vstd hardware inspect</code></h3>
+<p class="ref-help">Inspect one accelerator profile.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>profile_id</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-hardware-discover">
+<h3><code>vstd hardware discover</code></h3>
+<p class="ref-help">Run a vendor or generic adapter.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--adapter</code></td><td>optional</td><td>(one of: generic, nvidia, amd, intel)</td></tr>
+<tr><td><code>--fixture</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>Write the normalized adapter result JSON.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-hardware-emulate">
+<h3><code>vstd hardware emulate</code></h3>
+<p class="ref-help">Run the deterministic virtual firmware contract probe.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--output</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--created-at</code></td><td>optional</td><td>Final ISO-8601 receipt timestamp.</td></tr>
+<tr><td><code>--device-id</code></td><td>optional</td><td>[default: vstd3-virtual-0]</td></tr>
+<tr><td><code>--firmware-version</code></td><td>optional</td><td>[default: 1.0.0]</td></tr>
+<tr><td><code>--key-id</code></td><td>optional</td><td>[default: vstd3-virtual-device-key]</td></tr>
+<tr><td><code>--key-hex</code></td><td>optional</td><td>Test-only emulator HMAC key in hex.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-hardware-attest">
+<h3><code>vstd hardware attest</code></h3>
+<p class="ref-help">Run an explicitly virtual attestation probe; no commodity claim is made.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--virtual</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--created-at</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--device-id</code></td><td>optional</td><td>[default: vstd3-virtual-0]</td></tr>
+<tr><td><code>--firmware-version</code></td><td>optional</td><td>[default: 1.0.0]</td></tr>
+<tr><td><code>--key-id</code></td><td>optional</td><td>[default: vstd3-virtual-device-key]</td></tr>
+<tr><td><code>--key-hex</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-hardware-capabilities">
+<h3><code>vstd hardware capabilities</code></h3>
+<p class="ref-help">Evaluate incremental VSTD 3 conformance profiles.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+<tr><td><code>--key</code></td><td>optional</td><td>Test-only HMAC verification key; repeat for multiple key ids.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-hardware-verify">
+<h3><code>vstd hardware verify</code></h3>
+<p class="ref-help">Verify a VSTD 3 receipt and all recorded passing claims.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+<tr><td><code>--key</code></td><td>optional</td><td>Test-only HMAC verification key; repeat for multiple key ids.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-continuity">
+<h3><code>vstd continuity</code></h3>
+<p class="ref-help">Verify authenticated event continuity.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-continuity-verify">
+<h3><code>vstd continuity verify</code></h3>
+<p class="ref-help">Subcommand group.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+<tr><td><code>--key</code></td><td>optional</td><td>Test-only HMAC verification key; repeat for multiple key ids.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-fleet">
+<h3><code>vstd fleet</code></h3>
+<p class="ref-help">Verify a declared enrolled fleet boundary.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-fleet-verify">
+<h3><code>vstd fleet verify</code></h3>
+<p class="ref-help">Subcommand group.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-evidence">
+<h3><code>vstd evidence</code></h3>
+<p class="ref-help">Inspect VSTD 3 evidence strength.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-evidence-inspect">
+<h3><code>vstd evidence inspect</code></h3>
+<p class="ref-help">Subcommand group.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+<tr><td><code>--key</code></td><td>optional</td><td>Test-only HMAC verification key; repeat for multiple key ids.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-claims">
+<h3><code>vstd claims</code></h3>
+<p class="ref-help">Evaluate or explain VSTD 3 claims.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-claims-evaluate">
+<h3><code>vstd claims evaluate</code></h3>
+<p class="ref-help">Subcommand group.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+<tr><td><code>--key</code></td><td>optional</td><td>Test-only HMAC verification key; repeat for multiple key ids.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-claims-explain">
+<h3><code>vstd claims explain</code></h3>
+<p class="ref-help">Subcommand group.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>kind</code></td><td>positional</td><td>(one of: DEVICE_IDENTITY, FIRMWARE_INTEGRITY, EXECUTION_OBSERVED, EXECUTION_ATTESTATION, EXECUTION_ACCOUNTING, ACCOUNTING_CONTINUITY, COMPLETE_MEDIATION, FLEET_COMPLETENESS, PHYSICAL_WORLD_COMPLETENESS)</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+</tbody></table>
+</article></div>
+      </div>
+    </section>
+
+    <section id="api">
+      <div class="wrap">
+        <div class="eyebrow">API</div>
+        <h2>Public Python exports.</h2>
+        <p class="section-lead">The names in <code>verifier.__all__</code>, with their live
+        signatures and declared docstrings. Anything not listed here is internal and carries no
+        wire-identifier or version guarantee.</p>
+        <div class="ref-list"><article class="ref-item" id="api-DecisionCertificate">
+<h3><code>DecisionCertificate</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>DecisionCertificate(header: 'CertificateHeader', formula: 'tuple[tuple[int, ...], ...]', grounding: 'Grounding', decision: 'DecisionBlock', hints: 'dict[str, Any]' = &lt;factory&gt;) -&gt; None</code></pre>
+<p class="ref-help">No docstring is declared for this export; the signature above is its whole declared surface.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/certificate.py"><code>verifier.core.certificate</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr><td><code>without_hints(self) -&gt; "'DecisionCertificate'"</code></td><td>Hint-stripped form.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-ReproducibilityLevel">
+<h3><code>ReproducibilityLevel</code> <span class="ref-tag">enum</span></h3>
+<p class="ref-help">Monotone levels of reproduction fidelity.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/reproducibility.py"><code>verifier.core.reproducibility</code></a></p>
+<p class="ref-help">Members: <code>BITWISE_IDENTICAL, CONTENT_IDENTICAL, EVIDENCE_EQUIVALENT, RESULT_EQUIVALENT, SEMANTIC_REPRODUCTION</code></p>
+</article>
+<article class="ref-item" id="api-VerificationGeometry">
+<h3><code>VerificationGeometry</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>VerificationGeometry(geometry_id: 'str', primary_subject_id: 'str', subjects: 'list[Subject]', loci: 'list[Locus]', facets: 'list[Facet]', coordinates: 'list[Coordinate]', surface: 'VerificationSurface', seams: 'list[Seam]' = &lt;factory&gt;, mechanisms: 'list[VerificationMechanism]' = &lt;factory&gt;, judgments: 'list[CoordinateJudgment]' = &lt;factory&gt;, horizons: 'list[Horizon]' = &lt;factory&gt;, residuals: 'list[Residual]' = &lt;factory&gt;, valences: 'list[VerificationValence]' = &lt;factory&gt;, reconstructions: 'list[ReconstructionAttempt]' = &lt;factory&gt;, verification_layers: 'list[VerificationLayer]' = &lt;factory&gt;, novelties: 'list[Novelty]' = &lt;factory&gt;, secondary_subject_id: 'Optional[str]' = None, focus_coordinate_ids: 'tuple[str, ...]' = (), meta_focus_coordinate_ids: 'tuple[str, ...]' = (), schema_version: 'str' = 'VSTD-0.2') -&gt; None</code></pre>
+<p class="ref-help">A finite verification geometry and its higher-order audit surface.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry.py"><code>verifier.core.geometry</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>assess_closure(self) -&gt; 'ClosureAssessment'</code></td><td>Assess declared closure and higher-order self-closure separately.</td></tr>
+<tr><td><code>canonical_digest(self) -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr><td><code>validate(self) -&gt; 'list[str]'</code></td><td>Return structural and epistemic errors; an empty list means valid.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-VerificationVerdict">
+<h3><code>VerificationVerdict</code> <span class="ref-tag">enum</span></h3>
+<p class="ref-help">str(object='') -&gt; str str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/checker.py"><code>verifier.core.checker</code></a></p>
+<p class="ref-help">Members: <code>VERIFIED, FALSIFIED, INDETERMINATE, UNSUPPORTED</code></p>
+</article>
+<article class="ref-item" id="api-VstdReceipt">
+<h3><code>VstdReceipt</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>VstdReceipt(schema_version: 'str', receipt_id: 'str', claim: 'ClaimSpec', evidence: 'EvidencePayload', target_result: 'dict[str, Any]', independent_audit: 'IndependentAuditReport', provenance: 'ProvenanceRecord', reproducibility: 'dict[str, Any]', canonical_digest: 'str' = '', execution_metadata: 'Optional[ExecutionMetadata]' = None) -&gt; None</code></pre>
+<p class="ref-help">No docstring is declared for this export; the signature above is its whole declared surface.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>compute_and_set_digest(self) -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>get_stable_payload(self) -&gt; 'dict[str, Any]'</code></td><td>Extract only deterministic, location-independent fields for canonical hashing.</td></tr>
+<tr><td><code>save_to_directory(self, out_dir: 'Path') -&gt; 'Path'</code></td><td></td></tr>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr><td><code>verify_digest_integrity(self) -&gt; 'bool'</code></td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-capture_run">
+<h3><code>capture_run</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>capture_run(manifest: 'Mapping[str, Any]', manifest_dir: 'Path', receipt_id: 'Optional[str]' = None) -&gt; 'GenericRunReceipt'</code></pre>
+<p class="ref-help">Execute the manifest-declared command and capture a proof-carrying receipt.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run</code></a></p>
+
+</article>
+<article class="ref-item" id="api-certificate_from_canonical_bytes">
+<h3><code>certificate_from_canonical_bytes</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>certificate_from_canonical_bytes(data: 'bytes') -&gt; 'DecisionCertificate'</code></pre>
+<p class="ref-help">Decode only the canonical JSON representation used in commitment digests.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/certificate.py"><code>verifier.core.certificate</code></a></p>
+
+</article>
+<article class="ref-item" id="api-compute_canonical_digest">
+<h3><code>compute_canonical_digest</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>compute_canonical_digest(stable_payload: 'Mapping[str, Any]') -&gt; 'str'</code></pre>
+<p class="ref-help">Compute SHA-256 digest of canonicalized stable payload.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt</code></a></p>
+
+</article>
+<article class="ref-item" id="api-require_vstd5_entry">
+<h3><code>require_vstd5_entry</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>require_vstd5_entry(result: 'DepthResult') -&gt; 'DepthResult'</code></pre>
+<p class="ref-help">Fail closed unless ``result`` carries the complete layer-4 witness.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
+
+</article>
+<article class="ref-item" id="api-validate_run_receipt">
+<h3><code>validate_run_receipt</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>validate_run_receipt(receipt_path_or_dir: 'Path') -&gt; 'int'</code></pre>
+<p class="ref-help">No docstring is declared for this export; the signature above is its whole declared surface.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run</code></a></p>
+
+</article>
+<article class="ref-item" id="api-vstd4_depth">
+<h3><code>vstd4_depth</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>vstd4_depth(evidence: 'Mapping[str, str]', *, claim_id: 'str', binding: 'ClaimBinding') -&gt; 'DepthResult'</code></pre>
+<p class="ref-help">Compute how far up the layer-4 ladder ``evidence`` carries a claim.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
+
+</article></div>
+      </div>
+    </section>
+
+    <section id="wire">
+      <div class="wrap">
+        <div class="eyebrow">Wire</div>
+        <h2>Canonical schemas and identifiers.</h2>
+        <p class="section-lead">Receipt schemas are served from this site at their canonical
+        <code>$id</code> routes, and the frozen wire identifiers they belong to are listed in the
+        standard.</p>
+        <div class="actions">
+          <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/standard/WIRE_IDENTIFIERS.md">Wire identifiers</a>
+          <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/receipts/schema">Schema sources</a>
+          <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/QUICKSTART.md">Quickstart</a>
+          <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/CLAIMS_AND_LIMITS.md">Claim limits</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap">VSTD &middot; Apache-2.0 &middot; Reference generated from the implementation by <code>scripts/build_reference.py</code>.</div></footer>
+</body>
+</html>
