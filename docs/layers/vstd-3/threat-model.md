@@ -1,5 +1,7 @@
 # VSTD-3 threat model
 
+> Reader aid: [concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
+
 **Layer:** VSTD-3; historical receipt wire identifier `VSTD-3.0`
 **Purpose:** defensive verification and conformance; not offensive exploit guidance
 

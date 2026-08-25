@@ -1,5 +1,7 @@
 # VSTD-3 official public references
 
+> Reader aid: [cross-layer concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
+
 **Retrieved:** 2026-08-21
 
 These sources inform adapter boundaries and interoperability vocabulary. They are not

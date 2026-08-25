@@ -26,6 +26,7 @@ stronger claim than the evidence supports.
 [Run the demo](#see-it-fail-correctly) ·
 [Read the quickstart](docs/QUICKSTART.md) ·
 [Inspect the standard](standard/LADDER.md) ·
+[Explore concepts and precedents](docs/CONCEPTS_AND_PRECEDENTS.md) ·
 [Challenge a claim](https://github.com/TimeLordRaps/verifier/discussions/8) ·
 [See the roadmap](ROADMAP.md)
 

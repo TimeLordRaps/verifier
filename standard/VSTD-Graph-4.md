@@ -1,5 +1,7 @@
 # VSTD-Graph-4 — Refutable Transformation Closure
 
+> Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
+
 **Layer:** 4 of 5 on the graph axis (see `LADDER.md`)
 **Status:** implemented computed profile
 **License:** Apache-2.0

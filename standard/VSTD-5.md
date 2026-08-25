@@ -1,5 +1,7 @@
 # VSTD-5 — Witness Corroboration
 
+> Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
+
 **Layer:** 5 of 5 on the object axis (see `LADDER.md`)
 **Status:** DRAFT — not implemented
 **Editor:** TimeLordRaps

@@ -1,5 +1,7 @@
 # Claims and limits in plain language
 
+> Reader aid: [concept glossary and primary precedents](CONCEPTS_AND_PRECEDENTS.md).
+
 **Status:** normative interpretation guide for the VSTD object and Graph ladders
 
 This guide translates VSTD claim language into ordinary language. When a short claim

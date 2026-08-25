@@ -1,5 +1,7 @@
 # VSTD-Graph-2 — Bounded Collection Surface
 
+> Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
+
 **Layer:** 2 of 5 on the graph axis (see `LADDER.md`)
 **Status:** implemented computed profile
 **License:** Apache-2.0

@@ -1,5 +1,7 @@
 # VSTD-Graph-3 — Accountable Provenance Closure
 
+> Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
+
 **Layer:** 3 of 5 on the graph axis (see `LADDER.md`)
 **Status:** implemented computed profile
 **License:** Apache-2.0

@@ -4,6 +4,8 @@
 **Scope:** the public specification, reference implementation, and interoperability
 surface only
 
+**Reader context:** [`Concept guide and intellectual precedents`](docs/CONCEPTS_AND_PRECEDENTS.md)
+
 ## The near-term problem
 
 “Speed superintelligence” is used here as an operational condition, not as a model
