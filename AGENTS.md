@@ -109,7 +109,8 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 - `src/verifier/runtime/` — `public_cli.py` (every CLI entry point) and `demo.py`.
 - `src/verifier/specifications/` — byte-identical copies of normative spec files.
 - `receipts/schema/` — JSON Schemas. `examples/` — runnable specimens.
-- `experiments/` — non-normative profile manifests with explicit horizons.
+- `experiments/` — non-normative studies with profile manifests, explicit horizons,
+  and blockers.
 - `src/verifier/experimental_workflow/` — optional workflow/profile interchange; it
   records allocation but never grants a VSTD verdict from repository state.
 - `scripts/` — `check_presentation.py`, `release_artifacts.py`, `build_pages.py`,
@@ -136,8 +137,9 @@ keeps import cost near zero. Do not convert these into eager imports.
 **Console scripts.** `vstd`, `verifier`, and `verifiable` all map to
 `verifier.runtime.public_cli:main`. `vstd` is canonical because an unqualified `verifier`
 on Windows commonly resolves to Windows Driver Verifier. `verifiable` is a **permanent**
-alias: published receipts bind it in falsification instructions, so removing it would
-render already-published refutation steps unrunnable.
+alias: receipts in the `v0.1.0` and `v0.2.0` release artifacts bind it in falsification
+instructions, so removing it would render already-published refutation steps unrunnable.
+The evidence is the published releases, not a file in the current checkout.
 
 **Frozen wire identifiers.** `VSTD-0.1`, `VSTD-0.2`, `VSTD-3.0`, and `VSTD-DATA-0.1` are
 frozen; readers dispatch on them, not on filenames. Released artifacts are immutable and
@@ -201,8 +203,11 @@ assertion to make a suite green.
 
 Work lands via pull request into `main`. `.github/PULL_REQUEST_TEMPLATE.md` requires a
 Coordinate (layer, release, seam), a falsification condition, and compatibility plus
-frozen-wire impact. Commit subjects are short and imperative. Do not run release or tag
-workflows; [`RELEASING.md`](RELEASING.md) is a maintainer procedure.
+frozen-wire impact. Commit subjects are short and imperative. Every commit is GPG-signed;
+never bypass a signing failure with an unsigned commit. A signature binds commit bytes to
+a key but does not establish identity, correctness, independence, authorization, or
+safety. Do not run release or tag workflows; [`RELEASING.md`](RELEASING.md) is a
+maintainer procedure.
 
 `.github/workflows/pages.yml` publishes the `scripts/build_pages.py` output to GitHub Pages
 on every push to `main`. Documentation and schema edits become public the moment they merge,

@@ -23,6 +23,54 @@ checkable within stated bounds, and capable of being overturned. It is evidence
 infrastructure around fast systems—not proof that a system is aligned, safe,
 conscious, superintelligent, or fully observed.
 
+## The next question: what should we check first?
+
+Verification is never free. A project can usually identify more claims, artifacts, and
+dependencies worth checking than its available time, compute, evidence access, and human
+attention can cover. Hiding that constraint does not remove it; it only makes the choice
+of what went unchecked harder to inspect.
+
+The intended next direction is straightforward for a newcomer:
+
+1. record the available verification budget;
+2. choose which check to run next under a declared policy;
+3. record why that check was selected and what was deferred;
+4. preserve the native verifier's actual result and VSTD claim boundary; and
+5. observe whether the policy makes artifacts easier to check—or merely easier to game.
+
+This is **bounded verification allocation**. A priority is a scheduling result, not a
+truth result. “Check this first” does not mean “this is false,” “this is important in
+every context,” or “everything else is safe.” Budget exhaustion leaves the deferred
+surface explicit and unresolved.
+
+The longer-term objective is a portable, verifier-independent way to:
+
+- allocate bounded verification work across different proof engines, domain verifiers,
+  tests, reproduction procedures, and challenge routes;
+- bind the policy, evidence, expected cost, downstream blast radius, and recorded reason
+  for each allocation decision;
+- measure **verification yield** without reducing it to solver time alone;
+- make certificate-friendly, modular, replayable, and cheaply refutable artifacts easier
+  to select and deploy; and
+- expose feedback loops in which artifacts or adaptive systems change their behavior
+  because they anticipate what will be checked.
+
+The allocation policy is itself a versioned software artifact. It can therefore be
+tested, challenged, meta-verified, and represented in VSTD-Graph alongside the artifacts
+and verifier actions it influences. A stable feedback loop is not automatically a true
+one: randomized challenges, counterevidence searches, dependency-aware updates, and
+explicit `UNKNOWN` outcomes remain necessary to resist self-confirming verification.
+
+This direction composes established work on
+[bounded optimality](https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume2/russell95a.pdf),
+[active testing](https://proceedings.mlr.press/v139/kossen21a.html),
+[cost-sensitive testing trees](https://proceedings.mlr.press/v32/cicalese14.html),
+[proof-carrying code](https://people.eecs.berkeley.edu/~necula/papers.html), and
+[certifying algorithms](https://www.sciencedirect.com/science/article/pii/S1574013710000560).
+The roadmap does not claim those foundations as VSTD inventions. The research question
+is whether VSTD can provide interoperable claim boundaries and portable result semantics
+for their combined use across heterogeneous verification substrates.
+
 ## Vision board
 
 ```text
@@ -44,6 +92,28 @@ claim → evidence → bounded check → publish → challenge → adjudicate �
 
 No arrow in that loop upgrades one VSTD layer with another layer's evidence. Each
 layer still requires its own evidence; the loop only carries results and challenges.
+
+## Current experimental development tracks
+
+This dated register records substantive work as of **2026-08-24**. A committed experiment,
+local branch, passing test, or generated index is not normative, released, independently
+reproduced, or evidence of adoption merely because it exists. Branch names are operational
+coordinates rather than experiment identities. Profile manifests and the generated
+[`experiments/INDEX.md`](experiments/INDEX.md) are the portable experiment register when
+intentional experiment artifacts are present.
+
+| Track | Local branch or branches | Current boundary | Roadmap disposition |
+|---|---|---|---|
+| Public surface and reserved `.vstd` lockfile | `codex/public-surface-lockfile-audit` | Uncommitted local draft at `main`; mixed changes must be separated and audited before integration. | Review the specification as reserved and non-normative; do not imply an implemented lockfile. |
+| Documentation lineage and precedents | `codex/documentation-lineage` | One signed local commit; unmerged and unpublished. | Review source accuracy and merge only compatibility-preserving documentation. |
+| SCITT interoperability | `codex/scitt-interop` | One signed local commit; experimental adapter, examples, adversarial tests, and audit; unmerged and unpublished. | Preserve SCITT as an adjacent transparency/receipt substrate and VSTD as bounded verification semantics. |
+| ZIZK experiments | [`experiments/zizk_vstd/experiment.json`](experiments/zizk_vstd/experiment.json) | Integrated experimental code, reports, fixtures, bounded workflow manifest, and unresolved horizons; not a normative ZIZK profile or completed protocol. | Keep zero knowledge, identity minimization, and reverification experimental until their claim boundaries and trustless substrate survive joint review. |
+| Verifier-guided SAT routing | `codex/verifier-guided-sat` | Real SAT/native-verifier baseline infrastructure exists locally, but the required live LM evaluation is hard-blocked and no result commit exists. | Preserve the blocker; do not substitute fake LM evidence or claim speed/generalization. |
+| Verification allocation and experimental workflows | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Experimental profile 0.1, strict validator, schema, verdict-neutral GitHub adapter, generated index, and ZIZK dogfood manifest are implemented. No allocation engine, optimality claim, or independent consumer exists. | Add non-GitHub adapters and index SCITT and SAT only when their intentional artifacts and blockers are ready to bind. |
+
+Historical release branches, pre-rename branches, and already-merged branches are
+repository-maintenance concerns rather than active roadmap tracks. Their continued local
+existence does not make their older semantics candidates for reintegration.
 
 ## Milestone 1 — make refutation the front door
 
@@ -82,10 +152,11 @@ layer still requires its own evidence; the loop only carries results and challen
   budgets, amendments, challenges, and publication state;
 - a GitHub adapter that maps issues, commits, workflow runs, artifacts, pull requests,
   and merges without treating repository state as a verification verdict;
-- bounded verification-allocation records that preserve the reason, budget, deferred
-  surface, and native outcome without assigning truth by priority;
+- bounded verification-allocation records that preserve the policy, reason, budget,
+  deferred surface, and native outcome without assigning truth by priority;
 - deterministic canonicalization, repository-artifact binding, a generated experiment
-  index, adversarial tests, and a verdict-neutral checked-in specimen.
+  index, adversarial tests, a verdict-neutral checked-in specimen, and a ZIZK dogfood
+  manifest.
 
 **Still build**
 
@@ -98,6 +169,9 @@ layer still requires its own evidence; the loop only carries results and challen
 
 **Exit evidence**
 
+- the SCITT, ZIZK, and SAT tracks can be indexed through the same experimental-workflow
+  vocabulary without changing their native verifiers or erasing their blockers;
+- a GitHub merge remains an integration event rather than becoming a VSTD pass;
 - the same trace can be checked by two independent consumers;
 - deleting or substituting a bound tool output changes the receipt digest or fails a
   declared rule;

@@ -13,6 +13,7 @@ PYTHONPATH=src python scripts/build_experiment_index.py --check
 | Experiment | State | Question | Publication | Open horizons | Manifest |
 |---|---|---|---|---:|---|
 | experiment-github-verdict-neutrality | COMPLETED | Does the GitHub adapter preserve successful workflow and merge states without converting them into a VSTD verdict? | INTERNAL | 1 | [`experiments/github_verdict_neutrality/experiment.json`](github_verdict_neutrality/experiment.json)<br>`sha256:3b98310d35c20e7099d242e2c655e4bf8dc62d91298adc04e4dc2f56f2f79d89` |
+| experiment-zizk-vstd | RUNNING | Can optional VSTD profiles prove bounded predicates while minimizing witness and actor disclosure without allowing reverification to accumulate unearned trust? | CANDIDATE | 2 | [`experiments/zizk_vstd/experiment.json`](zizk_vstd/experiment.json)<br>`sha256:fda6eb1e909341d895b44f8d73a38d5c9843df2314b4dffc1c906a7c50ea2c17` |
 
 Platform events, including successful workflows and merges, retain
 `verification_effect = NONE` unless a separate native result is explicitly

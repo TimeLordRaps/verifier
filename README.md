@@ -15,6 +15,14 @@
 *A PASS is not enough. Show what passed, under which meaning, against which
 evidence, inside which bounds, and how somebody else can prove it wrong.*
 
+VSTD gives different verification tools a shared way to say **what they checked,
+how they checked it, where the result stops, and what would overturn it**. Verification
+time is limited, so the roadmap also asks a practical next question: **what should we
+check first?** The intended direction is to record why verification work was selected,
+spend bounded verification effort where it matters most, and make artifacts easier to
+check and refute—without turning priority, confidence, or a tool's native result into a
+stronger claim than the evidence supports.
+
 [Run the demo](#see-it-fail-correctly) ·
 [Read the quickstart](docs/QUICKSTART.md) ·
 [Inspect the standard](standard/LADDER.md) ·

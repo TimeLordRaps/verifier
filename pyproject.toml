@@ -41,16 +41,18 @@ release = ["build==1.5.0", "twine==7.0.0"]
 vstd = "verifier.runtime.public_cli:main"
 # Retain the project-name alias for compatibility on platforms where it is unambiguous.
 verifier = "verifier.runtime.public_cli:main"
-# `verifiable` is retained as a deprecated alias and MUST NOT be removed: published
-# VSTD receipts bind falsification conditions that invoke it by name (see
-# examples/generic_run/receipt.json). Removing it would render already-published
-# refutation instructions unrunnable. The alias is a command name only; it no longer
-# corresponds to any import package.
+# `verifiable` is retained as a deprecated alias and MUST NOT be removed: receipts
+# published in the v0.1.0 and v0.2.0 release artifacts, which predate the rename, bind
+# falsification conditions that invoke it by name. Removing it would render those
+# already-published refutation instructions unrunnable. No file in the current tree
+# binds it. The alias is a command name only; it no longer corresponds to any import
+# package.
 verifiable = "verifier.runtime.public_cli:main"
 
 [tool.setuptools.package-data]
 verifier = ["hardware/*.json", "specifications/*.md"]
 
 [tool.pytest.ini_options]
+pythonpath = ["src"]
 testpaths = ["tests"]
 norecursedirs = ["artifacts_tmp", "build", "dist", ".git", ".venv"]
