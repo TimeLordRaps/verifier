@@ -122,6 +122,7 @@ def test_generated_reference_covers_every_command_and_public_export() -> None:
         assert anchor in page, f"reference page omits {command['prog']}"
     for name in verifier.__all__:
         assert f'id="api-{name}"' in page, f"reference page omits export {name}"
+    assert "Enumeration of the exported result values." in page
 
 
 def test_generated_reference_detects_drift() -> None:

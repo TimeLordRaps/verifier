@@ -262,7 +262,10 @@ def _api_section() -> str:
                     "<table><thead><tr><th>Method</th><th>Summary</th></tr></thead>"
                     f"<tbody>\n{rows}</tbody></table>"
                 )
-        summary = _summary(value)
+        # ``str, Enum`` inherits a version-specific builtin ``str`` docstring on
+        # Python 3.10, while later interpreters expose Enum's generic docstring.
+        # Neither describes the public VSTD surface, so emit one stable summary.
+        summary = "Enumeration of the exported result values." if kind == "enum" else _summary(value)
         if not summary or summary.startswith(f"{name}("):
             # A dataclass with no docstring of its own repeats its signature; that is
             # not documentation, so say so instead of publishing the repetition.
