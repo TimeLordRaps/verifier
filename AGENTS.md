@@ -37,6 +37,31 @@ This inverts the usual agent instinct. An uncertain or negative result here is o
 When a check cannot be discharged, the conforming output is the uncertain verdict with a
 reason, not a pass. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
+### 2.1 Minimum surface and blast radius
+
+This file governs the public VSTD repository. Verify the repository root and remote before
+editing; never copy private workspace coordinates or artifacts into the public tree.
+
+Use the **minimum lines of code and minimum lines of documentation** that carry the
+maximum necessary information for a reader to comprehend the complete expected
+verification standard. Minimum never permits omission of normative meaning, claim
+boundaries, wire behavior, failure/`UNKNOWN` semantics, conformance, or security.
+
+Default to the smallest change that restores truth. Reformat or restructure adjacent
+architecture only after the idea space is conditionally operationalized by a named target,
+dependency map, migration and compatibility analysis, tests, and explicit approval.
+
+Treat public onboarding examples as release surfaces. Feature one only when its declared
+subject is real, its critical artifacts are retrievable, and its claimed path is rerunnable;
+otherwise remove it from navigation and the live example/test surface instead of explaining
+away missing evidence. Preserve forensic material outside the public tree or in Git history.
+
+After a public credibility failure, audit adjacent first-impression claims, validation labels,
+evidence classifications, links, packaging, tests, and private/public boundary leaks. Never
+relabel digest integrity, same-process extraction, self-report, local rehearsal, or artifact
+retention as full validity, independent verification, attestation, public recomputation, or
+proof of correctness.
+
 ## 3. Environment and commands
 
 ```bash
