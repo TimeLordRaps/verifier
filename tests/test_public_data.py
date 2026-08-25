@@ -105,9 +105,10 @@ def _receipt() -> VstdDataReceipt:
     )
 
 
-def test_public_data_receipt_round_trip(tmp_path: Path) -> None:
+def test_public_data_receipt_round_trip(tmp_path: Path, capsys) -> None:
     _receipt().save_to_directory(tmp_path)
     assert validate_data_receipt(tmp_path) == 0
+    assert "[VALIDATION OK]" in capsys.readouterr().out
     assert reproduce_data_receipt(tmp_path) == 0
 
 

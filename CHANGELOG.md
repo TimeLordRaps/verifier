@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0 - 2026-08-24
+## 1.2.0 - 2026-08-25
 
 - Add experimental workflow profile 0.1 with deterministic canonicalization, strict
   validation, bounded work-allocation records, additive amendments and challenges,
@@ -17,6 +17,19 @@
   reference or experiment-index content.
 - Clarify VSTD's role as a verification-domain language and interchange layer that
   preserves, rather than replaces or strengthens, native verifier results.
+- Add the experimental SCITT adapter, reproducible COSE specimen, explicit semantic
+  boundary, and adversarial composition tests without claiming IETF review or payload
+  truth from registration.
+- Add the bounded ZIZK experiment and documentation-lineage guide while preserving
+  unresolved horizons and native-system authority.
+- Remove the live SimulacraBench rehearsal and its front-door promotion; the repository
+  never contained or reproduced the submission, hosted image, hardware, or protected
+  evaluation identified by that name.
+- Correct generic-run wording: digest validation is an integrity check, external
+  references remain unattested until dereferenced and verified, same-path output
+  extraction is not independent verification, and unverified determinism is `UNKNOWN`.
+- Publish a Pages guide index and enforce language, title, viewport, main-region, skip-link,
+  image-alt, labelled-navigation, generated-reference, and local-link checks in CI.
 
 ## 1.1.3 - 2026-08-22
 

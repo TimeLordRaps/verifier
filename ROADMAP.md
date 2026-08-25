@@ -97,25 +97,17 @@ layer still requires its own evidence; the loop only carries results and challen
 
 ## Current experimental development tracks
 
-This dated register records substantive work as of **2026-08-24**. A committed experiment,
-local branch, passing test, or generated index is not normative, released, independently
-reproduced, or evidence of adoption merely because it exists. Branch names are operational
-coordinates rather than experiment identities. Profile manifests and the generated
+This dated register records substantive work as of **2026-08-25**. A committed experiment,
+passing test, or generated index is not normative, released, independently reproduced,
+or evidence of adoption merely because it exists. Profile manifests and the generated
 [`experiments/INDEX.md`](experiments/INDEX.md) are the portable experiment register when
 intentional experiment artifacts are present.
 
-| Track | Local branch or branches | Current boundary | Roadmap disposition |
+| Track | Public artifact | Current boundary | Next gate |
 |---|---|---|---|
-| Public surface and reserved `.vstd` lockfile | `codex/public-surface-lockfile-audit` | Uncommitted local draft at `main`; mixed changes must be separated and audited before integration. | Review the specification as reserved and non-normative; do not imply an implemented lockfile. |
-| Documentation lineage and precedents | `codex/documentation-lineage` | One signed local commit; unmerged and unpublished. | Review source accuracy and merge only compatibility-preserving documentation. |
-| SCITT interoperability | `codex/scitt-interop` | One signed local commit; experimental adapter, examples, adversarial tests, and audit; unmerged and unpublished. | Preserve SCITT as an adjacent transparency/receipt substrate and VSTD as bounded verification semantics. |
-| ZIZK experiments | [`experiments/zizk_vstd/experiment.json`](experiments/zizk_vstd/experiment.json) | Integrated experimental code, reports, fixtures, bounded workflow manifest, and unresolved horizons; not a normative ZIZK profile or completed protocol. | Keep zero knowledge, identity minimization, and reverification experimental until their claim boundaries and trustless substrate survive joint review. |
-| Verifier-guided SAT routing | `codex/verifier-guided-sat` | Real SAT/native-verifier baseline infrastructure exists locally, but the required live LM evaluation is hard-blocked and no result commit exists. | Preserve the blocker; do not substitute fake LM evidence or claim speed/generalization. |
-| Verification allocation and experimental workflows | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Experimental profile 0.1, strict validator, schema, verdict-neutral GitHub adapter, generated index, and ZIZK dogfood manifest are implemented. No allocation engine, optimality claim, or independent consumer exists. | Add non-GitHub adapters and index SCITT and SAT only when their intentional artifacts and blockers are ready to bind. |
-
-Historical release branches, pre-rename branches, and already-merged branches are
-repository-maintenance concerns rather than active roadmap tracks. Their continued local
-existence does not make their older semantics candidates for reintegration.
+| SCITT interoperability | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) | Experimental adapter, reproducible specimen, and adversarial tests; no IETF review or external interoperability result. | Independent implementation and interoperability result. |
+| ZIZK | [`experiments/zizk_vstd/experiment.json`](experiments/zizk_vstd/experiment.json) | Code, reports, fixtures, manifest, and unresolved horizons; not a normative profile or completed protocol. | Joint review of claim boundaries and the trustless substrate. |
+| Workflow and allocation | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Strict validator, verdict-neutral GitHub adapter, generated index, and allocation records; no optimality claim or independent consumer. | A second observable adapter and independent consumer. |
 
 ## Milestone 1 — make refutation the front door
 

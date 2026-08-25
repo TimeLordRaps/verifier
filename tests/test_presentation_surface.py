@@ -71,6 +71,8 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     output = tmp_path / "site"
     copied = module.build(output)
     assert (output / "index.html").is_file()
+    assert (output / "guides.html").is_file()
+    assert (output / "reference.html").is_file()
     sources = sorted((ROOT / "receipts/schema").glob("*.json"))
     assert [path.name for path in copied] == [path.name for path in sources]
     for source, deployed in zip(sources, copied):

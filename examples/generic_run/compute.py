@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Deterministic word-frequency computation used by the VSTD generic-run example.
+"""Word-frequency computation used by the VSTD generic-run example.
 
 Pure standard library, no randomness, no floating point, and no wall-clock
 dependence in its *output* — timing is recorded separately by the VSTD
-receipt as execution metadata, not baked into these artifacts. That is what
-lets this example legitimately declare ``determinism_declared: DETERMINISTIC``
-in manifest.json.
+receipt as execution metadata, not baked into these artifacts. The generic capture
+path does not independently establish determinism, so the manifest leaves that
+classification unknown and relies on explicit rerun comparison instead.
 """
 from __future__ import annotations
 

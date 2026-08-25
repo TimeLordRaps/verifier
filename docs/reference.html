@@ -8,16 +8,18 @@
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
+  <a class="skip-link" href="#top">Skip to content</a>
   <header class="wrap">
     <nav aria-label="Primary">
       <a class="brand" href="index.html">VSTD</a>
       <div class="links">
         <a href="index.html">Overview</a>
-        <a href="reference.html">Docs</a>
+        <a href="guides.html">Guides</a>
+        <a href="reference.html" aria-current="page">Reference</a>
         <a href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Demo</a>
-        <a href="https://github.com/TimeLordRaps/verifier/blob/main/standard/LADDER.md">Standard</a>
-        <a href="profiles/experimental-workflow.md">Experiments</a>
-        <a href="https://github.com/TimeLordRaps/verifier/blob/main/ROADMAP.md">Roadmap</a>
+        <a href="guides.html#standards">Standards</a>
+        <a href="guides.html#experiments">Experiments</a>
+        <a href="guides.html#project">Project</a>
         <a href="https://github.com/TimeLordRaps/verifier">GitHub</a>
       </div>
     </nav>
@@ -53,7 +55,7 @@
 <tr><td><code>vstd demo</code></td><td>Runs the four adversarial specimens in-process and reports whether each defensive outcome matched its declared invariant.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:run_demo</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:demo_report</code></a></td></tr>
 <tr><td><code>vstd plan</code></td><td>Resolves a manifest's command and declared paths without executing anything.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:describe_run_plan</code></a></td></tr>
 <tr><td><code>vstd run</code></td><td>Executes a trusted manifest without sandboxing, captures the observed execution, and writes a canonically digested receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:capture_run</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt:compute_canonical_digest</code></a></td></tr>
-<tr><td><code>vstd validate</code></td><td>Dispatches on the receipt's frozen wire identifier and validates it against the matching canonical schema and checks.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:validate_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:validate_data_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
+<tr><td><code>vstd validate</code></td><td>Dispatches on the receipt's frozen wire identifier and runs its implemented checks. Generic-run validation checks only the stable digest; other receipt kinds enforce their separately documented structure and evidence rules.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:validate_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:validate_data_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
 <tr><td><code>vstd inspect</code></td><td>Prints the claim coordinate, digest, and verdict surface of a stored receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:inspect_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/receipt.py"><code>verifier.hardware.receipt:load_vstd3_receipt</code></a></td></tr>
 <tr><td><code>vstd reproduce</code></td><td>Replays only the mechanisms a stored receipt actually carries; physical hardware execution is refused rather than simulated.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:reproduce_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:reproduce_data_receipt</code></a></td></tr>
 <tr><td><code>vstd impact</code></td><td>Finds stored run receipts whose recorded ancestry reaches a revoked provenance artifact.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:find_run_receipts_impacted_by_revocation</code></a></td></tr>
@@ -105,7 +107,7 @@
 </article>
 <article class="ref-item" id="cli-vstd-validate">
 <h3><code>vstd validate</code></h3>
-<p class="ref-help">Validate a generic-run or VSTD-Graph receipt.</p>
+<p class="ref-help">Run implemented checks for a generic-run, VSTD-Graph, or VSTD-3 receipt.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>receipt</code></td><td>positional</td><td>Receipt directory or receipt.json.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
@@ -114,7 +116,7 @@
 </article>
 <article class="ref-item" id="cli-vstd-inspect">
 <h3><code>vstd inspect</code></h3>
-<p class="ref-help">Inspect a generic-run or VSTD-Graph receipt.</p>
+<p class="ref-help">Inspect a generic-run or VSTD-Graph receipt; validate and report VSTD-3.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>receipt</code></td><td>positional</td><td>Receipt directory or receipt.json.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
@@ -389,7 +391,7 @@
 <article class="ref-item" id="api-capture_run">
 <h3><code>capture_run</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>capture_run(manifest: 'Mapping[str, Any]', manifest_dir: 'Path', receipt_id: 'Optional[str]' = None) -&gt; 'GenericRunReceipt'</code></pre>
-<p class="ref-help">Execute the manifest-declared command and capture a proof-carrying receipt.</p>
+<p class="ref-help">Execute the manifest-declared command and capture a computational run receipt.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run</code></a></p>
 
 </article>

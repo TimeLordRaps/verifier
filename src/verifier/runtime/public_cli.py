@@ -164,8 +164,8 @@ def build_parser() -> argparse.ArgumentParser:
     plan_parser.add_argument("--json", action="store_true")
 
     for command, help_text in (
-        ("validate", "Validate a generic-run or VSTD-Graph receipt."),
-        ("inspect", "Inspect a generic-run or VSTD-Graph receipt."),
+        ("validate", "Run implemented checks for a generic-run, VSTD-Graph, or VSTD-3 receipt."),
+        ("inspect", "Inspect a generic-run or VSTD-Graph receipt; validate and report VSTD-3."),
         ("reproduce", "Replay the mechanisms available in a stored receipt."),
     ):
         command_parser = subparsers.add_parser(command, help=help_text)

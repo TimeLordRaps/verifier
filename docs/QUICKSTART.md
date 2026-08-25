@@ -57,9 +57,9 @@ vstd validate /tmp/vstd-receipt
 vstd inspect /tmp/vstd-receipt
 ```
 
-This establishes that the receipt is structurally valid and that its stable recorded
-content agrees with the declared artifacts. It does not establish that the claim is
-empirically true beyond that observation surface.
+`validate` recomputes the receipt's stable-payload digest only. It does not schema-validate
+the receipt, rehash the declared artifacts, verify external evidence, or establish that
+the claim is true. Use `reproduce` for the separately bounded artifact comparison.
 
 ## 5. Exercise the falsification route
 

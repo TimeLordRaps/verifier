@@ -52,8 +52,9 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ),
     (
         "vstd validate",
-        "Dispatches on the receipt's frozen wire identifier and validates it against "
-        "the matching canonical schema and checks.",
+        "Dispatches on the receipt's frozen wire identifier and runs its implemented "
+        "checks. Generic-run validation checks only the stable digest; other receipt "
+        "kinds enforce their separately documented structure and evidence rules.",
         (
             "verifier.core.run:validate_run_receipt",
             "verifier.data.receipt:validate_data_receipt",
@@ -317,16 +318,18 @@ def render() -> str:
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
+  <a class="skip-link" href="#top">Skip to content</a>
   <header class="wrap">
     <nav aria-label="Primary">
       <a class="brand" href="index.html">VSTD</a>
       <div class="links">
         <a href="index.html">Overview</a>
-        <a href="reference.html">Docs</a>
+        <a href="guides.html">Guides</a>
+        <a href="reference.html" aria-current="page">Reference</a>
         <a href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Demo</a>
-        <a href="https://github.com/TimeLordRaps/verifier/blob/main/standard/LADDER.md">Standard</a>
-        <a href="profiles/experimental-workflow.md">Experiments</a>
-        <a href="https://github.com/TimeLordRaps/verifier/blob/main/ROADMAP.md">Roadmap</a>
+        <a href="guides.html#standards">Standards</a>
+        <a href="guides.html#experiments">Experiments</a>
+        <a href="guides.html#project">Project</a>
         <a href="https://github.com/TimeLordRaps/verifier">GitHub</a>
       </div>
     </nav>

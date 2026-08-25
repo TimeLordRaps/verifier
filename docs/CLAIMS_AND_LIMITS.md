@@ -38,6 +38,29 @@ safe, complete, permanent, legally authorized, or endorsed.
 | “This native verifier result was mapped into VSTD.” | **Yes, when the mapping preserves the native object, result, trust roots, bounds, and unsupported fields.** | VSTD can standardize the claim boundary and portable result semantics around a domain verifier without performing that verifier's native work. | Native object and version, native verifier implementation/version, native result, field-level mapping, information-loss declaration, VSTD coordinate, adapter tests. | VSTD replaced or reimplemented the native verifier, strengthened its result, inherited its authority, or established conformance to the source standard. |
 | “A challenge to this recorded ancestor affects these recorded descendants.” | **Yes.** | Blast radius is forward reachability over the stored graph. | Challenged artifact ID and bound hypergraph. | Historical receipts were automatically mutated or that unrecorded downstream systems were found. |
 
+## Competition and scored-evaluation claims
+
+For predictive-AI, scientific-ML, agent, and other scored evaluations, bind the exact
+rules, data, model, submission, evaluator, metrics, score, transformations, environment,
+and evidence classes. Mark hidden tests as a horizon—not evidence of integrity. This adds
+no verdict, affiliation, certification, endorsement, ranking, prize eligibility, or
+organizer acceptance.
+
+For later-resolved predictions, also bind emission and resolution times, the frozen
+prediction digest, update or abstention policy, resolution source and digest, scoring
+rule, and channel independence. Corrections are additive; never overwrite a frozen
+prediction. See the complete non-normative
+[`competition profile`](profiles/competition-evaluation.md).
+
+Use the coordinate-bounded wording:
+
+> The submission and score receipt binds the declared artifact, evaluator, and
+> provenance surface. Hidden-test integrity and organizer acceptance remain outside the
+> participant-observable surface.
+
+Do not shorten this to “the model,” “the competition result,” or “the prediction is
+verified.”
+
 ## VSTD-4 grounded-decision claim translations
 
 `VSTD4-GDC-1` makes a decision certificate independently checkable against an

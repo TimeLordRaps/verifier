@@ -86,11 +86,42 @@ class LinkCollector(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.links: list[str] = []
+        self.html_lang = ""
+        self.has_viewport = False
+        self.in_title = False
+        self.title = ""
+        self.main_ids: list[str] = []
+        self.skip_targets: list[str] = []
+        self.images_without_alt = 0
+        self.unlabelled_navs = 0
 
     def handle_starttag(self, tag: str, attrs) -> None:
+        attributes = dict(attrs)
+        if tag == "html":
+            self.html_lang = attributes.get("lang", "")
+        elif tag == "meta" and attributes.get("name") == "viewport":
+            self.has_viewport = True
+        elif tag == "title":
+            self.in_title = True
+        elif tag == "main":
+            self.main_ids.append(attributes.get("id", ""))
+        elif tag == "a" and "skip-link" in attributes.get("class", "").split():
+            self.skip_targets.append(attributes.get("href", ""))
+        elif tag == "img" and "alt" not in attributes:
+            self.images_without_alt += 1
+        elif tag == "nav" and not attributes.get("aria-label"):
+            self.unlabelled_navs += 1
         for name, value in attrs:
             if name in {"href", "src"} and value:
                 self.links.append(value)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "title":
+            self.in_title = False
+
+    def handle_data(self, data: str) -> None:
+        if self.in_title:
+            self.title += data
 
 
 def _public_files() -> list[Path]:
@@ -130,6 +161,29 @@ def check_local_links(errors: list[str]) -> None:
                 errors.append(
                     f"broken local link in {source.relative_to(ROOT)}: {raw}"
                 )
+
+
+def check_html_accessibility(errors: list[str]) -> None:
+    """Enforce the small structural accessibility floor for every Pages document."""
+
+    for path in sorted((ROOT / "docs").glob("*.html")):
+        parser = LinkCollector()
+        parser.feed(path.read_text(encoding="utf-8"))
+        name = path.relative_to(ROOT).as_posix()
+        if not parser.html_lang:
+            errors.append(f"{name} has no html language")
+        if not parser.title.strip():
+            errors.append(f"{name} has no document title")
+        if not parser.has_viewport:
+            errors.append(f"{name} has no viewport metadata")
+        if len(parser.main_ids) != 1 or not parser.main_ids[0]:
+            errors.append(f"{name} must have exactly one identified main region")
+        elif f"#{parser.main_ids[0]}" not in parser.skip_targets:
+            errors.append(f"{name} has no skip link to its main region")
+        if parser.images_without_alt:
+            errors.append(f"{name} has {parser.images_without_alt} image(s) without alt text")
+        if parser.unlabelled_navs:
+            errors.append(f"{name} has {parser.unlabelled_navs} navigation region(s) without labels")
 
 
 def check_versions(errors: list[str]) -> None:
@@ -298,8 +352,9 @@ def check_generated_reference(errors: list[str]) -> None:
             "run python scripts/build_reference.py"
         )
     index = (ROOT / "docs/index.html").read_text(encoding="utf-8")
-    if '<a href="reference.html">Docs</a>' not in index:
-        errors.append("docs/index.html no longer links the generated reference from its nav")
+    for link in ('<a href="guides.html">Guides</a>', '<a href="reference.html">Reference</a>'):
+        if link not in index:
+            errors.append(f"docs/index.html navigation is missing {link}")
 
 
 def check_experiment_index(errors: list[str]) -> None:
@@ -328,6 +383,7 @@ def check_experiment_index(errors: list[str]) -> None:
 def run() -> list[str]:
     errors: list[str] = []
     check_local_links(errors)
+    check_html_accessibility(errors)
     check_versions(errors)
     check_claim_boundaries(errors)
     check_public_paths(errors)
@@ -345,8 +401,8 @@ def main() -> int:
             print(f"[PRESENTATION FAIL] {error}", file=sys.stderr)
         return 1
     print(
-        "[PRESENTATION OK] links, versions, boundaries, paths, visual assets, "
-        "generated reference, and experiment index"
+        "[PRESENTATION OK] links, accessibility, versions, boundaries, paths, "
+        "visual assets, generated reference, and experiment index"
     )
     return 0
 

@@ -59,11 +59,10 @@ emit each specimen.
 
 ## What VSTD adds
 
-VSTD is a verification domain language and interchange layer. It does not replace domain
-verifiers, proof engines, signatures, identity systems, transparency logs, or provenance
-formats. Those systems keep producing their native results; VSTD standardizes the claim
-boundary and portable result semantics used to map them across systems without silently
-upgrading what they establish.
+VSTD is a verification domain language and interchange layer. Loss-declared adapters
+standardize claim boundaries and portable result semantics; domain verifiers, proof
+engines, signatures, identity systems, transparency logs, and provenance formats retain
+their native semantics and authority. Mapping never strengthens what they establish.
 
 Ordinary computational results often omit machine-readable answers to four questions:
 
@@ -71,14 +70,6 @@ Ordinary computational results often omit machine-readable answers to four quest
 2. **Which exact evidence supports it?** Digests, mechanisms, provenance, and trust roots.
 3. **Where does the verdict stop?** Explicit coordinates and resource bounds.
 4. **How can it change?** Reproduction, counterexample, challenge, and degradation rules.
-
-VSTD is designed as a **standard domain language for verification**: a verification
-interlingua into which domain verifiers, proof engines, signature systems, identity
-systems, transparency logs, provenance formats, and verification pipelines can map
-their bounded claims and native results. VSTD is the operator-language class; those
-systems are the orchestrated verification substrata. It does not replace or absorb
-their native semantics. Explicit, loss-declared adapters map results into and through
-VSTD without silently increasing their justified strength.
 
 VSTD stores that interoperable boundary in receipts and provenance hypergraphs. The reference
 implementation can validate stable receipt content, reproduce declared mechanisms,
@@ -112,11 +103,9 @@ separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
 |---|---|
 | Understand the claim model in ten minutes | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
 | Try to break the core claim | [`examples/flagship_demo`](examples/flagship_demo) |
-| Inspect a disclosure-bounded closed evaluation | [`examples/simulacrabench_synthetic`](examples/simulacrabench_synthetic) |
 | Implement an independent checker | [`standard/VSTD-4.md`](standard/VSTD-4.md) and [`VSTD4-GDC-1` schema](receipts/schema/vstd4_certificate.json) |
 | Model a provenance collection | [`standard/VSTD-Graph-1.md`](standard/VSTD-Graph-1.md) |
 | Record and allocate bounded experimental work | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) and [`experiments/INDEX.md`](experiments/INDEX.md) |
-| Integrate accelerator evidence | [`docs/layers/vstd-3/vendor-integration.md`](docs/layers/vstd-3/vendor-integration.md) |
 | Use VSTD beside existing supply-chain/provenance systems | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
 | Inspect the experimental IETF SCITT interoperability profile | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) |
 | Review exact public claim limits | [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) |
@@ -145,9 +134,10 @@ vstd validate /tmp/vstd-receipt
 vstd reproduce /tmp/vstd-receipt --rerun
 ```
 
-`validate` checks stable receipt content. `reproduce --rerun` executes the recorded
-command again when permitted and compares the declared outputs. Neither operation
-widens the receipt into a claim about the unobserved world.
+`validate` checks only the stable-payload digest; it does not schema-validate the
+receipt, rehash artifacts, or verify a claim. `reproduce --rerun` separately executes
+the recorded command and compares declared outputs. Neither operation widens the receipt
+into a claim about the unobserved world.
 
 ## The grounded certificate
 

@@ -363,7 +363,10 @@ def validate_data_receipt(receipt_path_or_dir: Path) -> int:
             print(f"[FAIL] {error}", file=sys.stderr)
         return 1
 
-    print(f"[PASS] Dataset Receipt {data.get('receipt_id')} is valid.")
+    print(
+        f"[VALIDATION OK] Dataset Receipt {data.get('receipt_id')} passed "
+        "the implemented stored-receipt checks."
+    )
     print(f"       Schema: {data.get('schema_version')}")
     print(f"       Digest: {recorded_digest}")
     print(f"       Verdict: {data.get('independent_audit', {}).get('overall_verdict')}")

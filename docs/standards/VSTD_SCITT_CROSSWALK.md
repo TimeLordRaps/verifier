@@ -1,7 +1,7 @@
 # VSTD and IETF SCITT: experimental interoperability crosswalk
 
 > **Status:** experimental, non-normative, reviewed against public specifications on
-> 2026-08-23. This document does not alter VSTD semantics and does not imply IETF,
+> 2026-08-25. This document does not alter VSTD semantics and does not imply IETF,
 > SCITT Working Group, or implementation-provider endorsement.
 
 ## Result
@@ -28,12 +28,12 @@ reviewable. That is the clean VSTD-shaped boundary.
 
 ## Sources and exact status
 
-| Document | Status on 2026-08-23 | Relevance |
+| Document | Status on 2026-08-25 | Relevance |
 |---|---|---|
 | [RFC 9943: SCITT Architecture](https://datatracker.ietf.org/doc/html/rfc9943) | IETF Standards Track RFC, **Proposed Standard**, June 2026 | Normative SCITT architecture, Signed Statements, Registration, Receipts, Transparent Statements, and security boundary. |
 | [RFC 9942: COSE Receipts](https://datatracker.ietf.org/doc/html/rfc9942) | IETF Standards Track RFC, **Proposed Standard**, June 2026 | COSE Receipt wrapper, VDS/VDP registries, RFC9162 inclusion and consistency proof encodings. |
 | [draft-ietf-scitt-scrapi-11](https://datatracker.ietf.org/doc/html/draft-ietf-scitt-scrapi-11) | **Active SCITT WG Internet-Draft**, intended Proposed Standard, in the RFC Editor Queue; not yet an RFC | HTTP registration, asynchronous completion, receipt resolution, and TS key discovery. |
-| [draft-ietf-scitt-receipts-ccf-profile-04](https://datatracker.ietf.org/doc/html/draft-ietf-scitt-receipts-ccf-profile-04) | **Active SCITT WG Internet-Draft**, intended Proposed Standard, publication requested; not an RFC | CCF ledger VDS and inclusion-proof profile for COSE Receipts. |
+| [draft-ietf-scitt-receipts-ccf-profile-04](https://datatracker.ietf.org/doc/html/draft-ietf-scitt-receipts-ccf-profile-04) | **Active SCITT WG Internet-Draft**, intended Proposed Standard, in IETF Last Call through 2026-09-07; not an RFC | CCF ledger VDS and inclusion-proof profile for COSE Receipts. |
 | [draft-nobuo-scitt-composite-evidence-verification-00](https://datatracker.ietf.org/doc/draft-nobuo-scitt-composite-evidence-verification/) | **Active individual Internet-Draft**, no WG adoption or formal standing | Closest work: composite verification of statements, receipts, bindings, relationships, freshness, conflicts, and bundles under a named profile. |
 | [draft-nobuo-scitt-protected-object-binding-00](https://datatracker.ietf.org/doc/draft-nobuo-scitt-protected-object-binding/) | **Active individual Internet-Draft**, no WG adoption or formal standing | Proposed object bindings and statement-graph relationships; explicitly does not establish payload truth. |
 | [draft-emirdag-scitt-ai-agent-execution-00](https://datatracker.ietf.org/doc/html/draft-emirdag-scitt-ai-agent-execution-00) | **Active individual Internet-Draft**, no stream or WG adoption; its draft header says intended Informational | Agent-execution records, sequence completeness, evidence custody, and redaction receipts. |

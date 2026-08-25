@@ -1,4 +1,4 @@
-"""Adversarial and lifecycle tests for the generic proof-carrying computational run
+"""Adversarial and lifecycle tests for the generic computational run receipt
 primitive (`verifier.core.run`).
 
 Covers the acceptance-test flow (capture -> validate -> inspect -> reproduce) plus a
@@ -24,9 +24,15 @@ from verifier.core.run import (
     reproduce_run_receipt,
     validate_run_receipt,
 )
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-
+from verifier.data.models import (
+    ArtifactNode,
+    ArtifactStatus,
+    ArtifactType,
+    HyperedgePort,
+    ProvenanceHypergraph,
+    TransformationHyperedge,
+    TransformationType,
+)
 
 def _write_tiny_project(tmp_path: Path) -> Path:
     """A minimal deterministic project: script reads input.txt, writes output.json."""
@@ -59,6 +65,41 @@ def _base_manifest() -> dict:
         "outputs": [{"path": "output.json", "role": "primary_output"}],
         "determinism_declared": "DETERMINISTIC",
     }
+
+
+def _write_data_receipt(tmp_path: Path) -> tuple[Path, str]:
+    """Write the smallest public graph fixture needed by linkage/blast-radius tests."""
+
+    graph = ProvenanceHypergraph()
+    for artifact_id in ("artifact:source", "artifact:derived"):
+        graph.add_artifact(
+            ArtifactNode(
+                artifact_id,
+                artifact_id,
+                ArtifactType.CORPUS,
+                "a" * 64,
+                status=ArtifactStatus.VALID,
+            )
+        )
+    graph.add_transformation(
+        TransformationHyperedge(
+            "transform:derive",
+            "derive",
+            TransformationType.EXTRACTION,
+            (HyperedgePort("artifact:source", "INPUT"),),
+            (HyperedgePort("artifact:derived", "OUTPUT"),),
+            {},
+            {},
+            {},
+        )
+    )
+    receipt_file = tmp_path / "dataset-receipt" / "receipt.json"
+    receipt_file.parent.mkdir()
+    receipt_file.write_text(
+        json.dumps({"hypergraph": graph.to_dict()}),
+        encoding="utf-8",
+    )
+    return receipt_file, "artifact:source"
 
 
 def test_full_lifecycle_capture_validate_inspect_reproduce(tmp_path, capsys):
@@ -98,6 +139,7 @@ def test_full_lifecycle_capture_validate_inspect_reproduce(tmp_path, capsys):
     ]
 
     assert validate_run_receipt(out_dir) == 0
+    assert "[INTEGRITY OK]" in capsys.readouterr().out
     assert inspect_run_receipt(out_dir) == 0
 
     # Default reproduce: artifact rehash only, no side effects.
@@ -129,15 +171,6 @@ def test_new_run_receipt_binds_precommitment_bounds_and_refutation_surface(tmp_p
     layer4["prior_commitment"] = "sha256:" + "b" * 64
     receipt.layer4_binding = layer4
     assert receipt.compute_and_set_digest() != before
-
-
-def test_historical_generic_run_digest_is_unchanged_by_optional_layer4_block():
-    receipt_path = REPO_ROOT / "examples" / "generic_run" / "receipt.json"
-    if not receipt_path.exists():
-        pytest.skip("historical private-path receipt is intentionally excluded publicly")
-    data = json.loads(receipt_path.read_text(encoding="utf-8"))
-    assert "layer4_binding" not in data
-    assert validate_run_receipt(receipt_path) == 0
 
 
 def test_missing_input_fails_closed_without_executing(tmp_path):
@@ -248,7 +281,7 @@ def test_external_evaluation_never_auto_promoted_to_attested(tmp_path):
     assert ext.attested is False, "an unverified assertion must never be silently promoted to attested"
 
 
-def test_external_evaluation_with_linked_artifact_and_ref_can_be_attested(tmp_path):
+def test_external_evaluation_reference_remains_unverified_by_capture_runtime(tmp_path):
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()
     manifest["external_evaluation"] = {
@@ -261,7 +294,7 @@ def test_external_evaluation_with_linked_artifact_and_ref_can_be_attested(tmp_pa
     }
     receipt = capture_run(manifest, manifest_dir=proj)
     ext = receipt.claims.external_evaluation
-    assert ext.attested is True
+    assert ext.attested is False
     assert ext.evidence_ref == "sha256:deadbeef"
 
 
@@ -279,8 +312,8 @@ def test_evaluator_claim_reads_true_value_from_output_not_manifest_assertion(tmp
     receipt = capture_run(manifest, manifest_dir=proj)
     claim = receipt.claims.evaluator_claims[0]
     assert claim.value == 42  # actual value read from the produced artifact, not the bogus 999999
-    assert claim.computed_by == "local_reference_evaluator"
-    assert claim.verified_independently is True
+    assert claim.computed_by == "bound_output_extraction"
+    assert claim.verified_independently is False
 
 
 def test_nondeterministic_run_cannot_declare_bitwise_ceiling(tmp_path):
@@ -312,35 +345,22 @@ def test_rerun_reproduction_achieves_bitwise_identical_for_deterministic_example
     assert reproduce_run_receipt(proj, rerun=True) == 0
 
 
-def test_provenance_linkage_against_real_vfy_data_receipt():
-    """Dogfood check: link a run to the real VFY-DATA-000001 hypergraph in this repo."""
-    data_receipt_dir = REPO_ROOT / "receipts" / "VFY-DATA-000001"
-    if not (data_receipt_dir / "receipt.json").exists():
-        pytest.skip("VFY-DATA-000001 receipt not present in this checkout")
-
-    data = json.loads((data_receipt_dir / "receipt.json").read_text(encoding="utf-8"))
-    arts = data.get("hypergraph", {}).get("artifacts", [])
-    # Artifacts are serialized as a list of dicts on disk (see VstdDataReceipt.to_dict
-    # -> ProvenanceHypergraph.to_dict); normalize defensively in case that ever changes to a
-    # dict keyed by artifact_id.
-    if isinstance(arts, dict):
-        artifact_ids = list(arts.keys())
-    else:
-        artifact_ids = [a["artifact_id"] for a in arts]
-    assert artifact_ids, "expected at least one artifact in VFY-DATA-000001's hypergraph"
+def test_provenance_linkage_uses_public_graph_fixture(tmp_path):
+    """Resolve linkage without depending on a receipt absent from the public tree."""
+    data_receipt_file, artifact_id = _write_data_receipt(tmp_path)
 
     from verifier.core.run import _resolve_provenance_linkage
 
     linkage = _resolve_provenance_linkage(
-        REPO_ROOT,
-        {"dataset_receipt_path": "receipts/VFY-DATA-000001", "artifact_id": artifact_ids[0]},
+        tmp_path,
+        {"dataset_receipt_path": str(data_receipt_file.parent.name), "artifact_id": artifact_id},
     )
     assert linkage.found_in_hypergraph is True
     assert linkage.ancestor_count is not None
 
     missing = _resolve_provenance_linkage(
-        REPO_ROOT,
-        {"dataset_receipt_path": "receipts/VFY-DATA-000001", "artifact_id": "art:does_not_exist_12345"},
+        tmp_path,
+        {"dataset_receipt_path": str(data_receipt_file.parent.name), "artifact_id": "artifact:missing"},
     )
     assert missing.found_in_hypergraph is False
     assert missing.ancestor_count is None
@@ -351,19 +371,13 @@ def test_blast_radius_revocation_flags_dependent_run_receipts(tmp_path):
     consumed it (directly or via a downstream derivative) — composing dataset
     provenance into run-receipt impact analysis rather than a parallel system.
     """
-    data_receipt_dir = REPO_ROOT / "receipts" / "VFY-DATA-000001"
-    data_receipt_file = data_receipt_dir / "receipt.json"
-    if not data_receipt_file.exists():
-        pytest.skip("VFY-DATA-000001 receipt not present in this checkout")
-
-    data = json.loads(data_receipt_file.read_text(encoding="utf-8"))
-    artifact_id = data["hypergraph"]["artifacts"][0]["artifact_id"]
+    data_receipt_file, artifact_id = _write_data_receipt(tmp_path)
 
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()
     manifest["provenance_roots"] = [
         {
-            "dataset_receipt_path": str(data_receipt_dir),
+            "dataset_receipt_path": str(data_receipt_file.parent),
             "artifact_id": artifact_id,
         }
     ]

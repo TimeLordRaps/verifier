@@ -12,15 +12,17 @@
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
+  <a class="skip-link" href="#top">Skip to content</a>
   <header class="wrap">
     <nav aria-label="Primary">
       <a class="brand" href="#top">VSTD</a>
       <div class="links">
-        <a href="reference.html">Docs</a>
+        <a href="guides.html">Guides</a>
+        <a href="reference.html">Reference</a>
         <a href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Demo</a>
-        <a href="https://github.com/TimeLordRaps/verifier/blob/main/standard/LADDER.md">Standard</a>
-        <a href="profiles/experimental-workflow.md">Experiments</a>
-        <a href="https://github.com/TimeLordRaps/verifier/blob/main/ROADMAP.md">Roadmap</a>
+        <a href="guides.html#standards">Standards</a>
+        <a href="guides.html#experiments">Experiments</a>
+        <a href="guides.html#project">Project</a>
         <a href="https://github.com/TimeLordRaps/verifier">GitHub</a>
       </div>
     </nav>
@@ -34,7 +36,7 @@
         <p class="lead">VSTD makes computational claims:</p>
         <dl class="lead-defs">
           <dt>Portable:</dt>
-          <dd>checkable without post-verdict cooperation from the declarant, using included or content-addressed evidence under an explicit availability boundary.</dd>
+          <dd>checkable without post-verdict cooperation from the declarant because every verdict-critical byte is included or retrievable and digest-bound; a locator or retention promise alone does not qualify.</dd>
           <dt>Bounded:</dt>
           <dd>carrying their own claim coordinates and resource ceilings, so exhausted work remains <code>UNKNOWN</code> rather than being answered outside the checked boundary.</dd>
           <dt>Refutable:</dt>

@@ -11,7 +11,7 @@ body:
     attributes:
       label: Exact coordinate
       description: File, section, schema field, layer, and release or commit.
-      placeholder: standard/VSTD-4.md section 2.10 at v1.0.1
+      placeholder: standard/VSTD-4.md section X at release or commit Y
     validations:
       required: true
   - type: textarea

@@ -1,4 +1,4 @@
-"""Generic proof-carrying computational run capture for VSTD.
+"""Generic computational run receipt capture for VSTD.
 
 This module implements the smallest working version of the "wrap any consequential
 computation and get a receipt" primitive described in the VSTD program graph.
@@ -25,9 +25,9 @@ Design commitments (do not weaken without updating tests + docs):
    commands are accepted, closing off the shell-indirection attack class.
 3. **External evaluation is never auto-promoted.** If a manifest declares that an
    organizer/leaderboard reported a score, that is stored as an
-   :class:`ExternalEvaluationEvidence` record with ``attested=False`` unless the
-   manifest itself supplies a checkable evidence reference. Its presence never
-   flips ``execution_completed`` or any other locally-checked claim to true.
+   :class:`ExternalEvaluationEvidence` record with ``attested=False``. A supplied
+   evidence reference is recorded but not dereferenced or verified by this runtime.
+   Its presence never flips any locally checked claim to true.
 4. **Reproduction fidelity is classified, not asserted.** Rehashing on-disk output
    artifacts (always available, side-effect free) is distinguished from re-running
    the recorded command (only performed when explicitly requested via ``rerun``),
@@ -237,7 +237,7 @@ class EvaluatorClaim:
     evaluator_name: str
     metric_name: str
     value: Any
-    computed_by: str  # "local_reference_evaluator" | "declared_by_manifest_author"
+    computed_by: str  # "bound_output_extraction" | "declared_by_manifest_author"
     verified_independently: bool
 
     def to_dict(self) -> dict[str, Any]:
@@ -255,10 +255,9 @@ class ExternalEvaluationEvidence:
     """Explicit, bounded slot for organizer/third-party reported results.
 
     Presence of this record NEVER means the runtime cryptographically or
-    independently verified the external event described. ``attested``
-    distinguishes a claim carrying real checkable evidence (a signature, a
-    linked artifact digest) from a bare unverifiable assertion. Default is
-    the least trusting classification.
+    independently verified the external event described. ``evidence_kind`` and
+    ``evidence_ref`` preserve what the manifest supplied; ``attested`` remains
+    false because this capture path does not dereference or verify that evidence.
     """
 
     source: str
@@ -281,17 +280,13 @@ class ExternalEvaluationEvidence:
     @classmethod
     def from_manifest(cls, d: Mapping[str, Any]) -> "ExternalEvaluationEvidence":
         evidence_kind = str(d.get("evidence_kind", "UNVERIFIED_ASSERTION")).upper()
-        # Fail closed: only LINKED_ARTIFACT/SIGNED_ATTESTATION with a concrete
-        # evidence_ref may claim attested=True. A bare assertion never can,
-        # regardless of what the manifest author writes in "attested".
-        attested = bool(d.get("attested", False)) and evidence_kind != "UNVERIFIED_ASSERTION" and bool(d.get("evidence_ref"))
         return cls(
             source=str(d.get("source", "unspecified")),
             description=str(d.get("description", "")),
             reported_value=d.get("reported_value"),
             evidence_kind=evidence_kind,
             evidence_ref=d.get("evidence_ref"),
-            attested=attested,
+            attested=False,
         )
 
 
@@ -549,8 +544,8 @@ def generate_run_receipt_markdown(receipt: GenericRunReceipt) -> str:
             f"- **Reported value:** `{ext.reported_value}`\n"
             f"- **Evidence kind:** `{ext.evidence_kind}`\n"
             f"- **Evidence reference:** `{ext.evidence_ref}`\n"
-            f"- **Attested by the runtime:** `{ext.attested}` "
-            f"({'a checkable evidence reference backs this value' if ext.attested else 'this is an UNVERIFIED external assertion — recorded for bookkeeping only, NOT independently checked'})\n"
+            f"- **Verified by this runtime:** `{ext.attested}` "
+            "(the reference is recorded but not dereferenced or independently checked)\n"
         )
     else:
         external_md = "_(no external evaluation evidence declared — this run makes no claim about any external score, leaderboard, or organizer report)_"
@@ -637,7 +632,7 @@ def generate_run_receipt_markdown(receipt: GenericRunReceipt) -> str:
 ## 8. Reproduction
 
 ```bash
-vstd reproduce {receipt.receipt_id if False else '<receipt-dir>'}
+vstd reproduce <receipt-dir>
 ```
 
 Highest demonstrated reproduction fidelity: `{receipt.reproducibility.get("highest_demonstrated_level") or "NOT YET REPRODUCED"}`.
@@ -732,7 +727,7 @@ def capture_run(
     manifest_dir: Path,
     receipt_id: Optional[str] = None,
 ) -> GenericRunReceipt:
-    """Execute the manifest-declared command and capture a proof-carrying receipt.
+    """Execute the manifest-declared command and capture a computational run receipt.
 
     Fails closed (raises :class:`RunError`) on manifest shape errors that would
     otherwise silently under-specify the claim (non-list command, absent claim
@@ -896,11 +891,11 @@ def capture_run(
                     for key in [k for k in pointer.split(".") if k]:
                         node = node[key]
                     value = node
-                    computed_by = "local_reference_evaluator"
-                    verified_independently = True
+                    computed_by = "bound_output_extraction"
+                    verified_independently = False
                 except Exception:
                     value = None
-                    computed_by = "local_reference_evaluator"
+                    computed_by = "bound_output_extraction"
                     verified_independently = False
         evaluator_claims.append(
             EvaluatorClaim(
@@ -1038,7 +1033,7 @@ def validate_run_receipt(receipt_path_or_dir: Path) -> int:
     if recomputed != recorded_digest:
         print(f"[FAIL] Canonical digest mismatch:\n  Recorded:   {recorded_digest}\n  Recomputed: {recomputed}")
         return 1
-    print(f"[PASS] Run receipt {data.get('receipt_id')} is valid.")
+    print(f"[INTEGRITY OK] Run receipt {data.get('receipt_id')} stable digest matches.")
     print(f"       Digest: {recorded_digest}")
     print(f"       Outcome: {data.get('execution', {}).get('outcome')}")
     return 0
@@ -1066,7 +1061,11 @@ def inspect_run_receipt(receipt_path_or_dir: Path) -> int:
     print(f"  all_declared_artifacts_present: {c.get('all_declared_artifacts_present')}")
     ext = c.get("external_evaluation")
     if ext:
-        print(f"  external_evaluation:            reported={ext.get('reported_value')} attested={ext.get('attested')}")
+        print(
+            "  external_evaluation:            "
+            f"reported={ext.get('reported_value')} recorded_attested={ext.get('attested')} "
+            "(not verified by inspect)"
+        )
     else:
         print("  external_evaluation:            (none declared)")
     print("=" * 70)
