@@ -46,6 +46,10 @@ def test_public_parser_has_no_target_specific_generation_commands() -> None:
     assert parser.parse_args(["data", "export", "receipt.json"]).data_command == "export"
     assert parser.parse_args(["plan", "manifest.json"]).command == "plan"
     assert parser.parse_args(["demo"]).command == "demo"
+    assert (
+        parser.parse_args(["experiment", "validate", "experiment.json"]).experiment_command
+        == "validate"
+    )
 
 
 def test_public_cli_flagship_demo_is_side_effect_free_and_machine_readable(

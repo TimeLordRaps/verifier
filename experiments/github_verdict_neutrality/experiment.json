@@ -1,0 +1,190 @@
+{
+  "profile": {
+    "id": "vstd.experimental-workflow",
+    "version": "0.1",
+    "status": "EXPERIMENTAL_NON_NORMATIVE"
+  },
+  "experiment": {
+    "id": "experiment-github-verdict-neutrality",
+    "title": "GitHub workflow observations remain verdict-neutral",
+    "question": "Does the GitHub adapter preserve successful workflow and merge states without converting them into a VSTD verdict?",
+    "state": "COMPLETED",
+    "started_at": "2026-08-24T12:00:00Z"
+  },
+  "hypotheses": [
+    {
+      "id": "hypothesis-platform-non-upgrade",
+      "statement": "Every supported GitHub observation maps with verification_effect NONE.",
+      "falsification_condition": "Any supported snapshot produces a workflow event that grants or implies a VSTD verdict.",
+      "state": "SUPPORTED"
+    }
+  ],
+  "preregistration": {
+    "state": "NONE",
+    "recorded_at": null,
+    "artifact_id": null,
+    "limitations": [
+      "This is a deterministic adapter specimen rather than a preregistered empirical study."
+    ]
+  },
+  "artifacts": [],
+  "budgets": [
+    {
+      "id": "budget-github-events",
+      "resource": "normalized-platform-events",
+      "limit": 5,
+      "consumed": 5,
+      "unit": "event",
+      "scope": "checked-in GitHub snapshot"
+    }
+  ],
+  "actions": [
+    {
+      "id": "action-map-github-snapshot",
+      "kind": "WORKFLOW_ADAPTER_MAPPING",
+      "target": "normalized GitHub issue, commit, workflow, artifact, and pull-request states",
+      "state": "COMPLETED",
+      "priority": 1,
+      "selected_because": "The public repository is hosted on GitHub, so the first adapter must demonstrate that native repository success does not become verification success.",
+      "selection_evidence_ids": [
+        "hypothesis-platform-non-upgrade"
+      ],
+      "alternatives_considered": [
+        "treat Git history as the experiment record",
+        "map workflow success to PASS"
+      ],
+      "budget_ids": [
+        "budget-github-events"
+      ],
+      "depends_on": [],
+      "triggered_by": [],
+      "expected_artifact_effect": "Produce a portable event record whose platform successes have no verification effect.",
+      "substrate": {
+        "kind": "workflow-platform-adapter",
+        "name": "VSTD normalized GitHub adapter",
+        "version": "0.1",
+        "coordinate": "repo:src/verifier/experimental_workflow/github.py"
+      },
+      "native_result_ids": [],
+      "produced_artifact_ids": []
+    }
+  ],
+  "observations": [
+    {
+      "id": "observation-five-neutral-events",
+      "action_id": "action-map-github-snapshot",
+      "recorded_at": "2026-08-24T12:06:00Z",
+      "statement": "Five supported GitHub observations were mapped and every event retained verification_effect NONE.",
+      "status": "OBSERVED",
+      "evidence_artifact_ids": [],
+      "limitations": [
+        "The normalized snapshot is a checked-in specimen and is not a live GitHub API observation."
+      ]
+    }
+  ],
+  "native_results": [],
+  "adaptations": [],
+  "amendments": [],
+  "challenges": [],
+  "horizons": [
+    {
+      "id": "horizon-underlying-correctness",
+      "status": "UNKNOWN",
+      "description": "Correctness of the change represented by the workflow and pull request",
+      "reason": "Repository state alone does not include a bound domain-verifier result and VSTD receipt."
+    }
+  ],
+  "publication": {
+    "state": "INTERNAL",
+    "artifact_ids": []
+  },
+  "workflow_events": [
+    {
+      "id": "github-event-16194f8f10fe0e61e766",
+      "kind": "PLATFORM_WORKFLOW_RUN",
+      "recorded_at": "2026-08-24T12:03:00Z",
+      "source": {
+        "platform": "github",
+        "repository": "github:example/verifier-integration",
+        "coordinate": "workflow-run:9001"
+      },
+      "native_state": "completed/success",
+      "verification_effect": "NONE",
+      "details": {
+        "id": 9001,
+        "workflow": "conformance",
+        "head_sha": "1111111111111111111111111111111111111111"
+      }
+    },
+    {
+      "id": "github-event-542a5a9a6b0b9b37d3a3",
+      "kind": "PLATFORM_PULL_REQUEST",
+      "recorded_at": "2026-08-24T12:05:00Z",
+      "source": {
+        "platform": "github",
+        "repository": "github:example/verifier-integration",
+        "coordinate": "pull-request:42"
+      },
+      "native_state": "closed/MERGED",
+      "verification_effect": "NONE",
+      "details": {
+        "number": 42,
+        "head_sha": "1111111111111111111111111111111111111111",
+        "base_sha": "0000000000000000000000000000000000000000",
+        "merged": true
+      }
+    },
+    {
+      "id": "github-event-6d179bfe41711ce7be21",
+      "kind": "PLATFORM_COMMIT",
+      "recorded_at": "2026-08-24T12:00:00Z",
+      "source": {
+        "platform": "github",
+        "repository": "github:example/verifier-integration",
+        "coordinate": "commit:1111111111111111111111111111111111111111"
+      },
+      "native_state": "RECORDED",
+      "verification_effect": "NONE",
+      "details": {
+        "sha": "1111111111111111111111111111111111111111",
+        "subject": "Run bounded checker"
+      }
+    },
+    {
+      "id": "github-event-bef92a6556f4ddf05651",
+      "kind": "PLATFORM_ISSUE",
+      "recorded_at": "2026-08-24T12:04:00Z",
+      "source": {
+        "platform": "github",
+        "repository": "github:example/verifier-integration",
+        "coordinate": "issue:41"
+      },
+      "native_state": "closed",
+      "verification_effect": "NONE",
+      "details": {
+        "number": 41,
+        "title": "Test the bounded checker"
+      }
+    },
+    {
+      "id": "github-event-d32d5b76ae8d24c7d5f7",
+      "kind": "PLATFORM_ARTIFACT",
+      "recorded_at": "2026-08-24T12:03:00Z",
+      "source": {
+        "platform": "github",
+        "repository": "github:example/verifier-integration",
+        "coordinate": "workflow-artifact:9002"
+      },
+      "native_state": "AVAILABLE",
+      "verification_effect": "NONE",
+      "details": {
+        "id": 9002,
+        "name": "checker-output",
+        "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "run_id": 9001
+      }
+    }
+  ],
+  "interventions": [],
+  "manifest_digest": "sha256:3b98310d35c20e7099d242e2c655e4bf8dc62d91298adc04e4dc2f56f2f79d89"
+}

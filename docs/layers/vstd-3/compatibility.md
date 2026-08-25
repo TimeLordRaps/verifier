@@ -4,6 +4,11 @@ VSTD-3 is additive. It does not reinterpret earlier receipt wire formats. For
 the historical filename and wire-identifier table, see
 `../../../standard/WIRE_IDENTIFIERS.md`.
 
+The currently shipped adapter boundary is centralized in
+[`docs/CLAIMS_AND_LIMITS.md`](../../CLAIMS_AND_LIMITS.md#what-the-current-adapters-can-say):
+host-visible metadata is not device attestation, and the virtual accelerator establishes
+only its emulator-scoped claims.
+
 ## Existing receipts
 
 - `VSTD-0.1` receipt validators keep their existing VSTD-1 wire semantics.

@@ -33,6 +33,10 @@ from verifier.runtime.hardware_cli import (
     handle_vstd3_command,
     parse_verification_keys,
 )
+from verifier.runtime.experimental_workflow_cli import (
+    add_experiment_parsers,
+    handle_experiment_command,
+)
 from verifier.runtime.demo import SCENARIOS, demo_report, emit_specimens, run_demo
 
 
@@ -200,6 +204,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     export_parser = data_commands.add_parser("export")
     export_parser.add_argument("receipt")
+    add_experiment_parsers(subparsers)
     add_vstd3_parsers(subparsers)
     return parser
 
@@ -390,6 +395,8 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.command == "data":
             return _handle_data_command(args)
+        if args.command == "experiment":
+            return handle_experiment_command(args)
         if args.command in {"hardware", "continuity", "fleet", "evidence", "claims"}:
             return handle_vstd3_command(args)
     except (OSError, RunError, ValueError, KeyError) as exc:

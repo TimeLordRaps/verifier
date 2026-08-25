@@ -1,0 +1,46 @@
+{
+  "commits": [
+    {
+      "committed_at": "2026-08-24T12:00:00Z",
+      "sha": "1111111111111111111111111111111111111111",
+      "subject": "Run bounded checker"
+    }
+  ],
+  "issues": [
+    {
+      "number": 41,
+      "state": "closed",
+      "title": "Test the bounded checker",
+      "updated_at": "2026-08-24T12:04:00Z"
+    }
+  ],
+  "pull_requests": [
+    {
+      "base_sha": "0000000000000000000000000000000000000000",
+      "head_sha": "1111111111111111111111111111111111111111",
+      "merged": true,
+      "number": 42,
+      "state": "closed",
+      "updated_at": "2026-08-24T12:05:00Z"
+    }
+  ],
+  "repository": "github:example/verifier-integration",
+  "workflow_runs": [
+    {
+      "artifacts": [
+        {
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "expired": false,
+          "id": 9002,
+          "name": "checker-output"
+        }
+      ],
+      "conclusion": "success",
+      "head_sha": "1111111111111111111111111111111111111111",
+      "id": 9001,
+      "status": "completed",
+      "updated_at": "2026-08-24T12:03:00Z",
+      "workflow": "conformance"
+    }
+  ]
+}

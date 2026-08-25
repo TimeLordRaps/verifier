@@ -4,9 +4,11 @@ Working rules for automated contributors to VSTD. Read this before editing anyth
 
 ## 1. What this repository is
 
-VSTD is a **specification** plus its **reference implementation** for portable, bounded,
-refutable evidence about computational claims. The distribution is `verifier-standard`,
-the import package is `verifier`, and `vstd` is the canonical command.
+VSTD is a **verification domain language** plus its **reference implementation** for
+portable, bounded, refutable evidence about computational claims. It standardizes claim
+boundaries and portable result semantics across domain verifiers without replacing their
+native work. The distribution is `verifier-standard`, the import package is `verifier`,
+and `vstd` is the canonical command.
 
 Two independent axes: `VSTD-1..5` (object mechanics) and `VSTD-Graph-1..5` (collection
 dynamics). Layers 1-4 are implemented; **layer 5 is DRAFT**. An aggregate depth of `N`
@@ -41,7 +43,9 @@ reason, not a pass. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 python -m pip install ".[test]"
 python -m pytest -q
 python scripts/check_presentation.py
+python scripts/build_reference.py --check
 python -m compileall -q src scripts
+PYTHONPATH=src python scripts/build_experiment_index.py --check
 ```
 
 Stdlib-purity smoke, mirroring the `stdlib-smoke` CI job:
@@ -80,7 +84,11 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 - `src/verifier/runtime/` — `public_cli.py` (every CLI entry point) and `demo.py`.
 - `src/verifier/specifications/` — byte-identical copies of normative spec files.
 - `receipts/schema/` — JSON Schemas. `examples/` — runnable specimens.
-- `scripts/` — `check_presentation.py`, `release_artifacts.py`, `build_pages.py`.
+- `experiments/` — non-normative profile manifests with explicit horizons.
+- `src/verifier/experimental_workflow/` — optional workflow/profile interchange; it
+  records allocation but never grants a VSTD verdict from repository state.
+- `scripts/` — `check_presentation.py`, `release_artifacts.py`, `build_pages.py`,
+  `build_reference.py`, and `build_experiment_index.py`.
 - `tests/` — flat `tests/test_*.py`, no `conftest.py`.
 
 ## 5. Invariants that must not be refactored away
@@ -140,6 +148,7 @@ CRLF/LF equivalence as byte identity. This matters when working on Windows.
   disclosure, explicit non-goals). Do not reword those sentences casually;
 - a local Windows or home-directory path leaked into committed content;
 - a change to the overview asset dimensions or its accessibility role.
+- a stale generated CLI/API reference or experiment index.
 
 The `conformance-gate` job requires `base`, `stdlib-smoke`, `release-integrity`,
 `installed-wheel-smoke`, and `presentation` to all succeed.

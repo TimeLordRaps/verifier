@@ -73,11 +73,23 @@ layer still requires its own evidence; the loop only carries results and challen
 - disagreements are preserved as public interoperability failures until resolved;
 - no “independent” label is used merely because two entry points call shared logic.
 
-## Milestone 3 — agent-work profile
+## Milestone 3 — experimental-workflow and agent-work profiles
 
-**Build**
+**Implemented in experimental profile 0.1**
 
-- a non-normative profile for observable user, agent, and tool messages;
+- a platform-independent, non-normative experimental-workflow profile for questions,
+  hypotheses, preregistration, interventions, observations, native-verifier results,
+  budgets, amendments, challenges, and publication state;
+- a GitHub adapter that maps issues, commits, workflow runs, artifacts, pull requests,
+  and merges without treating repository state as a verification verdict;
+- bounded verification-allocation records that preserve the reason, budget, deferred
+  surface, and native outcome without assigning truth by priority;
+- deterministic canonicalization, repository-artifact binding, a generated experiment
+  index, adversarial tests, and a verdict-neutral checked-in specimen.
+
+**Still build**
+
+- an agent-harness specialization for observable user, agent, and tool messages;
 - bindings for repository state, patches, file reads, commands, outputs, tests,
   failures, retries, and final claims;
 - explicit serialization gaps for hidden prompts, inaccessible reasoning, and

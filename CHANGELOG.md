@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.2.0 - 2026-08-24
+
+- Add experimental workflow profile 0.1 with deterministic canonicalization, strict
+  validation, bounded work-allocation records, additive amendments and challenges,
+  explicit unresolved horizons, and verdict-neutral platform events.
+- Add a normalized GitHub adapter for issues, commits, workflow runs, artifacts, and
+  pull requests. Successful workflows and merges retain `verification_effect = NONE`
+  unless a separate native result is explicitly mapped through a bound VSTD receipt.
+- Add `vstd experiment validate` and `vstd experiment github-events` as offline,
+  verdict-neutral entry points. Repository artifacts are explicitly `NOT_CHECKED` with
+  exit code 2 unless their root is supplied.
+- Add a machine-readable schema, checked-in verdict-neutral specimen, generated
+  experiment index, adversarial tests, and a runnable offline example.
+- Add a generated CLI/API reference page and presentation gates that reject stale
+  reference or experiment-index content.
+- Clarify VSTD's role as a verification-domain language and interchange layer that
+  preserves, rather than replaces or strengthens, native verifier results.
+
 ## 1.1.3 - 2026-08-22
 
 - Canonicalize source ZIP timestamps in UTC and remove host ZIP metadata, so the

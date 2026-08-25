@@ -98,3 +98,45 @@ def test_pages_builder_refuses_to_merge_into_existing_content(tmp_path: Path) ->
     else:
         raise AssertionError("Pages builder merged into non-empty output")
     assert marker.read_text(encoding="utf-8") == "keep\n"
+
+
+def test_generated_reference_covers_every_command_and_public_export() -> None:
+    """The docs tab is generated, not asserted: it must list the live surface."""
+
+    path = ROOT / "scripts/build_reference.py"
+    spec = importlib.util.spec_from_file_location("build_reference_coverage", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    page = (ROOT / "docs/reference.html").read_text(encoding="utf-8")
+    assert page == module.render()
+
+    import verifier
+    from verifier.runtime.public_cli import build_parser
+
+    for command in module._walk(build_parser()):
+        anchor = 'id="cli-' + str(command["prog"]).replace(" ", "-") + '"'
+        assert anchor in page, f"reference page omits {command['prog']}"
+    for name in verifier.__all__:
+        assert f'id="api-{name}"' in page, f"reference page omits export {name}"
+
+
+def test_generated_reference_detects_drift() -> None:
+    path = ROOT / "scripts/build_reference.py"
+    spec = importlib.util.spec_from_file_location("build_reference_drift", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    module.PIPELINE = ((
+        "vstd ghost",
+        "A command that no longer exists.",
+        ("verifier.core.run:not_a_real_entry_point",),
+    ),)
+    try:
+        module.render()
+    except module.ReferenceBuildError:
+        pass
+    else:
+        raise AssertionError("reference build published a missing pipeline entry point")

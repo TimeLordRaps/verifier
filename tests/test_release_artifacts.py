@@ -130,16 +130,16 @@ def test_repository_url_spellings_are_canonical(raw: str, expected: str) -> None
 
 
 def _write_raw_wheel(path: Path, *, newline: bytes, reverse: bool) -> None:
-    dist_info = "verifier_standard-1.1.3.dist-info"
+    dist_info = "verifier_standard-1.2.0.dist-info"
     members = [
-        ("verifier/__init__.py", b'__version__ = "1.1.3"\n'),
+        ("verifier/__init__.py", b'__version__ = "1.2.0"\n'),
         (
             f"{dist_info}/METADATA",
             newline.join(
                 [
                     b"Metadata-Version: 2.4",
                     b"Name: verifier-standard",
-                    b"Version: 1.1.3",
+                    b"Version: 1.2.0",
                     b"",
                     b"Canonical metadata.",
                     b"",
@@ -200,9 +200,9 @@ def test_wheel_normalization_removes_host_newlines_and_zip_metadata(tmp_path: Pa
         infos = bundle.infolist()
         assert all(info.create_system == 3 for info in infos)
         assert all(info.compress_type == zipfile.ZIP_STORED for info in infos)
-        metadata_name = "verifier_standard-1.1.3.dist-info/METADATA"
+        metadata_name = "verifier_standard-1.2.0.dist-info/METADATA"
         assert b"\r" not in bundle.read(metadata_name)
-        record_name = "verifier_standard-1.1.3.dist-info/RECORD"
+        record_name = "verifier_standard-1.2.0.dist-info/RECORD"
         rows = list(csv.reader(io.StringIO(bundle.read(record_name).decode("utf-8"))))
         records = {row[0]: row[1:] for row in rows}
         for info in infos:
@@ -217,7 +217,7 @@ def test_wheel_normalization_removes_host_newlines_and_zip_metadata(tmp_path: Pa
 
 
 def _write_raw_sdist(path: Path, *, newline: bytes, reverse: bool) -> None:
-    root = "verifier_standard-1.1.3"
+    root = "verifier_standard-1.2.0"
     members = [
         (
             f"{root}/PKG-INFO",
@@ -225,7 +225,7 @@ def _write_raw_sdist(path: Path, *, newline: bytes, reverse: bool) -> None:
                 [
                     b"Metadata-Version: 2.4",
                     b"Name: verifier-standard",
-                    b"Version: 1.1.3",
+                    b"Version: 1.2.0",
                     b"",
                 ]
             ),
@@ -237,7 +237,7 @@ def _write_raw_sdist(path: Path, *, newline: bytes, reverse: bool) -> None:
                 [
                     b"Metadata-Version: 2.4",
                     b"Name: verifier-standard",
-                    b"Version: 1.1.3",
+                    b"Version: 1.2.0",
                     b"",
                 ]
             ),
@@ -272,7 +272,7 @@ def test_sdist_normalization_removes_host_newlines_and_tar_metadata(tmp_path: Pa
 
     with tarfile.open(first, "r:gz") as bundle:
         files = {member.name: member for member in bundle.getmembers()}
-        root = "verifier_standard-1.1.3"
+        root = "verifier_standard-1.2.0"
         metadata = bundle.extractfile(files[f"{root}/PKG-INFO"])
         assert metadata is not None and b"\r" not in metadata.read()
         readme = bundle.extractfile(files[f"{root}/README.md"])
