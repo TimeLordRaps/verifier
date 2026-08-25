@@ -1,4 +1,6 @@
-"""Incremental, evidence-bounded VSTD 3 conformance profiles."""
+"""Terminology: Verifier Standard (VSTD).
+
+Incremental, evidence-bounded VSTD 3 conformance profiles."""
 
 from __future__ import annotations
 

@@ -1,4 +1,8 @@
-"""``VSTD4-GDC-1`` conformance, and regressions pinning the three retrofits.
+"""Terminology: conjunctive normal form (CNF); grounded decision certificate (GDC);
+Boolean satisfiability problem (SAT); trusted computing base (TCB); unsatisfiable (UNSAT);
+Verifier Standard (VSTD).
+
+``VSTD4-GDC-1`` conformance, and regressions pinning the three retrofits.
 
 The tests that matter most here are the ones no competition proof format could
 express: the keystone test, where a decision block is perfectly valid and the

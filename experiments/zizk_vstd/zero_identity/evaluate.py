@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Experimental evaluator for the ZIZK-VSTD bounded identity disclosure profile.
+"""Terminology: Verifier Standard (VSTD); zero-identity/zero-knowledge (ZIZK).
+
+Experimental evaluator for the ZIZK-VSTD bounded identity disclosure profile.
 
 Discharges nothing on the VSTD ladder. This module is experimental scaffolding for
 the terminology and safety question recorded in ``SEMANTIC_MODEL.md``: it decides

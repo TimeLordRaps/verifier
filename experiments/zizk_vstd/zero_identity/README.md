@@ -1,4 +1,4 @@
-# ZIZK-VSTD experiment: zero identity, examined
+# zero-identity/zero-knowledge (ZIZK)-Verifier Standard (VSTD) experiment: zero identity, examined
 
 **Status:** experimental. Not normative, not part of any VSTD layer, not implemented by
 the `verifier` package, and not referenced by any receipt. Nothing here carries a wire

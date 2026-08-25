@@ -1,5 +1,9 @@
 # Threat model
 
+> **Acronyms:** Executable and Linkable Format (ELF); identifier (ID); JavaScript Object Notation (JSON);
+> reduced instruction set computer (RISC); Secure Hash Algorithm 256-bit (SHA-256);
+> scalable transparent argument of knowledge (STARK); zero-knowledge virtual machine (zkVM).
+
 **Scope:** the optional zero-knowledge experiment only.
 
 ## Protected secret

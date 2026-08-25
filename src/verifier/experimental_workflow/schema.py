@@ -1,4 +1,6 @@
-"""JSON Schema generator for the experimental workflow interchange profile."""
+"""Terminology: identifier (ID); JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+
+JSON Schema generator for the experimental workflow interchange profile."""
 
 from __future__ import annotations
 
@@ -86,6 +88,7 @@ def workflow_manifest_schema() -> dict[str, Any]:
     )
 
     return {
+        "$comment": "Terminology: Verifier Standard (VSTD).",
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "$id": "https://timelordraps.github.io/verifier/profiles/experimental-workflow.schema.json",
         "title": "VSTD experimental workflow profile 0.1",

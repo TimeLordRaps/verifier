@@ -1,4 +1,7 @@
-# VSTD-2 — Verification Surface
+# Verifier Standard (VSTD)-2 — Verification Surface
+
+> **Acronyms:** abstract syntax tree (AST); continuous delivery or deployment (CD); continuous integration (CI);
+> intermediate representation (IR); trusted computing base (TCB).
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 

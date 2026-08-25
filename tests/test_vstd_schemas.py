@@ -1,4 +1,6 @@
-"""Published JSON Schema coverage for the integer-layer release.
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+
+Published JSON Schema coverage for the integer-layer release.
 
 JSON Schema checks document shape.  The independent kernel remains authoritative
 for grounding, tier, count, binding, and proof semantics.

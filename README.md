@@ -1,8 +1,13 @@
 <div align="center">
 
-<img src="docs/assets/vstd-overview.svg" alt="VSTD object and graph verification layers, each requiring its own separate evidence" width="920">
+<img src="docs/assets/vstd-overview.svg" alt="Verifier Standard (VSTD) object and graph verification layers, each requiring its own separate evidence" width="920">
 
-# VSTD
+# Verifier Standard (VSTD)
+
+> **Acronyms:** artificial intelligence (AI); continuous integration (CI); command-line interface (CLI);
+> grounded decision certificate (GDC); Internet Engineering Task Force (IETF);
+> International Organization for Standardization (ISO); Supply Chain Integrity, Transparency, and Trust (SCITT);
+> World Wide Web Consortium (W3C); YAML Ain't Markup Language (YAML); ZIP archive format (ZIP).
 
 **Portable, bounded, refutable evidence for computational claims.**
 
@@ -102,6 +107,7 @@ separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
 | If you want to… | Start here |
 |---|---|
 | Understand the claim model in ten minutes | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
+| Look up a repository acronym or abbreviated term | [`docs/ACRONYMS.md`](docs/ACRONYMS.md) |
 | Try to break the core claim | [`examples/flagship_demo`](examples/flagship_demo) |
 | Implement an independent checker | [`standard/VSTD-4.md`](standard/VSTD-4.md) and [`VSTD4-GDC-1` schema](receipts/schema/vstd4_certificate.json) |
 | Model a provenance collection | [`standard/VSTD-Graph-1.md`](standard/VSTD-Graph-1.md) |

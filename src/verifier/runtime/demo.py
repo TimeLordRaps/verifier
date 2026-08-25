@@ -1,4 +1,7 @@
-"""Deterministic adversarial demonstration of VSTD's refutation boundaries.
+"""Terminology: command-line interface (CLI); JavaScript Object Notation (JSON);
+Verifier Standard (VSTD).
+
+Deterministic adversarial demonstration of VSTD's refutation boundaries.
 
 The demo is intentionally self-contained and side-effect free unless a caller
 explicitly asks to emit its JSON specimens.  It does not execute manifests,

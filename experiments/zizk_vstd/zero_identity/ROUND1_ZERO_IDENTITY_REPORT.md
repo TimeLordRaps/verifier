@@ -1,4 +1,6 @@
-# Round 1 report: zero identity in a ZIZK-VSTD profile
+# Round 1 report: zero identity in a zero-identity/zero-knowledge (ZIZK)-Verifier Standard (VSTD) profile
+
+> **Acronym:** carriage return and line feed (CRLF).
 
 **Status:** experimental result. Non-normative. No adoption is claimed or implied.
 

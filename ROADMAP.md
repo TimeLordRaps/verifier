@@ -1,4 +1,8 @@
-# VSTD public technical roadmap
+# Verifier Standard (VSTD) public technical roadmap
+
+> **Acronyms:** grounded decision certificate (GDC); Internet Engineering Task Force (IETF);
+> Boolean satisfiability problem (SAT); Supply Chain Integrity, Transparency, and Trust (SCITT);
+> zero-identity/zero-knowledge (ZIZK).
 
 **Status:** direction, not a promise of delivery or adoption
 **Scope:** the public specification, reference implementation, and interoperability

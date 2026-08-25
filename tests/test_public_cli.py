@@ -1,4 +1,6 @@
-"""Tests for the target-neutral public CLI surface."""
+"""Terminology: command-line interface (CLI); Verifier Standard (VSTD).
+
+Tests for the target-neutral public CLI surface."""
 
 from __future__ import annotations
 

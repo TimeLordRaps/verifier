@@ -1,4 +1,6 @@
-"""Semantic tests for the additive VSTD-0.2 verification geometry slice."""
+"""Terminology: Verifier Standard (VSTD).
+
+Semantic tests for the additive VSTD-0.2 verification geometry slice."""
 
 import json
 from dataclasses import replace

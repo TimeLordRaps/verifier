@@ -1,4 +1,15 @@
-# VSTD-3 — Substrate Accountability
+# Verifier Standard (VSTD)-3 — Substrate Accountability
+
+> **Acronyms:** Advanced Micro Devices (AMD); Amazon Web Services (AWS); Compute Unified Device Architecture (CUDA);
+> Device Identifier Composition Engine (DICE); DMTF standards organization (DMTF); DICE Protection Environment (DPE);
+> Entity Attestation Token (EAT); floating-point operation (FLOP); hash-based message authentication code (HMAC);
+> integrated development environment (IDE); Internet Engineering Task Force (IETF);
+> International Organization for Standardization (ISO); JavaScript Object Notation (JSON);
+> NVIDIA Management Library (NVML); Peripheral Component Interconnect (PCI); PCI Special Interest Group (PCI-SIG);
+> Remote Attestation Procedures (RATS); Reference Integrity Manifest (RIM); software development kit (SDK);
+> Secure Hash Algorithm 256-bit (SHA-256); system management interface (SMI); Security Protocol and Data Model (SPDM);
+> Trusted Device Interface Security Protocol (TDISP); tensor processing unit (TPU); Coordinated Universal Time (UTC);
+> Unicode Transformation Format, 8-bit (UTF-8); World Wide Web Consortium (W3C).
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 

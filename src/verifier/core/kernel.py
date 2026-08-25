@@ -1,4 +1,7 @@
-"""The refutability kernel -- the whole trusted computing base of VSTD layer 4.
+"""Terminology: conjunctive normal form (CNF); grounded decision certificate (GDC);
+Boolean satisfiability problem (SAT); Verifier Standard (VSTD).
+
+The refutability kernel -- the whole trusted computing base of VSTD layer 4.
 
 Rung 4.7 is a claim about code, not a slogan: a certificate checker must be
 radically simpler than the system that produced the claim, and must share no

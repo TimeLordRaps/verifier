@@ -1,4 +1,6 @@
-"""Rung 4.12 -- the challenge protocol.
+"""Terminology: Verifier Standard (VSTD).
+
+Rung 4.12 -- the challenge protocol.
 
 Layer 4 must define what happens when someone says *this verdict is wrong*,
 even though nobody has yet. A challenge mechanism that exists but does not move

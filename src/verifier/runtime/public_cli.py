@@ -1,4 +1,7 @@
-"""Public, target-neutral CLI for the VSTD reference implementation.
+"""Terminology: command-line interface (CLI); identifier (ID); JavaScript Object Notation (JSON);
+Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
+
+Public, target-neutral CLI for the VSTD reference implementation.
 
 This entry point deliberately excludes repository-specific generators and verifiers.
 It operates only on declared generic-run manifests and stored VSTD-Graph receipts.

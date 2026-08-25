@@ -1,4 +1,7 @@
-"""Rung 4.11 -- the precommitment envelope.
+"""Terminology: International Organization for Standardization (ISO);
+Coordinated Universal Time (UTC); Verifier Standard (VSTD).
+
+Rung 4.11 -- the precommitment envelope.
 
 Committing only the claim is not enough, and the gap is not subtle. A declarant
 can honestly precommit *"my system achieves X"* and then, after looking at the

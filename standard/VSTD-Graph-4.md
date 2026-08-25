@@ -1,4 +1,6 @@
-# VSTD-Graph-4 — Refutable Transformation Closure
+# Verifier Standard (VSTD)-Graph-4 — Refutable Transformation Closure
+
+> **Acronym:** unsatisfiable (UNSAT).
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 

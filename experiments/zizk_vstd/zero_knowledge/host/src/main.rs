@@ -1,3 +1,7 @@
+//! Terminology: Executable and Linkable Format (ELF); identifier (ID);
+//! reduced instruction set computer (RISC); RISC Zero (RISC0);
+//! Secure Hash Algorithm 256-bit (SHA-256); scalable transparent argument of knowledge (STARK);
+//! Verifier Standard (VSTD); zero-knowledge (ZK).
 use hex::FromHex;
 use rand::{rngs::OsRng, RngCore};
 use risc0_zkvm::{

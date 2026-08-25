@@ -1,4 +1,12 @@
-"""``VSTD4-GDC-1`` -- Grounded Decision Certificates for VSTD layer 4.
+"""Terminology: American Standard Code for Information Interchange (ASCII);
+conjunctive normal form (CNF); deletion resolution asymmetric tautology (DRAT);
+Boolean satisfiability problem (SAT); flexible SAT proof format (FRAT);
+grounded decision certificate (GDC); GRAT proof format (GRAT); JavaScript Object Notation (JSON);
+linear resolution asymmetric tautology (LRAT); resolution asymmetric tautology (RAT);
+reverse unit propagation (RUP); Unicode Transformation Format, 8-bit (UTF-8);
+Verifier Standard (VSTD).
+
+``VSTD4-GDC-1`` -- Grounded Decision Certificates for VSTD layer 4.
 
 Competition proof formats (DRAT, LRAT, GRAT, FRAT) answer exactly one question:
 *is this large formula really unsatisfiable?* They are deliberately

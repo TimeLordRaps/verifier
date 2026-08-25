@@ -1,5 +1,7 @@
 ## Coordinate
 
+> **Acronyms:** Verifier Standard (VSTD).
+
 - VSTD layer/profile:
 - Repository release or target commit:
 - Claim, schema, or implementation seam:

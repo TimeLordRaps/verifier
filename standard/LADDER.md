@@ -1,4 +1,14 @@
-# The VSTD Ladder — what the numbers mean
+# The Verifier Standard (VSTD) Ladder — what the numbers mean
+
+> **Acronyms:** conjunctive normal form (CNF); Certificate Transparency (CT);
+> deletion resolution asymmetric tautology (DRAT); grounded decision certificate (GDC);
+> JavaScript Object Notation (JSON); National Institute of Standards and Technology (NIST);
+> nondeterministic polynomial time (NP); proof-carrying code (PCC);
+> World Wide Web Consortium provenance vocabulary (PROV); PROV data model (PROV-DM); Protect the Software (PS);
+> Request for Comments (RFC); reverse unit propagation (RUP); Boolean satisfiability problem (SAT);
+> Supply-chain Levels for Software Artifacts (SLSA); satisfiability modulo theories (SMT);
+> SMT library standard (SMT-LIB); Secure Software Development Framework (SSDF); The Update Framework (TUF);
+> unsatisfiable (UNSAT); World Wide Web Consortium (W3C).
 
 **Status:** project specification (normative for numbering and composition)
 **Editor:** TimeLordRaps
@@ -249,7 +259,7 @@ sources, and explicit non-equivalences.
 | Stable cryptographic representations | [RFC 8785: JSON Canonicalization Scheme](https://www.rfc-editor.org/rfc/rfc8785.html) | Shows why JSON used as cryptographic input needs invariant representation. VSTD formats retain their own declared canonicalization rules. |
 | Recorded entities, activities, and agents | W3C [PROV-DM](https://www.w3.org/TR/prov-dm/) | Supplies an interoperable provenance model adjacent to the Graph axis. VSTD-Graph is not a PROV implementation and does not infer complete history. |
 | Software materials, builders, steps, and products | [in-toto specification v1.0](https://in-toto.io/docs/specs/) and [SLSA v1.2](https://slsa.dev/spec/v1.2/) | Establish supply-chain provenance and attestation precedents. VSTD may bind their evidence but cannot manufacture their authorization or assurance level. |
-| Preserved release and provenance evidence | NIST [SP 800-218 SSDF 1.1](https://doi.org/10.6028/NIST.SP.800-218) | Practices PS.3.1 and PS.3.2 call for preserving releases and provenance and enabling integrity verification. They do not certify a VSTD receipt. |
+| Preserved release and provenance evidence | NIST [Special Publication (SP) 800-218 SSDF 1.1](https://doi.org/10.6028/NIST.SP.800-218) | Protect the Software practices PS.3.1 and PS.3.2 call for preserving releases and provenance and enabling integrity verification. They do not certify a VSTD receipt. |
 | Independent recreation | Reproducible Builds, [formal definition](https://reproducible-builds.org/docs/definition/) | Grounds the special case where another party recreates specified artifacts from declared inputs and instructions. Reproducibility does not establish every semantic claim. |
 | Producer-supplied portable certificates | Necula, [*Proof-Carrying Code*](https://doi.org/10.1145/263699.263712) | Establishes the pattern of an untrusted producer supplying a proof checked under a declared policy. VSTD uses the pattern beyond code safety without inheriting PCC's theorem. |
 | Independently checked UNSAT results | Wetzler, Heule, and Hunt, [*DRAT-trim*](https://www.cs.cmu.edu/~mheule/publications/drat-trim.pdf) | Establishes practical checking of clausal unsatisfiability proofs rather than trusting solver output. VSTD's implemented RUP format is narrower than DRAT. |

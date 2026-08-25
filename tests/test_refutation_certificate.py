@@ -1,4 +1,7 @@
-"""VSTD layer 4: refusals must carry certificates a stranger can check.
+"""Terminology: conjunctive normal form (CNF); Boolean satisfiability problem (SAT);
+unsatisfiable (UNSAT); Verifier Standard (VSTD).
+
+VSTD layer 4: refusals must carry certificates a stranger can check.
 
 The property under test is not merely that the solver is correct. It is that an
 UNSAT verdict ships an artifact an independent party validates *without*

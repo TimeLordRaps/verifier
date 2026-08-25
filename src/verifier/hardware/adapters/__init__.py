@@ -1,4 +1,6 @@
-"""Built-in VSTD 3 evidence adapters."""
+"""Terminology: Verifier Standard (VSTD).
+
+Built-in VSTD 3 evidence adapters."""
 
 from .amd import AmdAdapter
 from .base import AdapterError, EvidenceAdapter

@@ -1,4 +1,7 @@
-"""Translation-boundary assurance: the missing dimension between "a formal
+"""Terminology: finite-state machine (FSM); JavaScript Object Notation (JSON);
+Boolean satisfiability problem (SAT); Verifier Standard (VSTD).
+
+Translation-boundary assurance: the missing dimension between "a formal
 system said yes" and "the formal system was fed an honest encoding of the
 real thing."
 

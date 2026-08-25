@@ -1,4 +1,9 @@
-"""Public VSTD 3 accelerator-accountability CLI surfaces."""
+"""Terminology: application programming interface (API); command-line interface (CLI);
+hash-based message authentication code (HMAC); identifier (ID);
+International Organization for Standardization (ISO); JavaScript Object Notation (JSON);
+Verifier Standard (VSTD).
+
+Public VSTD 3 accelerator-accountability CLI surfaces."""
 
 from __future__ import annotations
 

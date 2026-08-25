@@ -1,5 +1,14 @@
 # Changelog
 
+> **Acronyms:** artificial intelligence (AI); Advanced Micro Devices (AMD); application programming interface (API);
+> Amazon Web Services (AWS); Concise Binary Object Representation (CBOR); continuous integration (CI);
+> command-line interface (CLI); conjunctive normal form (CNF); CBOR Object Signing and Encryption (COSE);
+> grounded decision certificate (GDC); Hypertext Transfer Protocol Secure (HTTPS);
+> Internet Engineering Task Force (IETF); JavaScript Object Notation (JSON); nondeterministic polynomial time (NP);
+> Boolean satisfiability problem (SAT); Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
+> Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
+> zero-identity/zero-knowledge (ZIZK).
+
 ## 1.2.0 - 2026-08-25
 
 - Add experimental workflow profile 0.1 with deterministic canonicalization, strict
@@ -37,7 +46,7 @@
   same Git coordinate produces byte-identical source archives on Windows and Linux.
 - Canonicalize generated wheel and source-distribution newlines, archive member
   order, modes, timestamps, and ownership. Rebuild wheel `RECORD` after normalization
-  and use compression-independent ZIP members plus a stable USTAR/gzip container.
+  and use compression-independent ZIP members plus a stable `ustar`/gzip container.
 - Normalize common HTTPS and SSH spellings of the Git origin before recording the
   public repository coordinate in a release manifest.
 - Require CI to build the complete release artifact set independently on Windows and

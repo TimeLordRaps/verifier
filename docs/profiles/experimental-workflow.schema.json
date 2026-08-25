@@ -1,4 +1,5 @@
 {
+  "$comment": "Terminology: Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/profiles/experimental-workflow.schema.json",
   "title": "VSTD experimental workflow profile 0.1",

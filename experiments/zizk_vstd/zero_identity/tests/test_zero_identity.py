@@ -1,4 +1,6 @@
-"""Validation suite for the experimental bounded identity disclosure profile.
+"""Terminology: Verifier Standard (VSTD).
+
+Validation suite for the experimental bounded identity disclosure profile.
 
 Each test names the inference it exists to block. A test that starts passing because
 a status was upgraded to something more favourable is a defect, not a fix.

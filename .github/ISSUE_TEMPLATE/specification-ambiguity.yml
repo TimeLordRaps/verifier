@@ -5,7 +5,7 @@ labels: ["specification", "needs-triage"]
 body:
   - type: markdown
     attributes:
-      value: Do not include secrets or vulnerability details. Use private vulnerability reporting for security-sensitive findings.
+      value: Report ambiguity in the Verifier Standard (VSTD) without including secrets or vulnerability details. Use private vulnerability reporting for security-sensitive findings.
   - type: input
     id: coordinate
     attributes:

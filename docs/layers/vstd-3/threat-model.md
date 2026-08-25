@@ -1,4 +1,8 @@
-# VSTD-3 threat model
+# Verifier Standard (VSTD)-3 threat model
+
+> **Acronyms:** Advanced Micro Devices (AMD); command-line interface (CLI);
+> hash-based message authentication code (HMAC); identifier (ID); trusted computing base (TCB);
+> Coordinated Universal Time (UTC); virtual machine (VM).
 
 > Reader aid: [concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
 

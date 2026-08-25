@@ -1,4 +1,4 @@
-# VSTD community conduct
+# Verifier Standard (VSTD) community conduct
 
 ## Expected conduct
 

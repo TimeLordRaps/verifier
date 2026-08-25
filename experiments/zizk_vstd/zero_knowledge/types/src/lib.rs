@@ -1,3 +1,5 @@
+//! Terminology: Verifier Standard (VSTD); zero-identity/zero-knowledge (ZIZK); zero-knowledge (ZK).
+//!
 //! Shared, experiment-local types for the ZIZK-VSTD zero-knowledge probe.
 
 use serde::{Deserialize, Serialize};

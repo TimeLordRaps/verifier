@@ -1,4 +1,6 @@
-"""VSTD-4 refutability records outside the trusted decision kernel."""
+"""Terminology: Verifier Standard (VSTD).
+
+VSTD-4 refutability records outside the trusted decision kernel."""
 
 from .availability import (
     ArtifactAvailability,

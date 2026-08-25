@@ -1,4 +1,4 @@
-# VSTD-3 implementation compatibility
+# Verifier Standard (VSTD)-3 implementation compatibility
 
 > Reader aid: [concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
 

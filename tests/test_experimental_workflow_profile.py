@@ -1,4 +1,6 @@
-"""Adversarial tests for the non-normative experimental-workflow profile."""
+"""Terminology: zero-identity/zero-knowledge (ZIZK).
+
+Adversarial tests for the non-normative experimental-workflow profile."""
 
 from __future__ import annotations
 
@@ -28,6 +30,7 @@ EXAMPLE = ROOT / "examples" / "experimental_workflow"
 EXPERIMENT_MANIFEST = (
     ROOT / "experiments" / "github_verdict_neutrality" / "experiment.json"
 )
+ZIZK_MANIFEST = ROOT / "experiments" / "zizk_vstd" / "experiment.json"
 
 
 def _example_payload() -> dict[str, object]:
@@ -82,6 +85,26 @@ def test_checked_in_manifests_validate_and_match_schema() -> None:
     schema = workflow_manifest_schema()
     payload = load_manifest(EXPERIMENT_MANIFEST)
     jsonschema.Draft202012Validator(schema).validate(payload)
+
+
+def test_zizk_manifest_preserves_dual_causal_boundary() -> None:
+    payload = load_manifest(ZIZK_MANIFEST)
+    verify_repo_artifacts(payload, ROOT)
+
+    hypotheses = {item["id"]: item for item in payload["hypotheses"]}
+    assert hypotheses["hypothesis-artifact-first-zero-actor-trust"]["state"] == "OPEN"
+    assert hypotheses["hypothesis-contextual-actor-artifact-roles"]["state"] == "OPEN"
+    assert hypotheses["hypothesis-rust-genetic-backtrace"]["state"] == "OPEN"
+    assert hypotheses["hypothesis-dual-causal-propagation"]["state"] == "OPEN"
+
+    adaptation = payload["adaptations"][0]
+    assert "artifact trust moves parent-to-child" in adaptation["decision"]
+    assert "Rust moves child-to-parent" in adaptation["decision"]
+
+    horizons = {item["id"]: item["status"] for item in payload["horizons"]}
+    assert horizons["horizon-contextual-role-protocol"] == "UNKNOWN"
+    assert horizons["horizon-rust-genetic-backtrace"] == "UNKNOWN"
+    assert horizons["horizon-forward-artifact-trust"] == "UNKNOWN"
 
 
 def test_checked_in_schema_is_generated_from_one_source() -> None:

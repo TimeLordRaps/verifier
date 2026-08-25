@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Demonstrate that GitHub success and merge state grant no VSTD verdict."""
+"""Terminology: Verifier Standard (VSTD).
+
+Demonstrate that GitHub success and merge state grant no VSTD verdict."""
 
 from __future__ import annotations
 

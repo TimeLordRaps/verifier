@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Terminology: reduced instruction set computer (RISC); RISC Zero (RISC0); Verifier Standard (VSTD).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"

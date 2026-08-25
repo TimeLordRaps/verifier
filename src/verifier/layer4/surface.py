@@ -1,4 +1,6 @@
-"""Rung 4.10 -- the explicit refutation surface.
+"""Terminology: Verifier Standard (VSTD).
+
+Rung 4.10 -- the explicit refutation surface.
 
 VSTD-2 defines the *claim* surface. VSTD-4 defines the *refutation* surface of
 that claim surface. This is where the two layers compose, and it is the rung

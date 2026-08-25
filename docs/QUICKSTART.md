@@ -1,4 +1,4 @@
-# VSTD quickstart
+# Verifier Standard (VSTD) quickstart
 
 > Reader aid: [concept glossary and primary precedents](CONCEPTS_AND_PRECEDENTS.md).
 

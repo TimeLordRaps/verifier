@@ -1,4 +1,9 @@
-"""Refutation certificates for VSTD layer 4 (refutability).
+"""Terminology: conjunctive normal form (CNF); Davis-Putnam-Logemann-Loveland (DPLL);
+deletion resolution asymmetric tautology (DRAT); grounded decision certificate (GDC);
+nondeterministic polynomial time (NP); reverse unit propagation (RUP);
+Boolean satisfiability problem (SAT); unsatisfiable (UNSAT); Verifier Standard (VSTD).
+
+Refutation certificates for VSTD layer 4 (refutability).
 
 Layer 4 requires that every verdict -- pass **and** fail -- carry an artifact an
 independent party can check without the declarant's cooperation.

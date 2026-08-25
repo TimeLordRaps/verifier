@@ -1,4 +1,6 @@
-# VSTD flagship adversarial demo
+# Verifier Standard (VSTD) flagship adversarial demo
+
+> **Acronym:** JavaScript Object Notation (JSON).
 
 This is the shortest executable explanation of VSTD's intended behavior. It tests four
 failure boundaries rather than presenting a happy-path receipt and asking the reader to

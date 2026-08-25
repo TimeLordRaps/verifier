@@ -1,4 +1,7 @@
-"""Canonical binding and independent verification for VSTD 3 attestations."""
+"""Terminology: hash-based message authentication code (HMAC);
+Security Protocol and Data Model (SPDM); Verifier Standard (VSTD).
+
+Canonical binding and independent verification for VSTD 3 attestations."""
 
 from __future__ import annotations
 

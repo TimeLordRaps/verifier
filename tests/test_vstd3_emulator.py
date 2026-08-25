@@ -1,3 +1,5 @@
+"""Terminology: floating-point operation (FLOP); Verifier Standard (VSTD)."""
+
 from __future__ import annotations
 
 from dataclasses import replace

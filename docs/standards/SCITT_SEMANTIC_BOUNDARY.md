@@ -1,4 +1,9 @@
-# SCITT semantic boundary for VSTD interoperability
+# Supply Chain Integrity, Transparency, and Trust (SCITT) semantic boundary for Verifier Standard (VSTD) interoperability
+
+> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
+> JavaScript Object Notation (JSON); Request for Comments (RFC); Secure Hash Algorithm 256-bit (SHA-256);
+> Transparency Service (TS); verifiable data structure proof (VDP); verifiable data structure (VDS);
+> working group (WG).
 
 > **Status:** experimental, non-normative. This boundary follows [RFC 9943](https://datatracker.ietf.org/doc/html/rfc9943), [RFC 9942](https://datatracker.ietf.org/doc/html/rfc9942), and the current repository's implemented VSTD specifications. It does not claim SCITT WG review.
 
@@ -191,6 +196,6 @@ The module in `src/verifier/interoperability/scitt/`:
 - rejects unknown mappings instead of guessing.
 
 The example uses pinned optional libraries to create and verify real COSE bytes and
-an RFC9162 SHA-256 inclusion receipt in a local one-entry test log. That demonstrates
+an RFC 9162 SHA-256 inclusion receipt in a local one-entry test log. That demonstrates
 the cryptographic boundary but does not represent a production TS, public witness,
 or public anchoring.

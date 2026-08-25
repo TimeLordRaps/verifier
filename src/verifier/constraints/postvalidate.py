@@ -1,4 +1,6 @@
-"""Independent whole-output checks adjacent to logits-time constraints."""
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+
+Independent whole-output checks adjacent to logits-time constraints."""
 
 from __future__ import annotations
 

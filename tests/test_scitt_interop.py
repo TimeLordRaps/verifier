@@ -1,4 +1,7 @@
-"""Adversarial tests for the experimental VSTD/SCITT composition boundary."""
+"""Terminology: grounded decision certificate (GDC);
+Supply Chain Integrity, Transparency, and Trust (SCITT); Verifier Standard (VSTD).
+
+Adversarial tests for the experimental VSTD/SCITT composition boundary."""
 
 from __future__ import annotations
 

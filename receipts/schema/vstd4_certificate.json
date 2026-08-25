@@ -1,4 +1,5 @@
 {
+  "$comment": "Terminology: grounded decision certificate (GDC); Boolean satisfiability problem (SAT).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd4_certificate.json",
   "title": "VSTD4-GDC-1 Decision Certificate",

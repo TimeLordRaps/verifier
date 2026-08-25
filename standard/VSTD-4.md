@@ -1,4 +1,8 @@
-# VSTD-4 — Refutability
+# Verifier Standard (VSTD)-4 — Refutability
+
+> **Acronyms:** conjunctive normal form (CNF); grounded decision certificate (GDC); JavaScript Object Notation (JSON);
+> resolution asymmetric tautology (RAT); Boolean satisfiability problem (SAT);
+> Unicode Transformation Format, 8-bit (UTF-8).
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 

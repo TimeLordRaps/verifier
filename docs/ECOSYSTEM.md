@@ -1,5 +1,11 @@
 # Ecosystem boundary map
 
+> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
+> Internet Engineering Task Force (IETF); World Wide Web Consortium provenance vocabulary (PROV);
+> Request for Comments (RFC); Supply Chain Integrity, Transparency, and Trust (SCITT);
+> Supply-chain Levels for Software Artifacts (SLSA); verifiable data structure (VDS); Verifier Standard (VSTD);
+> World Wide Web Consortium (W3C).
+
 > Reader aid: [concept glossary and primary precedents](CONCEPTS_AND_PRECEDENTS.md).
 
 **Status:** non-normative positioning note

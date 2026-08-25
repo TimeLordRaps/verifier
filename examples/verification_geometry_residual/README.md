@@ -1,5 +1,7 @@
 # Reconstruction residual and bounded closure
 
+> **Acronym:** Verifier Standard (VSTD).
+
 This example is the smallest VSTD-0.2 verification-geometry vertical slice. Its
 machine-readable form is [`geometry.json`](geometry.json).
 

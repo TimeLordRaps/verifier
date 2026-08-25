@@ -1,5 +1,7 @@
 # Generated fixtures
 
+> **Acronym:** scalable transparent argument of knowledge (STARK).
+
 The real-proof self-test creates fixtures under the ignored `local-artifacts/` directory
 instead of committing a reusable private witness or a large proof binary.
 

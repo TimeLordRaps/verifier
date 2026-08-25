@@ -1,4 +1,7 @@
-"""CLI boundary for the experimental, non-normative workflow profile."""
+"""Terminology: command-line interface (CLI); JavaScript Object Notation (JSON);
+Verifier Standard (VSTD).
+
+CLI boundary for the experimental, non-normative workflow profile."""
 
 from __future__ import annotations
 

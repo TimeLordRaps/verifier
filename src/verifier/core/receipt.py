@@ -1,4 +1,9 @@
-"""Canonical receipt model, canonicalization algorithm, and digest verification for VSTD-0.1."""
+"""Terminology: command-line interface (CLI); identifier (ID); JavaScript Object Notation (JSON);
+Boolean satisfiability problem (SAT); Secure Hash Algorithm 256-bit (SHA-256);
+trusted computing base (TCB); Unicode Transformation Format, 8-bit (UTF-8);
+Verifier Standard (VSTD).
+
+Canonical receipt model, canonicalization algorithm, and digest verification for VSTD-0.1."""
 
 from __future__ import annotations
 

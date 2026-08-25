@@ -1,4 +1,6 @@
-"""Fail-closed structural and epistemic validation for VSTD 3 receipts."""
+"""Terminology: International Organization for Standardization (ISO); Verifier Standard (VSTD).
+
+Fail-closed structural and epistemic validation for VSTD 3 receipts."""
 
 from __future__ import annotations
 

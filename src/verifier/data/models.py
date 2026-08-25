@@ -1,4 +1,6 @@
-"""VSTD-Graph provenance models and algorithms.
+"""Terminology: Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
+
+VSTD-Graph provenance models and algorithms.
 
 Graph-1 receipts retain the frozen ``VSTD-DATA-0.1`` wire identifier.
 """

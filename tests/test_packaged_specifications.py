@@ -1,4 +1,6 @@
-"""Installed specification resources must match the public normative files exactly."""
+"""Terminology: Verifier Standard (VSTD).
+
+Installed specification resources must match the public normative files exactly."""
 
 from __future__ import annotations
 

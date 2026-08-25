@@ -1,7 +1,11 @@
-# VSTD/SCITT cryptographic interoperability example
+# Verifier Standard (VSTD)/Supply Chain Integrity, Transparency, and Trust (SCITT) cryptographic interoperability example
+
+> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
+> Internet Engineering Task Force (IETF); Request for Comments (RFC); Secure Hash Algorithm 256-bit (SHA-256);
+> verifiable data structure (VDS).
 
 > **Experimental and non-normative.** This example creates real COSE signatures and
-> an RFC9162 SHA-256 inclusion receipt in a local one-entry test log.
+> an RFC 9162 SHA-256 inclusion receipt in a local one-entry test log.
 > It does not operate a production SCITT Transparency Service, publish to a public
 > log, or demonstrate third-party monitoring.
 

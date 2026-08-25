@@ -1,4 +1,5 @@
 {
+  "$comment": "Terminology: grounded decision certificate (GDC); Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json",
   "title": "VSTD-4 Refutability Receipt",

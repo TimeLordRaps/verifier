@@ -1,4 +1,6 @@
-# VSTD frozen wire identifiers and historical filenames
+# Verifier Standard (VSTD) frozen wire identifiers and historical filenames
+
+> **Acronym:** command-line interface (CLI).
 
 **Status:** normative for wire-identifier dispatch; filename history is informative
 **Date:** 2026-08-22

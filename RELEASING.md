@@ -1,5 +1,9 @@
 # Release procedure
 
+> **Acronyms:** carriage return and line feed (CRLF); digital object identifier (DOI);
+> hash-based message authentication code (HMAC); line feed (LF); Secure Hash Algorithm 256-bit (SHA-256);
+> Coordinated Universal Time (UTC); ZIP archive format (ZIP).
+
 Public releases are built only from a commit already present in the public repository.
 The release manifest is published beside the source ZIP rather than tracked inside the
 source tree. This avoids a self-referential commit field and lets the manifest bind an

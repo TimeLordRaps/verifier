@@ -1,4 +1,8 @@
-# VSTD-Graph-1 — Recorded Lineage
+# Verifier Standard (VSTD)-Graph-1 — Recorded Lineage
+
+> **Acronyms:** conjunctive normal form (CNF); Davis-Putnam-Logemann-Loveland (DPLL); operating system (OS);
+> Boolean satisfiability problem (SAT); Secure Hash Algorithm 256-bit (SHA-256); satisfiability modulo theories (SMT);
+> Software Package Data Exchange (SPDX); uniform resource identifier (URI).
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 

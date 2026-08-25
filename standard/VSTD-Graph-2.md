@@ -1,4 +1,4 @@
-# VSTD-Graph-2 — Bounded Collection Surface
+# Verifier Standard (VSTD)-Graph-2 — Bounded Collection Surface
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 

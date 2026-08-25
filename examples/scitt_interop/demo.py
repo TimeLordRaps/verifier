@@ -1,4 +1,10 @@
-"""Deterministic cryptographic VSTD/SCITT interoperability specimen.
+"""Terminology: Concise Binary Object Representation (CBOR);
+CBOR Object Signing and Encryption (COSE); CBOR Web Token (CWT);
+grounded decision certificate (GDC); Request for Comments (RFC);
+Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Hash Algorithm 256-bit (SHA-256);
+verifiable data structure (VDS); Verifier Standard (VSTD).
+
+Deterministic cryptographic VSTD/SCITT interoperability specimen.
 
 The optional ``scitt`` extra supplies COSE and RFC 9162 receipt primitives.  A
 one-entry local test log is used so the example is self-contained.  This is a

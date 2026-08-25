@@ -1,4 +1,10 @@
-# VSTD-1 — Claim Mechanics
+# Verifier Standard (VSTD)-1 — Claim Mechanics
+
+> **Acronyms:** artificial intelligence (AI); conjunctive normal form (CNF); directed acyclic graph (DAG);
+> Davis-Putnam-Logemann-Loveland (DPLL); International Organization for Standardization (ISO);
+> JavaScript Object Notation (JSON); Request for Comments (RFC); Boolean satisfiability problem (SAT);
+> Secure Hash Algorithm 256-bit (SHA-256); satisfiability modulo theories (SMT); trusted computing base (TCB);
+> Coordinated Universal Time (UTC); Unicode Transformation Format, 8-bit (UTF-8).
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 

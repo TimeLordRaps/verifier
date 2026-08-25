@@ -1,4 +1,4 @@
-# VSTD-5 — Witness Corroboration
+# Verifier Standard (VSTD)-5 — Witness Corroboration
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 

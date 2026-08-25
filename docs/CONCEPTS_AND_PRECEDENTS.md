@@ -1,5 +1,14 @@
 # Concept guide and intellectual precedents
 
+> **Acronyms:** conjunctive normal form (CNF); Certificate Transparency (CT);
+> deletion resolution asymmetric tautology (DRAT); Internet Engineering Task Force (IETF);
+> JavaScript Object Notation (JSON); National Institute of Standards and Technology (NIST); proof-carrying code (PCC);
+> Principles of Programming Languages (POPL); World Wide Web Consortium provenance vocabulary (PROV);
+> PROV data model (PROV-DM); Protect the Software (PS); Request for Comments (RFC); reverse unit propagation (RUP);
+> Boolean satisfiability problem (SAT); Supply-chain Levels for Software Artifacts (SLSA);
+> satisfiability modulo theories (SMT); SMT library standard (SMT-LIB); The Update Framework (TUF);
+> Verifier Standard (VSTD); World Wide Web Consortium (W3C).
+
 **Status:** non-normative reader aid
 
 VSTD did not arise in a vacuum, but it also does not inherit another system's
@@ -57,7 +66,7 @@ and the difference must remain explicit.
 | Canonical JSON as a cryptographic wire input | IETF Independent Stream, [RFC 8785: JSON Canonicalization Scheme](https://www.rfc-editor.org/rfc/rfc8785.html) | Shows why cryptographic operations over JSON require invariant representation. VSTD uses its own declared canonicalization rules and must not claim RFC 8785 conformance unless a format actually implements it. |
 | Provenance entities, activities, and agents | W3C, [PROV-DM: The PROV Data Model](https://www.w3.org/TR/prov-dm/) | Standardized vocabulary and constraints for interoperable provenance. VSTD-Graph's artifact and transformation model is adjacent, not a PROV implementation or complete history claim. |
 | Supply-chain step and artifact attestations | [in-toto specification v1.0](https://in-toto.io/docs/specs/) and [SLSA v1.2](https://slsa.dev/spec/v1.2/) | Established formats and levels for materials, products, builders, steps, and provenance. VSTD may bind their outputs as evidence but does not manufacture their authorization or assurance level. |
-| Release preservation and provenance integrity | NIST, [SP 800-218: Secure Software Development Framework 1.1](https://doi.org/10.6028/NIST.SP.800-218) | Practices PS.3.1 and PS.3.2 cover archiving releases, maintaining provenance, protecting its integrity, and enabling recipient verification. This is operational precedent, not VSTD certification. |
+| Release preservation and provenance integrity | NIST, [Special Publication (SP) 800-218: Secure Software Development Framework 1.1](https://doi.org/10.6028/NIST.SP.800-218) | Protect the Software practices PS.3.1 and PS.3.2 cover archiving releases, maintaining provenance, protecting its integrity, and enabling recipient verification. This is operational precedent, not VSTD certification. |
 | Independent recreation of artifacts | Reproducible Builds, [formal definition](https://reproducible-builds.org/docs/definition/) | Defines the source, environment, instruction, and artifact relationship needed for bit-for-bit recreation. VSTD permits other explicitly declared equivalence relations and does not infer truth from reproducibility alone. |
 | Producer-supplied, consumer-checked certificates | Necula, [*Proof-Carrying Code*](https://doi.org/10.1145/263699.263712) (POPL 1997) | Primary precedent for an untrusted producer supplying a proof checked under a defined policy by the consumer. VSTD generalizes the receipt pattern but does not inherit PCC's safety theorem. |
 | Checkable SAT refutations | Wetzler, Heule, and Hunt, [*DRAT-trim: Efficient Checking and Trimming Using Expressive Clausal Proofs*](https://www.cs.cmu.edu/~mheule/publications/drat-trim.pdf) (2014) | Demonstrates independently checking unsatisfiability proofs rather than trusting a SAT solver's answer. VSTD's implemented certificate is a narrower declared RUP path, not arbitrary DRAT. |

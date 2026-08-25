@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-"""Generate the public CLI and API reference page from the live implementation.
+"""Terminology: application programming interface (API); command-line interface (CLI);
+hash-based message authentication code (HMAC); International Organization for Standardization (ISO);
+JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256);
+Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
+
+Generate the public CLI and API reference page from the live implementation.
 
 Nothing on the generated page is hand-written prose about behaviour: every command,
 option, export, signature, and pipeline edge is read out of the importable package at
 build time. `scripts/check_presentation.py` and `tests/test_presentation_surface.py`
-regenerate this file and fail closed when the committed page drifts from the code.
-"""
+regenerate this file and fail closed when the committed page drifts from the code."""
 
 from __future__ import annotations
 
@@ -316,8 +320,8 @@ def render() -> str:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Generated CLI and API reference for the VSTD reference implementation.">
-  <title>VSTD docs &mdash; CLI and API reference</title>
+  <meta name="description" content="Generated reference for the Verifier Standard (VSTD).">
+  <title>VSTD docs &mdash; command-line interface (CLI) and application programming interface (API) reference</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -342,6 +346,10 @@ def render() -> str:
     <div class="wrap ref-hero">
       <div class="eyebrow">Reference &middot; verifier-standard {_esc(version)} &middot; {_esc(standard)}</div>
       <h1>Inspect the whole pipeline.</h1>
+      <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
+      code (HMAC); International Organization for Standardization (ISO); JavaScript Object
+      Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); and YAML Ain't Markup Language
+      (YAML).</p>
       <p class="lead">Every command, argument, public export, and dispatch edge below is read
       out of the installed package when this page is built, by
       <code>scripts/build_reference.py</code>, and the presentation tests fail closed when the

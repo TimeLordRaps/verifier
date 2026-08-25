@@ -1,4 +1,8 @@
-"""Validate the non-normative experimental-workflow profile.
+"""Terminology: identifier (ID); JavaScript Object Notation (JSON);
+Secure Hash Algorithm 256-bit (SHA-256); Unicode Transformation Format, 8-bit (UTF-8);
+Verifier Standard (VSTD).
+
+Validate the non-normative experimental-workflow profile.
 
 This module records allocation and workflow facts. It deliberately does not execute
 domain verifiers, derive VSTD verdicts, or treat repository state as verification.

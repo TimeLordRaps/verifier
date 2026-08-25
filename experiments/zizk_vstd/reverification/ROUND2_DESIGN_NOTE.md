@@ -1,4 +1,8 @@
-# Round 2 design note: trustless reverification as the ZIZK substrate
+# Round 2 design note: artifact-first reverification without actor trust
+
+> **Acronyms:** Common Vulnerabilities and Exposures (CVE); identifier (ID); reduced instruction set computer (RISC);
+> Secure Hash Algorithm 256-bit (SHA-256); scalable transparent argument of knowledge (STARK);
+> Verifier Standard (VSTD); zero-identity (ZI); zero-knowledge (ZK); zero-knowledge virtual machine (zkVM).
 
 **Status:** experimental design note; non-normative; no wire profile is defined.
 
@@ -7,23 +11,36 @@ reverification result must not require knowing or trusting the submitter. It doe
 mean assumption-free, trust-root-free, or immune to compromised software, unavailable
 evidence, or false observations.
 
-The design decision is:
+The design decisions are:
 
-> Tier 0 binds claims, artifacts, predicates, verifier mechanisms, boundary snapshots,
-> proofs, and checkable results. It binds no actor identity and accumulates no trust.
+> Tier 0 is artifact-first: it binds claims, artifacts, predicates, verifier mechanisms,
+> boundary snapshots, proofs, and checkable results. Actor identity, popularity, and
+> reputation contribute no verdict weight and accumulate no trust.
 
-Authorship, authorization, issuer identity, organizational accountability, and reputation
-may exist in adjacent optional profiles. They are not inputs to the Tier 0 result.
+> Actor and artifact are contextual roles on creation and operation events, not disjoint
+> kinds of entity. A coding agent can be an artifact when created, serialized, versioned,
+> or evaluated and an actor when it performs a transformation or creates another artifact.
 
-## 1. Where the three halves stand
+> The same bound causal graph carries two directions: bounded artifact trust moves forward
+> through developmental claim space, while observed Rust moves backward from child effects
+> toward candidate falsehoods in ancestor claim architecture.
+
+Authorship, authorization, issuer identity, organizational accountability, and descriptive
+history may exist in adjacent optional profiles. Tier 0 may bind their coordinates when a
+claim requires them, but their mere presence cannot strengthen the result.
+
+## 1. Where the research components stand
 
 Round 1 began from commit `598c545be3833d6d81bb7e252ca5837f3bb2a449`.
 
 | Work | Source coordinate | What it established | Round 2 treatment |
 |---|---|---|---|
-| Zero Identity | `claude/zizk-zero-identity` at `48fab87b05ad5ddaf24d08b6391cde99d05fc8f1` | A semantic experiment for bounded identity disclosure, with 22 fixtures and 65 focused tests | Retained as an adjacent actor/authorization experiment; its actor coordinates are removed from the Tier 0 substrate |
+| Zero Identity | `claude/zizk-zero-identity` at `48fab87b05ad5ddaf24d08b6391cde99d05fc8f1` | A semantic experiment for bounded identity disclosure, with 22 fixtures and 65 focused tests | Retained as an adjacent actor/authorization experiment; its coordinates carry only the claim meaning explicitly checked |
 | Zero Knowledge | `codex/zizk-zero-knowledge` at `14d31e0426656c5208f2b6579a5217af3a6bb2bd` | A real RISC Zero zkVM 3.0.6 composite STARK receipt for one hidden-witness predicate | Retained as the confidential-evidence mechanism; its bearer, artifact-bound form is compatible with Tier 0 |
-| Reverification | no prior committed experiment from the common base | A roadmap draft existed outside these source branches, but was not a citable implementation or design result | This note is the first merged, committed synthesis; the draft is not imported or modified |
+| Zero actor trust | this Round 2 design | No actor identity, popularity, or reputation may strengthen a result | Open as an operational protocol; stated here as a required invariant |
+| Artifact-first trust | existing VSTD artifact, evidence, mechanism, and predicate bindings | Bounded positive support can move from verified parent artifacts into the declared obligations of descendants | Retained as the Tier 0 starting point; child obligations remain independently checked |
+| Actor-artifact role semantics | no prior implementation | An entity's role depends on the creation or operation event; coding agents can occupy both roles | Open; this note corrects the earlier object-only partition |
+| Rust | this Round 2 design | A proposed viral backtrace of measured deviation through bound creation ancestry, never trust or a verdict | Reframed as relation-bound and genetically transferred to ancestor states |
 
 One premise in the initial Round 2 plan is corrected here. The two finished halves did
 **not** both put trust in credentials:
@@ -35,10 +52,12 @@ One premise in the initial Round 2 plan is corrected here. The two finished halv
   image ID, authenticated journal, and proof. It adds no actor coordinate and expressly
   prohibits inferring identity, authorization, uniqueness, or independence.
 
-The architectural correction therefore applies to the placement of the Zero Identity
-model, not to the Zero Knowledge proof. The identity model is not discarded; it is
-demoted from proposed substrate to an optional adjacent profile for deployments that
-actually need authorization or accountability.
+The architectural correction applies to the evidentiary effect of the Zero Identity
+model, not to the existence of actor coordinates or to the Zero Knowledge proof. The
+identity model is not discarded: it remains an optional adjacent profile for deployments
+that need authorization or accountability. Its coordinates cannot become actor trust,
+and the actor/artifact role model below prevents the profile boundary from becoming a
+false permanent partition between parties and things.
 
 VSTD already contains much of the required substrate discipline. In particular,
 `standard/VSTD-4.md` requires post-verdict checking without cooperation from the
@@ -46,10 +65,10 @@ declarant, disallows undeclared state from becoming verdict material, defines ve
 descriptors through content hashes, requires a checker that shares no verdict-producing
 code, and requires a declared verification interface for confidential evidence. That
 does not make every VSTD layer identity-free: observational evidence and external trust
-roots still have sources. It does make actor identity unnecessary for the bounded
-recomputation path defined here.
+roots still have sources. It makes actor identity unnecessary as verdict weight while
+preserving any actor-artifact relation needed to state the bounded claim.
 
-## 2. Identity-less trust as convergent recomputation
+## 2. Zero actor trust through artifact-first convergent recomputation
 
 ### 2.1 Reverification unit
 
@@ -64,7 +83,9 @@ A Tier 0 reverification attempt is defined over these public coordinates:
    proof-system program identifier or verification key when applicable;
 6. **expected result** — the result committed by the claim being reverified; and
 7. **observed result and trace** — enough public material to repeat the check, or to
-   verify a proof when the witness is confidential.
+   verify a proof when the witness is confidential; and
+8. **role-relation snapshot, when claim-relevant** — content-addressed creation,
+   execution, input, and output edges without converting an endpoint into verdict weight.
 
 An experimental event body can be modeled as:
 
@@ -80,6 +101,7 @@ ReverificationEventBody = {
   observed_result_digest,
   outcome,
   trace_or_proof_digest,
+  role_relation_snapshot_digest?,
   prior_event_digest
 }
 
@@ -90,10 +112,33 @@ This is a design sketch, not a new schema. Its names are not reserved wire ident
 Canonicalization, supported digest algorithms, event-chain rules, and admissible outcome
 values require a later approved experiment before any schema can be proposed.
 
-No field identifies the submitter. Possession of a valid event confers no authorization
-and proves no authorship.
+No field identifies the submitter merely to weight the result. A claim-relevant role edge
+may identify a bounded entity coordinate, but possession of a valid event confers no
+authorization and proves no authorship.
 
-### 2.2 Agreement is not trust
+### 2.2 Actor and artifact are event-relative roles
+
+The model must not define permanent disjoint `Actor` and `Artifact` universes. It records
+roles on bound events:
+
+- `produced_by(event, entity, output)` places `entity` in an actor role and `output` in an
+  artifact role for that creation event;
+- `created_as(event, entity)` places the created entity in an artifact role;
+- `executed_as(event, entity)` places a running entity in an actor role; and
+- `used_as_input(event, entity)` may place the same entity in an artifact role for a
+  different operation.
+
+A coding-agent model, package, checkpoint, or executable is therefore an artifact of its
+training or build event. A bound execution of it is an actor in a patch-producing event,
+and the patch is an artifact. The roles follow declared creation and operation semantics;
+they do not establish civil identity, authorship, ownership, authorization, independence,
+or reputation.
+
+The precise event schema, instance coordinate, and relation vocabulary remain `OPEN`.
+This note establishes only that erasing the relation or forcing a permanent category is
+incorrect.
+
+### 2.3 Agreement is not trust
 
 Repeating the same deterministic implementation over the same frozen inputs is expected
 to return the same result. Ten, one thousand, or one million matching submissions do not
@@ -106,7 +151,7 @@ different falsification opportunity because it may expose a specification or
 implementation disagreement. Even then, agreement does not establish actor independence,
 real-world truth, or a probability of correctness.
 
-### 2.3 Divergence is a falsification candidate, not self-certifying truth
+### 2.4 Divergence is a falsification candidate, not self-certifying truth
 
 A submitted divergence is admissible only when the verifier can establish all of the
 following without trusting the submitter:
@@ -132,49 +177,80 @@ the result; however, anonymous spam can still create storage, bandwidth, and tri
 Rate limiting and admission control may address that operational denial-of-service risk,
 but must not become evidence about correctness.
 
-## 3. Falsification opportunity, not trust accumulation
+## 3. Forward artifact trust without actor-trust accumulation
 
-Tier 0 records accepted opportunities to refute a claim. It never records a producer's or
-verifier's reputation, and a claim does not gain standing by surviving attempts.
+Tier 0 records both bounded positive artifact support and accepted opportunities to refute
+a claim. It never turns either into a producer's or verifier's reputation, and a claim
+does not gain standing merely by surviving repeated attempts.
+
+Artifact trust is a positive signal bound to an exact artifact, claim, predicate,
+mechanism, evidence set, boundary snapshot, and time coordinate. It moves forward only
+through a declared creation or dependency edge whose transformation obligations pass. A
+child receives the intersection of applicable parent support, capped by the weakest
+required parent and edge; it does not receive a sum, vote, average, or confidence boost.
+The child must still discharge every new predicate, transformation, and boundary
+obligation it introduces.
+
+In schematic form:
+
+```text
+development: parent artifact --bounded positive support--> child claim or artifact
+diagnosis:   child Rust      --genetic causal backtrace--> ancestor claim architecture
+```
+
+`UNKNOWN`, `CONFLICTED`, revoked, unavailable, or out-of-scope parent support cannot be
+laundered into a clean child signal. Repeating the same parent coordinate does not create
+additional support. Actor identity and reputation do not participate in the transfer.
 
 | Tier 0 event outcome | Bounded interpretation | Forbidden interpretation |
 |---|---|---|
-| matching result | this accepted check matched the committed result | the claim, submitter, or mechanism is trustworthy |
+| matching result | this accepted check matched the committed result and may satisfy one declared child obligation | the claim, submitter, or mechanism is globally trustworthy |
 | admissible divergence | the declared equivalence or reproducibility condition has a checkable counterexample | the divergent result is automatically the true result |
 | unresolved boundary | required material could not be resolved or checked; preserve `UNKNOWN` | missing evidence is clean evidence |
 | incompatible admissible records | preserve `CONFLICTED` and expose both records | choose the more popular result |
 
-The Tier 0 state is a function over immutable records. It does not have a positive
-counter, confidence score, majority rule, actor weight, or time-decayed reputation.
+The Tier 0 state is a function over immutable records. Its positive artifact support is
+typed and scoped; it does not have a cumulative confidence counter, majority rule, actor
+weight, or time-decayed reputation.
 
 Tier 1 may provide descriptive analysis over Tier 0 events. Tier 1 is optional,
 non-normative, and forbidden from supplying `PASS`, `FAIL`, `UNKNOWN`, `CONFLICTED`,
 `VALID`, `STALE`, or any ladder result. Evidence in one layer does not silently supply
 evidence in another.
 
-## 4. Rust: an optional object-bound deviation ledger
+## 4. Rust: an optional relation-bound deviation ledger
 
 **Rust** is the working name for a Tier 1 view of past measured deviation. It is not
 trust, inverse trust, a verdict, or a prediction.
 
-### 4.1 Objects, not parties
+### 4.1 Bound relations, not actor reputation
 
-Rust may bind only to immutable object coordinates or mechanism descriptors:
+Rust may bind only to immutable coordinates and explicitly typed relations:
 
 - an artifact digest;
 - a statement or predicate digest;
 - a specification, implementation, and parser digest tuple; or
+- a content-addressed creation or transformation edge;
+- a contextual actor-role/artifact relation for one declared event; or
 - an explicit basin coordinate defining a common comparison unit.
 
-It does not bind a person, pseudonym, account, organization, author, issuer, key holder,
-or submitter. No upward aggregation to an actor is part of this design.
+It does not create a scalar score for a person, pseudonym, account, organization, author,
+issuer, key holder, submitter, or coding agent. An actor coordinate may be a relation
+endpoint, but rust cannot aggregate upward across unrelated artifacts, predicates,
+operations, or basins and cannot change a Tier 0 verdict.
+
+The same coding agent may therefore have one rust history as an evaluated artifact, other
+histories for specific creation or transformation relations in which it acted, and no
+valid global score. These histories remain separate unless an explicit common comparison
+unit and evidence justify composition.
 
 Content addressing prevents an unchanged byte sequence from shedding its history while
 keeping the same digest. It does **not** eliminate whitewashing in general: a trivial
 repackaging, semantically near-identical fork, or changed mechanism descriptor creates a
 new coordinate. Because recorded ancestry does not establish that a defect transferred,
-the parent's rust cannot be copied into the descendant. The old object's record remains,
-while any inference about the new object remains `UNKNOWN` until measured.
+the parent's rust cannot be copied into the descendant. The old coordinate and relation
+records remain, while any inference about the new entity or relation remains `UNKNOWN`
+until measured.
 
 ### 4.2 Exposure denominator and deduplication
 
@@ -185,7 +261,7 @@ for the declared expectation to fail.
 The proposed exposure key is the digest of:
 
 ```text
-(subject, statement, mechanism, comparison unit, boundary snapshot)
+(subject, statement, mechanism, role relation, comparison unit, boundary snapshot)
 ```
 
 Identical submissions collapse to one exposure. A different submitter does not create a
@@ -212,31 +288,75 @@ falsification condition, availability condition, reproducibility level, or other
 predicate. Rust therefore records **deviation from a declared expectation**, not error
 against unknowable real-world truth.
 
-Each expectation type needs a fixed comparison rule outside the measured object's control.
-Examples include binary mismatch, normalized numeric error under a declared unit, or
-set-distance under a fixed canonicalizer. An object must not choose a weaker penalty after
-seeing a result.
+Each expectation type needs a fixed comparison rule outside the measured relation
+endpoints' control. Examples include binary mismatch, normalized numeric error under a
+declared unit, or set-distance under a fixed canonicalizer. A measured endpoint must not
+choose a weaker penalty after seeing a result.
 
 `UNKNOWN` and `CONFLICTED` are not numeric zero. They remain typed observations. A
 comparison that lacks a common unit is not forced into a number.
 
-### 4.4 Basins, ancestry, and horizons
+### 4.4 Genetic backtrace, basins, and horizons
 
 A **basin** is an explicitly described analytical grouping of events that share a
 predicate, mechanism family, comparison unit, and deviation rule. Clustering may suggest
 a basin, but a clustering algorithm does not establish that the members are comparable.
 The basin definition and its digest must be published with the view.
 
-Rust does not decay. Historical events remain historical events. It does not propagate
-through recorded ancestry in either direction, and it does not enter existing blast-radius
-calculations. A viewer may display related ancestors and descendants as context, but must
-not calculate an inherited rust value from that relationship alone.
+Rust acts as a viral **truth-disease backtrace**. A directly measured deviation at a
+descendant is the infection event. The recorded creation and input graph determines which
+ancestor states receive the trace; actor/artifact role edges allow the trace to cross a
+coding-agent execution into the bound model, package, checkpoint, or executable that
+acted and then into that artifact's own creation ancestry.
+
+Propagation is typed rather than silently re-described as direct observation:
+
+| Rust state | Meaning |
+|---|---|
+| `OBSERVED` | the deviation was measured directly at this descendant coordinate |
+| `TRANSFERRED` | an observed rust event reached this ancestor through a recorded admissible path |
+| `LOCALIZED` | additional evidence identifies this ancestor or edge as contributing to the deviation |
+| `UNKNOWN` | the required lineage or edge semantics are incomplete or unavailable |
+| `CONFLICTED` | admissible backtraces disagree about the relation or contribution |
+
+For each admissible path from ancestor `a` to rusted descendant `d`, the transferred state
+must bind at least the source rust event, `a`, `d`, every traversed edge digest, the
+predicate, mechanism, comparison unit, basin, and transfer rule. A source event, ancestor,
+and path tuple is counted once. Mere co-occurrence, reference, authorship, or identity is
+not a transmission edge. An unknown edge stops that path and preserves `UNKNOWN`.
+
+Rust **concentrates** where distinct descendant infection events share an ancestor. For an
+ancestor and basin, the concentration record is the set of unique source rust event and
+admissible path digests that reach it. Multiple paths or duplicate reports of one source
+event remain visible but do not multiply its weight. Intersections of independent
+backtraces prioritize earlier claims, predicates, mechanisms, or artifacts for causal
+examination because they are common candidate loci of falsehood.
+
+`TRANSFERRED` is actual rust inheritance, but it is not a claim that the ancestor was
+directly measured or proved causal. `LOCALIZED` requires an intervention, ablation,
+independent reproduction, or other declared mechanism that distinguishes contribution
+from ancestry. The backtrace is append-only, does not decay, and does not alter existing
+Verifier Standard status or blast-radius calculations until a separate normative rule is
+approved.
 
 Horizon summaries are indexed by accepted exposures rather than wall-clock time, for
 example the last 10, 100, and 1,000 exposures plus lifetime. The complete vector and its
 dispersion are reported. It is not collapsed into one rankable scalar.
 
-### 4.5 Prior art boundary
+### 4.5 Dual causal representation
+
+Forward artifact trust and backward Rust are messages over the same directed development
+graph, not positive and negative values on one scalar. The forward message asks which
+bounded parent obligations are available to a child. The backward message asks which
+recorded ancestors can explain an observed child deviation. A node may carry both without
+cancellation: positive support for one predicate does not erase Rust for another, and
+Rust on one descendant does not erase unrelated support.
+
+The causal graph therefore represents both the generative direction commonly used to
+explain how claims and artifacts develop and the diagnostic direction used to identify
+where a later contradiction may have entered the architecture.
+
+### 4.6 Prior art boundary
 
 Proper scoring rules provide a lower-is-better penalty analogy when a claim is genuinely
 probabilistic; the original references include [Brier (1950)](https://journals.ametsoc.org/view/journals/mwre/78/1/1520-0493_1950_078_0001_vofeit_2_0_co_2.xml)
@@ -245,16 +365,17 @@ Rust is not itself a proper scoring rule unless its declared expectation and com
 rule satisfy the corresponding conditions.
 
 [Friedman and Resnick (2001)](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1430-9134.2001.00173.x)
-analyze the social cost of cheap pseudonyms in party reputation systems. Object binding
-changes the coordinate being measured, but, as noted above, does not prove that
-semantically equivalent repackaging is impossible.
+analyze the social cost of cheap pseudonyms in party reputation systems. Content and
+relation binding change the coordinate being measured, but, as noted above, do not prove
+that semantically equivalent repackaging is impossible.
 
 [CVE](https://www.cve.org/), [OpenSSF Scorecard](https://openssf.org/scorecard/), and
 [Certificate Transparency](https://www.rfc-editor.org/rfc/rfc9162.html) are useful
 comparisons for public negative signals, automated project checks, and append-only public
 records. They are not equivalent mechanisms and do not validate this design. This note
-claims only a proposed composition of object-bound deviation, exposure deduplication,
-typed uncertainty, and separation from verdict material. It makes no novelty claim.
+claims only a proposed composition of relation-bound deviation, genetic backtrace,
+exposure deduplication, typed uncertainty, and separation from verdict material. It makes
+no novelty claim.
 
 ## 5. The information-free limit
 
@@ -383,15 +504,16 @@ proof for one favorable bounded predicate, not as a full trichotomy implementati
   ancestry is not established influence; and one evidence class cannot silently upgrade
   another.
 
-### Removed from Tier 0
+### Forbidden as automatic trust or verdict weight
 
-- pseudonym;
-- signing-key identifier;
-- issuer and authorization grant;
-- actor trust root;
-- revocation source for actor credentials;
-- uniqueness, Sybil-resistance, independence, and accountability properties; and
-- authorship degree or credential ancestry as verdict inputs.
+- pseudonym or signing-key identity;
+- issuer, authorization grant, actor trust root, or revocation source;
+- uniqueness, Sybil-resistance, independence, or accountability claims; and
+- authorship degree or credential ancestry.
+
+These coordinates may still be bound when the declared claim needs them. None is a
+general trust signal, none upgrades an artifact result, and none permanently classifies an
+entity as an actor rather than an artifact.
 
 Deployments may still use the Zero Identity experiment's bounded identity disclosure
 model alongside Tier 0 when they need authenticated authorization. Its results must not
@@ -429,7 +551,11 @@ This design does not establish or claim:
 - that `STALE` can be inferred from elapsed time, rust, missing records, or popularity;
 - that a rust history predicts future behavior; it records only past measured deviation;
 - that rust is comparable across predicates, units, or basins;
-- that an object-bound ledger prevents semantically equivalent repackaging;
+- that a relation-bound Rust ledger prevents semantically equivalent repackaging;
+- that `TRANSFERRED` proves direct observation, causation, intent, or fault at an ancestor;
+- that Rust concentration is a probability of guilt or a substitute for localization;
+- that forward artifact trust proves a child claim without its own transformation and
+  predicate evidence;
 - that authorship is actor identity, or that either is required by Tier 0;
 - independent implementation, external audit, external adoption, production readiness,
   or a security review of this synthesis;
@@ -439,35 +565,44 @@ This design does not establish or claim:
 
 ## 10. Open questions
 
-1. **Name:** keep the operator's `rust` metaphor in research prose, use `corrosion` in
-   wire-facing material, or select a third term that does not collide with the Rust
-   programming language?
-2. **Deviation rules:** which fixed magnitude rule applies to each expectation type, and
+1. **Transmission rules:** which typed creation, input, execution, and transformation
+   edges admit Rust transfer, and which reference-only edges stop it?
+2. **Localization:** which intervention or independent evidence promotes inherited
+   `TRANSFERRED` Rust to `LOCALIZED` contribution?
+3. **Role coordinates:** how are a coding-agent artifact and its bound acting instance
+   related without claiming they are identical or permanently assigning either category?
+4. **Forward trust transfer:** which parent evidence classes and edge checks supply a
+   bounded positive signal to each child obligation, and how is the weakest required
+   support preserved?
+5. **Concentration:** which independence and basin conditions let intersecting backtraces
+   prioritize a common ancestor without converting frequency into causal proof?
+6. **Deviation rules:** which fixed magnitude rule applies to each expectation type, and
    who may define it without letting the measured object tune its own penalty?
-3. **Cross-basin comparison:** should comparison be explicitly undefined unless predicate,
+7. **Cross-basin comparison:** should comparison be explicitly undefined unless predicate,
    unit, mechanism class, and deviation rule all match?
-4. **Exposure admission:** which distinct test vectors and boundary snapshots are
+8. **Exposure admission:** which distinct test vectors and boundary snapshots are
    sufficiently non-duplicative to count as new falsification opportunities without
-   introducing actor identity?
-5. **Independent implementation:** what evidence is sufficient to show that two checkers
+   converting an actor-role coordinate into actor trust?
+9. **Independent implementation:** what evidence is sufficient to show that two checkers
    share no verdict-producing code?
-6. **Ledger convergence:** how are concurrent append-only event branches, unavailable log
+10. **Ledger convergence:** how are concurrent append-only event branches, unavailable log
    heads, and resolver equivocation represented without a privileged mutable registry?
-7. **`STALE` governance:** should `CoordinateStatus.STALE` and `ArtifactStatus.STALE` share
+11. **`STALE` governance:** should `CoordinateStatus.STALE` and `ArtifactStatus.STALE` share
    one abstract event model while retaining separate transition functions and schemas?
-8. **ZK trichotomy:** what bounded private witness structure lets the guest derive
+12. **ZK trichotomy:** what bounded private witness structure lets the guest derive
    `Supported`, `Unknown`, and `Conflicted` rather than authenticate a caller's label?
-9. **Observational evidence:** VSTD-3 device observations cannot be recreated from artifact
+13. **Observational evidence:** VSTD-3 device observations cannot be recreated from artifact
    bytes. What source testimony and attestation assumptions must a boundary snapshot expose
    without turning the observer's identity into verdict weight?
-10. **Author is not actor:** if optional authorship is later marked inside artifact bytes,
+14. **Author is not actor:** if optional authorship is later marked inside artifact bytes,
     the mark changes the content digest. Should authorship instead use a detached,
     separately content-addressed statement, and what claim could it safely support?
-11. **ZI declarative drift:** should the evaluator import a generated coordinate contract,
+15. **ZI declarative drift:** should the evaluator import a generated coordinate contract,
     or should a repository containment test require the model and code lists to agree?
-12. **Operational controls:** how can anonymous admission control limit denial-of-service
+16. **Operational controls:** how can anonymous admission control limit denial-of-service
     without becoming a correctness signal or a de facto identity requirement?
 
-Round 2 intentionally resolves none of these questions by implementation. The next safe
-step is a bounded event-ledger experiment with no new wire identifier, followed separately
-by the ZK trichotomy experiment once its derivation rule is specified.
+Round 2 resolves the category error and the two propagation directions but implements none
+of these open mechanics. The next safe step is a bounded dual-direction event-ledger
+experiment with no new wire identifier, followed separately by the ZK trichotomy
+experiment once its derivation rule is specified.

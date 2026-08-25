@@ -1,4 +1,8 @@
-"""Experimental, non-normative VSTD/SCITT interoperability surface.
+"""Terminology: Concise Binary Object Representation (CBOR);
+CBOR Object Signing and Encryption (COSE); Supply Chain Integrity, Transparency, and Trust (SCITT);
+Verifier Standard (VSTD).
+
+Experimental, non-normative VSTD/SCITT interoperability surface.
 
 This package does not implement COSE or a SCITT Transparency Service.  It
 defines the application payload carried by a SCITT Signed Statement and the

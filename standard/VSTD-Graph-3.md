@@ -1,4 +1,4 @@
-# VSTD-Graph-3 — Accountable Provenance Closure
+# Verifier Standard (VSTD)-Graph-3 — Accountable Provenance Closure
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 

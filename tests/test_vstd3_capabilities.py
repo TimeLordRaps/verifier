@@ -1,3 +1,6 @@
+"""Terminology: Advanced Micro Devices (AMD); application-specific integrated circuit (ASIC);
+Verifier Standard (VSTD)."""
+
 from __future__ import annotations
 
 import base64

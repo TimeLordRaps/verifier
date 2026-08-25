@@ -1,4 +1,6 @@
-"""CLI tests for the verdict-neutral experimental-workflow surface."""
+"""Terminology: command-line interface (CLI); Verifier Standard (VSTD).
+
+CLI tests for the verdict-neutral experimental-workflow surface."""
 
 from __future__ import annotations
 

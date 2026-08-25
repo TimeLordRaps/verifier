@@ -1,4 +1,7 @@
-"""Unit tests for the independent VSTD SAT solver and Grounding checker."""
+"""Terminology: Boolean satisfiability problem (SAT); unsatisfiable (UNSAT);
+Verifier Standard (VSTD).
+
+Unit tests for the independent VSTD SAT solver and Grounding checker."""
 
 from __future__ import annotations
 

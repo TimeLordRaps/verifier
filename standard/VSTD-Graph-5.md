@@ -1,4 +1,4 @@
-# VSTD-Graph-5 — Corroborated Verification Network
+# Verifier Standard (VSTD)-Graph-5 — Corroborated Verification Network
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 

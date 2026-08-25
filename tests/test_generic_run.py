@@ -1,4 +1,6 @@
-"""Adversarial and lifecycle tests for the generic computational run receipt
+"""Terminology: Verifier Standard (VSTD).
+
+Adversarial and lifecycle tests for the generic computational run receipt
 primitive (`verifier.core.run`).
 
 Covers the acceptance-test flow (capture -> validate -> inspect -> reproduce) plus a

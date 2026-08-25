@@ -1,4 +1,6 @@
-"""Reproducibility taxonomy and verification comparison levels.
+"""Terminology: Boolean satisfiability problem (SAT); Verifier Standard (VSTD).
+
+Reproducibility taxonomy and verification comparison levels.
 
 Defines the formal gradient of reproducibility for computational and formal claims.
 """

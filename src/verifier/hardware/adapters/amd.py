@@ -1,4 +1,7 @@
-"""AMD SMI/ROCm discovery and offline evidence normalization."""
+"""Terminology: Advanced Micro Devices (AMD); application-specific integrated circuit (ASIC);
+JavaScript Object Notation (JSON); system management interface (SMI); Verifier Standard (VSTD).
+
+AMD SMI/ROCm discovery and offline evidence normalization."""
 
 from __future__ import annotations
 

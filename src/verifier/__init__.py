@@ -1,4 +1,6 @@
-"""VSTD reference implementation public API."""
+"""Terminology: application programming interface (API); Verifier Standard (VSTD).
+
+VSTD reference implementation public API."""
 
 from __future__ import annotations
 

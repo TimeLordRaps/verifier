@@ -1,4 +1,6 @@
-"""Build and verify public release artifacts from an exact public Git ref.
+"""Terminology: uniform resource locator (URL); Verifier Standard (VSTD); ZIP archive format (ZIP).
+
+Build and verify public release artifacts from an exact public Git ref.
 
 The release manifest is an artifact beside the source ZIP, not a tracked file inside
 the source tree. That avoids a self-referential commit hash and makes ``source_commit``

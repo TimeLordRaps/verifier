@@ -1,4 +1,10 @@
-"""Strict experimental mapping between VSTD's interlingua and IETF SCITT.
+"""Terminology: American Standard Code for Information Interchange (ASCII);
+Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
+Internet Engineering Task Force (IETF); JavaScript Object Notation (JSON);
+Request for Comments (RFC); Supply Chain Integrity, Transparency, and Trust (SCITT);
+Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
+
+Strict experimental mapping between VSTD's interlingua and IETF SCITT.
 
 The emitted registration template is a deterministic *input* to a native
 SCITT/COSE implementation.  It is not CBOR, COSE_Sign1, a signature, a COSE

@@ -1,4 +1,9 @@
-# Zero-knowledge experiment for ZIZK-VSTD
+# Zero-knowledge experiment for zero-identity/zero-knowledge (ZIZK)-Verifier Standard (VSTD)
+
+> **Acronyms:** gigabyte (GB); identifier (ID); random-access memory (RAM); reduced instruction set computer (RISC);
+> RISC Zero (RISC0); software development kit (SDK); Secure Hash Algorithm 256-bit (SHA-256);
+> scalable transparent argument of knowledge (STARK); Windows Subsystem for Linux 2 (WSL2);
+> zero-knowledge virtual machine (zkVM).
 
 **Status:** optional experiment; not a VSTD layer, wire identifier, conformance level,
 or compatibility promise.
@@ -65,6 +70,9 @@ the compiled expected image ID; it does not trust the convenience metadata in
 acceptance input here.
 
 Canonical evidence commitment input:
+
+`UTF8` means Unicode Transformation Format, 8-bit (UTF-8) encoding; `U32_BE` and
+`U64_BE` mean unsigned 32-bit and unsigned 64-bit big-endian encoding.
 
 ```text
 UTF8("vstd-zk-evidence-commitment-v1\\0")

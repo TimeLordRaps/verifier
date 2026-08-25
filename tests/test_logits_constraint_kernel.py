@@ -1,4 +1,6 @@
-"""Real logits-level constraint tests against llguidance, not an engine simulation."""
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+
+Real logits-level constraint tests against llguidance, not an engine simulation."""
 
 from __future__ import annotations
 

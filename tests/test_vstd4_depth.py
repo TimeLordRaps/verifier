@@ -1,4 +1,6 @@
-"""The ladder internal to VSTD-4, and the gate it guards.
+"""Terminology: identifier (ID); unsatisfiable (UNSAT); Verifier Standard (VSTD).
+
+The ladder internal to VSTD-4, and the gate it guards.
 
 ``vstd4_depth`` is computed, never declared. That is the whole point: standing
 up an external verification node is VSTD-5, and reaching it must be

@@ -1,5 +1,8 @@
 # Security policy
 
+> **Acronyms:** application programming interface (API); hash-based message authentication code (HMAC);
+> Verifier Standard (VSTD).
+
 ## Supported release
 
 Only the latest tagged public release is supported. Historical receipts and standards

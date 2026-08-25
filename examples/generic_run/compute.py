@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Word-frequency computation used by the VSTD generic-run example.
+"""Terminology: Verifier Standard (VSTD).
+
+Word-frequency computation used by the VSTD generic-run example.
 
 Pure standard library, no randomness, no floating point, and no wall-clock
 dependence in its *output* — timing is recorded separately by the VSTD

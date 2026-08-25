@@ -1,4 +1,8 @@
-"""Independent VSTD Checker for SAT, Derivation Graphs, and Grounding.
+"""Terminology: Davis-Putnam-Logemann-Loveland (DPLL); grounded decision certificate (GDC);
+Boolean satisfiability problem (SAT); Secure Hash Algorithm 256-bit (SHA-256);
+trusted computing base (TCB); Verifier Standard (VSTD).
+
+Independent VSTD Checker for SAT, Derivation Graphs, and Grounding.
 
 This module provides a minimal, self-contained verification engine with zero
 dependencies on external solver libraries or the target repository under test.

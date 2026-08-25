@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
-  <title id="title">VSTD two-axis verification overview</title>
+  <title id="title">Verifier Standard (VSTD) two-axis verification overview</title>
   <desc id="desc">Five object-mechanics layers and five collection-dynamics layers. Every layer requires separate evidence; higher layers never substitute for lower layers.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">

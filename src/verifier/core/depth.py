@@ -1,4 +1,7 @@
-"""``vstd4_depth`` -- how far up the layer-4 ladder a claim actually got.
+"""Terminology: conjunctive normal form (CNF); identifier (ID); unsatisfiable (UNSAT);
+Verifier Standard (VSTD).
+
+``vstd4_depth`` -- how far up the layer-4 ladder a claim actually got.
 
 VSTD-4 is fourteen rungs, ordered so that each is unstatable without the one
 below it. That ordering is not editorial tidiness. Standing up a genuinely

@@ -1,4 +1,5 @@
 {
+  "$comment": "Terminology: abstract syntax tree (AST); intermediate representation (IR); Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd2_receipt.json",
   "title": "VSTD-2 Verification Surface Receipt",

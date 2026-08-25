@@ -1,4 +1,6 @@
-# Contributing to VSTD
+# Contributing to Verifier Standard (VSTD)
+
+> **Acronym:** GNU Privacy Guard (GPG).
 
 Contributions are welcome when they make a declared verification surface more precise,
 more independently checkable, or easier to implement without strengthening unsupported

@@ -1,4 +1,6 @@
-# VSTD governance
+# Verifier Standard (VSTD) governance
+
+> **Acronym:** grounded decision certificate (GDC).
 
 ## Current phase
 

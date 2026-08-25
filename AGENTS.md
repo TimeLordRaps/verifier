@@ -1,5 +1,11 @@
 # AGENTS.md
 
+> **Acronyms:** application programming interface (API); continuous integration (CI); command-line interface (CLI);
+> carriage return and line feed (CRLF); GNU Privacy Guard (GPG); hash-based message authentication code (HMAC);
+> Hypertext Markup Language (HTML); Internet Engineering Task Force (IETF);
+> International Organization for Standardization (ISO); JavaScript Object Notation (JSON); line feed (LF);
+> Verifier Standard (VSTD); World Wide Web Consortium (W3C).
+
 Working rules for automated contributors to VSTD. Read this before editing anything.
 
 ## 1. What this repository is
@@ -55,6 +61,18 @@ Treat public onboarding examples as release surfaces. Feature one only when its 
 subject is real, its critical artifacts are retrievable, and its claimed path is rerunnable;
 otherwise remove it from navigation and the live example/test surface instead of explaining
 away missing evidence. Preserve forensic material outside the public tree or in Git history.
+
+### 2.2 First-use acronym expansion
+
+Write every independently readable document and source file for a newcomer who starts at its
+first line. Expand each acronym at its first reader-facing use as **expanded term (ACRONYM)**;
+do not require a prior document, domain background, or the filename to supply the meaning.
+Source files place the expansion in the module documentation or the first explanatory comment.
+The canonical expansion key is [`docs/ACRONYMS.md`](docs/ACRONYMS.md), but a glossary link never
+substitutes for the local first-use expansion. Do not rename frozen wire identifiers, schema
+values, code symbols, filenames, commands, or third-party proper names; explain them in adjacent
+prose instead. `scripts/check_acronyms.py` enforces the registered terms on public prose and
+source-documentation surfaces.
 
 After a public credibility failure, audit adjacent first-impression claims, validation labels,
 evidence classifications, links, packaging, tests, and private/public boundary leaks. Never

@@ -1,4 +1,7 @@
-"""Rung 4.8 -- the availability ladder.
+"""Terminology: identifier (ID); International Organization for Standardization (ISO);
+Verifier Standard (VSTD).
+
+Rung 4.8 -- the availability ladder.
 
 A hash is not availability. ``proof_sha256 = abc123…`` that nobody can obtain is
 cryptographically bound and completely uncheckable, and a verdict resting on it

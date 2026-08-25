@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Validate experimental manifests and build their deterministic public index."""
+"""Terminology: Verifier Standard (VSTD).
+
+Validate experimental manifests and build their deterministic public index."""
 
 from __future__ import annotations
 
@@ -42,6 +44,8 @@ def render(records: tuple[tuple[Path, dict[str, object]], ...]) -> str:
 
     lines = [
         "# Experimental work index",
+        "",
+        "> **Acronym:** Verifier Standard (VSTD).",
         "",
         "> **Experimental and non-normative.** Inclusion means that a profile manifest",
         "> is structurally valid and its `repo:` artifacts match their bound digests. It",

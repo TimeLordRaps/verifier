@@ -1,4 +1,6 @@
-"""Rung 4.14 -- refutability closure, and the handoff out of layer 4.
+"""Terminology: Verifier Standard (VSTD).
+
+Rung 4.14 -- refutability closure, and the handoff out of layer 4.
 
 ``A`` is VSTD-4 and ``B`` is VSTD-4 does **not** make ``C = f(A, B)`` VSTD-4.
 Refutability is not preserved by arbitrary transformation, and assuming it is

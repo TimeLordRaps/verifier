@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Fail closed when a release archive contains private or secret-shaped text."""
+"""Terminology: Unicode Transformation Format, 8-bit (UTF-8); Verifier Standard (VSTD).
+
+Fail closed when a release archive contains private or secret-shaped text."""
 
 from __future__ import annotations
 

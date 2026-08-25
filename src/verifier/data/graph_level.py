@@ -1,4 +1,7 @@
-"""``graph_level`` -- how far up the VSTD-Graph ladder a collection actually got.
+"""Terminology: conjunctive normal form (CNF); grounded decision certificate (GDC);
+Boolean satisfiability problem (SAT); unsatisfiable (UNSAT); Verifier Standard (VSTD).
+
+``graph_level`` -- how far up the VSTD-Graph ladder a collection actually got.
 
 VSTD is verification *mechanics* over one object. VSTD-Graph is verification
 *dynamics* over a collection.  The axes remain distinct: a collection holds at

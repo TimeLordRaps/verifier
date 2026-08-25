@@ -1,4 +1,8 @@
-"""Accelerator-agnostic records for VSTD 3 hardware accountability."""
+"""Terminology: artificial intelligence (AI); application-specific integrated circuit (ASIC);
+graphics processing unit (GPU); neural processing unit (NPU); tensor processing unit (TPU);
+Verifier Standard (VSTD).
+
+Accelerator-agnostic records for VSTD 3 hardware accountability."""
 
 from __future__ import annotations
 

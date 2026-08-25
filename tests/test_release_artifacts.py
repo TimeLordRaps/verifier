@@ -1,4 +1,6 @@
-"""The public source archive must bind exact, publicly resolvable Git bytes."""
+"""Terminology: Verifier Standard (VSTD); ZIP archive format (ZIP).
+
+The public source archive must bind exact, publicly resolvable Git bytes."""
 
 from __future__ import annotations
 

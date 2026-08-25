@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Fail closed when public presentation surfaces drift from executable truth."""
+"""Terminology: artificial intelligence (AI); application programming interface (API);
+Amazon Web Services (AWS); command-line interface (CLI); Verifier Standard (VSTD).
+
+Fail closed when public presentation surfaces drift from executable truth."""
 
 from __future__ import annotations
 
@@ -380,6 +383,22 @@ def check_experiment_index(errors: list[str]) -> None:
         )
 
 
+def check_acronyms(errors: list[str]) -> None:
+    """Require first-use expansion on every registered reader-facing surface."""
+
+    path = ROOT / "scripts/check_acronyms.py"
+    spec = importlib.util.spec_from_file_location("check_acronyms", path)
+    if spec is None or spec.loader is None:
+        errors.append("cannot load scripts/check_acronyms.py")
+        return
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+        errors.extend(module.validate_repo())
+    except Exception as exc:  # any glossary or scan failure is a presentation failure
+        errors.append(f"acronym presentation gate failed: {exc}")
+
+
 def run() -> list[str]:
     errors: list[str] = []
     check_local_links(errors)
@@ -391,6 +410,7 @@ def run() -> list[str]:
     check_visual_assets(errors)
     check_generated_reference(errors)
     check_experiment_index(errors)
+    check_acronyms(errors)
     return errors
 
 
@@ -402,7 +422,7 @@ def main() -> int:
         return 1
     print(
         "[PRESENTATION OK] links, accessibility, versions, boundaries, paths, "
-        "visual assets, generated reference, and experiment index"
+        "visual assets, generated reference, experiment index, and acronym expansion"
     )
     return 0
 

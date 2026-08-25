@@ -16,7 +16,7 @@
     "proof certificates"
   ],
   "license": "Apache-2.0",
-  "title": "VSTD: A Two-Axis Ladder for Refutable Verification",
+  "title": "Verifier Standard (VSTD): A Two-Axis Ladder for Refutable Verification",
   "version": "1.2.0",
   "upload_type": "software"
 }

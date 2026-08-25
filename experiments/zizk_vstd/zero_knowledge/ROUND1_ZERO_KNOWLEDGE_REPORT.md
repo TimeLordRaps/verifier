@@ -1,5 +1,11 @@
 # Round 1 zero-knowledge experiment report
 
+> **Acronyms:** gigabyte (GB); identifier (ID); random-access memory (RAM); reduced instruction set computer (RISC);
+> RISC Zero (RISC0); random number generator (RNG); software development kit (SDK);
+> Secure Hash Algorithm 256-bit (SHA-256); scalable transparent argument of knowledge (STARK);
+> Verifier Standard (VSTD); Windows Subsystem for Linux 2 (WSL2); zero-identity/zero-knowledge (ZIZK);
+> zero-knowledge virtual machine (zkVM).
+
 **Date:** 2026-08-23
 **Status:** completed local experiment; not published or merged
 

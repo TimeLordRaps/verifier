@@ -6,8 +6,8 @@
   },
   "experiment": {
     "id": "experiment-zizk-vstd",
-    "title": "ZIZK-VSTD bounded disclosure and trustless reverification",
-    "question": "Can optional VSTD profiles prove bounded predicates while minimizing witness and actor disclosure without allowing reverification to accumulate unearned trust?",
+    "title": "Zero identity, zero knowledge, zero actor trust, artifact-first trust, and genetic Rust backtrace",
+    "question": "Can bounded predicates support hidden witnesses and minimized identity disclosure while artifact trust moves forward through developmental claim space and child Rust moves backward to concentrate on candidate falsehoods in bound ancestor claim architecture, without actor reputation becoming verdict weight?",
     "state": "RUNNING",
     "started_at": "2026-08-23T00:00:00Z"
   },
@@ -29,6 +29,30 @@
       "statement": "Reverification can reproduce a verdict over bound public coordinates without accumulating actor reputation or historical trust.",
       "falsification_condition": "The proposed substrate requires actor identity or prior reputation to reproduce the bounded verdict, or repeated identical receipts increase epistemic strength without new evidence.",
       "state": "OPEN"
+    },
+    {
+      "id": "hypothesis-artifact-first-zero-actor-trust",
+      "statement": "Reverification acceptance is derived from bound artifacts, evidence, predicates, mechanisms, and declared trust roots; actor identity, popularity, repetition, or reputation cannot strengthen the verdict.",
+      "falsification_condition": "Changing only actor identity or reputation changes acceptance, repeated equivalent actor events raise status, or an unbound artifact is accepted.",
+      "state": "OPEN"
+    },
+    {
+      "id": "hypothesis-contextual-actor-artifact-roles",
+      "statement": "Actor and artifact are contextual roles on creation and operation events, so a coding agent may be an artifact when created or evaluated and an actor when it creates or transforms another artifact.",
+      "falsification_condition": "The model requires permanent disjoint actor and artifact categories, loses a claim-relevant creation edge, or treats a role assignment as identity, authority, or trust.",
+      "state": "OPEN"
+    },
+    {
+      "id": "hypothesis-rust-genetic-backtrace",
+      "statement": "Observed child deviation transfers typed Rust backward through admissible bound creation paths, concentrating independent backtraces on shared ancestor claims, predicates, mechanisms, artifacts, and contextual coding-agent roles.",
+      "falsification_condition": "Rust cannot reproduce its child-to-ancestor paths, fails to concentrate distinct comparable sources, crosses non-contributing edges, or reports concentration as direct observation, proven causation, actor reputation, or a VSTD verdict.",
+      "state": "OPEN"
+    },
+    {
+      "id": "hypothesis-dual-causal-propagation",
+      "statement": "The bound development graph can carry scoped positive artifact trust from parent to child and diagnostic Rust from child to parent without collapsing them into one scalar or allowing either direction to bypass claim-local evidence.",
+      "falsification_condition": "Positive support flows backward, Rust flows forward as inherited guilt, parent trust automatically proves a child, missing or conflicted support becomes clean, or actor identity changes either signal.",
+      "state": "OPEN"
     }
   ],
   "preregistration": {
@@ -45,21 +69,21 @@
       "id": "artifact-zk-report",
       "role": "round-1-zero-knowledge-report",
       "media_type": "text/markdown",
-      "digest": "sha256:63dd96f2f80c915ee937e9e68159f730000933fffece0b334cd368823c96fff4",
+      "digest": "sha256:eac348205ce3def8e79607eb0e68c3f1cbda4af30c3eb2761154ac3fc8a27705",
       "locator": "repo:experiments/zizk_vstd/zero_knowledge/ROUND1_ZERO_KNOWLEDGE_REPORT.md"
     },
     {
       "id": "artifact-zi-report",
       "role": "round-1-zero-identity-report",
       "media_type": "text/markdown",
-      "digest": "sha256:345426819cd03e1a4e850923c66de6d50732966efddacf5a1f1d90acdb469ad2",
+      "digest": "sha256:88a0c70788ded754cba3e04942c11223cfffce241ee6859c4bad3855c9897ac2",
       "locator": "repo:experiments/zizk_vstd/zero_identity/ROUND1_ZERO_IDENTITY_REPORT.md"
     },
     {
       "id": "artifact-round2-design",
       "role": "round-2-reverification-design",
       "media_type": "text/markdown",
-      "digest": "sha256:a1af087fe53485443a1ed4019e1e3a595485e6f4eb4b4e57c944a1ecd2adbc4e",
+      "digest": "sha256:24c925c2ce5398520752d906e315fe00c2af646a98f4cd936103ce3620bdba36",
       "locator": "repo:experiments/zizk_vstd/reverification/ROUND2_DESIGN_NOTE.md"
     }
   ],
@@ -159,17 +183,23 @@
     {
       "id": "action-reverification-synthesis",
       "kind": "DESIGN_SYNTHESIS",
-      "target": "trustless reverification substrate",
+      "target": "dual-direction artifact-first reverification: forward bounded artifact trust and backward genetic Rust concentration across contextual actor/artifact roles",
       "state": "COMPLETED",
       "priority": 3,
-      "selected_because": "The proof and identity studies exposed a need to separate reproducible artifact verdicts from actor reputation and accumulated trust.",
+      "selected_because": "The proof and identity studies exposed the need for artifact-first positive support without actor reputation, while coding-agent creation semantics require child-to-parent diagnostic Rust over the same causal graph.",
       "selection_evidence_ids": [
         "observation-zk-proof",
-        "observation-identity-boundary"
+        "observation-identity-boundary",
+        "hypothesis-contextual-actor-artifact-roles",
+        "hypothesis-rust-genetic-backtrace",
+        "hypothesis-artifact-first-zero-actor-trust",
+        "hypothesis-dual-causal-propagation"
       ],
       "alternatives_considered": [
         "identity-bound trust",
-        "reputation accumulation"
+        "actor reputation accumulation",
+        "object-only Rust with erased actor-artifact relations",
+        "permanent disjoint actor and artifact categories"
       ],
       "budget_ids": [
         "budget-round2-design"
@@ -182,10 +212,10 @@
         "observation-zk-proof",
         "observation-identity-boundary"
       ],
-      "expected_artifact_effect": "Produce an explicit protocol boundary and unresolved implementation requirements for a later round.",
+      "expected_artifact_effect": "Define contextual roles, forward scoped artifact support, backward typed Rust transfer, and concentration at shared candidate ancestor falsehoods while leaving the operational protocol and schema open.",
       "substrate": {
         "kind": "design-review",
-        "name": "ZIZK reverification synthesis",
+        "name": "ZIZK artifact-first actor-artifact reverification synthesis",
         "version": "round-2",
         "coordinate": "repo:experiments/zizk_vstd/reverification"
       },
@@ -270,8 +300,8 @@
         "observation-zk-proof",
         "observation-identity-boundary"
       ],
-      "decision": "Separate reproducible artifact verdicts from actor reputation and make non-accumulation of trust an explicit Round 2 requirement.",
-      "reason": "Proof verification and identity minimization address different risks; joining them through actor trust would contradict the trustless objective.",
+      "decision": "Use one bound development graph for two typed directions: artifact trust moves parent-to-child as scoped positive support, and Rust moves child-to-parent as a genetic backtrace that concentrates on shared candidate falsehoods; neither becomes actor reputation or a scalar verdict.",
+      "reason": "Creation causality and diagnostic causality require opposite traversal of the same actor-artifact relations. Keeping both signals typed preserves the causal model without letting parent trust prove a child or inherited Rust claim direct guilt.",
       "action_ids": [
         "action-reverification-synthesis"
       ],
@@ -287,6 +317,15 @@
       "reason": "Round 1 findings narrowed the design from identity-bound trust to artifact-bound trustless reverification.",
       "supersedes": [
         "hypothesis-trustless-reverification"
+      ],
+      "artifact_id": "artifact-round2-design"
+    },
+    {
+      "id": "amendment-actor-artifact-rust-correction",
+      "recorded_at": "2026-08-25T00:00:00Z",
+      "reason": "Correct the object-only framing with contextual actor/artifact roles and dual causal propagation: bounded artifact trust moves forward through claim development, while child Rust genetically backtraces and concentrates on shared ancestor claim architecture without becoming actor reputation.",
+      "supersedes": [
+        "amendment-round2-design"
       ],
       "artifact_id": "artifact-round2-design"
     }
@@ -310,6 +349,24 @@
       "status": "UNKNOWN",
       "description": "Independent implementation by an unrelated party",
       "reason": "No independent implementation has been demonstrated."
+    },
+    {
+      "id": "horizon-contextual-role-protocol",
+      "status": "UNKNOWN",
+      "description": "Operational actor/artifact role and creation-edge protocol",
+      "reason": "The design states the contextual-role invariant but includes no approved schema or implementation."
+    },
+    {
+      "id": "horizon-rust-genetic-backtrace",
+      "status": "UNKNOWN",
+      "description": "Typed backward Rust transfer, concentration, and localization over bound ancestry",
+      "reason": "The child-to-parent transfer states and concentration boundary are design-only; no event ledger, propagation implementation, or localization experiment is included."
+    },
+    {
+      "id": "horizon-forward-artifact-trust",
+      "status": "UNKNOWN",
+      "description": "Scoped forward artifact-trust transfer through developmental claim space",
+      "reason": "The design requires meet-like bounded support and child-local obligations, but no transfer algebra or implementation is included."
     }
   ],
   "publication": {
@@ -322,5 +379,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:fda6eb1e909341d895b44f8d73a38d5c9843df2314b4dffc1c906a7c50ea2c17"
+  "manifest_digest": "sha256:f5230cef21a94d576120df01237f99fd5000be6f1afcad7dc707b28b585ee003"
 }

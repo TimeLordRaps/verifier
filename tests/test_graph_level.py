@@ -1,4 +1,6 @@
-"""The VSTD-Graph axis: a computed level, and the proof of its ceiling.
+"""Terminology: Verifier Standard (VSTD).
+
+The VSTD-Graph axis: a computed level, and the proof of its ceiling.
 
 The level is never declared. Each test below pins one of the four conditions --
 membership floor, provenance closure, status admissibility, edge evidence --

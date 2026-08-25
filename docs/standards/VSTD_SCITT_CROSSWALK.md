@@ -1,4 +1,11 @@
-# VSTD and IETF SCITT: experimental interoperability crosswalk
+# Verifier Standard (VSTD) and Internet Engineering Task Force (IETF) Supply Chain Integrity, Transparency, and Trust (SCITT): experimental interoperability crosswalk
+
+> **Acronyms:** artificial intelligence (AI); application programming interface (API);
+> Concise Binary Object Representation (CBOR); Confidential Consortium Framework (CCF);
+> CBOR Object Signing and Encryption (COSE); CBOR Web Token (CWT); European Union (EU);
+> grounded decision certificate (GDC); Hypertext Transfer Protocol (HTTP); Request for Comments (RFC);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); SCITT Reference APIs (SCRAPI); Transparency Service (TS);
+> verifiable data structure proof (VDP); verifiable data structure (VDS); working group (WG); zero-knowledge (ZK).
 
 > **Status:** experimental, non-normative, reviewed against public specifications on
 > 2026-08-25. This document does not alter VSTD semantics and does not imply IETF,
@@ -31,7 +38,7 @@ reviewable. That is the clean VSTD-shaped boundary.
 | Document | Status on 2026-08-25 | Relevance |
 |---|---|---|
 | [RFC 9943: SCITT Architecture](https://datatracker.ietf.org/doc/html/rfc9943) | IETF Standards Track RFC, **Proposed Standard**, June 2026 | Normative SCITT architecture, Signed Statements, Registration, Receipts, Transparent Statements, and security boundary. |
-| [RFC 9942: COSE Receipts](https://datatracker.ietf.org/doc/html/rfc9942) | IETF Standards Track RFC, **Proposed Standard**, June 2026 | COSE Receipt wrapper, VDS/VDP registries, RFC9162 inclusion and consistency proof encodings. |
+| [RFC 9942: COSE Receipts](https://datatracker.ietf.org/doc/html/rfc9942) | IETF Standards Track RFC, **Proposed Standard**, June 2026 | COSE Receipt wrapper, VDS/VDP registries, RFC 9162 inclusion and consistency proof encodings. |
 | [draft-ietf-scitt-scrapi-11](https://datatracker.ietf.org/doc/html/draft-ietf-scitt-scrapi-11) | **Active SCITT WG Internet-Draft**, intended Proposed Standard, in the RFC Editor Queue; not yet an RFC | HTTP registration, asynchronous completion, receipt resolution, and TS key discovery. |
 | [draft-ietf-scitt-receipts-ccf-profile-04](https://datatracker.ietf.org/doc/html/draft-ietf-scitt-receipts-ccf-profile-04) | **Active SCITT WG Internet-Draft**, intended Proposed Standard, in IETF Last Call through 2026-09-07; not an RFC | CCF ledger VDS and inclusion-proof profile for COSE Receipts. |
 | [draft-nobuo-scitt-composite-evidence-verification-00](https://datatracker.ietf.org/doc/draft-nobuo-scitt-composite-evidence-verification/) | **Active individual Internet-Draft**, no WG adoption or formal standing | Closest work: composite verification of statements, receipts, bindings, relationships, freshness, conflicts, and bundles under a named profile. |

@@ -1,5 +1,7 @@
 # Semantic model: bounded identity disclosure
 
+> **Acronym:** Verifier Standard (VSTD).
+
 **Status:** experimental, non-normative. No wire identifier, no schema route, no receipt digest.
 
 This document defines what the experiment means by each identity-adjacent term, which

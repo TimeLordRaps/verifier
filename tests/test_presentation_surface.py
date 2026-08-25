@@ -1,4 +1,6 @@
-"""The public first impression is a checked repository surface."""
+"""Terminology: application programming interface (API); Verifier Standard (VSTD).
+
+The public first impression is a checked repository surface."""
 
 from __future__ import annotations
 
@@ -17,6 +19,39 @@ def test_professional_presentation_surface_has_no_drift() -> None:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert module.run() == []
+
+
+def test_acronym_gate_rejects_missing_and_late_first_use(tmp_path: Path) -> None:
+    path = ROOT / "scripts/check_acronyms.py"
+    spec = importlib.util.spec_from_file_location("check_acronyms_fixture", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    glossary = docs / "ACRONYMS.md"
+    glossary.write_text(
+        "| Term | Expansion | Note |\n"
+        "|---|---|---|\n"
+        "| `API` | application programming interface | interface |\n"
+        "| `VSTD` | Verifier Standard | standard |\n",
+        encoding="utf-8",
+    )
+    readme = tmp_path / "README.md"
+    readme.write_text("# VSTD API\n\nVerifier Standard (VSTD).\n", encoding="utf-8")
+    module.ROOT = tmp_path
+    module.GLOSSARY = glossary
+
+    errors = module.validate_repo()
+    assert any("VSTD appears before its expansion" in error for error in errors)
+    assert any("API is not expanded" in error for error in errors)
+
+    readme.write_text(
+        "# Verifier Standard (VSTD) application programming interface (API)\n",
+        encoding="utf-8",
+    )
+    assert module.validate_repo() == []
 
 
 def test_public_boundary_catches_private_coordinates_without_naming_them() -> None:

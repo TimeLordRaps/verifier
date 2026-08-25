@@ -1,4 +1,7 @@
-"""Strict deterministic serialization primitives for VSTD 3 signed records."""
+"""Terminology: JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256);
+Verifier Standard (VSTD).
+
+Strict deterministic serialization primitives for VSTD 3 signed records."""
 
 from __future__ import annotations
 

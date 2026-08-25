@@ -1,4 +1,6 @@
-"""Composition of VSTD 3 hardware evidence into the existing provenance hypergraph."""
+"""Terminology: Verifier Standard (VSTD).
+
+Composition of VSTD 3 hardware evidence into the existing provenance hypergraph."""
 
 from __future__ import annotations
 

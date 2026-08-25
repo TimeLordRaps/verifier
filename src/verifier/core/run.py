@@ -1,4 +1,8 @@
-"""Generic computational run receipt capture for VSTD.
+"""Terminology: JavaScript Object Notation (JSON); Boolean satisfiability problem (SAT);
+Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD);
+YAML Ain't Markup Language (YAML).
+
+Generic computational run receipt capture for VSTD.
 
 This module implements the smallest working version of the "wrap any consequential
 computation and get a receipt" primitive described in the VSTD program graph.

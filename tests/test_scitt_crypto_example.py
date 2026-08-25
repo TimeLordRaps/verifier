@@ -1,4 +1,8 @@
-"""Optional real-COSE integration test for the self-contained example."""
+"""Terminology: Concise Binary Object Representation (CBOR);
+CBOR Object Signing and Encryption (COSE); Supply Chain Integrity, Transparency, and Trust (SCITT);
+Verifier Standard (VSTD).
+
+Optional real-COSE integration test for the self-contained example."""
 
 from __future__ import annotations
 

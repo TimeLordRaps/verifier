@@ -1,5 +1,8 @@
 # Claim boundary
 
+> **Acronyms:** identifier (ID); JavaScript Object Notation (JSON); reduced instruction set computer (RISC);
+> Verifier Standard (VSTD); zero-knowledge virtual machine (zkVM).
+
 ## Permitted claim after the recorded real-proof run
 
 This optional experiment demonstrates that RISC Zero zkVM 3.0.6 can produce a real,

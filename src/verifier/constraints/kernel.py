@@ -1,4 +1,7 @@
-"""Small common contract around native constrained-decoding engines.
+"""Terminology: intermediate representation (IR); JavaScript Object Notation (JSON);
+Verifier Standard (VSTD).
+
+Small common contract around native constrained-decoding engines.
 
 This is intentionally not a universal grammar IR.  The source constraint remains
 in its native language and the selected engine owns compilation.  VSTD

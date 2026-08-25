@@ -1,4 +1,7 @@
-"""Typed verification geometry for the additive VSTD-0.2 vertical slice.
+"""Terminology: abstract syntax tree (AST); intermediate representation (IR);
+Verifier Standard (VSTD).
+
+Typed verification geometry for the additive VSTD-0.2 vertical slice.
 
 This module does not alter VSTD-0.1 or VSTD-DATA-0.1 receipts.  It supplies a
 small common representation for describing *where* verification attaches,

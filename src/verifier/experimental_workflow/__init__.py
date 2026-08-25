@@ -1,4 +1,6 @@
-"""Experimental workflow profile; non-normative and verdict-neutral."""
+"""Terminology: identifier (ID); Verifier Standard (VSTD).
+
+Experimental workflow profile; non-normative and verdict-neutral."""
 
 from __future__ import annotations
 

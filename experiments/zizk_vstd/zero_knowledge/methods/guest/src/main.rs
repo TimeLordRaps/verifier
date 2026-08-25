@@ -1,3 +1,4 @@
+//! Terminology: Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 use risc0_zkvm::{
     guest::env,
     sha::{Impl, Sha256},

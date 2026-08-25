@@ -1,4 +1,6 @@
-"""Cloud/provider control-plane evidence kept separate from hardware attestation."""
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+
+Cloud/provider control-plane evidence kept separate from hardware attestation."""
 
 from __future__ import annotations
 

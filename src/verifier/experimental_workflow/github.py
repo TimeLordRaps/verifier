@@ -1,4 +1,6 @@
-"""Deterministic GitHub-to-workflow observations with no verification upgrade."""
+"""Terminology: application programming interface (API); Verifier Standard (VSTD).
+
+Deterministic GitHub-to-workflow observations with no verification upgrade."""
 
 from __future__ import annotations
 

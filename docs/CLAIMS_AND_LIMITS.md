@@ -1,5 +1,12 @@
 # Claims and limits in plain language
 
+> **Acronyms:** artificial intelligence (AI); Advanced Micro Devices (AMD); application programming interface (API);
+> Amazon Web Services (AWS); conjunctive normal form (CNF); Device Identifier Composition Engine (DICE);
+> grounded decision certificate (GDC); identifier (ID); machine learning (ML); NVIDIA Management Library (NVML);
+> Secure Hash Algorithm 256-bit (SHA-256); system management interface (SMI); Security Protocol and Data Model (SPDM);
+> Software Package Data Exchange (SPDX); trusted computing base (TCB); Coordinated Universal Time (UTC);
+> Verifier Standard (VSTD).
+
 > Reader aid: [concept glossary and primary precedents](CONCEPTS_AND_PRECEDENTS.md).
 
 **Status:** normative interpretation guide for the VSTD object and Graph ladders

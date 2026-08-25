@@ -1,4 +1,6 @@
-"""Conformance tests for the public, adversarial VSTD flagship demo."""
+"""Terminology: Verifier Standard (VSTD).
+
+Conformance tests for the public, adversarial VSTD flagship demo."""
 
 from __future__ import annotations
 
