@@ -99,6 +99,11 @@ An aggregate depth of `N` is valid only when distinct evidence passes every laye
 1 through `N`. Layers 1–4 are self-discernable; layer 5 requires another party to
 exist, act, and be independent. VSTD-5 and its witness protocol remain **DRAFT**.
 
+The same bound development graph carries artifact support forward from parent to child
+and diagnostic Rust backward from child to ancestor. Neither direction becomes actor
+reputation or cancels the other. The controlling boundary is
+[`standard/LADDER.md` section 1.1](standard/LADDER.md#11-artifact-first-causal-orientation).
+
 Start with [`standard/LADDER.md`](standard/LADDER.md). Wire identifiers are frozen
 separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
 

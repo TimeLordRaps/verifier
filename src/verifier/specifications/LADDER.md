@@ -49,6 +49,43 @@ describing another layer's failure. The normative requirement is narrower: an
 implementation MUST NOT treat success on one question as evidence for a different
 question.
 
+### 1.1 Artifact-first causal orientation
+
+VSTD evaluates artifact-bound claims, evidence, predicates, mechanisms, and declared
+trust roots. An actor's identity, popularity, repetition, or reputation MUST NOT
+strengthen a result. **Actor** and **artifact** are contextual roles rather than permanent
+entity classes: a coding agent may be an artifact when it is created, versioned, or
+evaluated and an actor when it creates or transforms another artifact.
+
+The same bound development graph carries two typed causal directions:
+
+```text
+development: parent artifact --bounded positive support--> child claim or artifact
+diagnosis:   child Rust      --genetic causal backtrace--> ancestor claim architecture
+```
+
+**Artifact trust** is positive support already established for an exact artifact-bound
+obligation. It moves parent-to-child only across a declared creation or dependency edge
+whose relevant transformation obligations pass. Applicable support composes by
+intersection and is capped by the weakest required parent or edge; it is never added,
+averaged, voted, or converted into actor standing. Every child MUST still discharge its
+new predicates, transformations, boundaries, and evidence obligations.
+
+**Rust** is a typed diagnostic trace created by an observed descendant deviation from a
+declared expectation. It moves child-to-parent only through recorded admissible creation,
+input, or transformation paths. Distinct comparable backtraces may concentrate on a
+shared ancestor and prioritize it for causal examination. Transferred Rust establishes
+ancestral reachability, not direct observation or causal responsibility; localization
+requires additional intervention, ablation, independent reproduction, or equivalent
+declared evidence.
+
+Forward support and backward Rust MUST remain separate. They do not cancel, form one
+scalar score, or flow in the opposite direction as inherited truth or guilt. `UNKNOWN`
+and `CONFLICTED` support or lineage MUST remain visible and MUST NOT become a clean
+signal. This section fixes the semantic orientation and prohibited inferences; an event
+format, transfer algebra, concentration-independence rule, and localization protocol each
+require their own specification and evidence.
+
 ---
 
 ## 2. The object ladder

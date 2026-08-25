@@ -98,8 +98,9 @@ def test_zizk_manifest_preserves_dual_causal_boundary() -> None:
     assert hypotheses["hypothesis-dual-causal-propagation"]["state"] == "OPEN"
 
     adaptation = payload["adaptations"][0]
-    assert "artifact trust moves parent-to-child" in adaptation["decision"]
-    assert "Rust moves child-to-parent" in adaptation["decision"]
+    assert "standard/LADDER.md section 1.1" in adaptation["decision"]
+    assert "parent-to-child artifact support" in adaptation["decision"]
+    assert "child-to-parent Rust" in adaptation["decision"]
 
     horizons = {item["id"]: item["status"] for item in payload["horizons"]}
     assert horizons["horizon-contextual-role-protocol"] == "UNKNOWN"

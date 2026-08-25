@@ -1,4 +1,4 @@
-# Round 2 design note: artifact-first reverification without actor trust
+# Round 2 design note: operationalizing artifact-first reverification and Rust
 
 > **Acronyms:** Common Vulnerabilities and Exposures (CVE); identifier (ID); reduced instruction set computer (RISC);
 > Secure Hash Algorithm 256-bit (SHA-256); scalable transparent argument of knowledge (STARK);
@@ -10,6 +10,12 @@ This note uses **trustless** in one bounded sense: acceptance of a submitted
 reverification result must not require knowing or trusting the submitter. It does not
 mean assumption-free, trust-root-free, or immune to compromised software, unavailable
 evidence, or false observations.
+
+The controlling semantic orientation is normative in
+[`standard/LADDER.md` section 1.1](../../../standard/LADDER.md#11-artifact-first-causal-orientation).
+This experiment does not decide whether that orientation is valid repository architecture;
+it tests the still-open event format, transfer algebra, concentration rule, and localization
+mechanics needed to operationalize it.
 
 The design decisions are:
 
@@ -602,7 +608,7 @@ This design does not establish or claim:
 16. **Operational controls:** how can anonymous admission control limit denial-of-service
     without becoming a correctness signal or a de facto identity requirement?
 
-Round 2 resolves the category error and the two propagation directions but implements none
+Round 2 takes the normative role and propagation directions as input but implements none
 of these open mechanics. The next safe step is a bounded dual-direction event-ledger
 experiment with no new wire identifier, followed separately by the ZK trichotomy
 experiment once its derivation rule is specified.

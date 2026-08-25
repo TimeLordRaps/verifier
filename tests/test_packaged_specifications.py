@@ -15,3 +15,11 @@ def test_packaged_specification_bytes_match_normative_sources() -> None:
         normative = REPO_ROOT / "standard" / name
         packaged = REPO_ROOT / "src" / "verifier" / "specifications" / name
         assert packaged.read_bytes() == normative.read_bytes(), name
+
+
+def test_ladder_fixes_both_causal_directions_without_actor_trust() -> None:
+    ladder = (REPO_ROOT / "standard" / "LADDER.md").read_text(encoding="utf-8")
+    assert "parent artifact --bounded positive support--> child" in ladder
+    assert "child Rust      --genetic causal backtrace--> ancestor" in ladder
+    assert "MUST NOT\nstrengthen a result" in ladder
+    assert "They do not cancel, form one\nscalar score" in ladder

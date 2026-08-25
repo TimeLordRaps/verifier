@@ -6,8 +6,8 @@
   },
   "experiment": {
     "id": "experiment-zizk-vstd",
-    "title": "Zero identity, zero knowledge, zero actor trust, artifact-first trust, and genetic Rust backtrace",
-    "question": "Can bounded predicates support hidden witnesses and minimized identity disclosure while artifact trust moves forward through developmental claim space and child Rust moves backward to concentrate on candidate falsehoods in bound ancestor claim architecture, without actor reputation becoming verdict weight?",
+    "title": "Operationalization study: zero identity, zero knowledge, artifact trust, and genetic Rust",
+    "question": "Can a bounded event-ledger protocol operationalize the normative artifact-first causal orientation: scoped artifact support moving parent-to-child and typed Rust moving child-to-parent, without actor reputation, scalar cancellation, or causal overclaim?",
     "state": "RUNNING",
     "started_at": "2026-08-23T00:00:00Z"
   },
@@ -32,25 +32,25 @@
     },
     {
       "id": "hypothesis-artifact-first-zero-actor-trust",
-      "statement": "Reverification acceptance is derived from bound artifacts, evidence, predicates, mechanisms, and declared trust roots; actor identity, popularity, repetition, or reputation cannot strengthen the verdict.",
+      "statement": "An operational reverification protocol can derive acceptance from bound artifacts, evidence, predicates, mechanisms, and declared trust roots while preventing actor identity, popularity, repetition, or reputation from strengthening the verdict.",
       "falsification_condition": "Changing only actor identity or reputation changes acceptance, repeated equivalent actor events raise status, or an unbound artifact is accepted.",
       "state": "OPEN"
     },
     {
       "id": "hypothesis-contextual-actor-artifact-roles",
-      "statement": "Actor and artifact are contextual roles on creation and operation events, so a coding agent may be an artifact when created or evaluated and an actor when it creates or transforms another artifact.",
+      "statement": "An event schema can preserve actor and artifact as contextual roles, so a coding agent may be an artifact when created or evaluated and an actor when it creates or transforms another artifact.",
       "falsification_condition": "The model requires permanent disjoint actor and artifact categories, loses a claim-relevant creation edge, or treats a role assignment as identity, authority, or trust.",
       "state": "OPEN"
     },
     {
       "id": "hypothesis-rust-genetic-backtrace",
-      "statement": "Observed child deviation transfers typed Rust backward through admissible bound creation paths, concentrating independent backtraces on shared ancestor claims, predicates, mechanisms, artifacts, and contextual coding-agent roles.",
+      "statement": "An operational ledger can transfer typed Rust backward from an observed child deviation through admissible bound creation paths and concentrate independent backtraces on shared ancestor claims without reporting ancestry as localized causation.",
       "falsification_condition": "Rust cannot reproduce its child-to-ancestor paths, fails to concentrate distinct comparable sources, crosses non-contributing edges, or reports concentration as direct observation, proven causation, actor reputation, or a VSTD verdict.",
       "state": "OPEN"
     },
     {
       "id": "hypothesis-dual-causal-propagation",
-      "statement": "The bound development graph can carry scoped positive artifact trust from parent to child and diagnostic Rust from child to parent without collapsing them into one scalar or allowing either direction to bypass claim-local evidence.",
+      "statement": "An operational substrate can carry scoped positive artifact support from parent to child and diagnostic Rust from child to parent without collapsing them into one scalar or allowing either direction to bypass claim-local evidence.",
       "falsification_condition": "Positive support flows backward, Rust flows forward as inherited guilt, parent trust automatically proves a child, missing or conflicted support becomes clean, or actor identity changes either signal.",
       "state": "OPEN"
     }
@@ -83,7 +83,7 @@
       "id": "artifact-round2-design",
       "role": "round-2-reverification-design",
       "media_type": "text/markdown",
-      "digest": "sha256:24c925c2ce5398520752d906e315fe00c2af646a98f4cd936103ce3620bdba36",
+      "digest": "sha256:ffee1e8c88b85780b3c7b31b282ffb1ead626f74e78daf11413f3a0c233abdae",
       "locator": "repo:experiments/zizk_vstd/reverification/ROUND2_DESIGN_NOTE.md"
     }
   ],
@@ -183,10 +183,10 @@
     {
       "id": "action-reverification-synthesis",
       "kind": "DESIGN_SYNTHESIS",
-      "target": "dual-direction artifact-first reverification: forward bounded artifact trust and backward genetic Rust concentration across contextual actor/artifact roles",
+      "target": "candidate operational mechanics for the normative dual-direction causal orientation: forward bounded artifact support and backward genetic Rust across contextual actor/artifact roles",
       "state": "COMPLETED",
       "priority": 3,
-      "selected_because": "The proof and identity studies exposed the need for artifact-first positive support without actor reputation, while coding-agent creation semantics require child-to-parent diagnostic Rust over the same causal graph.",
+      "selected_because": "The normative ladder fixes the causal orientation, while the proof and identity studies expose the still-open event, transfer, concentration, and localization mechanics needed to implement it without actor reputation.",
       "selection_evidence_ids": [
         "observation-zk-proof",
         "observation-identity-boundary",
@@ -212,7 +212,7 @@
         "observation-zk-proof",
         "observation-identity-boundary"
       ],
-      "expected_artifact_effect": "Define contextual roles, forward scoped artifact support, backward typed Rust transfer, and concentration at shared candidate ancestor falsehoods while leaving the operational protocol and schema open.",
+      "expected_artifact_effect": "Specify candidate contextual-role, forward-support, backward-Rust, and concentration mechanics while leaving the event schema, transfer algebra, and localization protocol open.",
       "substrate": {
         "kind": "design-review",
         "name": "ZIZK artifact-first actor-artifact reverification synthesis",
@@ -300,8 +300,8 @@
         "observation-zk-proof",
         "observation-identity-boundary"
       ],
-      "decision": "Use one bound development graph for two typed directions: artifact trust moves parent-to-child as scoped positive support, and Rust moves child-to-parent as a genetic backtrace that concentrates on shared candidate falsehoods; neither becomes actor reputation or a scalar verdict.",
-      "reason": "Creation causality and diagnostic causality require opposite traversal of the same actor-artifact relations. Keeping both signals typed preserves the causal model without letting parent trust prove a child or inherited Rust claim direct guilt.",
+      "decision": "Treat standard/LADDER.md section 1.1 as the controlling semantic invariant and confine Round 2 to candidate operational mechanics for its parent-to-child artifact support and child-to-parent Rust directions.",
+      "reason": "The architecture is normative; only its event format, transfer algebra, concentration-independence rule, and localization protocol remain experimental. The experiment must not make the core causal orientation appear contingent on its outcome.",
       "action_ids": [
         "action-reverification-synthesis"
       ],
@@ -323,7 +323,7 @@
     {
       "id": "amendment-actor-artifact-rust-correction",
       "recorded_at": "2026-08-25T00:00:00Z",
-      "reason": "Correct the object-only framing with contextual actor/artifact roles and dual causal propagation: bounded artifact trust moves forward through claim development, while child Rust genetically backtraces and concentrates on shared ancestor claim architecture without becoming actor reputation.",
+      "reason": "Correct the object-only framing and distinguish the normative causal orientation from its experimental operationalization: artifact support moves parent-to-child, while Rust genetically backtraces child-to-parent without becoming actor reputation, scalar cancellation, or localized guilt.",
       "supersedes": [
         "amendment-round2-design"
       ],
@@ -379,5 +379,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:f5230cef21a94d576120df01237f99fd5000be6f1afcad7dc707b28b585ee003"
+  "manifest_digest": "sha256:c2ff593a485bdebfdce9a1f51198bf13f7991c45be82484cd9b1fe58a37fe3bf"
 }
