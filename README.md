@@ -72,7 +72,15 @@ Ordinary computational results often omit machine-readable answers to four quest
 3. **Where does the verdict stop?** Explicit coordinates and resource bounds.
 4. **How can it change?** Reproduction, counterexample, challenge, and degradation rules.
 
-VSTD stores those answers in receipts and provenance hypergraphs. The reference
+VSTD is designed as a **standard domain language for verification**: a verification
+interlingua into which domain verifiers, proof engines, signature systems, identity
+systems, transparency logs, provenance formats, and verification pipelines can map
+their bounded claims and native results. VSTD is the operator-language class; those
+systems are the orchestrated verification substrata. It does not replace or absorb
+their native semantics. Explicit, loss-declared adapters map results into and through
+VSTD without silently increasing their justified strength.
+
+VSTD stores that interoperable boundary in receipts and provenance hypergraphs. The reference
 implementation can validate stable receipt content, reproduce declared mechanisms,
 check grounded decision certificates, and compute collection-level ceilings from
 recorded ancestry and caller-supplied object and edge ratings.
@@ -110,6 +118,7 @@ separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
 | Record and allocate bounded experimental work | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) and [`experiments/INDEX.md`](experiments/INDEX.md) |
 | Integrate accelerator evidence | [`docs/layers/vstd-3/vendor-integration.md`](docs/layers/vstd-3/vendor-integration.md) |
 | Use VSTD beside existing supply-chain/provenance systems | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| Inspect the experimental IETF SCITT interoperability profile | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) |
 | Review exact public claim limits | [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) |
 
 The experimental workflow profile has an offline, verdict-neutral CLI surface:

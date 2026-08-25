@@ -1,0 +1,67 @@
+{
+  "artifact_sha256": "39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341",
+  "composition": {
+    "native_scitt_result": "SIGNED_STATEMENT_AND_INCLUSION_RECEIPT_VERIFIED",
+    "native_vstd_result": "PASS",
+    "reason": "native VSTD PASS and exact current SCITT registration both verified",
+    "scitt_statement_sha256": "bf054204c40f1273c0abb260b0cdc91977585214ccaf59f937e7ecc21a4754dd",
+    "status": "PASS",
+    "vstd_receipt_sha256": "10dace7e0fc4bbea53ee7e26965ae1e7b2f4b11e15e64b6d83ccf96742adbf41"
+  },
+  "payload_sha256": "38a21c5d1a5aa9feb99626d7631a626d5b140f39486117a9954afb54ae2fb661",
+  "receipt_sha256": "8e6c0d446c9c9bf52b5c0b05fda350bf192747d02f8f84973a8010da8fed12d6",
+  "scitt_as_vstd_evidence": {
+    "computational_verdict": "NOT_EVALUATED",
+    "evidence_kind": "SCITT_TRANSPARENCY",
+    "native_scitt_result": "SIGNED_STATEMENT_AND_INCLUSION_RECEIPT_VERIFIED",
+    "normalized_state": "REGISTERED",
+    "payload_sha256": "38a21c5d1a5aa9feb99626d7631a626d5b140f39486117a9954afb54ae2fb661",
+    "reason": "local one-entry test log; cryptographic inclusion verified, without public anchoring or production-service claims",
+    "registered_at": "2026-08-23T00:00:00Z",
+    "statement_sha256": "bf054204c40f1273c0abb260b0cdc91977585214ccaf59f937e7ecc21a4754dd",
+    "trust_coordinates": {
+      "accepted_issuers": [
+        "https://issuer.example/vstd-scitt-demo"
+      ],
+      "registration_policy": "urn:example:vstd-scitt-registration-policy:v1",
+      "transparency_service": "urn:example:vstd-scitt-local-test-log",
+      "vds": "RFC9162_SHA256",
+      "verification_profile": "RFC9943+RFC9942/RFC9162_SHA256"
+    }
+  },
+  "scitt_observation": {
+    "issuer": "https://issuer.example/vstd-scitt-demo",
+    "native_result": "SIGNED_STATEMENT_AND_INCLUSION_RECEIPT_VERIFIED",
+    "payload_sha256": "38a21c5d1a5aa9feb99626d7631a626d5b140f39486117a9954afb54ae2fb661",
+    "reason": "local one-entry test log; cryptographic inclusion verified, without public anchoring or production-service claims",
+    "receipt_verified": true,
+    "registered_at": "2026-08-23T00:00:00Z",
+    "registration_policy": "urn:example:vstd-scitt-registration-policy:v1",
+    "signed_statement_verified": true,
+    "state": "REGISTERED",
+    "statement_sha256": "bf054204c40f1273c0abb260b0cdc91977585214ccaf59f937e7ecc21a4754dd",
+    "subject": "artifact:sha256:39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341",
+    "transparency_service": "urn:example:vstd-scitt-local-test-log",
+    "vds": "RFC9162_SHA256",
+    "verification_profile": "RFC9943+RFC9942/RFC9162_SHA256"
+  },
+  "statement_sha256": "bf054204c40f1273c0abb260b0cdc91977585214ccaf59f937e7ecc21a4754dd",
+  "transparent_statement_sha256": "ab52c3d383df55ea8d00d19231f6fb356a4e8a14621b8ff3b4ab000bf08ae100",
+  "vstd_kernel": {
+    "details": "model satisfies all 1 grounded clauses",
+    "hints_present": false,
+    "literals_processed": 1,
+    "outcome": "ACCEPTED",
+    "reason": null,
+    "steps_checked": 0,
+    "verdict": "PASS"
+  },
+  "vstd_observation": {
+    "checker": "verifier.core.kernel.check",
+    "native_result": "PASS",
+    "reason": "model satisfies all 1 grounded clauses",
+    "receipt_sha256": "10dace7e0fc4bbea53ee7e26965ae1e7b2f4b11e15e64b6d83ccf96742adbf41",
+    "state": "VERIFIED",
+    "verification_profile": "VSTD4-GDC-1/reference-kernel"
+  }
+}
