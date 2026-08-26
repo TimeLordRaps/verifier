@@ -98,7 +98,7 @@
       "id": "artifact-zi-report",
       "role": "round-1-zero-identity-report",
       "media_type": "text/markdown",
-      "digest": "sha256:5f5a53aa12cc33624a9663bf93d5c9880e5142e93edd2c5e624b289e50c6c0a8",
+      "digest": "sha256:cf974b4a616e65d4dbebd61d1f43666bcf8fd275b350921b339d9245f2f46700",
       "locator": "repo:examples/zizk_artifact_first/zero_identity/ROUND1_ZERO_IDENTITY_REPORT.md"
     },
     {
@@ -410,5 +410,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:ef5f53d9791bb59f34f57ae787f390dea8c28aa8bdb3af0f75950c2d71a62790"
+  "manifest_digest": "sha256:44bb0280ed8d075607b0b52cfd5d8e0bece8df13b50fb66554125e559f80ef12"
 }

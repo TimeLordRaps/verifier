@@ -1,4 +1,4 @@
-"""Terminology: zero-identity/zero-knowledge (ZIZK).
+"""Terminology: line feed (LF); zero-identity/zero-knowledge (ZIZK).
 
 Adversarial tests for the non-normative experimental-workflow profile."""
 
@@ -122,6 +122,17 @@ def test_artifact_first_mechanism_manifest_preserves_dual_causal_boundary() -> N
     assert horizons["horizon-contextual-role-protocol"] == "UNKNOWN"
     assert horizons["horizon-rust-genetic-backtrace"] == "UNKNOWN"
     assert horizons["horizon-forward-artifact-trust"] == "UNKNOWN"
+
+
+def test_manifest_bound_text_artifacts_use_repository_lf_bytes() -> None:
+    payload = load_manifest(ARTIFACT_FIRST_MECHANISMS_MANIFEST)
+    for artifact in payload["artifacts"]:
+        if artifact["media_type"] != "text/markdown":
+            continue
+        locator = artifact["locator"]
+        assert locator.startswith("repo:")
+        data = (ROOT / locator.removeprefix("repo:")).read_bytes()
+        assert b"\r\n" not in data, f"{locator} must match Git's LF-normalized bytes"
 
 
 def test_checked_in_schema_is_generated_from_one_source() -> None:
