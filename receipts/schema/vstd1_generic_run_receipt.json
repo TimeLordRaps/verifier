@@ -221,15 +221,17 @@
     },
     "layer4_binding": {
       "type": "object",
+      "description": "Legacy VSTD-0.1 generic-run container introduced by the version 1.0.0 writer. Its contents are generic assessment context, not VSTD-4 conformance; pre-version-1.0 receipts omit it.",
       "additionalProperties": false,
       "required": ["verifier", "resource_bounds", "prior_commitment", "refutation_surface"],
       "properties": {
         "vstd4_conformance": {
           "const": "NOT_EVALUATED",
-          "description": "The historical field name records VSTD-1 refutation metadata; it is not a VSTD-4 grounded decision certificate."
+          "description": "Negative routing guard added by the version 1.2.0 writer and absent from earlier receipts. The historical container records generic assessment context; it is not a VSTD-4 grounded decision certificate."
         },
         "verifier": {
           "type": "object",
+          "description": "Identity and implementation coordinates for the generic-run mechanism; these fields do not establish actor or implementation independence.",
           "additionalProperties": false,
           "required": ["specification_hash", "implementation_hash", "parser_hash", "certificate_format", "format_fragment", "dependencies", "deterministic"],
           "properties": {
@@ -244,6 +246,7 @@
         },
         "resource_bounds": {
           "type": "object",
+          "description": "Manifest-declared assessment bounds recorded by the generic writer; presence does not establish enforcement.",
           "additionalProperties": false,
           "required": ["verification_cost_bound", "memory_bound", "certificate_size_bound"],
           "properties": {
@@ -252,7 +255,10 @@
             "certificate_size_bound": { "type": "integer", "minimum": 0 }
           }
         },
-        "prior_commitment": { "type": "string" },
+        "prior_commitment": {
+          "type": "string",
+          "description": "Recorded commitment declaration; receipt inclusion alone does not establish that it preceded execution."
+        },
         "refutation_surface": {
           "type": "object",
           "description": "Deliberately open domain-refutation map retained for compatibility with issued VSTD-0.1 receipts; the three named fields have fixed meanings and additional fields remain declarations.",

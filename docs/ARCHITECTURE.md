@@ -67,6 +67,33 @@ mechanisms. `validate`, `inspect`, and `reproduce` honor `--json` for generic-ru
 VSTD-Graph receipts; the envelope reports command completion without upgrading the
 receipt's claim semantics.
 
+### Historical generic-run binding container
+
+`layer4_binding` is a legacy `VSTD-0.1` generic-run wire container, not a VSTD-4 object.
+Versions 0.1.0 and 0.2.0 omitted it; released writers from 1.0.0 through 1.1.3 emitted it.
+It is optional for historical reads and participates in the canonical digest when present.
+The version 1.2.0 writer keeps emitting it because the current profile has no other lossless
+location for its manifest-declared context. Dropping it would discard evidence; moving it
+would define a new wire shape.
+
+| Member | Five-As role | Maximum current meaning |
+|---|---|---|
+| verifier identity | Assessment | Names the generic mechanism; identity alone earns no result. |
+| specification identity | Attribution and Assessment | Binds the mechanism to VSTD-1 bytes, not VSTD-4. |
+| implementation identity | Assignment | Identifies implementation bytes; it does not prove an independent implementation. |
+| parser identity | Assignment | Identifies parser bytes; equality with the implementation hash records shared bytes, not separation. |
+| format identity | Attribution | Names the generic capture/validate/reproduce fragment. |
+| resource bounds | Assurance input and Assessment bound | Records manifest declarations; the generic runtime does not establish their enforcement. |
+| prior commitment | Assurance input | Records a commitment string; receipt inclusion does not prove temporal priority. |
+| refutation surface | Attribution | Declares admissible refutations and exclusions; it is not the checked VSTD-4 `RefutationSurface`. |
+| `vstd4_conformance` | VSTD-4-specific Assessment coordinate | Only `NOT_EVALUATED` is permitted; it earns no VSTD-4 state. |
+
+Layers are assessment coordinates, not containers for generic verification context. The
+legacy name must not generate `layer1_binding`, `layer2_binding`, or similar structures.
+Replacing this writer requires an explicit later generic-run profile discriminator and
+matching schema coordinate; a package version alone cannot redefine the frozen profile.
+No future identifier is reserved here.
+
 ## Five-As human traversal
 
 **Status:** non-wire architecture guide. The five As are roles in a human traversal of

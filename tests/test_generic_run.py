@@ -152,18 +152,18 @@ def test_full_lifecycle_capture_validate_inspect_reproduce(tmp_path, capsys):
     Draft202012Validator(schema).validate(data)
     assert is_generic_run_receipt(data)
     assert data["canonical_digest"] == receipt.canonical_digest
-    layer4 = data["layer4_binding"]
-    assert layer4["vstd4_conformance"] == "NOT_EVALUATED"
-    assert layer4["verifier"]["implementation_hash"].startswith("sha256:")
-    assert layer4["verifier"]["parser_hash"].startswith("sha256:")
-    assert layer4["resource_bounds"] == {
+    legacy_context = data["layer4_binding"]
+    assert legacy_context["vstd4_conformance"] == "NOT_EVALUATED"
+    assert legacy_context["verifier"]["implementation_hash"].startswith("sha256:")
+    assert legacy_context["verifier"]["parser_hash"].startswith("sha256:")
+    assert legacy_context["resource_bounds"] == {
         "verification_cost_bound": 0,
         "memory_bound": 0,
         "certificate_size_bound": 0,
     }
-    assert layer4["prior_commitment"] == ""
-    assert layer4["refutation_surface"]["admissible_refutations"] == []
-    assert "PHYSICAL_WORLD_COMPLETENESS" in layer4["refutation_surface"][
+    assert legacy_context["prior_commitment"] == ""
+    assert legacy_context["refutation_surface"]["admissible_refutations"] == []
+    assert "PHYSICAL_WORLD_COMPLETENESS" in legacy_context["refutation_surface"][
         "excluded_claims"
     ]
 
@@ -190,16 +190,51 @@ def test_new_run_receipt_binds_precommitment_bounds_and_refutation_surface(tmp_p
     }
     receipt = capture_run(manifest, manifest_dir=proj)
     before = receipt.canonical_digest
-    layer4 = receipt.get_stable_payload()["layer4_binding"]
-    assert layer4["prior_commitment"] == manifest["prior_commitment"]
-    assert layer4["resource_bounds"] == manifest["resource_bounds"]
-    assert layer4["refutation_surface"]["admissible_refutations"] == [
+    legacy_context = receipt.get_stable_payload()["layer4_binding"]
+    assert legacy_context["prior_commitment"] == manifest["prior_commitment"]
+    assert legacy_context["resource_bounds"] == manifest["resource_bounds"]
+    assert legacy_context["refutation_surface"]["admissible_refutations"] == [
         "evidence_hash_mismatch"
     ]
 
-    layer4["prior_commitment"] = "sha256:" + "b" * 64
-    receipt.layer4_binding = layer4
+    legacy_context["prior_commitment"] = "sha256:" + "b" * 64
+    receipt.layer4_binding = legacy_context
     assert receipt.compute_and_set_digest() != before
+
+
+@pytest.mark.parametrize("historical_shape", ("pre_v1", "v1_without_marker"))
+def test_historical_generic_run_binding_shapes_remain_readable(
+    tmp_path, capsys, historical_shape
+):
+    proj = _write_tiny_project(tmp_path)
+    data = capture_run(_base_manifest(), manifest_dir=proj).to_dict()
+    if historical_shape == "pre_v1":
+        data.pop("layer4_binding")
+    else:
+        data["layer4_binding"].pop("vstd4_conformance")
+    data["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(data)
+    )
+    path = tmp_path / f"{historical_shape}.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    assert is_generic_run_receipt(data)
+    assert validate_run_receipt(path) == 0
+    assert "[INTEGRITY OK]" in capsys.readouterr().out
+
+
+def test_legacy_container_cannot_claim_vstd4_conformance(tmp_path, capsys):
+    proj = _write_tiny_project(tmp_path)
+    data = capture_run(_base_manifest(), manifest_dir=proj).to_dict()
+    data["layer4_binding"]["vstd4_conformance"] = "PASS"
+    data["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(data)
+    )
+    path = tmp_path / "hostile-vstd4-claim.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    assert validate_run_receipt(path) == 1
+    assert "vstd4_conformance must be NOT_EVALUATED" in capsys.readouterr().out
 
 
 def test_missing_input_fails_closed_without_executing(tmp_path):

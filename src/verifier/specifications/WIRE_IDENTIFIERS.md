@@ -44,10 +44,22 @@ New `1.2.0` receipts use `VSTD1-CHECKER-REPORT`, bind `VSTD-1.md`, and record ac
 implementation, and runtime separation explicitly. Neither descriptor name proves that
 separate actors performed producer and checker runs.
 
-The generic-run field name `layer4_binding` is also historical. It carries VSTD-1
-refutation metadata, not a VSTD-4 grounded decision certificate. New captures include
-`vstd4_conformance = "NOT_EVALUATED"`; field presence never dispatches the receipt to
-VSTD-4.
+The generic-run field name `layer4_binding` is also historical. Version 0.1.0 and 0.2.0
+writers omitted it; writers from version 1.0.0 through 1.1.3 emitted it under the same
+`VSTD-0.1` generic-run discriminator. Readers MUST accept both forms. When present, the
+exact block participates in the canonical digest and remains attributable to its writer.
+
+The block carries generic assessment context and VSTD-1 refutation metadata, not a
+VSTD-4 grounded decision certificate. Version 1.2.0 continues to emit the legacy block so
+manifest-declared verifier coordinates, resource-bound declarations, prior commitment,
+and refutation surface are not silently discarded. It adds
+`vstd4_conformance = "NOT_EVALUATED"`; neither the container name nor its presence
+dispatches the receipt to VSTD-4 or establishes that a declared bound was enforced.
+
+This historical container is not a pattern for `layer1_binding`, `layer2_binding`, or
+other layer-named context objects. A clean replacement requires an explicit new generic-run
+profile discriminator and matching schema coordinate. A package semantic-version change
+alone MUST NOT reinterpret the existing profile. No replacement identifier is reserved.
 
 ### 1.1 Non-wire vocabulary
 

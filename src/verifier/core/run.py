@@ -79,17 +79,18 @@ def _digest_if_available(path: Path, label: str, *alternatives: Path) -> str:
     return f"UNAVAILABLE:{label}"
 
 
-def _run_layer4_binding(
+def _legacy_generic_run_binding(
     manifest: Mapping[str, Any],
     *,
     falsification_condition: str,
 ) -> dict[str, Any]:
-    """Bind the verifier, bounds, precommitment, and refutation surface.
+    """Serialize generic assessment context into the historical wire container.
 
-    Historical generic-run receipts omit this block and retain their canonical
-    digests. New captures always include it, including explicit empty or
-    undeclared values; absence is evidence of a missing rung, not permission to
-    infer that a bound or precommitment existed.
+    ``layer4_binding`` was introduced by the version 1.0.0 generic-run writer,
+    but none of its positive content establishes VSTD-4. Older receipts omit the
+    block and retain their canonical digests. Version 1.2.0 continues to emit the
+    legacy shape so declared context is not silently dropped under the frozen
+    profile; a clean replacement requires an explicit later profile boundary.
     """
     raw_bounds = manifest.get("resource_bounds", {})
     if not isinstance(raw_bounds, Mapping):
@@ -410,6 +411,7 @@ class GenericRunReceipt:
     claims: RunClaims
     provenance_linkage: tuple[ProvenanceLinkage, ...]
     reproducibility: dict[str, Any]
+    # Historical VSTD-0.1 wire name; this is generic assessment context, not VSTD-4.
     layer4_binding: Optional[dict[str, Any]] = None
     canonical_digest: str = ""
 
@@ -977,7 +979,7 @@ def capture_run(
             "supported_levels": supported_levels,
             "reproduction_command": "vstd reproduce <receipt-dir>",
         },
-        layer4_binding=_run_layer4_binding(
+        layer4_binding=_legacy_generic_run_binding(
             manifest,
             falsification_condition=str(
                 claim_block.get("falsification_condition", "")

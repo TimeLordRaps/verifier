@@ -67,6 +67,10 @@
   `HUMANS.md` for human five-As reasoning, and `TIME.md` for live contradictions in the
   repository's own authoritative state. TIME is clear and remains a human release check,
   not a runtime status or continuous integration gate.
+- Classify generic-run `layer4_binding` as a legacy wire container rather than a layer
+  abstraction. Preserve pre-version-1.0 and version-1.x reads, keep current writes lossless
+  under the frozen profile, and require an explicit later profile/schema boundary before
+  replacing it; only `vstd4_conformance = NOT_EVALUATED` is accepted.
 
 ## 1.1.3 - 2026-08-22
 
