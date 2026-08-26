@@ -11,6 +11,10 @@
 
 ## 1.2.0 - UNRELEASED
 
+- Restructure the public first-view path around one bounded project description, one
+  deterministic demonstration, one canonical maturity table, skeptical claim limits,
+  contributor routes, and release/citation boundaries; align Pages and package metadata
+  without changing normative or wire semantics.
 - Add experimental workflow profile 0.1 with deterministic canonicalization, strict
   validation, bounded work-allocation records, additive amendments and challenges,
   explicit unresolved horizons, and verdict-neutral platform events.
@@ -134,7 +138,7 @@
 
 - Correct the SimulacraBench synthetic specimen additively: unobserved private
   artifacts now remain `IDENTIFIED`, and the public challenge stops at
-  `CHALLENGED` without a founder-authored adjudication.
+  `CHALLENGED` without a maintainer-authored adjudication.
 - Require content-bound observed bytes before deriving `AVAILABLE` or `PORTABLE`;
   locator and retention declarations alone no longer elevate availability.
 - Expand the public presentation gate to reject drive-qualified paths, private

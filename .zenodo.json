@@ -4,7 +4,7 @@
       "name": "Roost, Tyler"
     }
   ],
-  "description": "Release-candidate metadata for a two-axis verification ladder and reference implementation for bounded claims, provenance graphs, substrate accountability, grounded refutation certificates, and candidate verification depth. Publication metadata is assigned only after the release exists.",
+  "description": "Release-candidate metadata for a verification-domain language and Python reference implementation that packages bounded computational claims with explicit evidence, checking mechanisms, limits, refutation conditions, provenance, and reproducibility information. It does not replace native domain verifiers or strengthen their results. Publication metadata is assigned only after the release exists.",
   "keywords": [
     "verification",
     "provenance",
@@ -13,10 +13,11 @@
     "software supply chain",
     "accelerator accountability",
     "refutability",
-    "proof certificates"
+    "proof certificates",
+    "bounded claims"
   ],
   "license": "Apache-2.0",
-  "title": "Verifier Standard (VSTD): A Two-Axis Ladder for Refutable Verification",
+  "title": "Verifier Standard (VSTD): Bounded, Refutable Evidence for Computational Claims",
   "version": "1.2.0",
   "upload_type": "software"
 }

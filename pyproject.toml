@@ -5,13 +5,21 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "verifier-standard"
 version = "1.2.0"
-description = "Reference implementation for bounded verification receipts and provenance."
+description = "Verification-domain language and reference implementation for bounded computational claims."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
 authors = [{name = "TimeLordRaps"}]
-keywords = ["verification", "provenance", "reproducibility", "artificial-intelligence"]
+keywords = [
+  "verification",
+  "evidence",
+  "provenance",
+  "refutability",
+  "reproducibility",
+  "software-supply-chain",
+  "artificial-intelligence",
+]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python :: 3",
@@ -26,6 +34,9 @@ dependencies = []
 Homepage = "https://github.com/TimeLordRaps/verifier"
 Documentation = "https://timelordraps.github.io/verifier/"
 Issues = "https://github.com/TimeLordRaps/verifier/issues"
+Specification = "https://github.com/TimeLordRaps/verifier/tree/main/standard"
+Changelog = "https://github.com/TimeLordRaps/verifier/blob/main/CHANGELOG.md"
+Security = "https://github.com/TimeLordRaps/verifier/security/policy"
 
 [project.optional-dependencies]
 yaml = ["pyyaml>=6.0"]

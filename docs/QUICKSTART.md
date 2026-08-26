@@ -16,6 +16,10 @@ python -m pip install .
 Use `vstd` as the cross-platform command. The `verifier` compatibility alias can be
 shadowed by Windows Driver Verifier.
 
+Before evaluating a broader claim, review the canonical
+[implementation-maturity table](../README.md#current-maturity). It separates implemented
+checks from candidate calculations and unimplemented mechanisms.
+
 ## 2. Run the adversarial demo
 
 ```bash
@@ -83,4 +87,7 @@ silently converted into success.
 
 To evaluate the project rather than merely run it, start by trying to create a receipt
 that passes outside its declared coordinate. A reproducible counterexample is more
-valuable than a general endorsement.
+valuable than a general endorsement. Report a
+[specification ambiguity](https://github.com/TimeLordRaps/verifier/issues/new?template=specification-ambiguity.yml),
+[counterexample](https://github.com/TimeLordRaps/verifier/issues/new?template=counterexample.yml),
+or [security issue](../SECURITY.md) through its designated route.

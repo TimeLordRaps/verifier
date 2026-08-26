@@ -75,6 +75,36 @@ def test_public_boundary_catches_private_coordinates_without_naming_them() -> No
     assert "private deployment field" in module.public_boundary_violations(deployment_field)
 
 
+def test_maturity_table_requires_each_major_surface_and_explicit_conformance() -> None:
+    path = ROOT / "scripts" / "check_presentation.py"
+    spec = importlib.util.spec_from_file_location("check_presentation_maturity", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert module.maturity_table_violations(readme) == []
+
+    combined = readme.replace("| VSTD-Graph-3 |", "| VSTD-Graph-2 |", 1)
+    errors = module.maturity_table_violations(combined)
+    assert any("VSTD-Graph-2" in error and "observed 2" in error for error in errors)
+    assert any("VSTD-Graph-3" in error and "observed 0" in error for error in errors)
+
+
+def test_long_lived_docs_reject_transient_time_state() -> None:
+    path = ROOT / "scripts" / "check_presentation.py"
+    spec = importlib.util.spec_from_file_location("check_presentation_time", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    assert module.transient_time_status_violations("TIME.md is CLEAR today")
+    assert module.transient_time_status_violations("TIME == OPEN")
+    assert module.transient_time_status_violations(
+        "TIME.md is a contradiction annunciator"
+    ) == []
+
+
 def test_lineage_claim_gate_rejects_causal_upgrades_without_blocking_boundaries() -> None:
     path = ROOT / "scripts" / "check_presentation.py"
     spec = importlib.util.spec_from_file_location("check_presentation_lineage", path)

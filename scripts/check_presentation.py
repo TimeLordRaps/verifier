@@ -85,6 +85,35 @@ LINEAGE_CAUSALITY_PATTERNS = (
         re.compile(r"(?i)\bcausally\s+contribut(?:e|ed|es|ing)\b"),
     ),
 )
+CURRENT_TIME_STATUS = re.compile(
+    r"(?i)\bTIME(?:\.md)?`?\s+(?:is|=|==|has\s+status|status\s*(?:is|=|:))\s+"
+    r"(?:`?Status:\s*)?`?(?:CLEAR|OPEN)\b"
+)
+CURRENT_FACING_SURFACES = (
+    "README.md",
+    "docs/CLAIMS_AND_LIMITS.md",
+    "docs/QUICKSTART.md",
+    "docs/guides.html",
+    "docs/index.html",
+)
+MATURITY_CONFORMANCE = {
+    "VSTD-1": "Implemented reference subset",
+    "VSTD-2": "Implemented vertical slice",
+    "VSTD-3": "Implemented reference surface",
+    "VSTD-4": "`NOT_ESTABLISHED`",
+    "VSTD-5": "Not implemented",
+    "VSTD-Graph-1": "Implemented reference subset",
+    "VSTD-Graph-2": "`NOT_ESTABLISHED`",
+    "VSTD-Graph-3": "`NOT_ESTABLISHED`",
+    "VSTD-Graph-4": "`NOT_ESTABLISHED`",
+    "VSTD-Graph-5": "`NOT_ESTABLISHED`",
+    "Generic run": "`vstd4_conformance = NOT_EVALUATED`",
+    "Experimental workflow": "No VSTD conformance claim",
+    "Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability": (
+        "VSTD-4 remains `NOT_ESTABLISHED`"
+    ),
+    "zero-identity/zero-knowledge (ZIZK) research": "No VSTD conformance claim",
+}
 
 
 class LinkCollector(HTMLParser):
@@ -238,6 +267,52 @@ def check_versions(errors: list[str]) -> None:
         errors.append("CITATION.cff date-released must match the dated CHANGELOG heading")
 
 
+def maturity_table_violations(readme: str) -> list[str]:
+    """Require one reviewable status row for every advertised major surface."""
+
+    heading = "## Current maturity"
+    if heading not in readme:
+        return ["README.md has no canonical current-maturity section"]
+    section = readme.split(heading, 1)[1].split("\n## ", 1)[0]
+    header = (
+        "| Surface | Normative status | Reference implementation | Evidence binding | "
+        "Conformance status | Missing mechanism or evidence |"
+    )
+    errors: list[str] = []
+    if header not in section:
+        errors.append("README.md maturity table does not expose all six required fields")
+    rows: dict[str, list[str]] = {}
+    for line in section.splitlines():
+        if not line.startswith("|") or line.startswith("|---"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if cells and cells[0] != "Surface":
+            rows.setdefault(cells[0], []).append(line)
+            if len(cells) != 6:
+                errors.append(
+                    f"README.md maturity row {cells[0]!r} has {len(cells)} fields, expected 6"
+                )
+    for surface, conformance in MATURITY_CONFORMANCE.items():
+        observed = rows.get(surface, [])
+        if len(observed) != 1:
+            errors.append(
+                f"README.md maturity table requires exactly one {surface!r} row, "
+                f"observed {len(observed)}"
+            )
+        elif conformance not in observed[0]:
+            errors.append(
+                f"README.md maturity row {surface!r} is missing conformance boundary "
+                f"{conformance!r}"
+            )
+    return errors
+
+
+def transient_time_status_violations(text: str) -> list[str]:
+    """Find transient TIME state copied into long-lived explanatory prose."""
+
+    return [match.group(0) for match in CURRENT_TIME_STATUS.finditer(text)]
+
+
 def check_claim_boundaries(errors: list[str]) -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     roadmap = (ROOT / "ROADMAP.md").read_text(encoding="utf-8")
@@ -252,16 +327,58 @@ def check_claim_boundaries(errors: list[str]) -> None:
     )
     required_readme = (
         "Portable, bounded, refutable evidence for computational claims.",
+        "VSTD is a verification-domain language and Python reference implementation",
+        "does **not**\nreplace native domain verifiers",
+        "## 30–60 second demonstration",
+        "## What a result means",
+        "## Current maturity",
+        "## Why VSTD exists",
         "vstd demo",
-        "founder-maintained **alpha project specification**",
         "A higher-layer result does **not** supply",
-        "It cannot prove general AI safety",
+        "It cannot prove general AI",
+        "[Normative specifications](standard/LADDER.md)",
+        "[Report an ambiguity or counterexample]",
+        "[Report a vulnerability privately]",
+        "SCITT registration proves neither payload",
+        "The current checkout is an unreleased",
     )
     for phrase in required_readme:
         if phrase not in readme:
             errors.append(f"README.md is missing presentation boundary: {phrase!r}")
-    if "`vstd` is the canonical cross-platform command" not in readme:
+    if "`vstd` is the canonical cross-platform CLI name" not in readme:
         errors.append("README.md does not disclose the canonical cross-platform CLI")
+    errors.extend(maturity_table_violations(readme))
+    expected_order = (
+        "VSTD is a verification-domain language",
+        "## 30–60 second demonstration",
+        "## What a result means",
+        "## Current maturity",
+        "## Why VSTD exists",
+        "## Architecture",
+        "## Install and use",
+        "## Interoperability",
+        "## Reproducibility and releases",
+        "## Claims, security, and contribution",
+        "## Citation and license",
+    )
+    positions = [readme.find(marker) for marker in expected_order]
+    if any(position < 0 for position in positions) or positions != sorted(positions):
+        errors.append("README.md first-view information hierarchy has drifted")
+    for relative in CURRENT_FACING_SURFACES:
+        text = (ROOT / relative).read_text(encoding="utf-8")
+        for match in transient_time_status_violations(text):
+            errors.append(f"transient TIME state copied into {relative}: {match!r}")
+    for relative in (
+        "README.md",
+        "AGENTS.md",
+        "CODE_OF_CONDUCT.md",
+        "GOVERNANCE.md",
+        "docs/index.html",
+        "docs/guides.html",
+        "docs/assets/vstd-overview.svg",
+    ):
+        if "founder-maintained" in (ROOT / relative).read_text(encoding="utf-8").lower():
+            errors.append(f"{relative} uses reputation-centric founder-maintained wording")
     if "`vstd` is the canonical cross-platform CLI name" not in wire:
         errors.append("WIRE_IDENTIFIERS.md does not preserve the CLI compatibility rule")
     if "VSTD-4 CANDIDATE; CONFORMANCE NOT_ESTABLISHED" not in reference:
@@ -462,7 +579,8 @@ def main() -> int:
         return 1
     print(
         "[PRESENTATION OK] links, accessibility, versions, boundaries, paths, "
-        "visual assets, generated reference, experiment index, and acronym expansion"
+        "maturity, transient status, visual assets, generated reference, experiment "
+        "index, and acronym expansion"
     )
     return 0
 

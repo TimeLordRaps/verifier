@@ -4,7 +4,7 @@
 
 ## Current phase
 
-VSTD is founder-maintained project specification work. Publication makes the text and
+VSTD is maintainer-led project specification work. Publication makes the text and
 reference implementation inspectable; it does not manufacture multi-stakeholder
 consensus or standards-body recognition.
 

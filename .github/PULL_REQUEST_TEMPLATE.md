@@ -25,3 +25,4 @@
 - [ ] I did not strengthen a claim without stronger evidence.
 - [ ] I did not include secrets, private data, or proprietary operational material.
 - [ ] Normative text, machine-readable surfaces, examples, and tests agree.
+- [ ] README maturity, claims guidance, generated reference, and Pages status still agree.

@@ -336,7 +336,7 @@ def render() -> str:
         <a href="index.html">Overview</a>
         <a href="guides.html">Guides</a>
         <a href="reference.html" aria-current="page">Reference</a>
-        <a href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Demo</a>
+        <a href="https://github.com/TimeLordRaps/verifier#30-60-second-demonstration">Demo</a>
         <a href="guides.html#standards">Standards</a>
         <a href="guides.html#experiments">Experiments</a>
         <a href="guides.html#project">Project</a>

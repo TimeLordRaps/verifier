@@ -25,5 +25,5 @@ GitHub channel. For security vulnerabilities, use the private reporting route in
 `SECURITY.md`. This project does not promise confidentiality beyond the controls of the
 channel used.
 
-Because governance is currently founder-maintained, enforcement is not independent.
+Because governance is currently centralized under one maintainer, enforcement is not independent.
 That centralization boundary is disclosed in `GOVERNANCE.md`.

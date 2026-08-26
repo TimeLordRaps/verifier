@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The Verifier Standard (VSTD) makes computational claims portable, bounded, and refutable.">
+  <meta name="description" content="The Verifier Standard (VSTD) is a verification-domain language and Python reference implementation for bounded computational claims.">
   <meta property="og:title" content="VSTD — portable, bounded, refutable evidence">
   <meta property="og:description" content="A project specification and reference implementation for bounded computational claims and provenance graphs.">
   <meta property="og:image" content="https://timelordraps.github.io/verifier/assets/vstd-overview.png">
@@ -19,8 +19,8 @@
       <div class="links">
         <a href="guides.html">Guides</a>
         <a href="reference.html">Reference</a>
-        <a href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Demo</a>
-        <a href="guides.html#standards">Standards</a>
+        <a href="https://github.com/TimeLordRaps/verifier#30-60-second-demonstration">Demo</a>
+        <a href="guides.html#standards">Specifications</a>
         <a href="guides.html#experiments">Experiments</a>
         <a href="guides.html#project">Project</a>
         <a href="https://github.com/TimeLordRaps/verifier">GitHub</a>
@@ -33,6 +33,10 @@
       <div>
         <div class="eyebrow">Verification language for computational work</div>
         <h1>Make the claim challengeable.</h1>
+        <p class="lead">VSTD packages bounded computational claims with their evidence,
+        checking mechanisms, limits, refutation conditions, provenance, and
+        reproducibility information. It does not replace native domain verifiers or
+        strengthen their results.</p>
         <p class="lead">VSTD makes computational claims:</p>
         <dl class="lead-defs">
           <dt>Portable:</dt>
@@ -44,7 +48,7 @@
         </dl>
         <p class="lead lead-close">A result travels with its meaning, evidence, limits, and failure routes so downstream humans and agents can draw conclusions without silently widening it.</p>
         <div class="actions">
-          <a class="button primary" href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Run the four-scenario demo</a>
+          <a class="button primary" href="https://github.com/TimeLordRaps/verifier#30-60-second-demonstration">Run the four-scenario demo</a>
           <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/QUICKSTART.md">Read the quickstart</a>
         </div>
       </div>
@@ -97,11 +101,11 @@ $ vstd demo
     <section>
       <div class="wrap">
         <div class="eyebrow">Current status</div>
-        <h2>Built for adversarial review, not ceremonial adoption.</h2>
-        <p class="status">VSTD is a founder-maintained alpha project specification. VSTD-4 depth and Graph layers 2-4 are candidate computations with conformance NOT_ESTABLISHED; VSTD-5 remains draft. The project has no demonstrated external adoption, independent implementation, interoperability deployment, or third-party security review.</p>
+        <h2>Current implementation status</h2>
+        <p class="status">VSTD is a maintainer-led alpha project specification. VSTD-4 depth and Graph layers 2-5 are candidate computations with conformance <code>NOT_ESTABLISHED</code>; VSTD-5 is draft and not implemented. The project has no demonstrated external adoption, independent implementation, interoperability deployment, or third-party security review.</p>
         <div class="actions">
-          <a class="button primary" href="https://github.com/TimeLordRaps/verifier/discussions/8">Challenge the design</a>
-          <a class="button" href="https://github.com/TimeLordRaps/verifier/issues/new/choose">Report a concrete issue</a>
+          <a class="button primary" href="https://github.com/TimeLordRaps/verifier#current-maturity">Review the maturity table</a>
+          <a class="button" href="https://github.com/TimeLordRaps/verifier/issues/new/choose">Report an ambiguity or counterexample</a>
           <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/CLAIMS_AND_LIMITS.md">Read claim limits</a>
         </div>
       </div>

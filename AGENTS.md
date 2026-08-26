@@ -25,7 +25,7 @@ conformance `NOT_ESTABLISHED`; **layer 5 is DRAFT**. An aggregate depth of `N` h
 only when distinct evidence passes every layer from 1 through `N`. A higher-layer result
 never supplies, implies, upgrades, or repairs a lower-layer one.
 
-This is founder-maintained alpha project work. It is **not** an accredited, consensus,
+This is maintainer-led alpha project work. It is **not** an accredited, consensus,
 IETF, ISO, or W3C standard, and it has no demonstrated external adoption. Do not write
 text implying otherwise. Orientation: [`README.md`](README.md),
 [`standard/LADDER.md`](standard/LADDER.md),

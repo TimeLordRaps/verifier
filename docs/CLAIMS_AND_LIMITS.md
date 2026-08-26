@@ -1,10 +1,12 @@
 # Claims and limits in plain language
 
 > **Acronyms:** artificial intelligence (AI); Advanced Micro Devices (AMD); application programming interface (API);
-> Amazon Web Services (AWS); conjunctive normal form (CNF); Device Identifier Composition Engine (DICE);
+> Amazon Web Services (AWS); Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
+> conjunctive normal form (CNF); Device Identifier Composition Engine (DICE);
 > grounded decision certificate (GDC); identifier (ID); machine learning (ML); NVIDIA Management Library (NVML);
 > Secure Hash Algorithm 256-bit (SHA-256); system management interface (SMI); Security Protocol and Data Model (SPDM);
-> Software Package Data Exchange (SPDX); trusted computing base (TCB); Coordinated Universal Time (UTC);
+> Software Package Data Exchange (SPDX); Supply Chain Integrity, Transparency, and Trust (SCITT);
+> trusted computing base (TCB); Coordinated Universal Time (UTC);
 > Verifier Standard (VSTD).
 
 > Reader aid: [concept glossary and primary precedents](CONCEPTS_AND_PRECEDENTS.md).
@@ -24,6 +26,24 @@ A VSTD result always has this form:
 
 Omitting any bolded idea changes the claim. `VERIFIED` never means universally true,
 safe, complete, permanent, legally authorized, or endorsed.
+
+## Skeptical review summary
+
+VSTD has no single scalar “strongest claim”; mechanisms establish different predicates.
+The strongest generally reusable implemented statement is therefore an exact, bounded
+checker result—not a claim of universal truth or whole-project conformance.
+
+| Reviewer question | Current answer | Mechanism and trust roots | Boundary or missing mechanism |
+|---|---|---|---|
+| What can the generic validator establish? | Stable receipt content and strict profile shape. | Canonicalization, recorded digest, profile discriminator, and bundled validator bytes. | It does not verify the recorded native claim, external evidence, actor identity, or independence. |
+| What can the grounded-certificate kernel establish? | The exact `VSTD4-GDC-1` decision was accepted, rejected, or left `UNKNOWN` under its claim binding and resource bound. | Certificate bytes, formula, grounding, policy/evidence roots, verifier descriptor, and kernel. | VSTD-4 depth conformance is `NOT_ESTABLISHED`; rung evidence and lower-layer preconditions are not bound by the depth runtime. |
+| What can VSTD-Graph establish? | Stored objects, transformations, conflicts, recorded reachability, and policy results over that graph. | Content digests, Graph receipt, hyperedges, statuses, and named query or policy. | Graph levels 2–5 are candidates from caller-supplied ratings; completeness, causality, and rating-to-evidence binding are absent. |
+| What can VSTD-3 establish? | Conditional device, firmware, execution, accounting, continuity, or fleet predicates when each required evidence path validates. | Named roots, keys, nonces, measurements, topology, events, appraisal inputs, and profile-specific validators. | Host inventory is not attestation; production vendor integration and complete mediation outside the emulator remain separate requirements. |
+| What does SCITT add? | Signature and registration/inclusion evidence for exact payload bytes under a declared relying-party policy. | Native SCITT verifier, issuer/log keys, payload digest, registration policy, and Transparency Service evidence. | Registration cannot establish payload correctness, VSTD conformance, or issuer authority outside the policy. The current example uses a local test log. |
+| What remains outside current support? | General AI safety, hidden state, complete physical-world history, automatic actor independence, automatic challenge-to-Graph propagation, VSTD-5, and unqualified provenance truth. | No current ordinary VSTD mechanism observes or validates those propositions. | Preserve `UNKNOWN`, `UNSUPPORTED`, `CONFLICTED`, or `NOT_ESTABLISHED`; do not infer a clean result. |
+
+Every claim below expands one of these boundaries into publishable wording and its
+required falsification surface.
 
 ## Claim translation table
 

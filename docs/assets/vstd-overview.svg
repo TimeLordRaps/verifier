@@ -28,7 +28,7 @@
     <text x="167" y="68" fill="#a8bac4" font-size="25" font-weight="450">portable · bounded · refutable</text>
     <rect x="872" y="36" width="266" height="42" rx="21" fill="#102f3d" stroke="#385361"/>
     <circle cx="901" cy="57" r="7" fill="#f2a93b"/>
-    <text x="919" y="64" fill="#d7e4e8" font-size="16" font-weight="650">FOUNDER-MAINTAINED ALPHA</text>
+    <text x="919" y="63" fill="#d7e4e8" font-size="14" font-weight="650">ALPHA PROJECT SPECIFICATION</text>
 
     <text x="62" y="128" fill="#66dec8" font-size="17" font-weight="700" letter-spacing="1.6">OBJECT MECHANICS</text>
     <text x="622" y="128" fill="#8fc4ff" font-size="17" font-weight="700" letter-spacing="1.6">COLLECTION DYNAMICS</text>

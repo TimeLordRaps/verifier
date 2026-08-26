@@ -16,10 +16,9 @@ GitHub repository to open a private vulnerability report with the maintainer:
 
 `https://github.com/TimeLordRaps/verifier/security/advisories/new`
 
-GitHub private vulnerability reporting was enabled and verified through the repository
-API on 2026-08-21. If GitHub does not show the private-reporting form, do not disclose
-sensitive details in a public issue; report only the non-sensitive fact that the private
-route is unavailable.
+GitHub private vulnerability reporting is the intended sensitive-reporting route. If
+GitHub does not show the private-reporting form, do not disclose sensitive details in a
+public issue; report only the non-sensitive fact that the private route is unavailable.
 
 ## Scope
 

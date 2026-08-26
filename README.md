@@ -1,13 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/vstd-overview.svg" alt="Verifier Standard (VSTD) object and graph verification layers, each requiring its own separate evidence" width="920">
-
 # Verifier Standard (VSTD)
-
-> **Acronyms:** artificial intelligence (AI); continuous integration (CI); command-line interface (CLI);
-> grounded decision certificate (GDC); Internet Engineering Task Force (IETF);
-> International Organization for Standardization (ISO); Supply Chain Integrity, Transparency, and Trust (SCITT);
-> World Wide Web Consortium (W3C); YAML Ain't Markup Language (YAML); ZIP archive format (ZIP).
 
 **Portable, bounded, refutable evidence for computational claims.**
 
@@ -15,29 +8,35 @@
 [![Latest release](https://img.shields.io/github/v/release/TimeLordRaps/verifier?display_name=tag&sort=semver)](https://github.com/TimeLordRaps/verifier/releases/latest)
 [![Python 3.10–3.13](https://img.shields.io/badge/python-3.10%E2%80%933.13-3776AB.svg)](https://www.python.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-2f7d6d.svg)](LICENSE)
-[![Status: alpha](https://img.shields.io/badge/status-founder--maintained%20alpha-d97706.svg)](#project-status)
-
-*A PASS is not enough. Show what passed, under which meaning, against which
-evidence, inside which bounds, and how somebody else can prove it wrong.*
-
-VSTD gives different verification tools a shared way to say **what they checked,
-how they checked it, where the result stops, and what would overturn it**. Verification
-time is limited, so the roadmap also asks a practical next question: **what should we
-check first?** The intended direction is to record why verification work was selected,
-spend bounded verification effort where it matters most, and make artifacts easier to
-check and refute—without turning priority, confidence, or a tool's native result into a
-stronger claim than the evidence supports.
-
-[Run the demo](#see-it-fail-correctly) ·
-[Read the quickstart](docs/QUICKSTART.md) ·
-[Inspect the standard](standard/LADDER.md) ·
-[Explore concepts and precedents](docs/CONCEPTS_AND_PRECEDENTS.md) ·
-[Challenge a claim](https://github.com/TimeLordRaps/verifier/discussions/8) ·
-[See the roadmap](ROADMAP.md)
+[![Status: alpha](https://img.shields.io/badge/status-alpha-d97706.svg)](#current-maturity)
 
 </div>
 
-## See it fail correctly
+VSTD is a verification-domain language and Python reference implementation for packaging
+bounded computational claims with their evidence, checking mechanisms, limits,
+refutation conditions, provenance, and reproducibility information. It does **not**
+replace native domain verifiers, proof systems, signatures, identity systems,
+transparency logs, or provenance formats, and it never strengthens their results merely
+by translating or storing them.
+
+It addresses a practical review problem: a final answer or green check rarely says
+exactly what was checked, which evidence was used, where the conclusion stops, or what
+would overturn it. VSTD carries those boundaries with the result.
+
+**Current boundary:** implemented reference paths cover receipts, generic computation
+capture, provenance graphs, verification geometry, accelerator evidence, grounded
+certificate checking, reproduction, and a flagship adversarial demo. VSTD-4 depth and
+Graph layers 2–5 are candidate computations with conformance `NOT_ESTABLISHED`;
+VSTD-5 is not implemented. See [current maturity](#current-maturity) and
+[claims and limits](docs/CLAIMS_AND_LIMITS.md).
+
+[Normative specifications](standard/LADDER.md) ·
+[60-second quickstart](docs/QUICKSTART.md) ·
+[Implementation reference](https://timelordraps.github.io/verifier/reference.html) ·
+[Report an ambiguity or counterexample](https://github.com/TimeLordRaps/verifier/issues/new/choose) ·
+[Report a vulnerability privately](SECURITY.md)
+
+## 30–60 second demonstration
 
 ```bash
 git clone https://github.com/TimeLordRaps/verifier.git
@@ -46,7 +45,7 @@ python -m pip install .
 vstd demo
 ```
 
-The side-effect-free flagship demo runs four adversarial specimens. Abridged output:
+The side-effect-free demo runs four public adversarial specimens:
 
 ```text
 VSTD flagship adversarial demo
@@ -57,39 +56,81 @@ VSTD flagship adversarial demo
 [DEMO OK] Revoked ancestor behind valid descendants    → GRAPH-CANDIDATE-0
 ```
 
-These are bounded checks over included specimens—not evidence of empirical truth,
-complete provenance, external adoption, or general AI safety. Run `vstd demo --json`
-for the complete machine-readable results or `vstd demo --emit-specimens PATH` to
-emit each specimen.
+`[DEMO OK]` means the expected defensive outcome occurred; it is not a VSTD `PASS`.
+The scenarios establish bounded behavior of this reference implementation over the
+included specimens. They do not establish empirical truth, complete provenance,
+external adoption, independent implementation, or general artificial intelligence (AI)
+safety. Use `vstd demo --json` for JavaScript Object Notation (JSON) output or
+`vstd demo --emit-specimens PATH` to inspect the generated files.
 
-## What VSTD adds
+## What a result means
 
-VSTD is a verification domain language and interchange layer. Loss-declared adapters
-standardize claim boundaries and portable result semantics; domain verifiers, proof
-engines, signatures, identity systems, transparency logs, and provenance formats retain
-their native semantics and authority. Mapping never strengthens what they establish.
+VSTD result terms remain tied to one exact proposition, mechanism, evidence set, and
+bound:
+
+| Result | Bounded meaning | It does not mean |
+|---|---|---|
+| `PASS` | The named mechanism established its declared proposition inside the stated coordinate and bounds. | The proposition is universally or permanently true. |
+| `FAIL` | The mechanism found a checked violation, rejected certificate, or counterexample at the named surface. | Every broader interpretation is false. |
+| `UNKNOWN` | Available evidence, capability, or resources did not establish `PASS` or `FAIL`. | False, safe, unsupported forever, or “probably PASS.” |
+| `CONFLICTED` | Incompatible evidence or assertions remain explicit. | The conflict was resolved by choosing one side. |
+| `NOT_ESTABLISHED` | The repository computes a candidate, but a required evidence-binding or conformance mechanism is absent. | Conformance, readiness, or a weak form of `PASS`. |
+
+A VSTD `PASS` never means “true in the real world” without the exact real-world
+proposition and observation boundary being part of the checked claim.
+
+## Current maturity
+
+This is the canonical repository status table. “Implemented” applies only to the named
+reference surface; it does not imply adoption, external interoperability, certification,
+or a second implementation.
+
+| Surface | Normative status | Reference implementation | Evidence binding | Conformance status | Missing mechanism or evidence |
+|---|---|---|---|---|---|
+| VSTD-1 | Project specification with implemented reference subset | Claim receipts, checker reports, strict generic-run profile, inspection, and compatibility reads | Claim coordinates, stable digests, mechanism descriptors, and declared provenance; actor separation is not inferred | Implemented reference subset | External implementation and a validator binding distinct producer/checker actors and execution seams |
+| VSTD-2 | Additive experimental project specification | Typed verification geometry, residuals, closure checks, schema, and tests | Geometry and declared reconstruction evidence inside the receipt | Implemented vertical slice | Independent implementation and broader geometry interoperability |
+| VSTD-3 | Implemented project specification | Typed accelerator model, strict validator, emulator, offline adapters, continuity, fleet, and claim evaluation | Conditional on source-specific signatures, nonces, reference values, topology, events, and trust roots; host inventory remains weak evidence | Implemented reference surface | Vendor firmware integration, production trust roots, and complete-mediation evidence outside the emulator boundary |
+| VSTD-4 | Project specification | A grounded decision certificate (GDC) parser/kernel plus structural depth candidate | The certificate binds formula, grounding, claim, roots, and bounds; rung references and VSTD-1/2/3 preconditions are not evidence-bound by the depth runtime | `NOT_ESTABLISHED` | Rung-by-rung evidence validation, lower-layer composition, and an independent checker implementation |
+| VSTD-5 | Draft | Fail-closed rejection of current VSTD-4 candidates only | No witness-corroboration binding is implemented | Not implemented | Witness protocol, qualifying VSTD-4 input, distinct actors, independence evidence, and operational experience |
+| VSTD-Graph-1 | Project specification with implemented reference subset | Content-addressed artifacts, transformations, conflicts, policy queries, receipts, and recorded reachability | Binds recorded objects and edges; it does not establish real-world completeness or causality | Implemented reference subset | Independent implementation and external provenance-profile interoperability |
+| VSTD-Graph-2 | Project layer specification | Candidate bounded-collection level and ceiling-certificate computation | Uses caller-supplied object and edge ratings; the ratings are not validated against layer-2 evidence | `NOT_ESTABLISHED` | Rating-to-evidence validators for members, ancestors, statuses, and transformation edges |
+| VSTD-Graph-3 | Project layer specification | Candidate accountable-provenance level and ceiling-certificate computation | Uses caller-supplied object and edge ratings; no mechanism establishes that VSTD-3 produced them | `NOT_ESTABLISHED` | VSTD-3 rating evidence for every member, reachable ancestor, and transformation edge |
+| VSTD-Graph-4 | Project layer specification | Candidate refutable-transformation level and ceiling-certificate computation | Uses caller-supplied object and edge ratings; claimed refutability-closure records are not validated | `NOT_ESTABLISHED` | VSTD-4 rating evidence and validation of every reached refutability closure |
+| VSTD-Graph-5 | Draft profile | Candidate level 5 can be computed from caller-supplied ratings | No independent-witness or rating-evidence binding | `NOT_ESTABLISHED` | Graph-2–4 evidence binding plus a corroborated verification-network protocol |
+| Generic run | Frozen `VSTD-0.1` compatibility profile under VSTD-1 | Plan, execute, capture, inspect, strict shape/digest validation, and declared-output rerun | Captures command, source state, outputs, environment, and manifest declarations; generic validation is not native claim verification | `vstd4_conformance = NOT_EVALUATED` | Sandbox, generic external-evidence resolver, and actor/execution binder |
+| Experimental workflow | Non-normative experimental profile 0.1 | Strict validator, verdict-neutral GitHub event projector, allocation records, and command-line interface (CLI) | Preserves native platform results and explicit horizons with `verification_effect = NONE` | No VSTD conformance claim | Independent consumer, additional platform adapter, and evidence for allocation optimality |
+| Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability | Experimental, non-normative application profile and crosswalk | Real local Concise Binary Object Representation (CBOR) plus CBOR Object Signing and Encryption (COSE) signatures/receipt, loss-declared adapter, and adjacent native-result composition | Binds the exact payload under emitted test keys and local policy; registration never establishes payload truth | VSTD-4 remains `NOT_ESTABLISHED` | Public Transparency Service, external implementation/interoperability result, and Internet Engineering Task Force (IETF) review |
+| zero-identity/zero-knowledge (ZIZK) research | Non-normative research experiments | Evaluator, fixtures, reports, and explicit unresolved horizons | Research-profile-specific recorded assumptions and checks only | No VSTD conformance claim | A reviewed public profile, formal guarantees where claimed, and independent evaluation |
+
+The authoritative implementation-to-specification map is
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Normative meaning remains under
+[standard/](standard/).
+
+## Why VSTD exists
 
 Ordinary computational results often omit machine-readable answers to four questions:
 
-1. **What exactly was claimed?** The subject, predicate, parameters, and limits.
-2. **Which exact evidence supports it?** Digests, mechanisms, provenance, and trust roots.
-3. **Where does the verdict stop?** Explicit coordinates and resource bounds.
-4. **How can it change?** Reproduction, counterexample, challenge, and degradation rules.
+1. **What exactly was claimed?** Subject, predicate, parameters, scope, and limits.
+2. **Which evidence supports it?** Exact bytes, digests, mechanisms, provenance, and trust roots.
+3. **Where does the verdict stop?** Explicit coordinates, exclusions, and resource bounds.
+4. **How can it change?** Reproduction, counterexample, challenge, invalidation, and degradation rules.
 
-VSTD stores that interoperable boundary in receipts and provenance hypergraphs. The reference
-implementation can validate stable receipt content, reproduce declared mechanisms,
-check grounded decision certificates, and compute collection-level ceilings from
-recorded ancestry and caller-supplied object and edge ratings. VSTD-4 depth and Graph
-layers 2-4 are candidate computations with conformance `NOT_ESTABLISHED`; neither
-caller-supplied references nor ratings establish layer conformance.
+VSTD packages that review boundary in receipts and provenance hypergraphs. The core
+design rule is:
 
-## Two axes; evidence never substitutes
+> No assurance is gained from storage location, field name, repetition, graph
+> multiplicity, actor reputation, or propagation. Every increase must identify the
+> verification mechanism that earned it.
 
-Specification numbers identify verification depth, not revisions. Every row is a
-different question with its own evidence. A higher-layer result does **not** supply,
-imply, upgrade, or repair a lower-layer result.
+## Architecture
 
-| Depth | VSTD object mechanics | VSTD-Graph collection dynamics |
+<img src="docs/assets/vstd-overview.svg" alt="Verifier Standard object and graph verification layers, each requiring separate evidence" width="920">
+
+Specification numbers identify verification depth, not software revisions. The object
+axis evaluates one computational claim; the Graph axis evaluates a bounded collection
+and its recorded transformations.
+
+| Depth | Object axis | Graph axis |
 |---:|---|---|
 | 1 | Claim mechanics | Recorded lineage |
 | 2 | Verification surface | Bounded collection surface |
@@ -97,162 +138,175 @@ imply, upgrade, or repair a lower-layer result.
 | 4 | Refutability | Refutable transformation closure |
 | 5 | Witness corroboration | Corroborated verification network |
 
-An aggregate depth of `N` is valid only when distinct evidence passes every layer from
-1 through `N`. The specification defines layers 1-4 without requiring another party,
-but the current VSTD-4 candidate does not establish aggregate depth 4. Layer 5 requires
-another party to exist, act, and be independent. VSTD-5 and its witness protocol remain
-**DRAFT**.
+A higher-layer result does **not** supply, imply, upgrade, or repair a lower-layer
+result. Aggregate depth requires separate passing evidence for every preceding layer.
 
-The same bound development graph carries artifact support forward from parent to child
-and diagnostic Rust backward from child to ancestor. Neither direction becomes actor
-reputation or cancels the other. The controlling boundary is
-[`standard/LADDER.md` section 1.1](standard/LADDER.md#11-artifact-first-causal-orientation).
+The same recorded development graph can carry bounded artifact support forward and
+diagnostic Rust backward. Rust identifies ancestors worth examining; it does not prove
+guilt, responsibility, causality, or automatic ancestor falsification. See
+[the governing architecture](standard/LADDER.md#11-artifact-first-causal-orientation).
 
-Start with [`standard/LADDER.md`](standard/LADDER.md). Wire identifiers are frozen
-separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
+## Install and use
 
-## Choose a path
-
-| If you want to… | Start here |
-|---|---|
-| Understand the claim model in ten minutes | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
-| Look up a repository acronym or abbreviated term | [`docs/ACRONYMS.md`](docs/ACRONYMS.md) |
-| Try to break the core claim | [`examples/flagship_demo`](examples/flagship_demo) |
-| Implement a separate certificate checker | [`standard/VSTD-4.md`](standard/VSTD-4.md) and [`VSTD4-GDC-1` schema](receipts/schema/vstd4_certificate.json) |
-| Model a provenance collection | [`standard/VSTD-Graph-1.md`](standard/VSTD-Graph-1.md) |
-| Record and allocate bounded experimental work | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) and [`experiments/INDEX.md`](experiments/INDEX.md) |
-| Use VSTD beside existing supply-chain/provenance systems | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
-| Inspect the experimental IETF SCITT interoperability profile | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) |
-| Review exact public claim limits | [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) |
-| Operate or review the repository as a maintainer | [`HUMANS.md`](HUMANS.md), then [`TIME.md`](TIME.md) |
-
-The experimental workflow profile has an offline, verdict-neutral CLI surface:
+The distribution name is `verifier-standard`. The published base package has no
+required third-party runtime dependencies.
 
 ```bash
-vstd experiment validate experiments/github_verdict_neutrality/experiment.json --json
-vstd experiment github-events examples/experimental_workflow/github_snapshot.json --json
+python -m pip install verifier-standard  # latest published release
+python -m pip install .                  # current release-candidate checkout
+python -m pip install ".[yaml]"          # YAML Ain't Markup Language (YAML) manifests
+python -m pip install ".[jsonschema]"    # JSON Schema validation
+python -m pip install ".[scitt]"         # optional SCITT/COSE experiment
 ```
 
-Neither structural validity nor a successful platform event grants a VSTD verdict.
+`vstd` is the canonical cross-platform CLI name. `verifier` remains a compatibility
+alias but can resolve to Windows Driver Verifier. `verifiable` is a permanent legacy
+alias because historical receipts may bind it in falsification instructions.
 
-## Capture a generic computation
+An unrelated PyPI distribution named `verifier` exports the same top-level Python
+import. Do not co-install it with `verifier-standard`.
 
-**Security boundary:** a manifest contains an executable command. `vstd run` does not
-sandbox it. Inspect the plan first; run only a trusted manifest inside an operating
-system or container boundary appropriate to that command. Declared-path checks expose
-capture scope, not everything the subprocess can access.
+### Capture a generic computation
+
+A manifest contains an executable command. `vstd run` does not sandbox it. Inspect the
+plan first and execute only trusted manifests inside an appropriate operating-system or
+container boundary.
 
 ```bash
 vstd plan examples/generic_run/manifest.json --json
 vstd run examples/generic_run/manifest.json --output /tmp/vstd-receipt
-vstd inspect /tmp/vstd-receipt
 vstd validate /tmp/vstd-receipt
+vstd inspect /tmp/vstd-receipt
 vstd reproduce /tmp/vstd-receipt --rerun
 ```
 
-`validate` is an integrity/profile validator for generic-run receipts: it checks the
-strict profile shape and stable-payload digest. The refutation-surface map remains an
-explicit declaration extension point for frozen-wire compatibility. It is not a native claim
-verifier; it does not rehash artifacts or verify recorded declarations as claims.
-`reproduce --rerun` applies the same structural gate, then separately executes the
-recorded command and compares declared outputs. Neither operation widens the receipt into
-a claim about the unobserved world. Add `--json` to `validate`, `inspect`, or `reproduce`
-for one machine-readable command-result envelope.
+Generic `validate` checks the strict profile shape and stable-payload digest. It does
+not rehash external artifacts, resolve evidence references, rerun the command, or verify
+the recorded declaration as a native domain claim. `reproduce --rerun` separately
+executes the recorded command and compares declared output paths, digests, and execution
+outcome. Matching outputs do not establish actor independence, environment equivalence,
+semantic equivalence, or truth outside that scope.
 
-## The grounded certificate
+### Use the Python application programming interface (API)
 
-`VSTD4-GDC-1` binds a decision to the claim and evidence it is supposed to describe:
+```python
+from verifier.core.certificate import certificate_from_canonical_bytes
+from verifier.core.kernel import check
+
+certificate = certificate_from_canonical_bytes(certificate_bytes)
+result = check(certificate, budget=verification_budget, binding=claim_binding)
+```
+
+The installed wheel contains byte-identical copies of every normative specification, so
+a verifier descriptor can retain its exact specification binding outside a source
+checkout. See the generated [CLI and API
+reference](https://timelordraps.github.io/verifier/reference.html).
+
+## Receipts, Graphs, and grounded certificates
+
+- [VSTD-1 receipts](standard/VSTD-1.md) carry claim coordinates, evidence,
+  checker results, trust boundaries, and reproducibility information.
+- [VSTD-Graph-1](standard/VSTD-Graph-1.md) records content-addressed artifacts,
+  many-to-many transformations, conflicts, and bounded downstream reachability.
+- [`VSTD4-GDC-1`](standard/VSTD-4.md) binds a decision certificate to a formula,
+  grounding, claim coordinate, verifier descriptor, roots, and resource bounds.
+
+The grounded-certificate checker rejects over-budget headers before proof work, rejects
+cost-tier inflation, validates grounding before the decision block, and preserves
+`UNKNOWN` when a bound is exhausted. Kernel acceptance establishes only the bounded
+certificate result; it is not VSTD-4 conformance, evidence authenticity, external
+validation, or proof of the unobserved world.
+
+## Interoperability
+
+VSTD composes beside native systems rather than replacing them:
 
 ```text
-DecisionCertificate
-├── header       verdict, tightest cost tier, counts, binding digest
-├── formula      normalized finite clauses
-├── grounding    variables → facts; clauses → named encoding rules
-├── decision     model, proof, witness, or bounded UNKNOWN transcript
-└── hints        untrusted, optional, and strippable
+native object ──native verifier──> native result
+      └──── exact bytes + identity ──> loss-declared adapter
+                                           └──> VSTD claim boundary
 ```
 
-The checker rejects over-budget headers before proof work, rejects cost-tier inflation,
-checks grounding before the decision block, and preserves `UNKNOWN` when a declared
-bound is exhausted. `VSTD4-GDC-1` is a VSTD project format; reference-kernel acceptance
-is not external validation.
+The experimental SCITT profile uses
+real Concise Binary Object Representation (CBOR) and COSE
+signatures and a local inclusion receipt. It demonstrates exact payload carriage and
+adjacent verification under test keys. SCITT registration proves neither payload
+correctness nor VSTD conformance. See the [crosswalk](docs/standards/VSTD_SCITT_CROSSWALK.md),
+[semantic boundary](docs/standards/SCITT_SEMANTIC_BOUNDARY.md), and
+[runnable example](examples/scitt_interop/).
 
-## Install and command names
+The [ecosystem map](docs/ECOSYSTEM.md) separately covers adjacent provenance,
+software-supply-chain, signing, and transparency systems without implying endorsement or
+adoption.
 
-The distribution name is `verifier-standard`; the base install has no required
-third-party runtime dependencies.
+## Specifications and navigation
 
-```bash
-python -m pip install verifier-standard  # latest published release
-python -m pip install .                  # current 1.2.0 release-candidate checkout
-python -m pip install ".[yaml]"        # YAML manifests
-python -m pip install ".[jsonschema]"  # schema validation
-python -m pip install ".[llguidance]"  # optional constraint adapter
-python -m pip install ".[torch]"       # optional tensor adapter
-```
+Read authoritative material in this order:
 
-`vstd` is the canonical cross-platform command. `verifier` remains an alias, but an
-unqualified `verifier` command on Windows commonly resolves to Windows Driver Verifier.
-`verifiable` remains a permanent compatibility alias because published project receipts
-may bind it in falsification instructions.
+1. [Ladder and composition](standard/LADDER.md)
+2. [Object and Graph layer documents](standard/)
+3. [Frozen wire identifiers](standard/WIRE_IDENTIFIERS.md)
+4. [Published schemas](receipts/schema/)
+5. [Implementation ownership](docs/ARCHITECTURE.md)
+6. [Claims and limits](docs/CLAIMS_AND_LIMITS.md)
 
-An unrelated PyPI distribution named `verifier` exports the same top-level Python
-import. Do not co-install it with `verifier-standard`: Python packaging does not prevent
-two distributions from overwriting one import package. Install this project by its full
-distribution name and use `vstd` as the command.
+Additional entry points:
 
-## Verify a release
+| Goal | Document |
+|---|---|
+| Install and exercise the first-run path | [Quickstart](docs/QUICKSTART.md) |
+| Understand terminology and precedents | [Concepts and precedents](docs/CONCEPTS_AND_PRECEDENTS.md) |
+| Inspect abbreviated terms | [Acronyms](docs/ACRONYMS.md) |
+| Review experimental profiles | [Experiment index](experiments/INDEX.md) |
+| Understand human claim traversal | [Human operating guide](HUMANS.md) |
+| Inspect project direction and non-goals | [Roadmap](ROADMAP.md) |
 
-Release assets include an external manifest binding the exact public source ref,
-commit, archive digest, file set, and member bytes. The release builder produces a
-platform-independent canonical source ZIP, wheel, and source distribution from that
-source coordinate. CI independently builds the full set on Windows and Linux and fails
-unless every artifact is byte-identical.
-GitHub/Sigstore artifact attestations bind the ZIP, wheel, source distribution, and
-manifest to the release workflow:
+## Reproducibility and releases
+
+A release contains a canonical artifact set: ZIP archive format (ZIP), wheel, source
+distribution, and external manifest bound to the exact public Git commit and file
+members. The continuous integration (CI) workflow builds on Windows and Linux and rejects
+cross-platform byte differences. GitHub
+artifact attestations bind uploaded bytes to the workflow; they do not establish source
+correctness, tag identity, or adoption.
 
 ```bash
 gh attestation verify PATH_TO_DOWNLOADED_ASSET --repo TimeLordRaps/verifier
 ```
 
-Release notes report the tag-signature status separately. An artifact attestation is
-not a tag signature. The signed `v1.1.2` GitHub release was not uploaded to PyPI because
-its Windows and Linux builds differed. PyPI publication now requires the cross-platform
-equality gate plus approval in the protected `pypi` environment. See
-[`RELEASING.md`](RELEASING.md) for the complete gate.
+Use [RELEASING.md](RELEASING.md) to verify the manifest, tag, artifact attestations,
+package name, and historical compatibility. The current checkout is an unreleased
+1.2.0 candidate; use the [latest release page](https://github.com/TimeLordRaps/verifier/releases/latest)
+for published citation and artifact coordinates.
 
-## Project status
+## Claims, security, and contribution
 
-VSTD is a founder-maintained **alpha project specification**. There is no demonstrated
-external adoption, independent implementation, interoperability deployment, or
-third-party security review. It is not an accredited, consensus, IETF, ISO, or W3C
-standard. A `VERIFIED` result is always relative to declared coordinates, evidence,
-mechanisms, bounds, and trust roots.
+Review [claims and limits](docs/CLAIMS_AND_LIMITS.md) before publishing a VSTD result.
+The reference implementation may improve auditability, reproducibility, incident
+analysis, and challenge routing over observable records. It cannot prove general AI
+safety, reveal hidden model state, establish physical-world completeness, or compensate
+for missing instrumentation.
 
-Current public-review priorities are counterexamples to normative statements,
-ambiguous wire rules, independent parser results, interoperability failures, and
-receipts that pass when they should fail. Use the
-[issue forms](https://github.com/TimeLordRaps/verifier/issues/new/choose). Send sensitive
-findings through [`SECURITY.md`](SECURITY.md), not a public issue.
+`vstd run` executes manifest commands without sandboxing. See the
+[security policy](SECURITY.md) and use GitHub private vulnerability reporting for
+sensitive findings.
 
-VSTD may improve auditability, reproducibility, incident analysis, and challenge
-propagation over observable records. It cannot prove general AI safety, reveal hidden
-model internals, establish physical-world completeness, or compensate for missing
-instrumentation.
+Contributors should start with [CONTRIBUTING.md](CONTRIBUTING.md), which identifies
+normative, implementation, schema, adapter, test, compatibility, and release pathways.
+Use the issue forms for a
+[specification ambiguity](https://github.com/TimeLordRaps/verifier/issues/new?template=specification-ambiguity.yml),
+[counterexample](https://github.com/TimeLordRaps/verifier/issues/new?template=counterexample.yml),
+or [implementation/interoperability report](https://github.com/TimeLordRaps/verifier/issues/new?template=implementation-report.yml).
 
-## Project process
+Project authority and centralization are documented in [GOVERNANCE.md](GOVERNANCE.md).
+Automated-contributor rules live in [AGENTS.md](AGENTS.md); the human operating model in
+[HUMANS.md](HUMANS.md); and live repository contradictions only in [TIME.md](TIME.md).
 
-- Specification order: [`LADDER`](standard/LADDER.md) → layer documents → schemas →
-  separately implemented checker → conformance tests.
-- Implementation ownership: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
-- Public technical direction: [`ROADMAP.md`](ROADMAP.md).
-- Contribution rules: [`CONTRIBUTING.md`](CONTRIBUTING.md).
-- Automated-contributor rules: [`AGENTS.md`](AGENTS.md).
-- Human operating and reasoning guide: [`HUMANS.md`](HUMANS.md).
-- Live repository-contradiction status: [`TIME.md`](TIME.md).
-- Governance and release authority: [`GOVERNANCE.md`](GOVERNANCE.md).
-- Security and disclosure: [`SECURITY.md`](SECURITY.md).
-- Release construction and attestations: [`RELEASING.md`](RELEASING.md).
+## Citation and license
 
-Apache License 2.0. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). VSTD is not
+Cite a published release from its versioned GitHub release metadata or
+`CITATION.cff` at that tagged coordinate. Do not cite unreleased candidate metadata as
+a published release.
+
+Licensed under the [Apache License 2.0](LICENSE); see [NOTICE](NOTICE). VSTD is not
 affiliated with or endorsed by the Apache Software Foundation.
