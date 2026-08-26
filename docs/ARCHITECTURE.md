@@ -1,8 +1,9 @@
 # Verifier Standard (VSTD) conformance architecture
 
 > **Acronyms:** Boolean satisfiability problem (SAT); command-line interface (CLI);
-> JavaScript Object Notation (JSON); Supply Chain Integrity, Transparency, and Trust (SCITT);
-> Verifier Standard (VSTD).
+> JavaScript Object Notation (JSON); reduced instruction set computer (RISC);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); Verifier Standard (VSTD);
+> zero-identity/zero-knowledge (ZIZK).
 
 **Status:** implementation and ownership map; normative meaning remains in `standard/`
 
@@ -30,11 +31,37 @@ shape only; a passing validator establishes only its named implemented checks.
 | VSTD-5 | `standard/VSTD-5.md` | fail-closed candidate rejection only | `vstd5_receipt.json` | `test_vstd4_depth.py`, `test_vstd_schemas.py` |
 | VSTD-Graph-1 | `standard/VSTD-Graph-1.md` | `verifier.data.models`, `verifier.data.receipt` | `vstd_graph_receipt.json` | `test_public_data.py` |
 | VSTD-Graph-2..5 | matching Graph documents | `verifier.data.graph_level` | `computed_graph_level` within `vstd_graph_receipt.json` | `test_graph_level.py` |
+| ZIZK artifact-first trust | `standard/LADDER.md` section 1.1 | Governs every mechanism; bounded RISC Zero example under `examples/zizk_artifact_first/` | No separate wire identifier or profile | presentation, experiment-manifest, and ZIZK mechanism tests |
 
 VSTD-5 is draft. The VSTD-4 depth runtime and Graph-2 through Graph-5 compute candidates
 from caller-supplied references or ratings and return
 `conformance_status = NOT_ESTABLISHED`; evidence binding is not implemented. Neither
 candidate is layer conformance.
+
+## Governing ZIZK architecture and mechanism ownership
+
+Zero-identity/zero-knowledge (ZIZK) artifact-first trust is a governing VSTD
+architecture, not a side experiment, layer, profile, or scalar trust system. Its
+normative source is `standard/LADDER.md` section 1.1:
+
+- actor identity, popularity, repetition, and reputation supply no assurance;
+- actor and artifact are contextual roles rather than permanent entity classes;
+- established artifact support may move forward only across admissible bound
+  transformations, while every child discharges its new obligations;
+- diagnostic Rust may move backward only as recorded ancestral reachability; and
+- forward support and backward Rust never cancel, reverse direction, or manufacture a
+  clean signal from `UNKNOWN` or `CONFLICTED` inputs.
+
+Maturity attaches to mechanisms beneath that architecture:
+
+| Mechanism surface | Current status | Ownership boundary |
+|---|---|---|
+| RISC Zero hidden-witness predicate | Bounded reference mechanism with tracked public proof artifacts | `examples/zizk_artifact_first/risc0/`; native verification only, no VSTD receipt mapping |
+| Bounded identity-disclosure evaluator | Bounded non-normative reference mechanism | `examples/zizk_artifact_first/zero_identity/`; no identity-derived trust |
+| Event serialization and support-transfer algebra | Experimental and unimplemented | May implement the governing direction but cannot redefine it |
+| Rust concentration and localization | Experimental and unimplemented | Diagnostic reachability only until a separately specified mechanism earns more |
+| Complete `PASS`/`FAIL`/`UNKNOWN`/`CONFLICTED` hidden-witness derivation | Experimental and unimplemented | A caller-supplied state tag is not an earned verdict |
+| Specific optional proof backends | Backend-specific maturity; the RISC Zero example has one recorded native proof | Optional proof machinery cannot make the governing architecture optional or establish broader VSTD conformance |
 
 ## Wire dispatch
 

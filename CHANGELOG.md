@@ -5,7 +5,8 @@
 > command-line interface (CLI); conjunctive normal form (CNF); CBOR Object Signing and Encryption (COSE);
 > grounded decision certificate (GDC); Hypertext Transfer Protocol Secure (HTTPS);
 > Internet Engineering Task Force (IETF); JavaScript Object Notation (JSON); nondeterministic polynomial time (NP);
-> Boolean satisfiability problem (SAT); Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
+> reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
 > Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
 > zero-identity/zero-knowledge (ZIZK).
 
@@ -33,8 +34,10 @@
 - Add the experimental SCITT adapter, rerunnable real-COSE specimen with ephemeral keys, explicit semantic
   boundary, and adversarial composition tests without claiming IETF review or payload
   truth from registration.
-- Add the bounded ZIZK experiment and documentation-lineage guide while preserving
-  unresolved horizons and native-system authority.
+- Surface zero-identity/zero-knowledge (ZIZK) artifact-first trust as governing
+  architecture, publish the bounded RISC Zero reference mechanism and exact recorded
+  public proof artifacts, and keep only unfinished mechanisms experimental while
+  preserving unresolved horizons and native-system authority.
 - Remove the live SimulacraBench rehearsal and its front-door promotion; the repository
   never contained or reproduced the submission, hosted image, hardware, or protected
   evaluation identified by that name.

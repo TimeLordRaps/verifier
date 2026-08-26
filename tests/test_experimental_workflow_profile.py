@@ -30,7 +30,9 @@ EXAMPLE = ROOT / "examples" / "experimental_workflow"
 EXPERIMENT_MANIFEST = (
     ROOT / "experiments" / "github_verdict_neutrality" / "experiment.json"
 )
-ZIZK_MANIFEST = ROOT / "experiments" / "zizk_vstd" / "experiment.json"
+ARTIFACT_FIRST_MECHANISMS_MANIFEST = (
+    ROOT / "experiments" / "artifact_first_mechanisms" / "experiment.json"
+)
 
 
 def _example_payload() -> dict[str, object]:
@@ -87,9 +89,23 @@ def test_checked_in_manifests_validate_and_match_schema() -> None:
     jsonschema.Draft202012Validator(schema).validate(payload)
 
 
-def test_zizk_manifest_preserves_dual_causal_boundary() -> None:
-    payload = load_manifest(ZIZK_MANIFEST)
+def test_artifact_first_mechanism_manifest_preserves_dual_causal_boundary() -> None:
+    payload = load_manifest(ARTIFACT_FIRST_MECHANISMS_MANIFEST)
     verify_repo_artifacts(payload, ROOT)
+
+    assert payload["experiment"]["id"] == "experiment-artifact-first-mechanisms"
+    assert "governing" in payload["experiment"]["title"]
+
+    artifacts = {item["id"]: item for item in payload["artifacts"]}
+    assert artifacts["artifact-zk-receipt"]["locator"].endswith(
+        "recorded-proof/receipt.msgpack"
+    )
+    assert artifacts["artifact-zk-public-envelope"]["locator"].endswith(
+        "recorded-proof/public.json"
+    )
+    assert artifacts["artifact-zk-self-test"]["locator"].endswith(
+        "recorded-proof/self-test-results.json"
+    )
 
     hypotheses = {item["id"]: item for item in payload["hypotheses"]}
     assert hypotheses["hypothesis-artifact-first-zero-actor-trust"]["state"] == "OPEN"

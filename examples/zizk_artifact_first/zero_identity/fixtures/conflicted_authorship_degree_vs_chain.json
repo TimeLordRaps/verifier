@@ -1,0 +1,96 @@
+{
+  "expected": {
+    "properties": {
+      "accountability": "ATTESTED",
+      "authentication": "SUPPORTED",
+      "authority_active": "SUPPORTED",
+      "authorization": "SUPPORTED",
+      "authorship_degree": "CONFLICTED",
+      "civil_identity": "UNSUPPORTED_BY_DESIGN",
+      "credential_ancestry": "ATTESTED",
+      "freshness": "SUPPORTED",
+      "recovery": "ATTESTED",
+      "uniqueness": "UNKNOWN",
+      "unlinkability": "UNKNOWN",
+      "verifier_independence": "UNKNOWN"
+    },
+    "verdict": "CONFLICTED"
+  },
+  "falsification_question": "Is the more convenient of two disagreeing degree claims preferred?",
+  "fixture_id": "conflicted_authorship_degree_vs_chain",
+  "intent": "A declared degree that disagrees with the recorded chain stays CONFLICTED.",
+  "record": {
+    "actor": {
+      "civil_identity": "withheld",
+      "key_binding": {
+        "key_id": "key:delegate-1",
+        "signature_verified": true,
+        "trust_root": "root:issuer-a"
+      },
+      "pseudonym": "pseudonym:alpha"
+    },
+    "authorization": {
+      "grant_id": "grant:alpha-1",
+      "issuer": "root:issuer-a",
+      "not_after": "2026-12-31T00:00:00Z",
+      "not_before": "2026-01-01T00:00:00Z",
+      "scope": [
+        "vstd4-refutation-run"
+      ]
+    },
+    "authorship": {
+      "attested_by": "root:issuer-a",
+      "degree": 2,
+      "role": "DELEGATE"
+    },
+    "claim_scope": "vstd4-refutation-run",
+    "claimed_properties": [
+      "authorization"
+    ],
+    "conflicts": [],
+    "credential_ancestry": [
+      {
+        "attested_by": "root:issuer-a",
+        "child": "key:alpha-1",
+        "link_type": "issuance",
+        "parent": "root:issuer-a"
+      },
+      {
+        "attested_by": "root:issuer-a",
+        "child": "key:delegate-1",
+        "child_scope": [
+          "vstd4-refutation-run"
+        ],
+        "link_type": "delegation",
+        "parent": "key:alpha-1",
+        "parent_scope": [
+          "vstd4-refutation-run"
+        ]
+      }
+    ],
+    "escalation_authority": "root:issuer-a",
+    "evaluated_at": "2026-08-23T00:00:00Z",
+    "freshness": {
+      "challenge_source": "verifier:v1",
+      "nonce": "challenge:0001",
+      "previously_observed_nonces": [],
+      "required": true
+    },
+    "independence_evidence": [],
+    "peer_receipts": [],
+    "profile": "zizk-vstd/bounded-identity-disclosure/reference-0",
+    "record_id": "zi-authorship-degree-conflict",
+    "recovery": {
+      "mechanism": "issuer reissue on quorum of two custodians"
+    },
+    "revocation": {
+      "checked_at": "2026-08-23T00:00:00Z",
+      "source": "root:issuer-a/status",
+      "state": "active"
+    },
+    "trust_roots": [
+      "root:issuer-a"
+    ],
+    "uniqueness_evidence": []
+  }
+}

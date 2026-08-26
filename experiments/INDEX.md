@@ -14,8 +14,8 @@ PYTHONPATH=src python scripts/build_experiment_index.py --check
 
 | Experiment | State | Question | Publication | Open horizons | Manifest |
 |---|---|---|---|---:|---|
+| experiment-artifact-first-mechanisms | RUNNING | Which bounded event serialization, support-transfer algebra, Rust concentration and localization rules, and hidden-witness trichotomy mechanisms can implement the governing artifact-first causal orientation without actor reputation, scalar cancellation, causal overclaim, or making that orientation contingent on the study? | CANDIDATE | 5 | [`experiments/artifact_first_mechanisms/experiment.json`](artifact_first_mechanisms/experiment.json)<br>`sha256:ef5f53d9791bb59f34f57ae787f390dea8c28aa8bdb3af0f75950c2d71a62790` |
 | experiment-github-verdict-neutrality | COMPLETED | Does the GitHub adapter preserve successful workflow and merge states without converting them into a VSTD verdict? | INTERNAL | 1 | [`experiments/github_verdict_neutrality/experiment.json`](github_verdict_neutrality/experiment.json)<br>`sha256:3b98310d35c20e7099d242e2c655e4bf8dc62d91298adc04e4dc2f56f2f79d89` |
-| experiment-zizk-vstd | RUNNING | Can a bounded event-ledger protocol operationalize the normative artifact-first causal orientation: scoped artifact support moving parent-to-child and typed Rust moving child-to-parent, without actor reputation, scalar cancellation, or causal overclaim? | CANDIDATE | 5 | [`experiments/zizk_vstd/experiment.json`](zizk_vstd/experiment.json)<br>`sha256:09d5c462eb3ea57ad30cdaca9ca4310991d46f3181c0515a8c1ec886e98352e7` |
 
 Platform events, including successful workflows and merges, retain
 `verification_effect = NONE` unless a separate native result is explicitly

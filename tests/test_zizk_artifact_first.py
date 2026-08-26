@@ -1,0 +1,78 @@
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+
+ROOT = Path(__file__).resolve().parents[1]
+MECHANISM = ROOT / "examples" / "zizk_artifact_first" / "risc0"
+
+
+def test_zero_knowledge_mechanism_is_optional_and_pinned() -> None:
+    host_manifest = (MECHANISM / "host" / "Cargo.toml").read_text(encoding="utf-8")
+    guest_manifest = (
+        MECHANISM / "methods" / "guest" / "Cargo.toml"
+    ).read_text(encoding="utf-8")
+    methods_manifest = (MECHANISM / "methods" / "Cargo.toml").read_text(
+        encoding="utf-8"
+    )
+
+    assert 'version = "=3.0.6"' in host_manifest
+    assert 'features = ["disable-dev-mode"]' in host_manifest
+    assert 'version = "=3.0.6"' in guest_manifest
+    assert 'version = "=3.0.6"' in methods_manifest
+    assert "zizk" not in (ROOT / "pyproject.toml").read_text(encoding="utf-8").lower()
+
+
+def test_zero_knowledge_claim_boundary_is_explicit() -> None:
+    boundary = (MECHANISM / "CLAIM_BOUNDARY.md").read_text(encoding="utf-8")
+    assert "does not prove" in boundary
+    assert "bounded reference mechanism" in boundary
+    assert "UNKNOWN" in boundary
+    assert "CONFLICTED" in boundary
+
+
+def test_private_inputs_are_excluded_and_public_proof_artifacts_are_versioned() -> None:
+    ignore = (MECHANISM / ".gitignore").read_text(encoding="utf-8")
+    assert "private-*.json" in ignore
+    assert "local-artifacts/" in ignore
+    tracked = subprocess.run(
+        ["git", "ls-files", "--", "examples/zizk_artifact_first/risc0"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.splitlines()
+    assert any(path.endswith("recorded-proof/receipt.msgpack") for path in tracked)
+    assert any(path.endswith("recorded-proof/public.json") for path in tracked)
+    assert any(path.endswith("recorded-proof/self-test-results.json") for path in tracked)
+    assert not any("private-" in path and path.endswith(".json") for path in tracked)
+
+
+def test_recorded_public_proof_artifact_hashes_match_the_reported_run() -> None:
+    expected = {
+        "receipt.msgpack": "5fd33b0fbf6b54e34d4dd19c5ff068a8f82bacacc21881b5fa2cc5c0a90090df",
+        "public.json": "6324c3c5d77ea4df4034f61131059289d5228f190d69e34c59bd7416fa9ac823",
+        "self-test-results.json": "e4c1bff21fb6161221276157fa96af6661af8635da35970ba12e462881f2c6fe",
+    }
+    for name, digest in expected.items():
+        artifact = MECHANISM / "recorded-proof" / name
+        assert hashlib.sha256(artifact.read_bytes()).hexdigest() == digest
+
+
+def test_recorded_verification_pins_the_historical_program_trust_coordinate() -> None:
+    public = json.loads(
+        (MECHANISM / "recorded-proof" / "public.json").read_text(encoding="utf-8")
+    )
+    expected_image_id = public["image_id"]
+    script = (MECHANISM / "scripts" / "verify_recorded_proof.sh").read_text(
+        encoding="utf-8"
+    )
+    host = (MECHANISM / "host" / "src" / "main.rs").read_text(encoding="utf-8")
+
+    assert expected_image_id in script
+    assert "verify recorded-proof/receipt.msgpack recorded-proof/public.json" in script
+    assert "let trusted_id = expected_id.unwrap_or_else(method_id);" in host
+    assert "trusted_id != method_id()" not in host

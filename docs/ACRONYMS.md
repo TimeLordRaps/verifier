@@ -116,8 +116,8 @@ identifiers, code symbols, filenames, and third-party names remain byte-for-byte
 | `WG` | working group | Standards-development group. |
 | `WSL2` | Windows Subsystem for Linux 2 | Windows-hosted Linux environment. |
 | `YAML` | YAML Ain't Markup Language | Structured data format. |
-| `ZI` | zero-identity | Experimental coordinate prefix. |
+| `ZI` | zero-identity | Historical study coordinate; not a trust or conformance class. |
 | `ZIP` | ZIP archive format | Compressed archive format; treat ZIP as the format's proper name. |
-| `ZIZK` | zero-identity/zero-knowledge | Joint experimental disclosure-minimization track. |
+| `ZIZK` | zero-identity/zero-knowledge | Governing VSTD artifact-first architecture; particular privacy and propagation mechanisms have their own maturity. |
 | `ZK` | zero-knowledge | Cryptographic or semantic privacy property, only when explicitly supported. |
 | `zkVM` | zero-knowledge virtual machine | Virtual machine that emits a zero-knowledge proof. |

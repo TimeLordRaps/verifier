@@ -1,0 +1,12 @@
+{
+  "real_proof_verified": true,
+  "unsatisfied_witness_rejected": true,
+  "unknown_rejected": true,
+  "conflicted_rejected": true,
+  "mutated_public_input_rejected": true,
+  "wrong_image_id_rejected": true,
+  "corrupted_proof_rejected": true,
+  "tampered_journal_rejected": true,
+  "statement_transplant_rejected": true,
+  "private_bytes_absent_from_public_artifacts": true
+}

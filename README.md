@@ -12,6 +12,8 @@
 
 </div>
 
+> **Acronym used below:** reduced instruction set computer (RISC).
+
 VSTD is a verification-domain language and Python reference implementation for packaging
 bounded computational claims with their evidence, checking mechanisms, limits,
 refutation conditions, provenance, and reproducibility information. It does **not**
@@ -100,7 +102,8 @@ or a second implementation.
 | Generic run | Frozen `VSTD-0.1` compatibility profile under VSTD-1 | Plan, execute, capture, inspect, strict shape/digest validation, and declared-output rerun | Captures command, source state, outputs, environment, and manifest declarations; generic validation is not native claim verification | `vstd4_conformance = NOT_EVALUATED` | Sandbox, generic external-evidence resolver, and actor/execution binder |
 | Experimental workflow | Non-normative experimental profile 0.1 | Strict validator, verdict-neutral GitHub event projector, allocation records, and command-line interface (CLI) | Preserves native platform results and explicit horizons with `verification_effect = NONE` | No VSTD conformance claim | Independent consumer, additional platform adapter, and evidence for allocation optimality |
 | Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability | Experimental, non-normative application profile and crosswalk | Real local Concise Binary Object Representation (CBOR) plus CBOR Object Signing and Encryption (COSE) signatures/receipt, loss-declared adapter, and adjacent native-result composition | Binds the exact payload under emitted test keys and local policy; registration never establishes payload truth | VSTD-4 remains `NOT_ESTABLISHED` | Public Transparency Service, external implementation/interoperability result, and Internet Engineering Task Force (IETF) review |
-| zero-identity/zero-knowledge (ZIZK) research | Non-normative research experiments | Evaluator, fixtures, reports, and explicit unresolved horizons | Research-profile-specific recorded assumptions and checks only | No VSTD conformance claim | A reviewed public profile, formal guarantees where claimed, and independent evaluation |
+| zero-identity/zero-knowledge (ZIZK) artifact-first trust | Governing VSTD architecture in `standard/LADDER.md` section 1.1; not a separate layer or profile | Artifact-bound claim/evidence/mechanism semantics, contextual actor/artifact roles, forward support, and reverse diagnostic Rust constraints | Existing mechanism-specific evidence only; identity, reputation, repetition, and topology add no assurance | Governing architectural invariant; not a separate VSTD conformance result | Event serialization, support-transfer algebra, Rust concentration/localization, complete trichotomy derivation, and maturation of specific optional proof backends |
+| RISC Zero proof-carrying reference mechanism | Bounded non-normative mechanism example under the governing ZIZK architecture | Pinned prover/verifier source plus a tracked real receipt, public envelope, self-test result, and offline verification command | Authenticates one fixed hidden-witness predicate and expected image identifier; it does not establish the witness's external truth | Native proof verified; no VSTD receipt mapping | Complete VSTD trichotomy predicate, second build, external audit, and additional proof backends |
 
 The authoritative implementation-to-specification map is
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Normative meaning remains under
@@ -145,6 +148,14 @@ The same recorded development graph can carry bounded artifact support forward a
 diagnostic Rust backward. Rust identifies ancestors worth examining; it does not prove
 guilt, responsibility, causality, or automatic ancestor falsification. See
 [the governing architecture](standard/LADDER.md#11-artifact-first-causal-orientation).
+
+This is VSTD's **ZIZK artifact-first trust architecture**, not an optional research
+profile. Zero identity means actor identity and reputation supply no assurance. Zero
+knowledge means a claim may use a proof-carrying mechanism that hides bounded evidence
+when that mechanism establishes its exact predicate; it does not make disclosure
+mandatory or assumption-free. The runnable
+[RISC Zero reference mechanism](examples/zizk_artifact_first/) is one bounded backend,
+while its proof system and unfinished transfer mechanics remain mechanism-specific.
 
 ## Install and use
 

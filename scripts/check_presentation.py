@@ -2,7 +2,7 @@
 """Terminology: artificial intelligence (AI); application programming interface (API);
 Amazon Web Services (AWS); Concise Binary Object Representation (CBOR); CBOR Object Signing and
 Encryption (COSE); command-line interface (CLI); Supply Chain Integrity, Transparency, and
-Trust (SCITT); Verifier Standard (VSTD).
+Trust (SCITT); reduced instruction set computer (RISC); Verifier Standard (VSTD).
 
 Fail closed when public presentation surfaces drift from executable truth."""
 
@@ -112,7 +112,12 @@ MATURITY_CONFORMANCE = {
     "Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability": (
         "VSTD-4 remains `NOT_ESTABLISHED`"
     ),
-    "zero-identity/zero-knowledge (ZIZK) research": "No VSTD conformance claim",
+    "zero-identity/zero-knowledge (ZIZK) artifact-first trust": (
+        "Governing architectural invariant; not a separate VSTD conformance result"
+    ),
+    "RISC Zero proof-carrying reference mechanism": (
+        "Native proof verified; no VSTD receipt mapping"
+    ),
 }
 
 

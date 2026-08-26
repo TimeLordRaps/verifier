@@ -2,7 +2,8 @@
 
 > **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
 > grounded decision certificate (GDC); Internet Engineering Task Force (IETF);
-> Boolean satisfiability problem (SAT); Supply Chain Integrity, Transparency, and Trust (SCITT);
+> reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
+> Supply Chain Integrity, Transparency, and Trust (SCITT);
 > zero-identity/zero-knowledge (ZIZK).
 
 **Status:** direction, not a promise of delivery or adoption
@@ -111,7 +112,7 @@ intentional experiment artifacts are present.
 | Track | Public artifact | Current boundary | Next gate |
 |---|---|---|---|
 | SCITT interoperability | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) | Experimental adapter, rerunnable real-COSE specimen with ephemeral keys, and adversarial tests; no IETF review or external interoperability result. | Independent implementation and interoperability result. |
-| ZIZK | [`experiments/zizk_vstd/experiment.json`](experiments/zizk_vstd/experiment.json) | Code, reports, fixtures, manifest, and unresolved horizons; not a normative profile or completed protocol. | Joint review of claim boundaries and the trustless substrate. |
+| Artifact-first mechanism completion | [`experiments/artifact_first_mechanisms/experiment.json`](experiments/artifact_first_mechanisms/experiment.json) | Experimental event serialization, transfer algebra, Rust concentration/localization, complete trichotomy derivation, and specific unfinished optional proof backends under the already-governing ZIZK architecture. The bounded identity evaluator and tracked RISC Zero reference mechanism are under `examples/`. | Implement and falsify each mechanism without treating the governing orientation as contingent. |
 | Workflow and allocation | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Strict validator, verdict-neutral GitHub adapter, generated index, and allocation records; no optimality claim or independent consumer. | A second observable adapter and independent consumer. |
 
 ## Milestone 1 — make refutation the front door
@@ -154,8 +155,8 @@ intentional experiment artifacts are present.
 - bounded verification-allocation records that preserve the policy, reason, budget,
   deferred surface, and native outcome without assigning truth by priority;
 - deterministic canonicalization, repository-artifact binding, a generated experiment
-  index, adversarial tests, a verdict-neutral checked-in specimen, and a ZIZK dogfood
-  manifest.
+  index, adversarial tests, a verdict-neutral checked-in specimen, and an
+  artifact-first-mechanism dogfood manifest.
 
 **Still build**
 
@@ -168,7 +169,7 @@ intentional experiment artifacts are present.
 
 **Exit evidence**
 
-- the SCITT, ZIZK, and SAT tracks can be indexed through the same experimental-workflow
+- the SCITT, artifact-first-mechanism, and SAT tracks can be indexed through the same experimental-workflow
   vocabulary without changing their native verifiers or erasing their blockers;
 - a GitHub merge remains an integration event rather than becoming a VSTD pass;
 - the same trace can be checked by two separately maintained consumers;
