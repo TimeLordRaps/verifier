@@ -1,3 +1,5 @@
+"""Terminology: Verifier Standard (VSTD)."""
+
 from __future__ import annotations
 
 import hashlib
@@ -32,6 +34,36 @@ def test_zero_knowledge_claim_boundary_is_explicit() -> None:
     assert "bounded reference mechanism" in boundary
     assert "UNKNOWN" in boundary
     assert "CONFLICTED" in boundary
+
+
+def test_experimental_scope_does_not_absorb_the_governing_architecture() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    architecture = (ROOT / "docs" / "ARCHITECTURE.md").read_text(encoding="utf-8")
+    experiment_index = (
+        ROOT / "experiments" / "artifact_first_mechanisms" / "README.md"
+    ).read_text(encoding="utf-8")
+    design = (
+        ROOT
+        / "experiments"
+        / "artifact_first_mechanisms"
+        / "reverification"
+        / "ROUND2_DESIGN_NOTE.md"
+    ).read_text(encoding="utf-8")
+
+    assert "Governing VSTD architecture" in readme
+    assert "not an optional research" in readme
+    assert "architecture, not a side experiment" in architecture
+    for phrase in (
+        "event serialization",
+        "support-transfer algebra",
+        "Rust concentration and localization",
+        "complete hidden-witness trichotomy derivation",
+        "specific optional proof backends",
+    ):
+        assert phrase in experiment_index
+    assert "semantic experiment for bounded identity disclosure" not in design
+    assert "Zero Identity experiment" not in design
+    assert "bounded identity-disclosure reference" in design
 
 
 def test_private_inputs_are_excluded_and_public_proof_artifacts_are_versioned() -> None:

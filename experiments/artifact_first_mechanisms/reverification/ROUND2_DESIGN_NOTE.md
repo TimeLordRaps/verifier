@@ -41,7 +41,7 @@ Round 1 began from commit `598c545be3833d6d81bb7e252ca5837f3bb2a449`.
 
 | Work | Source coordinate | What it established | Round 2 treatment |
 |---|---|---|---|
-| Zero Identity | `claude/zizk-zero-identity` at `48fab87b05ad5ddaf24d08b6391cde99d05fc8f1` | A semantic experiment for bounded identity disclosure, with 22 fixtures and 65 focused tests | Retained as an adjacent actor/authorization experiment; its coordinates carry only the claim meaning explicitly checked |
+| Zero Identity | `claude/zizk-zero-identity` at `48fab87b05ad5ddaf24d08b6391cde99d05fc8f1` | A bounded identity-disclosure reference evaluation, with 22 fixtures and 65 focused tests | Retained as an adjacent reference mechanism; its coordinates carry only the claim meaning explicitly checked |
 | Zero Knowledge | `codex/zizk-zero-knowledge` at `14d31e0426656c5208f2b6579a5217af3a6bb2bd` | A real RISC Zero zkVM 3.0.6 composite STARK receipt for one hidden-witness predicate | Retained as the confidential-evidence mechanism; its bearer, artifact-bound form is compatible with Tier 0 |
 | Zero actor trust | this Round 2 design | No actor identity, popularity, or reputation may strengthen a result | Open as an operational protocol; stated here as a required invariant |
 | Artifact-first trust | existing VSTD artifact, evidence, mechanism, and predicate bindings | Bounded positive support can move from verified parent artifacts into the declared obligations of descendants | Retained as the Tier 0 starting point; child obligations remain separately checked |
@@ -521,7 +521,7 @@ These coordinates may still be bound when the declared claim needs them. None is
 general trust signal, none upgrades an artifact result, and none permanently classifies an
 entity as an actor rather than an artifact.
 
-Deployments may still use the Zero Identity experiment's bounded identity disclosure
+Deployments may still use the bounded identity-disclosure reference
 model alongside Tier 0 when they need authenticated authorization. Its results must not
 raise or lower the artifact-bound reverification result.
 

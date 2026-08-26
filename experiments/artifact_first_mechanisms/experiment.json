@@ -105,7 +105,7 @@
       "id": "artifact-round2-design",
       "role": "round-2-reverification-design",
       "media_type": "text/markdown",
-      "digest": "sha256:a8b9af2daddbf95f4f2c2504b577a147c64e3ebf9ee5581a2c1a96b6049f1a2c",
+      "digest": "sha256:f190f073bf07ec04a97d97dbb92bf9fac7dcdff1b5da081fde2721b9e31ce7ed",
       "locator": "repo:experiments/artifact_first_mechanisms/reverification/ROUND2_DESIGN_NOTE.md"
     }
   ],
@@ -329,7 +329,7 @@
         "observation-identity-boundary"
       ],
       "decision": "Treat standard/LADDER.md section 1.1 as the controlling semantic invariant and confine Round 2 to candidate operational mechanics for its parent-to-child artifact support and child-to-parent Rust directions.",
-      "reason": "The architecture is normative; only its event format, transfer algebra, concentration-independence rule, and localization protocol remain experimental. The experiment must not make the core causal orientation appear contingent on its outcome.",
+      "reason": "The architecture is normative; only event serialization, support-transfer algebra, Rust concentration and localization, complete trichotomy derivation, and specific unfinished optional proof backends remain experimental. The experiment must not make the core causal orientation appear contingent on its outcome.",
       "action_ids": [
         "action-reverification-synthesis"
       ],
@@ -351,7 +351,7 @@
     {
       "id": "amendment-actor-artifact-rust-correction",
       "recorded_at": "2026-08-25T00:00:00Z",
-      "reason": "Correct the object-only framing and distinguish the normative causal orientation from its experimental operationalization: artifact support moves parent-to-child, while Rust genetically backtraces child-to-parent without becoming actor reputation, scalar cancellation, or localized guilt.",
+      "reason": "Correct the object-only framing and distinguish the normative causal orientation from its experimental event, transfer, Rust, trichotomy, and optional proof-backend mechanisms: artifact support moves parent-to-child, while Rust genetically backtraces child-to-parent without becoming actor reputation, scalar cancellation, or localized guilt.",
       "supersedes": [
         "amendment-round2-design"
       ],
@@ -410,5 +410,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:44bb0280ed8d075607b0b52cfd5d8e0bece8df13b50fb66554125e559f80ef12"
+  "manifest_digest": "sha256:5801835f64a1dabc4d474be6a97a9d4fa6f7bebd8b26ebad5583844af3a0b4ea"
 }
