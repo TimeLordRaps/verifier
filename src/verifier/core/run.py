@@ -35,8 +35,9 @@ Design commitments (do not weaken without updating tests + docs):
 4. **Reproduction fidelity is classified, not asserted.** Rehashing on-disk output
    artifacts (always available, side-effect free) is distinguished from re-running
    the recorded command (only performed when explicitly requested via ``rerun``).
-   The generic rerun compares the full stable receipt payload, so it can establish
-   only ``CONTENT_IDENTICAL``; a determinism declaration earns no level.
+   The generic rerun compares the declared output bytes and execution outcome, so
+   it can establish only scoped ``CONTENT_IDENTICAL``; a determinism declaration
+   earns no level.
 """
 
 from __future__ import annotations
@@ -1716,19 +1717,19 @@ def reproduce_run_receipt(receipt_path_or_dir: Path, rerun: bool = False) -> int
                 for item in data.get("outputs", [])
             }
             reproduced_outputs = {item.path: item.sha256 for item in reproduced.outputs}
-            outputs_match = original_outputs == reproduced_outputs
-            stable_payload_match = data.get("canonical_digest") == reproduced.canonical_digest
+            outputs_match = bool(original_outputs) and original_outputs == reproduced_outputs
+            outcomes_match = original_outcome == reproduced_outcome
             level = (
                 ReproducibilityLevel.CONTENT_IDENTICAL.value
-                if stable_payload_match
+                if outputs_match and outcomes_match
                 else "NOT_DEMONSTRATED"
             )
-            print(f"[REPRODUCTION RESULT - RERUN] Level: {level}")
+            print(f"[REPRODUCTION RESULT - RERUN] Level: {level} (declared-output scope)")
             print(f"  Original outcome:   {original_outcome}")
             print(f"  Reproduced outcome: {reproduced_outcome}")
             print(f"  Outputs match:      {outputs_match}")
-            print(f"  Stable payload match: {stable_payload_match}")
-            return 0 if stable_payload_match else 1
+            print("  Scope: declared output artifacts and execution outcome")
+            return 0 if outputs_match and outcomes_match else 1
 
     # Default path: rehash on-disk artifacts only (no execution).
     mismatches: list[tuple[Any, Any, Optional[str]]] = []

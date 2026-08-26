@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import copy
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -39,6 +40,7 @@ from verifier.data.models import (
     TransformationHyperedge,
     TransformationType,
 )
+from verifier.runtime.public_cli import _write_reproduction_bundle
 
 def _write_tiny_project(tmp_path: Path) -> Path:
     """A minimal deterministic project: script reads input.txt, writes output.json."""
@@ -440,7 +442,7 @@ def test_determinism_declaration_cannot_raise_reproduction_ceiling(tmp_path):
     assert receipt.reproducibility["highest_demonstrated_level"] is None
 
 
-def test_rerun_demonstrates_only_stable_receipt_content_identity(tmp_path, capsys):
+def test_rerun_demonstrates_only_declared_output_content_identity(tmp_path, capsys):
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()
     receipt = capture_run(manifest, manifest_dir=proj)
@@ -449,8 +451,34 @@ def test_rerun_demonstrates_only_stable_receipt_content_identity(tmp_path, capsy
 
     assert reproduce_run_receipt(proj, rerun=True) == 0
     output = capsys.readouterr().out
-    assert "Level: CONTENT_IDENTICAL" in output
+    assert "Level: CONTENT_IDENTICAL (declared-output scope)" in output
     assert "BITWISE_IDENTICAL" not in output
+
+
+def test_relocated_bundle_rerun_keeps_declared_output_scope(tmp_path, capsys):
+    source = tmp_path / "source"
+    source.mkdir()
+    _write_tiny_project(source)
+    subprocess.run(["git", "init", "-q"], cwd=source, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test" + "@" + "example.invalid"],
+        cwd=source,
+        check=True,
+    )
+    subprocess.run(["git", "config", "user.name", "VSTD Test"], cwd=source, check=True)
+    subprocess.run(["git", "add", "double.py", "input.txt"], cwd=source, check=True)
+    subprocess.run(["git", "commit", "-q", "-m", "fixture"], cwd=source, check=True)
+
+    manifest = _base_manifest()
+    receipt = capture_run(manifest, manifest_dir=source)
+    bundle = tmp_path / "bundle"
+    _write_reproduction_bundle(manifest, source, bundle)
+    receipt.save_to_directory(bundle)
+
+    assert reproduce_run_receipt(bundle, rerun=True) == 0
+    output = capsys.readouterr().out
+    assert "Level: CONTENT_IDENTICAL (declared-output scope)" in output
+    assert "Scope: declared output artifacts and execution outcome" in output
 
 
 def test_same_outcome_with_changed_output_earns_no_reproduction_level(tmp_path, capsys):
@@ -468,7 +496,7 @@ def test_same_outcome_with_changed_output_earns_no_reproduction_level(tmp_path, 
     assert "SEMANTIC_REPRODUCTION" not in output
 
 
-def test_no_declared_outputs_require_full_stable_payload_match(tmp_path, capsys):
+def test_no_declared_outputs_cannot_vacuously_reproduce(tmp_path, capsys):
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()
     manifest["outputs"] = []
@@ -476,10 +504,8 @@ def test_no_declared_outputs_require_full_stable_payload_match(tmp_path, capsys)
     receipt.save_to_directory(proj)
     (proj / "manifest.source.json").write_text(json.dumps(manifest), encoding="utf-8")
 
-    assert reproduce_run_receipt(proj, rerun=True) == 0
-    output = capsys.readouterr().out
-    assert "Level: CONTENT_IDENTICAL" in output
-    assert "Stable payload match: True" in output
+    assert reproduce_run_receipt(proj, rerun=True) == 1
+    assert "Level: NOT_DEMONSTRATED" in capsys.readouterr().out
 
 
 def test_provenance_linkage_uses_public_graph_fixture(tmp_path):
