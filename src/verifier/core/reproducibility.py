@@ -41,8 +41,13 @@ def compare_reproduction_level(
     reproduced_evidence_hash: str | None = None,
     original_raw_bytes: bytes | None = None,
     reproduced_raw_bytes: bytes | None = None,
-) -> ReproducibilityLevel:
-    """Classify the observed reproduction fidelity between two verification runs."""
+) -> ReproducibilityLevel | None:
+    """Return the strongest level earned by the supplied comparison evidence.
+
+    ``None`` means that these inputs do not establish a taxonomy level.  A
+    matching verdict without matching primary metrics cannot establish result
+    equivalence, and a verdict mismatch cannot establish semantic reproduction.
+    """
     if original_raw_bytes is not None and reproduced_raw_bytes is not None:
         if original_raw_bytes == reproduced_raw_bytes:
             return ReproducibilityLevel.BITWISE_IDENTICAL
@@ -57,7 +62,4 @@ def compare_reproduction_level(
     ):
         return ReproducibilityLevel.EVIDENCE_EQUIVALENT
 
-    if original_verdict == reproduced_verdict:
-        return ReproducibilityLevel.RESULT_EQUIVALENT
-
-    return ReproducibilityLevel.SEMANTIC_REPRODUCTION
+    return None

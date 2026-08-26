@@ -59,6 +59,10 @@
   rating-derived levels as `CALLER_SUPPLIED` candidates with conformance `NOT_ESTABLISHED`.
 - Publish the architecture ownership map linking normative documents, runtime validators,
   schemas, and conformance tests.
+- Document the five-As human traversal over existing receipt, Graph, hardware, certificate,
+  reproduction, and SCITT machinery without adding a wire format; reject duplicate Graph
+  identifiers and reproduction levels inferred from declarations, matching verdicts, or
+  mismatching runs.
 
 ## 1.1.3 - 2026-08-22
 

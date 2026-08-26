@@ -260,25 +260,31 @@ class ProvenanceHypergraph:
         self.rights: dict[str, RightsSpec] = {}
         self.conflicts: dict[str, ConflictRecord] = {}
 
+    @staticmethod
+    def _add_unique(collection: dict[str, Any], identifier: str, value: Any) -> str:
+        if identifier in collection:
+            raise ValueError(f"duplicate graph identifier: {identifier}")
+        collection[identifier] = value
+        return identifier
+
     def add_artifact(self, artifact: ArtifactNode) -> str:
-        self.artifacts[artifact.artifact_id] = artifact
-        return artifact.artifact_id
+        return self._add_unique(self.artifacts, artifact.artifact_id, artifact)
 
     def add_transformation(self, transform: TransformationHyperedge) -> str:
-        self.transformations[transform.transformation_id] = transform
-        return transform.transformation_id
+        return self._add_unique(
+            self.transformations, transform.transformation_id, transform
+        )
 
     def add_contributor(self, contributor: ContributorSpec) -> str:
-        self.contributors[contributor.contributor_id] = contributor
-        return contributor.contributor_id
+        return self._add_unique(
+            self.contributors, contributor.contributor_id, contributor
+        )
 
     def add_rights(self, rights: RightsSpec) -> str:
-        self.rights[rights.rights_id] = rights
-        return rights.rights_id
+        return self._add_unique(self.rights, rights.rights_id, rights)
 
     def add_conflict(self, conflict: ConflictRecord) -> str:
-        self.conflicts[conflict.conflict_id] = conflict
-        return conflict.conflict_id
+        return self._add_unique(self.conflicts, conflict.conflict_id, conflict)
 
     def has_conflict(self, subject_id: str) -> bool:
         return any(record.subject_id == subject_id for record in self.conflicts.values())

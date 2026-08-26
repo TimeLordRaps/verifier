@@ -7,6 +7,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from verifier.core.checker import VerificationVerdict
 from verifier.core.provenance import GitProvenance, ProvenanceRecord, RuntimeEnvironment
 from verifier.core.receipt import compute_canonical_digest
@@ -215,6 +217,29 @@ def test_missing_artifact_status_defaults_to_unknown() -> None:
         content_digest="a" * 64,
     )
     assert artifact.status == ArtifactStatus.UNKNOWN
+
+
+def test_duplicate_graph_identifier_cannot_replace_recorded_evidence() -> None:
+    graph = ProvenanceHypergraph()
+    original = ArtifactNode(
+        artifact_id="artifact:duplicate",
+        label="original",
+        artifact_type=ArtifactType.RAW_SOURCE_FILE,
+        content_digest="a" * 64,
+    )
+    graph.add_artifact(original)
+
+    with pytest.raises(ValueError, match="duplicate graph identifier"):
+        graph.add_artifact(
+            ArtifactNode(
+                artifact_id="artifact:duplicate",
+                label="replacement",
+                artifact_type=ArtifactType.RAW_SOURCE_FILE,
+                content_digest="b" * 64,
+            )
+        )
+
+    assert graph.artifacts["artifact:duplicate"] is original
 
 
 def test_completeness_rejects_non_hex_digest() -> None:

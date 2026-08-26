@@ -6,7 +6,7 @@ primitive (`verifier.core.run`).
 Covers the acceptance-test flow (capture -> validate -> inspect -> reproduce) plus a
 hostile-scrutiny mini-corpus: tampered receipts, tampered outputs, missing declared
 inputs/outputs, shell-indirection rejection, non-promotable external evaluation
-claims, and determinism-bounded reproduction ceilings.
+claims, and mechanism-bounded reproduction ceilings.
 """
 
 from __future__ import annotations
@@ -420,7 +420,7 @@ def test_evaluator_claim_reads_true_value_from_output_not_manifest_assertion(tmp
     assert claim.verified_independently is False
 
 
-def test_nondeterministic_run_cannot_declare_bitwise_ceiling(tmp_path):
+def test_determinism_declaration_cannot_raise_reproduction_ceiling(tmp_path):
     proj = _write_tiny_project(tmp_path)
     script = proj / "rand.py"
     script.write_text(
@@ -432,14 +432,15 @@ def test_nondeterministic_run_cannot_declare_bitwise_ceiling(tmp_path):
     manifest = _base_manifest()
     manifest["command"] = [sys.executable, "rand.py", "output.json"]
     manifest["inputs"] = [{"path": "rand.py", "role": "entrypoint_source"}]
-    manifest["determinism_declared"] = "NONDETERMINISTIC"
+    manifest["determinism_declared"] = "DETERMINISTIC"
     receipt = capture_run(manifest, manifest_dir=proj)
 
-    assert receipt.reproducibility["declared_ceiling"] != "BITWISE_IDENTICAL"
-    assert "BITWISE_IDENTICAL" not in receipt.reproducibility["supported_levels"]
+    assert receipt.reproducibility["declared_ceiling"] == "CONTENT_IDENTICAL"
+    assert receipt.reproducibility["supported_levels"] == ["CONTENT_IDENTICAL"]
+    assert receipt.reproducibility["highest_demonstrated_level"] is None
 
 
-def test_rerun_reproduction_achieves_bitwise_identical_for_deterministic_example(tmp_path):
+def test_rerun_demonstrates_only_stable_receipt_content_identity(tmp_path, capsys):
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()
     receipt = capture_run(manifest, manifest_dir=proj)
@@ -447,6 +448,38 @@ def test_rerun_reproduction_achieves_bitwise_identical_for_deterministic_example
     (proj / "manifest.source.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     assert reproduce_run_receipt(proj, rerun=True) == 0
+    output = capsys.readouterr().out
+    assert "Level: CONTENT_IDENTICAL" in output
+    assert "BITWISE_IDENTICAL" not in output
+
+
+def test_same_outcome_with_changed_output_earns_no_reproduction_level(tmp_path, capsys):
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    receipt = capture_run(manifest, manifest_dir=proj)
+    receipt.save_to_directory(proj)
+    (proj / "manifest.source.json").write_text(json.dumps(manifest), encoding="utf-8")
+    (proj / "input.txt").write_text("22", encoding="utf-8")
+
+    assert reproduce_run_receipt(proj, rerun=True) == 1
+    output = capsys.readouterr().out
+    assert "Level: NOT_DEMONSTRATED" in output
+    assert "RESULT_EQUIVALENT" not in output
+    assert "SEMANTIC_REPRODUCTION" not in output
+
+
+def test_no_declared_outputs_require_full_stable_payload_match(tmp_path, capsys):
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    manifest["outputs"] = []
+    receipt = capture_run(manifest, manifest_dir=proj)
+    receipt.save_to_directory(proj)
+    (proj / "manifest.source.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    assert reproduce_run_receipt(proj, rerun=True) == 0
+    output = capsys.readouterr().out
+    assert "Level: CONTENT_IDENTICAL" in output
+    assert "Stable payload match: True" in output
 
 
 def test_provenance_linkage_uses_public_graph_fixture(tmp_path):

@@ -34,8 +34,9 @@ Design commitments (do not weaken without updating tests + docs):
    Its presence never flips any locally checked claim to true.
 4. **Reproduction fidelity is classified, not asserted.** Rehashing on-disk output
    artifacts (always available, side-effect free) is distinguished from re-running
-   the recorded command (only performed when explicitly requested via ``rerun``),
-   and nondeterministic runs are never permitted to claim ``BITWISE_IDENTICAL``.
+   the recorded command (only performed when explicitly requested via ``rerun``).
+   The generic rerun compares the full stable receipt payload, so it can establish
+   only ``CONTENT_IDENTICAL``; a determinism declaration earns no level.
 """
 
 from __future__ import annotations
@@ -657,7 +658,7 @@ vstd reproduce <receipt-dir>
 ```
 
 Highest demonstrated reproduction fidelity: `{receipt.reproducibility.get("highest_demonstrated_level") or "NOT YET REPRODUCED"}`.
-Declared supported ceiling (determinism-bounded): `{receipt.reproducibility.get("declared_ceiling")}`.
+Declared supported ceiling (bundled mechanism): `{receipt.reproducibility.get("declared_ceiling")}`.
 
 ---
 
@@ -945,17 +946,8 @@ def capture_run(
         key_files=key_files,
     )
 
-    supported_levels = [
-        ReproducibilityLevel.CONTENT_IDENTICAL.value,
-        ReproducibilityLevel.EVIDENCE_EQUIVALENT.value,
-        ReproducibilityLevel.RESULT_EQUIVALENT.value,
-        ReproducibilityLevel.SEMANTIC_REPRODUCTION.value,
-    ]
-    if determinism == DeterminismDeclaration.DETERMINISTIC.value:
-        supported_levels.insert(0, ReproducibilityLevel.BITWISE_IDENTICAL.value)
-        ceiling = ReproducibilityLevel.BITWISE_IDENTICAL.value
-    else:
-        ceiling = ReproducibilityLevel.CONTENT_IDENTICAL.value
+    supported_levels = [ReproducibilityLevel.CONTENT_IDENTICAL.value]
+    ceiling = ReproducibilityLevel.CONTENT_IDENTICAL.value
 
     receipt = GenericRunReceipt(
         schema_version=RUN_SCHEMA_VERSION,
@@ -1707,8 +1699,6 @@ def reproduce_run_receipt(receipt_path_or_dir: Path, rerun: bool = False) -> int
     # for resolving those relative paths during reproduction.
     base_dir = receipt_dir
 
-    determinism = data.get("execution", {}).get("determinism_declared")
-
     if rerun:
         manifest_path = base_dir / "manifest.source.json"
         if not manifest_path.exists():
@@ -1721,23 +1711,24 @@ def reproduce_run_receipt(receipt_path_or_dir: Path, rerun: bool = False) -> int
             reproduced = capture_run(manifest, manifest_dir=base_dir, receipt_id=data.get("receipt_id"))
             original_outcome = data.get("execution", {}).get("outcome")
             reproduced_outcome = reproduced.execution.outcome
-            outputs_match = all(
-                o.sha256 == next((x.get("sha256") for x in data.get("outputs", []) if x.get("path") == o.path), None)
-                for o in reproduced.outputs
+            original_outputs = {
+                str(item.get("path")): item.get("sha256")
+                for item in data.get("outputs", [])
+            }
+            reproduced_outputs = {item.path: item.sha256 for item in reproduced.outputs}
+            outputs_match = original_outputs == reproduced_outputs
+            stable_payload_match = data.get("canonical_digest") == reproduced.canonical_digest
+            level = (
+                ReproducibilityLevel.CONTENT_IDENTICAL.value
+                if stable_payload_match
+                else "NOT_DEMONSTRATED"
             )
-            if determinism == DeterminismDeclaration.DETERMINISTIC.value and outputs_match and original_outcome == reproduced_outcome:
-                level = ReproducibilityLevel.BITWISE_IDENTICAL
-            elif outputs_match and original_outcome == reproduced_outcome:
-                level = ReproducibilityLevel.CONTENT_IDENTICAL
-            elif original_outcome == reproduced_outcome:
-                level = ReproducibilityLevel.RESULT_EQUIVALENT
-            else:
-                level = ReproducibilityLevel.SEMANTIC_REPRODUCTION
-            print(f"[REPRODUCTION RESULT - RERUN] Level: {level.value}")
+            print(f"[REPRODUCTION RESULT - RERUN] Level: {level}")
             print(f"  Original outcome:   {original_outcome}")
             print(f"  Reproduced outcome: {reproduced_outcome}")
             print(f"  Outputs match:      {outputs_match}")
-            return 0 if outputs_match and original_outcome == reproduced_outcome else 1
+            print(f"  Stable payload match: {stable_payload_match}")
+            return 0 if stable_payload_match else 1
 
     # Default path: rehash on-disk artifacts only (no execution).
     mismatches: list[tuple[Any, Any, Optional[str]]] = []
@@ -1754,8 +1745,8 @@ def reproduce_run_receipt(receipt_path_or_dir: Path, rerun: bool = False) -> int
             mismatches.append((out["path"], recorded_hash, current_hash))
 
     if not data.get("outputs"):
-        print("[REPRODUCTION RESULT - ARTIFACT REHASH] No outputs were declared; nothing to compare.")
-        return 0
+        print("[REPRODUCTION RESULT - ARTIFACT REHASH] NOT_DEMONSTRATED: no outputs were declared.")
+        return 1
 
     if mismatches:
         print(f"[REPRODUCTION RESULT - ARTIFACT REHASH] MISMATCH ({len(mismatches)} of {len(data.get('outputs', []))} outputs)")
@@ -1764,7 +1755,8 @@ def reproduce_run_receipt(receipt_path_or_dir: Path, rerun: bool = False) -> int
         return 1
 
     print(f"[REPRODUCTION RESULT - ARTIFACT REHASH] All {checked} on-disk output artifact(s) match recorded digests.")
-    print(f"  Reproduction level: {ReproducibilityLevel.CONTENT_IDENTICAL.value} (artifact-level; command was not re-executed - pass --rerun for a full rerun comparison)")
+    print("  Declared-output bytes: MATCH")
+    print("  Run-level reproduction: NOT_DEMONSTRATED (command was not re-executed; pass --rerun to assess it)")
     return 0
 
 
