@@ -464,6 +464,13 @@ def graph_level(
             "collection has no level."
         )
 
+    closure = graph.ancestors(collection.members)
+    if not graph.verify_acyclicity(closure):
+        raise GraphEncodingError(
+            f"{collection.collection_id} has cyclic recorded ancestry, so recursive "
+            "reachability cannot establish a candidate graph level."
+        )
+
     items = obligations(graph, collection)
 
     for level in range(GRAPH_MAX_LEVEL, GRAPH_MIN_LEVEL - 1, -1):

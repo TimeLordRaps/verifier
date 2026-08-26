@@ -611,3 +611,25 @@ def test_blast_radius_revocation_flags_dependent_run_receipts(tmp_path):
     matched_ids = {e["receipt_id"] for e in impacted_again}
     assert "RUN-TEST-000" in matched_ids
     assert "RUN-UNRELATED-000" not in matched_ids
+
+
+def test_repeated_provenance_reference_does_not_duplicate_impact(tmp_path):
+    data_receipt_file, artifact_id = _write_data_receipt(tmp_path)
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    repeated = {
+        "dataset_receipt_path": str(data_receipt_file.parent),
+        "artifact_id": artifact_id,
+    }
+    manifest["provenance_roots"] = [repeated, dict(repeated)]
+    receipt = capture_run(manifest, manifest_dir=proj)
+    assert len(receipt.provenance_linkage) == 2
+    receipt.save_to_directory(tmp_path / "receipts_tree" / "RUN-TEST-000")
+
+    impacted = find_run_receipts_impacted_by_revocation(
+        search_root=tmp_path / "receipts_tree",
+        dataset_receipt_file=data_receipt_file,
+        revoked_artifact_id=artifact_id,
+    )
+
+    assert [item["receipt_id"] for item in impacted] == ["RUN-TEST-000"]

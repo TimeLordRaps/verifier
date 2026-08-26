@@ -404,13 +404,25 @@ class ProvenanceHypergraph:
                 errors.append(f"conflict {conflict_id} must retain at least two evidence references")
         return errors
 
-    def verify_acyclicity(self) -> bool:
-        """Check whether the bipartite artifact-hyperedge graph contains cycles."""
-        adj: dict[str, set[str]] = {a: set() for a in self.artifacts}
+    def verify_acyclicity(self, artifact_ids: Optional[Iterable[str]] = None) -> bool:
+        """Check whether all or a selected artifact-induced subgraph contains cycles.
+
+        Structural reference validation remains the responsibility of
+        :meth:`validate_structure`; missing referenced artifacts are retained as
+        vertices here so the cycle check itself remains total.
+        """
+        if artifact_ids is None:
+            selected = set(self.artifacts)
+            for transform in self.transformations.values():
+                selected.update(port.artifact_id for port in (*transform.inputs, *transform.outputs))
+        else:
+            selected = set(artifact_ids)
+        adj: dict[str, set[str]] = {artifact_id: set() for artifact_id in selected}
         for t in self.transformations.values():
             for inp in t.inputs:
                 for out in t.outputs:
-                    adj[inp.artifact_id].add(out.artifact_id)
+                    if inp.artifact_id in selected and out.artifact_id in selected:
+                        adj[inp.artifact_id].add(out.artifact_id)
 
         visited: set[str] = set()
         rec_stack: set[str] = set()
@@ -427,7 +439,7 @@ class ProvenanceHypergraph:
             rec_stack.remove(node)
             return False
 
-        for a in self.artifacts:
+        for a in selected:
             if a not in visited:
                 if dfs(a):
                     return False

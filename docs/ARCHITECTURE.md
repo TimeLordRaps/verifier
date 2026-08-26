@@ -170,3 +170,26 @@ derives `EVIDENCED`.
 Graph conflict records retain incompatible values and their evidence references without
 adding a scalar score or changing the frozen artifact-status vocabulary. A conflict makes
 the subject inadmissible to a clean candidate Graph level.
+
+### Recursive current-state audit
+
+Historical receipt bytes and their recorded `PASS` remain unchanged. A later current-state
+question is a new assessment over the retained graph and applicable lifecycle records:
+
+| Scenario | Implemented outcome |
+|---|---|
+| An ancestor is `CHALLENGED`, `REVOKED`, or `STALE` | Candidate Graph recomputation follows the full ancestor closure and returns level 0. It does not rewrite the historical receipt. |
+| An ancestor is `SUPERSEDED` | The historical Graph candidate remains admissible by design; the stricter all-ancestors-`VALID` policy rejects it for current-use admission. Supersession does not retroactively falsify its prior lineage role. |
+| Upstream evidence conflicts | A retained `ConflictRecord` blocks a clean candidate. Conflict resolution is not implemented; any future resolution must be additive and retain the competing evidence. |
+| Evidence arrives by multiple paths or one run receipt repeats a reference | Reachability and impact sets deduplicate identifiers. Multiplicity supplies no independence or strength. |
+| A descendant deviation points toward shared ancestors | Existing ancestor queries establish recorded reverse reachability only. No runtime emits Rust, measures independent concentration, or attributes causal responsibility. |
+| A challenge ledger changes a claim's current status | The append-only ledger derives `CHALLENGED` or `REVOKED`, but no adapter binds that claim status into a Graph artifact. Cross-surface propagation is `NOT_ESTABLISHED`, not silently clean. |
+| Later evidence is intended to clear a conflict | No conflict-resolution transition exists in version 1.2.0. Removing the old record would violate additive correction; a future mechanism must preserve it and identify what resolved it. |
+| Candidate calculation encounters cyclic ancestry | Rejected before candidate calculation; recursive topology cannot manufacture assurance. |
+
+The implemented forward blast-radius query discovers recorded downstream artifacts and
+generic-run receipts that require reconsideration when given an invalidated artifact. It is
+a discovery mechanism, not automatic status mutation, current-admissibility adjudication,
+or proof of causal influence. Automatic propagation for challenge, staleness, supersession,
+conflict resolution, Artifact support, and Rust remains `NOT_ESTABLISHED` until a distinct
+mechanism binds the lifecycle event to the exact Graph artifact and proposition.

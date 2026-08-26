@@ -12,6 +12,7 @@ be badly rated as a collection.
 
 from __future__ import annotations
 
+from dataclasses import replace
 import importlib
 
 import pytest
@@ -46,6 +47,7 @@ from verifier.data.models import (
     TransformationHyperedge,
     TransformationType,
 )
+from verifier.data.policy import ProvenancePolicyVerifier
 
 graph_module = importlib.import_module("verifier.data.graph_level")
 
@@ -180,14 +182,46 @@ def test_every_inadmissible_status_fails_closed(status):
 
 def test_superseded_is_admissible_and_documented_as_such():
     """A superseded ancestor was replaced going forward; its history is unchanged."""
+    graph = _graph(src=ArtifactStatus.SUPERSEDED)
     assert ArtifactStatus.SUPERSEDED.value not in INADMISSIBLE_STATUSES
-    assert _level(_graph(src=ArtifactStatus.SUPERSEDED), _collection()).level == GRAPH_MAX_LEVEL
+    assert _level(graph, _collection()).level == GRAPH_MAX_LEVEL
+    assert ProvenancePolicyVerifier.verify_all_ancestors_valid(graph, "corpus").passed is False
+
+
+@pytest.mark.parametrize(
+    "current_status",
+    (ArtifactStatus.CHALLENGED, ArtifactStatus.REVOKED, ArtifactStatus.STALE),
+)
+def test_current_admissibility_changes_without_rewriting_historical_graph(current_status):
+    historical = _graph()
+    historical_bytes = historical.to_dict()
+    assert _level(historical, _collection()).level == GRAPH_MAX_LEVEL
+
+    current = ProvenanceHypergraph.from_dict(historical_bytes)
+    current.artifacts["src"] = replace(current.artifacts["src"], status=current_status)
+
+    assert _level(current, _collection()).level == 0
+    assert historical.artifacts["src"].status is ArtifactStatus.VALID
+    assert historical.to_dict() == historical_bytes
 
 
 def test_an_artifact_missing_from_the_graph_is_unknown_not_absent():
     graph = _graph()
     del graph.artifacts["mid"]
     assert _level(graph, _collection()).level == 0
+
+
+def test_cyclic_ancestry_cannot_receive_a_clean_candidate_level():
+    graph = _graph()
+    graph.add_transformation(
+        TransformationHyperedge(
+            "t3", "feedback", TransformationType.AUGMENTATION,
+            (HyperedgePort("corpus", "IN"),), (HyperedgePort("src", "OUT"),), {}, {}, {},
+        )
+    )
+
+    with pytest.raises(GraphEncodingError, match="cyclic recorded ancestry"):
+        _level(graph, _collection(edges={"t1": 5, "t2": 5, "t3": 5}))
 
 
 # --------------------------------------------------------------------------
