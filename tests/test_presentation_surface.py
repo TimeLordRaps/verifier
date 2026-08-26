@@ -1,4 +1,6 @@
-"""Terminology: application programming interface (API); Verifier Standard (VSTD).
+"""Terminology: application programming interface (API); Concise Binary Object Representation (CBOR);
+CBOR Object Signing and Encryption (COSE); continuous integration (CI);
+Supply Chain Integrity, Transparency, and Trust (SCITT); Verifier Standard (VSTD).
 
 The public first impression is a checked repository surface."""
 
@@ -7,6 +9,8 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -121,6 +125,19 @@ def test_architecture_map_names_every_published_schema() -> None:
     architecture = (ROOT / "docs" / "ARCHITECTURE.md").read_text(encoding="utf-8")
     for schema in (ROOT / "receipts" / "schema").glob("*.json"):
         assert schema.name in architecture, schema.name
+
+
+def test_conformance_gate_requires_real_scitt_cose_integration() -> None:
+    workflow = yaml.safe_load(
+        (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    )
+    jobs = workflow["jobs"]
+    scitt_job = jobs["scitt-crypto"]
+    steps = "\n".join(str(step.get("run", "")) for step in scitt_job["steps"])
+    assert 'pip install ".[test,scitt]"' in steps
+    assert "import cbor2, cryptography, scitt_cose" in steps
+    assert "tests/test_scitt_crypto_example.py" in steps
+    assert "scitt-crypto" in jobs["conformance-gate"]["needs"]
 
 
 def test_pages_builder_refuses_to_merge_into_existing_content(tmp_path: Path) -> None:

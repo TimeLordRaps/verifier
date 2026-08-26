@@ -92,12 +92,16 @@ def _run_layer4_binding(
     raw_bounds = manifest.get("resource_bounds", {})
     if not isinstance(raw_bounds, Mapping):
         raise RunError("resource_bounds must be an object")
-    bounds: dict[str, int] = {}
-    for name in (
+    bound_fields = (
         "verification_cost_bound",
         "memory_bound",
         "certificate_size_bound",
-    ):
+    )
+    unknown_bounds = sorted(set(raw_bounds) - set(bound_fields))
+    if unknown_bounds:
+        raise RunError(f"resource_bounds has unknown fields: {', '.join(unknown_bounds)}")
+    bounds: dict[str, int] = {}
+    for name in bound_fields:
         value = raw_bounds.get(name, 0)
         if type(value) is not int or value < 0:
             raise RunError(f"resource_bounds.{name} must be a non-negative integer")
@@ -110,6 +114,13 @@ def _run_layer4_binding(
     surface.setdefault("admissible_refutations", [])
     surface.setdefault("excluded_claims", ["PHYSICAL_WORLD_COMPLETENESS"])
     surface.setdefault("legacy_falsification_condition", falsification_condition)
+    for name in ("admissible_refutations", "excluded_claims"):
+        if not isinstance(surface[name], list) or not all(
+            isinstance(item, str) for item in surface[name]
+        ):
+            raise RunError(f"refutation_surface.{name} must be an array of strings")
+    if not isinstance(surface["legacy_falsification_condition"], str):
+        raise RunError("refutation_surface.legacy_falsification_condition must be a string")
 
     here = Path(__file__).resolve()
     specification = here.parents[3] / "standard" / "VSTD-1.md"
@@ -1112,6 +1123,17 @@ def _run_payload_errors(data: Mapping[str, Any]) -> list[str]:
         errors,
     )
     if source is not None:
+        source_fields = (
+            "target_name",
+            "portable_repository_id",
+            "local_repository_path",
+            "git",
+            "runtime",
+            "captured_at_utc",
+            "command_executed",
+            "source_file_hashes",
+        )
+        _unexpected_fields(source, "source_state", source_fields, errors)
         for name in (
             "target_name",
             "portable_repository_id",
@@ -1138,6 +1160,15 @@ def _run_payload_errors(data: Mapping[str, Any]) -> list[str]:
             errors,
         )
         if git is not None:
+            git_fields = (
+                "commit_sha",
+                "branch",
+                "is_dirty",
+                "dirty_files",
+                "untracked_files",
+                "remote_origin",
+            )
+            _unexpected_fields(git, "source_state.git", git_fields, errors)
             if not isinstance(git.get("commit_sha"), str) or not isinstance(
                 git.get("branch"), str
             ):
@@ -1150,6 +1181,8 @@ def _run_payload_errors(data: Mapping[str, Any]) -> list[str]:
                     or not all(isinstance(item, str) for item in git.get(name, []))
                 ):
                     errors.append(f"source_state.git.{name} must be an array of strings")
+            if "remote_origin" in git and not isinstance(git.get("remote_origin"), str):
+                errors.append("source_state.git.remote_origin must be a string")
         runtime = _missing_fields(
             source.get("runtime"),
             "source_state.runtime",
@@ -1161,6 +1194,19 @@ def _run_payload_errors(data: Mapping[str, Any]) -> list[str]:
             for name in ("python_version", "platform_system")
         ):
             errors.append("source_state.runtime required fields must be strings")
+        if runtime is not None:
+            runtime_fields = (
+                "python_version",
+                "python_implementation",
+                "platform_system",
+                "platform_release",
+                "platform_machine",
+                "hostname_masked",
+            )
+            _unexpected_fields(runtime, "source_state.runtime", runtime_fields, errors)
+            for name in runtime_fields:
+                if name in runtime and not isinstance(runtime.get(name), str):
+                    errors.append(f"source_state.runtime.{name} must be a string")
 
     for collection_name in ("inputs", "outputs"):
         collection = data.get(collection_name)
@@ -1421,10 +1467,127 @@ def _run_payload_errors(data: Mapping[str, Any]) -> list[str]:
             ("verifier", "resource_bounds", "prior_commitment", "refutation_surface"),
             errors,
         )
-        if layer4 is not None and "vstd4_conformance" in layer4 and layer4.get(
-            "vstd4_conformance"
-        ) != "NOT_EVALUATED":
-            errors.append("layer4_binding.vstd4_conformance must be NOT_EVALUATED")
+        if layer4 is not None:
+            layer4_fields = (
+                "verifier",
+                "vstd4_conformance",
+                "resource_bounds",
+                "prior_commitment",
+                "refutation_surface",
+            )
+            _unexpected_fields(layer4, "layer4_binding", layer4_fields, errors)
+            if "vstd4_conformance" in layer4 and layer4.get(
+                "vstd4_conformance"
+            ) != "NOT_EVALUATED":
+                errors.append("layer4_binding.vstd4_conformance must be NOT_EVALUATED")
+            verifier = _missing_fields(
+                layer4.get("verifier"),
+                "layer4_binding.verifier",
+                (
+                    "specification_hash",
+                    "implementation_hash",
+                    "parser_hash",
+                    "certificate_format",
+                    "format_fragment",
+                    "dependencies",
+                    "deterministic",
+                ),
+                errors,
+            )
+            if verifier is not None:
+                verifier_fields = (
+                    "specification_hash",
+                    "implementation_hash",
+                    "parser_hash",
+                    "certificate_format",
+                    "format_fragment",
+                    "dependencies",
+                    "deterministic",
+                )
+                _unexpected_fields(
+                    verifier, "layer4_binding.verifier", verifier_fields, errors
+                )
+                for name in (
+                    "specification_hash",
+                    "implementation_hash",
+                    "parser_hash",
+                ):
+                    value = verifier.get(name)
+                    unavailable_legacy_specification = (
+                        name == "specification_hash"
+                        and isinstance(value, str)
+                        and value.startswith("UNAVAILABLE:")
+                    )
+                    if (
+                        not unavailable_legacy_specification
+                        and (
+                            not isinstance(value, str)
+                            or not re.fullmatch(r"sha256:[0-9a-f]{64}", value)
+                        )
+                    ):
+                        errors.append(
+                            f"layer4_binding.verifier.{name} must be a prefixed SHA-256 digest"
+                        )
+                for name in ("certificate_format", "format_fragment"):
+                    if not isinstance(verifier.get(name), str):
+                        errors.append(f"layer4_binding.verifier.{name} must be a string")
+                if not isinstance(verifier.get("dependencies"), list) or not all(
+                    isinstance(item, str) for item in verifier.get("dependencies", [])
+                ):
+                    errors.append(
+                        "layer4_binding.verifier.dependencies must be an array of strings"
+                    )
+                if type(verifier.get("deterministic")) is not bool:
+                    errors.append("layer4_binding.verifier.deterministic must be a boolean")
+            bounds = _missing_fields(
+                layer4.get("resource_bounds"),
+                "layer4_binding.resource_bounds",
+                (
+                    "verification_cost_bound",
+                    "memory_bound",
+                    "certificate_size_bound",
+                ),
+                errors,
+            )
+            if bounds is not None:
+                bound_fields = (
+                    "verification_cost_bound",
+                    "memory_bound",
+                    "certificate_size_bound",
+                )
+                _unexpected_fields(
+                    bounds, "layer4_binding.resource_bounds", bound_fields, errors
+                )
+                for name in bound_fields:
+                    value = bounds.get(name)
+                    if type(value) is not int or value < 0:
+                        errors.append(
+                            f"layer4_binding.resource_bounds.{name} must be a non-negative integer"
+                        )
+            if not isinstance(layer4.get("prior_commitment"), str):
+                errors.append("layer4_binding.prior_commitment must be a string")
+            surface = _missing_fields(
+                layer4.get("refutation_surface"),
+                "layer4_binding.refutation_surface",
+                (
+                    "admissible_refutations",
+                    "excluded_claims",
+                    "legacy_falsification_condition",
+                ),
+                errors,
+            )
+            if surface is not None:
+                for name in ("admissible_refutations", "excluded_claims"):
+                    if not isinstance(surface.get(name), list) or not all(
+                        isinstance(item, str) for item in surface.get(name, [])
+                    ):
+                        errors.append(
+                            f"layer4_binding.refutation_surface.{name} must be an array of strings"
+                        )
+                if not isinstance(surface.get("legacy_falsification_condition"), str):
+                    errors.append(
+                        "layer4_binding.refutation_surface.legacy_falsification_condition must be a string"
+                    )
     return errors
 
 

@@ -100,22 +100,15 @@ class IndependenceStatus(str, Enum):
 
 
 def independence_is_evidenced(basis: Mapping[str, Any]) -> bool:
-    """True only when distinct actors and both execution seams carry evidence."""
+    """Apply the bundled runtime's current independence capability ceiling.
 
-    evidence = basis.get("evidence")
-    return (
-        isinstance(evidence, (list, tuple))
-        and bool(evidence)
-        and all(isinstance(item, str) and item for item in evidence)
-        and all(
-            basis.get(field_name) == IndependenceStatus.EVIDENCED.value
-            for field_name in (
-                "actor_independence",
-                "implementation_separation",
-                "runtime_separation",
-            )
-        )
-    )
+    Serialized status words and evidence references are declarations. VSTD 1.2.0
+    ships no validator that resolves and binds them to distinct actors and execution
+    seams, so no supplied mapping can establish evidenced independence.
+    """
+
+    del basis
+    return False
 
 
 @dataclass(frozen=True)
@@ -129,6 +122,8 @@ class IndependenceBasis:
 
     @property
     def independently_verified(self) -> bool:
+        """False until an implemented adapter validates the recorded bindings."""
+
         return independence_is_evidenced(
             {
                 "actor_independence": self.actor_independence.value,

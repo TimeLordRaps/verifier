@@ -16,11 +16,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
-from verifier.core.checker import (
-    IndependenceBasis,
-    VerificationVerdict,
-    independence_is_evidenced,
-)
+from verifier.core.checker import IndependenceBasis, VerificationVerdict
 from verifier.core.provenance import ProvenanceRecord
 from verifier.core.receipt import compute_canonical_digest
 from verifier.data.models import CompletenessMetrics, ProvenanceHypergraph
@@ -306,10 +302,59 @@ def validate_data_receipt(receipt_path_or_dir: Path) -> int:
     if basis is not None:
         if not isinstance(basis, dict):
             graph_errors.append("independent_audit.independence_basis must be an object")
-        elif basis.get("independently_verified") is not independence_is_evidenced(basis):
-            graph_errors.append(
-                "independent_audit.independence_basis derives independence inconsistently"
+        else:
+            basis_fields = {
+                "independently_verified",
+                "actor_independence",
+                "implementation_separation",
+                "runtime_separation",
+                "evidence",
+            }
+            missing_basis_fields = sorted(basis_fields - basis.keys())
+            unknown_basis_fields = sorted(basis.keys() - basis_fields)
+            if missing_basis_fields:
+                graph_errors.append(
+                    "independent_audit.independence_basis is missing fields: "
+                    + ", ".join(missing_basis_fields)
+                )
+            if unknown_basis_fields:
+                graph_errors.append(
+                    "independent_audit.independence_basis has unknown fields: "
+                    + ", ".join(unknown_basis_fields)
+                )
+            statuses = {
+                "EVIDENCED",
+                "DECLARED",
+                "NOT_DEMONSTRATED",
+                "CONFLICTED",
+            }
+            separation_fields = (
+                "actor_independence",
+                "implementation_separation",
+                "runtime_separation",
             )
+            for field_name in separation_fields:
+                if basis.get(field_name) not in statuses:
+                    graph_errors.append(
+                        f"independent_audit.independence_basis.{field_name} is not recognized"
+                    )
+            evidence = basis.get("evidence")
+            if not isinstance(evidence, list) or not all(
+                isinstance(item, str) and item for item in evidence
+            ):
+                graph_errors.append(
+                    "independent_audit.independence_basis.evidence must be an array of nonempty strings"
+                )
+            if basis.get("independently_verified") is not False:
+                graph_errors.append(
+                    "independent_audit.independence_basis cannot be independently verified: "
+                    "VSTD 1.2.0 has no actor/execution evidence-binding validator"
+                )
+            if any(basis.get(field_name) == "EVIDENCED" for field_name in separation_fields):
+                graph_errors.append(
+                    "independent_audit.independence_basis EVIDENCED assertions are unvalidated; "
+                    "the bundled runtime treats externally supplied assertions as no stronger than DECLARED"
+                )
     expected_audit_fields = {
         "acyclic_hypergraph": acyclic,
         "integrity_passed": completeness.content_integrity == 1.0,

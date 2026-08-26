@@ -10,11 +10,13 @@ It operates only on declared generic-run manifests and stored VSTD-Graph receipt
 from __future__ import annotations
 
 import argparse
+import contextlib
+import io
 import json
 import shutil
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from verifier.core.checker import independence_is_evidenced
 from verifier.core.run import (
@@ -134,6 +136,60 @@ def _inspect_data_receipt(path_or_dir: Path) -> int:
     return 0
 
 
+def _run_receipt_handler_as_json(
+    command: str, receipt_kind: str, handler: Callable[[], int]
+) -> int:
+    """Keep the common receipt commands machine-readable without changing their APIs."""
+
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+    with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+        exit_code = handler()
+    result = (
+        "COMPLETED"
+        if exit_code == 0
+        else "UNSUPPORTED"
+        if exit_code == 2
+        else "FAILED"
+    )
+    print(
+        json.dumps(
+            {
+                "command": command,
+                "receipt_kind": receipt_kind,
+                "result": result,
+                "exit_code": exit_code,
+                "messages": stdout.getvalue().splitlines(),
+                "errors": stderr.getvalue().splitlines(),
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return exit_code
+
+
+def _receipt_command_failure(args: argparse.Namespace, message: str) -> int:
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "command": args.command,
+                    "receipt_kind": "UNKNOWN",
+                    "result": "FAILED",
+                    "exit_code": 1,
+                    "messages": [],
+                    "errors": [message],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+    else:
+        print(f"[FAIL] {message}", file=sys.stderr)
+    return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="vstd",
@@ -222,34 +278,55 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
     receipt_path = Path(args.receipt).resolve()
     payload = _read_receipt(receipt_path)
     if payload is None:
-        print(f"[FAIL] Receipt is missing or malformed: {_receipt_file(receipt_path)}", file=sys.stderr)
-        return 1
+        return _receipt_command_failure(
+            args, f"Receipt is missing or malformed: {_receipt_file(receipt_path)}"
+        )
 
     if is_generic_run_receipt(payload):
         if args.command == "validate":
-            return validate_run_receipt(receipt_path)
-        if args.command == "inspect":
-            return inspect_run_receipt(receipt_path)
-        return reproduce_run_receipt(receipt_path, rerun=args.rerun)
+            handler = lambda: validate_run_receipt(receipt_path)
+        elif args.command == "inspect":
+            handler = lambda: inspect_run_receipt(receipt_path)
+        else:
+            handler = lambda: reproduce_run_receipt(receipt_path, rerun=args.rerun)
+        return (
+            _run_receipt_handler_as_json(args.command, "generic_computational_run", handler)
+            if args.json
+            else handler()
+        )
 
     if _is_data_receipt(payload):
         if args.command == "validate":
-            return validate_data_receipt(receipt_path)
-        if args.command == "inspect":
-            return _inspect_data_receipt(receipt_path)
-        if args.rerun:
-            print("[FAIL] --rerun is not defined for stored VSTD-Graph receipts", file=sys.stderr)
-            return 1
-        return reproduce_data_receipt(receipt_path)
+            handler = lambda: validate_data_receipt(receipt_path)
+        elif args.command == "inspect":
+            handler = lambda: _inspect_data_receipt(receipt_path)
+        elif args.rerun:
+            handler = lambda: _receipt_command_failure(
+                argparse.Namespace(command=args.command, json=False),
+                "--rerun is not defined for stored VSTD-Graph receipts",
+            )
+        else:
+            handler = lambda: reproduce_data_receipt(receipt_path)
+        return (
+            _run_receipt_handler_as_json(args.command, "vstd_graph", handler)
+            if args.json
+            else handler()
+        )
 
     if is_vstd3_receipt(payload):
         receipt = load_vstd3_receipt(receipt_path)
         if args.command == "reproduce":
-            print(
-                "[UNSUPPORTED] A stored hardware receipt cannot replay physical execution; "
-                "use its declared emulator or vendor collection mechanism.",
-                file=sys.stderr,
+            message = (
+                "A stored hardware receipt cannot replay physical execution; use its "
+                "declared emulator or vendor collection mechanism."
             )
+            if args.json:
+                return _run_receipt_handler_as_json(
+                    args.command,
+                    "vstd3_hardware",
+                    lambda: (print(f"[UNSUPPORTED] {message}", file=sys.stderr) or 2),
+                )
+            print(f"[UNSUPPORTED] {message}", file=sys.stderr)
             return 2
         resolver, _ = parse_verification_keys(args.key)
         validation = validate_vstd3_receipt(receipt, key_resolver=resolver)
@@ -272,8 +349,7 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
                 print(f"  - {message}")
         return 0 if validation.status.value == "PASS" else (1 if validation.status.value == "FAIL" else 2)
 
-    print("[FAIL] Unsupported receipt kind or schema", file=sys.stderr)
-    return 1
+    return _receipt_command_failure(args, "Unsupported receipt kind or schema")
 
 
 def _handle_data_command(args: argparse.Namespace) -> int:

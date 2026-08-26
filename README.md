@@ -145,11 +145,14 @@ vstd validate /tmp/vstd-receipt
 vstd reproduce /tmp/vstd-receipt --rerun
 ```
 
-`validate` checks the generic-run receipt's required structure and stable-payload digest;
-it does not rehash artifacts or verify the recorded declarations as claims.
+`validate` is an integrity/profile validator for generic-run receipts: it checks the
+strict profile shape and stable-payload digest. The refutation-surface map remains an
+explicit declaration extension point for frozen-wire compatibility. It is not a native claim
+verifier; it does not rehash artifacts or verify recorded declarations as claims.
 `reproduce --rerun` applies the same structural gate, then separately executes the
 recorded command and compares declared outputs. Neither operation widens the receipt into
-a claim about the unobserved world.
+a claim about the unobserved world. Add `--json` to `validate`, `inspect`, or `reproduce`
+for one machine-readable command-result envelope.
 
 ## The grounded certificate
 

@@ -84,7 +84,9 @@ scalar score, or flow in the opposite direction as inherited truth or guilt. `UN
 and `CONFLICTED` support or lineage MUST remain visible and MUST NOT become a clean
 signal. This section fixes the semantic orientation and prohibited inferences; an event
 format, transfer algebra, concentration-independence rule, and localization protocol each
-require their own specification and evidence.
+require their own specification and evidence. Until those exist, Artifact trust and Rust
+are constraints on causal interpretation, not computable conformance results; no current
+VSTD runtime emits or validates either transfer.
 
 ---
 

@@ -49,12 +49,33 @@ Every `standard/*.md` file has a byte-identical installed resource under
 checkout is present. The installed-wheel gate runs outside the checkout and rejects an
 unavailable specification digest.
 
+## Generic-run validation contract
+
+`vstd validate` is an integrity/profile validator for the
+`generic_computational_run` profile. It enforces the strict receipt shape and recomputes
+the stable-payload digest. The dynamic path keys inside
+`source_state.source_file_hashes`, unconstrained recorded evaluator values, and
+additional declarations inside `layer4_binding.refutation_surface` are explicit data or
+extension surfaces. The refutation surface remains open because versions 1.1.2 and 1.1.3
+preserved caller-defined domain refutations under the frozen `VSTD-0.1` wire identifier.
+Unknown object properties outside those named surfaces fail closed.
+
+Validation does not rehash referenced artifacts, rerun the command, resolve evidence
+references, or establish that recorded declarations are true. Those are separate
+mechanisms. `validate`, `inspect`, and `reproduce` honor `--json` for generic-run and
+VSTD-Graph receipts; the envelope reports command completion without upgrading the
+receipt's claim semantics.
+
 ## Separation and Graph boundaries
 
 The historical `independent_audit` field name does not prove independence. Its
 `independence_basis` records actor, implementation, and runtime separation. Repeated or
 matching results are artifact agreement, not evidence that separate actors performed the
-runs; absent separation evidence is `NOT_DEMONSTRATED`.
+runs; absent separation evidence is `NOT_DEMONSTRATED`. Serialized status words and
+evidence-reference strings cannot self-promote that result. Because version 1.2.0 has no
+actor/execution evidence-binding adapter, the bundled runtime treats supplied assertions
+as no stronger than `DECLARED`, rejects receipts that label them `EVIDENCED`, and never
+derives `EVIDENCED`.
 
 Graph conflict records retain incompatible values and their evidence references without
 adding a scalar score or changing the frozen artifact-status vocabulary. A conflict makes

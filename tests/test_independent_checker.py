@@ -150,14 +150,13 @@ def test_matching_checker_runs_do_not_establish_actor_independence() -> None:
     assert not second.independence_basis.independently_verified
 
 
-def test_actor_and_execution_evidence_are_jointly_required() -> None:
+def test_serialized_evidence_references_cannot_self_promote_independence() -> None:
     basis = IndependenceBasis(
         actor_independence=IndependenceStatus.EVIDENCED,
         implementation_separation=IndependenceStatus.EVIDENCED,
         runtime_separation=IndependenceStatus.EVIDENCED,
         evidence=("receipt:producer", "receipt:checker"),
     )
-    assert basis.independently_verified
+    assert not basis.independently_verified
     raw = basis.to_dict()
-    raw["actor_independence"] = "NOT_DEMONSTRATED"
     assert not independence_is_evidenced(raw)

@@ -117,6 +117,14 @@ separation achieved. If distinct actors are not evidenced, actor independence is
 logic or state, the result is still inspectable but MUST NOT be labeled independent on
 that seam.
 
+Serialized `EVIDENCED` status words and evidence-reference strings are declarations, not
+validated bindings. A runtime MUST derive independent verification only after an
+implemented validator resolves the referenced evidence, binds it to the producer and
+checker executions, and establishes distinct actors plus the claimed implementation and
+runtime seams. The VSTD 1.2.0 reference runtime implements no such adapter; it therefore
+treats externally supplied assertions as no stronger than `DECLARED`, rejects receipts
+that serialize them as `EVIDENCED`, and never emits `EVIDENCED`.
+
 ---
 
 ## 6. Reproducibility Taxonomy

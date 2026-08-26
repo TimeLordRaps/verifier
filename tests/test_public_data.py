@@ -28,7 +28,7 @@ from verifier.data.receipt import (
     reproduce_data_receipt,
     validate_data_receipt,
 )
-from verifier.runtime.public_cli import _inspect_data_receipt
+from verifier.runtime.public_cli import _inspect_data_receipt, main
 
 
 def _receipt() -> VstdDataReceipt:
@@ -141,6 +141,18 @@ def test_public_data_receipt_round_trip(tmp_path: Path, capsys) -> None:
     assert reproduce_data_receipt(tmp_path) == 0
 
 
+def test_graph_validate_and_inspect_honor_json(tmp_path: Path, capsys) -> None:
+    _receipt().save_to_directory(tmp_path)
+
+    for command in ("validate", "inspect"):
+        assert main([command, str(tmp_path), "--json"]) == 0
+        result = json.loads(capsys.readouterr().out)
+        assert result["command"] == command
+        assert result["receipt_kind"] == "vstd_graph"
+        assert result["result"] == "COMPLETED"
+        assert result["exit_code"] == 0
+
+
 def test_actorless_independence_upgrade_is_rejected_and_never_displayed(
     tmp_path: Path, capsys
 ) -> None:
@@ -154,8 +166,36 @@ def test_actorless_independence_upgrade_is_rejected_and_never_displayed(
 
     assert _inspect_data_receipt(tmp_path) == 0
     assert "Independence:     NOT_DEMONSTRATED" in capsys.readouterr().out
-    assert validate_data_receipt(tmp_path) == 1
-    assert "derives independence inconsistently" in capsys.readouterr().err
+    assert main(["validate", str(tmp_path)]) == 1
+    assert "no actor/execution evidence-binding validator" in capsys.readouterr().err
+
+
+def test_self_promoted_independence_with_arbitrary_references_is_rejected(
+    tmp_path: Path, capsys
+) -> None:
+    receipt_path = _receipt().save_to_directory(tmp_path)
+    payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+    basis = payload["independent_audit"]["independence_basis"]
+    basis.update(
+        {
+            "actor_independence": "EVIDENCED",
+            "implementation_separation": "EVIDENCED",
+            "runtime_separation": "EVIDENCED",
+            "evidence": ["receipt:producer", "receipt:checker"],
+            "independently_verified": True,
+        }
+    )
+    _rehash(payload)
+    receipt_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert main(["validate", str(tmp_path)]) == 1
+    errors = capsys.readouterr().err
+    assert "no actor/execution evidence-binding validator" in errors
+    assert "no stronger than DECLARED" in errors
+    assert main(["inspect", str(tmp_path)]) == 0
+    inspection = capsys.readouterr().out
+    assert "Independence:     NOT_DEMONSTRATED" in inspection
+    assert "Independence:     EVIDENCED" not in inspection
 
 
 def test_public_data_receipt_tamper_fails(tmp_path: Path) -> None:

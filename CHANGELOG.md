@@ -47,6 +47,14 @@
 - Bind the bundled checker to VSTD-1, record actor and execution separation explicitly,
   and never infer independent actors from a historical field name, repeated runs, or
   matching results.
+- Reject self-promoted independence even when every supplied status and digest agrees;
+  version 1.2.0 has no actor/execution evidence-binding adapter and therefore never
+  derives `EVIDENCED` from serialized references.
+- Require the real optional SCITT/COSE cryptographic example in the conformance gate
+  rather than allowing its dependency-gated tests to disappear from the base matrix.
+- Close generic-run control structures while retaining the released refutation-extension
+  map, make common receipt commands honor `--json`, and lock `validate` as an
+  integrity/profile check rather than a claim verifier.
 - Preserve incompatible Graph assertions as evidence-linked conflict records and label
   rating-derived levels as `CALLER_SUPPLIED` candidates with conformance `NOT_ESTABLISHED`.
 - Publish the architecture ownership map linking normative documents, runtime validators,

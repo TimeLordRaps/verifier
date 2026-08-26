@@ -341,6 +341,50 @@ def test_validator_rejects_digest_consistent_independence_and_attestation_upgrad
         assert validate_run_receipt(path) == 1
 
 
+@pytest.mark.parametrize(
+    ("container_path", "field_name"),
+    (
+        (("source_state",), "unknown_source_field"),
+        (("source_state", "git"), "unknown_git_field"),
+        (("source_state", "runtime"), "unknown_runtime_field"),
+        (("layer4_binding",), "unknown_binding_field"),
+        (("layer4_binding", "verifier"), "unknown_verifier_field"),
+        (("layer4_binding", "resource_bounds"), "unknown_bound_field"),
+    ),
+)
+def test_validator_rejects_digest_consistent_unknown_nested_fields(
+    tmp_path, container_path, field_name
+):
+    proj = _write_tiny_project(tmp_path)
+    receipt = capture_run(_base_manifest(), manifest_dir=proj)
+    data = receipt.to_dict()
+    container = data
+    for segment in container_path:
+        container = container[segment]
+    container[field_name] = "attacker-controlled"
+    data["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(data)
+    )
+    path = tmp_path / "hostile-nested-receipt.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    assert validate_run_receipt(path) == 1
+
+
+def test_refutation_surface_is_the_explicit_compatible_extension_map(tmp_path):
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    manifest["refutation_surface"] = {"domain_refutation": "declared extension"}
+    receipt = capture_run(manifest, manifest_dir=proj)
+    path = receipt.save_to_directory(proj)
+
+    assert (
+        receipt.layer4_binding["refutation_surface"]["domain_refutation"]
+        == "declared extension"
+    )
+    assert validate_run_receipt(path) == 0
+
+
 def test_external_evaluation_reference_remains_unverified_by_capture_runtime(tmp_path):
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()

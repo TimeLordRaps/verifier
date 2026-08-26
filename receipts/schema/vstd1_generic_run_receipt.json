@@ -39,6 +39,7 @@
     "falsification_condition": { "type": "string" },
     "source_state": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "target_name",
         "portable_repository_id",
@@ -61,6 +62,7 @@
         },
         "git": {
           "type": "object",
+          "additionalProperties": false,
           "required": ["commit_sha", "branch", "is_dirty"],
           "properties": {
             "commit_sha": { "type": "string" },
@@ -73,6 +75,7 @@
         },
         "runtime": {
           "type": "object",
+          "additionalProperties": false,
           "required": ["python_version", "platform_system"],
           "properties": {
             "python_version": { "type": "string" },
@@ -218,16 +221,48 @@
     },
     "layer4_binding": {
       "type": "object",
+      "additionalProperties": false,
       "required": ["verifier", "resource_bounds", "prior_commitment", "refutation_surface"],
       "properties": {
         "vstd4_conformance": {
           "const": "NOT_EVALUATED",
           "description": "The historical field name records VSTD-1 refutation metadata; it is not a VSTD-4 grounded decision certificate."
         },
-        "verifier": { "type": "object" },
-        "resource_bounds": { "type": "object" },
+        "verifier": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["specification_hash", "implementation_hash", "parser_hash", "certificate_format", "format_fragment", "dependencies", "deterministic"],
+          "properties": {
+            "specification_hash": { "$ref": "#/$defs/specificationBinding" },
+            "implementation_hash": { "$ref": "#/$defs/prefixedSha256" },
+            "parser_hash": { "$ref": "#/$defs/prefixedSha256" },
+            "certificate_format": { "type": "string" },
+            "format_fragment": { "type": "string" },
+            "dependencies": { "type": "array", "items": { "type": "string" } },
+            "deterministic": { "type": "boolean" }
+          }
+        },
+        "resource_bounds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["verification_cost_bound", "memory_bound", "certificate_size_bound"],
+          "properties": {
+            "verification_cost_bound": { "type": "integer", "minimum": 0 },
+            "memory_bound": { "type": "integer", "minimum": 0 },
+            "certificate_size_bound": { "type": "integer", "minimum": 0 }
+          }
+        },
         "prior_commitment": { "type": "string" },
-        "refutation_surface": { "type": "object" }
+        "refutation_surface": {
+          "type": "object",
+          "description": "Deliberately open domain-refutation map retained for compatibility with issued VSTD-0.1 receipts; the three named fields have fixed meanings and additional fields remain declarations.",
+          "required": ["admissible_refutations", "excluded_claims", "legacy_falsification_condition"],
+          "properties": {
+            "admissible_refutations": { "type": "array", "items": { "type": "string" } },
+            "excluded_claims": { "type": "array", "items": { "type": "string" } },
+            "legacy_falsification_condition": { "type": "string" }
+          }
+        }
       }
     }
   },
@@ -235,6 +270,16 @@
     "sha256": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "prefixedSha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "specificationBinding": {
+      "oneOf": [
+        { "$ref": "#/$defs/prefixedSha256" },
+        { "type": "string", "pattern": "^UNAVAILABLE:.+$" }
+      ]
     },
     "artifact": {
       "type": "object",

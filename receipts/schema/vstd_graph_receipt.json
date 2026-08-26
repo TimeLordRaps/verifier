@@ -120,11 +120,18 @@
           "additionalProperties": false,
           "required": ["independently_verified", "actor_independence", "implementation_separation", "runtime_separation", "evidence"],
           "properties": {
-            "independently_verified": { "type": "boolean" },
+            "independently_verified": {
+              "type": "boolean",
+              "description": "A conformance claim, not a structural inference. VSTD 1.2.0's bundled runtime accepts only false because it has no actor/execution evidence-binding validator."
+            },
             "actor_independence": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
             "implementation_separation": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
             "runtime_separation": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
-            "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+            "evidence": {
+              "type": "array",
+              "description": "References are declarations until an implemented profile resolves and validates their execution bindings.",
+              "items": { "type": "string", "minLength": 1 }
+            }
           },
           "allOf": [
             {

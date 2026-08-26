@@ -26,5 +26,7 @@ def test_ladder_fixes_both_causal_directions_without_actor_trust() -> None:
     ladder = (REPO_ROOT / "standard" / "LADDER.md").read_text(encoding="utf-8")
     assert "parent artifact --bounded positive support--> child" in ladder
     assert "child Rust      --genetic causal backtrace--> ancestor" in ladder
+    assert "not computable conformance results" in ladder
+    assert "no current\nVSTD runtime emits or validates either transfer" in ladder
     assert "MUST NOT\nstrengthen a result" in ladder
     assert "They do not cancel, form one\nscalar score" in ladder

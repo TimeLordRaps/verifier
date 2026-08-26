@@ -1,10 +1,12 @@
 # AGENTS.md
 
-> **Acronyms:** application programming interface (API); continuous integration (CI); command-line interface (CLI);
+> **Acronyms:** application programming interface (API); Concise Binary Object Representation (CBOR);
+> CBOR Object Signing and Encryption (COSE); continuous integration (CI); command-line interface (CLI);
 > carriage return and line feed (CRLF); GNU Privacy Guard (GPG); hash-based message authentication code (HMAC);
 > Hypertext Markup Language (HTML); Internet Engineering Task Force (IETF);
 > International Organization for Standardization (ISO); JavaScript Object Notation (JSON); line feed (LF);
-> Verifier Standard (VSTD); World Wide Web Consortium (W3C).
+> Supply Chain Integrity, Transparency, and Trust (SCITT); Verifier Standard (VSTD);
+> World Wide Web Consortium (W3C).
 
 Working rules for automated contributors to VSTD. Read this before editing anything.
 
@@ -194,8 +196,10 @@ CRLF/LF equivalence as byte identity. This matters when working on Windows.
 - a change to the overview asset dimensions or its accessibility role.
 - a stale generated CLI/API reference or experiment index.
 
-The `conformance-gate` job requires `base`, `stdlib-smoke`, `release-integrity`,
-`installed-wheel-smoke`, and `presentation` to all succeed.
+The `conformance-gate` job requires `base`, `stdlib-smoke`, `scitt-crypto`,
+`release-integrity`, `release-reproducibility`, `installed-wheel-smoke`, and
+`presentation` to all succeed. The dedicated SCITT/COSE job installs `.[test,scitt]`; the
+normal test matrix may skip that optional cryptographic integration module.
 
 ## 7. Conventions
 

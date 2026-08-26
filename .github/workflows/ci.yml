@@ -37,6 +37,19 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: PYTHONPATH=src python -S -c "import verifier; from verifier.core.run import load_manifest; print(verifier.__version__)"
 
+  scitt-crypto:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install ".[test,scitt]"
+      - name: Require the real SCITT/COSE statement and receipt path
+        run: |
+          python -c "import cbor2, cryptography, scitt_cose"
+          python -m pytest -q tests/test_scitt_crypto_example.py
+
   release-integrity:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -121,13 +134,14 @@ jobs:
 
   conformance-gate:
     if: always()
-    needs: [base, stdlib-smoke, release-integrity, release-reproducibility, installed-wheel-smoke, presentation]
+    needs: [base, stdlib-smoke, scitt-crypto, release-integrity, release-reproducibility, installed-wheel-smoke, presentation]
     runs-on: ubuntu-latest
     steps:
       - name: Require every declared support and artifact check
         env:
           BASE: ${{ needs.base.result }}
           STDLIB: ${{ needs.stdlib-smoke.result }}
+          SCITT: ${{ needs.scitt-crypto.result }}
           RELEASE: ${{ needs.release-integrity.result }}
           REPRODUCIBLE: ${{ needs.release-reproducibility.result }}
           WHEEL: ${{ needs.installed-wheel-smoke.result }}
@@ -135,6 +149,7 @@ jobs:
         run: |
           test "$BASE" = success
           test "$STDLIB" = success
+          test "$SCITT" = success
           test "$RELEASE" = success
           test "$REPRODUCIBLE" = success
           test "$WHEEL" = success
