@@ -25,8 +25,8 @@ record of:
 - the time, memory, disclosure, and availability bounds;
 - the conditions that produce `FAIL`, `UNKNOWN`, challenge, or degradation.
 
-VSTD's intended role is to make that review object cheap to transfer, independently
-checkable within stated bounds, and capable of being overturned. It is evidence
+VSTD's intended role is to make that review object cheap to transfer, checkable outside
+its producer within stated bounds, and capable of being overturned. It is evidence
 infrastructure around fast systems—not proof that a system is aligned, safe,
 conscious, superintelligent, or fully observed.
 
@@ -50,7 +50,7 @@ truth result. “Check this first” does not mean “this is false,” “this 
 every context,” or “everything else is safe.” Budget exhaustion leaves the deferred
 surface explicit and unresolved.
 
-The longer-term objective is a portable, verifier-independent way to:
+The longer-term objective is a portable, verifier-neutral way to:
 
 - allocate bounded verification work across different proof engines, domain verifiers,
   tests, reproduction procedures, and challenge routes;
@@ -85,7 +85,7 @@ TODAY                         NEXT                          TARGET CONDITION
 fast opaque result           result + bounded receipt      claims travel with challenges
 green check only      →      PASS / FAIL / UNKNOWN   →     wrong claims degrade visibly
 flat artifact list           provenance hypergraph         poisoned ancestry has blast radius
-producer's own word          independent checker kit       multiple implementations can disagree
+producer's own word          separate checker kit          multiple implementations can disagree
 manual after-the-fact audit  policy-bound event capture    review scales with evidence, not rhetoric
 ```
 
@@ -103,7 +103,7 @@ layer still requires its own evidence; the loop only carries results and challen
 ## Current experimental development tracks
 
 This dated register records substantive work as of **2026-08-25**. A committed experiment,
-passing test, or generated index is not normative, released, independently reproduced,
+passing test, or generated index is not normative, released, reproduced by a distinct actor,
 or evidence of adoption merely because it exists. Profile manifests and the generated
 [`experiments/INDEX.md`](experiments/INDEX.md) are the portable experiment register when
 intentional experiment artifacts are present.
@@ -126,7 +126,7 @@ intentional experiment artifacts are present.
 - Public counterexample, ambiguity, implementation, and private-security routes are
   distinct and usable.
 
-## Milestone 2 — independent checker kit
+## Milestone 2 — separate checker kit
 
 **Build**
 
@@ -171,7 +171,7 @@ intentional experiment artifacts are present.
 - the SCITT, ZIZK, and SAT tracks can be indexed through the same experimental-workflow
   vocabulary without changing their native verifiers or erasing their blockers;
 - a GitHub merge remains an integration event rather than becoming a VSTD pass;
-- the same trace can be checked by two independent consumers;
+- the same trace can be checked by two separately maintained consumers;
 - deleting or substituting a bound tool output changes the receipt digest or fails a
   declared rule;
 - missing observability yields a named gap or `UNKNOWN`, never reconstructed fiction.

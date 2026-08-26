@@ -90,7 +90,7 @@ def _is_tautology(clause: Sequence[int]) -> bool:
 
 @dataclass(frozen=True)
 class RefutationCertificate:
-    """A clausal refutation proof, independently checkable without re-solving."""
+    """A clausal refutation proof that a consumer can check without re-solving."""
 
     proof: list[list[int]]
     n_vars: int

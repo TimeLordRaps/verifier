@@ -76,7 +76,7 @@ declared expectation. It moves child-to-parent only through recorded admissible 
 input, or transformation paths. Distinct comparable backtraces may concentrate on a
 shared ancestor and prioritize it for causal examination. Transferred Rust establishes
 ancestral reachability, not direct observation or causal responsibility; localization
-requires additional intervention, ablation, independent reproduction, or equivalent
+requires additional intervention, ablation, reproduction by a distinct actor, or equivalent
 declared evidence.
 
 Forward support and backward Rust MUST remain separate. They do not cancel, form one
@@ -178,12 +178,14 @@ the third is the load-bearing one.
 
 VSTD does not classify every receipt as an NP certificate. Specific bounded formats,
 including `VSTD4-GDC-1`, define a finite decision problem, a certificate language, and
-an independent checker. Complexity claims apply only to such a defined formal problem.
+a checker implemented separately from the producer path. Complexity claims apply only
+to such a defined formal problem; checker separation alone does not establish distinct
+actors.
 Other receipt fields may be signed declarations, hashes, measurements, or references
 whose meaning depends on explicitly named trust roots.
 
 The useful engineering asymmetry is concrete rather than universal: when a result can
-carry a smaller independently checkable artifact instead of requiring the original
+carry a smaller consumer-checkable artifact instead of requiring the original
 computation, VSTD preserves that artifact and its verification bounds.
 
 ### 4.2 Bounded admission uses CNF
@@ -310,7 +312,7 @@ sources, and explicit non-equivalences.
 | Preserved release and provenance evidence | NIST [Special Publication (SP) 800-218 SSDF 1.1](https://doi.org/10.6028/NIST.SP.800-218) | Protect the Software practices PS.3.1 and PS.3.2 call for preserving releases and provenance and enabling integrity verification. They do not certify a VSTD receipt. |
 | Independent recreation | Reproducible Builds, [formal definition](https://reproducible-builds.org/docs/definition/) | Grounds the special case where another party recreates specified artifacts from declared inputs and instructions. Reproducibility does not establish every semantic claim. |
 | Producer-supplied portable certificates | Necula, [*Proof-Carrying Code*](https://doi.org/10.1145/263699.263712) | Establishes the pattern of an untrusted producer supplying a proof checked under a declared policy. VSTD uses the pattern beyond code safety without inheriting PCC's theorem. |
-| Independently checked UNSAT results | Wetzler, Heule, and Hunt, [*DRAT-trim*](https://www.cs.cmu.edu/~mheule/publications/drat-trim.pdf) | Establishes practical checking of clausal unsatisfiability proofs rather than trusting solver output. VSTD's implemented RUP format is narrower than DRAT. |
+| Consumer-checked UNSAT results | Wetzler, Heule, and Hunt, [*DRAT-trim*](https://www.cs.cmu.edu/~mheule/publications/drat-trim.pdf) | Establishes practical checking of clausal unsatisfiability proofs rather than trusting solver output. VSTD's implemented RUP format is narrower than DRAT. |
 | A first-class refusal to fabricate a Boolean answer | [SMT-LIB Standard 2.7](https://smt-lib.org/papers/smt-lib-reference-v2.7-r2025-04-09.pdf) | Its response grammar includes `sat`, `unsat`, and `unknown`. VSTD independently defines a richer status system with the same fail-closed pressure. |
 | Append-only public evidence and detectable equivocation | [RFC 9162: Certificate Transparency Version 2.0](https://www.rfc-editor.org/rfc/rfc9162.html) | Merkle proofs make log inclusion and consistency auditable while preserving explicit split-view limitations. VSTD additive receipts are analogous, not a CT implementation. |
 | Freshness, rollback, freeze, and compromise recovery | [The Update Framework specification](https://theupdateframework.github.io/specification/latest/) | Demonstrates that authentic old data is not automatically current data. VSTD does not implement TUF, but likewise keeps freshness and revocation distinct from byte identity. |

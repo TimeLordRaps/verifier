@@ -2,5 +2,5 @@ a claim is not merely logged
 a claim is packaged with evidence
 a claim is packaged with scope
 a claim is packaged with provenance
-a claim is checked by an independent auditor
+a claim is checked by a separately implemented auditor
 a claim becomes a challengeable receipt

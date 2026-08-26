@@ -91,7 +91,7 @@ verified.”
 
 ## VSTD-4 grounded-decision claim translations
 
-`VSTD4-GDC-1` makes a decision certificate independently checkable against an
+`VSTD4-GDC-1` makes a decision certificate checkable outside its producer against an
 explicit claim coordinate, formula, grounding map, verifier identity, resource
 bounds, and prior commitment. It does not make the certificate independent of
 the evidence source or make the grounded claim true outside that coordinate.

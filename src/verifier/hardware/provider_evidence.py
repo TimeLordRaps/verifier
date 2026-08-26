@@ -1,4 +1,9 @@
-"""Canonical binding and independent verification of provider control-plane evidence."""
+"""Canonical binding and verifier-side recomputation of provider control-plane evidence.
+
+The legacy public function name ``independently_verify_provider_evidence`` distinguishes
+recomputation from trusting a provider's status field. It does not establish distinct
+producer and checker actors under Verifier Standard (VSTD) level 1.
+"""
 
 from __future__ import annotations
 

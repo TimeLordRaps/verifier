@@ -43,7 +43,7 @@ VSTD layers can establish:
 - an accepted VSTD4-GDC-1 certificate result of PASS, FAIL, or UNKNOWN without
   upgrading it to VSTD-4 layer conformance;
 - grounding between a bounded logical encoding and named artifact facts;
-- independent checking of the VSTD-4 certificate without sharing verdict-producing
+- checker-side recomputation of the VSTD-4 certificate without sharing verdict-producing
   code;
 - a bounded cost/memory/certificate-size ceiling and honest refusal when exceeded;
 - Graph lineage and blast-radius queries plus candidate degradation from statuses already
@@ -118,7 +118,7 @@ The experimental profile places the first inside the payload of a SCITT Signed
 Statement and attaches the second to that statement. Implementations must name the
 receipt type whenever “receipt” would be ambiguous.
 
-The unwrapped VSTD receipt remains independently checkable. Selecting the SCITT
+The unwrapped VSTD receipt remains checkable outside its producer. Selecting the SCITT
 profile deliberately adds issuer and transparency coordinates; it is not the
 default wire path for an identity-independent or witness-private VSTD profile.
 
@@ -149,7 +149,7 @@ default wire path for an identity-independent or witness-private VSTD profile.
 
 A composed PASS is permitted only when all of the following hold:
 
-1. the native VSTD checker independently accepts a VSTD PASS;
+1. the native VSTD checker accepts a VSTD PASS without sharing verdict-producing code;
 2. the full VSTD payload digest matches the payload signed in the SCITT statement;
 3. the SCITT statement signature is valid under an accepted issuer policy;
 4. the SCITT Receipt is valid for that exact statement under an accepted TS/VDS

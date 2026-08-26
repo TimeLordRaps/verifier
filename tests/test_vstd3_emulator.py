@@ -129,7 +129,10 @@ def test_verified_flags_without_keys_cannot_bootstrap_strong_claims() -> None:
     validation = validate_vstd3_receipt(receipt)
     assert not validation.valid
     assert validation.status is ClaimStatus.UNKNOWN
-    assert any("could not be independently verified" in warning for warning in validation.warnings)
+    assert any(
+        "could not be verified against configured trust material" in warning
+        for warning in validation.warnings
+    )
     overclaims = "\n".join(validation.errors)
     assert "overclaims DEVICE_IDENTITY" in overclaims
     assert "overclaims FIRMWARE_INTEGRITY" in overclaims

@@ -364,7 +364,7 @@ def test_encoding_divergence_raises_with_a_certificate_attached(monkeypatch):
 
 
 def test_solver_divergence_is_caught_before_the_direct_check(monkeypatch):
-    """The encoding and the independent solver must agree first, or nothing else counts."""
+    """The encoding and separately implemented solver must agree first."""
 
     class ContrarySolver:
         def __init__(self, **_kwargs):
@@ -376,7 +376,7 @@ def test_solver_divergence_is_caught_before_the_direct_check(monkeypatch):
     monkeypatch.setattr(graph_module, "MinimalIndependentDPLL", ContrarySolver)
 
     items = obligations(_graph(), _collection())
-    with pytest.raises(GraphEncodingError, match="independent solver said False"):
+    with pytest.raises(GraphEncodingError, match="separately implemented solver said False"):
         certify_graph_cnf(
             collection_id="collection:C", items=items, level=GRAPH_MAX_LEVEL,
             binding=_binding(),

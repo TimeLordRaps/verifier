@@ -15,10 +15,10 @@
 
 VSTD-4 defines **adversarially portable checkability**. A verdict reaches this
 layer only when its exact meaning, evidence, failure conditions, and checking
-procedure can leave the declarant and survive hostile independent inspection.
+procedure can leave the declarant and survive hostile inspection outside the declarant.
 
-VSTD-4 establishes that independent checking is possible. It does not establish
-that an independent party exists or has checked anything; that is VSTD-5.
+VSTD-4 establishes that checking by an outside party is possible. It does not establish
+that such a party exists or has checked anything; that is VSTD-5.
 
 > **No verdict without a portable certificate.**
 > **No portable certificate without an explicit falsifier.**
@@ -113,7 +113,7 @@ C = H(claim || coordinate || policy_root || evidence_root || verifier
 
 Canonical serialization MUST use sorted object keys, integer-valued numeric
 fields, no floating-point values, UTF-8, and no insignificant whitespace. A
-checker MUST reject a certificate whose binding does not match the independently
+checker MUST reject a certificate whose binding does not match the externally
 supplied `ClaimBinding`.
 
 ### 2.4 Portable verification
@@ -179,7 +179,7 @@ requires a successful retrieval observation bound to the artifact identifier, de
 locator, observed bytes, observation time, and observer. The observed bytes MUST match
 the content address. `PORTABLE` additionally requires anonymous access and a declared
 retrieval procedure. A retrieval observation is scoped to its named trust root; it does
-not by itself establish independent retrieval.
+not by itself establish retrieval by a distinct actor.
 
 ### 2.9 Disclosure-safe checkability
 
@@ -230,7 +230,7 @@ VALID -> CHALLENGED -> REVOKED
 
 A valid challenge mechanism that cannot change claim status is non-conforming.
 Synthetic challenges test structural challengeability at VSTD-4. Actual
-independent action belongs to VSTD-5.
+action by a distinct actor belongs to VSTD-5.
 
 ### 2.13 Monotonic degradation
 
@@ -311,7 +311,7 @@ accepted.
 ## 4. Normative invariants
 
 > A verdict MUST NOT be recorded at a strength exceeding the strength of the
-> certificate an independent party could check without the declarant's
+> certificate an outside party could check without the declarant's
 > cooperation.
 
 > Loss of certificate validity, accessibility, dependency validity, or

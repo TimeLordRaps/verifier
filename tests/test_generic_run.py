@@ -175,6 +175,18 @@ def test_full_lifecycle_capture_validate_inspect_reproduce(tmp_path, capsys):
     assert reproduce_run_receipt(out_dir) == 0
 
 
+def test_reproduce_honors_an_explicit_receipt_filename(tmp_path):
+    proj = _write_tiny_project(tmp_path)
+    receipt = capture_run(_base_manifest(), manifest_dir=proj)
+    receipt_file = receipt.save_to_directory(proj)
+    renamed_receipt = proj / "renamed-receipt.json"
+    receipt_file.rename(renamed_receipt)
+
+    assert validate_run_receipt(renamed_receipt) == 0
+    assert inspect_run_receipt(renamed_receipt) == 0
+    assert reproduce_run_receipt(renamed_receipt) == 0
+
+
 def test_new_run_receipt_binds_precommitment_bounds_and_refutation_surface(tmp_path):
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()

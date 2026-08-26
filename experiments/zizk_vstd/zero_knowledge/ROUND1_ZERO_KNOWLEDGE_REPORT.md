@@ -121,7 +121,7 @@ elapsed wall time: 6.10 seconds
 maximum resident set: 1,214,664 KiB
 ```
 
-Independent verifier invocation without the witness:
+Offline verifier invocation without the witness:
 
 ```text
 RISC0_DEV_MODE=0 vstd-zk-host verify receipt.msgpack public.json
@@ -196,8 +196,9 @@ coordinates make this run identifiable without publishing its ephemeral private 
 ## Public claims currently justified
 
 The local evidence justifies saying that an optional RISC Zero 3.0.6 experiment produced
-and independently re-verified within the reference program a real composite STARK receipt
-for one bounded hidden-witness predicate, with the recorded negative cases rejected.
+and re-verified within the reference program a real composite STARK receipt for one bounded
+hidden-witness predicate, with the recorded negative cases rejected. It does not establish
+distinct prover/verifier actors.
 
 It also supports keeping VSTD core disclosure-neutral: this result demonstrates one
 optional privacy mechanism without requiring or invalidating full-disclosure receipts.

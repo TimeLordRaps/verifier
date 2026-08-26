@@ -148,7 +148,7 @@ def _tier_admissible(
 
 
 # --------------------------------------------------------------------------
-# Propagation -- independently re-implemented; see module docstring
+# Propagation -- separately reimplemented from the producer path; see module docstring
 # --------------------------------------------------------------------------
 
 

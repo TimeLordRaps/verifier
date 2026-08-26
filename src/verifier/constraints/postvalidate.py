@@ -1,6 +1,8 @@
 """Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
 
-Independent whole-output checks adjacent to logits-time constraints."""
+Whole-output checks implemented separately from logits-time constraints.
+
+This mechanism separation does not establish distinct actors."""
 
 from __future__ import annotations
 
@@ -19,7 +21,7 @@ def validate_json_schema_output(output_text: str, schema: Mapping[str, Any]) -> 
         import jsonschema  # type: ignore[import-untyped]
         from jsonschema import Draft202012Validator
     except ImportError as exc:  # pragma: no cover - exercised only without test/runtime dependency
-        raise RuntimeError("jsonschema is required for independent JSON Schema post-validation") from exc
+        raise RuntimeError("jsonschema is required for separate JSON Schema post-validation") from exc
 
     output_digest = hashlib.sha256(output_text.encode("utf-8")).hexdigest()
     constraint_source_digest = canonical_digest(dict(schema))

@@ -356,7 +356,7 @@ def certify_graph_cnf(
     if encoded != satisfiable:
         raise GraphEncodingError(
             f"{collection_id} at level {level}: the certified encoding says "
-            f"{encoded} but the independent solver said {satisfiable}",
+            f"{encoded} but the separately implemented solver said {satisfiable}",
             certificate=certificate,
             cnf_satisfiable=satisfiable,
             direct_result=holds_at(items, level),

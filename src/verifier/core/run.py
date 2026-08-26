@@ -20,7 +20,7 @@ Design commitments (do not weaken without updating tests + docs):
 1. **Claims are not flattened.** "The command exited 0", "the declared output files
    exist with these digests", "an evaluator computed this metric", "the run's inputs
    trace to a provenance root", and "an external party reported a score" are five
-   different, independently falsifiable statements. They are recorded as five
+   different, separately falsifiable statements. They are recorded as five
    distinct fields under :class:`RunClaims`, never collapsed into one boolean.
 2. **Fail closed.** A missing declared input aborts the run *before* executing the
    command (no fabricated "it probably would have worked"). A missing declared
@@ -279,7 +279,8 @@ class ExternalEvaluationEvidence:
     """Explicit, bounded slot for organizer/third-party reported results.
 
     Presence of this record NEVER means the runtime cryptographically or
-    independently verified the external event described. ``evidence_kind`` and
+    verified the external event described through a separate mechanism or actor.
+    ``evidence_kind`` and
     ``evidence_ref`` preserve what the manifest supplied; ``attested`` remains
     false because this capture path does not dereference or verify that evidence.
     """
@@ -374,7 +375,7 @@ def _resolve_provenance_linkage(base_dir: Path, root: Mapping[str, Any]) -> Prov
 class RunClaims:
     """Distinct, non-flattened claims a run receipt may make.
 
-    Each field is an independently falsifiable statement. They must never be
+    Each field is a separately falsifiable statement. They must never be
     collapsed into a single pass/fail boolean — see module docstring.
     """
 
@@ -570,7 +571,7 @@ def generate_run_receipt_markdown(receipt: GenericRunReceipt) -> str:
             f"- **Evidence kind:** `{ext.evidence_kind}`\n"
             f"- **Evidence reference:** `{ext.evidence_ref}`\n"
             f"- **Verified by this runtime:** `{ext.attested}` "
-            "(the reference is recorded but not dereferenced or independently checked)\n"
+            "(the reference is recorded but not checked by a separate mechanism or actor)\n"
         )
     else:
         external_md = "_(no external evaluation evidence declared — this run makes no claim about any external score, leaderboard, or organizer report)_"
@@ -1677,8 +1678,12 @@ def reproduce_run_receipt(receipt_path_or_dir: Path, rerun: bool = False) -> int
     this mutates on-disk state at the declared output paths and is therefore
     opt-in only.
     """
-    receipt_dir = receipt_path_or_dir if receipt_path_or_dir.is_dir() else receipt_path_or_dir.parent
-    receipt_file = receipt_dir / "receipt.json"
+    receipt_file = (
+        receipt_path_or_dir / "receipt.json"
+        if receipt_path_or_dir.is_dir()
+        else receipt_path_or_dir
+    )
+    receipt_dir = receipt_file.parent
     if not receipt_file.exists():
         print(f"Error: receipt not found at {receipt_file}")
         return 1

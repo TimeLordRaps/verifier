@@ -162,7 +162,7 @@ When an upstream source $S$ is marked `REVOKED` (e.g. due to copyright claim, da
   that a claimed origin, contributor, execution, or license declaration is authentic.
 - **Complete real-world lineage**: Missing instrumentation, hidden inputs, pre-observation
   contamination, and out-of-band transformations remain outside the graph unless
-  independently evidenced.
+  separately evidenced.
 - **Automatic physical-file checking**: A stored VSTD-Graph receipt validates its own
   stable content. It flags a physical-file mismatch only when an adapter supplies and
   rehashes that file.

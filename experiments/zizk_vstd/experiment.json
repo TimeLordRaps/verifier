@@ -69,7 +69,7 @@
       "id": "artifact-zk-report",
       "role": "round-1-zero-knowledge-report",
       "media_type": "text/markdown",
-      "digest": "sha256:eac348205ce3def8e79607eb0e68c3f1cbda4af30c3eb2761154ac3fc8a27705",
+      "digest": "sha256:c5f4f010c498ded22411e4a049c88238fbb4ea6ca69959d66bca5d5e5ec05a0c",
       "locator": "repo:experiments/zizk_vstd/zero_knowledge/ROUND1_ZERO_KNOWLEDGE_REPORT.md"
     },
     {
@@ -83,7 +83,7 @@
       "id": "artifact-round2-design",
       "role": "round-2-reverification-design",
       "media_type": "text/markdown",
-      "digest": "sha256:ffee1e8c88b85780b3c7b31b282ffb1ead626f74e78daf11413f3a0c233abdae",
+      "digest": "sha256:a8b9af2daddbf95f4f2c2504b577a147c64e3ebf9ee5581a2c1a96b6049f1a2c",
       "locator": "repo:experiments/zizk_vstd/reverification/ROUND2_DESIGN_NOTE.md"
     }
   ],
@@ -120,7 +120,7 @@
       "target": "fixed hidden-evidence predicate and public VSTD-facing coordinates",
       "state": "COMPLETED",
       "priority": 1,
-      "selected_because": "A zero-knowledge claim required a real proof and independent verification rather than a commitment-only or development-mode substitute.",
+      "selected_because": "A zero-knowledge claim required a real proof and offline native verification rather than a commitment-only or development-mode substitute.",
       "selection_evidence_ids": [
         "hypothesis-hidden-witness"
       ],
@@ -230,7 +230,7 @@
       "id": "observation-zk-proof",
       "action_id": "action-zk-proof",
       "recorded_at": "2026-08-23T00:00:00Z",
-      "statement": "The recorded round-1 run generated and independently verified one real RISC Zero receipt and exercised the declared negative cases.",
+      "statement": "The recorded round-1 run generated and re-verified one real RISC Zero receipt within the reference program and exercised the declared negative cases; distinct actors were not established.",
       "status": "OBSERVED",
       "evidence_artifact_ids": [
         "artifact-zk-report"
@@ -379,5 +379,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:c2ff593a485bdebfdce9a1f51198bf13f7991c45be82484cd9b1fe58a37fe3bf"
+  "manifest_digest": "sha256:09d5c462eb3ea57ad30cdaca9ca4310991d46f3181c0515a8c1ec886e98352e7"
 }

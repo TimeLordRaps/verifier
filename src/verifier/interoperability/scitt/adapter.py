@@ -593,7 +593,7 @@ class ScittVerificationEvidence:
             self.signed_statement_verified and self.receipt_verified
         ):
             raise InteropError(
-                "REGISTERED requires independently verified statement and receipt"
+                "REGISTERED requires native verification of both statement and receipt"
             )
 
     def to_dict(self) -> dict[str, Any]:

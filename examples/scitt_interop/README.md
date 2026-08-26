@@ -16,20 +16,21 @@ The example executes this chain:
 ```text
 artifact bytes
   -> grounded VSTD4-GDC-1 digest predicate
-  -> independently checked certificate PASS
+  -> separately implemented kernel check returns PASS
   -> deterministic experimental VSTD/SCITT payload
   -> RFC 9943-style EdDSA COSE Signed Statement
   -> RFC 9942 / RFC9162_SHA256 signed inclusion receipt
-  -> independent statement and receipt verification
+  -> offline statement-signature and receipt verification
   -> composed result preserving both native verdicts
 ```
 
 It proves, under the emitted public keys and local test-log policy, that the exact
 Signed Statement is authentic and included in the one-entry VDS, and that the exact
-embedded VSTD certificate independently checks as PASS for the artifact digest
+embedded VSTD certificate passes the separately implemented kernel check for the artifact digest
 predicate. The enclosing VSTD-4 depth is a structural candidate with conformance
 `NOT_ESTABLISHED`; this example does not establish VSTD-4 conformance or VSTD-5
-readiness. It also does not prove artifact safety, production-service registration,
+readiness or distinct producer/checker actors. It also does not prove artifact safety,
+production-service registration,
 public witnessing, issuer authority outside the test, or arbitrary payload truth.
 
 ## Identity and privacy boundary
@@ -60,7 +61,7 @@ The optional extra is pinned in `pyproject.toml`:
 - `cbor2==6.1.4`
 - `cryptography==50.0.0`
 
-`scitt-cose` is an independent implementation, not an IETF publication or
+`scitt-cose` is a separately maintained implementation, not an IETF publication or
 endorsement. The normative wire references are [RFC 9943](https://datatracker.ietf.org/doc/html/rfc9943), [RFC 9942](https://datatracker.ietf.org/doc/html/rfc9942), RFC 9052/9053, and RFC 9162.
 
 ## Produce and verify
@@ -89,8 +90,8 @@ no authority outside this example.
 | `signed_statement.cose` | Real COSE_Sign1 Signed Statement. |
 | `receipt.cose` | Real signed RFC9162_SHA256 inclusion receipt. |
 | `transparent_statement.cose` | Signed Statement with receipt attached at COSE header label 394. |
-| `issuer_public.pem` | Public key for independent statement verification. |
-| `log_public.pem` | Public key for independent receipt verification. |
+| `issuer_public.pem` | Public key for offline statement-signature verification. |
+| `log_public.pem` | Public key for offline receipt verification. |
 | `verification_result.json` | Native VSTD candidate-check result, explicit VSTD conformance `NOT_ESTABLISHED`, native SCITT observation, scoped composition, and hashes. |
 
 ## Adversarial coverage

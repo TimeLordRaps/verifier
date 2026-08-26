@@ -9,8 +9,9 @@ payload and ephemeral-key COSE artifacts.
 
 The optional ``scitt`` extra supplies COSE and RFC 9162 receipt primitives.  A
 one-entry local test log is used so the example is self-contained.  This is a
-real signed statement, signed inclusion receipt, and independent verification;
-it is not a production Transparency Service, public anchoring, or endorsement.
+real signed statement, signed inclusion receipt, and offline native verification;
+it is not distinct-actor verification, a production Transparency Service, public
+anchoring, or endorsement.
 """
 
 from __future__ import annotations
@@ -120,7 +121,7 @@ def _public_key_pair():
 
 
 def _claim_binding_from_dict(value: dict[str, Any]) -> ClaimBinding:
-    """Reconstruct the exact receipt binding for independent kernel checking."""
+    """Reconstruct the exact receipt binding for separate kernel checking."""
 
     coordinate = value["coordinate"]
     bounds = value["bounds"]
@@ -234,7 +235,7 @@ def build_vstd_receipt() -> tuple[dict[str, Any], VstdCoordinates]:
         "refutation_surface": {
             "admissible_refutations": [
                 "artifact bytes hash to a value other than the bound digest",
-                "the VSTD decision certificate fails independent checking",
+                "the VSTD decision certificate fails separate kernel checking",
             ],
             "excluded_claims": [
                 "artifact safety",
@@ -399,7 +400,7 @@ def verify(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
     if vstd_result.outcome is KernelOutcome.ACCEPTED:
         vstd_state = VstdVerificationState.VERIFIED
         if vstd_result.verdict is None:
-            raise RuntimeError("independent VSTD checker returned no native verdict")
+            raise RuntimeError("VSTD checker returned no native verdict")
         native_vstd_result = vstd_result.verdict.value
     elif vstd_result.outcome is KernelOutcome.REFUSED:
         vstd_state = VstdVerificationState.INDETERMINATE

@@ -29,7 +29,10 @@ class ReproducibilityLevel(str, Enum):
     declared error tolerance, but internal intermediate proof structures may differ."""
 
     SEMANTIC_REPRODUCTION = "SEMANTIC_REPRODUCTION"
-    """The underlying formal proposition is sustained under an independent translation or alternate solver."""
+    """The proposition is sustained under a separately implemented translation or solver.
+
+    This level does not establish distinct actors.
+    """
 
 
 def compare_reproduction_level(

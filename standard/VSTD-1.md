@@ -19,7 +19,7 @@
 ## 1. Purpose & Thesis
 
 VSTD specifies infrastructure for consequential computational claims to carry
-independently checkable evidence. Conformance is defined by this document, not by
+evidence checkable outside its producer. Conformance is defined by this document, not by
 the identity of its maintainer.
 
 Modern AI systems, scientific simulators, and autonomous code generators routinely
@@ -58,13 +58,13 @@ additive record rather than an in-place rewrite.
 
 | Status | Definition |
 | :--- | :--- |
-| `DEMONSTRATED` | The claim is backed by executable tests or formal proofs that pass in an independently reproducible environment. |
+| `DEMONSTRATED` | The claim is backed by executable tests or formal proofs that pass in a reproducible environment with recorded execution coordinates. Actor independence is a separate claim. |
 | `BENCHMARKED` | Quantitative performance or accuracy metrics have been empirically measured against a defined reference baseline. |
 | `SUPPORTED` | Theoretical derivation or empirical evidence is established, but automated end-to-end continuous verification is partial. |
-| `IMPLEMENTED_UNVALIDATED` | Code or logic exists on disk, but automated independent verification has not yet run or passed. |
+| `IMPLEMENTED_UNVALIDATED` | Code or logic exists on disk, but automated end-to-end verification has not yet run or passed. |
 | `INDETERMINATE` | Evidence is ambiguous, supporting leaves are unspecified, or solver execution timed out. |
 | `UNSUPPORTED` | No valid empirical or formal evidence is attached to the proposition. |
-| `FALSIFIED` | An executable check, counterexample, or independent audit refuted the claim. |
+| `FALSIFIED` | An executable check, counterexample, or evidence-bound audit refuted the claim. |
 | `HYPOTHESIS` | A stated conjecture intended for experimental falsification. |
 | `LONG_RANGE_OBJECTIVE` | A strategic or architectural aspiration requiring substantial future R&D. |
 
@@ -135,7 +135,7 @@ VSTD-1 defines a five-tier reproducibility taxonomy:
 2. `CONTENT_IDENTICAL`: Canonical JSON representation of stable verification payload matches exactly, ignoring volatile execution fields (timestamps, elapsed wall-clock ms, hostnames).
 3. `EVIDENCE_EQUIVALENT`: All checks, proofs, SAT assignments, and invariant bounds evaluate to the same truth values and proof certificates, though internal trace order or solver step counts may differ.
 4. `RESULT_EQUIVALENT`: High-level verification verdict (`VERIFIED`/`FALSIFIED`) and primary metrics agree within declared tolerance bounds.
-5. `SEMANTIC_REPRODUCTION`: The underlying formal proposition is sustained under an independent translation or alternate solver.
+5. `SEMANTIC_REPRODUCTION`: The underlying formal proposition is sustained under a separately implemented translation or alternate solver. This does not establish distinct actors.
 
 ---
 

@@ -504,7 +504,7 @@ def _handle_claims(args: argparse.Namespace) -> int:
         "claims": [item.to_dict() for item in receipt.claim_evaluations],
         "validation_errors": list(validation.errors),
         "validation_warnings": list(validation.warnings),
-        "note": "Claim statuses are accepted only when receipt validation independently reproduces every PASS.",
+        "note": "Claim statuses are accepted only when receipt validation recomputes every PASS from bound evidence; this does not establish distinct actors.",
     }
     _emit(payload, as_json=args.json)
     return _status_exit(status)

@@ -139,7 +139,7 @@ The reference implication graph is explicit. In particular:
 - fleet-boundary attestation does not imply physical-world completeness.
 
 `VERIFIED` flags inside a receipt are not self-authenticating. A verifier MUST
-independently reproduce signature and continuity checks before using those flags to
+recompute signature and continuity checks from the bound evidence before using those flags to
 accept a strong `PASS`.
 
 ## 7. Incremental conformance profiles
@@ -363,7 +363,7 @@ hardware or firmware evidence therefore reaches downstream artifacts through the
 existing blast-radius algorithm. VSTD-3 does not create a second lineage graph.
 
 Composition is transactional and refuses receipts whose recorded `PASS` claims cannot
-be independently reproduced.
+be recomputed from the bound evidence.
 
 ## 20. Verification algorithm
 
@@ -374,12 +374,12 @@ A verifier MUST, in order:
 3. verify identifiers and all references;
 4. verify raw evidence byte digests;
 5. validate challenge freshness, nonce uniqueness, subject, and certificate binding;
-6. independently verify implemented attestation and provider signatures;
+6. verify implemented attestation and provider signatures against configured trust material;
 7. validate topology and partition lineage;
 8. bind starts, observations, accounting, ends, and workload identity to events;
 9. verify event continuity, resets, and anchors;
 10. verify the exact fleet boundary when present;
-11. recompute every recorded passing claim from independently accepted evidence;
+11. recompute every recorded passing claim from mechanism-verified evidence;
 12. reject any stronger recorded `PASS`.
 
 Receipt digest integrity alone completes only steps 1–2.

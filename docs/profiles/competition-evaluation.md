@@ -51,7 +51,7 @@ rules + data snapshots + permitted externals
 Each artifact receives a stable identifier and content digest. Each transformation
 records its input and output roles, software identity, parameters, environment, and
 evidence classification. A declaration is not relabeled as direct observation or
-independent reproduction.
+reproduction by a distinct actor.
 
 ## 3. Predictive-evaluation time boundary
 
@@ -75,7 +75,7 @@ artifact.
 A participant normally cannot observe or serialize hidden tests. The participant
 receipt therefore records an explicit horizon. An organizer can later close part of
 that horizon by publishing a commitment, signed attestation, disclosed snapshot, or
-independently reproducible evaluator receipt.
+evaluator receipt reproducible by a distinct actor.
 
 Absence of access is not evidence of hidden-test integrity. A participant-side
 `VERIFIED` result MUST NOT imply that the organizer's hidden corpus was uncontaminated,

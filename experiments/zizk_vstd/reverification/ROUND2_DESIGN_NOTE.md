@@ -44,7 +44,7 @@ Round 1 began from commit `598c545be3833d6d81bb7e252ca5837f3bb2a449`.
 | Zero Identity | `claude/zizk-zero-identity` at `48fab87b05ad5ddaf24d08b6391cde99d05fc8f1` | A semantic experiment for bounded identity disclosure, with 22 fixtures and 65 focused tests | Retained as an adjacent actor/authorization experiment; its coordinates carry only the claim meaning explicitly checked |
 | Zero Knowledge | `codex/zizk-zero-knowledge` at `14d31e0426656c5208f2b6579a5217af3a6bb2bd` | A real RISC Zero zkVM 3.0.6 composite STARK receipt for one hidden-witness predicate | Retained as the confidential-evidence mechanism; its bearer, artifact-bound form is compatible with Tier 0 |
 | Zero actor trust | this Round 2 design | No actor identity, popularity, or reputation may strengthen a result | Open as an operational protocol; stated here as a required invariant |
-| Artifact-first trust | existing VSTD artifact, evidence, mechanism, and predicate bindings | Bounded positive support can move from verified parent artifacts into the declared obligations of descendants | Retained as the Tier 0 starting point; child obligations remain independently checked |
+| Artifact-first trust | existing VSTD artifact, evidence, mechanism, and predicate bindings | Bounded positive support can move from verified parent artifacts into the declared obligations of descendants | Retained as the Tier 0 starting point; child obligations remain separately checked |
 | Actor-artifact role semantics | no prior implementation | An entity's role depends on the creation or operation event; coding agents can occupy both roles | Open; this note corrects the earlier object-only partition |
 | Rust | this Round 2 design | A proposed viral backtrace of measured deviation through bound creation ancestry, never trust or a verdict | Reframed as relation-bound and genetically transferred to ancestor states |
 
@@ -340,7 +340,7 @@ examination because they are common candidate loci of falsehood.
 
 `TRANSFERRED` is actual rust inheritance, but it is not a claim that the ancestor was
 directly measured or proved causal. `LOCALIZED` requires an intervention, ablation,
-independent reproduction, or other declared mechanism that distinguishes contribution
+reproduction by a distinct actor, or other declared mechanism that distinguishes contribution
 from ancestry. The backtrace is append-only, does not decay, and does not alter existing
 Verifier Standard status or blast-radius calculations until a separate normative rule is
 approved.

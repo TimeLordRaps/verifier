@@ -21,8 +21,8 @@ reinterpret historical receipts whose wire identifiers are `VSTD-0.1` or
 extension only when it declares `schema_version = "VSTD-0.2"`; older validators may
 continue to process their existing receipt kinds unchanged.
 
-VSTD-1 answers how a bounded claim carries evidence, provenance, an independent
-judgment, and reproducibility information. VSTD-Graph-1 answers how artifacts and
+VSTD-1 answers how a bounded claim carries evidence, provenance, a checker judgment,
+an explicitly evidenced independence basis, and reproducibility information. VSTD-Graph-1 answers how artifacts and
 transformations compose into a provenance hypergraph. VSTD-2 answers a different
 question: **what geometry was selected for verification, what did reconstruction
 expose that the geometry missed, and has the sufficiency of the declared closure

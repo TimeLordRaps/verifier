@@ -28,9 +28,9 @@
         ],
         "deterministic": true,
         "format_fragment": "UP,WIDTH-K,RES",
-        "implementation_hash": "sha256:0f7f9709fd77d7ff1b6825af784cfdb1d2b429265dada6763fccba1f8d41b2d2",
+        "implementation_hash": "sha256:94e4f7d4cb771f76d3e856ad93f0e7c3d151d47d862abef00fbcda23d7975e1f",
         "parser_hash": "sha256:7d05d3810219b1ef8400accd5735fbde494c4fb310c4d86f08381d4979dcde5c",
-        "specification_hash": "sha256:d823afbd1325961cf961db88832a13496637cf7ea0b162b2bb8c2cf83655a1c8"
+        "specification_hash": "sha256:9648fee5c94a8c41a581ec003226dd87eca59bc6e2356ed0383fcabbf02a1d5f"
       }
     },
     "collection": {
@@ -65,7 +65,7 @@
       "level": 0,
       "max_level": 5,
       "rating_basis": "CALLER_SUPPLIED",
-      "refutation_digest": "d47d4827c0b005e4e2d12603c6a7b9678779b34aad649092cc5f54a5d331841f",
+      "refutation_digest": "25e9bec3b78e32a249e5f4eadfd0515f4670c2c65f29b5e64268eaa02f7e9cb2",
       "witness_digest": null
     },
     "hypergraph": {
@@ -592,7 +592,7 @@
         ]
       },
       "header": {
-        "binding": "6d95eb43403ed7ae8f81dab20da681538a3e2b20cc224fc4d5af6dd7a3a03601",
+        "binding": "465fbae913606519d06914c7d1929c3f710f75ca5471074425af1bd721e4ed3d",
         "clause_count": 17,
         "format": "VSTD4-GDC-1",
         "literal_count": 25,

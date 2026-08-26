@@ -3,7 +3,7 @@
 > **Acronym:** GNU Privacy Guard (GPG).
 
 Contributions are welcome when they make a declared verification surface more precise,
-more independently checkable, or easier to implement without strengthening unsupported
+more checkable outside its producer, or easier to implement without strengthening unsupported
 claims. Counterexamples, incompatible parser results, and failed interoperability attempts
 are useful contributions.
 

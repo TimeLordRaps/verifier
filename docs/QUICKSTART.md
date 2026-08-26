@@ -78,7 +78,7 @@ silently converted into success.
 
 ## 6. Read the normative path
 
-1. [`standard/LADDER.md`](../standard/LADDER.md) — numbering, independent evidence,
+1. [`standard/LADDER.md`](../standard/LADDER.md) — numbering, separate evidence per layer,
    and composition.
 2. [`standard/VSTD-4.md`](../standard/VSTD-4.md) — refutability and the grounded
    decision certificate.

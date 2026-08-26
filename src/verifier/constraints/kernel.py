@@ -7,7 +7,8 @@ This is intentionally not a universal grammar IR.  The source constraint remains
 in its native language and the selected engine owns compilation.  VSTD
 standardizes only the adjacent observable seam: source identity, compiled-object
 identity, tokenizer identity, per-step token masks, state transitions, and optional
-independent post-validation.
+separately implemented post-validation. This mechanism separation does not establish
+distinct actors.
 """
 
 from __future__ import annotations

@@ -4,23 +4,23 @@
     "native_scitt_result": "SIGNED_STATEMENT_AND_INCLUSION_RECEIPT_VERIFIED",
     "native_vstd_result": "PASS",
     "reason": "native candidate-check result PASS (VSTD conformance NOT_ESTABLISHED) and exact current SCITT registration both verified",
-    "scitt_statement_sha256": "6e962795a6cd502c9c4056f27f54bec90a090d8fead110ff8d2f5fbe788a9e41",
+    "scitt_statement_sha256": "3e6f2a928abc6162511d648305a91b7fa242803f4b607c4beb91a0d8ab8391b5",
     "status": "PASS",
     "status_scope": "NATIVE_VSTD_RESULT_AND_SCITT_REGISTRATION",
     "vstd_conformance_status": "NOT_ESTABLISHED",
-    "vstd_receipt_sha256": "f7b54e72eef157ae7030e0ce6463646900d86bace341ab5306c6a725d893b629"
+    "vstd_receipt_sha256": "f8117247e97f12834206f5b024085c54b5d899e6880659d8afcebfeee2ddece1"
   },
-  "payload_sha256": "36c0b877b87a554ba9fddb2a1760456f5aa135d4f93dbd3d15d4210429c77ef1",
-  "receipt_sha256": "284ef8a624e66aafec5c83dc58d4d974f83cf8f9ebca1e76accbc9154ae668dc",
+  "payload_sha256": "a0fc13840915e31f4d4787c7503f86f789be24e4a18fa76181991fa9aaecca63",
+  "receipt_sha256": "700df05d3c99098f8dbabb0757bf24fbe46073aa3823e1f5612bb373f426cfea",
   "scitt_as_vstd_evidence": {
     "computational_verdict": "NOT_EVALUATED",
     "evidence_kind": "SCITT_TRANSPARENCY",
     "native_scitt_result": "SIGNED_STATEMENT_AND_INCLUSION_RECEIPT_VERIFIED",
     "normalized_state": "REGISTERED",
-    "payload_sha256": "36c0b877b87a554ba9fddb2a1760456f5aa135d4f93dbd3d15d4210429c77ef1",
+    "payload_sha256": "a0fc13840915e31f4d4787c7503f86f789be24e4a18fa76181991fa9aaecca63",
     "reason": "local one-entry test log; cryptographic inclusion verified, without public anchoring or production-service claims",
     "registered_at": "2026-08-23T00:00:00Z",
-    "statement_sha256": "6e962795a6cd502c9c4056f27f54bec90a090d8fead110ff8d2f5fbe788a9e41",
+    "statement_sha256": "3e6f2a928abc6162511d648305a91b7fa242803f4b607c4beb91a0d8ab8391b5",
     "trust_coordinates": {
       "accepted_issuers": [
         "https://issuer.example/vstd-scitt-demo"
@@ -34,21 +34,21 @@
   "scitt_observation": {
     "issuer": "https://issuer.example/vstd-scitt-demo",
     "native_result": "SIGNED_STATEMENT_AND_INCLUSION_RECEIPT_VERIFIED",
-    "payload_sha256": "36c0b877b87a554ba9fddb2a1760456f5aa135d4f93dbd3d15d4210429c77ef1",
+    "payload_sha256": "a0fc13840915e31f4d4787c7503f86f789be24e4a18fa76181991fa9aaecca63",
     "reason": "local one-entry test log; cryptographic inclusion verified, without public anchoring or production-service claims",
     "receipt_verified": true,
     "registered_at": "2026-08-23T00:00:00Z",
     "registration_policy": "urn:example:vstd-scitt-registration-policy:v1",
     "signed_statement_verified": true,
     "state": "REGISTERED",
-    "statement_sha256": "6e962795a6cd502c9c4056f27f54bec90a090d8fead110ff8d2f5fbe788a9e41",
+    "statement_sha256": "3e6f2a928abc6162511d648305a91b7fa242803f4b607c4beb91a0d8ab8391b5",
     "subject": "artifact:sha256:39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341",
     "transparency_service": "urn:example:vstd-scitt-local-test-log",
     "vds": "RFC9162_SHA256",
     "verification_profile": "RFC9943+RFC9942/RFC9162_SHA256"
   },
-  "statement_sha256": "6e962795a6cd502c9c4056f27f54bec90a090d8fead110ff8d2f5fbe788a9e41",
-  "transparent_statement_sha256": "0fc521a4b80c9179099415e102bb15d13aff3691fce36ab6087c45a2986ddd8d",
+  "statement_sha256": "3e6f2a928abc6162511d648305a91b7fa242803f4b607c4beb91a0d8ab8391b5",
+  "transparent_statement_sha256": "c75ff44dcc7b9630a05ad5c0040bc4c5dbb89651d47f345a18fdb4ddcb1bca7b",
   "vstd_kernel": {
     "details": "model satisfies all 1 grounded clauses",
     "hints_present": false,
@@ -63,7 +63,7 @@
     "conformance_status": "NOT_ESTABLISHED",
     "native_result": "PASS",
     "reason": "model satisfies all 1 grounded clauses",
-    "receipt_sha256": "f7b54e72eef157ae7030e0ce6463646900d86bace341ab5306c6a725d893b629",
+    "receipt_sha256": "f8117247e97f12834206f5b024085c54b5d899e6880659d8afcebfeee2ddece1",
     "state": "VERIFIED",
     "verification_profile": "VSTD4-GDC-1/reference-kernel"
   }
