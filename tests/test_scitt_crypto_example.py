@@ -37,6 +37,12 @@ def test_real_signed_statement_receipt_and_independent_consumption(tmp_path):
     assert result["scitt_observation"]["signed_statement_verified"] is True
     assert result["scitt_observation"]["receipt_verified"] is True
     assert result["composition"]["status"] == "PASS"
+    assert result["vstd_observation"]["conformance_status"] == "NOT_ESTABLISHED"
+    assert result["composition"]["vstd_conformance_status"] == "NOT_ESTABLISHED"
+    assert result["composition"]["status_scope"] == (
+        "NATIVE_VSTD_RESULT_AND_SCITT_REGISTRATION"
+    )
+    assert "conformance NOT_ESTABLISHED" in result["composition"]["reason"]
 
     schema_dir = REPO_ROOT / "receipts" / "schema"
     receipt_schema = json.loads((schema_dir / "vstd4_receipt.json").read_text())
@@ -46,9 +52,9 @@ def test_real_signed_statement_receipt_and_independent_consumption(tmp_path):
     registry = Registry().with_resource(
         certificate_schema["$id"], Resource.from_contents(certificate_schema)
     )
-    Draft202012Validator(receipt_schema, registry=registry).validate(
-        json.loads((tmp_path / "vstd_receipt.json").read_text())
-    )
+    receipt = json.loads((tmp_path / "vstd_receipt.json").read_text())
+    Draft202012Validator(receipt_schema, registry=registry).validate(receipt)
+    assert receipt["conformance_status"] == "NOT_ESTABLISHED"
 
 
 def test_application_payload_is_deterministic_but_ephemeral_cose_keys_are_not(

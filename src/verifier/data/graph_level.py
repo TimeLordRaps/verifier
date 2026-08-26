@@ -408,8 +408,8 @@ class GraphLevelResult:
     witness: Optional[DecisionCertificate]
     refutation: Optional[DecisionCertificate]
     blocking_obligations: tuple[Obligation, ...]
-    rating_basis: str = "CALLER_SUPPLIED"
-    conformance_status: str = "NOT_ESTABLISHED"
+    rating_basis: str = field(default="CALLER_SUPPLIED", init=False)
+    conformance_status: str = field(default="NOT_ESTABLISHED", init=False)
 
     @property
     def explanation(self) -> str:

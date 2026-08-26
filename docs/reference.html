@@ -27,7 +27,7 @@
 
   <main id="top">
     <div class="wrap ref-hero">
-      <div class="eyebrow">Reference &middot; verifier-standard 1.2.0 &middot; VSTD-4</div>
+      <div class="eyebrow">Reference &middot; verifier-standard 1.2.0 &middot; VSTD-4 CANDIDATE; CONFORMANCE NOT_ESTABLISHED</div>
       <h1>Inspect the whole pipeline.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
@@ -111,7 +111,7 @@
 </article>
 <article class="ref-item" id="cli-vstd-validate">
 <h3><code>vstd validate</code></h3>
-<p class="ref-help">Run implemented checks for a generic-run, VSTD-Graph, or VSTD-3 receipt.</p>
+<p class="ref-help">Run implemented receipt checks; Graph candidate validation is not conformance.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>receipt</code></td><td>positional</td><td>Receipt directory or receipt.json.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
@@ -417,7 +417,7 @@
 <article class="ref-item" id="api-require_vstd5_entry">
 <h3><code>require_vstd5_entry</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>require_vstd5_entry(result: 'DepthResult') -&gt; 'DepthResult'</code></pre>
-<p class="ref-help">Fail closed unless ``result`` carries the complete layer-4 witness.</p>
+<p class="ref-help">Reject the current unbound candidate result at the VSTD-5 boundary.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
 
 </article>
@@ -431,7 +431,7 @@
 <article class="ref-item" id="api-vstd4_depth">
 <h3><code>vstd4_depth</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>vstd4_depth(evidence: 'Mapping[str, str]', *, claim_id: 'str', binding: 'ClaimBinding') -&gt; 'DepthResult'</code></pre>
-<p class="ref-help">Compute how far up the layer-4 ladder ``evidence`` carries a claim.</p>
+<p class="ref-help">Compute a structural candidate depth from caller-supplied references.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
 
 </article></div>

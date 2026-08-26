@@ -9,7 +9,7 @@
 > Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
 > zero-identity/zero-knowledge (ZIZK).
 
-## 1.2.0 - 2026-08-25
+## 1.2.0 - UNRELEASED
 
 - Add experimental workflow profile 0.1 with deterministic canonicalization, strict
   validation, bounded work-allocation records, additive amendments and challenges,
@@ -26,7 +26,7 @@
   reference or experiment-index content.
 - Clarify VSTD's role as a verification-domain language and interchange layer that
   preserves, rather than replaces or strengthens, native verifier results.
-- Add the experimental SCITT adapter, reproducible COSE specimen, explicit semantic
+- Add the experimental SCITT adapter, rerunnable real-COSE specimen with ephemeral keys, explicit semantic
   boundary, and adversarial composition tests without claiming IETF review or payload
   truth from registration.
 - Add the bounded ZIZK experiment and documentation-lineage guide while preserving
@@ -57,6 +57,16 @@
   integrity/profile check rather than a claim verifier.
 - Preserve incompatible Graph assertions as evidence-linked conflict records and label
   rating-derived levels as `CALLER_SUPPLIED` candidates with conformance `NOT_ESTABLISHED`.
+- Classify the current VSTD-4 depth calculation as a structural candidate over
+  caller-supplied rung references with conformance `NOT_ESTABLISHED`; reject that
+  candidate at the VSTD-5 entry gate even when its candidate depth is 14.
+- Label Graph 2-4 candidates consistently on first-view, documentation, command, schema,
+  and SCITT surfaces. Keep challenge-ledger state, degradation from status already
+  recorded in a Graph, and the missing challenge-to-Graph adapter distinct.
+- Mark 1.2.0 metadata as an unreleased release candidate, omit any fabricated release
+  date, and require the exact tagged checkout to have `TIME.md` set to `Status: CLEAR`.
+- Make package/reference status explicitly say VSTD-4 candidate conformance is
+  `NOT_ESTABLISHED`, and require finalized release metadata in the tag workflow.
 - Publish the architecture ownership map linking normative documents, runtime validators,
   schemas, and conformance tests.
 - Document the five-As human traversal over existing receipt, Graph, hardware, certificate,
@@ -64,9 +74,9 @@
   identifiers and reproduction levels inferred from declarations, matching verdicts, or
   mismatching runs.
 - Restore the three non-overlapping operating controls: `AGENTS.md` for automated work,
-  `HUMANS.md` for human five-As reasoning, and `TIME.md` for live contradictions in the
-  repository's own authoritative state. TIME is clear and remains a human release check,
-  not a runtime status or continuous integration gate.
+  `HUMANS.md` for human five-As reasoning, and `TIME.md` for current repository
+  contradictions. Development may record `OPEN`; the exact tagged checkout must be
+  `CLEAR` before publication.
 - Classify generic-run `layer4_binding` as a legacy wire container rather than a layer
   abstraction. Preserve pre-version-1.0 and version-1.x reads, keep current writes lossless
   under the frozen profile, and require an explicit later profile/schema boundary before
@@ -188,16 +198,18 @@
   collection axis.
 - Hard-rename the historical specification paths while preserving issued receipt
   wire identifiers and the `v0.1.0` and `v0.2.0` release history.
-- Implement the fourteen-rung VSTD-4 refutability ladder and compute depth by
-  iterated satisfiability rather than accepting a declared level.
+- Add the fourteen-rung VSTD-4 structural calculation and compute its candidate depth by
+  iterated satisfiability rather than copying a declared level. Version 1.2.0 clarifies
+  that its caller-supplied references do not establish VSTD-4 conformance.
 - Add the `VSTD4-GDC-1` grounded decision-certificate format, independent bounded
   checker, Horn/unit-propagation tier, width-bounded and general-resolution tiers,
   and evidence-bearing `UNKNOWN` results on exhaustion.
 - Add machine-readable refutation surfaces, precommitment envelopes, availability
   assessment, append-only challenge adjudication, monotonic degradation, and
   refutability closure.
-- Compute VSTD-Graph level from membership, provenance closure, status, and edge
-  evidence, with a certificate explaining the next unreachable level.
+- Add the historical VSTD-Graph level calculation from membership, provenance closure,
+  status, and caller-supplied edge ratings, with a certificate explaining the next
+  unreachable candidate level. Version 1.2.0 labels conformance `NOT_ESTABLISHED`.
 - Replace fabricated conflict evidence, literal trust-boundary claims, and
   decorative policy certificates with checked evidence and fail-closed divergence.
 - Publish a draft VSTD-5 witness-corroboration interface. No independent witness

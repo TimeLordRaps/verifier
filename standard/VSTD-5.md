@@ -19,15 +19,18 @@ independent witness exists.
 
 ## 1. Entry gate
 
-Every VSTD-5 procedure MUST reject a claim unless its computed VSTD-4 depth is
-exactly 14:
+Every VSTD-5 procedure MUST reject a claim unless VSTD-1/2/3 preconditions and all
+VSTD-4 rung propositions have been evidence-bound and checked, establishing normative
+VSTD-4 conformance at depth 14:
 
 ```
 vstd4_depth(claim) == 14
 ```
 
-The gate is structural. A witness cannot corroborate a claim whose refutability
-does not compose.
+The gate is not satisfied by a structural candidate over caller-supplied references.
+The current reference candidate reports `conformance_status = NOT_ESTABLISHED`, and
+`require_vstd5_entry` rejects it even at candidate depth 14. A witness cannot
+corroborate a claim whose refutability does not compose.
 
 ---
 

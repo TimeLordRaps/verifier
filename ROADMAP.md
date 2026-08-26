@@ -1,6 +1,7 @@
 # Verifier Standard (VSTD) public technical roadmap
 
-> **Acronyms:** grounded decision certificate (GDC); Internet Engineering Task Force (IETF);
+> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
+> grounded decision certificate (GDC); Internet Engineering Task Force (IETF);
 > Boolean satisfiability problem (SAT); Supply Chain Integrity, Transparency, and Trust (SCITT);
 > zero-identity/zero-knowledge (ZIZK).
 
@@ -109,7 +110,7 @@ intentional experiment artifacts are present.
 
 | Track | Public artifact | Current boundary | Next gate |
 |---|---|---|---|
-| SCITT interoperability | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) | Experimental adapter, reproducible specimen, and adversarial tests; no IETF review or external interoperability result. | Independent implementation and interoperability result. |
+| SCITT interoperability | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) | Experimental adapter, rerunnable real-COSE specimen with ephemeral keys, and adversarial tests; no IETF review or external interoperability result. | Independent implementation and interoperability result. |
 | ZIZK | [`experiments/zizk_vstd/experiment.json`](experiments/zizk_vstd/experiment.json) | Code, reports, fixtures, manifest, and unresolved horizons; not a normative profile or completed protocol. | Joint review of claim boundaries and the trustless substrate. |
 | Workflow and allocation | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Strict validator, verdict-neutral GitHub adapter, generated index, and allocation records; no optimality claim or independent consumer. | A second observable adapter and independent consumer. |
 

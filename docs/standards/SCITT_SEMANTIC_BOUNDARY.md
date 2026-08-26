@@ -1,6 +1,6 @@
 # Supply Chain Integrity, Transparency, and Trust (SCITT) semantic boundary for Verifier Standard (VSTD) interoperability
 
-> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
+> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE); grounded decision certificate (GDC);
 > JavaScript Object Notation (JSON); Request for Comments (RFC); Secure Hash Algorithm 256-bit (SHA-256);
 > Transparency Service (TS); verifiable data structure proof (VDP); verifiable data structure (VDS);
 > working group (WG).
@@ -40,13 +40,15 @@ VSTD layers can establish:
 - claim-mechanics and declared falsification conditions;
 - an explicit verification surface and claim coordinate;
 - substrate/accountability evidence within VSTD-3's implemented capability model;
-- a VSTD-4 PASS, FAIL, or UNKNOWN carrying the required decision artifact;
+- an accepted VSTD4-GDC-1 certificate result of PASS, FAIL, or UNKNOWN without
+  upgrading it to VSTD-4 layer conformance;
 - grounding between a bounded logical encoding and named artifact facts;
 - independent checking of the VSTD-4 certificate without sharing verdict-producing
   code;
 - a bounded cost/memory/certificate-size ceiling and honest refusal when exceeded;
-- graph-level lineage, closure, challenge, blast-radius, and degradation results over
-  the recorded VSTD-Graph evidence.
+- Graph lineage and blast-radius queries plus candidate degradation from statuses already
+  recorded in VSTD-Graph. Rating evidence and challenge-to-Graph propagation remain
+  `NOT_ESTABLISHED`.
 
 The native solver, proof engine, signature checker, identity service, transparency
 log, or provenance system retains its own semantics and result. A loss-declared

@@ -1,6 +1,6 @@
 # Verifier Standard (VSTD)/Supply Chain Integrity, Transparency, and Trust (SCITT) cryptographic interoperability example
 
-> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
+> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE); grounded decision certificate (GDC);
 > Internet Engineering Task Force (IETF); Request for Comments (RFC); Secure Hash Algorithm 256-bit (SHA-256);
 > verifiable data structure (VDS).
 
@@ -15,8 +15,8 @@ The example executes this chain:
 
 ```text
 artifact bytes
-  -> grounded VSTD-4 digest predicate
-  -> independently checked VSTD PASS certificate
+  -> grounded VSTD4-GDC-1 digest predicate
+  -> independently checked certificate PASS
   -> deterministic experimental VSTD/SCITT payload
   -> RFC 9943-style EdDSA COSE Signed Statement
   -> RFC 9942 / RFC9162_SHA256 signed inclusion receipt
@@ -27,7 +27,9 @@ artifact bytes
 It proves, under the emitted public keys and local test-log policy, that the exact
 Signed Statement is authentic and included in the one-entry VDS, and that the exact
 embedded VSTD certificate independently checks as PASS for the artifact digest
-predicate. It does not prove artifact safety, production-service registration,
+predicate. The enclosing VSTD-4 depth is a structural candidate with conformance
+`NOT_ESTABLISHED`; this example does not establish VSTD-4 conformance or VSTD-5
+readiness. It also does not prove artifact safety, production-service registration,
 public witnessing, issuer authority outside the test, or arbitrary payload truth.
 
 ## Identity and privacy boundary
@@ -81,7 +83,7 @@ no authority outside this example.
 
 | File | Meaning |
 |---|---|
-| `vstd_receipt.json` | Native VSTD-4 receipt and grounded decision certificate. |
+| `vstd_receipt.json` | VSTD-4 structural candidate receipt and grounded decision certificate; conformance is `NOT_ESTABLISHED`. |
 | `vstd_scitt_payload.json` | Canonical application payload bytes carried by SCITT. |
 | `registration_template.json` | Human-readable normalized input; explicitly **not** COSE. |
 | `signed_statement.cose` | Real COSE_Sign1 Signed Statement. |
@@ -89,7 +91,7 @@ no authority outside this example.
 | `transparent_statement.cose` | Signed Statement with receipt attached at COSE header label 394. |
 | `issuer_public.pem` | Public key for independent statement verification. |
 | `log_public.pem` | Public key for independent receipt verification. |
-| `verification_result.json` | Native VSTD result, native SCITT observation, composition, and hashes. |
+| `verification_result.json` | Native VSTD candidate-check result, explicit VSTD conformance `NOT_ESTABLISHED`, native SCITT observation, scoped composition, and hashes. |
 
 ## Adversarial coverage
 

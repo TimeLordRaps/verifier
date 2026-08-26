@@ -29,6 +29,7 @@ from verifier.data.graph_level import (
     GRAPH_MAX_LEVEL,
     GraphCollection,
     GraphEncodingError,
+    GraphLevelResult,
     INADMISSIBLE_STATUSES,
     ObligationKind,
     certify_graph_cnf,
@@ -250,6 +251,18 @@ def test_the_witness_and_the_refutation_are_different_certificates():
     assert summary["witness_digest"] != summary["refutation_digest"]
     assert summary["rating_basis"] == "CALLER_SUPPLIED"
     assert summary["conformance_status"] == "NOT_ESTABLISHED"
+
+
+def test_caller_cannot_promote_a_graph_candidate_to_conformance():
+    with pytest.raises(TypeError, match="conformance_status"):
+        GraphLevelResult(
+            "collection:x",
+            5,
+            None,
+            None,
+            (),
+            conformance_status="ESTABLISHED",  # type: ignore[call-arg]
+        )
 
 
 def test_conflicting_lineage_is_retained_and_blocks_a_clean_level():

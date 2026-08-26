@@ -26,14 +26,15 @@ shape only; a passing validator establishes only its named implemented checks.
 | VSTD-1 generic run | `standard/VSTD-1.md` | `verifier.core.run` | `vstd1_generic_run_receipt.json` | `test_generic_run.py` |
 | VSTD-2 | `standard/VSTD-2.md` | `verifier.core.geometry` | `vstd2_receipt.json` | `test_verification_geometry.py` |
 | VSTD-3 | `standard/VSTD-3.md` | `verifier.hardware` | `vstd3_receipt.json`, `vstd3_accelerator_profile.json` | `test_vstd3_schema.py`, hardware tests |
-| VSTD-4 | `standard/VSTD-4.md` | `verifier.core.certificate`, `verifier.core.kernel`, `verifier.core.depth` | `vstd4_certificate.json`, `vstd4_receipt.json` | `test_gdc_certificate.py` |
-| VSTD-5 | `standard/VSTD-5.md` | entry gate only | `vstd5_receipt.json` | `test_vstd_schemas.py` |
+| VSTD-4 | `standard/VSTD-4.md` | certificate/kernel checks plus unbound candidate depth in `verifier.core.depth` | `vstd4_certificate.json`, `vstd4_receipt.json` | `test_gdc_certificate.py`, `test_vstd4_depth.py` |
+| VSTD-5 | `standard/VSTD-5.md` | fail-closed candidate rejection only | `vstd5_receipt.json` | `test_vstd4_depth.py`, `test_vstd_schemas.py` |
 | VSTD-Graph-1 | `standard/VSTD-Graph-1.md` | `verifier.data.models`, `verifier.data.receipt` | `vstd_graph_receipt.json` | `test_public_data.py` |
 | VSTD-Graph-2..5 | matching Graph documents | `verifier.data.graph_level` | `computed_graph_level` within `vstd_graph_receipt.json` | `test_graph_level.py` |
 
-VSTD-5 is draft. Graph-2 through Graph-5 currently compute candidate levels from
-caller-supplied ratings and return `conformance_status = NOT_ESTABLISHED`; rating-evidence
-binding is not implemented.
+VSTD-5 is draft. The VSTD-4 depth runtime and Graph-2 through Graph-5 compute candidates
+from caller-supplied references or ratings and return
+`conformance_status = NOT_ESTABLISHED`; evidence binding is not implemented. Neither
+candidate is layer conformance.
 
 ## Wire dispatch
 

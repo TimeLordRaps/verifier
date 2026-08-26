@@ -68,9 +68,9 @@
     </g>
     <g fill="#91a9b4" font-size="13" font-weight="600" text-anchor="end">
       <text data-layer="vstd-1" x="558" y="188">REF. SUBSET</text><text data-layer="graph-1" x="1118" y="188">REF. SUBSET</text>
-      <text data-layer="vstd-2" x="558" y="268" fill="#f2bf68">EXPERIMENTAL</text><text data-layer="graph-2" x="1118" y="268">IMPLEMENTED</text>
-      <text data-layer="vstd-3" x="558" y="348">IMPLEMENTED</text><text data-layer="graph-3" x="1118" y="348">IMPLEMENTED</text>
-      <text data-layer="vstd-4" x="558" y="428">IMPLEMENTED</text><text data-layer="graph-4" x="1118" y="428">IMPLEMENTED</text>
+      <text data-layer="vstd-2" x="558" y="268" fill="#f2bf68">EXPERIMENTAL</text><text data-layer="graph-2" x="1118" y="268">CANDIDATE</text>
+      <text data-layer="vstd-3" x="558" y="348">IMPLEMENTED</text><text data-layer="graph-3" x="1118" y="348">CANDIDATE</text>
+      <text data-layer="vstd-4" x="558" y="428">CANDIDATE</text><text data-layer="graph-4" x="1118" y="428">CANDIDATE</text>
       <text data-layer="vstd-5" x="558" y="508" fill="#f2bf68">DRAFT</text><text data-layer="graph-5" x="1118" y="508" fill="#f2bf68">DRAFT</text>
     </g>
 

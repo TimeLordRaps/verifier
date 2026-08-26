@@ -80,8 +80,8 @@ outputs. The edge records ancestry; it does not by itself establish causal influ
 - `evidence_refs` retains at least two evidence records rather than selecting a winner.
 
 A conflict record does not mutate the frozen artifact-status vocabulary. It makes the
-subject inadmissible to a clean computed Graph level. This release implements no
-conflict-resolution transition; later resolution must be additive and must retain the
+subject inadmissible to a clean computed Graph level. The current reference implementation
+has no conflict-resolution transition; later resolution must be additive and must retain the
 competing evidence.
 
 ---

@@ -21,11 +21,20 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = REPO_ROOT / "scripts" / "release_artifacts.py"
 RELEASE_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "release.yml"
+TIME_GATE = REPO_ROOT / "scripts" / "check_time_status.py"
+RELEASE_METADATA_GATE = REPO_ROOT / "scripts" / "check_release_metadata.py"
 
 SPEC = importlib.util.spec_from_file_location("vstd_release_artifacts", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 release_artifacts = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(release_artifacts)
+
+METADATA_SPEC = importlib.util.spec_from_file_location(
+    "vstd_release_metadata", RELEASE_METADATA_GATE
+)
+assert METADATA_SPEC is not None and METADATA_SPEC.loader is not None
+release_metadata = importlib.util.module_from_spec(METADATA_SPEC)
+METADATA_SPEC.loader.exec_module(release_metadata)
 
 
 def test_source_release_manifest_binds_head_and_exact_archive_bytes(tmp_path: Path) -> None:
@@ -304,3 +313,119 @@ def test_release_notes_use_the_github_tag_object_verification() -> None:
     assert ".verification.reason" in workflow
     assert "SIGNED_AND_GITHUB_VERIFIED" in workflow
     assert 'git verify-tag "$GITHUB_REF_NAME"' not in workflow
+
+
+@pytest.mark.parametrize(
+    "status", ["OPEN", "CONFLICTED", "", "CLEAR\nStatus: CLEAR", "CLEAR\nStatus: open"]
+)
+def test_release_time_gate_rejects_every_non_exact_clear_state(
+    tmp_path: Path, status: str
+) -> None:
+    time_file = tmp_path / "TIME.md"
+    time_file.write_text(f"# TIME\n\nStatus: {status}\n", encoding="utf-8")
+    result = subprocess.run(
+        [sys.executable, str(TIME_GATE), str(time_file)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 1
+    assert "[TIME BLOCKED]" in result.stderr
+
+
+def test_tag_release_requires_clear_time_from_the_exact_checkout(tmp_path: Path) -> None:
+    time_file = tmp_path / "TIME.md"
+    time_file.write_text("# TIME\n\nStatus: CLEAR\n", encoding="utf-8")
+    result = subprocess.run(
+        [sys.executable, str(TIME_GATE), str(time_file)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert "[TIME CLEAR]" in result.stdout
+
+    workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
+    assert "Require TIME CLEAR in the exact tagged checkout" in workflow
+    assert "python scripts/check_time_status.py" in workflow
+    assert workflow.index("python scripts/check_time_status.py") < workflow.index(
+        "python -m pytest -q"
+    )
+
+
+def _write_final_release_metadata(root: Path) -> None:
+    (root / "pyproject.toml").write_text(
+        '[project]\nname = "verifier-standard"\nversion = "1.2.0"\n',
+        encoding="utf-8",
+    )
+    (root / "CHANGELOG.md").write_text(
+        "# Changelog\n\n## 1.2.0 - 2026-08-26\n", encoding="utf-8"
+    )
+    (root / "CITATION.cff").write_text(
+        'cff-version: 1.2.0\nmessage: "Cite this published release."\n'
+        "version: 1.2.0\ndate-released: 2026-08-26\n",
+        encoding="utf-8",
+    )
+    (root / ".zenodo.json").write_text(
+        json.dumps({"version": "1.2.0", "description": "Final publication metadata."}),
+        encoding="utf-8",
+    )
+
+
+@pytest.mark.parametrize(
+    "fault",
+    (
+        "unreleased_changelog",
+        "missing_citation_date",
+        "mismatched_citation_date",
+        "candidate_citation",
+        "candidate_zenodo",
+        "package_version",
+    ),
+)
+def test_release_metadata_gate_rejects_unfinalized_or_inconsistent_state(
+    tmp_path: Path, fault: str
+) -> None:
+    _write_final_release_metadata(tmp_path)
+    if fault == "unreleased_changelog":
+        path = tmp_path / "CHANGELOG.md"
+        path.write_text(path.read_text().replace("2026-08-26", "UNRELEASED"))
+    elif fault == "missing_citation_date":
+        path = tmp_path / "CITATION.cff"
+        path.write_text(path.read_text().replace("date-released: 2026-08-26\n", ""))
+    elif fault == "mismatched_citation_date":
+        path = tmp_path / "CITATION.cff"
+        path.write_text(path.read_text().replace("2026-08-26", "2026-08-25"))
+    elif fault == "candidate_citation":
+        path = tmp_path / "CITATION.cff"
+        path.write_text(path.read_text().replace("published release", "release candidate"))
+    elif fault == "candidate_zenodo":
+        path = tmp_path / ".zenodo.json"
+        path.write_text(
+            json.dumps({"version": "1.2.0", "description": "Release-candidate metadata."})
+        )
+    else:
+        path = tmp_path / "pyproject.toml"
+        path.write_text(path.read_text().replace("1.2.0", "1.1.3"))
+
+    with pytest.raises(ValueError):
+        release_metadata.require_finalized(tmp_path, "1.2.0")
+
+
+def test_release_metadata_gate_accepts_one_final_consistent_coordinate(tmp_path: Path) -> None:
+    _write_final_release_metadata(tmp_path)
+    release_metadata.require_finalized(tmp_path, "1.2.0")
+
+
+def test_tag_release_contract_binds_main_version_gate_and_final_metadata() -> None:
+    workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
+    required = (
+        'git merge-base --is-ancestor "$GITHUB_SHA" origin/main',
+        'git rev-parse "${GITHUB_REF}^{commit}"',
+        'test "$VERSION" = "$PACKAGE_VERSION"',
+        'commits/$GITHUB_SHA/check-runs',
+        'select(.name == "conformance-gate" and .conclusion == "success")',
+        'python scripts/check_release_metadata.py --version "${GITHUB_REF_NAME#v}"',
+    )
+    for fragment in required:
+        assert fragment in workflow

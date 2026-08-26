@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Terminology: artificial intelligence (AI); application programming interface (API);
-Amazon Web Services (AWS); command-line interface (CLI); Verifier Standard (VSTD).
+Amazon Web Services (AWS); Concise Binary Object Representation (CBOR); CBOR Object Signing and
+Encryption (COSE); command-line interface (CLI); Supply Chain Integrity, Transparency, and
+Trust (SCITT); Verifier Standard (VSTD).
 
 Fail closed when public presentation surfaces drift from executable truth."""
 
@@ -200,9 +202,10 @@ def check_versions(errors: list[str]) -> None:
     expected = project_match.group(1)
     init_text = (ROOT / "src/verifier/__init__.py").read_text(encoding="utf-8")
     init_match = re.search(r'^__version__ = "([^"]+)"$', init_text, re.MULTILINE)
+    citation_text = (ROOT / "CITATION.cff").read_text(encoding="utf-8")
     citation_match = re.search(
         r"^version:\s*([^\s]+)$",
-        (ROOT / "CITATION.cff").read_text(encoding="utf-8"),
+        citation_text,
         re.MULTILINE,
     )
     zenodo = json.loads((ROOT / ".zenodo.json").read_text(encoding="utf-8"))
@@ -215,14 +218,38 @@ def check_versions(errors: list[str]) -> None:
     for label, version in found.items():
         if version != expected:
             errors.append(f"version mismatch: pyproject={expected}, {label}={version}")
-    if not re.search(rf"^## {re.escape(expected)} - \d{{4}}-\d{{2}}-\d{{2}}$", changelog, re.MULTILINE):
-        errors.append(f"CHANGELOG.md has no dated {expected} release heading")
+    dated = re.search(
+        rf"^## {re.escape(expected)} - (\d{{4}}-\d{{2}}-\d{{2}})$",
+        changelog,
+        re.MULTILINE,
+    )
+    unreleased = re.search(
+        rf"^## {re.escape(expected)} - UNRELEASED$", changelog, re.MULTILINE
+    )
+    citation_date = re.search(r"^date-released:\s*(\d{4}-\d{2}-\d{2})$", citation_text, re.MULTILINE)
+    if dated is None and unreleased is None:
+        errors.append(f"CHANGELOG.md has no dated or UNRELEASED {expected} heading")
+    elif unreleased is not None:
+        if citation_date is not None:
+            errors.append("unreleased CITATION.cff must not fabricate date-released")
+        if "release candidate" not in citation_text.lower():
+            errors.append("unreleased CITATION.cff must identify the release candidate")
+    elif citation_date is None or citation_date.group(1) != dated.group(1):
+        errors.append("CITATION.cff date-released must match the dated CHANGELOG heading")
 
 
 def check_claim_boundaries(errors: list[str]) -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     roadmap = (ROOT / "ROADMAP.md").read_text(encoding="utf-8")
     wire = (ROOT / "standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
+    reference = (ROOT / "docs/reference.html").read_text(encoding="utf-8")
+    changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    scitt_demo = (ROOT / "examples/scitt_interop/demo.py").read_text(encoding="utf-8")
+    scitt_result = json.loads(
+        (ROOT / "examples/scitt_interop/generated/verification_result.json").read_text(
+            encoding="utf-8"
+        )
+    )
     required_readme = (
         "Portable, bounded, refutable evidence for computational claims.",
         "vstd demo",
@@ -237,6 +264,19 @@ def check_claim_boundaries(errors: list[str]) -> None:
         errors.append("README.md does not disclose the canonical cross-platform CLI")
     if "`vstd` is the canonical cross-platform CLI name" not in wire:
         errors.append("WIRE_IDENTIFIERS.md does not preserve the CLI compatibility rule")
+    if "VSTD-4 CANDIDATE; CONFORMANCE NOT_ESTABLISHED" not in reference:
+        errors.append("generated reference does not bound its VSTD-4 implementation status")
+    if "reproducible COSE specimen" in changelog or "reproducible specimen" in roadmap:
+        errors.append("SCITT ephemeral-key specimen is described as byte-reproducible")
+    if "ephemeral-key COSE artifacts" not in scitt_demo:
+        errors.append("SCITT producer does not disclose its ephemeral-key artifact boundary")
+    if scitt_result.get("vstd_observation", {}).get("conformance_status") != "NOT_ESTABLISHED":
+        errors.append("SCITT verification result drops VSTD conformance status")
+    composition = scitt_result.get("composition", {})
+    if composition.get("vstd_conformance_status") != "NOT_ESTABLISHED":
+        errors.append("SCITT composition drops VSTD conformance status")
+    if composition.get("status_scope") != "NATIVE_VSTD_RESULT_AND_SCITT_REGISTRATION":
+        errors.append("SCITT composition does not state the scope of PASS")
     if "## Explicit non-goals" not in roadmap or "operational condition" not in roadmap:
         errors.append("ROADMAP.md lacks its capability and non-goal boundary")
     if (ROOT / "docs/layers/vstd-3/migration.md").exists():
@@ -297,12 +337,12 @@ def check_visual_assets(errors: list[str]) -> None:
         "vstd-1": "REF. SUBSET",
         "vstd-2": "EXPERIMENTAL",
         "vstd-3": "IMPLEMENTED",
-        "vstd-4": "IMPLEMENTED",
+        "vstd-4": "CANDIDATE",
         "vstd-5": "DRAFT",
         "graph-1": "REF. SUBSET",
-        "graph-2": "IMPLEMENTED",
-        "graph-3": "IMPLEMENTED",
-        "graph-4": "IMPLEMENTED",
+        "graph-2": "CANDIDATE",
+        "graph-3": "CANDIDATE",
+        "graph-4": "CANDIDATE",
         "graph-5": "DRAFT",
     }
     observed_status = {

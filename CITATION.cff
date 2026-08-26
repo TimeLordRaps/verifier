@@ -1,11 +1,10 @@
 cff-version: 1.2.0
-message: "If you use the Verifier Standard (VSTD) or its reference implementation, cite this release."
+message: "This describes the Verifier Standard (VSTD) 1.2.0 release candidate; cite the published release after it exists."
 title: "VSTD: A Two-Axis Ladder for Refutable Verification"
 type: software
 authors:
   - name: "TimeLordRaps"
 version: 1.2.0
-date-released: 2026-08-24
 license: Apache-2.0
 repository-code: "https://github.com/TimeLordRaps/verifier"
 keywords:

@@ -1,6 +1,6 @@
 # Verifier Standard (VSTD)-4 — Refutability
 
-> **Acronyms:** conjunctive normal form (CNF); grounded decision certificate (GDC); JavaScript Object Notation (JSON);
+> **Acronyms:** application programming interface (API); conjunctive normal form (CNF); grounded decision certificate (GDC); JavaScript Object Notation (JSON);
 > resolution asymmetric tautology (RAT); Boolean satisfiability problem (SAT);
 > Unicode Transformation Format, 8-bit (UTF-8).
 
@@ -8,7 +8,7 @@
 
 **Layer:** 4 of 5 on the object axis (see `LADDER.md`)
 **Certificate format:** `VSTD4-GDC-1`
-**Status:** implemented project specification
+**Status:** project specification; candidate computation implemented; evidence binding and conformance not implemented
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
 **Date:** 2026-08-22
@@ -39,13 +39,18 @@ vstd4_depth(claim) = max { k : CNF_4k(claim) is satisfiable }
 
 An implementation MUST NOT accept a declarant-supplied depth as authoritative.
 For a depth below 14, the `FAIL` certificate for rung `k+1` is the normative
-explanation of the ceiling. Entry to any VSTD-5 procedure requires:
+explanation of the ceiling. Entry to any VSTD-5 procedure requires established
+VSTD-4 conformance and:
 
 ```
 vstd4_depth(claim) == 14
 ```
 
-The reference implementation is `verifier.core.depth`.
+The historical `verifier.core.depth.vstd4_depth` API computes only a structural
+candidate over caller-supplied, nonempty rung references. It does not resolve those
+references, validate their rung propositions, or check VSTD-1/2/3 preconditions. Its
+result is therefore `CANDIDATE` with `conformance_status = NOT_ESTABLISHED`, including
+at candidate depth 14, and the reference VSTD-5 entry gate rejects it.
 
 ---
 
@@ -336,7 +341,7 @@ bounded checking.
 
 ## 6. Reference implementation boundary
 
-The reference producer and data structures are in:
+The reference certificate producer, candidate-depth computation, and data structures are in:
 
 * `src/verifier/core/certificate.py`
 * `src/verifier/core/grounding.py`
@@ -346,6 +351,11 @@ The reference producer and data structures are in:
 
 The trusted checker is `src/verifier/core/kernel.py`. Producer modules are not
 part of its trusted import boundary.
+
+The kernel checks the supplied certificate, grounding, and `ClaimBinding` for internal
+consistency. It does not retrieve rung references or establish the required lower-layer
+results. Kernel acceptance of a candidate certificate is therefore not VSTD-4
+conformance.
 
 No external implementation, interoperability profile, or third-party attack has
 yet been demonstrated for `VSTD4-GDC-1`. This implementation status MUST remain

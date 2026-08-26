@@ -4,7 +4,7 @@
       "name": "Roost, Tyler"
     }
   ],
-  "description": "A two-axis verification ladder and reference implementation for bounded claims, provenance graphs, substrate accountability, grounded refutation certificates, and computed verification depth.",
+  "description": "Release-candidate metadata for a two-axis verification ladder and reference implementation for bounded claims, provenance graphs, substrate accountability, grounded refutation certificates, and candidate verification depth. Publication metadata is assigned only after the release exists.",
   "keywords": [
     "verification",
     "provenance",

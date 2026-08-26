@@ -4,7 +4,8 @@ grounded decision certificate (GDC); Request for Comments (RFC);
 Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Hash Algorithm 256-bit (SHA-256);
 verifiable data structure (VDS); Verifier Standard (VSTD).
 
-Deterministic cryptographic VSTD/SCITT interoperability specimen.
+Cryptographic VSTD/SCITT interoperability specimen with a deterministic application
+payload and ephemeral-key COSE artifacts.
 
 The optional ``scitt`` extra supplies COSE and RFC 9162 receipt primitives.  A
 one-entry local test log is used so the example is self-contained.  This is a
@@ -221,6 +222,7 @@ def build_vstd_receipt() -> tuple[dict[str, Any], VstdCoordinates]:
         "claim_id": "SCITT-INTEROP-DEMO-DIGEST",
         "binding": binding.to_dict(),
         "vstd4_depth": 14,
+        "conformance_status": "NOT_ESTABLISHED",
         "rung_evidence": {
             f"4.{index}": f"decision_certificate:{certificate.digest()}#4.{index}"
             for index in range(1, 15)

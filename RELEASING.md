@@ -9,9 +9,20 @@ The release manifest is published beside the source ZIP rather than tracked insi
 source tree. This avoids a self-referential commit field and lets the manifest bind an
 exact, publicly resolvable commit.
 
-Before treating a commit as a release candidate, confirm that [`TIME.md`](TIME.md) says
-`Status: CLEAR`. This is a manual version 1.2.0 release check; development branches may
-record precise open contradictions and no continuous integration gate enforces this state.
+Development branches may record precise contradictions with [`TIME.md`](TIME.md) set to
+`Status: OPEN`; normal pull-request checks do not prohibit that state. Publication is
+different: the tag-triggered workflow runs `python scripts/check_time_status.py` against
+the exact tagged checkout and fails unless it contains exactly one `Status: CLEAR` line.
+There is no subjective override.
+
+The source version may be prepared as 1.2.0 while the release does not exist. During that
+period, `CHANGELOG.md` says `UNRELEASED`, `CITATION.cff` identifies a release candidate and
+has no `date-released`, and install instructions distinguish a source checkout from the
+latest published package. Before tagging, land an explicit release-finalization change that
+uses the actual publication date consistently in the changelog and citation metadata; do
+not fabricate or backdate it. The tag workflow enforces this with
+`python scripts/check_release_metadata.py --version <version>` and also refuses
+release-candidate Zenodo metadata.
 
 1. Merge the versioned release change through the public pull-request workflow. Require
    every protected conformance check on the exact candidate commit.
@@ -53,7 +64,9 @@ record precise open contradictions and no continuous integration gate enforces t
    distribution for
    private project names, proprietary model identifiers, local or home-directory paths,
    credentials, and personal email addresses.
-6. Create the release tag locally at the exact tested commit. Prefer a cryptographically
+6. Confirm `python scripts/check_time_status.py` passes, release-candidate metadata has
+   been finalized with the actual intended publication date, and then create the release
+   tag locally at the exact tested commit. Prefer a cryptographically
    signed annotated tag when the maintainer's signing key is registered and available.
    Rebuild using the tag coordinate. The source ZIP, wheel, and source distribution MUST
    be byte-identical to the commit-coordinate candidate. The external manifest MUST

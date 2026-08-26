@@ -464,7 +464,10 @@ class VstdVerificationEvidence:
     check state for the exact embedded receipt and retain the checker trust
     coordinates.  This is deliberately symmetric with
     :class:`ScittVerificationEvidence`, which is normalized output from a
-    native SCITT verifier rather than a replacement for one.
+    native SCITT verifier rather than a replacement for one.  ``state`` says
+    whether that bounded native check ran; it is not VSTD layer conformance.
+    The current adapter therefore emits ``conformance_status`` explicitly and
+    accepts only ``NOT_ESTABLISHED``.
     """
 
     state: VstdVerificationState
@@ -473,6 +476,7 @@ class VstdVerificationEvidence:
     checker: str
     verification_profile: str
     reason: str
+    conformance_status: str = "NOT_ESTABLISHED"
 
     def __post_init__(self) -> None:
         try:
@@ -487,6 +491,11 @@ class VstdVerificationEvidence:
         )
         for name in ("native_result", "checker", "verification_profile", "reason"):
             _nonempty(getattr(self, name), name)
+        if self.conformance_status != "NOT_ESTABLISHED":
+            raise InteropError(
+                "this experimental adapter cannot establish VSTD conformance; "
+                "conformance_status must be NOT_ESTABLISHED"
+            )
 
     def to_dict(self) -> dict[str, str]:
         return {
@@ -496,6 +505,7 @@ class VstdVerificationEvidence:
             "checker": self.checker,
             "verification_profile": self.verification_profile,
             "reason": self.reason,
+            "conformance_status": self.conformance_status,
         }
 
     @classmethod
@@ -507,7 +517,15 @@ class VstdVerificationEvidence:
             "checker",
             "verification_profile",
             "reason",
+            "conformance_status",
         }
+        # Read the pre-1.2 experimental shape fail-closed: the old object did
+        # not serialize conformance, and absence never established it.  New
+        # writers always emit the explicit status.
+        legacy_expected = expected - {"conformance_status"}
+        if set(value) == legacy_expected:
+            value = dict(value)
+            value["conformance_status"] = "NOT_ESTABLISHED"
         _exact_keys(value, expected, "VSTD verification evidence")
         try:
             state = VstdVerificationState(value["state"])
@@ -631,7 +649,11 @@ class CompositionStatus(str, Enum):
 
 @dataclass(frozen=True)
 class CompositionResult:
+    """Scoped conjunction of native results, never a conformance certificate."""
+
     status: CompositionStatus
+    status_scope: str
+    vstd_conformance_status: str
     native_vstd_result: str
     native_scitt_result: str
     reason: str
@@ -641,6 +663,8 @@ class CompositionResult:
     def to_dict(self) -> dict[str, str]:
         return {
             "status": self.status.value,
+            "status_scope": self.status_scope,
+            "vstd_conformance_status": self.vstd_conformance_status,
             "native_vstd_result": self.native_vstd_result,
             "native_scitt_result": self.native_scitt_result,
             "reason": self.reason,
@@ -783,7 +807,10 @@ def compose_results(
         reason = f"SCITT evidence state {scitt_state.value} does not establish a current registration"
     elif native_vstd in _VSTD_PASS:
         status = CompositionStatus.PASS
-        reason = "native VSTD PASS and exact current SCITT registration both verified"
+        reason = (
+            "native candidate-check result PASS (VSTD conformance "
+            "NOT_ESTABLISHED) and exact current SCITT registration both verified"
+        )
     else:
         raise InteropError(
             f"unsupported native VSTD result {native_vstd!r}; refusing to guess"
@@ -791,6 +818,8 @@ def compose_results(
 
     return CompositionResult(
         status=status,
+        status_scope="NATIVE_VSTD_RESULT_AND_SCITT_REGISTRATION",
+        vstd_conformance_status=vstd.conformance_status,
         native_vstd_result=native_vstd,
         native_scitt_result=scitt.native_result,
         reason=reason,

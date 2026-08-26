@@ -253,9 +253,11 @@ is computed:
 vstd4_depth(claim) = max { k : CNF_4k(claim) is satisfiable }
 ```
 
-The certificate for rung `k+1` explains a partial depth. Only depth 14 admits a
-claim to any VSTD-5 procedure. See `VSTD-4.md` for the normative rung graph and
-`VSTD4-GDC-1` format.
+The certificate for rung `k+1` explains a partial normative depth. Only established
+VSTD-4 conformance at depth 14 admits a claim to any VSTD-5 procedure. The current
+reference `vstd4_depth` function instead computes a structural candidate from
+caller-supplied rung references, labels conformance `NOT_ESTABLISHED`, and never admits
+VSTD-5. See `VSTD-4.md` for the normative rung graph and `VSTD4-GDC-1` format.
 
 ---
 

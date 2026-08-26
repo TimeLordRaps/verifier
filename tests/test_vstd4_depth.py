@@ -1,11 +1,10 @@
 """Terminology: identifier (ID); unsatisfiable (UNSAT); Verifier Standard (VSTD).
 
-The ladder internal to VSTD-4, and the gate it guards.
+The structural candidate ladder internal to VSTD-4, and the gate it cannot cross.
 
-``vstd4_depth`` is computed, never declared. That is the whole point: standing
-up an external verification node is VSTD-5, and reaching it must be
-*computationally costly*, because verification is the new scaling. A rung that
-could be declared would let an implementer skip the climb.
+``vstd4_depth`` computes consistency over caller-supplied rung references. The
+references are not resolved and lower-layer preconditions are not checked, so
+the result remains ``NOT_ESTABLISHED`` even when its candidate depth is 14.
 
 The tests below check the two halves of an honest answer. The witness certifies
 the rungs that were climbed; the refutation certifies why the next one was not,
@@ -99,10 +98,11 @@ def test_the_top_rung_depends_on_every_other():
 # --------------------------------------------------------------------------
 
 
-def test_full_evidence_reaches_the_top_and_admits_vstd5():
+def test_full_reference_set_reaches_only_the_candidate_top():
     result = _depth(_evidence())
     assert result.depth == MAX_DEPTH
-    assert result.admits_vstd5 is True
+    assert result.conformance_status == "NOT_ESTABLISHED"
+    assert result.admits_vstd5 is False
     assert result.refutation is None
     assert result.blocking_rungs == ()
     assert result.witness is not None
@@ -161,16 +161,26 @@ def test_no_evidence_is_depth_zero_with_a_refutation_and_no_witness():
     _assert_certificates_check(result)
 
 
-def test_the_vstd5_gate_refuses_anything_below_fourteen():
-    """Layer 4 asks *could a stranger check this?*; layer 5 asks *did one?*"""
-    for level in range(0, MAX_DEPTH):
+def test_the_vstd5_gate_refuses_every_unbound_candidate():
+    for level in range(0, MAX_DEPTH + 1):
         result = _depth(_evidence(only=level))
         assert result.admits_vstd5 is False
-        with pytest.raises(VSTD5EntryError, match="requires computed vstd4_depth"):
+        expected = (
+            "requires computed vstd4_depth"
+            if level < MAX_DEPTH
+            else "requires established VSTD-4 conformance"
+        )
+        with pytest.raises(VSTD5EntryError, match=expected):
             require_vstd5_entry(result)
-    complete = _depth(_evidence())
-    assert complete.admits_vstd5 is True
-    assert require_vstd5_entry(complete) is complete
+
+
+def test_fourteen_arbitrary_strings_cannot_establish_vstd4_or_vstd5_readiness():
+    result = _depth({rung.id: "arbitrary-nonempty-text" for rung in RUNGS})
+    assert result.depth == MAX_DEPTH
+    assert result.conformance_status == "NOT_ESTABLISHED"
+    assert result.admits_vstd5 is False
+    with pytest.raises(VSTD5EntryError, match="requires established VSTD-4 conformance"):
+        require_vstd5_entry(result)
 
 
 def test_unknown_rung_ids_are_refused():
@@ -181,6 +191,8 @@ def test_unknown_rung_ids_are_refused():
 def test_depth_summary_carries_both_certificate_digests():
     summary = _depth(_evidence(without=("4.5",))).to_dict()
     assert summary["depth"] == 4
+    assert summary["depth_kind"] == "CANDIDATE"
+    assert summary["conformance_status"] == "NOT_ESTABLISHED"
     assert summary["admits_vstd5"] is False
     assert summary["blocking_rungs"] == ["4.5"]
     assert summary["witness_digest"] is not None

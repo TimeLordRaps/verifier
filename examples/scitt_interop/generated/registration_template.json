@@ -3,7 +3,7 @@
     "mapping_version": "0.1",
     "profile": "vstd-scitt-interop-experimental-0.1",
     "receipt_media_type": "application/vnd.verifier.vstd-receipt+json",
-    "receipt_sha256": "10dace7e0fc4bbea53ee7e26965ae1e7b2f4b11e15e64b6d83ccf96742adbf41",
+    "receipt_sha256": "f7b54e72eef157ae7030e0ce6463646900d86bace341ab5306c6a725d893b629",
     "vstd_coordinates": {
       "artifact_digests": {
         "primary": "39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341"
@@ -22,7 +22,7 @@
         "memory_bound": 10,
         "verification_cost_bound": 100
       },
-      "native_canonical_digest": "10dace7e0fc4bbea53ee7e26965ae1e7b2f4b11e15e64b6d83ccf96742adbf41",
+      "native_canonical_digest": "f7b54e72eef157ae7030e0ce6463646900d86bace341ab5306c6a725d893b629",
       "native_result": "PASS",
       "provenance_references": [
         "urn:example:vstd-scitt-demo:artifact"
@@ -56,14 +56,15 @@
           ],
           "deterministic": true,
           "format_fragment": "UP,WIDTH-K,RES",
-          "implementation_hash": "sha256:49afe96d327f99b12a518529d47b1b68c16228c4688be14eca279ea3e5b14d5b",
-          "parser_hash": "sha256:a49fc58d15ec1b925b4e2bd48f5dfb350d9e9fca28044c5a0fa9ff051dc70c01",
-          "specification_hash": "sha256:f2420f7826531ffdfadb1fcb9c0d3317d330d47a1cc367328ebd1c6921af36eb"
+          "implementation_hash": "sha256:0f7f9709fd77d7ff1b6825af784cfdb1d2b429265dada6763fccba1f8d41b2d2",
+          "parser_hash": "sha256:7d05d3810219b1ef8400accd5735fbde494c4fb310c4d86f08381d4979dcde5c",
+          "specification_hash": "sha256:d823afbd1325961cf961db88832a13496637cf7ea0b162b2bb8c2cf83655a1c8"
         }
       },
       "blocking_rungs": [],
       "ceiling_refutation": null,
       "claim_id": "SCITT-INTEROP-DEMO-DIGEST",
+      "conformance_status": "NOT_ESTABLISHED",
       "receipt_id": "VFY-4-scitt-interop-demo",
       "refutation_surface": {
         "admissible_refutations": [
@@ -77,20 +78,20 @@
         ]
       },
       "rung_evidence": {
-        "4.1": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.1",
-        "4.10": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.10",
-        "4.11": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.11",
-        "4.12": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.12",
-        "4.13": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.13",
-        "4.14": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.14",
-        "4.2": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.2",
-        "4.3": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.3",
-        "4.4": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.4",
-        "4.5": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.5",
-        "4.6": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.6",
-        "4.7": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.7",
-        "4.8": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.8",
-        "4.9": "decision_certificate:11b5f590075cfed4b999419d1b8dbe9d5bb6734b5617f8228d8e557dafbb89e2#4.9"
+        "4.1": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.1",
+        "4.10": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.10",
+        "4.11": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.11",
+        "4.12": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.12",
+        "4.13": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.13",
+        "4.14": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.14",
+        "4.2": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.2",
+        "4.3": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.3",
+        "4.4": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.4",
+        "4.5": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.5",
+        "4.6": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.6",
+        "4.7": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.7",
+        "4.8": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.8",
+        "4.9": "decision_certificate:7e4138047ac2a0d17cb46939e67800d9817ef8f2a80e6a0d578b29fe561c0af7#4.9"
       },
       "schema_version": "VSTD-4",
       "status": "VALID",
@@ -148,7 +149,7 @@
           ]
         },
         "header": {
-          "binding": "0a544c944e0ecd14a40b74bacd3ffb3a443a978780e554c28cf9be0e657fda10",
+          "binding": "0b5dfd41aae194a54e3ccf49d07a8ddd5f8b638e5f215db4f999816b7cb42163",
           "clause_count": 1,
           "format": "VSTD4-GDC-1",
           "literal_count": 1,
@@ -162,7 +163,7 @@
       }
     }
   },
-  "payload_sha256": "38a21c5d1a5aa9feb99626d7631a626d5b140f39486117a9954afb54ae2fb661",
+  "payload_sha256": "36c0b877b87a554ba9fddb2a1760456f5aa135d4f93dbd3d15d4210429c77ef1",
   "representation": "normalized-registration-input-not-cose",
   "required_protected_header_projection": {
     "content_type": "application/vnd.verifier.vstd-receipt+json",

@@ -317,6 +317,7 @@ def render() -> str:
     package = importlib.import_module("verifier")
     version = package.__version__
     standard = package.__standard__
+    standard_status = package.__standard_status__
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -346,7 +347,7 @@ def render() -> str:
 
   <main id="top">
     <div class="wrap ref-hero">
-      <div class="eyebrow">Reference &middot; verifier-standard {_esc(version)} &middot; {_esc(standard)}</div>
+      <div class="eyebrow">Reference &middot; verifier-standard {_esc(version)} &middot; {_esc(standard)} {_esc(standard_status)}</div>
       <h1>Inspect the whole pipeline.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object

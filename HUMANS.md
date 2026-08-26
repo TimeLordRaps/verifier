@@ -83,6 +83,7 @@ five-As transition that gains assurance without a mechanism. Preserve both sides
 coordinates; resolve only from evidence.
 
 Do **not** escalate a receipt's `CONFLICTED` evidence, an honest `UNKNOWN`, a roadmap item,
-or speculative research to TIME. Before release, the maintainer should confirm
-`TIME.md` says `Status: CLEAR`. This is a human check in version 1.2.0, not a continuous
-integration gate; development branches may keep precise open contradictions.
+or speculative research to TIME. Development branches may keep precise open contradictions.
+For publication, the tag-triggered workflow checks the exact tagged `TIME.md` and fails
+unless it contains exactly one `Status: CLEAR` line; maintainer judgment cannot override
+that release invariant.

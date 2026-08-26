@@ -18,7 +18,7 @@ import hashlib
 import pytest
 
 from verifier.core.certificate import ClaimCoordinate
-from verifier.data.models import ArtifactStatus
+from verifier.data.models import ArtifactNode, ArtifactStatus, ArtifactType, ProvenanceHypergraph
 from verifier.hardware.anchors import AnchorError, LocalAnchorProvider
 from verifier.layer4.availability import (
     ArtifactAvailability,
@@ -426,6 +426,27 @@ def test_a_credible_challenge_actually_moves_verdict_state():
     assert ledger.status("claim:1").status is ArtifactStatus.REVOKED
 
 
+def test_challenge_records_do_not_silently_mutate_graph_state():
+    graph = ProvenanceHypergraph()
+    graph.add_artifact(
+        ArtifactNode(
+            "claim:1",
+            "claim",
+            ArtifactType.MODEL,
+            "a" * 64,
+            status=ArtifactStatus.VALID,
+        )
+    )
+    ledger = ChallengeLedger()
+    ledger.file(_challenge(), _surface())
+    ledger.adjudicate(
+        Adjudication("ch:1", ChallengeOutcome.ACCEPTED, "confirmed", "2026-02-02T00:00:00Z")
+    )
+
+    assert ledger.status("claim:1").status is ArtifactStatus.REVOKED
+    assert graph.artifacts["claim:1"].status is ArtifactStatus.VALID
+
+
 def test_a_disproven_challenge_returns_the_claim_to_valid():
     ledger = ChallengeLedger()
     ledger.file(_challenge(), _surface())
@@ -567,6 +588,7 @@ def test_the_output_is_capped_by_its_weakest_link():
     check = closure.validate()
     assert check.accepted is True
     assert check.closed_depth == 9  # not 14, not the average, not the transformation
+    assert check.conformance_status == "NOT_ESTABLISHED"
 
 
 def test_refutability_does_not_increase_under_composition():

@@ -161,7 +161,7 @@ def test_vstd4_gdc_certificate_matches_its_published_schema() -> None:
     )
 
 
-def test_vstd4_receipt_requires_the_computed_ceiling_certificate() -> None:
+def test_vstd4_candidate_receipt_is_explicit_and_keeps_legacy_shape_valid() -> None:
     certificate, binding = _certificate()
     schema = _load("vstd4_receipt.json")
     validator = Draft202012Validator(schema, registry=_registry())
@@ -171,6 +171,7 @@ def test_vstd4_receipt_requires_the_computed_ceiling_certificate() -> None:
         "claim_id": "claim:schema-test",
         "binding": binding.to_dict(),
         "vstd4_depth": 13,
+        "conformance_status": "NOT_ESTABLISHED",
         "rung_evidence": {f"4.{index}": f"sha256:{HEX}" for index in range(1, 14)},
         "witness": certificate.to_dict(),
         "ceiling_refutation": certificate.to_dict(),
@@ -178,6 +179,15 @@ def test_vstd4_receipt_requires_the_computed_ceiling_certificate() -> None:
         "status": "VALID",
     }
     validator.validate(receipt)
+    assert "does not establish VSTD-4 conformance" in schema["properties"]["status"]["description"]
+
+    legacy = dict(receipt)
+    del legacy["conformance_status"]
+    validator.validate(legacy)
+
+    receipt["conformance_status"] = "ESTABLISHED"
+    assert list(validator.iter_errors(receipt))
+    receipt["conformance_status"] = "NOT_ESTABLISHED"
 
     receipt["ceiling_refutation"] = None
     errors = list(validator.iter_errors(receipt))
@@ -185,9 +195,10 @@ def test_vstd4_receipt_requires_the_computed_ceiling_certificate() -> None:
     assert any("not of type 'object'" in error.message for error in errors)
 
 
-def test_vstd5_draft_schema_enforces_the_vstd4_entry_gate() -> None:
+def test_vstd5_draft_schema_records_shape_without_establishing_entry() -> None:
     schema = _load("vstd5_receipt.json")
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    assert "current VSTD-4 candidate cannot satisfy" in schema["description"]
     receipt = {
         "schema_version": "VSTD-5-DRAFT",
         "status": "DRAFT",

@@ -1,7 +1,7 @@
 """Terminology: conjunctive normal form (CNF); identifier (ID); unsatisfiable (UNSAT);
 Verifier Standard (VSTD).
 
-``vstd4_depth`` -- how far up the layer-4 ladder a claim actually got.
+``vstd4_depth`` -- candidate depth over caller-supplied rung references.
 
 VSTD-4 is fourteen rungs, ordered so that each is unstatable without the one
 below it. That ordering is not editorial tidiness. Standing up a genuinely
@@ -10,7 +10,7 @@ because verification is the new scaling, and layer 4 is where the cost is paid.
 The ladder makes the cost curve explicit instead of letting an implementer
 declare the top rung and skip the climb.
 
-So the depth is **computed, never declared**::
+The structural candidate is **computed, never copied from a declared depth**::
 
     vstd4_depth(claim) = max { k : CNF_4k(claim) is satisfiable }
 
@@ -25,6 +25,11 @@ in linear time. The dependency clauses look inert while the numbering is a valid
 topological order, and that is exactly the point: reorder the ladder so a rung
 depends on one above it and the formula goes unsatisfiable at a low depth,
 loudly, instead of quietly certifying a ladder that is no longer a ladder.
+
+The current producer checks reference presence and rung dependencies. It does not
+resolve those references, validate the propositions they allegedly establish, or
+check VSTD-1/2/3 preconditions. Its result is therefore a candidate with
+``conformance_status = NOT_ESTABLISHED`` and cannot admit VSTD-5.
 
 This module *produces* certificates. It is not part of the trusted computing
 base; :mod:`verifier.core.kernel` checks what it emits, and the propagation
@@ -53,7 +58,10 @@ from .certificate import (
 )
 
 MAX_DEPTH = 14
-"""Entry condition for VSTD-5: ``vstd4_depth(claim) == 14``."""
+"""Highest structural candidate depth; not sufficient for VSTD-5 entry."""
+
+DEPTH_KIND = "CANDIDATE"
+CONFORMANCE_STATUS = "NOT_ESTABLISHED"
 
 
 class VSTD5EntryError(RuntimeError):
@@ -129,12 +137,14 @@ _validate_ladder()
 
 @dataclass(frozen=True)
 class DepthResult:
-    """A computed depth, with the evidence for both halves of the answer.
+    """A computed candidate depth, with certificates for the structural answer.
 
-    ``witness`` certifies the rungs that were climbed. ``refutation`` certifies
-    why the next one was not, and its ``blocking_rungs`` name the reason. A
+    ``witness`` certifies consistency of the caller-supplied rung references.
+    ``refutation`` certifies why the next structural rung was not reached, and
+    its ``blocking_rungs`` name the reason. A
     depth reported without ``refutation`` at anything below :data:`MAX_DEPTH`
-    would be a declaration, which is the thing this module exists to avoid.
+    would be a declaration, which is the thing this module exists to avoid. The
+    references themselves and lower-layer preconditions are not validated here.
     """
 
     depth: int
@@ -144,11 +154,17 @@ class DepthResult:
 
     @property
     def admits_vstd5(self) -> bool:
-        return self.depth >= MAX_DEPTH
+        return False
+
+    @property
+    def conformance_status(self) -> str:
+        return CONFORMANCE_STATUS
 
     def to_dict(self) -> dict[str, object]:
         return {
             "depth": self.depth,
+            "depth_kind": DEPTH_KIND,
+            "conformance_status": self.conformance_status,
             "max_depth": MAX_DEPTH,
             "admits_vstd5": self.admits_vstd5,
             "blocking_rungs": list(self.blocking_rungs),
@@ -158,12 +174,12 @@ class DepthResult:
 
 
 def require_vstd5_entry(result: DepthResult) -> DepthResult:
-    """Fail closed unless ``result`` carries the complete layer-4 witness.
+    """Reject the current unbound candidate result at the VSTD-5 boundary.
 
-    VSTD-5 is draft, but its entry boundary is not: no future witness transport
-    may admit a partial layer-4 claim.  Returning the checked result makes this
-    function usable as the first line of any later VSTD-5 procedure without
-    turning the gate into a second, declarative depth field.
+    VSTD-5 is draft, but its entry boundary is not: a structural candidate over
+    caller-supplied references is not normative VSTD-4 conformance. A future
+    evidence-binding implementation needs a distinct result type and gate; it
+    must not make this candidate stronger by setting another declaration field.
     """
     if result.depth != MAX_DEPTH or result.witness is None:
         raise VSTD5EntryError(
@@ -176,7 +192,10 @@ def require_vstd5_entry(result: DepthResult) -> DepthResult:
         raise VSTD5EntryError(
             "VSTD-5 entry result carries a ceiling refutation or blocking rung"
         )
-    return result
+    raise VSTD5EntryError(
+        "VSTD-5 requires established VSTD-4 conformance; this structural "
+        f"candidate has conformance_status {result.conformance_status}"
+    )
 
 
 # --------------------------------------------------------------------------
@@ -297,12 +316,13 @@ def vstd4_depth(
     claim_id: str,
     binding: ClaimBinding,
 ) -> DepthResult:
-    """Compute how far up the layer-4 ladder ``evidence`` carries a claim.
+    """Compute a structural candidate depth from caller-supplied references.
 
     ``evidence`` maps a rung id (``"4.1"`` .. ``"4.14"``) to the content address
-    of the artifact establishing it. An absent or empty entry means the rung is
-    not established, and the resulting UNSAT certificate at the next level names
-    it.
+    claimed for the artifact establishing it. This function checks only whether
+    each value is nonempty; it does not retrieve the artifact or validate the
+    rung proposition. An absent or empty entry blocks the candidate, and the
+    resulting UNSAT certificate at the next level names it.
 
     Descends from :data:`MAX_DEPTH`, so the first satisfiable level found is the
     depth -- the ladder is monotone by construction, but searching downward

@@ -80,13 +80,13 @@ the evidence source or make the grounded claim true outside that coordinate.
 |---|---|---|---|
 | “This VSTD4-GDC-1 certificate was accepted.” | The identified reference kernel accepted the exact canonical certificate under the declared claim binding, fragment, verifier, and resource bounds. | Name the certificate digest, implementation commit, claim coordinate, cost tier, bounds, and kernel result. | The underlying evidence is authentic, the policy captured every intended condition, or the claim is globally true. |
 | “This decision is grounded.” | Every variable and clause in the accepted certificate maps to declared subjects, predicates, values, and encoding rules whose roots are bound by the certificate. | Preserve the evidence root, policy root, grounding map, and exclusions. | Unrecorded evidence does not exist, the grounding source is independent, or the physical world is completely represented. |
-| “`vstd4_depth = k`.” | Rungs `1..k` have accepted evidence in dependency order and, when `k < 14`, an accepted ceiling certificate refutes or blocks rung `k+1`. | Name the rung profile, witness certificates, ceiling certificate, budgets, and horizons. | Rungs above `k` are universally impossible or no proof can ever be found. |
+| “The reference implementation computed VSTD-4 candidate depth `k`.” | Caller-supplied nonempty references were structurally consistent through rungs `1..k` and, when `k < 14`, the candidate ceiling certificate blocks rung `k+1`. | State `CANDIDATE`, `conformance_status = NOT_ESTABLISHED`, the supplied references, certificates, budgets, and horizons. | The references establish their rung propositions, VSTD-1/2/3 passed, normative VSTD-4 conformance was established, or VSTD-5 entry is permitted. |
 | “The result is refutable.” | The published result exposes a machine-checkable falsification surface and admissible counterevidence within the declared boundary. | Name that surface, the admissible counterevidence, exclusions, and decision rule. | A separate party actually attempted refutation or independently witnessed the evidence. |
 | “The verifier returned `UNKNOWN`.” | The declared check could not establish `PASS` or `FAIL` within the implemented fragment, available evidence, or resource bound. | Preserve the indeterminacy reason and transcript. | The proposition is false, no proof exists, or a larger bound could not decide it. |
-| “The artifact is ready for VSTD-5 evaluation.” | The VSTD-4 result reached depth 14 with an accepted `PASS` witness and no ceiling refutation. | This is only the mechanical entry gate implemented by `require_vstd5_entry`. | VSTD-5 conformance, independent witnessing, or external certification has occurred. |
+| “The artifact is ready for VSTD-5 evaluation.” | **Not established by the current reference implementation.** | VSTD-5 requires evidence-bound VSTD-1/2/3 preconditions and normative VSTD-4 conformance at depth 14. `require_vstd5_entry` rejects the current unbound candidate. | Candidate depth 14, a `PASS` over the candidate formula, or nonempty references satisfy the gate. |
 
-The public reference implementation and its tests are one implementation. This
-release does not claim an external implementation, interoperability result,
+The public reference implementation and its tests are one implementation. This source
+coordinate does not claim an external implementation, interoperability result,
 security audit, independent witness, or third-party certification.
 
 ## VSTD-3 accelerator claim translations
@@ -169,12 +169,13 @@ VSTD-4 safe template:
 > establish evidence authenticity, complete policy coverage, independent
 > witnessing, or truth outside the coordinate.
 
-VSTD-5 draft boundary template:
+VSTD-5 draft boundary template for the current implementation:
 
-> The artifact passed the implemented VSTD-5 entry gate because its VSTD-4
-> result reached depth 14 with an accepted `PASS` witness. VSTD-5 remains a
-> draft specification and this release implements no VSTD-5 witness procedure.
-> Therefore no VSTD-5 conformance or independent-witness claim is made.
+> The artifact reached VSTD-4 structural candidate depth 14 with an accepted
+> certificate over caller-supplied references. Conformance remains
+> `NOT_ESTABLISHED`; the VSTD-5 entry gate rejected the candidate. VSTD-5 remains
+> a draft specification, and no VSTD-5 readiness, conformance, or
+> independent-witness claim is made.
 
 ## Prohibited shortcuts
 

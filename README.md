@@ -54,7 +54,7 @@ VSTD flagship adversarial demo
 [DEMO OK] Valid-looking proof, wrong artifact          → REJECTED
 [DEMO OK] Bound exhausted without a false answer       → ACCEPTED/UNKNOWN
 [DEMO OK] Inflated verification-cost claim             → REJECTED
-[DEMO OK] Revoked ancestor behind valid descendants    → GRAPH-LEVEL-0
+[DEMO OK] Revoked ancestor behind valid descendants    → GRAPH-CANDIDATE-0
 ```
 
 These are bounded checks over included specimens—not evidence of empirical truth,
@@ -79,7 +79,9 @@ Ordinary computational results often omit machine-readable answers to four quest
 VSTD stores that interoperable boundary in receipts and provenance hypergraphs. The reference
 implementation can validate stable receipt content, reproduce declared mechanisms,
 check grounded decision certificates, and compute collection-level ceilings from
-recorded ancestry and caller-supplied object and edge ratings.
+recorded ancestry and caller-supplied object and edge ratings. VSTD-4 depth and Graph
+layers 2-4 are candidate computations with conformance `NOT_ESTABLISHED`; neither
+caller-supplied references nor ratings establish layer conformance.
 
 ## Two axes; evidence never substitutes
 
@@ -96,8 +98,10 @@ imply, upgrade, or repair a lower-layer result.
 | 5 | Witness corroboration | Corroborated verification network |
 
 An aggregate depth of `N` is valid only when distinct evidence passes every layer from
-1 through `N`. Layers 1–4 are self-discernable; layer 5 requires another party to
-exist, act, and be independent. VSTD-5 and its witness protocol remain **DRAFT**.
+1 through `N`. The specification defines layers 1-4 without requiring another party,
+but the current VSTD-4 candidate does not establish aggregate depth 4. Layer 5 requires
+another party to exist, act, and be independent. VSTD-5 and its witness protocol remain
+**DRAFT**.
 
 The same bound development graph carries artifact support forward from parent to child
 and diagnostic Rust backward from child to ancestor. Neither direction becomes actor
@@ -179,8 +183,8 @@ The distribution name is `verifier-standard`; the base install has no required
 third-party runtime dependencies.
 
 ```bash
-python -m pip install "verifier-standard==1.2.0"
-python -m pip install .
+python -m pip install verifier-standard  # latest published release
+python -m pip install .                  # current 1.2.0 release-candidate checkout
 python -m pip install ".[yaml]"        # YAML manifests
 python -m pip install ".[jsonschema]"  # schema validation
 python -m pip install ".[llguidance]"  # optional constraint adapter

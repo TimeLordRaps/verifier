@@ -6,8 +6,9 @@ Layer 4 must define what happens when someone says *this verdict is wrong*,
 even though nobody has yet. A challenge mechanism that exists but does not move
 verdict state is item 7 on the challenge-theater list, and until now this
 repository was on that list: ``ArtifactStatus.CHALLENGED`` has existed in
-``verifier.data.models`` with **no producer anywhere in the tree**. This
-module is its producer.
+``verifier.data.models`` with **no producer anywhere in the tree**. This module
+produces challenge-ledger claim state only; it is not an adapter that mutates or
+binds that state into a VSTD-Graph artifact.
 
 The state machine::
 

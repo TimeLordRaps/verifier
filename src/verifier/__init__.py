@@ -8,7 +8,10 @@ from importlib import import_module
 from typing import TYPE_CHECKING, Any
 
 __version__ = "1.2.0"
+# This names the highest project-specification coordinate exposed by the package;
+# it is not a conformance claim. Keep the adjacent status when presenting it.
 __standard__ = "VSTD-4"
+__standard_status__ = "CANDIDATE; CONFORMANCE NOT_ESTABLISHED"
 
 _LAZY_EXPORTS = {
     "VerificationVerdict": ("verifier.core.checker", "VerificationVerdict"),

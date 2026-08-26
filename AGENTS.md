@@ -19,9 +19,11 @@ native work. The distribution is `verifier-standard`, the import package is `ver
 and `vstd` is the canonical command.
 
 Two independent axes: `VSTD-1..5` (object mechanics) and `VSTD-Graph-1..5` (collection
-dynamics). Layers 1-4 are implemented; **layer 5 is DRAFT**. An aggregate depth of `N`
-holds only when distinct evidence passes every layer from 1 through `N`. A higher-layer
-result never supplies, implies, upgrades, or repairs a lower-layer one.
+dynamics). Implementation status is layer-specific: the current VSTD-4 and Graph 2-4
+depth mechanisms compute candidates over caller-supplied references or ratings with
+conformance `NOT_ESTABLISHED`; **layer 5 is DRAFT**. An aggregate depth of `N` holds
+only when distinct evidence passes every layer from 1 through `N`. A higher-layer result
+never supplies, implies, upgrades, or repairs a lower-layer one.
 
 This is founder-maintained alpha project work. It is **not** an accredited, consensus,
 IETF, ISO, or W3C standard, and it has no demonstrated external adoption. Do not write
@@ -46,8 +48,9 @@ possible, leave a precise live entry instead of deleting or harmonizing either s
 Use TIME for disagreements among normative documents, schemas, runtime behavior,
 conformance tests, or public implementation claims. Do not use it for an honestly represented
 `UNKNOWN`, a receipt or Graph `CONFLICTED` state, ordinary design work, or a roadmap item.
-`TIME == CLEAR` is a human release-candidate check for version 1.2.0, not a continuous
-integration gate; development branches may retain exact unresolved entries.
+`TIME == CLEAR` is a release invariant for version 1.2.0. Development branches and normal
+pull-request checks may retain exact unresolved entries, but the tag-triggered publication
+workflow must reject the exact tagged checkout unless its status is `CLEAR`.
 
 ## 2. Prime directive
 
@@ -153,8 +156,9 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
   and blockers.
 - `src/verifier/experimental_workflow/` — optional workflow/profile interchange; it
   records allocation but never grants a VSTD verdict from repository state.
-- `scripts/` — `check_presentation.py`, `release_artifacts.py`, `build_pages.py`,
-  `build_reference.py`, and `build_experiment_index.py`.
+- `scripts/` — presentation, release-state, artifact, Pages, reference, and experiment-index
+  gates, including `check_presentation.py`, `check_time_status.py`,
+  `check_release_metadata.py`, and `release_artifacts.py`.
 - `tests/` — flat `tests/test_*.py`, no `conftest.py`.
 
 ## 5. Invariants that must not be refactored away

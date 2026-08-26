@@ -356,14 +356,14 @@ def _poisoned_ancestor() -> DemoResult:
         and refutation_check.verdict is Verdict.FAIL
     )
     observed = (
-        f"GRAPH-LEVEL-{result.level}; "
+        f"GRAPH-CANDIDATE-{result.level}; "
         f"{blockers[0].observed if blockers else 'NO-BLOCKER'}"
     )
     return DemoResult(
         scenario="poisoned-ancestor",
         title="Revoked ancestor behind valid descendants",
         question="Does a poisoned transitive ancestor cap the collection's graph level?",
-        expected="GRAPH-LEVEL-0; REVOKED blocker; checked refutation",
+        expected="GRAPH-CANDIDATE-0; REVOKED blocker; checked refutation",
         observed=observed,
         ok=ok,
         details=result.explanation,

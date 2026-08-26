@@ -14,7 +14,7 @@ EXPECTED_OBSERVATIONS = {
     "wrong-artifact": "REJECTED",
     "honest-unknown": "ACCEPTED/UNKNOWN",
     "inflated-tier": "REJECTED",
-    "poisoned-ancestor": "GRAPH-LEVEL-0; REVOKED",
+    "poisoned-ancestor": "GRAPH-CANDIDATE-0; REVOKED",
 }
 
 

@@ -240,8 +240,11 @@ def test_registered_vstd_pass_composes_to_pass_only_for_exact_artifact():
     payload = _payload()
     result = _compose(payload, _scitt(payload))
     assert result.status is CompositionStatus.PASS
+    assert result.status_scope == "NATIVE_VSTD_RESULT_AND_SCITT_REGISTRATION"
+    assert result.vstd_conformance_status == "NOT_ESTABLISHED"
     assert result.native_vstd_result == "PASS"
     assert result.native_scitt_result == "registered"
+    assert "conformance NOT_ESTABLISHED" in result.reason
 
 
 def test_registered_scitt_cannot_create_pass_without_bound_vstd_verification():
@@ -416,7 +419,17 @@ def test_scitt_verification_evidence_round_trip():
 
 def test_vstd_verification_evidence_round_trip_and_closed_shape():
     evidence = _vstd(_payload())
+    assert evidence.to_dict()["conformance_status"] == "NOT_ESTABLISHED"
     assert VstdVerificationEvidence.from_dict(evidence.to_dict()) == evidence
+
+    legacy = evidence.to_dict()
+    del legacy["conformance_status"]
+    assert VstdVerificationEvidence.from_dict(legacy) == evidence
+
+    promoted = evidence.to_dict()
+    promoted["conformance_status"] = "ESTABLISHED"
+    with pytest.raises(InteropError, match="cannot establish VSTD conformance"):
+        VstdVerificationEvidence.from_dict(promoted)
 
     malformed = evidence.to_dict()
     malformed["extra"] = "guess me"

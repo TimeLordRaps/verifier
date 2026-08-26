@@ -13,10 +13,12 @@ emulator, offline adapters, provenance composition, and conformance suite. It is
 claim that accelerator vendors implemented the firmware contract or accepted the
 specification.
 
-VSTD-4 is implemented for the declared grounded-certificate, computed-depth,
-availability, precommitment, challenge, degradation, and composition surfaces.
-`VSTD4-GDC-1` has no demonstrated independent implementation or external
-interoperability. VSTD-5 remains draft and has no shipped witness procedure.
+VSTD-4 ships grounded-certificate/kernel checks and separate availability,
+precommitment, challenge, degradation, and composition mechanisms. Its depth runtime
+computes only a structural candidate over caller-supplied references with conformance
+`NOT_ESTABLISHED`; no mechanism binds all rung propositions and VSTD-1/2/3 preconditions
+into VSTD-4 conformance. `VSTD4-GDC-1` has no demonstrated independent implementation
+or external interoperability. VSTD-5 remains draft and has no shipped witness procedure.
 
 ## Layer and release states
 
@@ -52,7 +54,7 @@ intended next governance step is independent implementation feedback followed by
 venue with explicit copyright and patent terms.
 
 The repository's Apache License 2.0 governs the specification, documentation, and
-reference implementation in this release. Its contributor patent grant is a project
+reference implementation at this source coordinate. Its contributor patent grant is a project
 license term, not a substitute for a neutral standards venue's intellectual-property
 policy or a separate contributor agreement.
 

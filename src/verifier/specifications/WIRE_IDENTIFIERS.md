@@ -5,8 +5,8 @@
 **Status:** normative for wire-identifier dispatch; filename history is informative
 **Date:** 2026-08-22
 
-VSTD has no demonstrated external adoption or independent implementation as of this
-release. This document therefore does not prescribe an adopter migration. It records
+VSTD has no demonstrated external adoption or independent implementation at this source
+coordinate. This document therefore does not prescribe an adopter migration. It records
 identifiers and filenames that appeared in the project's own public releases so that
 those artifacts are not silently reinterpreted.
 
