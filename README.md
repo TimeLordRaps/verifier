@@ -120,6 +120,7 @@ separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
 | Use VSTD beside existing supply-chain/provenance systems | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
 | Inspect the experimental IETF SCITT interoperability profile | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) |
 | Review exact public claim limits | [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md) |
+| Operate or review the repository as a maintainer | [`HUMANS.md`](HUMANS.md), then [`TIME.md`](TIME.md) |
 
 The experimental workflow profile has an offline, verdict-neutral CLI surface:
 
@@ -243,6 +244,8 @@ instrumentation.
 - Public technical direction: [`ROADMAP.md`](ROADMAP.md).
 - Contribution rules: [`CONTRIBUTING.md`](CONTRIBUTING.md).
 - Automated-contributor rules: [`AGENTS.md`](AGENTS.md).
+- Human operating and reasoning guide: [`HUMANS.md`](HUMANS.md).
+- Live repository-contradiction status: [`TIME.md`](TIME.md).
 - Governance and release authority: [`GOVERNANCE.md`](GOVERNANCE.md).
 - Security and disclosure: [`SECURITY.md`](SECURITY.md).
 - Release construction and attestations: [`RELEASING.md`](RELEASING.md).

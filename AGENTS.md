@@ -29,6 +29,26 @@ text implying otherwise. Orientation: [`README.md`](README.md),
 [`standard/LADDER.md`](standard/LADDER.md),
 [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md), [`GOVERNANCE.md`](GOVERNANCE.md).
 
+### 1.1 Operating control surfaces
+
+- [`AGENTS.md`](AGENTS.md) contains automated-contributor rules.
+- [`HUMANS.md`](HUMANS.md) contains the human operating and reasoning guide.
+- [`TIME.md`](TIME.md) announces unresolved contradictions in the repository's current
+  authoritative state; it is not a standard, roadmap, or runtime receipt.
+
+Read `TIME.md` before substantive work. `Status: CLEAR` means only that no unresolved
+repository contradiction is currently recorded. If its status is not clear, preserve both
+claims and their exact coordinates, apply the authority order in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), and repair only what the evidence resolves.
+Do not continue work whose conclusion depends on the unresolved seam; if safe repair is not
+possible, leave a precise live entry instead of deleting or harmonizing either side.
+
+Use TIME for disagreements among normative documents, schemas, runtime behavior,
+conformance tests, or public implementation claims. Do not use it for an honestly represented
+`UNKNOWN`, a receipt or Graph `CONFLICTED` state, ordinary design work, or a roadmap item.
+`TIME == CLEAR` is a human release-candidate check for version 1.2.0, not a continuous
+integration gate; development branches may retain exact unresolved entries.
+
 ## 2. Prime directive
 
 > Changes that strengthen a claim without stronger evidence are non-conforming.

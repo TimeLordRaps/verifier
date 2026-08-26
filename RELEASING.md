@@ -9,6 +9,10 @@ The release manifest is published beside the source ZIP rather than tracked insi
 source tree. This avoids a self-referential commit field and lets the manifest bind an
 exact, publicly resolvable commit.
 
+Before treating a commit as a release candidate, confirm that [`TIME.md`](TIME.md) says
+`Status: CLEAR`. This is a manual version 1.2.0 release check; development branches may
+record precise open contradictions and no continuous integration gate enforces this state.
+
 1. Merge the versioned release change through the public pull-request workflow. Require
    every protected conformance check on the exact candidate commit.
 2. From a clean checkout of that commit, run:

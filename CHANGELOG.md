@@ -63,6 +63,10 @@
   reproduction, and SCITT machinery without adding a wire format; reject duplicate Graph
   identifiers and reproduction levels inferred from declarations, matching verdicts, or
   mismatching runs.
+- Restore the three non-overlapping operating controls: `AGENTS.md` for automated work,
+  `HUMANS.md` for human five-As reasoning, and `TIME.md` for live contradictions in the
+  repository's own authoritative state. TIME is clear and remains a human release check,
+  not a runtime status or continuous integration gate.
 
 ## 1.1.3 - 2026-08-22
 
