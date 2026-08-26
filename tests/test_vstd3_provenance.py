@@ -131,6 +131,7 @@ def test_missing_declared_output_is_rejected_without_partial_mutation() -> None:
         "transformations": [],
         "contributors": [],
         "rights": [],
+        "conflicts": [],
     }
 
 

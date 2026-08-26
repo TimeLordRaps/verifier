@@ -206,17 +206,20 @@ class VstdReceipt:
 
 
 def generate_receipt_markdown_report(receipt: VstdReceipt) -> str:
-    """Generate human-readable audit report for the receipt."""
+    """Generate a human-readable checker report for the receipt."""
     audit = receipt.independent_audit
     prov = receipt.provenance
     claim = receipt.claim
+
+    independence = audit.independence_basis
 
     return f"""# VSTD Receipt Report — {receipt.receipt_id}
 
 > **Canonical Digest:** `{receipt.canonical_digest}`
 > **Schema Version:** `{receipt.schema_version}`
 > **Verification Status:** `{claim.status}`
-> **Independent Audit Verdict:** `{audit.overall_verdict.value}`
+> **Checker Verdict:** `{audit.overall_verdict.value}`
+> **Independent Verification:** `{'EVIDENCED' if independence.independently_verified else 'NOT_DEMONSTRATED'}`
 
 ---
 
@@ -233,9 +236,12 @@ def generate_receipt_markdown_report(receipt: VstdReceipt) -> str:
 
 ---
 
-## 2. Independent Audit (VSTD Independent Checker)
+## 2. Bundled Checker Result
 
-The verification was evaluated by an independent checker with zero shared solver code.
+The bundled checker used its recorded implementation and trusted computing base. Running
+it twice, or obtaining matching results, does not establish that separate independent
+actors performed the runs. Actor, implementation, and runtime separation require their
+own bound evidence.
 
 - **SAT Status:** `{'Satisfiable' if audit.sat_result.satisfiable else 'Unsatisfiable'}` (decisions={audit.sat_result.decisions_count}, propagations={audit.sat_result.propagations_count})
 - **Grounding Status:** `{audit.grounding_result.grounding_status.value}`
@@ -249,6 +255,11 @@ The verification was evaluated by an independent checker with zero shared solver
 ### Trusted Computing Base (TCB)
 ```yaml
 {chr(10).join(f"{k}: {v}" for k, v in audit.trusted_computing_base.items())}
+```
+
+### Independence Basis
+```yaml
+{chr(10).join(f"{k}: {v}" for k, v in independence.to_dict().items())}
 ```
 
 ---
@@ -270,7 +281,7 @@ The verification was evaluated by an independent checker with zero shared solver
 
 ## 4. Reproducibility Instructions
 
-To reproduce this receipt independently using the VSTD CLI:
+To reproduce the stored checks using the VSTD CLI:
 
 ```bash
 vstd reproduce receipts/{receipt.receipt_id}

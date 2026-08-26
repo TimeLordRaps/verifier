@@ -39,6 +39,18 @@
   extraction is not independent verification, and unverified determinism is `UNKNOWN`.
 - Publish a Pages guide index and enforce language, title, viewport, main-region, skip-link,
   image-alt, labelled-navigation, generated-reference, and local-link checks in CI.
+- Fail closed on malformed generic-run receipts, publish their exact schema, and dispatch
+  the frozen `VSTD-0.1` wire identifier by required receipt profile.
+- Package every normative specification, verify byte identity, and smoke-test the built
+  wheel outside the source checkout so installed specification bindings cannot silently
+  become unavailable.
+- Bind the bundled checker to VSTD-1, record actor and execution separation explicitly,
+  and never infer independent actors from a historical field name, repeated runs, or
+  matching results.
+- Preserve incompatible Graph assertions as evidence-linked conflict records and label
+  rating-derived levels as `CALLER_SUPPLIED` candidates with conformance `NOT_ESTABLISHED`.
+- Publish the architecture ownership map linking normative documents, runtime validators,
+  schemas, and conformance tests.
 
 ## 1.1.3 - 2026-08-22
 

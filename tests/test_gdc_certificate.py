@@ -584,6 +584,7 @@ def test_trusted_computing_base_is_hashes_not_a_literal_dict():
     descriptor = IndependentAuditor.verifier_descriptor()
     assert descriptor.implementation_hash.startswith("sha256:")
     assert descriptor.specification_hash.startswith("sha256:")
+    assert descriptor.certificate_format == "VSTD1-CHECKER-REPORT"
 
     # Computed from the file on disk, not from a string constant.
     import hashlib
@@ -592,6 +593,11 @@ def test_trusted_computing_base_is_hashes_not_a_literal_dict():
         Path(checker.__file__).read_bytes()
     ).hexdigest()
     assert descriptor.implementation_hash == expected
+
+    expected_specification = "sha256:" + hashlib.sha256(
+        (Path(__file__).resolve().parents[1] / "standard" / "VSTD-1.md").read_bytes()
+    ).hexdigest()
+    assert descriptor.specification_hash == expected_specification
 
     # And it declares what it actually implements, not VSTD4-GDC-1.
     assert descriptor.certificate_format != FORMAT

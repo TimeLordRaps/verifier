@@ -1,6 +1,6 @@
 # Verifier Standard (VSTD) frozen wire identifiers and historical filenames
 
-> **Acronym:** command-line interface (CLI).
+> **Acronyms:** Boolean satisfiability problem (SAT); command-line interface (CLI).
 
 **Status:** normative for wire-identifier dispatch; filename history is informative
 **Date:** 2026-08-22
@@ -16,7 +16,9 @@ semantic versions independently.
 ## 1. Frozen receipt wire identifiers
 
 A filename or current layer label does not change the meaning of an issued receipt.
-Readers MUST dispatch a receipt by its wire identifier:
+Readers MUST first dispatch by wire identifier. Where a frozen identifier carries more
+than one released profile, they MUST then dispatch by the profile discriminator and MUST
+NOT validate one profile against another profile's shape:
 
 | Current layer document | Frozen wire identifier |
 |---|---|
@@ -27,6 +29,25 @@ Readers MUST dispatch a receipt by its wire identifier:
 
 New layer-4 and layer-5 documents use their own schemas without changing historical
 canonical digests.
+
+`VSTD-0.1` has two claim-mechanics profiles. A receipt with
+`receipt_kind = "generic_computational_run"` uses
+`vstd1_generic_run_receipt.json`. Historical SAT/derivation receipts predate the
+discriminator and use `vstd1_receipt.json` only when their required `claim`, `evidence`,
+`target_result`, and `independent_audit` fields are present. Missing or unknown profile
+information fails closed; it is not permission to guess a shape.
+
+The bundled checker descriptor used `certificate_format = "VSTD3-INDEPENDENT-AUDIT"`
+through release `1.1.3` even though it checked VSTD-1 claim mechanics. That historical
+value remains attributable to those receipts but does not establish VSTD-3 conformance.
+New `1.2.0` receipts use `VSTD1-CHECKER-REPORT`, bind `VSTD-1.md`, and record actor,
+implementation, and runtime separation explicitly. Neither descriptor name proves that
+separate actors performed producer and checker runs.
+
+The generic-run field name `layer4_binding` is also historical. It carries VSTD-1
+refutation metadata, not a VSTD-4 grounded decision certificate. New captures include
+`vstd4_conformance = "NOT_EVALUATED"`; field presence never dispatches the receipt to
+VSTD-4.
 
 ### 1.1 Non-wire vocabulary
 

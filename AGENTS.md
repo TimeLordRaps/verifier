@@ -164,10 +164,9 @@ frozen; readers dispatch on them, not on filenames. Released artifacts are immut
 corrections are additive only. See
 [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
 
-**Packaged specification bytes.** Editing `LADDER.md`, `VSTD-3.md`, `VSTD-4.md`, or
-`WIRE_IDENTIFIERS.md` under `standard/` requires copying the exact bytes into
-`src/verifier/specifications/`. `tests/test_packaged_specifications.py` compares them
-byte-for-byte.
+**Packaged specification bytes.** Every `standard/*.md` file has a byte-identical
+installed copy under `src/verifier/specifications/` so verifier descriptors do not depend
+on a source checkout. `tests/test_packaged_specifications.py` enforces the complete set.
 
 **Schema `$id` is a live route.** Every `receipts/schema/*.json` must carry
 `"$id": "https://timelordraps.github.io/verifier/schemas/<filename>"`. `scripts/build_pages.py`

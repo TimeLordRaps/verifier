@@ -33,8 +33,8 @@
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
       Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); and YAML Ain't Markup Language
       (YAML).</p>
-      <p class="lead">Every command, argument, public export, and dispatch edge below is read
-      out of the installed package when this page is built, by
+      <p class="lead">Every command, argument, top-level export, and listed dispatch edge below
+      is read out of the installed package when this page is built, by
       <code>scripts/build_reference.py</code>, and the presentation tests fail closed when the
       committed page drifts &mdash; so it cannot describe behaviour the implementation no
       longer has.</p>
@@ -59,7 +59,7 @@
 <tr><td><code>vstd demo</code></td><td>Runs the four adversarial specimens in-process and reports whether each defensive outcome matched its declared invariant.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:run_demo</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:demo_report</code></a></td></tr>
 <tr><td><code>vstd plan</code></td><td>Resolves a manifest's command and declared paths without executing anything.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:describe_run_plan</code></a></td></tr>
 <tr><td><code>vstd run</code></td><td>Executes a trusted manifest without sandboxing, captures the observed execution, and writes a canonically digested receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:capture_run</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt:compute_canonical_digest</code></a></td></tr>
-<tr><td><code>vstd validate</code></td><td>Dispatches on the receipt's frozen wire identifier and runs its implemented checks. Generic-run validation checks only the stable digest; other receipt kinds enforce their separately documented structure and evidence rules.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:validate_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:validate_data_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
+<tr><td><code>vstd validate</code></td><td>Dispatches on the receipt's frozen wire identifier and runs its implemented checks. Generic-run validation enforces its required structure and stable digest; other receipt kinds enforce their separately documented structure and evidence rules.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:validate_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:validate_data_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
 <tr><td><code>vstd inspect</code></td><td>Prints the claim coordinate, digest, and verdict surface of a stored receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:inspect_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/receipt.py"><code>verifier.hardware.receipt:load_vstd3_receipt</code></a></td></tr>
 <tr><td><code>vstd reproduce</code></td><td>Replays only the mechanisms a stored receipt actually carries; physical hardware execution is refused rather than simulated.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:reproduce_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:reproduce_data_receipt</code></a></td></tr>
 <tr><td><code>vstd impact</code></td><td>Finds stored run receipts whose recorded ancestry reaches a revoked provenance artifact.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:find_run_receipts_impacted_by_revocation</code></a></td></tr>
@@ -340,10 +340,11 @@
     <section id="api">
       <div class="wrap">
         <div class="eyebrow">API</div>
-        <h2>Public Python exports.</h2>
+        <h2>Top-level Python exports.</h2>
         <p class="section-lead">The names in <code>verifier.__all__</code>, with their live
-        signatures and declared docstrings. Anything not listed here is internal and carries no
-        wire-identifier or version guarantee.</p>
+        signatures and declared docstrings. Public subpackage surfaces are not exhaustively
+        listed here; use the <a href="https://github.com/TimeLordRaps/verifier/blob/main/docs/ARCHITECTURE.md">architecture map</a>
+        to reach their owning modules, schemas, and tests.</p>
         <div class="ref-list"><article class="ref-item" id="api-DecisionCertificate">
 <h3><code>DecisionCertificate</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>DecisionCertificate(header: 'CertificateHeader', formula: 'tuple[tuple[int, ...], ...]', grounding: 'Grounding', decision: 'DecisionBlock', hints: 'dict[str, Any]' = &lt;factory&gt;) -&gt; None</code></pre>

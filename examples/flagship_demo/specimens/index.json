@@ -37,7 +37,7 @@
       "title": "Inflated verification-cost claim"
     },
     {
-      "details": "collection:demo holds at graph level 0. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
+      "details": "collection:demo computes to candidate graph level 0 from caller-supplied ratings; conformance is not established. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
       "expected": "GRAPH-LEVEL-0; REVOKED blocker; checked refutation",
       "observed": "GRAPH-LEVEL-0; REVOKED",
       "ok": true,

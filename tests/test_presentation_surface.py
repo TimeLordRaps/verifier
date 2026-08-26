@@ -117,6 +117,12 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
         )
 
 
+def test_architecture_map_names_every_published_schema() -> None:
+    architecture = (ROOT / "docs" / "ARCHITECTURE.md").read_text(encoding="utf-8")
+    for schema in (ROOT / "receipts" / "schema").glob("*.json"):
+        assert schema.name in architecture, schema.name
+
+
 def test_pages_builder_refuses_to_merge_into_existing_content(tmp_path: Path) -> None:
     path = ROOT / "scripts/build_pages.py"
     spec = importlib.util.spec_from_file_location("build_pages_safety", path)
@@ -137,8 +143,8 @@ def test_pages_builder_refuses_to_merge_into_existing_content(tmp_path: Path) ->
     assert marker.read_text(encoding="utf-8") == "keep\n"
 
 
-def test_generated_reference_covers_every_command_and_public_export() -> None:
-    """The docs tab is generated, not asserted: it must list the live surface."""
+def test_generated_reference_covers_commands_and_top_level_exports() -> None:
+    """The docs tab is generated and must list its declared live surface."""
 
     path = ROOT / "scripts/build_reference.py"
     spec = importlib.util.spec_from_file_location("build_reference_coverage", path)

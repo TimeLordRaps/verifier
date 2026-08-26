@@ -165,6 +165,26 @@ class ArtifactNode:
 
 
 @dataclass(frozen=True)
+class ConflictRecord:
+    """Retained incompatible evidence about one artifact or transformation field."""
+
+    conflict_id: str
+    subject_id: str
+    predicate: str
+    competing_values: tuple[str, ...]
+    evidence_refs: tuple[str, ...]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "conflict_id": self.conflict_id,
+            "subject_id": self.subject_id,
+            "predicate": self.predicate,
+            "competing_values": list(self.competing_values),
+            "evidence_refs": list(self.evidence_refs),
+        }
+
+
+@dataclass(frozen=True)
 class HyperedgePort:
     artifact_id: str
     role: str  # e.g., INPUT_SHARD, CONFIG, BASE_WEIGHTS, TRAINING_SPLIT, OUTPUT_CHECKPOINT
@@ -238,6 +258,7 @@ class ProvenanceHypergraph:
         self.transformations: dict[str, TransformationHyperedge] = {}
         self.contributors: dict[str, ContributorSpec] = {}
         self.rights: dict[str, RightsSpec] = {}
+        self.conflicts: dict[str, ConflictRecord] = {}
 
     def add_artifact(self, artifact: ArtifactNode) -> str:
         self.artifacts[artifact.artifact_id] = artifact
@@ -254,6 +275,13 @@ class ProvenanceHypergraph:
     def add_rights(self, rights: RightsSpec) -> str:
         self.rights[rights.rights_id] = rights
         return rights.rights_id
+
+    def add_conflict(self, conflict: ConflictRecord) -> str:
+        self.conflicts[conflict.conflict_id] = conflict
+        return conflict.conflict_id
+
+    def has_conflict(self, subject_id: str) -> bool:
+        return any(record.subject_id == subject_id for record in self.conflicts.values())
 
     def incoming_hyperedges(self, artifact_id: str) -> list[TransformationHyperedge]:
         """Hyperedges that produce artifact_id as an output."""
@@ -354,6 +382,20 @@ class ProvenanceHypergraph:
                     errors.append(
                         f"transformation {transformation_id} has an empty role for {port.artifact_id}"
                     )
+        subjects = set(self.artifacts) | set(self.transformations)
+        for conflict_id, conflict in sorted(self.conflicts.items()):
+            if not conflict_id or conflict.conflict_id != conflict_id:
+                errors.append(f"conflict map key does not match conflict_id: {conflict_id}")
+            if conflict.subject_id not in subjects:
+                errors.append(
+                    f"conflict {conflict_id} references missing subject {conflict.subject_id}"
+                )
+            if not conflict.predicate:
+                errors.append(f"conflict {conflict_id} has an empty predicate")
+            if len(set(conflict.competing_values)) < 2:
+                errors.append(f"conflict {conflict_id} must retain at least two competing values")
+            if len(set(conflict.evidence_refs)) < 2:
+                errors.append(f"conflict {conflict_id} must retain at least two evidence references")
         return errors
 
     def verify_acyclicity(self) -> bool:
@@ -466,6 +508,7 @@ class ProvenanceHypergraph:
             "transformations": [t.to_dict() for t in self.transformations.values()],
             "contributors": [c.to_dict() for c in self.contributors.values()],
             "rights": [r.to_dict() for r in self.rights.values()],
+            "conflicts": [c.to_dict() for c in self.conflicts.values()],
         }
 
     @classmethod
@@ -483,6 +526,16 @@ class ProvenanceHypergraph:
                     attribution_required=r_data.get("attribution_required", True),
                     usage_restrictions=tuple(r_data.get("usage_restrictions", ())),
                     rights_evidence_level=RightsEvidenceLevel(r_data.get("rights_evidence_level", "RIGHTS_DECLARED")),
+                )
+            )
+        for conflict_data in data.get("conflicts", []):
+            g.add_conflict(
+                ConflictRecord(
+                    conflict_id=conflict_data["conflict_id"],
+                    subject_id=conflict_data["subject_id"],
+                    predicate=conflict_data["predicate"],
+                    competing_values=tuple(conflict_data.get("competing_values", ())),
+                    evidence_refs=tuple(conflict_data.get("evidence_refs", ())),
                 )
             )
         for a_data in data.get("artifacts", []):

@@ -108,6 +108,10 @@ no second party in existence.
 
 **Layer 5 is not.** It requires another party to exist, to act, and to be independent.
 
+VSTD-1 records the claim-mechanics status of actor independence but cannot infer it from
+two runs or matching artifacts. VSTD-5 requires the corroborating witness procedure that
+uses such separately evidenced actor participation; recording a field is not witnessing.
+
 That transition between 4 and 5 is the most important boundary in the ladder. Layer 4
 asks *could a stranger check this?* Layer 5 asks *did one, and were they actually a
 stranger?* The first is a property of the claim. The second is a property of the world.
@@ -140,23 +144,26 @@ A collection `C` holds at Graph layer `N` only if all four conditions hold:
 
 1. **Membership floor** — every member is at object layer ≥ N.
 2. **Provenance closure** — every ancestor reachable from any member is at layer ≥ N.
-3. **Status admissibility** — no ancestor is `REVOKED`, `CHALLENGED`, `STALE`, or
-   `UNKNOWN`.
+3. **Status admissibility** — no ancestor is `REVOKED`, `CHALLENGED`, `STALE`,
+   `UNKNOWN`, or subject to an unresolved `CONFLICTED` record.
 4. **Edge evidence** — the transformation hyperedges themselves carry layer-N evidence.
 
 Condition 2 is what a plain minimum over members misses. Condition 4 is what makes this
 dynamics rather than aggregation: **a graph is only as verified as its edges**, and an
 unevidenced edge between two layer-5 artifacts does not yield a layer-5 collection.
 
-The level is **computed, never declared**:
+The level is **computed from validated object and edge ratings, never declared**:
 
 ```
 graph_level(C) = max { N : CNF_N(C) is satisfiable }
 ```
 
-The reference implementation searches 5→1. At a result below 5, the grounded
-`FAIL` certificate for `N+1` is the explanation of the ceiling. A level without
-that certificate is a declaration and is non-conforming.
+The reference implementation searches 5→1 and certifies its Boolean encoding. Its
+current rating inputs are caller-supplied, so it reports a **candidate level** with
+`conformance_status = NOT_ESTABLISHED`; the certificate proves the computation over
+those inputs, not the validity of the ratings. At a result below 5, the grounded `FAIL`
+certificate for `N+1` explains that candidate ceiling. Graph conformance additionally
+requires evidence-bound ratings under the applicable object and edge profiles.
 
 ---
 

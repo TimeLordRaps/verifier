@@ -55,12 +55,14 @@ jobs:
           python scripts/check_release_boundary.py dist/*.zip dist/*.whl dist/*.tar.gz
           python -m venv /tmp/vstd-release-wheel
           /tmp/vstd-release-wheel/bin/python -m pip install --no-deps dist/*.whl
+          cd /tmp
           /tmp/vstd-release-wheel/bin/vstd demo --json
-          /tmp/vstd-release-wheel/bin/vstd plan examples/generic_run/manifest.json --json
-          /tmp/vstd-release-wheel/bin/vstd run examples/generic_run/manifest.json --output /tmp/vstd-release-receipt
+          /tmp/vstd-release-wheel/bin/vstd plan "$GITHUB_WORKSPACE/examples/generic_run/manifest.json" --json
+          /tmp/vstd-release-wheel/bin/vstd run "$GITHUB_WORKSPACE/examples/generic_run/manifest.json" --output /tmp/vstd-release-receipt
           /tmp/vstd-release-wheel/bin/vstd validate /tmp/vstd-release-receipt
           /tmp/vstd-release-wheel/bin/vstd reproduce /tmp/vstd-release-receipt --rerun
           /tmp/vstd-release-wheel/bin/vstd hardware list --json >/dev/null
+          /tmp/vstd-release-wheel/bin/python -c 'import json; from pathlib import Path; from verifier.core.checker import IndependentAuditor; receipt=json.loads(Path("/tmp/vstd-release-receipt/receipt.json").read_text()); hashes=(receipt["layer4_binding"]["verifier"]["specification_hash"], IndependentAuditor.verifier_descriptor().specification_hash); assert all(value.startswith("sha256:") for value in hashes), hashes'
 
       - name: Attest every published artifact
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2

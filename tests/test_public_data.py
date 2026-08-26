@@ -4,10 +4,12 @@ Target-neutral VSTD-DATA receipt validation and mechanism replay."""
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from verifier.core.checker import VerificationVerdict
 from verifier.core.provenance import GitProvenance, ProvenanceRecord, RuntimeEnvironment
+from verifier.core.receipt import compute_canonical_digest
 from verifier.data.models import (
     ArtifactNode,
     ArtifactStatus,
@@ -26,6 +28,7 @@ from verifier.data.receipt import (
     reproduce_data_receipt,
     validate_data_receipt,
 )
+from verifier.runtime.public_cli import _inspect_data_receipt
 
 
 def _receipt() -> VstdDataReceipt:
@@ -107,11 +110,52 @@ def _receipt() -> VstdDataReceipt:
     )
 
 
+def _rehash(payload: dict) -> None:
+    provenance = payload["provenance"]
+    payload["canonical_digest"] = compute_canonical_digest(
+        {
+            "schema_version": payload["schema_version"],
+            "receipt_id": payload["receipt_id"],
+            "dataset_spec": payload["dataset_spec"],
+            "hypergraph": payload["hypergraph"],
+            "completeness_metrics": payload["completeness_metrics"],
+            "policy_evaluations": payload["policy_evaluations"],
+            "independent_audit": payload["independent_audit"],
+            "provenance_stable": {
+                "target_name": provenance["target_name"],
+                "portable_repository_id": provenance["portable_repository_id"],
+                "git_commit_sha": provenance["git"]["commit_sha"],
+                "git_branch": provenance["git"]["branch"],
+                "git_is_dirty": provenance["git"]["is_dirty"],
+                "runtime_python_version": provenance["runtime"]["python_version"],
+            },
+            "reproducibility": payload["reproducibility"],
+        }
+    )
+
+
 def test_public_data_receipt_round_trip(tmp_path: Path, capsys) -> None:
     _receipt().save_to_directory(tmp_path)
     assert validate_data_receipt(tmp_path) == 0
     assert "[VALIDATION OK]" in capsys.readouterr().out
     assert reproduce_data_receipt(tmp_path) == 0
+
+
+def test_actorless_independence_upgrade_is_rejected_and_never_displayed(
+    tmp_path: Path, capsys
+) -> None:
+    receipt_path = _receipt().save_to_directory(tmp_path)
+    payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+    payload["independent_audit"]["independence_basis"][
+        "independently_verified"
+    ] = True
+    _rehash(payload)
+    receipt_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert _inspect_data_receipt(tmp_path) == 0
+    assert "Independence:     NOT_DEMONSTRATED" in capsys.readouterr().out
+    assert validate_data_receipt(tmp_path) == 1
+    assert "derives independence inconsistently" in capsys.readouterr().err
 
 
 def test_public_data_receipt_tamper_fails(tmp_path: Path) -> None:

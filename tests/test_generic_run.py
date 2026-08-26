@@ -11,14 +11,17 @@ claims, and determinism-bounded reproduction ceilings.
 
 from __future__ import annotations
 
+import copy
 import json
 import sys
 from pathlib import Path
 
 import pytest
+from jsonschema import Draft202012Validator
 
 from verifier.core.run import (
     RunError,
+    _rebuild_stable_payload_from_dict,
     capture_run,
     find_run_receipts_impacted_by_revocation,
     inspect_run_receipt,
@@ -26,6 +29,7 @@ from verifier.core.run import (
     reproduce_run_receipt,
     validate_run_receipt,
 )
+from verifier.core.receipt import compute_canonical_digest
 from verifier.data.models import (
     ArtifactNode,
     ArtifactStatus,
@@ -49,6 +53,20 @@ def _write_tiny_project(tmp_path: Path) -> Path:
     )
     (tmp_path / "input.txt").write_text("21", encoding="utf-8")
     return tmp_path
+
+
+def test_digest_consistent_empty_generic_receipt_is_rejected(tmp_path, capsys):
+    receipt = {"receipt_kind": "generic_computational_run"}
+    receipt["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(receipt)
+    )
+    path = tmp_path / "receipt.json"
+    path.write_text(json.dumps(receipt), encoding="utf-8")
+
+    assert validate_run_receipt(path) == 1
+    output = capsys.readouterr().out
+    assert "[INTEGRITY OK]" not in output
+    assert "missing required fields" in output
 
 
 def _base_manifest() -> dict:
@@ -124,9 +142,16 @@ def test_full_lifecycle_capture_validate_inspect_reproduce(tmp_path, capsys):
     assert (out_dir / "manifest.json").exists() is False  # test manifest was never written to disk
 
     data = json.loads(receipt_file.read_text(encoding="utf-8"))
+    schema = json.loads(
+        (Path(__file__).resolve().parents[1] / "receipts" / "schema" / "vstd1_generic_run_receipt.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator(schema).validate(data)
     assert is_generic_run_receipt(data)
     assert data["canonical_digest"] == receipt.canonical_digest
     layer4 = data["layer4_binding"]
+    assert layer4["vstd4_conformance"] == "NOT_EVALUATED"
     assert layer4["verifier"]["implementation_hash"].startswith("sha256:")
     assert layer4["verifier"]["parser_hash"].startswith("sha256:")
     assert layer4["resource_bounds"] == {
@@ -281,6 +306,39 @@ def test_external_evaluation_never_auto_promoted_to_attested(tmp_path):
     assert ext is not None
     assert ext.evidence_kind == "UNVERIFIED_ASSERTION"
     assert ext.attested is False, "an unverified assertion must never be silently promoted to attested"
+
+
+def test_validator_rejects_digest_consistent_independence_and_attestation_upgrades(
+    tmp_path,
+):
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    manifest["evaluator_claims"] = [
+        {"evaluator_name": "declared", "metric_name": "score", "value": 1}
+    ]
+    manifest["external_evaluation"] = {
+        "source": "declared",
+        "description": "unverified",
+        "reported_value": 1,
+    }
+    receipt = capture_run(manifest, manifest_dir=proj)
+    original = receipt.to_dict()
+
+    for mutate in (
+        lambda data: data["claims"]["evaluator_claims"][0].update(
+            verified_independently=True
+        ),
+        lambda data: data["claims"]["external_evaluation"].update(attested=True),
+        lambda data: data.update(unbound_claim_upgrade=True),
+    ):
+        data = copy.deepcopy(original)
+        mutate(data)
+        data["canonical_digest"] = compute_canonical_digest(
+            _rebuild_stable_payload_from_dict(data)
+        )
+        path = tmp_path / "hostile-receipt.json"
+        path.write_text(json.dumps(data), encoding="utf-8")
+        assert validate_run_receipt(path) == 1
 
 
 def test_external_evaluation_reference_remains_unverified_by_capture_runtime(tmp_path):

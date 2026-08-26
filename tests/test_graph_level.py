@@ -1,6 +1,6 @@
 """Terminology: Verifier Standard (VSTD).
 
-The VSTD-Graph axis: a computed level, and the proof of its ceiling.
+The VSTD-Graph axis: a candidate level over supplied ratings, and the proof of its ceiling.
 
 The level is never declared. Each test below pins one of the four conditions --
 membership floor, provenance closure, status admissibility, edge evidence --
@@ -40,6 +40,7 @@ from verifier.data.models import (
     ArtifactNode,
     ArtifactStatus,
     ArtifactType,
+    ConflictRecord,
     HyperedgePort,
     ProvenanceHypergraph,
     TransformationHyperedge,
@@ -172,14 +173,14 @@ def test_a_revoked_ancestor_disqualifies_the_collection_entirely():
     _assert_certificates_check(result)
 
 
-@pytest.mark.parametrize("status", sorted(INADMISSIBLE_STATUSES, key=lambda s: s.value))
+@pytest.mark.parametrize("status", sorted(INADMISSIBLE_STATUSES - {"CONFLICTED"}))
 def test_every_inadmissible_status_fails_closed(status):
-    assert _level(_graph(mid=status), _collection()).level == 0
+    assert _level(_graph(mid=ArtifactStatus(status)), _collection()).level == 0
 
 
 def test_superseded_is_admissible_and_documented_as_such():
     """A superseded ancestor was replaced going forward; its history is unchanged."""
-    assert ArtifactStatus.SUPERSEDED not in INADMISSIBLE_STATUSES
+    assert ArtifactStatus.SUPERSEDED.value not in INADMISSIBLE_STATUSES
     assert _level(_graph(src=ArtifactStatus.SUPERSEDED), _collection()).level == GRAPH_MAX_LEVEL
 
 
@@ -213,6 +214,31 @@ def test_the_witness_and_the_refutation_are_different_certificates():
     assert summary["witness_digest"] is not None
     assert summary["refutation_digest"] is not None
     assert summary["witness_digest"] != summary["refutation_digest"]
+    assert summary["rating_basis"] == "CALLER_SUPPLIED"
+    assert summary["conformance_status"] == "NOT_ESTABLISHED"
+
+
+def test_conflicting_lineage_is_retained_and_blocks_a_clean_level():
+    graph = _graph()
+    graph.add_conflict(
+        ConflictRecord(
+            conflict_id="conflict:src-digest",
+            subject_id="src",
+            predicate="content_digest",
+            competing_values=("sha256:a", "sha256:b"),
+            evidence_refs=("receipt:a", "receipt:b"),
+        )
+    )
+
+    restored = ProvenanceHypergraph.from_dict(graph.to_dict())
+    assert restored.conflicts["conflict:src-digest"].competing_values == (
+        "sha256:a",
+        "sha256:b",
+    )
+    result = _level(restored, _collection())
+    assert result.level == 0
+    assert "caller-supplied ratings" in result.explanation
+    assert "conformance is not established" in result.explanation
 
 
 def test_variable_numbering_is_stable_across_adjacent_levels():

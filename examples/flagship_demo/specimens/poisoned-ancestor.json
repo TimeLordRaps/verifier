@@ -1,5 +1,5 @@
 {
-  "details": "collection:demo holds at graph level 0. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
+  "details": "collection:demo computes to candidate graph level 0 from caller-supplied ratings; conformance is not established. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
   "expected": "GRAPH-LEVEL-0; REVOKED blocker; checked refutation",
   "observed": "GRAPH-LEVEL-0; REVOKED",
   "ok": true,
@@ -18,7 +18,7 @@
         "predicate": "vstd_graph_level",
         "subject": "collection:demo"
       },
-      "evidence_root": "4cd50c61d6162451488a984b85a9a209e708095186132c33d1529adeeacd6ca5",
+      "evidence_root": "8d42243ad0124e5946c34fbd3d6175daf5712a3cd75560f47ec950885866e483",
       "policy_root": "e8e31ddeae93b0e85ec8cb26487489781efeab36ccef7676922a9e18b36155d8",
       "prior_commitment": "",
       "verifier": {
@@ -60,10 +60,12 @@
         }
       ],
       "collection_id": "collection:demo",
-      "explanation": "collection:demo holds at graph level 0. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
+      "conformance_status": "NOT_ESTABLISHED",
+      "explanation": "collection:demo computes to candidate graph level 0 from caller-supplied ratings; conformance is not established. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
       "level": 0,
       "max_level": 5,
-      "refutation_digest": "9c0ead7f659e1ebec464b03be6772f0c26ca5ce12ed7579769b7f034abd2cb45",
+      "rating_basis": "CALLER_SUPPLIED",
+      "refutation_digest": "f5326d69fb1504c8bfbbf4b8b5a1ef63625f045ff912bb314b342ecad8732c10",
       "witness_digest": null
     },
     "hypergraph": {
@@ -120,6 +122,7 @@
           "storage_uris": []
         }
       ],
+      "conflicts": [],
       "contributors": [],
       "rights": [],
       "transformations": [
@@ -589,7 +592,7 @@
         ]
       },
       "header": {
-        "binding": "76a6c4fc1961f21ab4f81f377fe3efb92249cac150c40eb6c2fa683236ee30f5",
+        "binding": "ace0c2a6930e892037d1f1752e5bbc5a4366b2379fe8c63e57c03ecc7b59730f",
         "clause_count": 17,
         "format": "VSTD4-GDC-1",
         "literal_count": 25,

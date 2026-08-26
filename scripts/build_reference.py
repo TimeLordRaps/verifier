@@ -4,12 +4,13 @@ hash-based message authentication code (HMAC); International Organization for St
 JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256);
 Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
 
-Generate the public CLI and API reference page from the live implementation.
+Generate the public CLI and top-level API reference page from the live implementation.
 
 Nothing on the generated page is hand-written prose about behaviour: every command,
-option, export, signature, and pipeline edge is read out of the importable package at
-build time. `scripts/check_presentation.py` and `tests/test_presentation_surface.py`
-regenerate this file and fail closed when the committed page drifts from the code."""
+option, top-level export, signature, and listed pipeline edge is read out of the
+importable package at build time. `scripts/check_presentation.py` and
+`tests/test_presentation_surface.py` regenerate this file and fail closed when the
+committed page drifts from the code."""
 
 from __future__ import annotations
 
@@ -57,8 +58,9 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     (
         "vstd validate",
         "Dispatches on the receipt's frozen wire identifier and runs its implemented "
-        "checks. Generic-run validation checks only the stable digest; other receipt "
-        "kinds enforce their separately documented structure and evidence rules.",
+        "checks. Generic-run validation enforces its required structure and stable "
+        "digest; other receipt kinds enforce their separately documented structure "
+        "and evidence rules.",
         (
             "verifier.core.run:validate_run_receipt",
             "verifier.data.receipt:validate_data_receipt",
@@ -350,8 +352,8 @@ def render() -> str:
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
       Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); and YAML Ain't Markup Language
       (YAML).</p>
-      <p class="lead">Every command, argument, public export, and dispatch edge below is read
-      out of the installed package when this page is built, by
+      <p class="lead">Every command, argument, top-level export, and listed dispatch edge below
+      is read out of the installed package when this page is built, by
       <code>scripts/build_reference.py</code>, and the presentation tests fail closed when the
       committed page drifts &mdash; so it cannot describe behaviour the implementation no
       longer has.</p>
@@ -391,10 +393,11 @@ def render() -> str:
     <section id="api">
       <div class="wrap">
         <div class="eyebrow">API</div>
-        <h2>Public Python exports.</h2>
+        <h2>Top-level Python exports.</h2>
         <p class="section-lead">The names in <code>verifier.__all__</code>, with their live
-        signatures and declared docstrings. Anything not listed here is internal and carries no
-        wire-identifier or version guarantee.</p>
+        signatures and declared docstrings. Public subpackage surfaces are not exhaustively
+        listed here; use the <a href="{SOURCE_BASE}docs/ARCHITECTURE.md">architecture map</a>
+        to reach their owning modules, schemas, and tests.</p>
         <div class="ref-list">{_api_section()}</div>
       </div>
     </section>

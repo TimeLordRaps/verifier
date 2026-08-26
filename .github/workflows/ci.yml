@@ -98,12 +98,16 @@ jobs:
       - run: python -m pip wheel --no-cache-dir --no-deps --wheel-dir dist .
       - run: python -m venv /tmp/vstd-wheel
       - run: /tmp/vstd-wheel/bin/python -m pip install --no-deps dist/*.whl
-      - run: /tmp/vstd-wheel/bin/vstd demo --json
-      - run: /tmp/vstd-wheel/bin/vstd plan examples/generic_run/manifest.json --json
-      - run: /tmp/vstd-wheel/bin/vstd run examples/generic_run/manifest.json --output /tmp/vstd-receipt
-      - run: /tmp/vstd-wheel/bin/vstd validate /tmp/vstd-receipt
-      - run: /tmp/vstd-wheel/bin/vstd reproduce /tmp/vstd-receipt --rerun
-      - run: /tmp/vstd-wheel/bin/verifier demo --scenario honest-unknown --json
+      - name: Exercise the installed wheel outside the source checkout
+        run: |
+          cd /tmp
+          /tmp/vstd-wheel/bin/vstd demo --json
+          /tmp/vstd-wheel/bin/vstd plan "$GITHUB_WORKSPACE/examples/generic_run/manifest.json" --json
+          /tmp/vstd-wheel/bin/vstd run "$GITHUB_WORKSPACE/examples/generic_run/manifest.json" --output /tmp/vstd-receipt
+          /tmp/vstd-wheel/bin/vstd validate /tmp/vstd-receipt
+          /tmp/vstd-wheel/bin/vstd reproduce /tmp/vstd-receipt --rerun
+          /tmp/vstd-wheel/bin/verifier demo --scenario honest-unknown --json
+          /tmp/vstd-wheel/bin/python -c 'import json; from pathlib import Path; from verifier.core.checker import IndependentAuditor; receipt=json.loads(Path("/tmp/vstd-receipt/receipt.json").read_text()); hashes=(receipt["layer4_binding"]["verifier"]["specification_hash"], IndependentAuditor.verifier_descriptor().specification_hash); assert all(value.startswith("sha256:") for value in hashes), hashes'
 
   presentation:
     runs-on: ubuntu-latest

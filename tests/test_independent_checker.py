@@ -1,16 +1,19 @@
 """Terminology: Boolean satisfiability problem (SAT); unsatisfiable (UNSAT);
 Verifier Standard (VSTD).
 
-Unit tests for the independent VSTD SAT solver and Grounding checker."""
+Unit tests for the bundled VSTD SAT solver and grounding checker."""
 
 from __future__ import annotations
 
 from verifier.core.checker import (
     GroundingVerdict,
+    IndependenceBasis,
+    IndependenceStatus,
     IndependentGroundingChecker,
     IndependentAuditor,
     MinimalIndependentDPLL,
     VerificationVerdict,
+    independence_is_evidenced,
 )
 
 
@@ -120,6 +123,41 @@ def test_independent_auditor_end_to_end() -> None:
         expected_satisfiable=True,
     )
     assert audit.overall_verdict == VerificationVerdict.VERIFIED
+    assert audit.independence_basis.independently_verified is False
+    assert audit.to_dict()["independence_basis"]["actor_independence"] == (
+        "NOT_DEMONSTRATED"
+    )
+    assert audit.to_dict()["independence_basis"]["runtime_separation"] == (
+        "NOT_DEMONSTRATED"
+    )
     assert audit.sat_result.satisfiable is True
     assert audit.grounding_result.grounding_status == GroundingVerdict.GROUNDED
     assert "MinimalIndependentDPLL" in audit.trusted_computing_base["solver"]
+
+
+def test_matching_checker_runs_do_not_establish_actor_independence() -> None:
+    arguments = {
+        "claim_id": "TEST-REPEAT",
+        "n_vars": 1,
+        "clauses": [[1]],
+        "atomic_reasons": [],
+        "expected_satisfiable": True,
+    }
+    first = IndependentAuditor.audit_claim_derivation(**arguments)
+    second = IndependentAuditor.audit_claim_derivation(**arguments)
+    assert first.overall_verdict == second.overall_verdict
+    assert not first.independence_basis.independently_verified
+    assert not second.independence_basis.independently_verified
+
+
+def test_actor_and_execution_evidence_are_jointly_required() -> None:
+    basis = IndependenceBasis(
+        actor_independence=IndependenceStatus.EVIDENCED,
+        implementation_separation=IndependenceStatus.EVIDENCED,
+        runtime_separation=IndependenceStatus.EVIDENCED,
+        evidence=("receipt:producer", "receipt:checker"),
+    )
+    assert basis.independently_verified
+    raw = basis.to_dict()
+    raw["actor_independence"] = "NOT_DEMONSTRATED"
+    assert not independence_is_evidenced(raw)

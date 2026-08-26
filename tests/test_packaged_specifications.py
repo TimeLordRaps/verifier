@@ -11,10 +11,15 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_packaged_specification_bytes_match_normative_sources() -> None:
-    for name in ("LADDER.md", "VSTD-3.md", "VSTD-4.md", "WIRE_IDENTIFIERS.md"):
-        normative = REPO_ROOT / "standard" / name
-        packaged = REPO_ROOT / "src" / "verifier" / "specifications" / name
-        assert packaged.read_bytes() == normative.read_bytes(), name
+    normative_files = sorted((REPO_ROOT / "standard").glob("*.md"))
+    packaged_dir = REPO_ROOT / "src" / "verifier" / "specifications"
+    assert {path.name for path in packaged_dir.glob("*.md")} == {
+        path.name for path in normative_files
+    }
+    for normative in normative_files:
+        assert (packaged_dir / normative.name).read_bytes() == normative.read_bytes(), (
+            normative.name
+        )
 
 
 def test_ladder_fixes_both_causal_directions_without_actor_trust() -> None:

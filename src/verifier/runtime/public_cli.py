@@ -16,6 +16,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from verifier.core.checker import independence_is_evidenced
 from verifier.core.run import (
     RunError,
     capture_run,
@@ -121,7 +122,12 @@ def _inspect_data_receipt(path_or_dir: Path) -> int:
     print("=" * 70)
     print(f"Canonical Digest: {payload.get('canonical_digest')}")
     print(f"Target Artifact:  {payload.get('dataset_spec', {}).get('target_artifact_id')}")
-    print(f"Audit Verdict:    {payload.get('independent_audit', {}).get('overall_verdict')}")
+    print(f"Checker Verdict:  {payload.get('independent_audit', {}).get('overall_verdict')}")
+    basis = payload.get("independent_audit", {}).get("independence_basis", {})
+    print(
+        "Independence:     "
+        + ("EVIDENCED" if independence_is_evidenced(basis) else "NOT_DEMONSTRATED")
+    )
     print(f"Artifacts:        {len(graph.artifacts)}")
     print(f"Transformations:  {len(graph.transformations)}")
     print("=" * 70)

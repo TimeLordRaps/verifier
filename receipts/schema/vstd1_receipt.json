@@ -93,7 +93,32 @@
         "grounding_result": { "type": "object" },
         "structural_integrity_passed": { "type": "boolean" },
         "trusted_computing_base": { "type": "object" },
-        "audit_notes": { "type": "array", "items": { "type": "string" } }
+        "audit_notes": { "type": "array", "items": { "type": "string" } },
+        "independence_basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["independently_verified", "actor_independence", "implementation_separation", "runtime_separation", "evidence"],
+          "properties": {
+            "independently_verified": { "type": "boolean" },
+            "actor_independence": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "implementation_separation": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "runtime_separation": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "independently_verified": { "const": true } } },
+              "then": {
+                "properties": {
+                  "actor_independence": { "const": "EVIDENCED" },
+                  "implementation_separation": { "const": "EVIDENCED" },
+                  "runtime_separation": { "const": "EVIDENCED" },
+                  "evidence": { "minItems": 1 }
+                }
+              }
+            }
+          ]
+        }
       }
     },
     "provenance": {

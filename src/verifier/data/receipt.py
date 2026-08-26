@@ -12,11 +12,15 @@ import hashlib
 import json
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
-from verifier.core.checker import VerificationVerdict
+from verifier.core.checker import (
+    IndependenceBasis,
+    VerificationVerdict,
+    independence_is_evidenced,
+)
 from verifier.core.provenance import ProvenanceRecord
 from verifier.core.receipt import compute_canonical_digest
 from verifier.data.models import CompletenessMetrics, ProvenanceHypergraph
@@ -47,6 +51,8 @@ class DatasetSpec:
 
 @dataclass(frozen=True)
 class DataIndependentAudit:
+    """Historical wire field for a checker result plus explicit separation basis."""
+
     overall_verdict: VerificationVerdict
     acyclic_hypergraph: bool
     integrity_passed: bool
@@ -55,6 +61,7 @@ class DataIndependentAudit:
     transformations_count: int
     trusted_computing_base: dict[str, str]
     audit_notes: list[str]
+    independence_basis: IndependenceBasis = field(default_factory=IndependenceBasis)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -66,6 +73,7 @@ class DataIndependentAudit:
             "transformations_count": self.transformations_count,
             "trusted_computing_base": self.trusted_computing_base,
             "audit_notes": self.audit_notes,
+            "independence_basis": self.independence_basis.to_dict(),
         }
 
 
@@ -266,6 +274,7 @@ def validate_data_receipt(receipt_path_or_dir: Path) -> int:
         ("transformations", "transformation_id"),
         ("contributors", "contributor_id"),
         ("rights", "rights_id"),
+        ("conflicts", "conflict_id"),
     ):
         graph_errors.extend(_duplicate_ids(graph_payload.get(collection), key))
     try:
@@ -293,6 +302,14 @@ def validate_data_receipt(receipt_path_or_dir: Path) -> int:
     if not isinstance(audit, dict):
         graph_errors.append("independent_audit must be an object")
         audit = {}
+    basis = audit.get("independence_basis")
+    if basis is not None:
+        if not isinstance(basis, dict):
+            graph_errors.append("independent_audit.independence_basis must be an object")
+        elif basis.get("independently_verified") is not independence_is_evidenced(basis):
+            graph_errors.append(
+                "independent_audit.independence_basis derives independence inconsistently"
+            )
     expected_audit_fields = {
         "acyclic_hypergraph": acyclic,
         "integrity_passed": completeness.content_integrity == 1.0,
@@ -372,7 +389,7 @@ def validate_data_receipt(receipt_path_or_dir: Path) -> int:
     )
     print(f"       Schema: {data.get('schema_version')}")
     print(f"       Digest: {recorded_digest}")
-    print(f"       Verdict: {data.get('independent_audit', {}).get('overall_verdict')}")
+    print(f"       Stored checker verdict: {data.get('independent_audit', {}).get('overall_verdict')}")
     print("       Scope: stored receipt + recorded hypergraph; upstream bytes not rehashed")
     return 0
 
@@ -479,15 +496,21 @@ def generate_data_receipt_markdown(receipt: VstdDataReceipt) -> str:
 
 ---
 
-## 5. Independent Auditor & Trusted Computing Base (TCB)
+## 5. Stored Checker Result & Trusted Computing Base (TCB)
 
 - **Acyclicity Verified:** {'PASSED (No cycles)' if audit.acyclic_hypergraph else 'FAILED (Cycle detected)'}
 - **Content-Digest Declaration Check:** {'PASSED' if audit.integrity_passed else 'FAILED'}
-- **Overall Independent Verdict:** {audit.overall_verdict.value}
+- **Overall Checker Verdict:** {audit.overall_verdict.value}
+- **Independent Verification:** {'EVIDENCED' if audit.independence_basis.independently_verified else 'NOT_DEMONSTRATED'}
 
 ### TCB Declaration
 ```yaml
 {chr(10).join(f"{k}: {v}" for k, v in audit.trusted_computing_base.items())}
+```
+
+### Independence Basis
+```yaml
+{chr(10).join(f"{k}: {v}" for k, v in audit.independence_basis.to_dict().items())}
 ```
 
 ---
@@ -502,9 +525,9 @@ def generate_data_receipt_markdown(receipt: VstdDataReceipt) -> str:
 
 ---
 
-## 7. Independent Reproduction
+## 7. Reproduction of Stored Checks
 
-To independently inspect and reproduce this dataset hypergraph receipt:
+To inspect and reproduce the stored dataset-hypergraph checks:
 
 ```bash
 vstd data verify receipts/{receipt.receipt_id}

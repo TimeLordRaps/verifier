@@ -114,7 +114,7 @@ separately in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
 | Understand the claim model in ten minutes | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
 | Look up a repository acronym or abbreviated term | [`docs/ACRONYMS.md`](docs/ACRONYMS.md) |
 | Try to break the core claim | [`examples/flagship_demo`](examples/flagship_demo) |
-| Implement an independent checker | [`standard/VSTD-4.md`](standard/VSTD-4.md) and [`VSTD4-GDC-1` schema](receipts/schema/vstd4_certificate.json) |
+| Implement a separate certificate checker | [`standard/VSTD-4.md`](standard/VSTD-4.md) and [`VSTD4-GDC-1` schema](receipts/schema/vstd4_certificate.json) |
 | Model a provenance collection | [`standard/VSTD-Graph-1.md`](standard/VSTD-Graph-1.md) |
 | Record and allocate bounded experimental work | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) and [`experiments/INDEX.md`](experiments/INDEX.md) |
 | Use VSTD beside existing supply-chain/provenance systems | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
@@ -145,10 +145,11 @@ vstd validate /tmp/vstd-receipt
 vstd reproduce /tmp/vstd-receipt --rerun
 ```
 
-`validate` checks only the stable-payload digest; it does not schema-validate the
-receipt, rehash artifacts, or verify a claim. `reproduce --rerun` separately executes
-the recorded command and compares declared outputs. Neither operation widens the receipt
-into a claim about the unobserved world.
+`validate` checks the generic-run receipt's required structure and stable-payload digest;
+it does not rehash artifacts or verify the recorded declarations as claims.
+`reproduce --rerun` applies the same structural gate, then separately executes the
+recorded command and compares declared outputs. Neither operation widens the receipt into
+a claim about the unobserved world.
 
 ## The grounded certificate
 
@@ -234,7 +235,8 @@ instrumentation.
 ## Project process
 
 - Specification order: [`LADDER`](standard/LADDER.md) → layer documents → schemas →
-  independent checker → conformance tests.
+  separately implemented checker → conformance tests.
+- Implementation ownership: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 - Public technical direction: [`ROADMAP.md`](ROADMAP.md).
 - Contribution rules: [`CONTRIBUTING.md`](CONTRIBUTING.md).
 - Automated-contributor rules: [`AGENTS.md`](AGENTS.md).

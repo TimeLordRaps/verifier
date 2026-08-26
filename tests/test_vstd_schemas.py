@@ -2,7 +2,7 @@
 
 Published JSON Schema coverage for the integer-layer release.
 
-JSON Schema checks document shape.  The independent kernel remains authoritative
+JSON Schema checks document shape. The separately implemented kernel remains authoritative
 for grounding, tier, count, binding, and proof semantics.
 """
 
@@ -27,11 +27,19 @@ from verifier.core.certificate import (
 )
 from verifier.core.kernel import check, reference_descriptor
 from verifier.core.refutation import build_horn_certificate
+from verifier.data.models import (
+    ArtifactNode,
+    ArtifactStatus,
+    ArtifactType,
+    ConflictRecord,
+    ProvenanceHypergraph,
+)
 
 
 SCHEMA_DIR = Path(__file__).resolve().parents[1] / "receipts" / "schema"
 PUBLISHED_SCHEMAS = (
     "vstd1_receipt.json",
+    "vstd1_generic_run_receipt.json",
     "vstd2_receipt.json",
     "vstd3_receipt.json",
     "vstd4_receipt.json",
@@ -93,6 +101,57 @@ def _registry() -> Registry:
 def test_every_published_schema_is_valid_draft_2020_12() -> None:
     for name in PUBLISHED_SCHEMAS:
         Draft202012Validator.check_schema(_load(name))
+
+
+def test_graph_schema_and_runtime_share_status_and_conflict_shapes() -> None:
+    schema = _load("vstd_graph_receipt.json")["properties"]["hypergraph"]
+    graph = ProvenanceHypergraph()
+    graph.add_artifact(
+        ArtifactNode("artifact:a", "a", ArtifactType.CORPUS, "a" * 64, status=ArtifactStatus.VALID)
+    )
+    graph.add_conflict(
+        ConflictRecord(
+            "conflict:a",
+            "artifact:a",
+            "content_digest",
+            ("sha256:a", "sha256:b"),
+            ("receipt:a", "receipt:b"),
+        )
+    )
+    payload = graph.to_dict()
+    Draft202012Validator(schema).validate(payload)
+    assert ProvenanceHypergraph.from_dict(payload).to_dict() == payload
+
+
+def test_graph_schema_keeps_legacy_candidate_blocks_additively_valid() -> None:
+    candidate_schema = _load("vstd_graph_receipt.json")["properties"][
+        "computed_graph_level"
+    ]
+    legacy = {
+        "collection_id": "collection:legacy",
+        "level": 2,
+        "max_level": 5,
+        "blocking_obligations": [],
+        "witness_digest": HEX,
+        "refutation_digest": HEX,
+    }
+    Draft202012Validator(candidate_schema).validate(legacy)
+    assert "rating_basis" not in candidate_schema["required"]
+    assert "conformance_status" not in candidate_schema["required"]
+
+
+def test_independence_schema_rejects_actorless_independence_claim() -> None:
+    basis_schema = _load("vstd1_receipt.json")["properties"]["independent_audit"][
+        "properties"
+    ]["independence_basis"]
+    basis = {
+        "independently_verified": True,
+        "actor_independence": "NOT_DEMONSTRATED",
+        "implementation_separation": "EVIDENCED",
+        "runtime_separation": "EVIDENCED",
+        "evidence": ["receipt:checker"],
+    }
+    assert list(Draft202012Validator(basis_schema).iter_errors(basis))
 
 
 def test_vstd4_gdc_certificate_matches_its_published_schema() -> None:

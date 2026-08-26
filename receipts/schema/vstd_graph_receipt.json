@@ -3,7 +3,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd_graph_receipt.json",
   "title": "VSTD-Graph Provenance Hypergraph Receipt",
-  "description": "VSTD-Graph receipt. The VSTD-DATA-0.1 wire identifier is frozen for historical Graph-1 receipts; computed_graph_level records the independently computed 1-5 profile when present.",
+  "description": "VSTD-Graph receipt. The VSTD-DATA-0.1 wire identifier is frozen for historical Graph-1 receipts; computed_graph_level records a candidate level over caller-supplied ratings and does not establish conformance. Historical blocks without rating_basis or conformance_status have the same unestablished interpretation.",
   "type": "object",
   "required": [
     "schema_version",
@@ -44,10 +44,47 @@
       "type": "object",
       "required": ["artifacts", "transformations", "contributors", "rights"],
       "properties": {
-        "artifacts": { "type": "array" },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["artifact_id", "status"],
+            "properties": {
+              "artifact_id": { "type": "string" },
+              "status": {
+                "enum": ["VALID", "CHALLENGED", "STALE", "SUPERSEDED", "REVOKED", "UNKNOWN"]
+              }
+            }
+          }
+        },
         "transformations": { "type": "array" },
         "contributors": { "type": "array" },
-        "rights": { "type": "array" }
+        "rights": { "type": "array" },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["conflict_id", "subject_id", "predicate", "competing_values", "evidence_refs"],
+            "properties": {
+              "conflict_id": { "type": "string", "minLength": 1 },
+              "subject_id": { "type": "string", "minLength": 1 },
+              "predicate": { "type": "string", "minLength": 1 },
+              "competing_values": {
+                "type": "array",
+                "minItems": 2,
+                "uniqueItems": true,
+                "items": { "type": "string" }
+              },
+              "evidence_refs": {
+                "type": "array",
+                "minItems": 2,
+                "uniqueItems": true,
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
       }
     },
     "completeness_metrics": {
@@ -76,7 +113,34 @@
     },
     "independent_audit": {
       "type": "object",
-      "required": ["overall_verdict", "acyclic_hypergraph", "integrity_passed", "trusted_computing_base"]
+      "required": ["overall_verdict", "acyclic_hypergraph", "integrity_passed", "trusted_computing_base"],
+      "properties": {
+        "independence_basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["independently_verified", "actor_independence", "implementation_separation", "runtime_separation", "evidence"],
+          "properties": {
+            "independently_verified": { "type": "boolean" },
+            "actor_independence": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "implementation_separation": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "runtime_separation": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "independently_verified": { "const": true } } },
+              "then": {
+                "properties": {
+                  "actor_independence": { "const": "EVIDENCED" },
+                  "implementation_separation": { "const": "EVIDENCED" },
+                  "runtime_separation": { "const": "EVIDENCED" },
+                  "evidence": { "minItems": 1 }
+                }
+              }
+            }
+          ]
+        }
+      }
     },
     "provenance": {
       "type": "object",
@@ -94,6 +158,8 @@
         "collection_id": {"type": "string", "minLength": 1},
         "level": {"type": "integer", "minimum": 0, "maximum": 5},
         "max_level": {"const": 5},
+        "rating_basis": {"const": "CALLER_SUPPLIED"},
+        "conformance_status": {"const": "NOT_ESTABLISHED"},
         "blocking_obligations": {"type": "array", "items": {"type": "object"}},
         "witness_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
         "refutation_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
