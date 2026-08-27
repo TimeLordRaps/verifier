@@ -44,13 +44,19 @@ Zero-identity/zero-knowledge (ZIZK) artifact-first trust is a governing VSTD
 architecture, not a side experiment, layer, profile, or scalar trust system. Its
 normative source is `standard/LADDER.md` section 1.1:
 
-- actor identity, popularity, repetition, and reputation supply no assurance;
+- identity or reputation alone, popularity, and repetition supply no assurance;
 - actor and artifact are contextual roles rather than permanent entity classes;
 - established artifact support may move forward only across admissible bound
   transformations, while every child discharges its new obligations;
 - diagnostic Rust may move backward only as recorded ancestral reachability; and
 - forward support and backward Rust never cancel, reverse direction, or manufacture a
   clean signal from `UNKNOWN` or `CONFLICTED` inputs.
+
+Zero identity is the no-identity-derived-trust rule above, not anonymity or absence of
+identifiers. Checked identity evidence may establish only its exact attribution,
+authorization, or separation proposition. Zero knowledge is mechanism-specific: it
+applies only where a named proof system establishes the formal property for the exact
+predicate and parameters under explicit assumptions.
 
 Maturity attaches to mechanisms beneath that architecture:
 

@@ -4,7 +4,7 @@
 > zero-identity/zero-knowledge (ZIZK).
 
 VSTD's governing ZIZK artifact-first architecture is normative in
-[`standard/LADDER.md` section 1.1](../../standard/LADDER.md#11-artifact-first-causal-orientation).
+[`standard/LADDER.md` section 1.1](../../standard/LADDER.md#11-artifact-first-support-and-diagnostic-orientation).
 It gives actor identity and reputation no assurance weight, treats actor and artifact as
 contextual roles, carries bounded Artifact support forward, and carries diagnostic Rust
 backward without scalar cancellation or inherited guilt.

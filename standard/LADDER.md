@@ -14,6 +14,11 @@
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
 
+**Normative language:** The uppercase key words in this series are interpreted as
+described by [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and
+[RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) only when they appear in all capitals;
+lowercase uses are ordinary prose.
+
 **Reader context:** [`Concept guide and intellectual precedents`](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md)
 
 VSTD specification numbers are **layers of verification depth**, not revisions of a single
@@ -49,19 +54,23 @@ describing another layer's failure. The normative requirement is narrower: an
 implementation MUST NOT treat success on one question as evidence for a different
 question.
 
-### 1.1 Artifact-first causal orientation
+### 1.1 Artifact-first support and diagnostic orientation
 
 VSTD evaluates artifact-bound claims, evidence, predicates, mechanisms, and declared
-trust roots. An actor's identity, popularity, repetition, or reputation MUST NOT
-strengthen a result. **Actor** and **artifact** are contextual roles rather than permanent
-entity classes: a coding agent may be an artifact when it is created, versioned, or
-evaluated and an actor when it creates or transforms another artifact.
+trust roots. Standing alone, an actor's identity, popularity, repetition, or reputation
+MUST NOT strengthen an artifact-bound result. A named mechanism MAY establish an exact
+attribution, authorization, or separation proposition by checking the required identity
+evidence; that result does not promote an unrelated computational claim. **Actor** and
+**artifact** are contextual roles rather than permanent entity classes: a coding agent
+may be an artifact when it is created, versioned, or evaluated and an actor when it
+creates or transforms another artifact.
 
-The same bound development graph carries two typed causal directions:
+The same bound development graph records two typed traversal directions over declared
+dependencies:
 
 ```text
 development: parent artifact --bounded positive support--> child claim or artifact
-diagnosis:   child Rust      --genetic causal backtrace--> ancestor claim architecture
+diagnosis:   child Rust      --recorded dependency backtrace--> recorded ancestors
 ```
 
 **Artifact trust** is positive support already established for an exact artifact-bound
@@ -74,10 +83,13 @@ new predicates, transformations, boundaries, and evidence obligations.
 **Rust** is a typed diagnostic trace created by an observed descendant deviation from a
 declared expectation. It moves child-to-parent only through recorded admissible creation,
 input, or transformation paths. Distinct comparable backtraces may concentrate on a
-shared ancestor and prioritize it for causal examination. Transferred Rust establishes
+shared ancestor and prioritize it for diagnostic examination. Transferred Rust establishes
 ancestral reachability, not direct observation or causal responsibility; localization
 requires additional intervention, ablation, reproduction by a distinct actor, or equivalent
 declared evidence.
+
+The word *causal* in this section names only the recorded developmental ordering. It does
+not establish intervention-level causality, causal localization, responsibility, or guilt.
 
 Forward support and backward Rust MUST remain separate. They do not cancel, form one
 scalar score, or flow in the opposite direction as inherited truth or guilt. `UNKNOWN`
@@ -85,7 +97,7 @@ and `CONFLICTED` support or lineage MUST remain visible and MUST NOT become a cl
 signal. This section fixes the semantic orientation and prohibited inferences; an event
 format, transfer algebra, concentration-independence rule, and localization protocol each
 require their own specification and evidence. Until those exist, Artifact trust and Rust
-are constraints on causal interpretation, not computable conformance results; no current
+are constraints on dependency interpretation, not computable conformance results; no current
 VSTD runtime emits or validates either transfer.
 
 ---

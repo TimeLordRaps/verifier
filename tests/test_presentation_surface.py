@@ -170,6 +170,42 @@ def test_conformance_gate_requires_real_scitt_cose_integration() -> None:
     assert "scitt-crypto" in jobs["conformance-gate"]["needs"]
 
 
+def test_repository_checks_do_not_self_certify_conformance() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    guides = (ROOT / "docs" / "guides.html").read_text(encoding="utf-8")
+    workflow_text = (ROOT / ".github" / "workflows" / "ci.yml").read_text(
+        encoding="utf-8"
+    )
+    workflow = yaml.safe_load(workflow_text)
+
+    assert "[![Conformance]" not in readme
+    assert "[![Repository checks]" in readme
+    assert workflow["name"] == "repository-checks"
+    assert "trace poisoned ancestry" not in guides
+    assert "examples/zizk_artifact_first" in guides
+
+
+def test_codeql_is_pinned_and_required_by_the_protected_gate() -> None:
+    workflow = yaml.safe_load(
+        (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    )
+    jobs = workflow["jobs"]
+    codeql = jobs["codeql"]
+    uses = [str(step.get("uses", "")) for step in codeql["steps"]]
+
+    assert any(
+        item
+        == "github/codeql-action/init@cdf488f595d80d6e07e03d4674febd5ab45fa938"
+        for item in uses
+    )
+    assert any(
+        item
+        == "github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938"
+        for item in uses
+    )
+    assert "codeql" in jobs["conformance-gate"]["needs"]
+
+
 def test_pages_builder_refuses_to_merge_into_existing_content(tmp_path: Path) -> None:
     path = ROOT / "scripts/build_pages.py"
     spec = importlib.util.spec_from_file_location("build_pages_safety", path)

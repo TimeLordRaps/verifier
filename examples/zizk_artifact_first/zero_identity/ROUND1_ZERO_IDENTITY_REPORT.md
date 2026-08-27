@@ -1,4 +1,4 @@
-# Round 1 report: zero identity in a zero-identity/zero-knowledge (ZIZK)-Verifier Standard (VSTD) profile
+# Round 1 report: bounded identity disclosure under the zero-identity/zero-knowledge (ZIZK) Verifier Standard (VSTD) architecture
 
 > **Acronym:** carriage return and line feed (CRLF).
 
@@ -22,8 +22,10 @@ uniqueness, Sybil resistance, privacy, or safety.
 
 ## 2. Terminology decision
 
-**"Zero Identity" is rejected as a public label.** It is retained only as the name of the
-question this reference evaluation answered, never as a description of what the profile provides.
+**"Zero Identity" is rejected as a public label for a privacy profile.** It is retained
+only as the name of the question this reference evaluation answered, never as a
+description of what the profile provides. This does not reject the architecture-level
+rule that identity or reputation alone cannot strengthen an artifact-bound result.
 
 The falsification succeeded. A profile that "removes identity" was tested against its own
 required coordinates and the requirement survived: bounded reverification needs a
@@ -295,7 +297,7 @@ that credential.
 
 ## 10. Public claims still prohibited
 
-- "VSTD supports zero identity", or any use of "zero identity" without the qualification
+- "VSTD supports a zero-identity privacy mode", or any privacy claim using "zero identity" without the qualification
   that civil identity alone is withheld.
 - "Anonymous", "untraceable", "uncorrelatable", or "privacy-preserving" as unqualified
   descriptions of this profile.

@@ -7,7 +7,7 @@
   "experiment": {
     "id": "experiment-artifact-first-mechanisms",
     "title": "Mechanism completion under VSTD's governing ZIZK artifact-first architecture",
-    "question": "Which bounded event serialization, support-transfer algebra, Rust concentration and localization rules, and hidden-witness trichotomy mechanisms can implement the governing artifact-first causal orientation without actor reputation, scalar cancellation, causal overclaim, or making that orientation contingent on the study?",
+    "question": "Which bounded event serialization, support-transfer algebra, Rust concentration and localization rules, and hidden-witness trichotomy mechanisms can implement the governing artifact-first support and diagnostic orientation without actor reputation, scalar cancellation, causal overclaim, or making that orientation contingent on the study?",
     "state": "RUNNING",
     "started_at": "2026-08-23T00:00:00Z"
   },
@@ -43,13 +43,13 @@
       "state": "OPEN"
     },
     {
-      "id": "hypothesis-rust-genetic-backtrace",
+      "id": "hypothesis-rust-dependency-backtrace",
       "statement": "An operational ledger can transfer typed Rust backward from an observed child deviation through admissible bound creation paths and concentrate independent backtraces on shared ancestor claims without reporting ancestry as localized causation.",
       "falsification_condition": "Rust cannot reproduce its child-to-ancestor paths, fails to concentrate distinct comparable sources, crosses non-contributing edges, or reports concentration as direct observation, proven causation, actor reputation, or a VSTD verdict.",
       "state": "OPEN"
     },
     {
-      "id": "hypothesis-dual-causal-propagation",
+      "id": "hypothesis-dual-traversal",
       "statement": "An operational substrate can carry scoped positive artifact support from parent to child and diagnostic Rust from child to parent without collapsing them into one scalar or allowing either direction to bypass claim-local evidence.",
       "falsification_condition": "Positive support flows backward, Rust flows forward as inherited guilt, parent trust automatically proves a child, missing or conflicted support becomes clean, or actor identity changes either signal.",
       "state": "OPEN"
@@ -70,7 +70,7 @@
       "id": "artifact-zk-report",
       "role": "round-1-zero-knowledge-report",
       "media_type": "text/markdown",
-      "digest": "sha256:0f1e74db013a6c64c53bb722bfbd74b459ad70238304429cc1703a09c0f72057",
+      "digest": "sha256:3275ec038c0c6ddc39bc26e5fc6d68853fff4ce6014aea20fa4fadbfaca4cbd2",
       "locator": "repo:examples/zizk_artifact_first/risc0/ROUND1_ZERO_KNOWLEDGE_REPORT.md"
     },
     {
@@ -98,14 +98,14 @@
       "id": "artifact-zi-report",
       "role": "round-1-zero-identity-report",
       "media_type": "text/markdown",
-      "digest": "sha256:cf974b4a616e65d4dbebd61d1f43666bcf8fd275b350921b339d9245f2f46700",
+      "digest": "sha256:09da65d7f87236344632df73821c177de27abbbb94f496e17ab8c409ce6a3398",
       "locator": "repo:examples/zizk_artifact_first/zero_identity/ROUND1_ZERO_IDENTITY_REPORT.md"
     },
     {
       "id": "artifact-round2-design",
       "role": "round-2-reverification-design",
       "media_type": "text/markdown",
-      "digest": "sha256:f190f073bf07ec04a97d97dbb92bf9fac7dcdff1b5da081fde2721b9e31ce7ed",
+      "digest": "sha256:88cf9c14becb600da187c266d1e78faefc2bc32703899b8832a6563725ee8dd0",
       "locator": "repo:experiments/artifact_first_mechanisms/reverification/ROUND2_DESIGN_NOTE.md"
     }
   ],
@@ -208,17 +208,17 @@
     {
       "id": "action-reverification-synthesis",
       "kind": "DESIGN_SYNTHESIS",
-      "target": "candidate operational mechanics for the normative dual-direction causal orientation: forward bounded artifact support and backward genetic Rust across contextual actor/artifact roles",
+      "target": "candidate operational mechanics for the normative dual-direction traversal: forward bounded artifact support and backward diagnostic Rust across contextual actor/artifact roles",
       "state": "COMPLETED",
       "priority": 3,
-      "selected_because": "The normative ladder fixes the causal orientation, while the proof and identity studies expose the still-open event, transfer, concentration, and localization mechanics needed to implement it without actor reputation.",
+      "selected_because": "The normative ladder fixes the support and diagnostic orientation, while the proof and identity studies expose the still-open event, transfer, concentration, and localization mechanics needed to implement it without actor reputation or causal overclaim.",
       "selection_evidence_ids": [
         "observation-zk-proof",
         "observation-identity-boundary",
         "hypothesis-contextual-actor-artifact-roles",
-        "hypothesis-rust-genetic-backtrace",
+        "hypothesis-rust-dependency-backtrace",
         "hypothesis-artifact-first-zero-actor-trust",
-        "hypothesis-dual-causal-propagation"
+        "hypothesis-dual-traversal"
       ],
       "alternatives_considered": [
         "identity-bound trust",
@@ -329,7 +329,7 @@
         "observation-identity-boundary"
       ],
       "decision": "Treat standard/LADDER.md section 1.1 as the controlling semantic invariant and confine Round 2 to candidate operational mechanics for its parent-to-child artifact support and child-to-parent Rust directions.",
-      "reason": "The architecture is normative; only event serialization, support-transfer algebra, Rust concentration and localization, complete trichotomy derivation, and specific unfinished optional proof backends remain experimental. The experiment must not make the core causal orientation appear contingent on its outcome.",
+      "reason": "The architecture is normative; only event serialization, support-transfer algebra, Rust concentration and localization, complete trichotomy derivation, and specific unfinished optional proof backends remain experimental. The experiment must not make the core support and diagnostic orientation appear contingent on its outcome.",
       "action_ids": [
         "action-reverification-synthesis"
       ],
@@ -351,7 +351,7 @@
     {
       "id": "amendment-actor-artifact-rust-correction",
       "recorded_at": "2026-08-25T00:00:00Z",
-      "reason": "Correct the object-only framing and distinguish the normative causal orientation from its experimental event, transfer, Rust, trichotomy, and optional proof-backend mechanisms: artifact support moves parent-to-child, while Rust genetically backtraces child-to-parent without becoming actor reputation, scalar cancellation, or localized guilt.",
+      "reason": "Correct the object-only framing and distinguish the normative support and diagnostic orientation from its experimental event, transfer, Rust, trichotomy, and optional proof-backend mechanisms: artifact support moves parent-to-child, while Rust traverses recorded dependencies child-to-parent without becoming actor reputation, scalar cancellation, causal localization, or guilt.",
       "supersedes": [
         "amendment-round2-design"
       ],
@@ -385,7 +385,7 @@
       "reason": "The design states the contextual-role invariant but includes no approved schema or implementation."
     },
     {
-      "id": "horizon-rust-genetic-backtrace",
+      "id": "horizon-rust-dependency-backtrace",
       "status": "UNKNOWN",
       "description": "Typed backward Rust transfer, concentration, and localization over bound ancestry",
       "reason": "The child-to-parent transfer states and concentration boundary are design-only; no event ledger, propagation implementation, or localization experiment is included."
@@ -410,5 +410,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:5801835f64a1dabc4d474be6a97a9d4fa6f7bebd8b26ebad5583844af3a0b4ea"
+  "manifest_digest": "sha256:abe8458ebc634bd683a1fec6f92488c51a07658d976a94542d395971b890a120"
 }

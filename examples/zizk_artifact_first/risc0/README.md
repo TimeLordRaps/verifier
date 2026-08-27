@@ -129,7 +129,8 @@ The exact non-secret artifacts from the recorded run are tracked under
 | `self-test-results.json` | 377 | `e4c1bff21fb6161221276157fa96af6661af8635da35970ba12e462881f2c6fe` |
 
 The private witness and salt are not tracked and are not required for verification.
-After installing the pinned toolchain below, run this command from this directory:
+After installing the pinned toolchain and obtaining the locked Cargo dependencies, run
+this command from this directory:
 
 ```bash
 ./scripts/verify_recorded_proof.sh
@@ -151,7 +152,9 @@ public envelope and independently pinned by this repository. It is an explicit
 program trust coordinate, not actor identity or reputation. Omitting it verifies
 newly produced artifacts against the guest image built by the current checkout;
 supplying it permits offline verification of this immutable historical receipt
-without silently substituting the current build's image identifier.
+without silently substituting the current build's image identifier. To require Cargo to
+use only an already populated local cache, run
+`CARGO_NET_OFFLINE=true ./scripts/verify_recorded_proof.sh`.
 
 The expected successful output is:
 
@@ -188,9 +191,10 @@ cargo run --locked --release -p vstd-zk-host -- \
   verify local-artifacts/manual/receipt.msgpack local-artifacts/manual/public.json
 ```
 
-The last command is the offline verifier path. It needs the receipt, public envelope,
-pinned verifier implementation, and expected image ID. It does not need the private
-witness or a network service.
+The last command is the verifier path. It needs the receipt, public envelope, pinned
+verifier implementation, and expected image ID. It does not need the private witness or
+a network service; Cargo itself may need the network until the locked dependencies and
+toolchain have been installed or cached.
 
 ## Interpretation
 

@@ -12,7 +12,7 @@ mean assumption-free, trust-root-free, or immune to compromised software, unavai
 evidence, or false observations.
 
 The controlling semantic orientation is normative in
-[`standard/LADDER.md` section 1.1](../../../standard/LADDER.md#11-artifact-first-causal-orientation).
+[`standard/LADDER.md` section 1.1](../../../standard/LADDER.md#11-artifact-first-support-and-diagnostic-orientation).
 This experiment does not decide whether that orientation is valid repository architecture;
 it tests the still-open event format, transfer algebra, concentration rule, and localization
 mechanics needed to operationalize it.
@@ -27,9 +27,10 @@ The design decisions are:
 > kinds of entity. A coding agent can be an artifact when created, serialized, versioned,
 > or evaluated and an actor when it performs a transformation or creates another artifact.
 
-> The same bound causal graph carries two directions: bounded artifact trust moves forward
-> through developmental claim space, while observed Rust moves backward from child effects
-> toward candidate falsehoods in ancestor claim architecture.
+> The same bound development graph carries two recorded traversal directions: bounded
+> artifact trust moves forward through developmental claim space, while observed Rust
+> moves backward from child deviations toward recorded ancestors. This backtrace does not
+> itself establish causal localization.
 
 Authorship, authorization, issuer identity, organizational accountability, and descriptive
 history may exist in adjacent optional profiles. Tier 0 may bind their coordinates when a
@@ -46,7 +47,7 @@ Round 1 began from commit `598c545be3833d6d81bb7e252ca5837f3bb2a449`.
 | Zero actor trust | this Round 2 design | No actor identity, popularity, or reputation may strengthen a result | Open as an operational protocol; stated here as a required invariant |
 | Artifact-first trust | existing VSTD artifact, evidence, mechanism, and predicate bindings | Bounded positive support can move from verified parent artifacts into the declared obligations of descendants | Retained as the Tier 0 starting point; child obligations remain separately checked |
 | Actor-artifact role semantics | no prior implementation | An entity's role depends on the creation or operation event; coding agents can occupy both roles | Open; this note corrects the earlier object-only partition |
-| Rust | this Round 2 design | A proposed viral backtrace of measured deviation through bound creation ancestry, never trust or a verdict | Reframed as relation-bound and genetically transferred to ancestor states |
+| Rust | this Round 2 design | A proposed viral backtrace of measured deviation through bound creation ancestry, never trust or a verdict | Reframed as relation-bound traversal toward recorded ancestor states |
 
 One premise in the initial Round 2 plan is corrected here. The two finished halves did
 **not** both put trust in credentials:
@@ -201,7 +202,7 @@ In schematic form:
 
 ```text
 development: parent artifact --bounded positive support--> child claim or artifact
-diagnosis:   child Rust      --genetic causal backtrace--> ancestor claim architecture
+diagnosis:   child Rust      --recorded dependency backtrace--> recorded ancestors
 ```
 
 `UNKNOWN`, `CONFLICTED`, revoked, unavailable, or out-of-scope parent support cannot be
@@ -302,18 +303,18 @@ choose a weaker penalty after seeing a result.
 `UNKNOWN` and `CONFLICTED` are not numeric zero. They remain typed observations. A
 comparison that lacks a common unit is not forced into a number.
 
-### 4.4 Genetic backtrace, basins, and horizons
+### 4.4 Recorded backtrace, basins, and horizons
 
 A **basin** is an explicitly described analytical grouping of events that share a
 predicate, mechanism family, comparison unit, and deviation rule. Clustering may suggest
 a basin, but a clustering algorithm does not establish that the members are comparable.
 The basin definition and its digest must be published with the view.
 
-Rust acts as a viral **truth-disease backtrace**. A directly measured deviation at a
-descendant is the infection event. The recorded creation and input graph determines which
-ancestor states receive the trace; actor/artifact role edges allow the trace to cross a
-coding-agent execution into the bound model, package, checkpoint, or executable that
-acted and then into that artifact's own creation ancestry.
+As an intuition only, Rust resembles a **truth-disease backtrace**. Operationally, a
+directly measured descendant deviation is the source event, and the recorded creation and
+input graph determines which ancestors receive a diagnostic trace. Actor/artifact role
+edges allow the trace to cross a coding-agent execution into the bound model, package,
+checkpoint, or executable that acted and then into that artifact's own creation ancestry.
 
 Propagation is typed rather than silently re-described as direct observation:
 
@@ -335,7 +336,7 @@ Rust **concentrates** where distinct descendant infection events share an ancest
 ancestor and basin, the concentration record is the set of unique source rust event and
 admissible path digests that reach it. Multiple paths or duplicate reports of one source
 event remain visible but do not multiply its weight. Intersections of independent
-backtraces prioritize earlier claims, predicates, mechanisms, or artifacts for causal
+backtraces prioritize earlier claims, predicates, mechanisms, or artifacts for diagnostic
 examination because they are common candidate loci of falsehood.
 
 `TRANSFERRED` is actual rust inheritance, but it is not a claim that the ancestor was
@@ -349,7 +350,7 @@ Horizon summaries are indexed by accepted exposures rather than wall-clock time,
 example the last 10, 100, and 1,000 exposures plus lifetime. The complete vector and its
 dispersion are reported. It is not collapsed into one rankable scalar.
 
-### 4.5 Dual causal representation
+### 4.5 Dual traversal representation
 
 Forward artifact trust and backward Rust are messages over the same directed development
 graph, not positive and negative values on one scalar. The forward message asks which
@@ -358,9 +359,10 @@ recorded ancestors can explain an observed child deviation. A node may carry bot
 cancellation: positive support for one predicate does not erase Rust for another, and
 Rust on one descendant does not erase unrelated support.
 
-The causal graph therefore represents both the generative direction commonly used to
-explain how claims and artifacts develop and the diagnostic direction used to identify
-where a later contradiction may have entered the architecture.
+The recorded development graph therefore represents both the generative direction used
+to explain how claims and artifacts develop and the diagnostic direction used to identify
+where a later contradiction may have entered the architecture. It does not establish
+intervention-level causality.
 
 ### 4.6 Prior art boundary
 
@@ -379,7 +381,7 @@ that semantically equivalent repackaging is impossible.
 [Certificate Transparency](https://www.rfc-editor.org/rfc/rfc9162.html) are useful
 comparisons for public negative signals, automated project checks, and append-only public
 records. They are not equivalent mechanisms and do not validate this design. This note
-claims only a proposed composition of relation-bound deviation, genetic backtrace,
+claims only a proposed composition of relation-bound deviation, recorded dependency backtrace,
 exposure deduplication, typed uncertainty, and separation from verdict material. It makes
 no novelty claim.
 

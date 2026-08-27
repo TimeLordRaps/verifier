@@ -1,4 +1,4 @@
-name: conformance
+name: repository-checks
 
 on:
   push:
@@ -132,9 +132,24 @@ jobs:
       - run: python scripts/check_presentation.py
       - run: python scripts/build_pages.py --output _site
 
+  codeql:
+    name: CodeQL (Python)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: github/codeql-action/init@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+        with:
+          languages: python
+          queries: security-extended
+      - uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+
+  # This identifier remains stable because main branch protection requires it.
   conformance-gate:
     if: always()
-    needs: [base, stdlib-smoke, scitt-crypto, release-integrity, release-reproducibility, installed-wheel-smoke, presentation]
+    needs: [base, stdlib-smoke, scitt-crypto, release-integrity, release-reproducibility, installed-wheel-smoke, presentation, codeql]
     runs-on: ubuntu-latest
     steps:
       - name: Require every declared support and artifact check
@@ -146,6 +161,7 @@ jobs:
           REPRODUCIBLE: ${{ needs.release-reproducibility.result }}
           WHEEL: ${{ needs.installed-wheel-smoke.result }}
           PRESENTATION: ${{ needs.presentation.result }}
+          CODEQL: ${{ needs.codeql.result }}
         run: |
           test "$BASE" = success
           test "$STDLIB" = success
@@ -154,3 +170,4 @@ jobs:
           test "$REPRODUCIBLE" = success
           test "$WHEEL" = success
           test "$PRESENTATION" = success
+          test "$CODEQL" = success

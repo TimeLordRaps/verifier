@@ -7,7 +7,7 @@
 
 **Layer:** 2 of 5 on the object axis (see `LADDER.md`)
 **Receipt wire format:** `schema_version = "VSTD-0.2"` — frozen; see `WIRE_IDENTIFIERS.md`
-**Status:** Additive experimental standard with an implemented vertical slice
+**Status:** experimental project specification with an implemented vertical slice
 **Maintainer:** TimeLordRaps
 **Date:** 2026-08-20
 

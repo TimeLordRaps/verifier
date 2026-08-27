@@ -11,7 +11,7 @@
   "terminology_decision": {
     "public_label_zero_identity": "REJECTED_AS_UNQUALIFIED_PUBLIC_LABEL",
     "accepted_label": "bounded identity disclosure",
-    "rationale": "The profile never removes identity; it withholds civil identity while retaining cryptographic and authorization coordinates. Calling that 'zero identity' overstates the privacy property and understates the retained coordinates."
+    "rationale": "The profile never removes identity; it withholds civil identity while retaining cryptographic and authorization coordinates. The architecture-level zero-identity rule means only that identity or reputation alone cannot strengthen an artifact-bound result; it is not a privacy guarantee."
   },
   "identity_dimensions": [
     "civil_identity",

@@ -1,4 +1,4 @@
-# Round 1 zero-knowledge experiment report
+# Recorded reduced instruction set computer (RISC) Zero proof-mechanism report
 
 > **Acronyms:** gigabyte (GB); identifier (ID); random-access memory (RAM); reduced instruction set computer (RISC);
 > RISC Zero (RISC0); random number generator (RNG); software development kit (SDK);

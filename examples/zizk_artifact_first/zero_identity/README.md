@@ -24,6 +24,10 @@ semantically reevaluable from public coordinates conditional on declared externa
 and every other identity property reported honestly as `UNKNOWN`,
 `CONFLICTED`, or `REFUTED` rather than assumed.
 
+This rejects “zero identity” as a privacy-profile claim. It does not reject VSTD's
+architecture-level zero-identity rule, which says only that identity or reputation alone
+cannot strengthen an artifact-bound result.
+
 Full reasoning and the exact claims that are and are not justified:
 [`ROUND1_ZERO_IDENTITY_REPORT.md`](ROUND1_ZERO_IDENTITY_REPORT.md).
 

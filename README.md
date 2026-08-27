@@ -4,7 +4,7 @@
 
 **Portable, bounded, refutable evidence for computational claims.**
 
-[![Conformance](https://github.com/TimeLordRaps/verifier/actions/workflows/ci.yml/badge.svg)](https://github.com/TimeLordRaps/verifier/actions/workflows/ci.yml)
+[![Repository checks](https://github.com/TimeLordRaps/verifier/actions/workflows/ci.yml/badge.svg)](https://github.com/TimeLordRaps/verifier/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/TimeLordRaps/verifier?display_name=tag&sort=semver)](https://github.com/TimeLordRaps/verifier/releases/latest)
 [![Python 3.10–3.13](https://img.shields.io/badge/python-3.10%E2%80%933.13-3776AB.svg)](https://www.python.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-2f7d6d.svg)](LICENSE)
@@ -102,8 +102,8 @@ or a second implementation.
 | Generic run | Frozen `VSTD-0.1` compatibility profile under VSTD-1 | Plan, execute, capture, inspect, strict shape/digest validation, and declared-output rerun | Captures command, source state, outputs, environment, and manifest declarations; generic validation is not native claim verification | `vstd4_conformance = NOT_EVALUATED` | Sandbox, generic external-evidence resolver, and actor/execution binder |
 | Experimental workflow | Non-normative experimental profile 0.1 | Strict validator, verdict-neutral GitHub event projector, allocation records, and command-line interface (CLI) | Preserves native platform results and explicit horizons with `verification_effect = NONE` | No VSTD conformance claim | Independent consumer, additional platform adapter, and evidence for allocation optimality |
 | Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability | Experimental, non-normative application profile and crosswalk | Real local Concise Binary Object Representation (CBOR) plus CBOR Object Signing and Encryption (COSE) signatures/receipt, loss-declared adapter, and adjacent native-result composition | Binds the exact payload under emitted test keys and local policy; registration never establishes payload truth | VSTD-4 remains `NOT_ESTABLISHED` | Public Transparency Service, external implementation/interoperability result, and Internet Engineering Task Force (IETF) review |
-| zero-identity/zero-knowledge (ZIZK) artifact-first trust | Governing VSTD architecture in `standard/LADDER.md` section 1.1; not a separate layer or profile | Artifact-bound claim/evidence/mechanism semantics, contextual actor/artifact roles, forward support, and reverse diagnostic Rust constraints | Existing mechanism-specific evidence only; identity, reputation, repetition, and topology add no assurance | Governing architectural invariant; not a separate VSTD conformance result | Event serialization, support-transfer algebra, Rust concentration/localization, complete trichotomy derivation, and maturation of specific optional proof backends |
-| RISC Zero proof-carrying reference mechanism | Bounded non-normative mechanism example under the governing ZIZK architecture | Pinned prover/verifier source plus a tracked real receipt, public envelope, self-test result, and offline verification command | Authenticates one fixed hidden-witness predicate and expected image identifier; it does not establish the witness's external truth | Native proof verified; no VSTD receipt mapping | Complete VSTD trichotomy predicate, second build, external audit, and additional proof backends |
+| zero-identity/zero-knowledge (ZIZK) artifact-first trust | Governing VSTD architecture in `standard/LADDER.md` section 1.1; not a separate layer or profile | Artifact-bound claim/evidence/mechanism semantics, contextual actor/artifact roles, forward support, and reverse diagnostic Rust constraints | Existing mechanism-specific evidence only; identity or reputation alone, repetition, and topology add no assurance | Governing architectural invariant; not a separate VSTD conformance result | Event serialization, support-transfer algebra, Rust concentration/localization, complete trichotomy derivation, and maturation of specific optional proof backends |
+| RISC Zero proof-carrying reference mechanism | Bounded non-normative mechanism example under the governing ZIZK architecture | Pinned prover/verifier source plus a tracked real receipt, public envelope, self-test result, and verifier command that can run network-offline after setup | Authenticates one fixed hidden-witness predicate and expected image identifier; it does not establish the witness's external truth | Native proof verified; no VSTD receipt mapping | Complete VSTD trichotomy predicate, second build, external audit, and additional proof backends |
 
 The authoritative implementation-to-specification map is
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Normative meaning remains under
@@ -147,13 +147,15 @@ result. Aggregate depth requires separate passing evidence for every preceding l
 The same recorded development graph can carry bounded artifact support forward and
 diagnostic Rust backward. Rust identifies ancestors worth examining; it does not prove
 guilt, responsibility, causality, or automatic ancestor falsification. See
-[the governing architecture](standard/LADDER.md#11-artifact-first-causal-orientation).
+[the governing architecture](standard/LADDER.md#11-artifact-first-support-and-diagnostic-orientation).
 
 This is VSTD's **ZIZK artifact-first trust architecture**, not an optional research
-profile. Zero identity means actor identity and reputation supply no assurance. Zero
-knowledge means a claim may use a proof-carrying mechanism that hides bounded evidence
-when that mechanism establishes its exact predicate; it does not make disclosure
-mandatory or assumption-free. The runnable
+profile. Zero identity is not anonymity or absence of identifiers: it means identity or
+reputation alone cannot strengthen an artifact-bound result. A mechanism may still earn
+an exact attribution, authorization, or separation claim by checking the required identity
+evidence. Zero knowledge applies only when a named proof system establishes its formal
+privacy property for the exact predicate and parameters under explicit assumptions; it is
+not a property of VSTD generally and does not make disclosure mandatory. The runnable
 [RISC Zero reference mechanism](examples/zizk_artifact_first/) is one bounded backend,
 while its proof system and unfinished transfer mechanics remain mechanism-specific.
 
@@ -201,11 +203,14 @@ semantic equivalence, or truth outside that scope.
 ### Use the Python application programming interface (API)
 
 ```python
-from verifier.core.certificate import certificate_from_canonical_bytes
-from verifier.core.kernel import check
+from pathlib import Path
 
-certificate = certificate_from_canonical_bytes(certificate_bytes)
-result = check(certificate, budget=verification_budget, binding=claim_binding)
+from verifier.core.run import describe_run_plan, load_manifest
+
+manifest_path = Path("examples/generic_run/manifest.json")
+manifest = load_manifest(manifest_path)
+plan = describe_run_plan(manifest, manifest_path.parent)
+print(plan["command"], plan["executes_without_sandbox"])
 ```
 
 The installed wheel contains byte-identical copies of every normative specification, so
