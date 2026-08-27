@@ -5,7 +5,7 @@
 
 This directory does **not** make VSTD's ZIZK artifact-first architecture experimental.
 That governing orientation is normative in
-[`standard/LADDER.md` section 1.1](../../standard/LADDER.md#11-artifact-first-support-and-diagnostic-orientation).
+[`standard/LADDER.md` section 1.1](../../standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
 
 Only the following unfinished mechanisms are experimental here:
 

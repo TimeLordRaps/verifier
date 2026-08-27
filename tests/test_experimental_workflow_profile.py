@@ -89,7 +89,7 @@ def test_checked_in_manifests_validate_and_match_schema() -> None:
     jsonschema.Draft202012Validator(schema).validate(payload)
 
 
-def test_artifact_first_mechanism_manifest_preserves_support_diagnostic_boundary() -> None:
+def test_artifact_first_mechanism_manifest_preserves_causal_provenance_boundary() -> None:
     payload = load_manifest(ARTIFACT_FIRST_MECHANISMS_MANIFEST)
     verify_repo_artifacts(payload, ROOT)
 
@@ -110,8 +110,8 @@ def test_artifact_first_mechanism_manifest_preserves_support_diagnostic_boundary
     hypotheses = {item["id"]: item for item in payload["hypotheses"]}
     assert hypotheses["hypothesis-artifact-first-zero-actor-trust"]["state"] == "OPEN"
     assert hypotheses["hypothesis-contextual-actor-artifact-roles"]["state"] == "OPEN"
-    assert hypotheses["hypothesis-rust-dependency-backtrace"]["state"] == "OPEN"
-    assert hypotheses["hypothesis-dual-traversal"]["state"] == "OPEN"
+    assert hypotheses["hypothesis-rust-memetic-backtrace"]["state"] == "OPEN"
+    assert hypotheses["hypothesis-dual-causal-propagation"]["state"] == "OPEN"
 
     adaptation = payload["adaptations"][0]
     assert "standard/LADDER.md section 1.1" in adaptation["decision"]
@@ -120,7 +120,7 @@ def test_artifact_first_mechanism_manifest_preserves_support_diagnostic_boundary
 
     horizons = {item["id"]: item["status"] for item in payload["horizons"]}
     assert horizons["horizon-contextual-role-protocol"] == "UNKNOWN"
-    assert horizons["horizon-rust-dependency-backtrace"] == "UNKNOWN"
+    assert horizons["horizon-rust-memetic-backtrace"] == "UNKNOWN"
     assert horizons["horizon-forward-artifact-trust"] == "UNKNOWN"
 
 

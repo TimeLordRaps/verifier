@@ -25,7 +25,7 @@ not fabricate or backdate it. The tag workflow enforces this with
 release-candidate Zenodo metadata.
 
 1. Merge the versioned release change through the public pull-request workflow. Require
-   every protected conformance check on the exact candidate commit.
+   the protected repository-check aggregate to pass on the exact candidate commit.
 2. From a clean checkout of that commit, run:
 
    ```bash
@@ -51,8 +51,8 @@ release-candidate Zenodo metadata.
    distributions declare `verifier-standard`, version `1.2.0`, import package `verifier`,
    and the frozen three console scripts.
 
-   The protected conformance gate separately builds this complete artifact set on
-   Windows and Linux and compares every byte. Do not prepare a tag unless that
+   The protected repository-check aggregate separately builds this complete artifact set
+   on Windows and Linux and compares every byte. Do not prepare a tag unless that
    cross-platform comparison passed on the exact candidate commit.
 
 4. Run `twine check` on the candidate wheel and source distribution. Install the
@@ -97,8 +97,9 @@ release-candidate Zenodo metadata.
    file set and every member byte MUST match that commit. CRLF/LF equivalence is not
    accepted as byte identity.
 8. Push the tag only after all preceding checks pass. The tag-triggered release workflow
-   rechecks protected-main ancestry, package version, the successful `conformance-gate`,
-   the full test suite, deterministic build, installed wheel, and artifact manifest.
+   rechecks protected-main ancestry, package version, the successful protected
+   repository-check aggregate (the `conformance-gate` status context), the full test
+   suite, deterministic build, installed wheel, and artifact manifest.
    It then attests and publishes exactly the tested source ZIP, wheel, source
    distribution, and external release manifest to the GitHub release. A second job can
    access only the wheel and source distribution, requires approval in the protected

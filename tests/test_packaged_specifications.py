@@ -22,13 +22,14 @@ def test_packaged_specification_bytes_match_normative_sources() -> None:
         )
 
 
-def test_ladder_fixes_support_and_diagnostic_directions_without_actor_trust() -> None:
+def test_ladder_fixes_causal_provenance_directions_without_actor_trust() -> None:
     ladder = (REPO_ROOT / "standard" / "LADDER.md").read_text(encoding="utf-8")
-    assert "parent artifact --bounded positive support--> child" in ladder
-    assert "child Rust      --recorded dependency backtrace--> recorded ancestors" in ladder
+    assert "ancestor artifact --bounded positive support--> descendant" in ladder
+    assert "descendant Rust   --memetic causal backtrace--> recorded ancestor states" in ladder
+    assert "Memetic propagation" in ladder
     assert "RFC 2119" in ladder
     assert "RFC 8174" in ladder
     assert "not computable conformance results" in ladder
-    assert "no current\nVSTD runtime emits or validates either transfer" in ladder
+    assert "current VSTD runtime emits or validates either transfer" in ladder
     assert "MUST NOT strengthen an artifact-bound result" in ladder
     assert "They do not cancel, form one\nscalar score" in ladder

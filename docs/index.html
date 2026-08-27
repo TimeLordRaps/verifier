@@ -8,7 +8,10 @@
   <meta property="og:description" content="A project specification and reference implementation for bounded computational claims and provenance graphs.">
   <meta property="og:image" content="https://timelordraps.github.io/verifier/assets/vstd-overview.png">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://timelordraps.github.io/verifier/">
   <title>VSTD — portable, bounded, refutable</title>
+  <link rel="canonical" href="https://timelordraps.github.io/verifier/">
+  <link rel="icon" href="assets/vstd-overview.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -37,6 +40,10 @@
         checking mechanisms, limits, refutation conditions, provenance, and
         reproducibility information. It does not replace native domain verifiers or
         strengthen their results.</p>
+        <div class="actions hero-actions">
+          <a class="button primary" href="https://github.com/TimeLordRaps/verifier#30-60-second-demonstration">Run the four-scenario demo</a>
+          <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/QUICKSTART.md">Read the quickstart</a>
+        </div>
         <p class="lead">VSTD makes computational claims:</p>
         <dl class="lead-defs">
           <dt>Portable:</dt>
@@ -47,10 +54,6 @@
           <dd>exposing falsification conditions, admissible counterevidence, exclusions, and decision rules so another party can challenge the exact result.</dd>
         </dl>
         <p class="lead lead-close">A result travels with its meaning, evidence, limits, and failure routes so downstream humans and agents can draw conclusions without silently widening it.</p>
-        <div class="actions">
-          <a class="button primary" href="https://github.com/TimeLordRaps/verifier#30-60-second-demonstration">Run the four-scenario demo</a>
-          <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/QUICKSTART.md">Read the quickstart</a>
-        </div>
       </div>
       <div class="hero-card">
         <img src="assets/vstd-overview.svg" alt="The VSTD object and graph axes, where every layer requires its own separate evidence">
@@ -103,6 +106,10 @@ $ vstd demo
         <div class="eyebrow">Current status</div>
         <h2>Current implementation status</h2>
         <p class="status">VSTD is a maintainer-led alpha project specification. VSTD-4 depth and Graph layers 2-5 are candidate computations with conformance <code>NOT_ESTABLISHED</code>; VSTD-5 is draft and not implemented. The project has no demonstrated external adoption, independent implementation, interoperability deployment, or third-party security review.</p>
+        <p class="release-coordinate"><strong>Release coordinate:</strong> this branch
+        documents <code>verifier-standard 1.2.0</code> as an unreleased candidate. Use
+        <a href="https://github.com/TimeLordRaps/verifier/releases">GitHub Releases</a> for
+        the latest published artifact.</p>
         <div class="actions">
           <a class="button primary" href="https://github.com/TimeLordRaps/verifier#current-maturity">Review the maturity table</a>
           <a class="button" href="https://github.com/TimeLordRaps/verifier/issues/new/choose">Report an ambiguity or counterexample</a>

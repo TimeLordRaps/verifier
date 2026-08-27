@@ -54,7 +54,7 @@ describing another layer's failure. The normative requirement is narrower: an
 implementation MUST NOT treat success on one question as evidence for a different
 question.
 
-### 1.1 Artifact-first support and diagnostic orientation
+### 1.1 Artifact-first causal provenance orientation
 
 VSTD evaluates artifact-bound claims, evidence, predicates, mechanisms, and declared
 trust roots. Standing alone, an actor's identity, popularity, repetition, or reputation
@@ -65,13 +65,19 @@ evidence; that result does not promote an unrelated computational claim. **Actor
 may be an artifact when it is created, versioned, or evaluated and an actor when it
 creates or transforms another artifact.
 
-The same bound development graph records two typed traversal directions over declared
-dependencies:
+The same bound development graph carries two typed causal-provenance propagation
+directions:
 
 ```text
-development: parent artifact --bounded positive support--> child claim or artifact
-diagnosis:   child Rust      --recorded dependency backtrace--> recorded ancestors
+development: ancestor artifact --bounded positive support--> descendant claim or artifact
+diagnosis:   descendant Rust   --memetic causal backtrace--> recorded ancestor states
 ```
+
+**Memetic propagation** is the transmission of claim and evidence state through recorded
+developmental provenance. The genetic or viral language names this inheritance mechanic:
+positive Artifact support propagates forward into descendant claim space, while Rust
+propagates backward toward ancestor states as a provenance backtrace. It does not claim
+biological transmission or make identity and reputation sources of assurance.
 
 **Artifact trust** is positive support already established for an exact artifact-bound
 obligation. It moves parent-to-child only across a declared creation or dependency edge
@@ -88,8 +94,10 @@ ancestral reachability, not direct observation or causal responsibility; localiz
 requires additional intervention, ablation, reproduction by a distinct actor, or equivalent
 declared evidence.
 
-The word *causal* in this section names only the recorded developmental ordering. It does
-not establish intervention-level causality, causal localization, responsibility, or guilt.
+The word *causal* is required here for recorded developmental and provenance causality:
+the graph states which artifacts and transformations produced later claim architecture.
+Propagation across those causal-provenance edges does not by itself establish
+intervention-level physical causality, causal localization, responsibility, or guilt.
 
 Forward support and backward Rust MUST remain separate. They do not cancel, form one
 scalar score, or flow in the opposite direction as inherited truth or guilt. `UNKNOWN`
@@ -97,8 +105,8 @@ and `CONFLICTED` support or lineage MUST remain visible and MUST NOT become a cl
 signal. This section fixes the semantic orientation and prohibited inferences; an event
 format, transfer algebra, concentration-independence rule, and localization protocol each
 require their own specification and evidence. Until those exist, Artifact trust and Rust
-are constraints on dependency interpretation, not computable conformance results; no current
-VSTD runtime emits or validates either transfer.
+are causal-provenance propagation constraints, not computable conformance results; no
+current VSTD runtime emits or validates either transfer.
 
 ---
 

@@ -12,6 +12,8 @@
 
 ## 1.2.0 - UNRELEASED
 
+### Public surface and integrations
+
 - Restructure the public first-view path around one bounded project description, one
   deterministic demonstration, one canonical maturity table, skeptical claim limits,
   contributor routes, and release/citation boundaries; align Pages and package metadata
@@ -38,6 +40,12 @@
   architecture, publish the bounded RISC Zero reference mechanism and exact recorded
   public proof artifacts, and keep only unfinished mechanisms experimental while
   preserving unresolved horizons and native-system authority.
+- State artifact support as forward causal-provenance flow and Rust as a memetic causal
+  backtrace toward recorded ancestor states, without inferring guilt, responsibility, or
+  intervention-level causal localization from diagnostic reachability alone.
+
+### Claim boundaries and validation
+
 - Remove the live SimulacraBench rehearsal and its front-door promotion; the repository
   never contained or reproduced the submission, hosted image, hardware, or protected
   evaluation identified by that name.
@@ -46,6 +54,8 @@
   extraction is not independent verification, and unverified determinism is `UNKNOWN`.
 - Publish a Pages guide index and enforce language, title, viewport, main-region, skip-link,
   image-alt, labelled-navigation, generated-reference, and local-link checks in CI.
+- Require CodeQL security-extended Python analysis in the protected repository-check
+  aggregate with only read access to content and write access to security results.
 - Fail closed on malformed generic-run receipts, publish their exact schema, and dispatch
   the frozen `VSTD-0.1` wire identifier by required receipt profile.
 - Package every normative specification, verify byte identity, and smoke-test the built
@@ -57,11 +67,15 @@
 - Reject self-promoted independence even when every supplied status and digest agrees;
   version 1.2.0 has no actor/execution evidence-binding adapter and therefore never
   derives `EVIDENCED` from serialized references.
-- Require the real optional SCITT/COSE cryptographic example in the conformance gate
+- Require the real optional SCITT/COSE cryptographic example in the protected
+  repository-check aggregate
   rather than allowing its dependency-gated tests to disappear from the base matrix.
 - Close generic-run control structures while retaining the released refutation-extension
   map, make common receipt commands honor `--json`, and lock `validate` as an
   integrity/profile check rather than a claim verifier.
+
+### Graph and conformance semantics
+
 - Preserve incompatible Graph assertions as evidence-linked conflict records and label
   rating-derived levels as `CALLER_SUPPLIED` candidates with conformance `NOT_ESTABLISHED`.
 - Classify the current VSTD-4 depth calculation as a structural candidate over
@@ -70,6 +84,9 @@
 - Label Graph 2-4 candidates consistently on first-view, documentation, command, schema,
   and SCITT surfaces. Keep challenge-ledger state, degradation from status already
   recorded in a Graph, and the missing challenge-to-Graph adapter distinct.
+
+### Release and maintainer controls
+
 - Mark 1.2.0 metadata as an unreleased release candidate, omit any fabricated release
   date, and require the exact tagged checkout to have `TIME.md` set to `Status: CLEAR`.
 - Make package/reference status explicitly say VSTD-4 candidate conformance is

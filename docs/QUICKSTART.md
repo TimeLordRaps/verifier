@@ -61,9 +61,11 @@ vstd validate /tmp/vstd-receipt
 vstd inspect /tmp/vstd-receipt
 ```
 
-`validate` recomputes the receipt's stable-payload digest only. It does not schema-validate
-the receipt, rehash the declared artifacts, verify external evidence, or establish that
-the claim is true. Use `reproduce` for the separately bounded artifact comparison.
+`validate` applies the bundled profile's structural checks and recomputes the receipt's
+stable-payload digest. It does not invoke an external JavaScript Object Notation (JSON)
+Schema engine, rehash the
+declared artifacts, verify external evidence, or establish that the claim is true. Use
+`reproduce` for the separately bounded artifact comparison.
 
 ## 5. Exercise the falsification route
 

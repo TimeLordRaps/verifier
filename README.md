@@ -144,10 +144,12 @@ and its recorded transformations.
 A higher-layer result does **not** supply, imply, upgrade, or repair a lower-layer
 result. Aggregate depth requires separate passing evidence for every preceding layer.
 
-The same recorded development graph can carry bounded artifact support forward and
-diagnostic Rust backward. Rust identifies ancestors worth examining; it does not prove
-guilt, responsibility, causality, or automatic ancestor falsification. See
-[the governing architecture](standard/LADDER.md#11-artifact-first-support-and-diagnostic-orientation).
+The same recorded causal-provenance graph can carry bounded artifact support forward and
+diagnostic Rust backward. This memetic propagation is how provenance state moves through
+developmental claim space. Rust identifies ancestor states worth examining; traversal
+alone does not prove guilt, responsibility, causal localization, or automatic ancestor
+falsification. See [the governing
+architecture](standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
 
 This is VSTD's **ZIZK artifact-first trust architecture**, not an optional research
 profile. Zero identity is not anonymity or absence of identifiers: it means identity or

@@ -57,6 +57,7 @@ h1 { max-width: 760px; margin: 12px 0 22px; font-size: clamp(2.8rem, 6vw, 5.6rem
 .lead-defs dd:last-child { margin-bottom: 0; }
 .lead-close { margin-top: 18px; }
 .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+.hero-actions { margin: 26px 0 30px; }
 .button { display: inline-flex; align-items: center; min-height: 46px; padding: 0 18px; border: 1px solid var(--line); border-radius: 9px; color: var(--ink); text-decoration: none; font-weight: 700; background: rgba(14, 39, 52, .72); }
 .button.primary { color: #061a1b; background: var(--teal); border-color: var(--teal); }
 .hero-card, .card, pre { border: 1px solid var(--line); border-radius: 15px; background: var(--panel); box-shadow: 0 22px 65px rgba(0, 0, 0, .22); }
@@ -80,6 +81,7 @@ pre { margin: 0; padding: 24px; color: #dcebed; font: 500 .92rem/1.75 ui-monospa
 .boundary { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 28px; }
 .boundary ul { margin: 10px 0 0; padding-left: 20px; color: var(--muted); }
 .status { border-left: 3px solid var(--amber); padding: 3px 0 3px 18px; color: #d6e2e5; max-width: 850px; }
+.release-coordinate { max-width: 850px; color: var(--muted); }
 
 .ref-hero { padding: 54px 0 10px; }
 .ref-hero h1 { font-size: clamp(2.4rem, 5vw, 4.2rem); margin-bottom: 18px; }

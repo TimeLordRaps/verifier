@@ -66,16 +66,16 @@ def test_experimental_scope_does_not_absorb_the_governing_architecture() -> None
     assert "bounded identity-disclosure reference" in design
 
 
-def test_zizk_terms_do_not_overclaim_identity_privacy_or_causality() -> None:
+def test_zizk_preserves_memetic_causality_without_localization_overclaim() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     ladder = (ROOT / "standard" / "LADDER.md").read_text(encoding="utf-8")
 
     assert "Zero identity is not anonymity or absence of identifiers" in readme
     assert "identity or\nreputation alone cannot strengthen" in readme
     assert "formal\nprivacy property for the exact predicate" in readme
-    assert "recorded dependency backtrace" in ladder
-    assert "not establish intervention-level causality" in ladder
-    assert "genetic causal backtrace" not in ladder
+    assert "memetic causal backtrace" in ladder
+    assert "genetic or viral language names this inheritance mechanic" in ladder
+    assert "does not by itself establish\nintervention-level physical causality" in ladder
 
 
 def test_private_inputs_are_excluded_and_public_proof_artifacts_are_versioned() -> None:

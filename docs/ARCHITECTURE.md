@@ -168,10 +168,11 @@ The smallest operational loop is:
 This is the human forward traversal of the same topology VSTD-Graph stores for machines.
 Artifact trust is bounded forward support across an admissible recorded transformation;
 the child still discharges its new obligations. Rust is reverse diagnostic reachability
-from a downstream deviation toward recorded ancestors. Rust can prioritize examination;
-it is not guilt, responsibility, direct causal identification, or automatic ancestor
-falsification. Neither direction creates a second causality graph, and neither is currently
-an emitted or validated transfer result.
+from a downstream deviation toward recorded ancestors. Together they form memetic
+causal-provenance propagation over one development graph: support moves forward through
+descendant claim space and Rust backtraces toward ancestor states. This propagation is
+not guilt, responsibility, causal localization, or automatic ancestor falsification, and
+neither direction is currently an emitted or validated transfer result.
 
 ### Recursive-amplification falsification outcomes
 

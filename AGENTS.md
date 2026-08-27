@@ -220,10 +220,11 @@ CRLF/LF equivalence as byte identity. This matters when working on Windows.
 - a change to the overview asset dimensions or its accessibility role.
 - a stale generated CLI/API reference or experiment index.
 
-The `conformance-gate` job requires `base`, `stdlib-smoke`, `scitt-crypto`,
-`release-integrity`, `release-reproducibility`, `installed-wheel-smoke`, and
-`presentation` to all succeed. The dedicated SCITT/COSE job installs `.[test,scitt]`; the
-normal test matrix may skip that optional cryptographic integration module.
+The protected repository-check aggregate (the `conformance-gate` job identifier) requires `base`,
+`stdlib-smoke`, `scitt-crypto`, `release-integrity`, `release-reproducibility`,
+`installed-wheel-smoke`, and `presentation` to all succeed. The dedicated SCITT/COSE job
+installs `.[test,scitt]`; the normal test matrix may skip that optional cryptographic
+integration module.
 
 ## 7. Conventions
 
