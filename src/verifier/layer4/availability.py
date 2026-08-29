@@ -1,4 +1,7 @@
-"""Rung 4.8 -- the availability ladder.
+"""Terminology: identifier (ID); International Organization for Standardization (ISO);
+Verifier Standard (VSTD).
+
+Rung 4.8 -- the availability-state sequence.
 
 A hash is not availability. ``proof_sha256 = abc123…`` that nobody can obtain is
 cryptographically bound and completely uncheckable, and a verdict resting on it
@@ -6,9 +9,11 @@ is exactly as portable as the declarant's willingness to answer email.
 
     IDENTIFIED -> AVAILABLE -> PORTABLE -> SELF_CONTAINED
 
-The levels are monotone in the same sense as
+The states are monotone in the same sense as
 :class:`verifier.core.reproducibility.ReproducibilityLevel`, whose shape this
-mirrors deliberately: an artifact at a level satisfies every level below it.
+mirrors deliberately: an artifact in one state satisfies every prerequisite state.
+The public ``AvailabilityLevel`` name and serialized ``*_level`` fields are retained
+compatibility identifiers; they do not denote numbered VSTD profiles.
 
 > All verdict-critical artifacts MUST either accompany the certificate or be
 > retrievable through content-addressed references satisfying a declared
@@ -29,7 +34,7 @@ from typing import Any, Mapping, Optional, Sequence
 
 
 class AvailabilityLevel(str, Enum):
-    """Monotone levels of artifact obtainability."""
+    """Monotone artifact-obtainability states; name retained for compatibility."""
 
     IDENTIFIED = "IDENTIFIED"
     """A content address exists. Nothing asserts that the bytes can be fetched."""
@@ -139,8 +144,9 @@ class RetrievalObservation:
 class ArtifactAvailability:
     """One verdict-critical artifact and how obtainable it actually is.
 
-    The level is **derived**, never taken on the declarant's word -- see
-    :meth:`assess`. A record may state a level, and if the stated level exceeds
+    The availability state is **derived**, never taken on the declarant's word -- see
+    :meth:`assess`. A record may state a value in its compatibility ``declared_level``
+    field, and if the stated value exceeds
     the derived one the record is refused rather than believed.
     """
 

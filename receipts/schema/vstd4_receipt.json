@@ -1,7 +1,9 @@
 {
+  "$comment": "Terminology: grounded decision certificate (GDC); Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json",
-  "title": "VSTD-4 Refutability Receipt",
+  "title": "VSTD-4 Structural Candidate Receipt",
+  "description": "Legacy-compatible VSTD-4 shape. vstd4_depth is a candidate over caller-supplied rung references; conformance is NOT_ESTABLISHED. Historical receipts without conformance_status have the same non-upgrading interpretation.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "receipt_id", "claim_id", "binding", "vstd4_depth", "rung_evidence", "witness", "ceiling_refutation", "blocking_rungs", "status"],
@@ -10,7 +12,8 @@
     "receipt_id": {"type": "string", "pattern": "^VFY-4-[A-Za-z0-9._:-]+$"},
     "claim_id": {"type": "string", "minLength": 1},
     "binding": {"$ref": "#/$defs/binding"},
-    "vstd4_depth": {"type": "integer", "minimum": 0, "maximum": 14},
+    "vstd4_depth": {"type": "integer", "minimum": 0, "maximum": 14, "description": "Structural candidate depth, not normative VSTD-4 conformance."},
+    "conformance_status": {"const": "NOT_ESTABLISHED"},
     "rung_evidence": {
       "type": "object",
       "additionalProperties": false,
@@ -27,7 +30,7 @@
     "witness": {"anyOf": [{"$ref": "vstd4_certificate.json"}, {"type": "null"}]},
     "ceiling_refutation": {"anyOf": [{"$ref": "vstd4_certificate.json"}, {"type": "null"}]},
     "blocking_rungs": {"type": "array", "items": {"pattern": "^4\\.(?:[1-9]|1[0-4])$"}, "uniqueItems": true},
-    "status": {"enum": ["VALID", "CHALLENGED", "REVOKED", "STALE", "UNKNOWN"]},
+    "status": {"enum": ["VALID", "CHALLENGED", "REVOKED", "STALE", "UNKNOWN"], "description": "Current append-only challenge-ledger state. VALID means no admitted challenge currently disqualifies the claim; it does not establish VSTD-4 conformance."},
     "refutation_surface": {"type": "object"},
     "precommitment_envelope": {"type": "object"},
     "availability": {"type": "array", "items": {"type": "object"}},
@@ -43,7 +46,7 @@
   ],
   "$defs": {
     "digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"},
-    "evidenceRef": {"type": "string", "minLength": 1},
+    "evidenceRef": {"type": "string", "minLength": 1, "description": "Caller-supplied reference. Schema validity does not establish retrieval, content binding, the rung proposition, or prerequisite-profile conformance."},
     "coordinate": {
       "type": "object", "additionalProperties": false,
       "required": ["subject", "predicate", "parameters"],

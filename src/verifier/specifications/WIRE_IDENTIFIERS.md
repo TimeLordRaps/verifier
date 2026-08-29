@@ -1,106 +1,88 @@
-# VSTD frozen wire identifiers and historical filenames
+# Verifier Standard (VSTD) serialized receipt identifiers
 
-**Status:** normative for wire-identifier dispatch; filename history is informative
-**Date:** 2026-08-22
+> **Acronyms:** command-line interface (CLI).
 
-VSTD has no demonstrated external adoption or independent implementation as of this
-release. This document therefore does not prescribe an adopter migration. It records
-identifiers and filenames that appeared in the project's own public releases so that
-those artifacts are not silently reinterpreted.
+**Status:** normative for current serialized-receipt dispatch
+**Date:** 2026-08-27
 
-Specification numbers now identify verification depth. Repository releases use
-semantic versions independently.
+A **serialized receipt identifier** is the value written into a receipt to select its exact reader and schema, principally `schema_version` plus any required profile discriminator. Standards literature often calls this a *wire identifier* or part of a *wire format*; here it means the stored JavaScript Object Notation (JSON) contract, not a network protocol.
 
-## 1. Frozen receipt wire identifiers
+Specification numbers identify numbered profiles and their cumulative closure coordinates.
+Repository releases use semantic
+versions independently. Retired partial-profile object identifiers and specification files are
+not current profiles and are absent from this source tree; published tags and Git history
+preserve those earlier project artifacts without making the current reader accept or
+reinterpret them.
 
-A filename or current layer label does not change the meaning of an issued receipt.
-Readers MUST dispatch a receipt by its wire identifier:
+## 1. Current serialized receipt dispatch
 
-| Current layer document | Frozen wire identifier |
+Readers MUST dispatch by the exact `schema_version` and any required profile
+discriminator. Unknown identifiers, missing discriminators, and mismatched shapes fail
+closed:
+
+| Numbered-profile document | Current serialized receipt identifier |
 |---|---|
-| `VSTD-1.md` | `schema_version = "VSTD-0.1"` |
-| `VSTD-2.md` | `schema_version = "VSTD-0.2"` |
+| `VSTD-1.md` | `schema_version = "VSTD-1"` |
+| `VSTD-2.md` | `schema_version = "VSTD-2"` |
 | `VSTD-3.md` | `schema_version = "VSTD-3.0"` |
+| `VSTD-4.md` | `schema_version = "VSTD-4"` |
+| `VSTD-5.md` | `schema_version = "VSTD-5-DRAFT"` |
 | `VSTD-Graph-1.md` | `schema_version = "VSTD-DATA-0.1"` |
 
-New layer-4 and layer-5 documents use their own schemas without changing historical
-canonical digests.
+VSTD-1 has two current receipt profiles:
+
+| `receipt_kind` | Schema | Meaning |
+|---|---|---|
+| `claim_mechanics` | `vstd1_receipt.json` | bounded claim, evidence, checker, provenance, and reproducibility |
+| `generic_computational_run` | `vstd1_generic_run_receipt.json` | planned execution, captured outputs, assessment context, and reproduction surface |
+
+Both discriminators are required. A reader MUST NOT guess the profile from incidental
+field similarity.
+
+The generic-run `assessment_context` is a VSTD-1 container for mechanism identity,
+declared resource bounds, prior commitment, and the refutation surface. It is not a
+VSTD-4 object and carries no VSTD-4 conformance field. The container and its selected
+fields participate in the canonical digest.
 
 ### 1.1 Non-wire vocabulary
 
-`VSTD-2.md` section 7 defines a prose lifecycle vocabulary. Only the
+`VSTD-2.md` section 7 defines prose lifecycle vocabulary. Only the
 `CoordinateStatus` members serialized in `receipts/schema/vstd2_receipt.json`
 (`PRE_VERIFIED`, `VERIFIED`, `FALSIFIED`, `INDETERMINATE`, `UNSUPPORTED`, `STALE`)
-are wire values. `POST_VERIFIED`, `GEOMETRY_INSPECTABLE`, and `COMPLETELY_VERIFIED`
-are descriptive terms only and have never appeared in an issued receipt; renaming
-them does not affect any canonical digest. `GEOMETRY_INSPECTABLE` was named
-`VERIFIABLE` in unreleased drafts before `v1.1.2`; a status token MUST NOT reuse the
-maintainer's name.
+are serialized receipt values. `POST_VERIFIED`, `GEOMETRY_INSPECTABLE`, and `COMPLETELY_VERIFIED`
+are descriptive terms rather than receipt values.
 
-## 2. Historical names in project releases
+## 2. Stored artifact-control identifiers
 
-| Historical public name | Current layer label | Meaning |
-|---|---|---|
-| `VSTD-0.1` | `VSTD-1` | claim mechanics |
-| `VSTD-0.2` | `VSTD-2` | verification surface |
-| `VSTD-3.0` | `VSTD-3` | substrate accountability |
-| — | `VSTD-4` | refutability |
-| — | `VSTD-5` | witness corroboration, draft |
-| `VSTD-DATA-0.1` | `VSTD-Graph-1` | recorded lineage over collections |
+Artifact-control mechanism objects are stored JSON contracts, not network traffic, VSTD
+receipts, or new numbered profiles. They dispatch independently by:
 
-`VSTD-Graph-2` through `VSTD-Graph-5` first appeared under their current labels.
+| Object | `schema_version` |
+|---|---|
+| Freeze manifest | `VSTD-ARTIFACT-FREEZE-1` |
+| Self-closing seal envelope | `VSTD-ARTIFACT-SEAL-1` |
+| Seal closure payload | `VSTD-ARTIFACT-SEAL-CLOSURE-1` |
+| Thaw lineage sidecar | `VSTD-ARTIFACT-THAW-1` |
 
-The current repository does not duplicate old specification paths. Historical tags
-remain the resolver for the bytes published under those paths:
+Their normative behavior is [`ARTIFACT_CONTROL.md`](ARTIFACT_CONTROL.md); their strict
+combined schema is published as
+[`artifact-control-1.schema.json`](https://timelordraps.github.io/verifier/schemas/artifact-control-1.schema.json).
+These identifiers do not imply a network protocol or VSTD conformance result.
 
-```text
-standard/VSTD-0.1.md      -> standard/VSTD-1.md
-standard/VSTD-0.2.md      -> standard/VSTD-2.md
-standard/VSTD-3.0.md      -> standard/VSTD-3.md
-standard/VSTD-DATA-0.1.md -> standard/VSTD-Graph-1.md
-VSTD3_THREAT_MODEL.md     -> docs/layers/vstd-3/threat-model.md
-VSTD3_VENDOR_INTEGRATION.md -> docs/layers/vstd-3/vendor-integration.md
-VSTD3_REFERENCES.md       -> docs/layers/vstd-3/references.md
-VSTD3_MIGRATION.md        -> docs/layers/vstd-3/compatibility.md
-COMPETITION_EVALUATION_PROFILE.md -> docs/profiles/competition-evaluation.md
-CLAIMS_AND_LIMITS.md      -> docs/CLAIMS_AND_LIMITS.md
-```
+## 3. Import package and distribution
 
-## 2.1 Import package and distribution rename
+The distribution is `verifier-standard`, the import package is `verifier`, and
+`vstd` is the canonical cross-platform CLI name. `verifier` may resolve to Windows Driver
+Verifier on common Windows `PATH` configurations. The `verifiable` command remains a
+compatibility alias for already-published execution instructions; it is not an import
+package or a standard identifier.
 
-From `v1.1.2` the import package is `verifier` and the distribution is
-`verifier-standard`. Both
-were previously `verifiable` / `verifiable-standard`. The rename removes a name that
-collided with the ordinary-English adjective, with a former VSTD-2 status token, and
-with the maintainer's former project name.
-
-| Historical name | Current name | Kind |
-|---|---|---|
-| `verifiable` | `verifier` | import package |
-| `verifiable-standard` | `verifier-standard` | distribution |
-| `verifiable-standard-<release>.zip` | `verifier-standard-<release>.zip` | release source archive |
-
-No receipt wire identifier, schema `$id`, or canonical digest changes. Specification
-text that cites a reference module (for example `verifier.core.kernel`) is a pointer
-into the reference implementation, not a wire value.
-
-Release manifests published up to and including `v1.1.1` bind
-`verifiable-standard-<release>.zip` in their `source.archive_prefix`.
-`scripts/release_artifacts.py verify` derives the archive name from the manifest, so
-those releases stay verifiable without republishing.
-
-## 3. CLI compatibility
-
-`vstd` is the canonical cross-platform CLI name. The `verifier` alias remains
-available, but Windows resolves the unqualified name to its built-in Driver Verifier
-utility on common `PATH` configurations. `verifiable` also remains an alias because
-project release materials and receipt instructions may bind that executable name. It is
-a command name only: since `v1.1.2` it no longer corresponds to any import package.
-Retaining either alias preserves project compatibility; it is not evidence of
-external use.
+Release verification derives archive names and console-script expectations from the
+release manifest being checked. This preserves issued release evidence without carrying
+obsolete standard identifiers into current receipt dispatch.
 
 ## 4. Release versioning
 
-The first repository release using integer layer names is `v1.0.0`. The release
-number does not claim VSTD-5 implementation: VSTD-5 is explicitly draft. Existing
-`v0.1.0` and `v0.2.0` tags and GitHub releases remain untouched.
+A repository release number does not claim conformance to a same-numbered VSTD profile.
+VSTD-5 remains draft until its required witness mechanism and evidence binding are
+implemented.

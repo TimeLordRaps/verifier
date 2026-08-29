@@ -1,19 +1,22 @@
-"""``graph_level`` -- how far up the VSTD-Graph ladder a collection actually got.
+"""Terminology: application programming interface (API); conjunctive normal form (CNF); grounded decision certificate (GDC);
+Boolean satisfiability problem (SAT); unsatisfiable (UNSAT); Verifier Standard (VSTD).
+
+``graph_level`` -- compatibility API for the candidate Graph profile satisfied by supplied collection ratings.
 
 VSTD is verification *mechanics* over one object. VSTD-Graph is verification
-*dynamics* over a collection.  The axes remain distinct: a collection holds at
-Graph level ``N`` only when four separately checked conditions over the supplied
-ratings and graph records hold at once.
+*dynamics* over a collection. The axes remain distinct. This module computes a
+candidate Graph profile from caller-supplied ratings; that computation is not
+conformance unless a separate profile validates and binds those ratings.
 
-1. **Membership floor** -- every member object is at object level >= N.
+1. **Membership floor** -- every member object has an object-profile rating >= N.
 2. **Provenance closure** -- every ancestor reachable from any member is also
    >= N. A plain minimum-over-members misses this, which is the whole reason a
    corpus of well-rated repositories can still be badly rated as a corpus.
 3. **Status admissibility** -- no artifact in the closure is ``REVOKED``,
    ``CHALLENGED``, ``STALE`` or ``UNKNOWN``. Fail-closed, per the ``UNKNOWN``
-   principle the data layer already applies elsewhere.
-4. **Edge evidence** -- the transformation hyperedges themselves carry level-N
-   evidence. A graph is only as verified as its edges, and this is the condition
+   principle the data package already applies elsewhere.
+4. **Edge evidence** -- the transformation hyperedges themselves carry profile-N
+   ratings. A graph is only as verified as its edges, and this is the condition
    that makes the axis dynamics rather than aggregation.
 
 Then, exactly as on the object axis::
@@ -21,12 +24,12 @@ Then, exactly as on the object axis::
     graph_level(C) = max { N : CNF_N(C) is satisfiable }
 
 computed by iterated SAT descending 5 -> 1, and **the UNSAT certificate at N+1
-is the explanation of why the collection cannot rate higher**. That certificate
-is a VSTD4-GDC-1 refutation.  That certificate is evidence for the graph-level
-ceiling only.  It does not supply, imply, upgrade, or repair evidence for any
-object or graph layer.
+is the explanation of why those supplied ratings do not support a higher candidate**.
+That certificate is a VSTD4-GDC-1 refutation of the encoded candidate only. It is not
+evidence that any object or Graph profile was satisfied, and does not supply, imply,
+upgrade, or repair evidence for one.
 
-Three independent opinions must agree before this module reports a level: the
+Three separately implemented checks must agree before this module reports a candidate: the
 certified Horn encoding, :class:`MinimalIndependentDPLL`, and a direct Python
 evaluation of the four conditions. Divergence raises rather than silently
 preferring one, because an encoding bug is precisely the failure that makes two
@@ -68,17 +71,18 @@ GRAPH_MAX_LEVEL = 5
 
 INADMISSIBLE_STATUSES = frozenset(
     {
-        ArtifactStatus.REVOKED,
-        ArtifactStatus.CHALLENGED,
-        ArtifactStatus.STALE,
-        ArtifactStatus.UNKNOWN,
+        ArtifactStatus.REVOKED.value,
+        ArtifactStatus.CHALLENGED.value,
+        ArtifactStatus.STALE.value,
+        ArtifactStatus.UNKNOWN.value,
+        "CONFLICTED",
     }
 )
-"""Statuses that disqualify an artifact from any graph level.
+"""Statuses that disqualify an artifact from any candidate Graph profile.
 
 ``SUPERSEDED`` is deliberately absent: a superseded artifact was replaced going
 forward, but its historical role in a lineage is unchanged and re-rating the
-past every time something is superseded would make levels unstable for reasons
+past every time something is superseded would make candidate profiles unstable for reasons
 having nothing to do with evidence. A caller wanting the stricter reading has
 :meth:`~verifier.data.policy.ProvenancePolicyVerifier.verify_all_ancestors_valid`,
 which admits ``VALID`` and nothing else.
@@ -108,7 +112,7 @@ class GraphEncodingError(RuntimeError):
 
 
 # --------------------------------------------------------------------------
-# Obligations -- what a level actually asks of a collection
+# Obligations -- what a candidate Graph profile asks of a collection
 # --------------------------------------------------------------------------
 
 
@@ -131,10 +135,10 @@ _KIND_ORDER = {kind: index for index, kind in enumerate(ObligationKind)}
 
 @dataclass(frozen=True)
 class Obligation:
-    """One thing a level requires, and what the graph actually says about it.
+    """One thing a candidate Graph profile requires and what the graph records.
 
-    ``observed`` is level-independent -- it is the ground fact. Whether the
-    obligation is *met* is a question asked of that fact once per level, which
+    ``observed`` is profile-independent -- it is the ground fact. Whether the
+    obligation is *met* is a question asked of that fact once per profile, which
     is why the variable numbering below is stable across all five encodings and
     only the unit clauses move.
     """
@@ -143,7 +147,7 @@ class Obligation:
     subject: str
     observed: str
     level: int = 0
-    """The rated level behind ``observed``; unused for status obligations."""
+    """Compatibility field carrying the profile rating; unused for status obligations."""
 
     @property
     def predicate(self) -> str:
@@ -151,15 +155,15 @@ class Obligation:
 
     def met_at(self, level: int) -> bool:
         if self.kind is ObligationKind.STATUS_ADMISSIBILITY:
-            return self.observed not in {status.value for status in INADMISSIBLE_STATUSES}
+            return self.observed not in INADMISSIBLE_STATUSES
         return self.level >= level
 
     def describe(self, level: int) -> str:
         if self.kind is ObligationKind.STATUS_ADMISSIBILITY:
             return f"{self.kind.value}: {self.subject} is {self.observed}"
         return (
-            f"{self.kind.value}: {self.subject} is rated {self.level}, "
-            f"which is below {level}"
+            f"{self.kind.value}: {self.subject} has profile rating {self.level}, "
+            f"below required profile {level}"
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -174,12 +178,12 @@ class Obligation:
 
 @dataclass(frozen=True)
 class GraphCollection:
-    """A collection under test, with the ratings its level will be computed from.
+    """A collection under test, with ratings for its candidate Graph profile.
 
-    ``object_levels`` and ``edge_levels`` are read as ratings someone else
-    established. An artifact or edge with no entry is rated ``0``: unrated is
-    not a passing grade, and reading it as one is how a collection of unknowns
-    becomes a level-5 corpus.
+    ``object_levels`` and ``edge_levels`` retain compatibility field names and are
+    read as profile ratings someone else established. An artifact or edge with
+    no entry is rated ``0``: unrated is not passing, and reading it as one is how
+    a collection of unknowns becomes a candidate Graph-5 collection.
     """
 
     collection_id: str
@@ -213,7 +217,10 @@ def obligations(graph: ProvenanceHypergraph, collection: GraphCollection) -> tup
         )
     for artifact_id in sorted(closure):
         node = graph.artifacts.get(artifact_id)
-        status = ArtifactStatus.UNKNOWN.value if node is None else node.status.value
+        if graph.has_conflict(artifact_id):
+            status = "CONFLICTED"
+        else:
+            status = ArtifactStatus.UNKNOWN.value if node is None else node.status.value
         found.append(Obligation(ObligationKind.STATUS_ADMISSIBILITY, artifact_id, status))
 
     edges = sorted(
@@ -224,7 +231,9 @@ def obligations(graph: ProvenanceHypergraph, collection: GraphCollection) -> tup
         }
     )
     for transformation_id in edges:
-        level = collection.edge_level(transformation_id)
+        level = 0 if graph.has_conflict(transformation_id) else collection.edge_level(
+            transformation_id
+        )
         found.append(
             Obligation(ObligationKind.EDGE_EVIDENCE, transformation_id, str(level), level)
         )
@@ -268,9 +277,9 @@ def encode(
 ) -> tuple[tuple[tuple[int, ...], ...], Grounding]:
     """CNF_N, together with the grounding that says what its variables mean.
 
-    Variable 1 is the collection holding at ``level``; variable ``1 + i`` is
-    obligation ``i``. The numbering does not move between levels -- only the
-    unit clauses do -- so two certificates for adjacent levels are directly
+    Variable 1 is the collection satisfying the profile number stored in ``level``;
+    variable ``1 + i`` is obligation ``i``. The numbering does not move between
+    profiles -- only the unit clauses do -- so two certificates for adjacent profiles are directly
     comparable rather than being two unrelated formulas that happen to share a
     subject.
     """
@@ -333,7 +342,7 @@ def certify_graph_cnf(
     verdict = kernel_check(certificate, binding=binding)
     if not verdict.accepted:
         raise GraphEncodingError(
-            f"{collection_id} at level {level}: the kernel refused this "
+            f"{collection_id} at candidate Graph profile {level}: the kernel refused this "
             f"collection's own certificate: {verdict.details}",
             certificate=certificate,
         )
@@ -346,8 +355,8 @@ def certify_graph_cnf(
     satisfiable, _model = solver.solve()
     if encoded != satisfiable:
         raise GraphEncodingError(
-            f"{collection_id} at level {level}: the certified encoding says "
-            f"{encoded} but the independent solver said {satisfiable}",
+            f"{collection_id} at candidate Graph profile {level}: the certified encoding says "
+            f"{encoded} but the separately implemented solver said {satisfiable}",
             certificate=certificate,
             cnf_satisfiable=satisfiable,
             direct_result=holds_at(items, level),
@@ -356,7 +365,7 @@ def certify_graph_cnf(
     direct = holds_at(items, level)
     if encoded != direct:
         raise GraphEncodingError(
-            f"{collection_id} at level {level}: CNF encoding and direct "
+            f"{collection_id} at candidate Graph profile {level}: CNF encoding and direct "
             f"computation disagree -- encoding says {encoded}, direct "
             f"computation says {direct}. One of them is wrong and the "
             "certificate attached shows what the encoding actually proves.",
@@ -379,17 +388,17 @@ def certify_graph_cnf(
 
 
 # --------------------------------------------------------------------------
-# The computed level
+# The computed candidate Graph profile
 # --------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
 class GraphLevelResult:
-    """A computed level, with the evidence for both halves of the answer.
+    """A candidate Graph profile computed from declared ratings, with its SAT evidence.
 
-    ``witness`` certifies the level reached. ``refutation`` certifies why the
-    next one was not, and ``blocking_obligations`` names what stopped it. A
-    level reported without a refutation at anything below
+    ``witness`` certifies the profile formula satisfied. ``refutation`` certifies
+    why the next one was not, and ``blocking_obligations`` names what stopped it.
+    A candidate reported without a refutation at anything below
     :data:`GRAPH_MAX_LEVEL` would be a declaration, which is the thing this
     module exists to avoid.
     """
@@ -399,17 +408,23 @@ class GraphLevelResult:
     witness: Optional[DecisionCertificate]
     refutation: Optional[DecisionCertificate]
     blocking_obligations: tuple[Obligation, ...]
+    rating_basis: str = field(default="CALLER_SUPPLIED", init=False)
+    conformance_status: str = field(default="NOT_ESTABLISHED", init=False)
 
     @property
     def explanation(self) -> str:
         if self.level >= GRAPH_MAX_LEVEL:
-            return f"{self.collection_id} holds at graph level {GRAPH_MAX_LEVEL}."
+            return (
+                f"{self.collection_id} computes to candidate Graph profile "
+                f"{GRAPH_MAX_LEVEL} from caller-supplied ratings; conformance is not established."
+            )
         blocked = "; ".join(
             item.describe(self.level + 1) for item in self.blocking_obligations
         )
         return (
-            f"{self.collection_id} holds at graph level {self.level}. "
-            f"Level {self.level + 1} is refuted by: {blocked or 'no obligation'}."
+            f"{self.collection_id} computes to candidate Graph profile {self.level} "
+            "from caller-supplied ratings; conformance is not established. "
+            f"Graph profile {self.level + 1} is refuted by: {blocked or 'no obligation'}."
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -417,6 +432,8 @@ class GraphLevelResult:
             "collection_id": self.collection_id,
             "level": self.level,
             "max_level": GRAPH_MAX_LEVEL,
+            "rating_basis": self.rating_basis,
+            "conformance_status": self.conformance_status,
             "blocking_obligations": [item.to_dict() for item in self.blocking_obligations],
             "witness_digest": None if self.witness is None else self.witness.digest(),
             "refutation_digest": (
@@ -432,19 +449,26 @@ def graph_level(
     *,
     binding: ClaimBinding,
 ) -> GraphLevelResult:
-    """Compute the graph level of ``collection``, with the proof of its ceiling.
+    """Compute the candidate Graph profile, retaining the compatibility API name.
 
-    Descends from :data:`GRAPH_MAX_LEVEL`, so the first satisfiable level found
-    is the answer. The conditions are monotone in the level by construction --
+    Descends from :data:`GRAPH_MAX_LEVEL`, so the first satisfiable profile formula
+    is the answer. The conditions are monotone in the profile number by construction --
     an obligation met at ``N`` is met at every ``N' <= N`` -- so descending
-    means a fully-conformant collection costs one solve rather than five.
+    means a collection meeting its supplied ratings costs one solve rather than five.
     """
     if not collection.members:
         raise GraphEncodingError(
             f"{collection.collection_id} has no members, so every obligation is "
-            "vacuously met and the encoding would hand out level "
+            "vacuously met and the encoding would hand out candidate Graph profile "
             f"{GRAPH_MAX_LEVEL} for a collection nobody can refute. An empty "
-            "collection has no level."
+            "collection satisfies no Graph profile."
+        )
+
+    closure = graph.ancestors(collection.members)
+    if not graph.verify_acyclicity(closure):
+        raise GraphEncodingError(
+            f"{collection.collection_id} has cyclic recorded ancestry, so recursive "
+            "reachability cannot establish a candidate Graph profile."
         )
 
     items = obligations(graph, collection)

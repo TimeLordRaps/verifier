@@ -37,11 +37,11 @@
       "title": "Inflated verification-cost claim"
     },
     {
-      "details": "collection:demo holds at graph level 0. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
-      "expected": "GRAPH-LEVEL-0; REVOKED blocker; checked refutation",
-      "observed": "GRAPH-LEVEL-0; REVOKED",
+      "details": "collection:demo computes to candidate Graph profile 0 from caller-supplied ratings; conformance is not established. Graph profile 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
+      "expected": "GRAPH-CANDIDATE-0; REVOKED blocker; checked refutation",
+      "observed": "GRAPH-CANDIDATE-0; REVOKED",
       "ok": true,
-      "question": "Does a poisoned transitive ancestor cap the collection's graph level?",
+      "question": "Does a poisoned transitive ancestor cap the collection's candidate Graph profile?",
       "scenario": "poisoned-ancestor",
       "title": "Revoked ancestor behind valid descendants"
     }

@@ -1,4 +1,6 @@
-"""Target-neutral VSTD-Graph reference types and receipt mechanisms."""
+"""Terminology: Verifier Standard (VSTD).
+
+Target-neutral VSTD-Graph reference types and receipt mechanisms."""
 
 from verifier.data.graph_level import (
     GraphCollection,
@@ -11,6 +13,7 @@ from verifier.data.models import (
     ArtifactStatus,
     ArtifactType,
     CompletenessMetrics,
+    ConflictRecord,
     ContributorSpec,
     HyperedgePort,
     ProvenanceHypergraph,
@@ -32,6 +35,7 @@ __all__ = [
     "ArtifactStatus",
     "ArtifactType",
     "CompletenessMetrics",
+    "ConflictRecord",
     "ContributorSpec",
     "HyperedgePort",
     "ProvenanceHypergraph",

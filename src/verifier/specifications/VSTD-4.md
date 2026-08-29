@@ -1,52 +1,63 @@
-# VSTD-4 — Refutability
+# Verifier Standard (VSTD)-4 — Refutability
 
-**Layer:** 4 of 5 on the object axis (see `LADDER.md`)
+> **Acronyms:** application programming interface (API); conjunctive normal form (CNF); grounded decision certificate (GDC); JavaScript Object Notation (JSON);
+> resolution asymmetric tautology (RAT); Boolean satisfiability problem (SAT);
+> Unicode Transformation Format, 8-bit (UTF-8).
+
+> Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
+
+**Numbered profile:** VSTD-4 on the object axis; required closure coordinate: Refutability (see `LADDER.md`)
 **Certificate format:** `VSTD4-GDC-1`
-**Status:** implemented project specification
+**Status:** project specification; candidate computation implemented; evidence binding and conformance not implemented
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
 **Date:** 2026-08-22
 
-VSTD-4 defines **adversarially portable checkability**. A verdict reaches this
-layer only when its exact meaning, evidence, failure conditions, and checking
-procedure can leave the declarant and survive hostile independent inspection.
+VSTD-4 defines **adversarially portable checkability**. A verdict satisfies this
+profile only when its exact meaning, evidence, failure conditions, and checking
+procedure can leave the declarant and survive hostile inspection outside the declarant.
 
-VSTD-4 establishes that independent checking is possible. It does not establish
-that an independent party exists or has checked anything; that is VSTD-5.
+VSTD-4 establishes that checking by an outside party is possible. It does not establish
+that such a party exists or has checked anything; that is VSTD-5.
 
 > **No verdict without a portable certificate.**
 > **No portable certificate without an explicit falsifier.**
 
 ---
 
-## 1. Conformance and lower-layer preconditions
+## 1. Conformance and prerequisite-profile coordinates
 
 VSTD-4 conformance is incremental. A claim MUST conform to VSTD-1, VSTD-2, and
 VSTD-3 before it can conform to VSTD-4. A VSTD-4 certificate over an
 unaccountable substrate does not repair the missing VSTD-3 evidence.
 
-The normative depth is computed:
+The VSTD-4 normative depth is computed:
 
 ```
 vstd4_depth(claim) = max { k : CNF_4k(claim) is satisfiable }
 ```
 
-An implementation MUST NOT accept a declarant-supplied depth as authoritative.
-For a depth below 14, the `FAIL` certificate for rung `k+1` is the normative
-explanation of the ceiling. Entry to any VSTD-5 procedure requires:
+An implementation MUST NOT accept a declarant-supplied VSTD-4 normative depth as authoritative.
+For a normative depth below 14, the `FAIL` certificate for rung `k+1` is the normative
+explanation of the ceiling. Entry to any VSTD-5 procedure requires established
+VSTD-4 conformance and:
 
 ```
 vstd4_depth(claim) == 14
 ```
 
-The reference implementation is `verifier.core.depth`.
+The historical `verifier.core.depth.vstd4_depth` API computes only a structural
+candidate over caller-supplied, nonempty rung references. It does not resolve those
+references, validate their rung propositions, or check VSTD-1/2/3 preconditions. Its
+result is therefore `CANDIDATE` with `conformance_status = NOT_ESTABLISHED`, including
+at candidate depth 14, and the reference VSTD-5 entry gate rejects it.
 
 ---
 
-## 2. The fourteen-rung ladder
+## 2. The fourteen-rung sequence
 
-Each rung depends on the evidence named below and on every lower-layer
-precondition. Rung 4.14 depends on the complete ladder.
+Each rung depends on the evidence named below and on every prerequisite-profile
+precondition. Rung 4.14 depends on the complete sequence.
 
 | Rung | Requirement | Direct dependencies |
 |---|---|---|
@@ -102,7 +113,7 @@ C = H(claim || coordinate || policy_root || evidence_root || verifier
 
 Canonical serialization MUST use sorted object keys, integer-valued numeric
 fields, no floating-point values, UTF-8, and no insignificant whitespace. A
-checker MUST reject a certificate whose binding does not match the independently
+checker MUST reject a certificate whose binding does not match the externally
 supplied `ClaimBinding`.
 
 ### 2.4 Portable verification
@@ -160,7 +171,7 @@ IDENTIFIED < AVAILABLE < PORTABLE < SELF_CONTAINED
 
 A digest alone establishes only `IDENTIFIED`. VSTD-4 requires at least
 `AVAILABLE`, and the claim's bundle is capped by its weakest verdict-critical
-artifact. A declared level that its retrieval and retention evidence cannot
+artifact. A declared availability state that its retrieval and retention evidence cannot
 support MUST be rejected.
 
 A locator and retention declaration alone are not retrieval evidence. `AVAILABLE`
@@ -168,7 +179,7 @@ requires a successful retrieval observation bound to the artifact identifier, de
 locator, observed bytes, observation time, and observer. The observed bytes MUST match
 the content address. `PORTABLE` additionally requires anonymous access and a declared
 retrieval procedure. A retrieval observation is scoped to its named trust root; it does
-not by itself establish independent retrieval.
+not by itself establish retrieval by a distinct actor.
 
 ### 2.9 Disclosure-safe checkability
 
@@ -219,7 +230,7 @@ VALID -> CHALLENGED -> REVOKED
 
 A valid challenge mechanism that cannot change claim status is non-conforming.
 Synthetic challenges test structural challengeability at VSTD-4. Actual
-independent action belongs to VSTD-5.
+action by a distinct actor belongs to VSTD-5.
 
 ### 2.13 Monotonic degradation
 
@@ -233,7 +244,8 @@ A `RefutabilityClosure` MUST bind input certificates, the transformation
 certificate, the output claim, and a total output-refutation mapping. A challenge
 to an output must localize to an input, the transformation, or the composition.
 
-Output depth MUST NOT exceed the weakest required input or transformation depth.
+Output VSTD-4 normative depth MUST NOT exceed the weakest required input or transformation
+VSTD-4 normative depth.
 This closure is both the handoff to VSTD-Graph edge evidence and the entry gate to
 VSTD-5.
 
@@ -300,7 +312,7 @@ accepted.
 ## 4. Normative invariants
 
 > A verdict MUST NOT be recorded at a strength exceeding the strength of the
-> certificate an independent party could check without the declarant's
+> certificate an outside party could check without the declarant's
 > cooperation.
 
 > Loss of certificate validity, accessibility, dependency validity, or
@@ -330,7 +342,7 @@ bounded checking.
 
 ## 6. Reference implementation boundary
 
-The reference producer and data structures are in:
+The reference certificate producer, candidate-depth computation, and data structures are in:
 
 * `src/verifier/core/certificate.py`
 * `src/verifier/core/grounding.py`
@@ -340,6 +352,11 @@ The reference producer and data structures are in:
 
 The trusted checker is `src/verifier/core/kernel.py`. Producer modules are not
 part of its trusted import boundary.
+
+The kernel checks the supplied certificate, grounding, and `ClaimBinding` for internal
+consistency. It does not retrieve rung references or establish the required prerequisite-profile
+results. Kernel acceptance of a candidate certificate is therefore not VSTD-4
+conformance.
 
 No external implementation, interoperability profile, or third-party attack has
 yet been demonstrated for `VSTD4-GDC-1`. This implementation status MUST remain

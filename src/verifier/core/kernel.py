@@ -1,4 +1,7 @@
-"""The refutability kernel -- the whole trusted computing base of VSTD layer 4.
+"""Terminology: conjunctive normal form (CNF); grounded decision certificate (GDC);
+Boolean satisfiability problem (SAT); Verifier Standard (VSTD).
+
+The refutability kernel -- the whole trusted computing base of VSTD-4 Refutability.
 
 Rung 4.7 is a claim about code, not a slogan: a certificate checker must be
 radically simpler than the system that produced the claim, and must share no
@@ -145,7 +148,7 @@ def _tier_admissible(
 
 
 # --------------------------------------------------------------------------
-# Propagation -- independently re-implemented; see module docstring
+# Propagation -- separately reimplemented from the producer path; see module docstring
 # --------------------------------------------------------------------------
 
 
@@ -337,7 +340,7 @@ def _decision_shape(certificate: DecisionCertificate) -> Optional[str]:
     if not actual and expected == "transcript":
         return (
             "UNKNOWN carries no indeterminacy transcript; a refusal without evidence "
-            "is not a layer-4 verdict"
+            "is not a VSTD-4 verdict"
         )
     if (
         certificate.header.verdict is Verdict.FAIL
@@ -440,7 +443,7 @@ def check(
 
     # Rung 4.7 honesty: a tier this kernel does not implement is UNKNOWN, not
     # FAIL. Silently mis-accepting an unimplemented construct would be exactly
-    # the semantic mismatch layer 4 prohibits.
+    # the semantic mismatch VSTD-4 Refutability prohibits.
     if header.tier is CostTier.SAT_PRESERVING:
         return _refuse(
             IndeterminacyReason.VERIFIER_UNAVAILABLE,
@@ -583,7 +586,7 @@ def check(
     if decision.transcript is None:
         return _reject(
             "UNKNOWN carries no indeterminacy transcript; a refusal without evidence "
-            "is not a layer-4 verdict",
+            "is not a VSTD-4 verdict",
             literals=literals,
             hints=hints_present,
         )

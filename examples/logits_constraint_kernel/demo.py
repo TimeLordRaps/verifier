@@ -1,4 +1,6 @@
-"""Emit a real llguidance logits-mask trace for a schema Outlines 0.2.14 dropped."""
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+
+Emit a real llguidance logits-mask trace for a schema Outlines 0.2.14 dropped."""
 
 from __future__ import annotations
 

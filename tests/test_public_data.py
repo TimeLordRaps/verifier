@@ -1,11 +1,17 @@
-"""Target-neutral VSTD-DATA receipt validation and mechanism replay."""
+"""Terminology: Verifier Standard (VSTD).
+
+Target-neutral VSTD-DATA receipt validation and mechanism replay."""
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
+
+import pytest
 
 from verifier.core.checker import VerificationVerdict
 from verifier.core.provenance import GitProvenance, ProvenanceRecord, RuntimeEnvironment
+from verifier.core.receipt import compute_canonical_digest
 from verifier.data.models import (
     ArtifactNode,
     ArtifactStatus,
@@ -24,6 +30,7 @@ from verifier.data.receipt import (
     reproduce_data_receipt,
     validate_data_receipt,
 )
+from verifier.runtime.public_cli import _inspect_data_receipt, main
 
 
 def _receipt() -> VstdDataReceipt:
@@ -105,10 +112,92 @@ def _receipt() -> VstdDataReceipt:
     )
 
 
-def test_public_data_receipt_round_trip(tmp_path: Path) -> None:
+def _rehash(payload: dict) -> None:
+    provenance = payload["provenance"]
+    payload["canonical_digest"] = compute_canonical_digest(
+        {
+            "schema_version": payload["schema_version"],
+            "receipt_id": payload["receipt_id"],
+            "dataset_spec": payload["dataset_spec"],
+            "hypergraph": payload["hypergraph"],
+            "completeness_metrics": payload["completeness_metrics"],
+            "policy_evaluations": payload["policy_evaluations"],
+            "independent_audit": payload["independent_audit"],
+            "provenance_stable": {
+                "target_name": provenance["target_name"],
+                "portable_repository_id": provenance["portable_repository_id"],
+                "git_commit_sha": provenance["git"]["commit_sha"],
+                "git_branch": provenance["git"]["branch"],
+                "git_is_dirty": provenance["git"]["is_dirty"],
+                "runtime_python_version": provenance["runtime"]["python_version"],
+            },
+            "reproducibility": payload["reproducibility"],
+        }
+    )
+
+
+def test_public_data_receipt_round_trip(tmp_path: Path, capsys) -> None:
     _receipt().save_to_directory(tmp_path)
     assert validate_data_receipt(tmp_path) == 0
+    assert "[VALIDATION OK]" in capsys.readouterr().out
     assert reproduce_data_receipt(tmp_path) == 0
+
+
+def test_graph_validate_and_inspect_honor_json(tmp_path: Path, capsys) -> None:
+    _receipt().save_to_directory(tmp_path)
+
+    for command in ("validate", "inspect"):
+        assert main([command, str(tmp_path), "--json"]) == 0
+        result = json.loads(capsys.readouterr().out)
+        assert result["command"] == command
+        assert result["receipt_kind"] == "vstd_graph"
+        assert result["result"] == "COMPLETED"
+        assert result["exit_code"] == 0
+
+
+def test_actorless_independence_upgrade_is_rejected_and_never_displayed(
+    tmp_path: Path, capsys
+) -> None:
+    receipt_path = _receipt().save_to_directory(tmp_path)
+    payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+    payload["independent_audit"]["independence_basis"][
+        "independently_verified"
+    ] = True
+    _rehash(payload)
+    receipt_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert _inspect_data_receipt(tmp_path) == 0
+    assert "Independence:     NOT_DEMONSTRATED" in capsys.readouterr().out
+    assert main(["validate", str(tmp_path)]) == 1
+    assert "no actor/execution evidence-binding validator" in capsys.readouterr().err
+
+
+def test_self_promoted_independence_with_arbitrary_references_is_rejected(
+    tmp_path: Path, capsys
+) -> None:
+    receipt_path = _receipt().save_to_directory(tmp_path)
+    payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+    basis = payload["independent_audit"]["independence_basis"]
+    basis.update(
+        {
+            "actor_independence": "EVIDENCED",
+            "implementation_separation": "EVIDENCED",
+            "runtime_separation": "EVIDENCED",
+            "evidence": ["receipt:producer", "receipt:checker"],
+            "independently_verified": True,
+        }
+    )
+    _rehash(payload)
+    receipt_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert main(["validate", str(tmp_path)]) == 1
+    errors = capsys.readouterr().err
+    assert "no actor/execution evidence-binding validator" in errors
+    assert "no stronger than DECLARED" in errors
+    assert main(["inspect", str(tmp_path)]) == 0
+    inspection = capsys.readouterr().out
+    assert "Independence:     NOT_DEMONSTRATED" in inspection
+    assert "Independence:     EVIDENCED" not in inspection
 
 
 def test_public_data_receipt_tamper_fails(tmp_path: Path) -> None:
@@ -128,6 +217,29 @@ def test_missing_artifact_status_defaults_to_unknown() -> None:
         content_digest="a" * 64,
     )
     assert artifact.status == ArtifactStatus.UNKNOWN
+
+
+def test_duplicate_graph_identifier_cannot_replace_recorded_evidence() -> None:
+    graph = ProvenanceHypergraph()
+    original = ArtifactNode(
+        artifact_id="artifact:duplicate",
+        label="original",
+        artifact_type=ArtifactType.RAW_SOURCE_FILE,
+        content_digest="a" * 64,
+    )
+    graph.add_artifact(original)
+
+    with pytest.raises(ValueError, match="duplicate graph identifier"):
+        graph.add_artifact(
+            ArtifactNode(
+                artifact_id="artifact:duplicate",
+                label="replacement",
+                artifact_type=ArtifactType.RAW_SOURCE_FILE,
+                content_digest="b" * 64,
+            )
+        )
+
+    assert graph.artifacts["artifact:duplicate"] is original
 
 
 def test_completeness_rejects_non_hex_digest() -> None:

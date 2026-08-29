@@ -1,4 +1,12 @@
-"""``VSTD4-GDC-1`` -- Grounded Decision Certificates for VSTD layer 4.
+"""Terminology: American Standard Code for Information Interchange (ASCII);
+conjunctive normal form (CNF); deletion resolution asymmetric tautology (DRAT);
+Boolean satisfiability problem (SAT); flexible SAT proof format (FRAT);
+grounded decision certificate (GDC); GRAT proof format (GRAT); JavaScript Object Notation (JSON);
+linear resolution asymmetric tautology (LRAT); resolution asymmetric tautology (RAT);
+reverse unit propagation (RUP); Unicode Transformation Format, 8-bit (UTF-8);
+Verifier Standard (VSTD).
+
+``VSTD4-GDC-1`` -- Grounded Decision Certificates for the VSTD-4 Refutability profile.
 
 Competition proof formats (DRAT, LRAT, GRAT, FRAT) answer exactly one question:
 *is this large formula really unsatisfiable?* They are deliberately
@@ -176,7 +184,7 @@ class VerifierDescriptor:
 
     ``format_fragment`` exists so a checker can be honest about what it does not
     implement. Silently mis-accepting a construct the checker does not
-    understand is the format-level form of semantic mismatch.
+    understand is the serialized-format form of semantic mismatch.
     """
 
     specification_hash: str
@@ -456,6 +464,8 @@ class CertificateHeader:
 
 @dataclass(frozen=True)
 class DecisionCertificate:
+    """Canonical grounded decision certificate (GDC) blocks for the bounded checker."""
+
     header: CertificateHeader
     formula: tuple[tuple[int, ...], ...]
     grounding: Grounding

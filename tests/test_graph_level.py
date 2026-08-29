@@ -1,15 +1,18 @@
-"""The VSTD-Graph axis: a computed level, and the proof of its ceiling.
+"""Terminology: Verifier Standard (VSTD).
 
-The level is never declared. Each test below pins one of the four conditions --
+The VSTD-Graph axis: a candidate profile over supplied ratings, and the proof of its ceiling.
+
+The candidate profile is never declared. Each test below pins one of the four conditions --
 membership floor, provenance closure, status admissibility, edge evidence --
-and checks not just that the level dropped but that the certificate at ``N+1``
-*says why*. A level without that certificate would be an assertion, and the
+and checks not just that the profile number dropped but that the certificate at ``N+1``
+*says why*. A candidate profile without that certificate would be an assertion, and the
 whole point of this axis is that a collection of well-rated members can still
 be badly rated as a collection.
 """
 
 from __future__ import annotations
 
+from dataclasses import replace
 import importlib
 
 import pytest
@@ -26,6 +29,7 @@ from verifier.data.graph_level import (
     GRAPH_MAX_LEVEL,
     GraphCollection,
     GraphEncodingError,
+    GraphLevelResult,
     INADMISSIBLE_STATUSES,
     ObligationKind,
     certify_graph_cnf,
@@ -38,11 +42,13 @@ from verifier.data.models import (
     ArtifactNode,
     ArtifactStatus,
     ArtifactType,
+    ConflictRecord,
     HyperedgePort,
     ProvenanceHypergraph,
     TransformationHyperedge,
     TransformationType,
 )
+from verifier.data.policy import ProvenancePolicyVerifier
 
 graph_module = importlib.import_module("verifier.data.graph_level")
 
@@ -51,7 +57,7 @@ BUDGET = 10_000
 
 def _binding() -> ClaimBinding:
     return ClaimBinding(
-        claim="corpus graph level",
+        claim="corpus candidate Graph profile",
         coordinate=ClaimCoordinate("collection:C", "vstd_graph_level"),
         policy_root="sha256:policy",
         evidence_root="sha256:evidence",
@@ -170,21 +176,53 @@ def test_a_revoked_ancestor_disqualifies_the_collection_entirely():
     _assert_certificates_check(result)
 
 
-@pytest.mark.parametrize("status", sorted(INADMISSIBLE_STATUSES, key=lambda s: s.value))
+@pytest.mark.parametrize("status", sorted(INADMISSIBLE_STATUSES - {"CONFLICTED"}))
 def test_every_inadmissible_status_fails_closed(status):
-    assert _level(_graph(mid=status), _collection()).level == 0
+    assert _level(_graph(mid=ArtifactStatus(status)), _collection()).level == 0
 
 
 def test_superseded_is_admissible_and_documented_as_such():
     """A superseded ancestor was replaced going forward; its history is unchanged."""
-    assert ArtifactStatus.SUPERSEDED not in INADMISSIBLE_STATUSES
-    assert _level(_graph(src=ArtifactStatus.SUPERSEDED), _collection()).level == GRAPH_MAX_LEVEL
+    graph = _graph(src=ArtifactStatus.SUPERSEDED)
+    assert ArtifactStatus.SUPERSEDED.value not in INADMISSIBLE_STATUSES
+    assert _level(graph, _collection()).level == GRAPH_MAX_LEVEL
+    assert ProvenancePolicyVerifier.verify_all_ancestors_valid(graph, "corpus").passed is False
+
+
+@pytest.mark.parametrize(
+    "current_status",
+    (ArtifactStatus.CHALLENGED, ArtifactStatus.REVOKED, ArtifactStatus.STALE),
+)
+def test_current_admissibility_changes_without_rewriting_historical_graph(current_status):
+    historical = _graph()
+    historical_bytes = historical.to_dict()
+    assert _level(historical, _collection()).level == GRAPH_MAX_LEVEL
+
+    current = ProvenanceHypergraph.from_dict(historical_bytes)
+    current.artifacts["src"] = replace(current.artifacts["src"], status=current_status)
+
+    assert _level(current, _collection()).level == 0
+    assert historical.artifacts["src"].status is ArtifactStatus.VALID
+    assert historical.to_dict() == historical_bytes
 
 
 def test_an_artifact_missing_from_the_graph_is_unknown_not_absent():
     graph = _graph()
     del graph.artifacts["mid"]
     assert _level(graph, _collection()).level == 0
+
+
+def test_cyclic_ancestry_cannot_receive_a_clean_candidate_level():
+    graph = _graph()
+    graph.add_transformation(
+        TransformationHyperedge(
+            "t3", "feedback", TransformationType.AUGMENTATION,
+            (HyperedgePort("corpus", "IN"),), (HyperedgePort("src", "OUT"),), {}, {}, {},
+        )
+    )
+
+    with pytest.raises(GraphEncodingError, match="cyclic recorded ancestry"):
+        _level(graph, _collection(edges={"t1": 5, "t2": 5, "t3": 5}))
 
 
 # --------------------------------------------------------------------------
@@ -211,10 +249,47 @@ def test_the_witness_and_the_refutation_are_different_certificates():
     assert summary["witness_digest"] is not None
     assert summary["refutation_digest"] is not None
     assert summary["witness_digest"] != summary["refutation_digest"]
+    assert summary["rating_basis"] == "CALLER_SUPPLIED"
+    assert summary["conformance_status"] == "NOT_ESTABLISHED"
+
+
+def test_caller_cannot_promote_a_graph_candidate_to_conformance():
+    with pytest.raises(TypeError, match="conformance_status"):
+        GraphLevelResult(
+            "collection:x",
+            5,
+            None,
+            None,
+            (),
+            conformance_status="ESTABLISHED",  # type: ignore[call-arg]
+        )
+
+
+def test_conflicting_lineage_is_retained_and_blocks_a_clean_level():
+    graph = _graph()
+    graph.add_conflict(
+        ConflictRecord(
+            conflict_id="conflict:src-digest",
+            subject_id="src",
+            predicate="content_digest",
+            competing_values=("sha256:a", "sha256:b"),
+            evidence_refs=("receipt:a", "receipt:b"),
+        )
+    )
+
+    restored = ProvenanceHypergraph.from_dict(graph.to_dict())
+    assert restored.conflicts["conflict:src-digest"].competing_values == (
+        "sha256:a",
+        "sha256:b",
+    )
+    result = _level(restored, _collection())
+    assert result.level == 0
+    assert "caller-supplied ratings" in result.explanation
+    assert "conformance is not established" in result.explanation
 
 
 def test_variable_numbering_is_stable_across_adjacent_levels():
-    """Two levels of the same collection are comparable, not unrelated formulas."""
+    """Two candidate profiles of the same collection are comparable formulas."""
     items = obligations(_graph(), _collection({"src": 5, "mid": 3, "corpus": 5}))
     low, low_grounding = encode("collection:C", items, 3)
     high, high_grounding = encode("collection:C", items, 4)
@@ -226,7 +301,7 @@ def test_variable_numbering_is_stable_across_adjacent_levels():
 
 
 # --------------------------------------------------------------------------
-# Monotonicity, and the things the level must refuse to say
+# Monotonicity and the claims the candidate-profile computation must refuse
 # --------------------------------------------------------------------------
 
 
@@ -251,7 +326,7 @@ def test_lowering_any_single_rating_can_only_lower_the_level():
 
 
 def test_an_empty_collection_has_no_level():
-    """Vacuous truth would hand out level 5 for a collection nobody can refute."""
+    """Vacuous truth would hand out candidate Graph-5 for an empty collection."""
     with pytest.raises(GraphEncodingError, match="no members"):
         _level(_graph(), GraphCollection("collection:empty", ()))
 
@@ -289,7 +364,7 @@ def test_encoding_divergence_raises_with_a_certificate_attached(monkeypatch):
 
 
 def test_solver_divergence_is_caught_before_the_direct_check(monkeypatch):
-    """The encoding and the independent solver must agree first, or nothing else counts."""
+    """The encoding and separately implemented solver must agree first."""
 
     class ContrarySolver:
         def __init__(self, **_kwargs):
@@ -301,7 +376,7 @@ def test_solver_divergence_is_caught_before_the_direct_check(monkeypatch):
     monkeypatch.setattr(graph_module, "MinimalIndependentDPLL", ContrarySolver)
 
     items = obligations(_graph(), _collection())
-    with pytest.raises(GraphEncodingError, match="independent solver said False"):
+    with pytest.raises(GraphEncodingError, match="separately implemented solver said False"):
         certify_graph_cnf(
             collection_id="collection:C", items=items, level=GRAPH_MAX_LEVEL,
             binding=_binding(),
@@ -323,6 +398,6 @@ def test_every_graph_formula_is_horn_and_therefore_tier_up():
     graph = _graph()
     for rating in range(0, GRAPH_MAX_LEVEL + 1):
         items = obligations(graph, _collection({"src": rating, "mid": rating, "corpus": rating}))
-        for level in range(1, GRAPH_MAX_LEVEL + 1):
-            formula, _grounding = encode("collection:C", items, level)
+        for candidate_profile in range(1, GRAPH_MAX_LEVEL + 1):
+            formula, _grounding = encode("collection:C", items, candidate_profile)
             assert is_horn(formula)

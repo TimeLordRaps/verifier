@@ -1,4 +1,5 @@
 {
+  "$comment": "Terminology: artificial intelligence (AI); application-specific integrated circuit (ASIC); graphics processing unit (GPU); JavaScript Object Notation (JSON); neural processing unit (NPU); tensor processing unit (TPU); Verifier Standard (VSTD).",
   "$defs": {
     "AcceleratorDescriptor": {
       "additionalProperties": false,

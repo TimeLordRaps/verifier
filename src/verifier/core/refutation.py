@@ -1,6 +1,11 @@
-"""Refutation certificates for VSTD layer 4 (refutability).
+"""Terminology: conjunctive normal form (CNF); Davis-Putnam-Logemann-Loveland (DPLL);
+deletion resolution asymmetric tautology (DRAT); grounded decision certificate (GDC);
+nondeterministic polynomial time (NP); reverse unit propagation (RUP);
+Boolean satisfiability problem (SAT); unsatisfiable (UNSAT); Verifier Standard (VSTD).
 
-Layer 4 requires that every verdict -- pass **and** fail -- carry an artifact an
+Refutation certificates for VSTD-4 Refutability.
+
+The Refutability coordinate requires that every verdict -- pass **and** fail -- carry an artifact an
 independent party can check without the declarant's cooperation.
 
 A satisfiable result already carries such an artifact: the model. Anyone can
@@ -85,7 +90,7 @@ def _is_tautology(clause: Sequence[int]) -> bool:
 
 @dataclass(frozen=True)
 class RefutationCertificate:
-    """A clausal refutation proof, independently checkable without re-solving."""
+    """A clausal refutation proof that a consumer can check without re-solving."""
 
     proof: list[list[int]]
     n_vars: int

@@ -1,4 +1,8 @@
-"""``VSTD4-GDC-1`` conformance, and regressions pinning the three retrofits.
+"""Terminology: conjunctive normal form (CNF); grounded decision certificate (GDC);
+Boolean satisfiability problem (SAT); trusted computing base (TCB); unsatisfiable (UNSAT);
+Verifier Standard (VSTD).
+
+``VSTD4-GDC-1`` conformance, and regressions pinning the three retrofits.
 
 The tests that matter most here are the ones no competition proof format could
 express: the keystone test, where a decision block is perfectly valid and the
@@ -6,7 +10,7 @@ grounding points at the wrong artifact, and the tier-inflation test, where a
 linear-time check is dressed in general-resolution machinery to look rigorous.
 
 The retrofit regressions at the bottom assert that the *old* behaviour is gone,
-not merely that the new behaviour works. Three things shipped that layer 4
+not merely that the new behaviour works. Three things shipped that VSTD-4
 prohibits, and a test that only exercises the fix would pass again the moment
 someone reintroduced the shortcut beside it.
 """
@@ -580,6 +584,7 @@ def test_trusted_computing_base_is_hashes_not_a_literal_dict():
     descriptor = IndependentAuditor.verifier_descriptor()
     assert descriptor.implementation_hash.startswith("sha256:")
     assert descriptor.specification_hash.startswith("sha256:")
+    assert descriptor.certificate_format == "VSTD1-CHECKER-REPORT"
 
     # Computed from the file on disk, not from a string constant.
     import hashlib
@@ -588,6 +593,11 @@ def test_trusted_computing_base_is_hashes_not_a_literal_dict():
         Path(checker.__file__).read_bytes()
     ).hexdigest()
     assert descriptor.implementation_hash == expected
+
+    expected_specification = "sha256:" + hashlib.sha256(
+        (Path(__file__).resolve().parents[1] / "standard" / "VSTD-1.md").read_bytes()
+    ).hexdigest()
+    assert descriptor.specification_hash == expected_specification
 
     # And it declares what it actually implements, not VSTD4-GDC-1.
     assert descriptor.certificate_format != FORMAT

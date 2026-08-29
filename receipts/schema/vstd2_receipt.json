@@ -1,8 +1,9 @@
 {
+  "$comment": "Terminology: abstract syntax tree (AST); intermediate representation (IR); Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd2_receipt.json",
   "title": "VSTD-2 Verification Surface Receipt",
-  "description": "VSTD-2 verification-surface document. The VSTD-0.2 wire identifier is frozen; semantic closure rules are enforced by verifier.core.geometry.validate_geometry.",
+  "description": "VSTD-2 verification-surface document. Semantic closure rules are enforced by verifier.core.geometry.validate_geometry.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -16,7 +17,7 @@
     "surface"
   ],
   "properties": {
-    "schema_version": {"const": "VSTD-0.2"},
+    "schema_version": {"const": "VSTD-2"},
     "geometry_id": {"$ref": "#/$defs/nonEmpty"},
     "primary_subject_id": {"$ref": "#/$defs/nonEmpty"},
     "secondary_subject_id": {"type": ["string", "null"]},

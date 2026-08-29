@@ -1,7 +1,20 @@
-# VSTD-3 — Substrate Accountability
+# Verifier Standard (VSTD)-3 — Substrate Accountability
 
-**Layer:** 3 of 5 on the object axis (see `LADDER.md`)
-**Receipt wire format:** `schema_version = "VSTD-3.0"` — frozen; see `WIRE_IDENTIFIERS.md`
+> **Acronyms:** Advanced Micro Devices (AMD); Amazon Web Services (AWS); Compute Unified Device Architecture (CUDA);
+> Device Identifier Composition Engine (DICE); DMTF standards organization (DMTF); DICE Protection Environment (DPE);
+> Entity Attestation Token (EAT); floating-point operation (FLOP); hash-based message authentication code (HMAC);
+> integrated development environment (IDE); Internet Engineering Task Force (IETF);
+> International Organization for Standardization (ISO); JavaScript Object Notation (JSON);
+> NVIDIA Management Library (NVML); Peripheral Component Interconnect (PCI); PCI Special Interest Group (PCI-SIG);
+> Remote Attestation Procedures (RATS); Reference Integrity Manifest (RIM); software development kit (SDK);
+> Secure Hash Algorithm 256-bit (SHA-256); system management interface (SMI); Security Protocol and Data Model (SPDM);
+> Trusted Device Interface Security Protocol (TDISP); tensor processing unit (TPU); Coordinated Universal Time (UTC);
+> Unicode Transformation Format, 8-bit (UTF-8); World Wide Web Consortium (W3C).
+
+> Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
+
+**Numbered profile:** VSTD-3 on the object axis; required closure coordinate: Substrate Accountability (see `LADDER.md`)
+**Receipt serialization:** `schema_version = "VSTD-3.0"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** implemented project specification
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
@@ -126,7 +139,7 @@ The reference implication graph is explicit. In particular:
 - fleet-boundary attestation does not imply physical-world completeness.
 
 `VERIFIED` flags inside a receipt are not self-authenticating. A verifier MUST
-independently reproduce signature and continuity checks before using those flags to
+recompute signature and continuity checks from the bound evidence before using those flags to
 accept a strong `PASS`.
 
 ## 7. Incremental conformance profiles
@@ -350,7 +363,7 @@ hardware or firmware evidence therefore reaches downstream artifacts through the
 existing blast-radius algorithm. VSTD-3 does not create a second lineage graph.
 
 Composition is transactional and refuses receipts whose recorded `PASS` claims cannot
-be independently reproduced.
+be recomputed from the bound evidence.
 
 ## 20. Verification algorithm
 
@@ -361,12 +374,12 @@ A verifier MUST, in order:
 3. verify identifiers and all references;
 4. verify raw evidence byte digests;
 5. validate challenge freshness, nonce uniqueness, subject, and certificate binding;
-6. independently verify implemented attestation and provider signatures;
+6. verify implemented attestation and provider signatures against configured trust material;
 7. validate topology and partition lineage;
 8. bind starts, observations, accounting, ends, and workload identity to events;
 9. verify event continuity, resets, and anchors;
 10. verify the exact fleet boundary when present;
-11. recompute every recorded passing claim from independently accepted evidence;
+11. recompute every recorded passing claim from mechanism-verified evidence;
 12. reject any stronger recorded `PASS`.
 
 Receipt digest integrity alone completes only steps 1–2.
@@ -388,8 +401,8 @@ trust anchors. Merely labeling bytes `SPDM`, `EAT`, or `DICE` is not verificatio
 ## 23. Compatibility
 
 VSTD-3 adds record and enum values. It does not reinterpret VSTD-1, VSTD-Graph-1,
-VSTD-2, or their historical wire identifiers. Existing readers remain valid
-for their versioned surfaces. VSTD-3 hardware nodes use additive artifact and
+VSTD-2, or their current serialized receipt identifiers. Each reader remains bounded to its
+versioned surface. VSTD-3 hardware nodes use additive artifact and
 transformation enum values in the existing hypergraph.
 
 ## 24. Falsification conditions
@@ -408,5 +421,5 @@ VSTD-3 conformance is falsified for a claimed surface if any of these occurs:
 - global absence of undeclared compute is derived from an ordinary receipt.
 
 Implementation limitations and the complete threat model are in
-`../docs/layers/vstd-3/threat-model.md`; vendor requirements are in
-`../docs/layers/vstd-3/vendor-integration.md`.
+`../docs/profiles/vstd-3/threat-model.md`; vendor requirements are in
+`../docs/profiles/vstd-3/vendor-integration.md`.

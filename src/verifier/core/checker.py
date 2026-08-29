@@ -1,13 +1,19 @@
-"""Independent VSTD Checker for SAT, Derivation Graphs, and Grounding.
+"""Terminology: application programming interface (API);
+Boolean satisfiability problem (SAT); Davis-Putnam-Logemann-Loveland (DPLL);
+grounded decision certificate (GDC); Secure Hash Algorithm 256-bit (SHA-256);
+trusted computing base (TCB); Verifier Standard (VSTD).
+
+Bundled VSTD Checker for SAT, Derivation Graphs, and Grounding.
 
 This module provides a minimal, self-contained verification engine with zero
 dependencies on external solver libraries or the target repository under test.
-It serves as an independent auditor in the Trusted Computing Base (TCB).
+It is a separate checker implementation in the trusted computing base (TCB), but
+calling it does not itself establish actor, implementation, or runtime independence.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 import hashlib
 from pathlib import Path
@@ -26,9 +32,10 @@ reported as unavailable rather than as a plausible-looking constant."""
 def _source_digest(*candidates: Any) -> str:
     """SHA-256 of the first candidate available in source or an installed wheel.
 
-    Several candidates are accepted because specification filenames move as the
-    ladder is renumbered, and a descriptor that breaks on a rename would push
-    implementers back toward hardcoding.
+    Each named candidate is tried as an absolute path, a repository-relative path,
+    and a current-working-directory-relative path. ``standard/`` coordinates also
+    resolve to the byte-identical installed specification copy. This is location
+    resolution, not semantic substitution; callers must name only equivalent sources.
     """
     for candidate in candidates:
         path = Path(candidate)
@@ -78,10 +85,65 @@ def unit_propagation_conflict(
 
 
 class VerificationVerdict(str, Enum):
+    """Outcome vocabulary returned by the VSTD-1 claim-mechanics checker."""
+
     VERIFIED = "VERIFIED"
     FALSIFIED = "FALSIFIED"
     INDETERMINATE = "INDETERMINATE"
     UNSUPPORTED = "UNSUPPORTED"
+
+
+class IndependenceStatus(str, Enum):
+    """Evidence state for separation between producer and checker."""
+
+    EVIDENCED = "EVIDENCED"
+    DECLARED = "DECLARED"
+    NOT_DEMONSTRATED = "NOT_DEMONSTRATED"
+    CONFLICTED = "CONFLICTED"
+
+
+def independence_is_evidenced(basis: Mapping[str, Any]) -> bool:
+    """Apply the bundled runtime's current independence capability ceiling.
+
+    Serialized status words and evidence references are declarations. VSTD 1.2.0
+    ships no validator that resolves and binds them to distinct actors and execution
+    seams, so no supplied mapping can establish evidenced independence.
+    """
+
+    del basis
+    return False
+
+
+@dataclass(frozen=True)
+class IndependenceBasis:
+    """Actor and execution separation; artifact agreement proves neither."""
+
+    actor_independence: IndependenceStatus = IndependenceStatus.NOT_DEMONSTRATED
+    implementation_separation: IndependenceStatus = IndependenceStatus.NOT_DEMONSTRATED
+    runtime_separation: IndependenceStatus = IndependenceStatus.NOT_DEMONSTRATED
+    evidence: tuple[str, ...] = ()
+
+    @property
+    def independently_verified(self) -> bool:
+        """False until an implemented adapter validates the recorded bindings."""
+
+        return independence_is_evidenced(
+            {
+                "actor_independence": self.actor_independence.value,
+                "implementation_separation": self.implementation_separation.value,
+                "runtime_separation": self.runtime_separation.value,
+                "evidence": self.evidence,
+            }
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "independently_verified": self.independently_verified,
+            "actor_independence": self.actor_independence.value,
+            "implementation_separation": self.implementation_separation.value,
+            "runtime_separation": self.runtime_separation.value,
+            "evidence": list(self.evidence),
+        }
 
 
 class GroundingVerdict(str, Enum):
@@ -118,6 +180,8 @@ class IndependentGroundingResult:
 
 @dataclass(frozen=True)
 class IndependentAuditReport:
+    """Historical API name for a checker report with explicit separation evidence."""
+
     claim_id: str
     sat_result: IndependentSatResult
     grounding_result: IndependentGroundingResult
@@ -125,11 +189,13 @@ class IndependentAuditReport:
     overall_verdict: VerificationVerdict
     trusted_computing_base: dict[str, str]
     audit_notes: list[str]
+    independence_basis: IndependenceBasis = field(default_factory=IndependenceBasis)
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "claim_id": self.claim_id,
             "overall_verdict": self.overall_verdict.value,
+            "independence_basis": self.independence_basis.to_dict(),
             "structural_integrity_passed": self.structural_integrity_passed,
             "sat_result": {
                 "satisfiable": self.sat_result.satisfiable,
@@ -160,7 +226,8 @@ class IndependentAuditReport:
 class MinimalIndependentDPLL:
     """A self-contained DPLL SAT solver in pure standard-library Python.
 
-    Independent of target solvers, third-party SAT packages, or external binaries.
+    It shares no target-solver, third-party SAT package, or external-binary logic.
+    That implementation separation does not establish actor independence.
     """
 
     def __init__(self, n_vars: int, clauses: Sequence[Sequence[int]]):
@@ -272,7 +339,7 @@ class MinimalIndependentDPLL:
 
 
 class IndependentGroundingChecker:
-    """Checks grounding, acyclicity, and derivation validity independently."""
+    """Separately implemented grounding, acyclicity, and derivation checks."""
 
     @staticmethod
     def audit_derivation(
@@ -382,7 +449,13 @@ class IndependentGroundingChecker:
 
 
 class IndependentAuditor:
-    """Top-level independent auditor that evaluates claims and derivation artifacts."""
+    """Historical API name for the bundled SAT and grounding checker.
+
+    Calling this class does not establish that separate actors performed the
+    producer and checker runs. Matching results cannot establish that fact. The
+    returned report records actor, implementation, and runtime separation as
+    ``NOT_DEMONSTRATED`` unless a separate integration supplies bound evidence.
+    """
 
     @classmethod
     def verifier_descriptor(cls) -> VerifierDescriptor:
@@ -398,13 +471,13 @@ class IndependentAuditor:
         ``certificate_format`` deliberately does **not** say ``VSTD4-GDC-1``.
         This auditor emits an ``IndependentAuditReport``, which is a different
         artifact, and claiming a format one does not implement is the
-        format-level form of the semantic mismatch rung 4.2 prohibits.
+        serialized-format form of the semantic mismatch rung 4.2 prohibits.
         """
         return VerifierDescriptor(
-            specification_hash=_source_digest("standard/VSTD-3.md"),
+            specification_hash=_source_digest("standard/VSTD-1.md"),
             implementation_hash=_source_digest(_MODULE_PATH),
             parser_hash=_source_digest(_MODULE_PATH.with_name("receipt.py")),
-            certificate_format="VSTD3-INDEPENDENT-AUDIT",
+            certificate_format="VSTD1-CHECKER-REPORT",
             format_fragment="SAT,GROUNDING,ACYCLICITY",
             dependencies=("python-stdlib",),
             deterministic=True,
@@ -476,9 +549,10 @@ class IndependentAuditor:
             overall = VerificationVerdict.INDETERMINATE
 
         notes = [
-            f"SAT formula solved independently: satisfiable={is_sat} (decisions={solver.decisions}, propagations={solver.propagations}).",
-            f"Grounding audit status: {grounding_result.grounding_status.value} ({grounding_result.details}).",
+            f"SAT formula solved by the bundled separate implementation: satisfiable={is_sat} (decisions={solver.decisions}, propagations={solver.propagations}).",
+            f"Grounding checker status: {grounding_result.grounding_status.value} ({grounding_result.details}).",
             f"Acyclicity verified: cycle_detected={grounding_result.cycle_detected}.",
+            "This same-process call did not demonstrate separate actors, implementation separation, or runtime separation; matching results cannot establish actor independence.",
         ]
         if not is_sat:
             notes.append(

@@ -1,4 +1,7 @@
-"""VSTD layer 4: refusals must carry certificates a stranger can check.
+"""Terminology: conjunctive normal form (CNF); Boolean satisfiability problem (SAT);
+unsatisfiable (UNSAT); Verifier Standard (VSTD).
+
+VSTD-4 Refutability: refusals must carry certificates a stranger can check.
 
 The property under test is not merely that the solver is correct. It is that an
 UNSAT verdict ships an artifact an independent party validates *without*
@@ -153,7 +156,7 @@ def _random_cnf(rng: random.Random, n_vars: int, n_clauses: int) -> list[list[in
 def test_agrees_with_the_existing_solver_and_every_refusal_is_certified():
     """Cross-check against MinimalIndependentDPLL over many random 3-CNF instances.
 
-    Fixed seed: this must be reproducible, per VSTD layer 1.
+    Fixed seed: this must be reproducible under VSTD-1 Claim Mechanics.
     """
     rng = random.Random(20260822)
     unsat_seen = 0

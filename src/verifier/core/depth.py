@@ -1,27 +1,33 @@
-"""``vstd4_depth`` -- how far up the layer-4 ladder a claim actually got.
+"""Terminology: conjunctive normal form (CNF); identifier (ID); unsatisfiable (UNSAT);
+Verifier Standard (VSTD).
+
+``vstd4_depth`` -- candidate depth over caller-supplied rung references.
 
 VSTD-4 is fourteen rungs, ordered so that each is unstatable without the one
-below it. That ordering is not editorial tidiness. Standing up a genuinely
-external verification node -- VSTD-5 -- must be *computationally costly*,
-because verification is the new scaling, and layer 4 is where the cost is paid.
-The ladder makes the cost curve explicit instead of letting an implementer
-declare the top rung and skip the climb.
+below it. That ordering is not editorial tidiness. Entry to VSTD-5 requires
+separately checkable VSTD-4 obligations rather than a declared top-rung reference.
+The rung sequence makes those dependencies explicit.
 
-So the depth is **computed, never declared**::
+The structural candidate is **computed, never copied from a declared depth**::
 
     vstd4_depth(claim) = max { k : CNF_4k(claim) is satisfiable }
 
 and the UNSAT certificate at ``k+1`` **is** the explanation of why the claim
-cannot climb higher. The layer certifies its own ceiling using its own
-mechanism, and the conflict clause of that certificate names the missing rung
-outright.
+cannot climb higher. The candidate-depth calculation certifies its own ceiling
+using its own mechanism, and the conflict clause names the missing rung outright.
 
 The encoding is Horn -- assertions ``[j]``, dependencies ``[-k, d]``, absences
 ``[-j]`` -- so every certificate this module produces is tier ``UP`` and checks
 in linear time. The dependency clauses look inert while the numbering is a valid
-topological order, and that is exactly the point: reorder the ladder so a rung
+topological order, and that is exactly the point: reorder the sequence so a rung
 depends on one above it and the formula goes unsatisfiable at a low depth,
-loudly, instead of quietly certifying a ladder that is no longer a ladder.
+loudly, instead of quietly certifying a sequence that no longer preserves its
+dependencies.
+
+The current producer checks reference presence and rung dependencies. It does not
+resolve those references, validate the propositions they allegedly establish, or
+check VSTD-1/2/3 preconditions. Its result is therefore a candidate with
+``conformance_status = NOT_ESTABLISHED`` and cannot admit VSTD-5.
 
 This module *produces* certificates. It is not part of the trusted computing
 base; :mod:`verifier.core.kernel` checks what it emits, and the propagation
@@ -50,7 +56,10 @@ from .certificate import (
 )
 
 MAX_DEPTH = 14
-"""Entry condition for VSTD-5: ``vstd4_depth(claim) == 14``."""
+"""Highest structural candidate depth; not sufficient for VSTD-5 entry."""
+
+DEPTH_KIND = "CANDIDATE"
+CONFORMANCE_STATUS = "NOT_ESTABLISHED"
 
 
 class VSTD5EntryError(RuntimeError):
@@ -111,27 +120,29 @@ RULE_REQUIRES = EncodingRule(
 RULES = (RULE_ASSERTED, RULE_ABSENT, RULE_REQUIRES)
 
 
-def _validate_ladder() -> None:
+def _validate_rung_sequence() -> None:
     for rung in RUNGS:
         for dependency in rung.depends_on:
             if dependency >= rung.index:
                 raise ValueError(
                     f"rung {rung.id} depends on rung index {dependency}, which is not "
-                    "below it; the ladder numbering is no longer a topological order"
+                    "below it; the rung numbering is no longer a topological order"
                 )
 
 
-_validate_ladder()
+_validate_rung_sequence()
 
 
 @dataclass(frozen=True)
 class DepthResult:
-    """A computed depth, with the evidence for both halves of the answer.
+    """A computed candidate depth, with certificates for the structural answer.
 
-    ``witness`` certifies the rungs that were climbed. ``refutation`` certifies
-    why the next one was not, and its ``blocking_rungs`` name the reason. A
+    ``witness`` certifies consistency of the caller-supplied rung references.
+    ``refutation`` certifies why the next structural rung was not reached, and
+    its ``blocking_rungs`` name the reason. A
     depth reported without ``refutation`` at anything below :data:`MAX_DEPTH`
-    would be a declaration, which is the thing this module exists to avoid.
+    would be a declaration, which is the thing this module exists to avoid. The
+    references themselves and prerequisite-profile coordinates are not validated here.
     """
 
     depth: int
@@ -141,11 +152,17 @@ class DepthResult:
 
     @property
     def admits_vstd5(self) -> bool:
-        return self.depth >= MAX_DEPTH
+        return False
+
+    @property
+    def conformance_status(self) -> str:
+        return CONFORMANCE_STATUS
 
     def to_dict(self) -> dict[str, object]:
         return {
             "depth": self.depth,
+            "depth_kind": DEPTH_KIND,
+            "conformance_status": self.conformance_status,
             "max_depth": MAX_DEPTH,
             "admits_vstd5": self.admits_vstd5,
             "blocking_rungs": list(self.blocking_rungs),
@@ -155,12 +172,12 @@ class DepthResult:
 
 
 def require_vstd5_entry(result: DepthResult) -> DepthResult:
-    """Fail closed unless ``result`` carries the complete layer-4 witness.
+    """Reject the current unbound candidate result at the VSTD-5 boundary.
 
-    VSTD-5 is draft, but its entry boundary is not: no future witness transport
-    may admit a partial layer-4 claim.  Returning the checked result makes this
-    function usable as the first line of any later VSTD-5 procedure without
-    turning the gate into a second, declarative depth field.
+    VSTD-5 is draft, but its entry boundary is not: a structural candidate over
+    caller-supplied references is not normative VSTD-4 conformance. A future
+    evidence-binding implementation needs a distinct result type and gate; it
+    must not make this candidate stronger by setting another declaration field.
     """
     if result.depth != MAX_DEPTH or result.witness is None:
         raise VSTD5EntryError(
@@ -173,7 +190,10 @@ def require_vstd5_entry(result: DepthResult) -> DepthResult:
         raise VSTD5EntryError(
             "VSTD-5 entry result carries a ceiling refutation or blocking rung"
         )
-    return result
+    raise VSTD5EntryError(
+        "VSTD-5 requires established VSTD-4 conformance; this structural "
+        f"candidate has conformance_status {result.conformance_status}"
+    )
 
 
 # --------------------------------------------------------------------------
@@ -182,7 +202,7 @@ def require_vstd5_entry(result: DepthResult) -> DepthResult:
 
 
 def _encode(
-    level: int, evidence: Mapping[str, str], claim_id: str
+    candidate_depth: int, evidence: Mapping[str, str], claim_id: str
 ) -> tuple[tuple[tuple[int, ...], ...], Grounding]:
     """CNF_4k, together with the grounding that says what its variables mean."""
     formula: list[tuple[int, ...]] = []
@@ -192,7 +212,7 @@ def _encode(
         clauses.append(ClauseGrounding(len(formula), rule.rule_id, dict(bindings), dict(subjects)))
         formula.append(tuple(literals))
 
-    for rung in RUNGS[:level]:
+    for rung in RUNGS[:candidate_depth]:
         emit([rung.index], RULE_ASSERTED, {"rung": rung.index}, {"rung": claim_id})
 
     for rung in RUNGS:
@@ -254,9 +274,9 @@ def _propagate(
 
 
 def _certify(
-    level: int, evidence: Mapping[str, str], claim_id: str, binding: ClaimBinding
+    candidate_depth: int, evidence: Mapping[str, str], claim_id: str, binding: ClaimBinding
 ) -> tuple[DecisionCertificate, tuple[str, ...]]:
-    formula, grounding = _encode(level, evidence, claim_id)
+    formula, grounding = _encode(candidate_depth, evidence, claim_id)
     steps, conflict, assignment = _propagate(formula)
     literals = sum(len(clause) for clause in formula)
 
@@ -294,29 +314,32 @@ def vstd4_depth(
     claim_id: str,
     binding: ClaimBinding,
 ) -> DepthResult:
-    """Compute how far up the layer-4 ladder ``evidence`` carries a claim.
+    """Compute a structural candidate depth from caller-supplied references.
 
     ``evidence`` maps a rung id (``"4.1"`` .. ``"4.14"``) to the content address
-    of the artifact establishing it. An absent or empty entry means the rung is
-    not established, and the resulting UNSAT certificate at the next level names
-    it.
+    claimed for the artifact establishing it. This function checks only whether
+    each value is nonempty; it does not retrieve the artifact or validate the
+    rung proposition. An absent or empty entry blocks the candidate, and the
+    resulting UNSAT certificate at the next candidate depth names it.
 
-    Descends from :data:`MAX_DEPTH`, so the first satisfiable level found is the
-    depth -- the ladder is monotone by construction, but searching downward
+    Descends from :data:`MAX_DEPTH`, so the first satisfiable candidate depth found is the
+    depth -- the rung sequence is monotone by construction, but searching downward
     means a fully-conformant claim costs one solve rather than fourteen.
     """
     unknown = set(evidence) - set(BY_ID)
     if unknown:
         raise ValueError(f"evidence names rungs that do not exist: {sorted(unknown)}")
 
-    for level in range(MAX_DEPTH, 0, -1):
-        certificate, blocking = _certify(level, evidence, claim_id, binding)
+    for candidate_depth in range(MAX_DEPTH, 0, -1):
+        certificate, blocking = _certify(candidate_depth, evidence, claim_id, binding)
         if certificate.header.verdict is Verdict.PASS:
             refutation: Optional[DecisionCertificate] = None
             blocked: tuple[str, ...] = ()
-            if level < MAX_DEPTH:
-                refutation, blocked = _certify(level + 1, evidence, claim_id, binding)
-            return DepthResult(level, certificate, refutation, blocked)
+            if candidate_depth < MAX_DEPTH:
+                refutation, blocked = _certify(
+                    candidate_depth + 1, evidence, claim_id, binding
+                )
+            return DepthResult(candidate_depth, certificate, refutation, blocked)
 
     refutation, blocked = _certify(1, evidence, claim_id, binding)
     return DepthResult(0, None, refutation, blocked)
