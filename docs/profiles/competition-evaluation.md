@@ -1,5 +1,9 @@
 # Competition evaluation profile
 
+> **Acronyms:** artificial intelligence (AI); machine learning (ML); Verifier Standard (VSTD).
+
+> Reader aid: [concept glossary and primary precedents](../CONCEPTS_AND_PRECEDENTS.md).
+
 **Status:** non-normative VSTD-1/VSTD-Graph integration profile
 **Version:** 0.1
 **Date:** 2026-08-21
@@ -8,6 +12,19 @@ This profile applies VSTD receipts and provenance hypergraphs to predictive-AI,
 scientific-ML, agent, and other scored evaluations. It does not add a new VSTD verdict
 and does not claim adoption, affiliation, certification, or endorsement by any
 conference, competition, benchmark, or organizer.
+
+The bounded public wording in
+[`docs/CLAIMS_AND_LIMITS.md`](../CLAIMS_AND_LIMITS.md#competition-and-scored-evaluation-claims)
+controls if a shorter phrase in this non-normative profile could be read more broadly.
+
+## VSTD-2 relationship
+
+Conceptually, this profile selects Verifier Standard (VSTD)-2 coordinates across the
+submission, evaluator, environment, score, and their seams. It does not emit a
+`VSTD-2` receipt or establish VSTD-2 conformance by itself. Each native scorer or
+benchmark adapter must attribute its output to the exact selected coordinates, preserve
+translation loss and horizons, and bind a separate assessment before any native result
+becomes a VSTD judgment.
 
 ## 1. Evaluation surface
 
@@ -43,7 +60,7 @@ rules + data snapshots + permitted externals
 Each artifact receives a stable identifier and content digest. Each transformation
 records its input and output roles, software identity, parameters, environment, and
 evidence classification. A declaration is not relabeled as direct observation or
-independent reproduction.
+reproduction by a distinct actor.
 
 ## 3. Predictive-evaluation time boundary
 
@@ -67,7 +84,7 @@ artifact.
 A participant normally cannot observe or serialize hidden tests. The participant
 receipt therefore records an explicit horizon. An organizer can later close part of
 that horizon by publishing a commitment, signed attestation, disclosed snapshot, or
-independently reproducible evaluator receipt.
+evaluator receipt reproducible by a distinct actor.
 
 Absence of access is not evidence of hidden-test integrity. A participant-side
 `VERIFIED` result MUST NOT imply that the organizer's hidden corpus was uncontaminated,
