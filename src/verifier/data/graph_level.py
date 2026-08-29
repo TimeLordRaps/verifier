@@ -60,8 +60,18 @@ from verifier.core.certificate import (
     Grounding,
     VariableGrounding,
     Verdict,
+    canonical_digest,
 )
 from verifier.core.checker import MinimalIndependentDPLL
+from verifier.core.evidence import (
+    BoundProposition,
+    EvidenceStore,
+    EvaluatedProposition,
+    MechanismOutcome,
+    VerificationMechanism,
+    VerificationSession,
+)
+from verifier.core.depth import claim_binding_from_dict
 from verifier.core.kernel import check as kernel_check
 from verifier.core.refutation import build_horn_certificate
 from verifier.data.models import ArtifactStatus, ProvenanceHypergraph
@@ -87,6 +97,24 @@ having nothing to do with evidence. A caller wanting the stricter reading has
 :meth:`~verifier.data.policy.ProvenancePolicyVerifier.verify_all_ancestors_valid`,
 which admits ``VALID`` and nothing else.
 """
+
+
+def graph_collection_binding_digest(
+    graph: ProvenanceHypergraph,
+    *,
+    collection_id: str,
+    members: Sequence[str],
+    binding: ClaimBinding,
+) -> str:
+    """Bind ratings to one Graph, member set, collection, and claim coordinate."""
+    return canonical_digest(
+        {
+            "collection_id": collection_id,
+            "members": sorted(set(members)),
+            "historical_graph_digest": canonical_digest(graph.to_dict()),
+            "claim_binding_digest": binding.digest(),
+        }
+    )
 
 
 class GraphEncodingError(RuntimeError):
@@ -443,6 +471,58 @@ class GraphLevelResult:
         }
 
 
+@dataclass(frozen=True)
+class EvidenceBoundGraphLevelResult:
+    """Graph profile whose object and edge ratings were rerun and bound."""
+
+    candidate: GraphLevelResult
+    object_evaluations: tuple[tuple[str, EvaluatedProposition], ...]
+    edge_evaluations: tuple[tuple[str, EvaluatedProposition], ...]
+    binding_errors: tuple[str, ...]
+    kernel_outcome: str
+
+    @property
+    def level(self) -> int:
+        return self.candidate.level
+
+    @property
+    def conformance_status(self) -> str:
+        if (
+            self.level < GRAPH_MIN_LEVEL
+            or self.binding_errors
+            or self.kernel_outcome != "ACCEPTED"
+        ):
+            return "NOT_ESTABLISHED"
+        evaluations = self.object_evaluations + self.edge_evaluations
+        if not evaluations or any(not result.passed for _, result in evaluations):
+            return "NOT_ESTABLISHED"
+        return "ESTABLISHED"
+
+    @property
+    def rating_basis(self) -> str:
+        return "MECHANISM_EVALUATED"
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = self.candidate.to_dict()
+        payload.update(
+            {
+                "rating_basis": self.rating_basis,
+                "conformance_status": self.conformance_status,
+                "object_evaluations": {
+                    subject: result.to_dict()
+                    for subject, result in self.object_evaluations
+                },
+                "edge_evaluations": {
+                    subject: result.to_dict()
+                    for subject, result in self.edge_evaluations
+                },
+                "binding_errors": list(self.binding_errors),
+                "kernel_outcome": self.kernel_outcome,
+            }
+        )
+        return payload
+
+
 def graph_level(
     graph: ProvenanceHypergraph,
     collection: GraphCollection,
@@ -501,3 +581,232 @@ def graph_level(
         binding=binding,
     )
     return GraphLevelResult(collection.collection_id, 0, None, refutation, blocked)
+
+
+def establish_graph_level(
+    graph: ProvenanceHypergraph,
+    *,
+    collection_id: str,
+    members: Sequence[str],
+    object_evidence: Mapping[str, BoundProposition],
+    edge_evidence: Mapping[str, BoundProposition],
+    session: VerificationSession,
+    binding: ClaimBinding,
+) -> EvidenceBoundGraphLevelResult:
+    """Rerun rating mechanisms before computing a conforming Graph profile.
+
+    Each reachable artifact must bind ``vstd.object_profile`` and each reachable
+    transformation must bind ``vstd.graph_edge_profile`` to an integer in
+    ``1..5`` under ``parameters['collection_id']``.  Missing, neighboring,
+    duplicate, failed, or uncertain propositions contribute rating zero and
+    prevent conformance; their field placement cannot promote the collection.
+    """
+
+    if not members:
+        raise GraphEncodingError("an evidence-bound Graph collection must have members")
+    normalized_members = tuple(sorted(set(members)))
+    closure = graph.ancestors(normalized_members)
+    edges = {
+        edge.transformation_id
+        for artifact_id in closure
+        for edge in graph.incoming_hyperedges(artifact_id)
+    }
+    errors: list[str] = []
+    object_results: list[tuple[str, EvaluatedProposition]] = []
+    edge_results: list[tuple[str, EvaluatedProposition]] = []
+    object_levels: dict[str, int] = {}
+    edge_levels: dict[str, int] = {}
+    exact_collection_binding = graph_collection_binding_digest(
+        graph,
+        collection_id=collection_id,
+        members=normalized_members,
+        binding=binding,
+    )
+
+    extra_objects = set(object_evidence) - closure
+    extra_edges = set(edge_evidence) - edges
+    if extra_objects:
+        errors.append(f"object ratings outside provenance closure: {sorted(extra_objects)}")
+    if extra_edges:
+        errors.append(f"edge ratings outside provenance closure: {sorted(extra_edges)}")
+
+    def evaluate_rating(
+        subject: str,
+        proposition: Optional[BoundProposition],
+        predicate: str,
+        sink: list[tuple[str, EvaluatedProposition]],
+    ) -> int:
+        if proposition is None:
+            errors.append(f"missing rating evidence for {subject}")
+            return 0
+        if type(proposition.expected) is not int:
+            errors.append(f"rating for {subject} is not an integer")
+            return 0
+        rating = proposition.expected
+        if not GRAPH_MIN_LEVEL <= rating <= GRAPH_MAX_LEVEL:
+            errors.append(f"rating for {subject} is outside 1..5")
+            return 0
+        if (
+            proposition.subject_id != subject
+            or proposition.predicate != predicate
+            or proposition.parameters.get("collection_id") != collection_id
+            or proposition.parameters.get("collection_binding_digest")
+            != exact_collection_binding
+        ):
+            errors.append(f"rating evidence for {subject} is not exactly collection-bound")
+            return 0
+        result = session.evaluate(proposition)
+        sink.append((subject, result))
+        if result.outcome is not MechanismOutcome.PASS:
+            errors.append(
+                f"rating mechanism for {subject} returned {result.outcome.value}"
+            )
+            return 0
+        return rating
+
+    for artifact_id in sorted(closure):
+        object_levels[artifact_id] = evaluate_rating(
+            artifact_id,
+            object_evidence.get(artifact_id),
+            "vstd.object_profile",
+            object_results,
+        )
+    for transformation_id in sorted(edges):
+        edge_levels[transformation_id] = evaluate_rating(
+            transformation_id,
+            edge_evidence.get(transformation_id),
+            "vstd.graph_edge_profile",
+            edge_results,
+        )
+
+    candidate = graph_level(
+        graph,
+        GraphCollection(
+            collection_id,
+            normalized_members,
+            object_levels,
+            edge_levels,
+        ),
+        binding=binding,
+    )
+    kernel_outcome = "REJECTED"
+    certificate = candidate.witness or candidate.refutation
+    if certificate is not None:
+        kernel_outcome = kernel_check(certificate, binding=binding).outcome.value
+    return EvidenceBoundGraphLevelResult(
+        candidate,
+        tuple(object_results),
+        tuple(edge_results),
+        tuple(errors),
+        kernel_outcome,
+    )
+
+
+def build_evidence_bound_graph_level_record(
+    result: EvidenceBoundGraphLevelResult,
+    *,
+    graph: ProvenanceHypergraph,
+    members: Sequence[str],
+    binding: ClaimBinding,
+    object_evidence: Mapping[str, BoundProposition],
+    edge_evidence: Mapping[str, BoundProposition],
+    session: VerificationSession,
+) -> dict[str, Any]:
+    """Serialize exact Graph rating bindings and bytes for offline replay."""
+    recomputed = establish_graph_level(
+        graph,
+        collection_id=result.candidate.collection_id,
+        members=members,
+        object_evidence=object_evidence,
+        edge_evidence=edge_evidence,
+        session=session,
+        binding=binding,
+    )
+    if canonical_digest(recomputed.to_dict()) != canonical_digest(result.to_dict()):
+        raise ValueError("Graph profile result does not match the supplied replay inputs")
+    all_refs = tuple(
+        sorted(
+            {
+                reference
+                for proposition in (*object_evidence.values(), *edge_evidence.values())
+                for reference in proposition.evidence_refs
+            }
+        )
+    )
+    normalized_members = tuple(sorted(set(members)))
+    payload = result.to_dict()
+    payload.update(
+        {
+            "members": list(normalized_members),
+            "binding": binding.to_dict(),
+            "evidence_bindings": {
+                "objects": {
+                    subject: proposition.to_dict()
+                    for subject, proposition in sorted(object_evidence.items())
+                },
+                "edges": {
+                    subject: proposition.to_dict()
+                    for subject, proposition in sorted(edge_evidence.items())
+                },
+            },
+            "evidence_payloads": session.evidence.export_base64(all_refs),
+        }
+    )
+    return payload
+
+
+def recheck_evidence_bound_graph_level_record(
+    graph: ProvenanceHypergraph,
+    record: Mapping[str, Any],
+    *,
+    mechanisms: Sequence[VerificationMechanism],
+) -> EvidenceBoundGraphLevelResult:
+    """Rebuild the evidence store, rerun rating mechanisms, and compare result."""
+    if record.get("rating_basis") != "MECHANISM_EVALUATED":
+        raise ValueError("Graph profile record is not mechanism-evaluated")
+    payloads = record.get("evidence_payloads")
+    bindings = record.get("evidence_bindings")
+    binding_data = record.get("binding")
+    members = record.get("members")
+    if (
+        not isinstance(payloads, Mapping)
+        or not isinstance(bindings, Mapping)
+        or not isinstance(binding_data, Mapping)
+        or not isinstance(members, Sequence)
+        or isinstance(members, (str, bytes))
+    ):
+        raise ValueError("evidence-bound Graph record is missing replay inputs")
+    store = EvidenceStore()
+    store.import_base64({str(key): str(value) for key, value in payloads.items()})
+    session = VerificationSession(store)
+    for mechanism in mechanisms:
+        session.register(mechanism)
+    objects_data = bindings.get("objects")
+    edges_data = bindings.get("edges")
+    if not isinstance(objects_data, Mapping) or not isinstance(edges_data, Mapping):
+        raise ValueError("Graph evidence binding maps are missing")
+    objects = {
+        str(subject): BoundProposition.from_dict(proposition)
+        for subject, proposition in objects_data.items()
+        if isinstance(proposition, Mapping)
+    }
+    edges = {
+        str(subject): BoundProposition.from_dict(proposition)
+        for subject, proposition in edges_data.items()
+        if isinstance(proposition, Mapping)
+    }
+    result = establish_graph_level(
+        graph,
+        collection_id=str(record["collection_id"]),
+        members=tuple(str(item) for item in members),
+        object_evidence=objects,
+        edge_evidence=edges,
+        session=session,
+        binding=claim_binding_from_dict(binding_data),
+    )
+    for result_field, value in result.to_dict().items():
+        if record.get(result_field) != value:
+            raise ValueError(
+                f"recomputed Graph field does not match receipt: {result_field}"
+            )
+    return result

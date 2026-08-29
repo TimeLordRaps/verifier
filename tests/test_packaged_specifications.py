@@ -30,8 +30,9 @@ def test_ladder_fixes_causal_provenance_directions_without_actor_trust() -> None
     assert "Memetic propagation" in ladder
     assert "RFC 2119" in ladder
     assert "RFC 8174" in ladder
-    assert "not serialized receipt values or\ncomputable conformance results" in ladder
-    assert "current VSTD runtime emits or validates a TRUST, ROT, or\nRUST transfer" in ladder
+    assert "serialize as typed event kinds only in the non-receipt\n`VSTD-GRAPH-ASSURANCE-1` mechanism log" in ladder
+    assert "`AssuranceLedger` implements mechanism-earned forward TRUST" in ladder
+    assert "`recheck_assurance_log` reconstructs the historical Graph" in ladder
     assert "MUST NOT strengthen an artifact-bound\nresult" in ladder
     assert "TRUST and RUST never cancel" in ladder
     assert "whether an actor is good, bad, reputable, or worthy of trust" in ladder

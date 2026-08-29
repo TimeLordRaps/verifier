@@ -165,13 +165,53 @@
         "collection_id": {"type": "string", "minLength": 1},
         "level": {"type": "integer", "minimum": 0, "maximum": 5},
         "max_level": {"const": 5},
-        "rating_basis": {"const": "CALLER_SUPPLIED"},
-        "conformance_status": {"const": "NOT_ESTABLISHED"},
+        "rating_basis": {"enum": ["CALLER_SUPPLIED", "MECHANISM_EVALUATED"]},
+        "conformance_status": {"enum": ["NOT_ESTABLISHED", "ESTABLISHED"]},
         "blocking_obligations": {"type": "array", "items": {"type": "object"}},
         "witness_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
         "refutation_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
-        "explanation": {"type": "string"}
-      }
+        "explanation": {"type": "string"},
+        "kernel_outcome": {"enum": ["ACCEPTED", "REJECTED", "REFUSED"]},
+        "members": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "binding": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json#/$defs/binding"},
+        "object_evaluations": {
+          "type": "object",
+          "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json#/$defs/evaluation"}
+        },
+        "edge_evaluations": {
+          "type": "object",
+          "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json#/$defs/evaluation"}
+        },
+        "binding_errors": {"type": "array", "items": {"type": "string"}},
+        "evidence_bindings": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["objects", "edges"],
+          "properties": {
+            "objects": {"type": "object", "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json#/$defs/evidenceBinding"}},
+            "edges": {"type": "object", "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json#/$defs/evidenceBinding"}}
+          }
+        },
+        "evidence_payloads": {
+          "type": "object",
+          "propertyNames": {"pattern": "^sha256:[0-9a-f]{64}$"},
+          "additionalProperties": {"type": "string", "contentEncoding": "base64"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"required": ["conformance_status"], "properties": {"conformance_status": {"const": "ESTABLISHED"}}},
+          "then": {
+            "required": ["rating_basis", "kernel_outcome", "members", "binding", "object_evaluations", "edge_evaluations", "binding_errors", "evidence_bindings", "evidence_payloads"],
+            "properties": {
+              "rating_basis": {"const": "MECHANISM_EVALUATED"},
+              "level": {"minimum": 1},
+              "kernel_outcome": {"const": "ACCEPTED"},
+              "binding_errors": {"maxItems": 0}
+            }
+          }
+        }
+      ]
     }
   }
 }

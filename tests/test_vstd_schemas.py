@@ -195,54 +195,20 @@ def test_vstd4_candidate_receipt_is_explicit_and_keeps_legacy_shape_valid() -> N
     assert any("not of type 'object'" in error.message for error in errors)
 
 
-def test_vstd5_draft_schema_records_shape_without_establishing_entry() -> None:
+def test_vstd5_schema_requires_replayable_evidence_bound_inputs() -> None:
     schema = _load("vstd5_receipt.json")
-    validator = Draft202012Validator(schema, format_checker=FormatChecker())
-    assert "current VSTD-4 candidate cannot satisfy" in schema["description"]
-    receipt = {
+    assert schema["properties"]["schema_version"]["const"] == "VSTD-5"
+    assert "must recheck" in schema["description"]
+    legacy_draft = {
         "schema_version": "VSTD-5-DRAFT",
         "status": "DRAFT",
         "receipt_id": "VFY-5-SCHEMA-TEST",
-        "claim_id": "claim:schema-test",
-        "claim_binding": HEX,
-        "entry_vstd4_depth": 14,
-        "witnesses": [
-            {
-                "witness_id": "witness:test",
-                "identity_evidence": "sha256:" + HEX,
-                "independence": {
-                    "shared_control": "UNKNOWN",
-                    "shared_code": "UNKNOWN",
-                    "shared_trust_root": "UNKNOWN",
-                    "shared_evidence_source": "UNKNOWN",
-                    "shared_infrastructure": "UNKNOWN",
-                    "financial_dependence": "UNKNOWN",
-                    "jurisdictional_dependence": "UNKNOWN",
-                    "evidence": [],
-                },
-            }
-        ],
-        "corroborations": [
-            {
-                "corroboration_id": "corroboration:test",
-                "witness_id": "witness:test",
-                "class": "PHYSICAL_INSPECTION",
-                "vstd4_certificate_digest": HEX,
-                "checker_descriptor_digest": HEX,
-                "observed_evidence": [HEX],
-                "result": "UNKNOWN",
-                "observed_at": "2026-08-22T12:00:00Z",
-            }
-        ],
-        "disagreements": [],
-        "computed_independence": "UNKNOWN",
     }
-    validator.validate(receipt)
+    assert list(Draft202012Validator(schema).iter_errors(legacy_draft))
 
-    receipt["entry_vstd4_depth"] = 13
-    errors = list(validator.iter_errors(receipt))
-    assert errors
-    assert any("14 was expected" in error.message for error in errors)
+    dimension = schema["$defs"]["dimension"]
+    assert dimension["required"] == ["state", "binding"]
+    assert {"type": "null"} in dimension["properties"]["binding"]["anyOf"]
 
 
 def test_current_wire_identifiers_and_profile_discriminators() -> None:

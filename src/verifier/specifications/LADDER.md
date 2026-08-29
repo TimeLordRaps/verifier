@@ -69,6 +69,7 @@ The rest of the Standard uses the following terms precisely:
 | **Profile axis** | One ordered family of cumulative checklists. VSTD has an object axis and a Graph axis. | Equal numbers on different axes do not identify equivalent or interchangeable results. |
 | **Object profile depth** | For one verification object, start at `VSTD-1` and count upward only while every required coordinate remains established. The last uninterrupted number is its depth. | Depth is a compact summary of separately established results, not a new verdict, evidence-strength rating, or permission to ignore a later established coordinate after an earlier gap. |
 | **Candidate Graph profile** | The greatest Graph checklist position satisfied by the current caller-supplied ratings. | The current calculation is `NOT_ESTABLISHED` because those ratings are not evidence-bound. It is not a verified Graph profile. |
+| **Evidence-bound Graph profile** | The greatest Graph checklist position obtained after rerunning exact member, ancestor, and edge rating mechanisms from content-addressed evidence. | It is established only under the named mechanisms, trust roots, evidence, bounds, lifecycle view, and conflict state. |
 | **VSTD-4 rung** | One of the fourteen ordered refutability obligations `4.1` through `4.14`. | “Rung” names only this internal sequence, never a top-level VSTD profile. |
 | **Verification order** | One adjacent meta-verification order in the VSTD-2 geometry model. | The compatibility names `VerificationLayer` and `verification_layers` do not denote numbered VSTD profiles. |
 | **Level** | A retained word in an explicitly named external taxonomy or compatibility identifier, including `ReproducibilityLevel`, `AvailabilityLevel`, `graph_level`, and serialized Graph `level` fields. | In Graph compatibility identifiers, the value is the candidate Graph profile number; “level” is not the governing name for a VSTD profile. |
@@ -140,8 +141,9 @@ can be an artifact when created, versioned, or evaluated and an actor when it ex
 transformation.
 
 The capitalized terms **TRUST**, **RUST**, and **ROT** are formal VSTD semantic names, not
-acronyms, serialized receipt values, actor ratings, scalar scores, or references to the Rust programming
-language. The same bound development graph and its time-indexed lifecycle carry three
+acronyms, numbered-profile receipt verdicts, actor ratings, scalar scores, or references to
+the Rust programming language. They serialize as typed event kinds only in the non-receipt
+`VSTD-GRAPH-ASSURANCE-1` mechanism log. The same bound development graph and its time-indexed lifecycle carry three
 distinct relations:
 
 ```text
@@ -192,12 +194,17 @@ intervention-level physical causality, causal localization, responsibility, or g
 TRUST, ROT, and RUST MUST remain separate. They do not cancel, form one scalar score, or
 flow in the opposite direction as inherited truth, decay, or guilt. `UNKNOWN` and
 `CONFLICTED` support or lineage MUST remain visible and MUST NOT become a clean signal.
-This section fixes their semantic orientation and prohibited inferences; event formats,
-TRUST-transfer algebra, ROT derivation and propagation, RUST concentration-independence,
-and localization protocols each require their own specification and evidence. Until those
-exist, the three terms are causal-provenance and lifecycle constraints, not serialized receipt values or
-computable conformance results; no current VSTD runtime emits or validates a TRUST, ROT, or
-RUST transfer.
+`VSTD-GRAPH-ASSURANCE-1` now serializes an additive, hash-chained reference event log with
+the complete historical Graph, exact proposition bindings, and embedded evidence bytes.
+`AssuranceLedger` implements mechanism-earned forward TRUST, typed ROT, challenge-ledger
+status projection, reverse RUST reachability, unique-descendant structural concentration,
+additive conflict resolution, explicit causal localization, and bounded artifact-relative
+diagnostic attribution. Duplicate paths and repeated records remain set-valued and earn no
+strength. `recheck_assurance_log` reconstructs the historical Graph, rehashes the embedded
+evidence, reruns every exact mechanism, reproduces the event hash chain, and compares the
+derived current view. A deployment still supplies the proposition-specific mechanisms: the
+event format and dispatcher do not create a universal support-transfer algebra or infer
+causality from topology.
 
 Artifact freezing and sealing are bounded mechanisms under this orientation, specified
 separately in [`ARTIFACT_CONTROL.md`](ARTIFACT_CONTROL.md). A verified freeze preserves
@@ -289,6 +296,14 @@ a **candidate Graph profile** with
 those inputs, not the validity of the ratings. At a result below 5, the grounded `FAIL`
 certificate for profile `N+1` explains that candidate ceiling. Graph conformance additionally
 requires evidence-bound ratings under the applicable object and edge profiles.
+`establish_graph_level` supplies that path: it rehashes embedded evidence, reruns the exact
+registered rating mechanism for every member, ancestor, and reached edge, then recomputes
+and kernel-checks the Graph certificate. Each rating proposition binds a digest over the
+historical Graph bytes, deduplicated member set, collection identifier, and claim binding;
+neighboring collection or topology evidence therefore contributes zero. Missing,
+non-integer, or non-passing bindings also contribute zero and prevent conformance. Profile
+zero never receives `ESTABLISHED`. The record builder recomputes before serialization, and
+the rechecker preserves offline replay.
 
 ---
 
@@ -382,7 +397,9 @@ The certificate for rung `k+1` explains a partial VSTD-4 normative depth. Only e
 VSTD-4 conformance at normative depth 14 admits a claim to any VSTD-5 procedure. The current
 reference `vstd4_depth` function instead computes a structural candidate from
 caller-supplied rung references, labels conformance `NOT_ESTABLISHED`, and never admits
-VSTD-5. See `VSTD-4.md` for the normative rung graph and `VSTD4-GDC-1` format.
+VSTD-5. `establish_vstd4` reruns exact VSTD-1/2/3 and rung bindings and may report
+`EVIDENCE_BOUND` / `ESTABLISHED` only when every mechanism and the independent kernel pass.
+See `VSTD-4.md` for the normative rung graph and `VSTD4-GDC-1` format.
 
 ---
 

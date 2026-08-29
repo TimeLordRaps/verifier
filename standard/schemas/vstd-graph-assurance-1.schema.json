@@ -1,0 +1,108 @@
+{
+  "$comment": "Terminology: Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD). TRUST, RUST, and ROT are formal semantic names, not acronyms.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json",
+  "title": "VSTD-Graph Assurance Event Log",
+  "description": "Strict shape for the additive, hash-chained reference event log. Schema validity establishes shape only. Mechanism outcomes must be replayed from the embedded evidence with the exact bound mechanism implementation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "historical_graph_digest", "historical_graph", "events", "conflict_resolutions", "current_view_digest"],
+  "properties": {
+    "schema_version": {"const": "VSTD-GRAPH-ASSURANCE-1"},
+    "historical_graph_digest": {"$ref": "#/$defs/digest"},
+    "historical_graph": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd_graph_receipt.json#/properties/hypergraph"},
+    "events": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/event"}
+    },
+    "conflict_resolutions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/resolution"}
+    },
+    "current_view_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "digestRef": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "outcome", "mechanism_id", "mechanism_digest", "evidence_refs", "trust_roots", "observed_evidence_bytes", "details", "observations"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "outcome": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "mechanism_id": {"type": "string", "minLength": 1},
+        "mechanism_digest": {"$ref": "#/$defs/digestRef"},
+        "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digestRef"}},
+        "trust_roots": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "observed_evidence_bytes": {"type": "integer", "minimum": 0},
+        "details": {"type": "string"},
+        "observations": {"type": "object"}
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "kind", "subject_id", "source_ids", "proposition", "binding", "recorded_at", "outcome", "mechanism_id", "mechanism_digest", "evidence_refs", "evidence_payloads", "trust_roots", "details", "previous_event_digest", "attributes", "event_digest"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 0},
+        "kind": {"enum": ["TRUST", "ROT", "RUST", "STATUS_PROJECTION", "CONFLICT_RESOLUTION", "CAUSAL_LOCALIZATION", "DIAGNOSTIC_ATTRIBUTION"]},
+        "subject_id": {"type": "string", "minLength": 1},
+        "source_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "proposition": {"type": "string", "minLength": 1},
+        "binding": {"$ref": "#/$defs/binding"},
+        "recorded_at": {"type": "string", "minLength": 1},
+        "outcome": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "mechanism_id": {"type": "string", "minLength": 1},
+        "mechanism_digest": {"$ref": "#/$defs/digestRef"},
+        "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digestRef"}},
+        "evidence_payloads": {
+          "type": "object",
+          "propertyNames": {"pattern": "^sha256:[0-9a-f]{64}$"},
+          "additionalProperties": {"type": "string", "contentEncoding": "base64"}
+        },
+        "trust_roots": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "details": {"type": "string"},
+        "previous_event_digest": {"type": "string", "pattern": "^(?:[0-9a-f]{64})?$"},
+        "attributes": {"type": "object"},
+        "event_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_id", "predicate", "expected", "mechanism_id", "mechanism_digest", "evidence_refs", "trust_roots", "bounds", "parameters"],
+      "properties": {
+        "subject_id": {"type": "string", "minLength": 1},
+        "predicate": {"type": "string", "minLength": 1},
+        "expected": {},
+        "mechanism_id": {"type": "string", "minLength": 1},
+        "mechanism_digest": {"$ref": "#/$defs/digestRef"},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/digestRef"}},
+        "trust_roots": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "bounds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["max_evidence_items", "max_evidence_bytes"],
+          "properties": {
+            "max_evidence_items": {"type": "integer", "minimum": 0},
+            "max_evidence_bytes": {"type": "integer", "minimum": 0}
+          }
+        },
+        "parameters": {"type": "object", "additionalProperties": {"type": "string"}}
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resolution_id", "conflict_id", "selected_value", "recorded_at", "evaluation"],
+      "properties": {
+        "resolution_id": {"type": "string", "minLength": 1},
+        "conflict_id": {"type": "string", "minLength": 1},
+        "selected_value": {"type": "string"},
+        "recorded_at": {"type": "string", "minLength": 1},
+        "evaluation": {"$ref": "#/$defs/evaluation"}
+      }
+    }
+  }
+}

@@ -2,8 +2,8 @@
   "$comment": "Terminology: grounded decision certificate (GDC); Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json",
-  "title": "VSTD-4 Structural Candidate Receipt",
-  "description": "Legacy-compatible VSTD-4 shape. vstd4_depth is a candidate over caller-supplied rung references; conformance is NOT_ESTABLISHED. Historical receipts without conformance_status have the same non-upgrading interpretation.",
+  "title": "VSTD-4 Refutability Receipt",
+  "description": "Legacy-compatible VSTD-4 shape. Caller-supplied rung references remain a candidate with conformance NOT_ESTABLISHED. The additive EVIDENCE_BOUND form embeds exact proposition bindings and evidence bytes so registered mechanisms can be rerun; schema validity alone never establishes conformance.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "receipt_id", "claim_id", "binding", "vstd4_depth", "rung_evidence", "witness", "ceiling_refutation", "blocking_rungs", "status"],
@@ -12,8 +12,10 @@
     "receipt_id": {"type": "string", "pattern": "^VFY-4-[A-Za-z0-9._:-]+$"},
     "claim_id": {"type": "string", "minLength": 1},
     "binding": {"$ref": "#/$defs/binding"},
-    "vstd4_depth": {"type": "integer", "minimum": 0, "maximum": 14, "description": "Structural candidate depth, not normative VSTD-4 conformance."},
-    "conformance_status": {"const": "NOT_ESTABLISHED"},
+    "vstd4_depth": {"type": "integer", "minimum": 0, "maximum": 14, "description": "Candidate depth unless depth_kind is EVIDENCE_BOUND and all replay checks establish the exact preconditions and rungs."},
+    "depth_kind": {"enum": ["CANDIDATE", "EVIDENCE_BOUND"]},
+    "conformance_status": {"enum": ["NOT_ESTABLISHED", "ESTABLISHED"]},
+    "kernel_outcome": {"enum": ["ACCEPTED", "REJECTED", "REFUSED"]},
     "rung_evidence": {
       "type": "object",
       "additionalProperties": false,
@@ -35,18 +37,88 @@
     "precommitment_envelope": {"type": "object"},
     "availability": {"type": "array", "items": {"type": "object"}},
     "challenge_records": {"type": "array", "items": {"type": "object"}},
-    "refutability_closure": {"type": ["object", "null"]}
+    "refutability_closure": {"type": ["object", "null"]},
+    "evidence_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prerequisites", "rungs"],
+      "properties": {
+        "prerequisites": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["1", "2", "3"],
+          "properties": {
+            "1": {"$ref": "#/$defs/evidenceBinding"},
+            "2": {"$ref": "#/$defs/evidenceBinding"},
+            "3": {"$ref": "#/$defs/evidenceBinding"}
+          }
+        },
+        "rungs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "4.13", "4.14"],
+          "properties": {
+            "4.1": {"$ref": "#/$defs/evidenceBinding"}, "4.2": {"$ref": "#/$defs/evidenceBinding"},
+            "4.3": {"$ref": "#/$defs/evidenceBinding"}, "4.4": {"$ref": "#/$defs/evidenceBinding"},
+            "4.5": {"$ref": "#/$defs/evidenceBinding"}, "4.6": {"$ref": "#/$defs/evidenceBinding"},
+            "4.7": {"$ref": "#/$defs/evidenceBinding"}, "4.8": {"$ref": "#/$defs/evidenceBinding"},
+            "4.9": {"$ref": "#/$defs/evidenceBinding"}, "4.10": {"$ref": "#/$defs/evidenceBinding"},
+            "4.11": {"$ref": "#/$defs/evidenceBinding"}, "4.12": {"$ref": "#/$defs/evidenceBinding"},
+            "4.13": {"$ref": "#/$defs/evidenceBinding"}, "4.14": {"$ref": "#/$defs/evidenceBinding"}
+          }
+        }
+      }
+    },
+    "evidence_payloads": {
+      "type": "object",
+      "propertyNames": {"pattern": "^sha256:[0-9a-f]{64}$"},
+      "additionalProperties": {"type": "string", "contentEncoding": "base64"}
+    }
   },
   "allOf": [
     {
       "if": {"properties": {"vstd4_depth": {"const": 14}}},
       "then": {"properties": {"witness": {"type": "object"}, "ceiling_refutation": {"type": "null"}}},
       "else": {"properties": {"ceiling_refutation": {"type": "object"}}}
+    },
+    {
+      "if": {"required": ["conformance_status"], "properties": {"conformance_status": {"const": "ESTABLISHED"}}},
+      "then": {
+        "required": ["depth_kind", "kernel_outcome", "evidence_bindings", "evidence_payloads"],
+        "properties": {
+          "vstd4_depth": {"const": 14},
+          "depth_kind": {"const": "EVIDENCE_BOUND"},
+          "kernel_outcome": {"const": "ACCEPTED"},
+          "blocking_rungs": {"maxItems": 0},
+          "witness": {"type": "object"},
+          "ceiling_refutation": {"type": "null"}
+        }
+      }
     }
   ],
   "$defs": {
     "digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"},
     "evidenceRef": {"type": "string", "minLength": 1, "description": "Caller-supplied reference. Schema validity does not establish retrieval, content binding, the rung proposition, or prerequisite-profile conformance."},
+    "evidenceBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_id", "predicate", "expected", "mechanism_id", "mechanism_digest", "evidence_refs", "trust_roots", "bounds", "parameters"],
+      "properties": {
+        "subject_id": {"type": "string", "minLength": 1},
+        "predicate": {"type": "string", "minLength": 1},
+        "expected": {},
+        "mechanism_id": {"type": "string", "minLength": 1},
+        "mechanism_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}},
+        "trust_roots": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "bounds": {
+          "type": "object", "additionalProperties": false,
+          "required": ["max_evidence_items", "max_evidence_bytes"],
+          "properties": {"max_evidence_items": {"type": "integer", "minimum": 0}, "max_evidence_bytes": {"type": "integer", "minimum": 0}}
+        },
+        "parameters": {"type": "object", "additionalProperties": {"type": "string"}}
+      }
+    },
     "coordinate": {
       "type": "object", "additionalProperties": false,
       "required": ["subject", "predicate", "parameters"],

@@ -8,7 +8,7 @@
 
 **Numbered profile:** VSTD-4 on the object axis; required closure coordinate: Refutability (see `LADDER.md`)
 **Certificate format:** `VSTD4-GDC-1`
-**Status:** project specification; candidate computation implemented; evidence binding and conformance not implemented
+**Status:** project specification with implemented candidate and evidence-bound reference paths
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
 **Date:** 2026-08-22
@@ -51,6 +51,15 @@ candidate over caller-supplied, nonempty rung references. It does not resolve th
 references, validate their rung propositions, or check VSTD-1/2/3 preconditions. Its
 result is therefore `CANDIDATE` with `conformance_status = NOT_ESTABLISHED`, including
 at candidate depth 14, and the reference VSTD-5 entry gate rejects it.
+
+`verifier.core.depth.establish_vstd4` is the evidence-bound path. It requires
+exact `BoundProposition` records for VSTD-1, VSTD-2, VSTD-3, and all fourteen
+rungs; resolves and rehashes every embedded evidence payload; selects a registered
+mechanism by identifier and implementation digest; enforces evidence byte/item
+bounds; reruns the mechanism; and independently checks the resulting structural
+certificate. Only the complete passing result reports `depth_kind = EVIDENCE_BOUND`,
+`conformance_status = ESTABLISHED`, and admits VSTD-5. The receipt builder embeds
+the bindings and evidence bytes, and the rechecker recomputes the result offline.
 
 ---
 
@@ -342,11 +351,12 @@ bounded checking.
 
 ## 6. Reference implementation boundary
 
-The reference certificate producer, candidate-depth computation, and data structures are in:
+The reference certificate producer, candidate/evidence-bound computations, and data structures are in:
 
 * `src/verifier/core/certificate.py`
 * `src/verifier/core/grounding.py`
 * `src/verifier/core/depth.py`
+* `src/verifier/core/evidence.py`
 * `src/verifier/core/refutation.py`
 * `src/verifier/layer4/`
 
@@ -354,9 +364,11 @@ The trusted checker is `src/verifier/core/kernel.py`. Producer modules are not
 part of its trusted import boundary.
 
 The kernel checks the supplied certificate, grounding, and `ClaimBinding` for internal
-consistency. It does not retrieve rung references or establish the required prerequisite-profile
-results. Kernel acceptance of a candidate certificate is therefore not VSTD-4
-conformance.
+consistency. It does not retrieve rung references or establish prerequisite-profile
+results by itself. Kernel acceptance of a candidate certificate is therefore not VSTD-4
+conformance. The evidence-bound path performs those additional checks before it can
+report conformance; its result remains bounded to the registered mechanisms, trust roots,
+evidence, and resource limits.
 
 No external implementation, interoperability profile, or third-party attack has
 yet been demonstrated for `VSTD4-GDC-1`. This implementation status MUST remain

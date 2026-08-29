@@ -3,7 +3,7 @@
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 
 **Numbered profile:** VSTD-Graph-5; required closure coordinate: Corroborated Verification Network (see `LADDER.md`)
-**Status:** DRAFT profile; computation is implemented, witness protocol is not
+**Status:** project specification with implemented candidate and evidence-bound reference paths
 **License:** Apache-2.0
 
 VSTD-Graph-5 is the collection profile for independently corroborated members,
@@ -11,9 +11,12 @@ ancestors, and transformations. The candidate-profile computation requires
 object and edge ratings of at least 5, provenance closure, and admissible status
 throughout.
 
-Because VSTD-5 is draft, the reference implementation can compute this profile
-only over externally supplied profile-5 ratings; it does not manufacture or verify
-their independence. A result based on self-declared ratings is not VSTD-Graph-5
+The compatibility implementation computes this profile over externally supplied
+profile-5 ratings and reports `NOT_ESTABLISHED`. The evidence-bound path can establish
+it only when registered mechanisms rerun exact VSTD-5 member/ancestor ratings and
+profile-5 transformation ratings from embedded evidence. Every rating is bound to the
+exact Graph bytes, deduplicated member set, collection identifier, and claim binding. A result based on
+self-declared ratings is not VSTD-Graph-5
 conformance.
 
 Conflicting witness records are retained as conflict records and make the relevant

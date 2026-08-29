@@ -1,5 +1,5 @@
-"""Terminology: conjunctive normal form (CNF); identifier (ID); unsatisfiable (UNSAT);
-Verifier Standard (VSTD).
+"""Terminology: conjunctive normal form (CNF); grounded decision certificate (GDC);
+identifier (ID); unsatisfiable (UNSAT); Verifier Standard (VSTD).
 
 ``vstd4_depth`` -- candidate depth over caller-supplied rung references.
 
@@ -24,10 +24,13 @@ depends on one above it and the formula goes unsatisfiable at a low depth,
 loudly, instead of quietly certifying a sequence that no longer preserves its
 dependencies.
 
-The current producer checks reference presence and rung dependencies. It does not
+The compatibility producer checks reference presence and rung dependencies. It does not
 resolve those references, validate the propositions they allegedly establish, or
 check VSTD-1/2/3 preconditions. Its result is therefore a candidate with
-``conformance_status = NOT_ESTABLISHED`` and cannot admit VSTD-5.
+``conformance_status = NOT_ESTABLISHED`` and cannot admit VSTD-5. The separate
+``establish_vstd4`` path reruns exact evidence-bound prerequisite and rung
+mechanisms, then checks the structural witness before it can report established
+conformance.
 
 This module *produces* certificates. It is not part of the trusted computing
 base; :mod:`verifier.core.kernel` checks what it emits, and the propagation
@@ -42,6 +45,7 @@ from typing import Mapping, Optional, Sequence
 from .certificate import (
     CertificateHeader,
     ClaimBinding,
+    ClaimCoordinate,
     ClauseGrounding,
     CostTier,
     DecisionBlock,
@@ -50,10 +54,22 @@ from .certificate import (
     GroundedFact,
     Grounding,
     PropagationStep,
+    ResourceBounds,
     UnitPropagationProof,
     VariableGrounding,
     Verdict,
+    VerifierDescriptor,
+    canonical_digest,
 )
+from .evidence import (
+    BoundProposition,
+    EvaluatedProposition,
+    MechanismOutcome,
+    EvidenceStore,
+    VerificationMechanism,
+    VerificationSession,
+)
+from .kernel import KernelOutcome, check as kernel_check
 
 MAX_DEPTH = 14
 """Highest structural candidate depth; not sufficient for VSTD-5 entry."""
@@ -171,13 +187,88 @@ class DepthResult:
         }
 
 
-def require_vstd5_entry(result: DepthResult) -> DepthResult:
+@dataclass(frozen=True)
+class EvidenceBoundDepthResult:
+    """VSTD-4 result obtained by rerunning every bound evidence mechanism.
+
+    The structural candidate is retained as an audit artifact.  Normative
+    conformance is established only when the VSTD-1, VSTD-2, and VSTD-3
+    preconditions and all fourteen rung propositions pass under their exact
+    bindings, and the candidate witness itself checks in the independent
+    kernel.
+    """
+
+    candidate: DepthResult
+    prerequisite_evaluations: tuple[tuple[int, EvaluatedProposition], ...]
+    rung_evaluations: tuple[tuple[str, EvaluatedProposition], ...]
+    binding_errors: tuple[str, ...]
+    kernel_outcome: str
+
+    @property
+    def depth(self) -> int:
+        return self.candidate.depth
+
+    @property
+    def witness(self) -> Optional[DecisionCertificate]:
+        return self.candidate.witness
+
+    @property
+    def refutation(self) -> Optional[DecisionCertificate]:
+        return self.candidate.refutation
+
+    @property
+    def blocking_rungs(self) -> tuple[str, ...]:
+        return self.candidate.blocking_rungs
+
+    @property
+    def conformance_status(self) -> str:
+        if self.binding_errors or self.depth != MAX_DEPTH:
+            return CONFORMANCE_STATUS
+        if self.kernel_outcome != KernelOutcome.ACCEPTED.value:
+            return CONFORMANCE_STATUS
+        if any(not result.passed for _, result in self.prerequisite_evaluations):
+            return CONFORMANCE_STATUS
+        if any(not result.passed for _, result in self.rung_evaluations):
+            return CONFORMANCE_STATUS
+        if len(self.prerequisite_evaluations) != 3 or len(self.rung_evaluations) != MAX_DEPTH:
+            return CONFORMANCE_STATUS
+        return "ESTABLISHED"
+
+    @property
+    def admits_vstd5(self) -> bool:
+        return self.conformance_status == "ESTABLISHED"
+
+    def to_dict(self) -> dict[str, object]:
+        payload = self.candidate.to_dict()
+        payload.update(
+            {
+                "depth_kind": "EVIDENCE_BOUND",
+                "conformance_status": self.conformance_status,
+                "admits_vstd5": self.admits_vstd5,
+                "prerequisite_evaluations": {
+                    str(profile): result.to_dict()
+                    for profile, result in self.prerequisite_evaluations
+                },
+                "rung_evaluations": {
+                    rung_id: result.to_dict()
+                    for rung_id, result in self.rung_evaluations
+                },
+                "binding_errors": list(self.binding_errors),
+                "kernel_outcome": self.kernel_outcome,
+            }
+        )
+        return payload
+
+
+def require_vstd5_entry(
+    result: DepthResult | EvidenceBoundDepthResult,
+) -> EvidenceBoundDepthResult:
     """Reject the current unbound candidate result at the VSTD-5 boundary.
 
-    VSTD-5 is draft, but its entry boundary is not: a structural candidate over
-    caller-supplied references is not normative VSTD-4 conformance. A future
-    evidence-binding implementation needs a distinct result type and gate; it
-    must not make this candidate stronger by setting another declaration field.
+    A structural candidate over caller-supplied references is not normative
+    VSTD-4 conformance. The evidence-binding implementation uses a distinct
+    result type and gate; it never makes this candidate stronger by setting
+    another declaration field.
     """
     if result.depth != MAX_DEPTH or result.witness is None:
         raise VSTD5EntryError(
@@ -190,10 +281,18 @@ def require_vstd5_entry(result: DepthResult) -> DepthResult:
         raise VSTD5EntryError(
             "VSTD-5 entry result carries a ceiling refutation or blocking rung"
         )
-    raise VSTD5EntryError(
-        "VSTD-5 requires established VSTD-4 conformance; this structural "
-        f"candidate has conformance_status {result.conformance_status}"
-    )
+    if not isinstance(result, EvidenceBoundDepthResult):
+        raise VSTD5EntryError(
+            "VSTD-5 requires established VSTD-4 conformance; this structural "
+            f"candidate has conformance_status {result.conformance_status}"
+        )
+    if not result.admits_vstd5:
+        detail = "; ".join(result.binding_errors) or "one or more mechanisms did not pass"
+        raise VSTD5EntryError(
+            "VSTD-5 requires established VSTD-4 conformance; evidence-bound "
+            f"result is {result.conformance_status}: {detail}"
+        )
+    return result
 
 
 # --------------------------------------------------------------------------
@@ -343,3 +442,252 @@ def vstd4_depth(
 
     refutation, blocked = _certify(1, evidence, claim_id, binding)
     return DepthResult(0, None, refutation, blocked)
+
+
+def establish_vstd4(
+    rung_evidence: Mapping[str, BoundProposition],
+    *,
+    prerequisite_evidence: Mapping[int, BoundProposition],
+    session: VerificationSession,
+    claim_id: str,
+    binding: ClaimBinding,
+) -> EvidenceBoundDepthResult:
+    """Rerun evidence mechanisms and establish VSTD-4 only if all pass.
+
+    Expected predicates are ``vstd.object_profile.1`` through
+    ``vstd.object_profile.3`` and ``vstd4.rung.4.1`` through
+    ``vstd4.rung.4.14``.  Every proposition must target ``claim_id``, expect the
+    Boolean value ``True``, and carry ``claim_binding_digest`` equal to the exact
+    :class:`ClaimBinding` used for the structural certificate.  Mismatches are
+    excluded rather than evaluated, so field naming or neighboring evidence
+    cannot earn a rung.
+    """
+
+    errors: list[str] = []
+    prerequisite_results: list[tuple[int, EvaluatedProposition]] = []
+    rung_results: list[tuple[str, EvaluatedProposition]] = []
+    exact_binding = binding.digest()
+
+    unknown_profiles = set(prerequisite_evidence) - {1, 2, 3}
+    if unknown_profiles:
+        errors.append(f"unknown prerequisite profiles: {sorted(unknown_profiles)}")
+    unknown_rungs = set(rung_evidence) - set(BY_ID)
+    if unknown_rungs:
+        errors.append(f"unknown VSTD-4 rungs: {sorted(unknown_rungs)}")
+
+    def binding_error(
+        proposition: BoundProposition, expected_predicate: str, label: str
+    ) -> Optional[str]:
+        if proposition.subject_id != claim_id:
+            return f"{label} targets {proposition.subject_id!r}, not {claim_id!r}"
+        if proposition.predicate != expected_predicate:
+            return (
+                f"{label} binds predicate {proposition.predicate!r}, not "
+                f"{expected_predicate!r}"
+            )
+        if proposition.expected is not True:
+            return f"{label} does not bind the required Boolean true proposition"
+        if proposition.parameters.get("claim_binding_digest") != exact_binding:
+            return f"{label} does not bind the exact VSTD-4 claim commitment"
+        return None
+
+    for profile in (1, 2, 3):
+        proposition = prerequisite_evidence.get(profile)
+        if proposition is None:
+            errors.append(f"missing VSTD-{profile} prerequisite evidence")
+            continue
+        issue = binding_error(proposition, f"vstd.object_profile.{profile}", f"VSTD-{profile}")
+        if issue:
+            errors.append(issue)
+            continue
+        prerequisite_results.append((profile, session.evaluate(proposition)))
+
+    passed_refs: dict[str, str] = {}
+    for rung in RUNGS:
+        proposition = rung_evidence.get(rung.id)
+        if proposition is None:
+            errors.append(f"missing rung {rung.id} evidence")
+            continue
+        issue = binding_error(proposition, f"vstd4.rung.{rung.id}", f"rung {rung.id}")
+        if issue:
+            errors.append(issue)
+            continue
+        result = session.evaluate(proposition)
+        rung_results.append((rung.id, result))
+        if result.outcome is MechanismOutcome.PASS:
+            passed_refs[rung.id] = "sha256:" + proposition.digest()
+
+    candidate = vstd4_depth(passed_refs, claim_id=claim_id, binding=binding)
+    kernel_outcome = KernelOutcome.REJECTED.value
+    if candidate.witness is not None:
+        kernel_outcome = kernel_check(candidate.witness, binding=binding).outcome.value
+
+    return EvidenceBoundDepthResult(
+        candidate,
+        tuple(prerequisite_results),
+        tuple(rung_results),
+        tuple(errors),
+        kernel_outcome,
+    )
+
+
+def build_evidence_bound_vstd4_receipt(
+    result: EvidenceBoundDepthResult,
+    *,
+    receipt_id: str,
+    claim_id: str,
+    binding: ClaimBinding,
+    prerequisite_evidence: Mapping[int, BoundProposition],
+    rung_evidence: Mapping[str, BoundProposition],
+    session: VerificationSession,
+    status: str = "VALID",
+) -> dict[str, object]:
+    """Serialize every input needed to rerun an evidence-bound VSTD-4 result."""
+    recomputed = establish_vstd4(
+        rung_evidence,
+        prerequisite_evidence=prerequisite_evidence,
+        session=session,
+        claim_id=claim_id,
+        binding=binding,
+    )
+    if canonical_digest(recomputed.to_dict()) != canonical_digest(result.to_dict()):
+        raise ValueError("VSTD-4 result does not match the supplied replay inputs")
+    all_refs = tuple(
+        sorted(
+            {
+                reference
+                for proposition in (*prerequisite_evidence.values(), *rung_evidence.values())
+                for reference in proposition.evidence_refs
+            }
+        )
+    )
+    return {
+        "schema_version": "VSTD-4",
+        "receipt_id": receipt_id,
+        "claim_id": claim_id,
+        "binding": binding.to_dict(),
+        "vstd4_depth": result.depth,
+        "depth_kind": "EVIDENCE_BOUND",
+        "conformance_status": result.conformance_status,
+        "rung_evidence": {
+            rung_id: "sha256:" + proposition.digest()
+            for rung_id, proposition in sorted(rung_evidence.items())
+        },
+        "witness": None if result.witness is None else result.witness.to_dict(),
+        "ceiling_refutation": (
+            None if result.refutation is None else result.refutation.to_dict()
+        ),
+        "blocking_rungs": list(result.blocking_rungs),
+        "status": status,
+        "kernel_outcome": result.kernel_outcome,
+        "evidence_bindings": {
+            "prerequisites": {
+                str(profile): proposition.to_dict()
+                for profile, proposition in sorted(prerequisite_evidence.items())
+            },
+            "rungs": {
+                rung_id: proposition.to_dict()
+                for rung_id, proposition in sorted(rung_evidence.items())
+            },
+        },
+        "evidence_payloads": session.evidence.export_base64(all_refs),
+    }
+
+
+def claim_binding_from_dict(data: Mapping[str, object]) -> ClaimBinding:
+    """Reconstruct the exact VSTD-4 claim binding carried by a receipt."""
+
+    coordinate = data["coordinate"]
+    verifier = data["verifier"]
+    bounds = data["bounds"]
+    if not isinstance(coordinate, Mapping) or not isinstance(verifier, Mapping) or not isinstance(bounds, Mapping):
+        raise ValueError("receipt ClaimBinding blocks must be objects")
+    return ClaimBinding(
+        str(data["claim"]),
+        ClaimCoordinate(
+            str(coordinate["subject"]),
+            str(coordinate["predicate"]),
+            {str(key): str(value) for key, value in dict(coordinate.get("parameters", {})).items()},
+        ),
+        str(data["policy_root"]),
+        str(data["evidence_root"]),
+        VerifierDescriptor(
+            str(verifier["specification_hash"]),
+            str(verifier["implementation_hash"]),
+            str(verifier["parser_hash"]),
+            str(verifier.get("certificate_format", "VSTD4-GDC-1")),
+            str(verifier.get("format_fragment", "UP,WIDTH-K,RES")),
+            tuple(str(item) for item in verifier.get("dependencies", ())),
+            bool(verifier.get("deterministic", True)),
+        ),
+        ResourceBounds(
+            int(bounds["verification_cost_bound"]),
+            int(bounds["memory_bound"]),
+            int(bounds["certificate_size_bound"]),
+        ),
+        str(data.get("prior_commitment", "")),
+    )
+
+
+def recheck_evidence_bound_vstd4_receipt(
+    receipt: Mapping[str, object],
+    *,
+    mechanisms: Sequence[VerificationMechanism],
+) -> EvidenceBoundDepthResult:
+    """Reconstruct evidence bytes and rerun an evidence-bound VSTD-4 receipt."""
+    if receipt.get("schema_version") != "VSTD-4":
+        raise ValueError("not a VSTD-4 receipt")
+    if receipt.get("depth_kind") != "EVIDENCE_BOUND":
+        raise ValueError("receipt is not evidence-bound")
+    payloads = receipt.get("evidence_payloads")
+    bindings = receipt.get("evidence_bindings")
+    binding_data = receipt.get("binding")
+    if not isinstance(payloads, Mapping) or not isinstance(bindings, Mapping) or not isinstance(binding_data, Mapping):
+        raise ValueError("evidence-bound receipt is missing replay inputs")
+    store = EvidenceStore()
+    store.import_base64({str(key): str(value) for key, value in payloads.items()})
+    session = VerificationSession(store)
+    for mechanism in mechanisms:
+        session.register(mechanism)
+    prerequisites_data = bindings.get("prerequisites")
+    rungs_data = bindings.get("rungs")
+    if not isinstance(prerequisites_data, Mapping) or not isinstance(rungs_data, Mapping):
+        raise ValueError("evidence binding maps are missing")
+    prerequisites = {
+        int(profile): BoundProposition.from_dict(proposition)
+        for profile, proposition in prerequisites_data.items()
+        if isinstance(proposition, Mapping)
+    }
+    rungs = {
+        str(rung_id): BoundProposition.from_dict(proposition)
+        for rung_id, proposition in rungs_data.items()
+        if isinstance(proposition, Mapping)
+    }
+    binding = claim_binding_from_dict(binding_data)
+    result = establish_vstd4(
+        rungs,
+        prerequisite_evidence=prerequisites,
+        session=session,
+        claim_id=str(receipt["claim_id"]),
+        binding=binding,
+    )
+    observed = result.to_dict()
+    comparisons = {
+        "vstd4_depth": observed["depth"],
+        "conformance_status": observed["conformance_status"],
+        "blocking_rungs": observed["blocking_rungs"],
+        "kernel_outcome": observed["kernel_outcome"],
+    }
+    for field, value in comparisons.items():
+        if receipt.get(field) != value:
+            raise ValueError(f"recomputed VSTD-4 field does not match receipt: {field}")
+    for field, certificate in (
+        ("witness", result.witness),
+        ("ceiling_refutation", result.refutation),
+    ):
+        expected = receipt.get(field)
+        expected_digest = None if expected is None else canonical_digest(expected)
+        observed_digest = None if certificate is None else certificate.digest()
+        if expected_digest != observed_digest:
+            raise ValueError(f"recomputed VSTD-4 {field} does not match receipt")
+    return result

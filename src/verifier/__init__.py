@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING, Any
 __version__ = "1.2.0"
 # This names the highest project-specification coordinate exposed by the package;
 # it is not a conformance claim. Keep the adjacent status when presenting it.
-__standard__ = "VSTD-4"
-__standard_status__ = "CANDIDATE; CONFORMANCE NOT_ESTABLISHED"
+__standard__ = "VSTD-5"
+__standard_status__ = "PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM"
 
 _LAZY_EXPORTS = {
     "ArtifactControlError": ("verifier.artifact_control", "ArtifactControlError"),
@@ -41,7 +41,53 @@ _LAZY_EXPORTS = {
         "certificate_from_canonical_bytes",
     ),
     "vstd4_depth": ("verifier.core.depth", "vstd4_depth"),
+    "establish_vstd4": ("verifier.core.depth", "establish_vstd4"),
+    "build_evidence_bound_vstd4_receipt": (
+        "verifier.core.depth",
+        "build_evidence_bound_vstd4_receipt",
+    ),
+    "claim_binding_from_dict": ("verifier.core.depth", "claim_binding_from_dict"),
+    "recheck_evidence_bound_vstd4_receipt": (
+        "verifier.core.depth",
+        "recheck_evidence_bound_vstd4_receipt",
+    ),
     "require_vstd5_entry": ("verifier.core.depth", "require_vstd5_entry"),
+    "BoundProposition": ("verifier.core.evidence", "BoundProposition"),
+    "EvidenceBounds": ("verifier.core.evidence", "EvidenceBounds"),
+    "EvidenceStore": ("verifier.core.evidence", "EvidenceStore"),
+    "EvidenceBindingError": ("verifier.core.evidence", "EvidenceBindingError"),
+    "MechanismDecision": ("verifier.core.evidence", "MechanismDecision"),
+    "MechanismOutcome": ("verifier.core.evidence", "MechanismOutcome"),
+    "VerificationSession": ("verifier.core.evidence", "VerificationSession"),
+    "WitnessBundle": ("verifier.core.witness", "WitnessBundle"),
+    "assess_witness_corroboration": (
+        "verifier.core.witness",
+        "assess_witness_corroboration",
+    ),
+    "build_vstd5_receipt": ("verifier.core.witness", "build_vstd5_receipt"),
+    "recheck_vstd5_receipt": ("verifier.core.witness", "recheck_vstd5_receipt"),
+    "AssuranceLedger": ("verifier.data.assurance", "AssuranceLedger"),
+    "recheck_assurance_log": (
+        "verifier.data.assurance",
+        "recheck_assurance_log",
+    ),
+    "ProvenanceHypergraph": ("verifier.data.models", "ProvenanceHypergraph"),
+    "establish_graph_level": (
+        "verifier.data.graph_level",
+        "establish_graph_level",
+    ),
+    "build_evidence_bound_graph_level_record": (
+        "verifier.data.graph_level",
+        "build_evidence_bound_graph_level_record",
+    ),
+    "graph_collection_binding_digest": (
+        "verifier.data.graph_level",
+        "graph_collection_binding_digest",
+    ),
+    "recheck_evidence_bound_graph_level_record": (
+        "verifier.data.graph_level",
+        "recheck_evidence_bound_graph_level_record",
+    ),
 }
 
 # Supported names remain in _LAZY_EXPORTS while deprecated. Each entry records the
@@ -90,9 +136,39 @@ if TYPE_CHECKING:
         certificate_from_canonical_bytes as certificate_from_canonical_bytes,
     )
     from verifier.core.depth import (
+        build_evidence_bound_vstd4_receipt as build_evidence_bound_vstd4_receipt,
+        claim_binding_from_dict as claim_binding_from_dict,
+        establish_vstd4 as establish_vstd4,
+        recheck_evidence_bound_vstd4_receipt as recheck_evidence_bound_vstd4_receipt,
         require_vstd5_entry as require_vstd5_entry,
         vstd4_depth as vstd4_depth,
     )
+    from verifier.core.evidence import (
+        BoundProposition as BoundProposition,
+        EvidenceBindingError as EvidenceBindingError,
+        EvidenceBounds as EvidenceBounds,
+        EvidenceStore as EvidenceStore,
+        MechanismDecision as MechanismDecision,
+        MechanismOutcome as MechanismOutcome,
+        VerificationSession as VerificationSession,
+    )
+    from verifier.core.witness import (
+        WitnessBundle as WitnessBundle,
+        assess_witness_corroboration as assess_witness_corroboration,
+        build_vstd5_receipt as build_vstd5_receipt,
+        recheck_vstd5_receipt as recheck_vstd5_receipt,
+    )
+    from verifier.data.assurance import (
+        AssuranceLedger as AssuranceLedger,
+        recheck_assurance_log as recheck_assurance_log,
+    )
+    from verifier.data.graph_level import (
+        build_evidence_bound_graph_level_record as build_evidence_bound_graph_level_record,
+        establish_graph_level as establish_graph_level,
+        graph_collection_binding_digest as graph_collection_binding_digest,
+        recheck_evidence_bound_graph_level_record as recheck_evidence_bound_graph_level_record,
+    )
+    from verifier.data.models import ProvenanceHypergraph as ProvenanceHypergraph
     from verifier.core.receipt import (
         VstdReceipt as VstdReceipt,
         compute_canonical_digest as compute_canonical_digest,

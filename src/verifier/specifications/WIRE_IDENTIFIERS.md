@@ -3,7 +3,7 @@
 > **Acronyms:** command-line interface (CLI).
 
 **Status:** normative for current serialized-receipt dispatch
-**Date:** 2026-08-27
+**Date:** 2026-08-29
 
 A **serialized receipt identifier** is the value written into a receipt to select its exact reader and schema, principally `schema_version` plus any required profile discriminator. Standards literature often calls this a *wire identifier* or part of a *wire format*; here it means the stored JavaScript Object Notation (JSON) contract, not a network protocol.
 
@@ -26,7 +26,7 @@ closed:
 | `VSTD-2.md` | `schema_version = "VSTD-2"` |
 | `VSTD-3.md` | `schema_version = "VSTD-3.0"` |
 | `VSTD-4.md` | `schema_version = "VSTD-4"` |
-| `VSTD-5.md` | `schema_version = "VSTD-5-DRAFT"` |
+| `VSTD-5.md` | `schema_version = "VSTD-5"` |
 | `VSTD-Graph-1.md` | `schema_version = "VSTD-DATA-0.1"` |
 
 VSTD-1 has two current receipt profiles:
@@ -52,7 +52,7 @@ fields participate in the canonical digest.
 are serialized receipt values. `POST_VERIFIED`, `GEOMETRY_INSPECTABLE`, and `COMPLETELY_VERIFIED`
 are descriptive terms rather than receipt values.
 
-## 2. Stored artifact-control identifiers
+## 2. Stored non-receipt mechanism identifiers
 
 Artifact-control mechanism objects are stored JSON contracts, not network traffic, VSTD
 receipts, or new numbered profiles. They dispatch independently by:
@@ -69,6 +69,13 @@ combined schema is published as
 [`artifact-control-1.schema.json`](https://timelordraps.github.io/verifier/schemas/artifact-control-1.schema.json).
 These identifiers do not imply a network protocol or VSTD conformance result.
 
+The Graph assurance event log dispatches separately as
+`schema_version = "VSTD-GRAPH-ASSURANCE-1"`. Its governing behavior is
+[`LADDER.md` section 1.1](LADDER.md#11-artifact-first-causal-provenance-orientation),
+and its strict schema is
+[`vstd-graph-assurance-1.schema.json`](https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json).
+It is not an artifact-control object or a numbered-profile receipt.
+
 ## 3. Import package and distribution
 
 The distribution is `verifier-standard`, the import package is `verifier`, and
@@ -84,5 +91,6 @@ obsolete standard identifiers into current receipt dispatch.
 ## 4. Release versioning
 
 A repository release number does not claim conformance to a same-numbered VSTD profile.
-VSTD-5 remains draft until its required witness mechanism and evidence binding are
-implemented.
+VSTD-5's reference mechanism is implemented. This project-specification status does not
+claim an external witness, independent implementation, standards-body consensus,
+accreditation, or interoperability deployment.
