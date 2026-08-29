@@ -1,5 +1,9 @@
 # Security policy
 
+> **Acronyms:** application programming interface (API); hash-based message authentication code (HMAC);
+> Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
+> Verifier Standard (VSTD).
+
 ## Supported release
 
 Only the latest tagged public release is supported. Historical receipts and standards
@@ -13,10 +17,9 @@ GitHub repository to open a private vulnerability report with the maintainer:
 
 `https://github.com/TimeLordRaps/verifier/security/advisories/new`
 
-GitHub private vulnerability reporting was enabled and verified through the repository
-API on 2026-08-21. If GitHub does not show the private-reporting form, do not disclose
-sensitive details in a public issue; report only the non-sensitive fact that the private
-route is unavailable.
+GitHub private vulnerability reporting is the intended sensitive-reporting route. If
+GitHub does not show the private-reporting form, do not disclose sensitive details in a
+public issue; report only the non-sensitive fact that the private route is unavailable.
 
 ## Scope
 
@@ -37,3 +40,18 @@ failure, or accidental credential/raw-evidence disclosure. The HMAC emulator and
 anchor keys are explicitly test-only and are not production cryptography. Vendor or
 cloud product vulnerabilities should also be reported to the affected vendor through
 its own process; VSTD does not authorize testing third-party infrastructure.
+
+## Artifact-control boundary
+
+`vstd artifact freeze` rejects symbolic links and special filesystem objects, preserves
+regular-file bytes, and makes the payload tree read-only. That guard is observable state,
+not a sandbox or a defense against privileged writes. Keep an independently controlled
+copy when durable preservation matters.
+
+Version 1 seals are readable Ed25519 signatures, not encryption. Protect private keys
+outside artifact bundles and never commit a production private key. Because each bundle
+carries its own public key, self-verification alone cannot detect substitution of the
+entire bundle and key; relying parties should bind an expected artifact identifier,
+expected key identifier, or independently verified external manifest/log coordinate.
+SHA-256 and SHA3-256 are both recomputed over preserved bytes so later algorithm concerns
+can be addressed by additive re-anchoring rather than rewriting historical artifacts.

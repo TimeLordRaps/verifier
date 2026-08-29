@@ -5,13 +5,13 @@ labels: ["specification", "needs-triage"]
 body:
   - type: markdown
     attributes:
-      value: Do not include secrets or vulnerability details. Use private vulnerability reporting for security-sensitive findings.
+      value: Report ambiguity in the Verifier Standard (VSTD) without including secrets or vulnerability details. Use private vulnerability reporting for security-sensitive findings.
   - type: input
     id: coordinate
     attributes:
       label: Exact coordinate
-      description: File, section, schema field, layer, and release or commit.
-      placeholder: standard/VSTD-4.md section 2.10 at v1.0.1
+      description: File, section, schema field, numbered profile or closure coordinate, and release or commit.
+      placeholder: standard/VSTD-4.md section X at release or commit Y
     validations:
       required: true
   - type: textarea

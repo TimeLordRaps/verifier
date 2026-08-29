@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
-  <title id="title">VSTD two-axis verification overview</title>
-  <desc id="desc">Five object-mechanics layers and five collection-dynamics layers. Every layer requires separate evidence; higher layers never substitute for lower layers.</desc>
+  <title id="title">Verifier Standard (VSTD) two-axis verification overview</title>
+  <desc id="desc">Five cumulative object profiles and five cumulative Graph profiles over distinct closure coordinates. Every coordinate requires separate evidence; later profiles never substitute for prerequisites.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#071724"/>
@@ -28,7 +28,7 @@
     <text x="167" y="68" fill="#a8bac4" font-size="25" font-weight="450">portable · bounded · refutable</text>
     <rect x="872" y="36" width="266" height="42" rx="21" fill="#102f3d" stroke="#385361"/>
     <circle cx="901" cy="57" r="7" fill="#f2a93b"/>
-    <text x="919" y="64" fill="#d7e4e8" font-size="16" font-weight="650">FOUNDER-MAINTAINED ALPHA</text>
+    <text x="919" y="63" fill="#d7e4e8" font-size="14" font-weight="650">ALPHA PROJECT SPECIFICATION</text>
 
     <text x="62" y="128" fill="#66dec8" font-size="17" font-weight="700" letter-spacing="1.6">OBJECT MECHANICS</text>
     <text x="622" y="128" fill="#8fc4ff" font-size="17" font-weight="700" letter-spacing="1.6">COLLECTION DYNAMICS</text>
@@ -67,14 +67,14 @@
       <text x="137" y="508">Witness corroboration</text><text x="697" y="508">Corroborated verification network</text>
     </g>
     <g fill="#91a9b4" font-size="13" font-weight="600" text-anchor="end">
-      <text data-layer="vstd-1" x="558" y="188">REF. SUBSET</text><text data-layer="graph-1" x="1118" y="188">REF. SUBSET</text>
-      <text data-layer="vstd-2" x="558" y="268" fill="#f2bf68">EXPERIMENTAL</text><text data-layer="graph-2" x="1118" y="268">IMPLEMENTED</text>
-      <text data-layer="vstd-3" x="558" y="348">IMPLEMENTED</text><text data-layer="graph-3" x="1118" y="348">IMPLEMENTED</text>
-      <text data-layer="vstd-4" x="558" y="428">IMPLEMENTED</text><text data-layer="graph-4" x="1118" y="428">IMPLEMENTED</text>
-      <text data-layer="vstd-5" x="558" y="508" fill="#f2bf68">DRAFT</text><text data-layer="graph-5" x="1118" y="508" fill="#f2bf68">DRAFT</text>
+      <text data-profile="vstd-1" x="558" y="188">REF. SUBSET</text><text data-profile="graph-1" x="1118" y="188">REF. SUBSET</text>
+      <text data-profile="vstd-2" x="558" y="268" fill="#f2bf68">EXPERIMENTAL</text><text data-profile="graph-2" x="1118" y="268">CANDIDATE</text>
+      <text data-profile="vstd-3" x="558" y="348">IMPLEMENTED</text><text data-profile="graph-3" x="1118" y="348">CANDIDATE</text>
+      <text data-profile="vstd-4" x="558" y="428">CANDIDATE</text><text data-profile="graph-4" x="1118" y="428">CANDIDATE</text>
+      <text data-profile="vstd-5" x="558" y="508" fill="#f2bf68">DRAFT</text><text data-profile="graph-5" x="1118" y="508" fill="#f2bf68">DRAFT</text>
     </g>
 
     <rect x="242" y="562" width="716" height="40" rx="20" fill="#0b1b27" stroke="#38515e"/>
-    <text x="600" y="588" text-anchor="middle" fill="#d7e6e9" font-size="17" font-weight="600">Higher depth = more checked questions · never evidence substitution</text>
+    <text x="600" y="588" text-anchor="middle" fill="#d7e6e9" font-size="17" font-weight="600">Cumulative profiles = more checked coordinates · never evidence substitution</text>
   </g>
 </svg>

@@ -5,7 +5,7 @@ labels: ["implementation", "interoperability"]
 body:
   - type: markdown
     attributes:
-      value: An implementation report is evidence of an attempt, not endorsement, adoption, certification, or conformance unless the stated tests establish that bounded result.
+      value: An implementation report for the Verifier Standard (VSTD) is evidence of an attempt, not endorsement, adoption, certification, or conformance unless the stated tests establish that bounded result.
   - type: input
     id: implementation
     attributes:
@@ -17,7 +17,7 @@ body:
     id: coordinate
     attributes:
       label: VSTD coordinate
-      description: Release, layer, wire identifier, and supported profile.
+      description: Release, numbered profile or closure coordinate, serialized receipt identifier, and supported receipt or application profile.
     validations:
       required: true
   - type: textarea
