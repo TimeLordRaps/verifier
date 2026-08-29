@@ -35,6 +35,12 @@ The matching supported portable-record exports are
 Compatibility `vstd4_depth` and `graph_level`-style candidate results do not become
 conformance results merely because the evidence-bound APIs also exist.
 
+`assess_witness_corroboration` accepts incomplete inputs so it can return a typed diagnostic
+result. The supported `build_vstd5_receipt` boundary is stricter: it either raises or returns
+an object satisfying the published receipt shape with all verdict-material evidence bytes.
+`recheck_vstd5_receipt` applies the same zero-dependency structural gate before replay and
+does not accept a schema-invalid assessment object as a portable receipt.
+
 Direct imports from `verifier.core`, `verifier.data`, `verifier.hardware`, other
 subpackages, or underscore-prefixed names are internal unless another published policy
 explicitly names them. They may change in a minor release. That freedom does not override

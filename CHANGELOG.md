@@ -107,7 +107,10 @@
   fails closed on any identity or separation defect without parsing error-message text.
   Witness identities and assertions serialize separately and in order, so duplicate,
   orphan, missing, and reused-identity error inputs remain replayable instead of collapsing
-  during receipt construction. This does not
+  during receipt construction. Keep permissive malformed-input assessment distinct from
+  portable receipt admission: the builder now raises unless the strict schema and complete
+  verdict-material evidence coverage hold, and the rechecker applies the same zero-dependency
+  gate before replay. This does not
   claim a real external witness or independent implementation; a positive observation with
   unresolved independence is overall `UNKNOWN`.
 - Add evidence-bound Graph profile computation and replay. The compatibility `graph_level`
@@ -125,6 +128,10 @@
   obligation and is not BLAME in the opposite direction. Localization binds one exact passing
   RUST event and descendant-deviation proposition. Status-conflict resolution projects the
   selected state into current admissibility; arbitrary resolved predicates remain blocked.
+  The current runtime has no general non-status admissibility-effect mechanism. RUST follows
+  historically recorded contributing ancestry even when current lifecycle state excludes a
+  route from TRUST. Artifact and transformation identifiers are globally disjoint so an
+  assurance `subject_id` cannot ambiguously name both.
   Add complete offline event replay,
   current TRUST filtering, and deduplicated descendant reassessment discovery.
 

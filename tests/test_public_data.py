@@ -242,6 +242,40 @@ def test_duplicate_graph_identifier_cannot_replace_recorded_evidence() -> None:
     assert graph.artifacts["artifact:duplicate"] is original
 
 
+def test_artifact_and_transformation_identifiers_are_globally_disjoint() -> None:
+    graph = ProvenanceHypergraph()
+    graph.add_artifact(
+        ArtifactNode(
+            artifact_id="shared:id",
+            label="artifact",
+            artifact_type=ArtifactType.RAW_SOURCE_FILE,
+            content_digest="a" * 64,
+        )
+    )
+    collision = TransformationHyperedge(
+        transformation_id="shared:id",
+        label="transformation",
+        transformation_type=TransformationType.EVALUATION,
+        inputs=(HyperedgePort("shared:id", "INPUT"),),
+        outputs=(HyperedgePort("shared:id", "OUTPUT"),),
+        software_provenance={},
+        parameters={},
+        execution_environment={},
+    )
+    with pytest.raises(ValueError, match="identifiers must be disjoint"):
+        graph.add_transformation(collision)
+
+    reverse = ProvenanceHypergraph()
+    reverse.add_transformation(collision)
+    with pytest.raises(ValueError, match="identifiers must be disjoint"):
+        reverse.add_artifact(graph.artifacts["shared:id"])
+
+    graph.transformations[collision.transformation_id] = collision
+    assert graph.validate_structure()[0] == (
+        "artifact and transformation identifiers must be disjoint: shared:id"
+    )
+
+
 def test_completeness_rejects_non_hex_digest() -> None:
     graph = ProvenanceHypergraph()
     graph.add_artifact(

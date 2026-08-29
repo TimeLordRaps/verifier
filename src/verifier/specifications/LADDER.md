@@ -176,9 +176,10 @@ and transformation remains admissible and free of an admissibility-blocking conf
 status-conflict resolution projects its selected state into the current view: `VALID` or
 `COMPLETED` may restore the affected route, while `REVOKED`, `FAILED`, or another
 inadmissible state cannot. Resolving an arbitrary predicate selects a retained value but
-does not establish its admissibility effect, so the route remains blocked. Alternate or
-duplicate paths remain distinct recorded routes; their count supplies no added strength
-or witness independence.
+does not establish its admissibility effect, so the route remains blocked. The current
+reference runtime implements no general non-status admissibility-effect mechanism.
+Alternate or duplicate paths remain distinct recorded routes; their count supplies no
+added strength or witness independence.
 
 **ROT** is typed, time-indexed degradation of the current admissibility of recorded TRUST.
 It requires exact lifecycle or dependency evidence, such as expiry under a declared
@@ -190,10 +191,12 @@ requires its named policy or mechanism.
 
 **RUST** is the inverse-TRUST diagnostic mechanic: a typed trace created by an observed
 descendant deviation from a declared expectation. It moves child-to-parent only through
-recorded admissible creation, input, or transformation paths. The inverse is directional
-and diagnostic, not arithmetic: TRUST and RUST never cancel. Distinct comparable
-backtraces may concentrate on a shared ancestor and prioritize it for falsification or
-diagnostic examination. Transferred RUST establishes ancestral reachability, not direct
+historically recorded contributing creation, input, or transformation paths. Current
+revocation, challenge, staleness, or conflict can remove a route from current TRUST without
+erasing it from historical diagnostic ancestry. The inverse is directional and diagnostic,
+not arithmetic: TRUST and RUST never cancel. Distinct comparable backtraces may concentrate
+on a shared ancestor and prioritize it for falsification or diagnostic examination.
+Transferred RUST establishes ancestral reachability, not current admissibility, direct
 observation, falsehood, or causal responsibility; localization requires additional
 intervention, ablation, independently bound execution evidence, or an equivalent declared
 mechanism.

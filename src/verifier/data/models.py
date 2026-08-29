@@ -268,9 +268,19 @@ class ProvenanceHypergraph:
         return identifier
 
     def add_artifact(self, artifact: ArtifactNode) -> str:
+        if artifact.artifact_id in self.transformations:
+            raise ValueError(
+                "artifact and transformation identifiers must be disjoint: "
+                f"{artifact.artifact_id}"
+            )
         return self._add_unique(self.artifacts, artifact.artifact_id, artifact)
 
     def add_transformation(self, transform: TransformationHyperedge) -> str:
+        if transform.transformation_id in self.artifacts:
+            raise ValueError(
+                "artifact and transformation identifiers must be disjoint: "
+                f"{transform.transformation_id}"
+            )
         return self._add_unique(
             self.transformations, transform.transformation_id, transform
         )
@@ -352,6 +362,11 @@ class ProvenanceHypergraph:
         captures every real-world input or transformation.
         """
         errors: list[str] = []
+        for identifier in sorted(set(self.artifacts) & set(self.transformations)):
+            errors.append(
+                "artifact and transformation identifiers must be disjoint: "
+                f"{identifier}"
+            )
         digest_pattern = re.compile(r"^[0-9a-fA-F]{64}$")
 
         for artifact_id, artifact in sorted(self.artifacts.items()):

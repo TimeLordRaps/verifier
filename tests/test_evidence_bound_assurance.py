@@ -376,6 +376,23 @@ def _witness_components(
     return witness, assertion, corroboration
 
 
+def _vstd5_schema_validator() -> Draft202012Validator:
+    root = Path(__file__).resolve().parents[1]
+    schema = json.loads((root / "receipts/schema/vstd5_receipt.json").read_text())
+    vstd4_schema = json.loads(
+        (root / "receipts/schema/vstd4_receipt.json").read_text()
+    )
+    assurance_schema = json.loads(
+        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+    )
+    registry = Registry().with_resource(
+        vstd4_schema["$id"], Resource.from_contents(vstd4_schema)
+    ).with_resource(
+        assurance_schema["$id"], Resource.from_contents(assurance_schema)
+    )
+    return Draft202012Validator(schema, registry=registry)
+
+
 def test_serialized_pass_is_not_an_input_to_evidence_evaluation() -> None:
     assert MechanismOutcome.__doc__ == "Enumeration of the exported result values."
     store, session = _session()
@@ -1627,24 +1644,14 @@ def test_vstd5_requires_every_independence_seam_and_preserves_disagreement() -> 
         receipt_id="VFY-5-EVIDENCE-TEST",
         session=session,
     )
-    root = Path(__file__).resolve().parents[1]
-    schema = json.loads((root / "receipts/schema/vstd5_receipt.json").read_text())
-    vstd4_schema = json.loads((root / "receipts/schema/vstd4_receipt.json").read_text())
-    assurance_schema = json.loads(
-        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
-    )
-    registry = Registry()
-    registry = registry.with_resource(vstd4_schema["$id"], Resource.from_contents(vstd4_schema))
-    registry = registry.with_resource(
-        assurance_schema["$id"], Resource.from_contents(assurance_schema)
-    )
-    Draft202012Validator(schema, registry=registry).validate(receipt)
+    validator = _vstd5_schema_validator()
+    validator.validate(receipt)
     false_positive = copy.deepcopy(receipt)
     false_positive["result"]["status"] = "CORROBORATED"
     false_positive["result"]["conformance_status"] = "NOT_ESTABLISHED"
     false_positive["result"]["computed_independence"] = "UNKNOWN"
     assert list(
-        Draft202012Validator(schema, registry=registry).iter_errors(false_positive)
+        validator.iter_errors(false_positive)
     )
     false_independence = copy.deepcopy(receipt)
     false_independence["result"]["conformance_status"] = "NOT_ESTABLISHED"
@@ -1655,7 +1662,7 @@ def test_vstd5_requires_every_independence_seam_and_preserves_disagreement() -> 
         false_independence["result"]["identity_errors"]
     )
     assert list(
-        Draft202012Validator(schema, registry=registry).iter_errors(false_independence)
+        validator.iter_errors(false_independence)
     )
     rechecked = recheck_vstd5_receipt(
         entry, receipt, mechanisms=(ExactFactMechanism(),)
@@ -1862,22 +1869,7 @@ def test_vstd5_receipts_preserve_noncanonical_replay_inputs() -> None:
             (first[2], second[2]),
         ),
     }
-    root = Path(__file__).resolve().parents[1]
-    schema = json.loads((root / "receipts/schema/vstd5_receipt.json").read_text())
-    vstd4_schema = json.loads(
-        (root / "receipts/schema/vstd4_receipt.json").read_text()
-    )
-    assurance_schema = json.loads(
-        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
-    )
-    registry = Registry()
-    registry = registry.with_resource(
-        vstd4_schema["$id"], Resource.from_contents(vstd4_schema)
-    )
-    registry = registry.with_resource(
-        assurance_schema["$id"], Resource.from_contents(assurance_schema)
-    )
-    validator = Draft202012Validator(schema, registry=registry)
+    validator = _vstd5_schema_validator()
 
     for name, bundle in bundles.items():
         result = assess_witness_corroboration(entry, bundle, session=session)
@@ -1897,3 +1889,115 @@ def test_vstd5_receipts_preserve_noncanonical_replay_inputs() -> None:
             entry, receipt, mechanisms=(ExactFactMechanism(),)
         )
         assert rechecked.to_dict() == result.to_dict(), name
+
+
+def test_vstd5_builder_returns_only_strict_replayable_receipts() -> None:
+    store, session = _session()
+    entry = _established_vstd4(store, session)
+    binding_digest = entry.witness.header.binding  # type: ignore[union-attr]
+    witness, assertion, corroboration = _witness_components(
+        store, entry, "witness:one"
+    )
+    valid = WitnessBundle(
+        "claim:fixture",
+        "declarant:one",
+        binding_digest,
+        (witness,),
+        (assertion,),
+        (corroboration,),
+    )
+    result = assess_witness_corroboration(entry, valid, session=session)
+    assert result.status is WitnessResultStatus.CORROBORATED
+    receipt = build_vstd5_receipt(
+        entry, valid, result, receipt_id="VFY-5-STRICT", session=session
+    )
+    _vstd5_schema_validator().validate(receipt)
+    assert recheck_vstd5_receipt(
+        entry, receipt, mechanisms=(ExactFactMechanism(),)
+    ).to_dict() == result.to_dict()
+
+    invalid_bundles = {
+        "no-witnesses": WitnessBundle(
+            "claim:fixture", "declarant:one", binding_digest, (), (), ()
+        ),
+        "no-corroborations": replace(valid, corroborations=()),
+        "empty-claim": replace(valid, claim_id=""),
+        "empty-declarant": replace(valid, declarant_id=""),
+        "empty-witness": replace(
+            valid, witnesses=(replace(witness, witness_id=""),)
+        ),
+    }
+    for name, bundle in invalid_bundles.items():
+        result = assess_witness_corroboration(entry, bundle, session=session)
+        with pytest.raises(ValueError, match="invalid VSTD-5 receipt shape"):
+            build_vstd5_receipt(
+                entry,
+                bundle,
+                result,
+                receipt_id=f"VFY-5-{name.upper()}",
+                session=session,
+            )
+
+    for receipt_id in ("", "invalid id"):
+        with pytest.raises(ValueError, match="receipt_id"):
+            build_vstd5_receipt(
+                entry,
+                valid,
+                assess_witness_corroboration(entry, valid, session=session),
+                receipt_id=receipt_id,
+                session=session,
+            )
+
+
+def test_vstd5_rechecker_refuses_external_shape_and_payload_defects() -> None:
+    store, session = _session()
+    entry = _established_vstd4(store, session)
+    binding_digest = entry.witness.header.binding  # type: ignore[union-attr]
+    witness, assertion, corroboration = _witness_components(
+        store, entry, "witness:one"
+    )
+    bundle = WitnessBundle(
+        "claim:fixture",
+        "declarant:one",
+        binding_digest,
+        (witness,),
+        (assertion,),
+        (corroboration,),
+    )
+    receipt = build_vstd5_receipt(
+        entry,
+        bundle,
+        assess_witness_corroboration(entry, bundle, session=session),
+        receipt_id="VFY-5-EXTERNAL",
+        session=session,
+    )
+    malformed = []
+    for coordinate, value in (
+        (("receipt_id",), "invalid id"),
+        (("bundle", "claim_id"), ""),
+        (("bundle", "witnesses"), []),
+        (("bundle", "corroborations"), []),
+        (("bundle", "witnesses", 0, "witness_id"), ""),
+    ):
+        candidate = copy.deepcopy(receipt)
+        target = candidate
+        for part in coordinate[:-1]:
+            target = target[part]
+        target[coordinate[-1]] = value
+        malformed.append(candidate)
+    extra = copy.deepcopy(receipt)
+    extra["result"]["unexpected"] = True
+    malformed.append(extra)
+
+    validator = _vstd5_schema_validator()
+    for candidate in malformed:
+        assert list(validator.iter_errors(candidate))
+        with pytest.raises(ValueError, match="invalid VSTD-5 receipt shape"):
+            recheck_vstd5_receipt(entry, candidate, mechanisms=())
+
+    missing_payload = copy.deepcopy(receipt)
+    missing_payload["evidence_payloads"].pop(
+        next(iter(missing_payload["evidence_payloads"]))
+    )
+    with pytest.raises(ValueError, match="missing verdict-material bytes"):
+        recheck_vstd5_receipt(entry, missing_payload, mechanisms=())

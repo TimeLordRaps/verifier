@@ -45,9 +45,15 @@ The reference receipt contains:
 
 Schema validity establishes only shape. `recheck_vstd5_receipt` imports and hashes
 the embedded bytes, checks the admitted VSTD-4 result digest, reruns every registered
-mechanism, and compares the complete derived result. Every receipt emitted by
-`build_vstd5_receipt`, including `UNKNOWN` / `NOT_ESTABLISHED` error receipts, MUST
-preserve the exact error-producing input and recheck identically.
+mechanism, and compares the complete derived result. Assessment and receipt construction
+are separate boundaries: `assess_witness_corroboration` may diagnose an arbitrary malformed
+or incomplete bundle as `UNKNOWN` / `NOT_ESTABLISHED`, but that assessment object is not
+thereby a VSTD-5 receipt. `build_vstd5_receipt` MUST fail before returning unless the object
+inhabits the strict receipt schema, contains at least one witness and corroboration, and
+embeds every verdict-material evidence byte. Every receipt it does emit, including a
+representable `UNKNOWN` / `NOT_ESTABLISHED` error receipt, MUST preserve the exact
+error-producing input and recheck identically. `recheck_vstd5_receipt` MUST enforce that
+strict shape and evidence coverage before mechanism replay.
 
 ---
 
@@ -111,10 +117,13 @@ another corroboration identifier is rejected rather than counted twice.
 7. bounded result emission with all errors and limitations retained.
 
 `build_vstd5_receipt` serializes witness identities and independence assertions as
-separate ordered arrays so duplicate and orphan assertions survive round trip.
-`recheck_vstd5_receipt` reruns them. Neither function turns an identity coordinate
-into trust or establishes a fact outside the propositions checked by its registered
-mechanisms.
+separate ordered arrays so representable duplicate, orphan, reused-identity, and missing
+assertion failures survive round trip. It refuses empty witness/corroboration collections,
+empty required identifiers, invalid receipt identifiers, malformed nested records, and
+missing verdict-material bytes rather than naming them receipts. `recheck_vstd5_receipt`
+applies the same zero-dependency structural gate before replay. Neither function turns an
+identity coordinate into trust or establishes a fact outside the propositions checked by
+its registered mechanisms.
 
 ---
 

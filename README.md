@@ -175,9 +175,10 @@ development, with each event binding one exact transformation, its inputs and ou
 historical Graph digest, and any prerequisite TRUST events;
 ROT is typed, time-indexed degradation of current admissibility without rewriting
 historical evidence; RUST is the inverse-TRUST diagnostic mechanic moving backward from a
-descendant deviation toward recorded ancestor candidates. This memetic propagation does
-not by itself prove guilt, responsibility, falsehood, causal localization, or automatic
-ancestor falsification. The reference runtime requires a separate passing localization
+descendant deviation through historically recorded contributing ancestry. Current
+revocation or conflict can remove a route from current TRUST without erasing that diagnostic
+history. This memetic propagation does not by itself prove guilt, responsibility, falsehood,
+causal localization, or automatic ancestor falsification. The reference runtime requires a separate passing localization
 mechanism bound to one exact passing RUST event and descendant-deviation proposition before
 it can emit a bounded
 `BLAME` or `GUILT`. BLAME establishes bounded responsibility or material contribution;
@@ -190,7 +191,9 @@ embedded evidence bytes, event hash chain, and derived current-view digest.
 `recheck_assurance_log` rehashes the evidence, reruns each exact registered mechanism, and
 rejects any event or current view that does not reproduce. Conflict adjudication and current
 admissibility are separate: a selected status affects the current artifact or transformation
-state, while resolving an arbitrary predicate cannot silently restore TRUST.
+state, while resolving an arbitrary predicate cannot silently restore TRUST. No general
+non-status admissibility-effect mechanism is currently implemented, so that route remains
+blocked.
 
 This is VSTD's **ZIZK artifact-first TRUST architecture**, not an optional research
 profile. Zero identity means zero identity-derived verdict weight, not anonymity or the
@@ -299,7 +302,8 @@ reference](https://timelordraps.github.io/verifier/reference.html).
 - [VSTD-1 receipts](standard/VSTD-1.md) carry claim coordinates, evidence,
   checker results, trust boundaries, and reproducibility information.
 - [VSTD-Graph-1](standard/VSTD-Graph-1.md) records content-addressed artifacts,
-  many-to-many transformations, conflicts, and bounded downstream reachability.
+  many-to-many transformations, globally disjoint artifact/transformation identifiers,
+  conflicts, and bounded downstream reachability.
 - [`VSTD4-GDC-1`](standard/VSTD-4.md) binds a decision certificate to a formula,
   grounding, claim coordinate, verifier descriptor, roots, and resource bounds.
 

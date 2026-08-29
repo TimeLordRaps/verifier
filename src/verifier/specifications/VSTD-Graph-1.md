@@ -76,6 +76,9 @@ outputs. The edge records ancestry; it does not by itself establish causal influ
   bounded CNF with its minimal DPLL implementation; general SMT is not implemented.
 
 ### 2.6 Conflict Records ($\mathcal{X}$)
+- Artifact and transformation identifiers share one globally disjoint subject namespace.
+  An identifier collision is structurally invalid because an untyped `subject_id` must name
+  exactly one kind of Graph object.
 - `conflict_id`, `subject_id`, and `predicate` identify the disputed coordinate.
 - `competing_values` retains at least two incompatible values.
 - `evidence_refs` retains at least two evidence records rather than selecting a winner.
@@ -86,6 +89,8 @@ conflict-resolution transition and remains immutable. The separate non-receipt
 `VSTD-GRAPH-ASSURANCE-1` overlay can record additive, mechanism-checked resolution while
 retaining the competing evidence. A selected status is projected into that overlay's current
 view; resolving any other predicate does not by itself establish a clean admissibility effect.
+No general non-status admissibility-effect mechanism is implemented in the current reference
+runtime, so such a conflict remains blocking.
 
 ---
 
