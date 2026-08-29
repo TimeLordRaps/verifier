@@ -159,7 +159,7 @@ Maturity attaches to mechanisms beneath that architecture:
 | RISC Zero hidden-witness predicate | Bounded reference mechanism with tracked public proof artifacts | `examples/zizk_artifact_first/risc0/`; native verification only, no VSTD receipt mapping |
 | Bounded identity-disclosure evaluator | Bounded non-normative reference mechanism | `examples/zizk_artifact_first/zero_identity/`; no identity-derived trust |
 | Assurance event serialization and replay | Implemented bounded reference mechanism | `VSTD-GRAPH-ASSURANCE-1` embeds the historical Graph, exact bindings, evidence bytes, a hash chain, and a current-view digest; `recheck_assurance_log` reruns every event mechanism |
-| TRUST transfer | Implemented proposition-dispatch reference mechanism | `record_trust` accepts only recorded ancestors and an exact passing support proposition; current lifecycle or conflict state can invalidate the event for current use without deleting history. No universal scalar support algebra exists. |
+| TRUST transfer | Implemented edge-local proposition-dispatch reference mechanism | `record_trust` binds one exact transformation, its complete inputs and output, the historical Graph digest, and the prerequisite TRUST event for every derived input. Recursive current-admissibility checking excludes the route if any required event, artifact, or transformation degrades or conflicts, without deleting history. No universal scalar support algebra exists. |
 | ROT derivation and cross-surface propagation | Implemented bounded reference mechanisms | Strictly degrading status propositions and complete challenge-ledger projections produce additive current-state overlays; the deduplicated descendant impact set is discovery, and a descendant status change still needs its own mechanism |
 | RUST concentration and localization | Implemented bounded reference mechanisms | A passing descendant-deviation proposition produces deduplicated reverse reachability; concentration counts unique descendants; localization and artifact-relative diagnostic attribution require separate passing propositions |
 | Complete `PASS`/`FAIL`/`UNKNOWN`/`CONFLICTED` hidden-witness derivation | Experimental and unimplemented | A caller-supplied state tag is not an earned verdict |
@@ -270,7 +270,9 @@ they describe memetic causal-provenance and lifecycle behavior over one developm
 They do not establish actor standing, moral character, responsibility, or automatic
 ancestor falsification. The reference runtime emits bounded TRUST, ROT, and RUST events
 only after their exact mechanisms run. Causal localization and artifact-relative `BLAME`
-or `GUILT` require additional exact propositions and never become actor reputation.
+or `GUILT` require additional exact propositions. BLAME establishes bounded responsibility
+or material contribution; GUILT is not directionally opposite, but additionally binds and
+checks an exact violated obligation. Neither becomes actor reputation.
 
 ### Recursive-amplification falsification outcomes
 
@@ -299,7 +301,9 @@ evidence-reference strings cannot self-promote that result. The generic-run comp
 path treats supplied assertions as no stronger than `DECLARED`, rejects receipts that label
 them `EVIDENCED`, and never derives `EVIDENCED`. The distinct VSTD-5 reference path can
 establish only its exact declarant/witness separation propositions after all seven seams are
-rerun by registered mechanisms; it does not upgrade the legacy generic-run fields.
+rerun by registered mechanisms. Typed binding, identity, separation, and corroboration
+errors keep `computed_independence` fail-closed; no error-message text is interpreted as a
+semantic category. This path does not upgrade the legacy generic-run fields.
 
 Graph conflict records retain incompatible values and their evidence references without
 adding a scalar score or changing the frozen artifact-status vocabulary. A conflict makes
@@ -314,16 +318,16 @@ question is a new assessment over the retained graph and applicable lifecycle re
 |---|---|
 | An ancestor is `CHALLENGED`, `REVOKED`, or `STALE` | Candidate/evidence-bound Graph recomputation follows the full ancestor closure and returns compatibility field `level = 0`. `AssuranceLedger` also records typed ROT or projects append-only challenge-ledger state into a derived current view; historical Graph bytes remain unchanged. |
 | An ancestor is `SUPERSEDED` | The historical Graph candidate remains admissible by design; the stricter all-ancestors-`VALID` policy rejects it for current-use admission. Supersession does not retroactively falsify its prior lineage role. |
-| Upstream evidence conflicts | A retained `ConflictRecord` blocks a clean result. `resolve_conflict` accepts only a mechanism-passing proposition bound to the exact conflict and one retained competing value; the original conflict remains in history while the derived current view records the additive resolution. |
+| Upstream evidence conflicts | A retained `ConflictRecord` or a mechanism-established `CONFLICT_DECLARATION` event blocks every dependent edge-local TRUST route. `resolve_conflict` accepts only a mechanism-passing proposition bound to the exact conflict and one retained competing value; the original conflict remains in history while the derived current view records the additive resolution. |
 | Evidence arrives by multiple paths or one run receipt repeats a reference | Reachability and impact sets deduplicate identifiers. Multiplicity supplies no independence or strength. |
 | A descendant deviation points toward shared ancestors | A mechanism-passing deviation emits RUST over the deduplicated recorded ancestor set. Structural concentration counts unique deviating descendants, not paths or causal strength. Localization, BLAME, and GUILT require separate exact mechanisms. |
-| A challenge ledger changes a claim's current status | `project_challenges` binds its complete append-only records into a current Graph overlay and embeds those records for replay. Existing TRUST remains historical but disappears from `current_trust_events`; `impacted_descendants` reports the deduplicated reassessment surface. It never mutates the historical graph. |
+| A challenge ledger changes a claim's current status | `project_challenges` binds its complete append-only records into a current Graph overlay and embeds those records for replay. Existing TRUST remains historical, while recursively dependent events disappear from `current_trust_events`; `impacted_descendants` reports the deduplicated reassessment surface. It never mutates the historical graph. |
 | Later evidence clears a conflict | The additive resolution retains the original competing evidence and its mechanism evaluation. Removing or rewriting the conflict remains invalid. |
 | Candidate calculation encounters cyclic ancestry | Rejected before candidate calculation; recursive topology cannot manufacture assurance. |
 
 The forward blast-radius query remains discovery only. `AssuranceLedger` is the distinct
-binding mechanism for explicit TRUST, ROT, RUST, challenge projection, and conflict
-resolution. `recheck_assurance_log` reconstructs the historical Graph, rehashes every
+binding mechanism for explicit edge-local TRUST, ROT, RUST, challenge projection, and
+conflict declaration/resolution. `recheck_assurance_log` reconstructs the historical Graph, rehashes every
 embedded evidence item, reruns the exact registered mechanisms, reproduces the event chain,
 and compares the derived current view. The ledger never infers an unrecorded edge, converts
 topology into assurance, or treats RUST as causality. Domain-specific transfer and

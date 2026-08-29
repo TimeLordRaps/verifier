@@ -52,7 +52,9 @@ scores, serialized receipt values, or references to the Rust programming languag
 The reference `AssuranceLedger` records these as additive Graph events. Treat structural
 RUST concentration as a triage count of unique deviating descendants, never causal
 strength. A bounded artifact-relative `BLAME` or `GUILT` result exists only after separate
-localization and attribution mechanisms pass; it never evaluates an actor's character.
+localization and attribution mechanisms pass. BLAME establishes responsibility or material
+contribution for the exact deviation; GUILT is the stronger obligation-relative result and
+is not BLAME flowing in the opposite direction. Neither evaluates an actor's character.
 For reliance, replay the portable log with `recheck_assurance_log`: a stored event word or
 hash chain without successful evidence rehash and mechanism execution is not current
 assurance. When upstream status changes, inspect `current_trust_events` and the deduplicated

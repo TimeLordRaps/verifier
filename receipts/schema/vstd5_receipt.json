@@ -91,7 +91,7 @@
     "evaluation": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json#/$defs/evaluation"},
     "result": {
       "type": "object", "additionalProperties": false,
-      "required": ["claim_id", "status", "conformance_status", "computed_independence", "independence_evaluations", "corroboration_evaluations", "disagreements", "errors", "limitations"],
+      "required": ["claim_id", "status", "conformance_status", "computed_independence", "independence_evaluations", "corroboration_evaluations", "disagreements", "binding_errors", "identity_errors", "separation_errors", "corroboration_errors", "errors", "limitations"],
       "properties": {
         "claim_id": {"type": "string", "minLength": 1},
         "status": {"enum": ["CORROBORATED", "REFUTED", "UNKNOWN", "CONFLICTED"]},
@@ -106,6 +106,10 @@
           "items": {"type": "object", "additionalProperties": false, "required": ["corroboration_id", "evaluation"], "properties": {"corroboration_id": {"type": "string"}, "evaluation": {"$ref": "#/$defs/evaluation"}}}
         },
         "disagreements": {"type": "array", "items": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}}},
+        "binding_errors": {"type": "array", "items": {"type": "string"}},
+        "identity_errors": {"type": "array", "items": {"type": "string"}},
+        "separation_errors": {"type": "array", "items": {"type": "string"}},
+        "corroboration_errors": {"type": "array", "items": {"type": "string"}},
         "errors": {"type": "array", "items": {"type": "string"}},
         "limitations": {"type": "array", "items": {"type": "string"}}
       },
@@ -116,6 +120,29 @@
             "properties": {
               "conformance_status": {"const": "ESTABLISHED"},
               "computed_independence": {"const": "INDEPENDENT"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"computed_independence": {"const": "INDEPENDENT"}}, "required": ["computed_independence"]},
+          "then": {
+            "properties": {
+              "binding_errors": {"maxItems": 0},
+              "identity_errors": {"maxItems": 0},
+              "separation_errors": {"maxItems": 0}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"conformance_status": {"const": "ESTABLISHED"}}, "required": ["conformance_status"]},
+          "then": {
+            "properties": {
+              "computed_independence": {"const": "INDEPENDENT"},
+              "binding_errors": {"maxItems": 0},
+              "identity_errors": {"maxItems": 0},
+              "separation_errors": {"maxItems": 0},
+              "corroboration_errors": {"maxItems": 0},
+              "errors": {"maxItems": 0}
             }
           }
         }

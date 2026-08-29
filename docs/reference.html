@@ -433,17 +433,18 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
 <tr><td><code>current_status(self, artifact_id: 'str') -&gt; 'ArtifactStatus'</code></td><td></td></tr>
-<tr><td><code>current_trust_events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return passing TRUST records still admissible under the current view.</td></tr>
+<tr><td><code>current_trust_events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return recursively current edge-local TRUST records.</td></tr>
 <tr><td><code>diagnose(self, kind: 'DiagnosticKind', ancestor_id: 'str', descendant_id: 'str', proposition: 'Optional[BoundProposition]', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compute bounded artifact-relative BLAME or GUILT just in time.</td></tr>
 <tr><td><code>events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td></td></tr>
 <tr><td><code>impacted_descendants(self, artifact_id: 'str') -&gt; 'tuple[str, ...]'</code></td><td>Return the deduplicated recorded forward impact set, not a verdict.</td></tr>
 <tr><td><code>localize_cause(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
 <tr><td><code>materialize_current_graph(self) -&gt; 'ProvenanceHypergraph'</code></td><td>Create a derived current view; never mutate the historical graph.</td></tr>
 <tr><td><code>project_challenges(self, challenges: 'ChallengeLedger', *, recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Project challenge state into an additive current Graph overlay.</td></tr>
+<tr><td><code>record_conflict(self, conflict: 'ConflictRecord', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Add mechanism-established current conflict evidence without rewriting Graph.</td></tr>
 <tr><td><code>record_rot(self, artifact_id: 'str', resulting_status: 'ArtifactStatus', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
 <tr><td><code>record_rust(self, descendant_id: 'str', deviation: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
 <tr><td><code>record_status_projection(self, artifact_id: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Record a mechanism-checked current-status projection additively.</td></tr>
-<tr><td><code>record_trust(self, target_id: 'str', source_ids: 'Iterable[str]', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
+<tr><td><code>record_trust(self, target_id: 'str', source_ids: 'Iterable[str]', proposition: 'BoundProposition', *, transformation_id: 'str', prerequisite_trust_event_digests: 'Iterable[str]' = (), session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
 <tr><td><code>resolutions(self) -&gt; 'tuple[ConflictResolution, ...]'</code></td><td></td></tr>
 <tr><td><code>resolve_conflict(self, conflict_id: 'str', selected_value: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'ConflictResolution'</code></td><td></td></tr>
 <tr><td><code>rust_concentration(self) -&gt; 'tuple[StructuralConcentration, ...]'</code></td><td></td></tr>

@@ -170,14 +170,18 @@ member set, collection, and claim. Profile zero remains `NOT_ESTABLISHED`.
 The formal names **TRUST**, **ROT**, and **RUST** are semantic terms, not acronyms, actor
 ratings, scalar scores, numbered-profile verdicts, or references to the Rust programming language.
 They serialize only as typed events in `VSTD-GRAPH-ASSURANCE-1`.
-TRUST is mechanism-earned artifact support moving forward through checked development;
+TRUST is mechanism-earned artifact support moving forward edge by edge through checked
+development, with each event binding one exact transformation, its inputs and output, the
+historical Graph digest, and any prerequisite TRUST events;
 ROT is typed, time-indexed degradation of current admissibility without rewriting
 historical evidence; RUST is the inverse-TRUST diagnostic mechanic moving backward from a
 descendant deviation toward recorded ancestor candidates. This memetic propagation does
 not by itself prove guilt, responsibility, falsehood, causal localization, or automatic
 ancestor falsification. The reference runtime requires a separate passing localization
 mechanism and an exact artifact-relative diagnostic proposition before it can emit bounded
-`BLAME` or `GUILT`; those results never concern actor character. See [the governing
+`BLAME` or `GUILT`. BLAME establishes bounded responsibility or material contribution;
+GUILT is not its opposite, but the stronger combined result that additionally establishes
+an exact violated obligation. Neither result concerns actor character. See [the governing
 architecture](standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
 
 `VSTD-GRAPH-ASSURANCE-1` carries the immutable historical Graph, exact event bindings,

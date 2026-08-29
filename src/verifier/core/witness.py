@@ -215,12 +215,25 @@ class WitnessCorroborationResult:
     ]
     corroboration_evaluations: tuple[tuple[str, EvaluatedProposition], ...]
     disagreements: tuple[tuple[str, ...], ...]
-    errors: tuple[str, ...]
+    binding_errors: tuple[str, ...]
+    identity_errors: tuple[str, ...]
+    separation_errors: tuple[str, ...]
+    corroboration_errors: tuple[str, ...]
     limitations: tuple[str, ...] = field(default_factory=tuple)
 
     @property
     def established(self) -> bool:
         return self.conformance_status == "ESTABLISHED"
+
+    @property
+    def errors(self) -> tuple[str, ...]:
+        """Return all errors without using message text as decision input."""
+        return (
+            *self.binding_errors,
+            *self.identity_errors,
+            *self.separation_errors,
+            *self.corroboration_errors,
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -244,6 +257,10 @@ class WitnessCorroborationResult:
                 for record_id, evaluation in self.corroboration_evaluations
             ],
             "disagreements": [list(group) for group in self.disagreements],
+            "binding_errors": list(self.binding_errors),
+            "identity_errors": list(self.identity_errors),
+            "separation_errors": list(self.separation_errors),
+            "corroboration_errors": list(self.corroboration_errors),
             "errors": list(self.errors),
             "limitations": list(self.limitations),
         }
@@ -258,35 +275,46 @@ def assess_witness_corroboration(
     """Recheck VSTD-5 entry, separation evidence, and corroboration evidence."""
 
     require_vstd5_entry(entry)
-    errors: list[str] = []
+    binding_errors: list[str] = []
+    identity_errors: list[str] = []
+    separation_errors: list[str] = []
+    corroboration_errors: list[str] = []
     independence_results: list[tuple[str, str, EvaluatedProposition]] = []
     corroboration_results: list[tuple[str, EvaluatedProposition]] = []
 
-    if bundle.claim_id == "" or bundle.declarant_id == "":
-        errors.append("claim_id and declarant_id must not be empty")
+    if bundle.claim_id == "":
+        binding_errors.append("claim_id must not be empty")
+    if bundle.declarant_id == "":
+        identity_errors.append("declarant_id must not be empty")
     if bundle.claim_binding_digest != entry.witness.header.binding:  # type: ignore[union-attr]
-        errors.append("witness bundle does not bind the admitted VSTD-4 commitment")
+        binding_errors.append(
+            "witness bundle does not bind the admitted VSTD-4 commitment"
+        )
 
     identities: dict[str, WitnessIdentity] = {}
     identity_refs: set[str] = set()
     for witness in bundle.witnesses:
         if not witness.witness_id:
-            errors.append("witness_id must not be empty")
+            identity_errors.append("witness_id must not be empty")
             continue
         if witness.witness_id == bundle.declarant_id:
-            errors.append(f"witness {witness.witness_id} is the declarant")
+            identity_errors.append(f"witness {witness.witness_id} is the declarant")
         if witness.witness_id in identities:
-            errors.append(f"duplicate witness identifier: {witness.witness_id}")
+            identity_errors.append(
+                f"duplicate witness identifier: {witness.witness_id}"
+            )
         identities[witness.witness_id] = witness
         try:
             identity_ref = session.evidence.add(
                 session.evidence.resolve(witness.identity_evidence_ref)
             )
         except Exception as exc:
-            errors.append(f"witness {witness.witness_id} identity evidence unavailable: {exc}")
+            identity_errors.append(
+                f"witness {witness.witness_id} identity evidence unavailable: {exc}"
+            )
             continue
         if identity_ref in identity_refs:
-            errors.append(
+            identity_errors.append(
                 f"witness {witness.witness_id} repeats another witness identity evidence"
             )
         identity_refs.add(identity_ref)
@@ -294,29 +322,31 @@ def assess_witness_corroboration(
     assertions: dict[str, IndependenceAssertion] = {}
     for assertion in bundle.independence:
         if assertion.witness_id in assertions:
-            errors.append(f"duplicate independence assertion: {assertion.witness_id}")
+            separation_errors.append(
+                f"duplicate independence assertion: {assertion.witness_id}"
+            )
             continue
         assertions[assertion.witness_id] = assertion
         if assertion.witness_id not in identities:
-            errors.append(
+            separation_errors.append(
                 f"independence assertion references missing witness {assertion.witness_id}"
             )
             continue
         for dimension in IndependenceDimension:
             state = assertion.relationships.get(dimension, RelationshipState.UNKNOWN)
             if state is RelationshipState.SHARED:
-                errors.append(
+                separation_errors.append(
                     f"witness {assertion.witness_id} shares {dimension.value} with declarant"
                 )
                 continue
             if state is RelationshipState.UNKNOWN:
-                errors.append(
+                separation_errors.append(
                     f"witness {assertion.witness_id} has UNKNOWN {dimension.value} separation"
                 )
                 continue
             proposition = assertion.evidence.get(dimension)
             if proposition is None:
-                errors.append(
+                separation_errors.append(
                     f"witness {assertion.witness_id} has no evidence for {dimension.value}"
                 )
                 continue
@@ -329,7 +359,7 @@ def assess_witness_corroboration(
                 or proposition.parameters.get("claim_binding_digest")
                 != bundle.claim_binding_digest
             ):
-                errors.append(
+                separation_errors.append(
                     f"witness {assertion.witness_id} {dimension.value} evidence is not "
                     "bound to the exact negative separation proposition"
                 )
@@ -339,46 +369,50 @@ def assess_witness_corroboration(
                 (assertion.witness_id, dimension.value, result)
             )
             if not result.passed:
-                errors.append(
+                separation_errors.append(
                     f"witness {assertion.witness_id} {dimension.value} separation "
                     f"was not established: {result.outcome.value}"
                 )
 
     for witness_id in identities:
         if witness_id not in assertions:
-            errors.append(f"witness {witness_id} has no independence assertion")
+            separation_errors.append(
+                f"witness {witness_id} has no independence assertion"
+            )
 
     seen_records: set[str] = set()
     observed_sets: set[tuple[str, ...]] = set()
     accepted_outcomes: list[tuple[str, CorroborationOutcome]] = []
     for record in bundle.corroborations:
         if record.corroboration_id in seen_records:
-            errors.append(f"duplicate corroboration identifier: {record.corroboration_id}")
+            corroboration_errors.append(
+                f"duplicate corroboration identifier: {record.corroboration_id}"
+            )
             continue
         seen_records.add(record.corroboration_id)
         if record.witness_id not in identities:
-            errors.append(
+            corroboration_errors.append(
                 f"corroboration {record.corroboration_id} references missing witness"
             )
             continue
         if record.claim_binding_digest != bundle.claim_binding_digest:
-            errors.append(
+            corroboration_errors.append(
                 f"corroboration {record.corroboration_id} binds a neighboring claim"
             )
             continue
         if record.vstd4_certificate_digest.removeprefix("sha256:") != entry.witness.digest():  # type: ignore[union-attr]
-            errors.append(
+            corroboration_errors.append(
                 f"corroboration {record.corroboration_id} binds a different VSTD-4 certificate"
             )
             continue
         unique_observations = tuple(sorted(set(record.observed_evidence_refs)))
         if len(unique_observations) != len(record.observed_evidence_refs):
-            errors.append(
+            corroboration_errors.append(
                 f"corroboration {record.corroboration_id} repeats evidence references"
             )
             continue
         if unique_observations in observed_sets:
-            errors.append(
+            corroboration_errors.append(
                 f"corroboration {record.corroboration_id} duplicates another evidence set"
             )
             continue
@@ -398,7 +432,7 @@ def assess_witness_corroboration(
             or proposition.parameters.get("witness_id") != record.witness_id
             or proposition.parameters.get("observed_at") != record.observed_at
         ):
-            errors.append(
+            corroboration_errors.append(
                 f"corroboration {record.corroboration_id} is not exactly bound"
             )
             continue
@@ -407,19 +441,21 @@ def assess_witness_corroboration(
         if result.outcome is MechanismOutcome.PASS:
             accepted_outcomes.append((record.corroboration_id, record.result))
         else:
-            errors.append(
+            corroboration_errors.append(
                 f"corroboration {record.corroboration_id} mechanism did not pass: "
                 f"{result.outcome.value}"
             )
 
     if not bundle.witnesses:
-        errors.append("at least one witness is required")
+        identity_errors.append("at least one witness is required")
     if not bundle.corroborations:
-        errors.append("at least one corroboration is required")
+        corroboration_errors.append("at least one corroboration is required")
     corroborating_witnesses = {record.witness_id for record in bundle.corroborations}
     for witness_id in identities:
         if witness_id not in corroborating_witnesses:
-            errors.append(f"witness {witness_id} has no corroboration record")
+            corroboration_errors.append(
+                f"witness {witness_id} has no corroboration record"
+            )
 
     outcome_groups = {
         outcome: tuple(record_id for record_id, item in accepted_outcomes if item is outcome)
@@ -439,14 +475,23 @@ def assess_witness_corroboration(
 
     expected_independence_checks = len(identities) * len(IndependenceDimension)
     independence_established = (
-        len(independence_results) == expected_independence_checks
+        bool(identities)
+        and len(bundle.witnesses) == len(identities)
+        and len(assertions) == len(identities)
+        and len(independence_results) == expected_independence_checks
         and all(result.passed for _, _, result in independence_results)
-        and not any("separation" in error or "shares" in error for error in errors)
+        and not binding_errors
+        and not identity_errors
+        and not separation_errors
     )
     computed_independence = "INDEPENDENT" if independence_established else "UNKNOWN"
     conformance = (
         "ESTABLISHED"
-        if not errors and independence_established and len(corroboration_results) > 0
+        if (
+            independence_established
+            and not corroboration_errors
+            and len(corroboration_results) > 0
+        )
         else "NOT_ESTABLISHED"
     )
     if status is WitnessResultStatus.CORROBORATED and conformance != "ESTABLISHED":
@@ -459,7 +504,10 @@ def assess_witness_corroboration(
         tuple(independence_results),
         tuple(corroboration_results),
         disagreements,
-        tuple(errors),
+        tuple(binding_errors),
+        tuple(identity_errors),
+        tuple(separation_errors),
+        tuple(corroboration_errors),
         (
             "Identity evidence identifies the witness coordinate; it does not confer trust.",
             "The result is bounded to the registered mechanisms, trust roots, evidence, and bounds.",

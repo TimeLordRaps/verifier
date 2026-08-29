@@ -258,6 +258,123 @@ def _graph_rating_evidence(graph, store, binding, *, members=("result",), rating
     return objects, edges
 
 
+def _trust_proposition(
+    store: EvidenceStore,
+    ledger: AssuranceLedger,
+    transformation_id: str,
+    target_id: str,
+    prerequisite_digests=(),
+) -> BoundProposition:
+    transform = ledger.graph.transformations[transformation_id]
+    inputs = sorted({port.artifact_id for port in transform.inputs})
+    prerequisites = sorted(set(prerequisite_digests))
+    return _proposition(
+        store,
+        target_id,
+        "vstd.graph.support",
+        {
+            "historical_graph_digest": ledger.graph_digest,
+            "inputs": inputs,
+            "output": target_id,
+            "prerequisite_trust_event_digests": prerequisites,
+            "transformation_id": transformation_id,
+        },
+    )
+
+
+def _record_trust_chain(
+    ledger: AssuranceLedger,
+    store: EvidenceStore,
+    session: VerificationSession,
+):
+    first_binding = _trust_proposition(store, ledger, "first", "middle")
+    first = ledger.record_trust(
+        "middle",
+        ("source",),
+        first_binding,
+        transformation_id="first",
+        session=session,
+        recorded_at="2026-08-29T00:00:00Z",
+    )
+    second_binding = _trust_proposition(
+        store, ledger, "second", "result", (first.digest(),)
+    )
+    second = ledger.record_trust(
+        "result",
+        ("middle",),
+        second_binding,
+        transformation_id="second",
+        prerequisite_trust_event_digests=(first.digest(),),
+        session=session,
+        recorded_at="2026-08-29T00:00:01Z",
+    )
+    return first, second
+
+
+def _witness_components(
+    store: EvidenceStore,
+    entry,
+    witness_id: str,
+    *,
+    declarant_id: str = "declarant:one",
+    identity_evidence_ref: str | None = None,
+):
+    binding_digest = entry.witness.header.binding
+    identity_ref = identity_evidence_ref or store.add(
+        f"identity coordinate:{witness_id}".encode()
+    )
+    witness = WitnessIdentity(witness_id, identity_ref)
+    relation = f"{declarant_id}->{witness_id}"
+    relationships = {
+        dimension: RelationshipState.SEPARATE for dimension in IndependenceDimension
+    }
+    assertion = IndependenceAssertion(
+        witness_id,
+        relationships,
+        {
+            dimension: _proposition(
+                store,
+                relation,
+                f"vstd5.shared.{dimension.value}",
+                False,
+                parameters={"claim_binding_digest": binding_digest},
+            )
+            for dimension in IndependenceDimension
+        },
+    )
+    checker_digest = hashlib.sha256(witness_id.encode()).hexdigest()
+    certificate_digest = entry.witness.digest()
+    expected = {
+        "claim_binding_digest": binding_digest,
+        "vstd4_certificate_digest": certificate_digest,
+        "checker_descriptor_digest": checker_digest,
+        "result": CorroborationOutcome.CORROBORATED.value,
+    }
+    verification = _proposition(
+        store,
+        "claim:fixture",
+        "vstd5.corroboration",
+        expected,
+        parameters={
+            "witness_id": witness_id,
+            "observed_at": "2026-08-29T00:00:00Z",
+        },
+    )
+    corroboration = CorroborationRecord(
+        f"corroboration:{witness_id}",
+        witness_id,
+        binding_digest,
+        certificate_digest,
+        checker_digest,
+        verification.evidence_refs,
+        CorroborationOutcome.CORROBORATED,
+        "2026-08-29T00:00:00Z",
+        verification,
+        "TEST",
+    )
+    return witness, assertion, corroboration
+
+
 def test_serialized_pass_is_not_an_input_to_evidence_evaluation() -> None:
     assert MechanismOutcome.__doc__ == "Enumeration of the exported result values."
     store, session = _session()
@@ -607,20 +724,28 @@ def test_upstream_challenge_invalidates_current_trust_and_graph_admission() -> N
     graph = _graph()
     ledger = AssuranceLedger(graph)
     store, session = _session()
-    trust = _proposition(
-        store,
-        "result",
-        "vstd.graph.support",
-        {"sources": ["source"], "target": "result"},
-    )
-    ledger.record_trust(
-        "result",
+    first_binding = _trust_proposition(store, ledger, "first", "middle")
+    first = ledger.record_trust(
+        "middle",
         ("source",),
-        trust,
+        first_binding,
+        transformation_id="first",
         session=session,
         recorded_at="2026-08-29T00:00:00Z",
     )
-    assert len(ledger.current_trust_events()) == 1
+    second_binding = _trust_proposition(
+        store, ledger, "second", "result", (first.digest(),)
+    )
+    ledger.record_trust(
+        "result",
+        ("middle",),
+        second_binding,
+        transformation_id="second",
+        prerequisite_trust_event_digests=(first.digest(),),
+        session=session,
+        recorded_at="2026-08-29T00:00:01Z",
+    )
+    assert len(ledger.current_trust_events()) == 2
     assert ledger.impacted_descendants("source") == ("middle", "result")
 
     challenges = ChallengeLedger()
@@ -749,18 +874,15 @@ def test_trust_rot_and_rust_follow_direction_without_recursive_amplification() -
     ledger = AssuranceLedger(graph)
     store, session = _session()
 
-    trust = _proposition(
-        store,
-        "result",
-        "vstd.graph.support",
-        {"sources": ["source"], "target": "result"},
-    )
+    trust = _trust_proposition(store, ledger, "first", "middle")
     first = ledger.record_trust(
-        "result", ("source", "source"), trust,
+        "middle", ("source", "source"), trust,
+        transformation_id="first",
         session=session, recorded_at="2026-08-29T00:00:00Z",
     )
     second = ledger.record_trust(
-        "result", ("source",), trust,
+        "middle", ("source",), trust,
+        transformation_id="first",
         session=session, recorded_at="2026-08-29T00:00:00Z",
     )
     assert first.digest() == second.digest()
@@ -784,12 +906,156 @@ def test_trust_rot_and_rust_follow_direction_without_recursive_amplification() -
         session=session, recorded_at="2026-08-29T00:02:00Z",
     )
     assert ledger.current_status("source") is ArtifactStatus.REVOKED
-    with pytest.raises(AssuranceFlowError, match="inadmissible target or ancestry"):
+    with pytest.raises(AssuranceFlowError, match="inadmissible target or transformation input"):
         ledger.record_trust(
-            "result", ("source",), trust,
+            "middle", ("source",), trust,
+            transformation_id="first",
             session=session, recorded_at="2026-08-29T00:03:00Z",
         )
     assert ledger.verify_hash_chain() is True
+
+
+def test_trust_cannot_jump_over_an_unbound_transformation() -> None:
+    ledger = AssuranceLedger(_graph())
+    store, session = _session()
+    direct = _proposition(
+        store,
+        "result",
+        "vstd.graph.support",
+        {
+            "historical_graph_digest": ledger.graph_digest,
+            "inputs": ["source"],
+            "output": "result",
+            "prerequisite_trust_event_digests": [],
+            "transformation_id": "second",
+        },
+    )
+    with pytest.raises(AssuranceFlowError, match="exact transformation input set"):
+        ledger.record_trust(
+            "result",
+            ("source",),
+            direct,
+            transformation_id="second",
+            session=session,
+            recorded_at="2026-08-29T00:00:00Z",
+        )
+
+    missing_prerequisite = _trust_proposition(
+        store, ledger, "second", "result"
+    )
+    with pytest.raises(AssuranceFlowError, match="exactly one current prerequisite"):
+        ledger.record_trust(
+            "result",
+            ("middle",),
+            missing_prerequisite,
+            transformation_id="second",
+            session=session,
+            recorded_at="2026-08-29T00:00:01Z",
+        )
+
+
+@pytest.mark.parametrize(
+    "status",
+    (
+        ArtifactStatus.CHALLENGED,
+        ArtifactStatus.STALE,
+        ArtifactStatus.REVOKED,
+        ArtifactStatus.SUPERSEDED,
+    ),
+)
+def test_intermediate_degradation_excludes_but_does_not_rewrite_trust(
+    status: ArtifactStatus,
+) -> None:
+    ledger = AssuranceLedger(_graph())
+    store, session = _session()
+    first, second = _record_trust_chain(ledger, store, session)
+    historical_digests = (first.digest(), second.digest())
+    rot = _proposition(
+        store, "middle", "vstd.graph.current_status", status.value
+    )
+    ledger.record_rot(
+        "middle",
+        status,
+        rot,
+        session=session,
+        recorded_at="2026-08-29T00:01:00Z",
+    )
+
+    assert ledger.current_trust_events() == ()
+    assert tuple(event.digest() for event in ledger.events()[:2]) == historical_digests
+    assert all(event.outcome is MechanismOutcome.PASS for event in ledger.events()[:2])
+
+
+@pytest.mark.parametrize("conflict_subject", ("middle", "first"))
+def test_dependency_conflict_invalidates_and_additive_resolution_restores_trust(
+    conflict_subject: str,
+) -> None:
+    ledger = AssuranceLedger(_graph())
+    store, session = _session()
+    first, second = _record_trust_chain(ledger, store, session)
+    assert tuple(event.digest() for event in ledger.current_trust_events()) == (
+        first.digest(),
+        second.digest(),
+    )
+
+    conflict = ConflictRecord(
+        f"conflict:{conflict_subject}",
+        conflict_subject,
+        "current_dependency_state",
+        ("candidate:a", "candidate:b"),
+        ("evidence:a", "evidence:b"),
+    )
+    conflict_binding = _proposition(
+        store,
+        conflict_subject,
+        "vstd.graph.conflict",
+        conflict.to_dict(),
+    )
+    ledger.record_conflict(
+        conflict,
+        conflict_binding,
+        session=session,
+        recorded_at="2026-08-29T00:01:00Z",
+    )
+    assert ledger.current_trust_events() == ()
+    assert len(ledger.events()) == 3
+
+    resolution = _proposition(
+        store,
+        conflict_subject,
+        "vstd.graph.resolve.current_dependency_state",
+        "candidate:a",
+        parameters={"conflict_id": conflict.conflict_id},
+    )
+    ledger.resolve_conflict(
+        conflict.conflict_id,
+        "candidate:a",
+        resolution,
+        session=session,
+        recorded_at="2026-08-29T00:02:00Z",
+    )
+    assert tuple(event.digest() for event in ledger.current_trust_events()) == (
+        first.digest(),
+        second.digest(),
+    )
+    root = Path(__file__).resolve().parents[1]
+    schema = json.loads(
+        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+    )
+    graph_schema = json.loads(
+        (root / "receipts/schema/vstd_graph_receipt.json").read_text()
+    )
+    registry = Registry().with_resource(
+        graph_schema["$id"], Resource.from_contents(graph_schema)
+    )
+    Draft202012Validator(schema, registry=registry).validate(ledger.to_dict())
+    replayed = recheck_assurance_log(
+        ledger.to_dict(), mechanisms=(ExactFactMechanism(),)
+    )
+    assert tuple(event.digest() for event in replayed.current_trust_events()) == (
+        first.digest(),
+        second.digest(),
+    )
 
 
 def test_rust_requires_separate_localization_before_blame_or_guilt() -> None:
@@ -860,6 +1126,30 @@ def test_rust_requires_separate_localization_before_blame_or_guilt() -> None:
             session=session,
             recorded_at="2026-08-29T00:04:00Z",
         )
+
+    established_guilt = _proposition(
+        store,
+        "source",
+        "vstd.graph.diagnostic.guilt",
+        {
+            "ancestor": "source",
+            "descendant": "result",
+            "localization_event_digest": event.digest(),
+            "violated_obligation": "obligation:preserve-result-integrity",
+        },
+        parameters={"obligation": "obligation:preserve-result-integrity"},
+    )
+    guilt_result = ledger.diagnose(
+        DiagnosticKind.GUILT,
+        "source",
+        "result",
+        established_guilt,
+        session=session,
+        recorded_at="2026-08-29T00:05:00Z",
+    )
+    assert guilt_result.status == "ESTABLISHED"
+    assert guilt_result.evaluation is not None
+    assert guilt_result.evaluation.passed is True
 
 
 def test_assurance_event_log_is_portable_strict_and_evidence_complete() -> None:
@@ -1054,6 +1344,17 @@ def test_vstd5_requires_every_independence_seam_and_preserves_disagreement() -> 
     assert list(
         Draft202012Validator(schema, registry=registry).iter_errors(false_positive)
     )
+    false_independence = copy.deepcopy(receipt)
+    false_independence["result"]["conformance_status"] = "NOT_ESTABLISHED"
+    false_independence["result"]["identity_errors"] = [
+        "duplicate witness identifier: witness:one"
+    ]
+    false_independence["result"]["errors"] = list(
+        false_independence["result"]["identity_errors"]
+    )
+    assert list(
+        Draft202012Validator(schema, registry=registry).iter_errors(false_independence)
+    )
     rechecked = recheck_vstd5_receipt(
         entry, receipt, mechanisms=(ExactFactMechanism(),)
     )
@@ -1079,3 +1380,118 @@ def test_vstd5_requires_every_independence_seam_and_preserves_disagreement() -> 
     assert result.conformance_status == "NOT_ESTABLISHED"
     assert result.status is WitnessResultStatus.UNKNOWN
     assert result.computed_independence == "UNKNOWN"
+
+
+def test_computed_independence_fails_closed_on_identity_and_assertion_errors() -> None:
+    store, session = _session()
+    entry = _established_vstd4(store, session)
+    binding_digest = entry.witness.header.binding  # type: ignore[union-attr]
+    witness, assertion, corroboration = _witness_components(
+        store, entry, "witness:one"
+    )
+
+    duplicate_witness = assess_witness_corroboration(
+        entry,
+        WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (witness, witness),
+            (assertion,),
+            (corroboration,),
+        ),
+        session=session,
+    )
+    assert duplicate_witness.computed_independence == "UNKNOWN"
+    assert any("duplicate witness identifier" in item for item in duplicate_witness.identity_errors)
+
+    shared_identity = store.add(b"shared identity evidence")
+    first = _witness_components(
+        store, entry, "witness:first", identity_evidence_ref=shared_identity
+    )
+    second = _witness_components(
+        store, entry, "witness:second", identity_evidence_ref=shared_identity
+    )
+    repeated_identity = assess_witness_corroboration(
+        entry,
+        WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (first[0], second[0]),
+            (first[1], second[1]),
+            (first[2], second[2]),
+        ),
+        session=session,
+    )
+    assert repeated_identity.computed_independence == "UNKNOWN"
+    assert any("repeats another witness identity" in item for item in repeated_identity.identity_errors)
+
+    missing = _witness_components(
+        store,
+        entry,
+        "witness:missing",
+        identity_evidence_ref="sha256:" + "0" * 64,
+    )
+    missing_identity = assess_witness_corroboration(
+        entry,
+        WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (missing[0],),
+            (missing[1],),
+            (missing[2],),
+        ),
+        session=session,
+    )
+    assert missing_identity.computed_independence == "UNKNOWN"
+    assert any("identity evidence unavailable" in item for item in missing_identity.identity_errors)
+
+    declarant = _witness_components(
+        store, entry, "declarant:one", declarant_id="declarant:one"
+    )
+    reused_declarant = assess_witness_corroboration(
+        entry,
+        WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (declarant[0],),
+            (declarant[1],),
+            (declarant[2],),
+        ),
+        session=session,
+    )
+    assert reused_declarant.computed_independence == "UNKNOWN"
+    assert any("is the declarant" in item for item in reused_declarant.identity_errors)
+
+    missing_assertion = assess_witness_corroboration(
+        entry,
+        WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (witness,),
+            (),
+            (corroboration,),
+        ),
+        session=session,
+    )
+    assert missing_assertion.computed_independence == "UNKNOWN"
+    assert any("no independence assertion" in item for item in missing_assertion.separation_errors)
+
+    duplicate_assertion = assess_witness_corroboration(
+        entry,
+        WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (witness,),
+            (assertion, assertion),
+            (corroboration,),
+        ),
+        session=session,
+    )
+    assert duplicate_assertion.computed_independence == "UNKNOWN"
+    assert any("duplicate independence assertion" in item for item in duplicate_assertion.separation_errors)

@@ -53,6 +53,7 @@ class AssuranceEventKind(str, Enum):
     ROT = "ROT"
     RUST = "RUST"
     STATUS_PROJECTION = "STATUS_PROJECTION"
+    CONFLICT_DECLARATION = "CONFLICT_DECLARATION"
     CONFLICT_RESOLUTION = "CONFLICT_RESOLUTION"
     CAUSAL_LOCALIZATION = "CAUSAL_LOCALIZATION"
     DIAGNOSTIC_ATTRIBUTION = "DIAGNOSTIC_ATTRIBUTION"
@@ -294,9 +295,10 @@ class AssuranceLedger:
             raise AssuranceFlowError(
                 "cyclic provenance cannot carry recursive assurance propagation"
             )
-        self.graph = graph
-        self._graph_digest = canonical_digest(graph.to_dict())
+        self.graph = ProvenanceHypergraph.from_dict(graph.to_dict())
+        self._graph_digest = canonical_digest(self.graph.to_dict())
         self._events: list[AssuranceEvent] = []
+        self._conflicts: dict[str, ConflictRecord] = dict(self.graph.conflicts)
         self._resolutions: dict[str, ConflictResolution] = {}
 
     @property
@@ -395,33 +397,119 @@ class AssuranceLedger:
         return tuple(sorted(self.graph.descendants((artifact_id,)) - {artifact_id}))
 
     def current_trust_events(self) -> tuple[AssuranceEvent, ...]:
-        """Return passing TRUST records still admissible under the current view."""
+        """Return recursively current edge-local TRUST records."""
+        if canonical_digest(self.graph.to_dict()) != self.graph_digest:
+            return ()
         unresolved_subjects = {item.subject_id for item in self.unresolved_conflicts()}
-        return tuple(
-            event
+        trust_events = {
+            event.digest(): event
             for event in self._events
             if event.kind is AssuranceEventKind.TRUST
-            and event.outcome is MechanismOutcome.PASS
-            and event.subject_id not in unresolved_subjects
-            and all(source not in unresolved_subjects for source in event.source_ids)
-            and self.current_status(event.subject_id) is ArtifactStatus.VALID
-            and all(
-                self.current_status(source) is ArtifactStatus.VALID
-                for source in event.source_ids
+        }
+        memo: dict[str, bool] = {}
+
+        def is_current(event_digest: str, visiting: set[str]) -> bool:
+            cached = memo.get(event_digest)
+            if cached is not None:
+                return cached
+            if event_digest in visiting:
+                memo[event_digest] = False
+                return False
+            event = trust_events.get(event_digest)
+            if event is None or event.outcome is not MechanismOutcome.PASS:
+                memo[event_digest] = False
+                return False
+            visiting.add(event_digest)
+            try:
+                transformation_id = str(event.attributes["transformation_id"])
+                historical_graph_digest = str(
+                    event.attributes["historical_graph_digest"]
+                )
+                attribute_inputs = tuple(str(item) for item in event.attributes["inputs"])
+                attribute_output = str(event.attributes["output"])
+                prerequisite_digests = tuple(
+                    str(item)
+                    for item in event.attributes["prerequisite_trust_event_digests"]
+                )
+                transform = self.graph.transformations[transformation_id]
+            except (KeyError, TypeError):
+                memo[event_digest] = False
+                return False
+
+            exact_inputs = tuple(sorted({port.artifact_id for port in transform.inputs}))
+            output_ids = {port.artifact_id for port in transform.outputs}
+            expected = {
+                "historical_graph_digest": self.graph_digest,
+                "inputs": list(exact_inputs),
+                "output": event.subject_id,
+                "prerequisite_trust_event_digests": list(prerequisite_digests),
+                "transformation_id": transformation_id,
+            }
+            required_prerequisite_targets = {
+                source
+                for source in exact_inputs
+                if self.graph.incoming_hyperedges(source)
+            }
+            prerequisite_targets: list[str] = []
+            valid = (
+                historical_graph_digest == self.graph_digest
+                and attribute_inputs == exact_inputs
+                and attribute_output == event.subject_id
+                and event.source_ids == exact_inputs
+                and event.subject_id in output_ids
+                and transform.status == "COMPLETED"
+                and event.subject_id not in unresolved_subjects
+                and transformation_id not in unresolved_subjects
+                and all(source not in unresolved_subjects for source in exact_inputs)
+                and self.current_status(event.subject_id) is ArtifactStatus.VALID
+                and all(
+                    self.current_status(source) is ArtifactStatus.VALID
+                    for source in exact_inputs
+                )
+                and event.binding.get("subject_id") == event.subject_id
+                and event.binding.get("predicate") == "vstd.graph.support"
+                and event.binding.get("expected") == expected
+                and len(set(prerequisite_digests)) == len(prerequisite_digests)
             )
+            if valid:
+                for prerequisite_digest in prerequisite_digests:
+                    prerequisite = trust_events.get(prerequisite_digest)
+                    if (
+                        prerequisite is None
+                        or prerequisite.sequence >= event.sequence
+                        or not is_current(prerequisite_digest, visiting)
+                    ):
+                        valid = False
+                        break
+                    prerequisite_targets.append(prerequisite.subject_id)
+            if valid:
+                valid = (
+                    len(prerequisite_targets) == len(required_prerequisite_targets)
+                    and set(prerequisite_targets) == required_prerequisite_targets
+                )
+            memo[event_digest] = valid
+            return valid
+
+        return tuple(
+            event
+            for event_digest, event in trust_events.items()
+            if is_current(event_digest, set())
         )
 
     def unresolved_conflicts(self) -> tuple[ConflictRecord, ...]:
         resolved = {item.conflict_id for item in self._resolutions.values()}
         return tuple(
             conflict
-            for conflict_id, conflict in self.graph.conflicts.items()
+            for conflict_id, conflict in self._conflicts.items()
             if conflict_id not in resolved
         )
 
     def materialize_current_graph(self) -> ProvenanceHypergraph:
         """Create a derived current view; never mutate the historical graph."""
         current = ProvenanceHypergraph.from_dict(self.graph.to_dict())
+        for conflict_id, conflict in self._conflicts.items():
+            if conflict_id not in current.conflicts:
+                current.add_conflict(conflict)
         for artifact_id, node in tuple(current.artifacts.items()):
             current.artifacts[artifact_id] = replace(
                 node, status=self.current_status(artifact_id)
@@ -511,6 +599,62 @@ class AssuranceLedger:
             attributes={"resulting_status": resulting_status.value},
         )
 
+    def record_conflict(
+        self,
+        conflict: ConflictRecord,
+        proposition: BoundProposition,
+        *,
+        session: VerificationSession,
+        recorded_at: str,
+    ) -> AssuranceEvent:
+        """Add mechanism-established current conflict evidence without rewriting Graph."""
+        if (
+            conflict.subject_id not in self.graph.artifacts
+            and conflict.subject_id not in self.graph.transformations
+        ):
+            raise AssuranceFlowError(
+                f"unknown conflict subject {conflict.subject_id}"
+            )
+        if (
+            not conflict.conflict_id
+            or not conflict.predicate
+            or len(conflict.competing_values) < 2
+            or len(set(conflict.competing_values)) != len(conflict.competing_values)
+            or not conflict.evidence_refs
+            or len(set(conflict.evidence_refs)) != len(conflict.evidence_refs)
+        ):
+            raise AssuranceFlowError(
+                "conflict requires an identifier, predicate, distinct competing values, "
+                "and distinct evidence references"
+            )
+        prior = self._conflicts.get(conflict.conflict_id)
+        if prior is not None:
+            raise AssuranceFlowError(
+                f"conflict identifier {conflict.conflict_id} is already bound"
+            )
+        expected = conflict.to_dict()
+        if (
+            proposition.subject_id != conflict.subject_id
+            or proposition.predicate != "vstd.graph.conflict"
+            or proposition.expected != expected
+        ):
+            raise AssuranceFlowError("conflict evidence is not exactly record-bound")
+        evaluation = session.evaluate(proposition)
+        event = self._append(
+            kind=AssuranceEventKind.CONFLICT_DECLARATION,
+            subject_id=conflict.subject_id,
+            source_ids=conflict.evidence_refs,
+            proposition=proposition.predicate,
+            binding=proposition.to_dict(),
+            recorded_at=recorded_at,
+            evaluation=evaluation,
+            evidence_payloads=session.evidence.export_base64(evaluation.evidence_refs),
+            attributes={"conflict": conflict.to_dict()},
+        )
+        if evaluation.outcome is MechanismOutcome.PASS:
+            self._conflicts[conflict.conflict_id] = conflict
+        return event
+
     def resolve_conflict(
         self,
         conflict_id: str,
@@ -520,7 +664,7 @@ class AssuranceLedger:
         session: VerificationSession,
         recorded_at: str,
     ) -> ConflictResolution:
-        conflict = self.graph.conflicts.get(conflict_id)
+        conflict = self._conflicts.get(conflict_id)
         if conflict is None:
             raise AssuranceFlowError(f"unknown conflict {conflict_id}")
         if conflict_id in {item.conflict_id for item in self._resolutions.values()}:
@@ -572,28 +716,77 @@ class AssuranceLedger:
         source_ids: Iterable[str],
         proposition: BoundProposition,
         *,
+        transformation_id: str,
+        prerequisite_trust_event_digests: Iterable[str] = (),
         session: VerificationSession,
         recorded_at: str,
     ) -> AssuranceEvent:
         sources = tuple(sorted(set(source_ids)))
         if not sources:
             raise AssuranceFlowError("TRUST requires at least one recorded source")
+        if canonical_digest(self.graph.to_dict()) != self.graph_digest:
+            raise AssuranceFlowError("historical Graph changed after ledger creation")
         if target_id not in self.graph.artifacts:
             raise AssuranceFlowError(f"unknown TRUST target {target_id}")
-        ancestors = self.graph.ancestors((target_id,)) - {target_id}
-        if any(source not in ancestors for source in sources):
-            raise AssuranceFlowError("TRUST sources must be recorded ancestors of target")
+        transform = self.graph.transformations.get(transformation_id)
+        if transform is None:
+            raise AssuranceFlowError(f"unknown TRUST transformation {transformation_id}")
+        exact_inputs = tuple(sorted({port.artifact_id for port in transform.inputs}))
+        if sources != exact_inputs:
+            raise AssuranceFlowError(
+                "TRUST sources must equal the exact transformation input set"
+            )
+        if target_id not in {port.artifact_id for port in transform.outputs}:
+            raise AssuranceFlowError(
+                "TRUST target must be an output of the bound transformation"
+            )
+        if transform.status != "COMPLETED":
+            raise AssuranceFlowError("incomplete transformation cannot provide TRUST")
         if self.current_status(target_id) is not ArtifactStatus.VALID or any(
             self.current_status(source) is not ArtifactStatus.VALID
             for source in sources
         ):
             raise AssuranceFlowError(
-                "inadmissible target or ancestry cannot provide current TRUST"
+                "inadmissible target or transformation input cannot provide current TRUST"
             )
         unresolved_subjects = {item.subject_id for item in self.unresolved_conflicts()}
-        if target_id in unresolved_subjects or any(source in unresolved_subjects for source in sources):
+        if (
+            target_id in unresolved_subjects
+            or transformation_id in unresolved_subjects
+            or any(source in unresolved_subjects for source in sources)
+        ):
             raise AssuranceFlowError("unresolved conflict blocks clean TRUST")
-        expected = {"sources": list(sources), "target": target_id}
+
+        prerequisite_digests = tuple(sorted(set(prerequisite_trust_event_digests)))
+        current_by_digest = {
+            event.digest(): event for event in self.current_trust_events()
+        }
+        required_prerequisite_targets = {
+            source for source in sources if self.graph.incoming_hyperedges(source)
+        }
+        prerequisite_targets: list[str] = []
+        for event_digest in prerequisite_digests:
+            prerequisite = current_by_digest.get(event_digest)
+            if prerequisite is None:
+                raise AssuranceFlowError(
+                    "TRUST prerequisite is not a current passing TRUST event"
+                )
+            prerequisite_targets.append(prerequisite.subject_id)
+        if (
+            len(prerequisite_targets) != len(required_prerequisite_targets)
+            or set(prerequisite_targets) != required_prerequisite_targets
+        ):
+            raise AssuranceFlowError(
+                "TRUST requires exactly one current prerequisite for each derived input"
+            )
+
+        expected = {
+            "historical_graph_digest": self.graph_digest,
+            "inputs": list(sources),
+            "output": target_id,
+            "prerequisite_trust_event_digests": list(prerequisite_digests),
+            "transformation_id": transformation_id,
+        }
         if (
             proposition.subject_id != target_id
             or proposition.predicate != "vstd.graph.support"
@@ -610,6 +803,13 @@ class AssuranceLedger:
             recorded_at=recorded_at,
             evaluation=evaluation,
             evidence_payloads=session.evidence.export_base64(evaluation.evidence_refs),
+            attributes={
+                "historical_graph_digest": self.graph_digest,
+                "inputs": list(sources),
+                "output": target_id,
+                "prerequisite_trust_event_digests": list(prerequisite_digests),
+                "transformation_id": transformation_id,
+            },
         )
 
     def record_rot(
@@ -743,9 +943,10 @@ class AssuranceLedger:
         """Compute bounded artifact-relative BLAME or GUILT just in time.
 
         BLAME means only that the named artifact-relative responsibility
-        proposition passed. GUILT additionally names an exact violated
-        obligation in ``proposition.parameters['obligation']``. Neither result
-        concerns an actor's moral character, reputation, or general trust.
+        proposition passed. GUILT is not its directional opposite: it checks
+        that same localized responsibility together with an exact violated
+        obligation. Neither result concerns an actor's moral character,
+        reputation, or general trust.
         """
         localization = next(
             (
@@ -778,19 +979,22 @@ class AssuranceLedger:
                 None,
                 "diagnostic attribution requires a separate exact mechanism",
             )
+        obligation = proposition.parameters.get("obligation", "")
+        if kind is DiagnosticKind.GUILT and not obligation:
+            raise AssuranceFlowError("GUILT requires an exact violated obligation")
         expected = {
             "ancestor": ancestor_id,
             "descendant": descendant_id,
             "localization_event_digest": localization.digest(),
         }
+        if kind is DiagnosticKind.GUILT:
+            expected["violated_obligation"] = obligation
         if (
             proposition.subject_id != ancestor_id
             or proposition.predicate != f"vstd.graph.diagnostic.{kind.value.lower()}"
             or proposition.expected != expected
         ):
             raise AssuranceFlowError("diagnostic proposition is not exactly relation-bound")
-        if kind is DiagnosticKind.GUILT and not proposition.parameters.get("obligation"):
-            raise AssuranceFlowError("GUILT requires an exact violated obligation")
         evaluation = session.evaluate(proposition)
         event = self._append(
             kind=AssuranceEventKind.DIAGNOSTIC_ATTRIBUTION,
@@ -804,7 +1008,7 @@ class AssuranceLedger:
             attributes={
                 "diagnostic_kind": kind.value,
                 "localization_event_digest": localization.digest(),
-                "obligation": proposition.parameters.get("obligation", ""),
+                "obligation": obligation,
             },
         )
         return DiagnosticAttribution(
@@ -891,6 +1095,13 @@ def recheck_assurance_log(
                     subject_id,
                     source_ids,
                     proposition,
+                    transformation_id=str(attributes["transformation_id"]),
+                    prerequisite_trust_event_digests=tuple(
+                        str(item)
+                        for item in attributes[
+                            "prerequisite_trust_event_digests"
+                        ]
+                    ),
                     session=session,
                     recorded_at=recorded_at,
                 )
@@ -912,6 +1123,22 @@ def recheck_assurance_log(
             elif kind is AssuranceEventKind.STATUS_PROJECTION:
                 event = ledger.record_status_projection(
                     subject_id,
+                    proposition,
+                    session=session,
+                    recorded_at=recorded_at,
+                )
+            elif kind is AssuranceEventKind.CONFLICT_DECLARATION:
+                conflict_data = attributes["conflict"]
+                if not isinstance(conflict_data, Mapping):
+                    raise TypeError("conflict declaration is not an object")
+                event = ledger.record_conflict(
+                    ConflictRecord(
+                        str(conflict_data["conflict_id"]),
+                        str(conflict_data["subject_id"]),
+                        str(conflict_data["predicate"]),
+                        tuple(str(item) for item in conflict_data["competing_values"]),
+                        tuple(str(item) for item in conflict_data["evidence_refs"]),
+                    ),
                     proposition,
                     session=session,
                     recorded_at=recorded_at,

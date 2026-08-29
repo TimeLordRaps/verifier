@@ -46,7 +46,7 @@
       "required": ["sequence", "kind", "subject_id", "source_ids", "proposition", "binding", "recorded_at", "outcome", "mechanism_id", "mechanism_digest", "evidence_refs", "evidence_payloads", "trust_roots", "details", "previous_event_digest", "attributes", "event_digest"],
       "properties": {
         "sequence": {"type": "integer", "minimum": 0},
-        "kind": {"enum": ["TRUST", "ROT", "RUST", "STATUS_PROJECTION", "CONFLICT_RESOLUTION", "CAUSAL_LOCALIZATION", "DIAGNOSTIC_ATTRIBUTION"]},
+        "kind": {"enum": ["TRUST", "ROT", "RUST", "STATUS_PROJECTION", "CONFLICT_DECLARATION", "CONFLICT_RESOLUTION", "CAUSAL_LOCALIZATION", "DIAGNOSTIC_ATTRIBUTION"]},
         "subject_id": {"type": "string", "minLength": 1},
         "source_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "proposition": {"type": "string", "minLength": 1},
@@ -66,6 +66,49 @@
         "previous_event_digest": {"type": "string", "pattern": "^(?:[0-9a-f]{64})?$"},
         "attributes": {"type": "object"},
         "event_digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "TRUST"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/trustAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "CONFLICT_DECLARATION"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/conflictAttributes"}}}
+        }
+      ]
+    },
+    "trustAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "historical_graph_digest", "inputs", "output", "prerequisite_trust_event_digests", "transformation_id"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "historical_graph_digest": {"$ref": "#/$defs/digest"},
+        "inputs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "output": {"type": "string", "minLength": 1},
+        "prerequisite_trust_event_digests": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+        "transformation_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "conflictAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "conflict"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "conflict": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["conflict_id", "subject_id", "predicate", "competing_values", "evidence_refs"],
+          "properties": {
+            "conflict_id": {"type": "string", "minLength": 1},
+            "subject_id": {"type": "string", "minLength": 1},
+            "predicate": {"type": "string", "minLength": 1},
+            "competing_values": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}},
+            "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+          }
+        }
       }
     },
     "binding": {

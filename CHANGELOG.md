@@ -102,20 +102,25 @@
   fourteen-rung mechanisms plus an accepted kernel witness admit VSTD-5.
 - Implement the VSTD-5 reference mechanism and receipt: seven evidence-bound separation
   dimensions, duplicate-witness/evidence refusal, exact admitted-certificate and
-  corroboration binding,
-  disagreement preservation, embedded evidence, and offline result recheck. This does not
+  corroboration binding, typed binding/identity/separation/corroboration errors,
+  disagreement preservation, embedded evidence, and offline result recheck. Independence
+  fails closed on any identity or separation defect without parsing error-message text. This does not
   claim a real external witness or independent implementation; a positive observation with
   unresolved independence is overall `UNKNOWN`.
 - Add evidence-bound Graph profile computation and replay. The compatibility `graph_level`
   path remains caller-supplied; the new path reruns every member, ancestor, and reached-edge
   rating mechanism bound to the exact Graph, members, collection, and claim before profile
   1–5 can report `ESTABLISHED`. Profile zero remains `NOT_ESTABLISHED`.
-- Add `VSTD-GRAPH-ASSURANCE-1` and `AssuranceLedger` for hash-chained TRUST, ROT, RUST,
-  challenge-ledger projection, additive conflict resolution, structural RUST concentration,
+- Add `VSTD-GRAPH-ASSURANCE-1` and `AssuranceLedger` for hash-chained edge-local TRUST, ROT, RUST,
+  challenge-ledger projection, additive conflict declaration/resolution, structural RUST concentration,
   explicit causal localization, and bounded artifact-relative BLAME/GUILT propositions.
-  Duplicate paths remain set-valued, historical graph bytes remain immutable, and topology
-  alone earns no causal or moral conclusion. Add complete offline event replay, current TRUST
-  filtering, and deduplicated descendant reassessment discovery.
+  Each TRUST event binds one exact transformation, its inputs/output, the historical Graph,
+  and prerequisite TRUST events; current eligibility recursively fails closed when any bound
+  dependency degrades or conflicts. Duplicate paths remain set-valued, historical graph bytes
+  remain immutable, and topology alone earns no causal or moral conclusion. BLAME establishes
+  bounded responsibility or material contribution; GUILT additionally binds an exact violated
+  obligation and is not BLAME in the opposite direction. Add complete offline event replay,
+  current TRUST filtering, and deduplicated descendant reassessment discovery.
 
 - Preserve incompatible Graph assertions as evidence-linked conflict records and label
   rating-derived Graph profile numbers as `CALLER_SUPPLIED` candidates with conformance `NOT_ESTABLISHED`.

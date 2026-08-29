@@ -168,6 +168,14 @@ averaged, voted, or converted into actor standing. Every child MUST still discha
 new predicates, transformations, boundaries, and evidence obligations. A declared trust
 root is an explicit dependency and stopping boundary, not actor TRUST.
 
+The reference event mechanism realizes that rule edge by edge. Each TRUST event binds the
+historical Graph digest, one exact transformation, its complete input artifact set, one
+output artifact, and the exact prerequisite TRUST event for every derived input. A
+descendant event is current only while every recursively required event, input, output,
+and transformation remains admissible and free of unresolved conflict. Alternate or
+duplicate paths remain distinct recorded routes; their count supplies no added strength
+or witness independence.
+
 **ROT** is typed, time-indexed degradation of the current admissibility of recorded TRUST.
 It requires exact lifecycle or dependency evidence, such as expiry under a declared
 freshness bound, `STALE`, `CHALLENGED`, `REVOKED`, `SUPERSEDED`, or an invalidated required
@@ -186,6 +194,16 @@ observation, falsehood, or causal responsibility; localization requires addition
 intervention, ablation, independently bound execution evidence, or an equivalent declared
 mechanism.
 
+**BLAME** and **GUILT** are bounded artifact-relative diagnostic results, not opposite
+directions on the Graph. BLAME requires a named mechanism to establish that an exact
+artifact bears responsibility for or materially contributed to an exact localized
+deviation. GUILT is the stronger combined proposition: the same localized responsibility
+plus an exact obligation that the artifact violated. Thus GUILT contains a responsibility
+component, while BLAME alone establishes no obligation or violation. Neither term concerns
+actor morality, character, identity, or reputation. Exoneration, obligation satisfaction,
+or not-guilty conclusions require their own exact propositions and mechanisms; absent such
+evidence the result remains `UNKNOWN`.
+
 The word *causal* is required here for recorded developmental and provenance causality:
 the graph states which artifacts and transformations produced later claim architecture.
 Propagation across those causal-provenance edges does not by itself establish
@@ -196,11 +214,11 @@ flow in the opposite direction as inherited truth, decay, or guilt. `UNKNOWN` an
 `CONFLICTED` support or lineage MUST remain visible and MUST NOT become a clean signal.
 `VSTD-GRAPH-ASSURANCE-1` now serializes an additive, hash-chained reference event log with
 the complete historical Graph, exact proposition bindings, and embedded evidence bytes.
-`AssuranceLedger` implements mechanism-earned forward TRUST, typed ROT, challenge-ledger
-status projection, reverse RUST reachability, unique-descendant structural concentration,
-additive conflict resolution, explicit causal localization, and bounded artifact-relative
-diagnostic attribution. Duplicate paths and repeated records remain set-valued and earn no
-strength. `recheck_assurance_log` reconstructs the historical Graph, rehashes the embedded
+`AssuranceLedger` implements mechanism-earned forward TRUST edge by edge, typed ROT,
+challenge-ledger status projection, reverse RUST reachability, unique-descendant structural
+concentration, additive conflict declaration and resolution, explicit causal localization,
+and bounded artifact-relative diagnostic attribution. Duplicate paths and repeated records
+remain set-valued and earn no strength. `recheck_assurance_log` reconstructs the historical Graph, rehashes the embedded
 evidence, reruns every exact mechanism, reproduces the event hash chain, and compares the
 derived current view. A deployment still supplies the proposition-specific mechanisms: the
 event format and dispatcher do not create a universal support-transfer algebra or infer
