@@ -1,12 +1,134 @@
 # Changelog
 
+> **Acronyms:** artificial intelligence (AI); Advanced Micro Devices (AMD); application programming interface (API);
+> Amazon Web Services (AWS); Concise Binary Object Representation (CBOR); continuous integration (CI);
+> command-line interface (CLI); conjunctive normal form (CNF); CBOR Object Signing and Encryption (COSE);
+> grounded decision certificate (GDC); Hypertext Transfer Protocol Secure (HTTPS);
+> Internet Engineering Task Force (IETF); JavaScript Object Notation (JSON); nondeterministic polynomial time (NP);
+> reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
+> Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
+> Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
+> zero-identity/zero-knowledge (ZIZK).
+
+## 1.2.0 - UNRELEASED
+
+### Public surface and integrations
+
+- Restructure the public first-view path around one bounded project description, one
+  deterministic demonstration, one canonical maturity table, skeptical claim limits,
+  contributor routes, and release/citation boundaries; align Pages and package metadata
+  without changing normative or serialized-receipt semantics.
+- Normalize the public architecture as a verification complex of named closure
+  coordinates and cumulative numbered profiles; reserve VSTD-4 rung, candidate depth,
+  verification order, compatibility level, and checker-cost tier for their distinct uses.
+- Add experimental workflow profile 0.1 with deterministic canonicalization, strict
+  validation, bounded work-allocation records, additive amendments and challenges,
+  explicit unresolved horizons, and verdict-neutral platform events.
+- Add a normalized GitHub adapter for issues, commits, workflow runs, artifacts, and
+  pull requests. Successful workflows and merges retain `verification_effect = NONE`
+  unless a separate native result is explicitly mapped through a bound VSTD receipt.
+- Add `vstd experiment validate` and `vstd experiment github-events` as offline,
+  verdict-neutral entry points. Repository artifacts are explicitly `NOT_CHECKED` with
+  exit code 2 unless their root is supplied.
+- Add a machine-readable schema, checked-in verdict-neutral specimen, generated
+  experiment index, adversarial tests, and a runnable offline example.
+- Add a generated CLI/API reference page and presentation gates that reject stale
+  reference or experiment-index content.
+- Clarify VSTD's role as a verification-domain language and interchange layer that
+  preserves, rather than replaces or strengthens, native verifier results.
+- Add the experimental SCITT adapter, rerunnable real-COSE specimen with ephemeral keys, explicit semantic
+  boundary, and adversarial composition tests without claiming IETF review or payload
+  truth from registration.
+- Surface zero-identity/zero-knowledge (ZIZK) artifact-first TRUST as governing
+  architecture, publish the bounded RISC Zero reference mechanism and exact recorded
+  public proof artifacts, and keep only unfinished mechanisms experimental while
+  preserving unresolved horizons and native-system authority.
+- Formally distinguish TRUST as mechanism-earned forward artifact support, ROT as typed
+  time-indexed degradation of current admissibility, and RUST as an inverse-TRUST memetic
+  causal backtrace toward recorded ancestor states. None is actor-tied trust, a scalar,
+  or permission to infer guilt, responsibility, or causal localization from reachability.
+- Present current reports, schemas, module descriptions, and examples under the full
+  VSTD-1 and VSTD-2 numbered-profile identifiers; remove retired partial-profile object identifiers from
+  active readers and add a regression preventing their return.
+- Add normative artifact-control mechanism version 1 with exact-byte file/directory
+  freezing, SHA-256 plus SHA3-256 artifact-derived identities, observable read-only
+  guards, readable finite self-closing Ed25519 seals, external anchor checks, and
+  copy-on-write thaw descendants. Sealing is not encryption and supplies no actor trust,
+  semantic correctness, trusted time, or numbered VSTD profile result.
+- Document multi-temporal realms, discrete and continuous coexistence, causal and
+  problem-space partial orders, atemporal versus temporal capsules, explicit cross-realm
+  mappings, and future constrained language-model transition verification without
+  claiming continuous mediation, inference-law implementation, or textual truth.
+
+### Claim boundaries and validation
+
+- Remove the live SimulacraBench rehearsal and its front-door promotion; the repository
+  never contained or reproduced the submission, hosted image, hardware, or protected
+  evaluation identified by that name.
+- Correct generic-run wording: digest validation is an integrity check, external
+  references remain unattested until dereferenced and verified, same-path output
+  extraction is not independent verification, and unverified determinism is `UNKNOWN`.
+- Publish a Pages guide index and enforce language, title, viewport, main-region, skip-link,
+  image-alt, labelled-navigation, generated-reference, and local-link checks in CI.
+- Require CodeQL security-extended Python analysis in the protected repository-check
+  aggregate with only read access to content and write access to security results.
+- Fail closed on malformed generic-run receipts, publish their exact schema, and dispatch
+  `VSTD-1` by its required receipt profile.
+- Package every normative specification, verify byte identity, and smoke-test the built
+  wheel outside the source checkout so installed specification bindings cannot silently
+  become unavailable.
+- Bind the bundled checker to VSTD-1, record actor and execution separation explicitly,
+  and never infer independent actors from a historical field name, repeated runs, or
+  matching results.
+- Reject self-promoted independence even when every supplied status and digest agrees;
+  version 1.2.0 has no actor/execution evidence-binding adapter and therefore never
+  derives `EVIDENCED` from serialized references.
+- Require the real optional SCITT/COSE cryptographic example in the protected
+  repository-check aggregate
+  rather than allowing its dependency-gated tests to disappear from the base matrix.
+- Close generic-run control structures while retaining the released refutation-extension
+  map, make common receipt commands honor `--json`, and lock `validate` as an
+  integrity/profile check rather than a claim verifier.
+
+### Graph and conformance semantics
+
+- Preserve incompatible Graph assertions as evidence-linked conflict records and label
+  rating-derived Graph profile numbers as `CALLER_SUPPLIED` candidates with conformance `NOT_ESTABLISHED`.
+- Classify the current VSTD-4 candidate-depth calculation as a structural result over
+  caller-supplied rung references with conformance `NOT_ESTABLISHED`; reject that
+  candidate at the VSTD-5 entry gate even when its candidate depth is 14.
+- Label Graph 2-4 candidates consistently on first-view, documentation, command, schema,
+  and SCITT surfaces. Keep challenge-ledger state, degradation from status already
+  recorded in a Graph, and the missing challenge-to-Graph adapter distinct.
+
+### Release and maintainer controls
+
+- Mark 1.2.0 metadata as an unreleased release candidate, omit any fabricated release
+  date, and require the exact tagged checkout to have `TIME.md` set to `Status: CLEAR`.
+- Make package/reference status explicitly say VSTD-4 candidate conformance is
+  `NOT_ESTABLISHED`, and require finalized release metadata in the tag workflow.
+- Publish the architecture ownership map linking normative documents, runtime validators,
+  schemas, and conformance tests.
+- Document the five-As human traversal over existing receipt, Graph, hardware, certificate,
+  reproduction, and SCITT machinery without adding a serialized receipt format; reject duplicate Graph
+  identifiers and reproduction-fidelity states inferred from declarations, matching verdicts, or
+  mismatching runs.
+- Restore the three non-overlapping operating controls: `AGENTS.md` for automated work,
+  `HUMANS.md` for human five-As reasoning, and `TIME.md` for current repository
+  contradictions. Development may record `OPEN`; the exact tagged checkout must be
+  `CLEAR` before publication.
+- Replace the developmental profile-numbered generic-run container with required neutral
+  `assessment_context`; preserve its mechanism, bound, commitment, and refutation
+  coordinates without carrying a VSTD-4 conformance field.
+
 ## 1.1.3 - 2026-08-22
 
 - Canonicalize source ZIP timestamps in UTC and remove host ZIP metadata, so the
   same Git coordinate produces byte-identical source archives on Windows and Linux.
 - Canonicalize generated wheel and source-distribution newlines, archive member
   order, modes, timestamps, and ownership. Rebuild wheel `RECORD` after normalization
-  and use compression-independent ZIP members plus a stable USTAR/gzip container.
+  and use compression-independent ZIP members plus a stable `ustar`/gzip container.
 - Normalize common HTTPS and SSH spellings of the Git origin before recording the
   public repository coordinate in a release manifest.
 - Require CI to build the complete release artifact set independently on Windows and
@@ -26,7 +148,7 @@
   manifests published through `v1.1.1` that bind `verifiable-standard-<release>.zip`
   remain verifiable without republishing.
 - Record the import-package, distribution, and archive renames in
-  `WIRE_IDENTIFIERS.md`. No receipt wire identifier, schema `$id`, or canonical digest
+  `WIRE_IDENTIFIERS.md`. No receipt serialized receipt identifier, schema `$id`, or canonical digest
   changes.
 - Attribute the specifications, distribution metadata, and governance decision rights to
   `TimeLordRaps`. The legal name remains the copyright holder in `NOTICE`.
@@ -42,7 +164,7 @@
 
 - Rename the VSTD-2 section 7 lifecycle term `VERIFIABLE` to `GEOMETRY_INSPECTABLE`
   and record in `WIRE_IDENTIFIERS.md` that the section 7 vocabulary is prose-only, so
-  no status token reuses the maintainer's name and no wire value changes.
+  no status token reuses the maintainer's name and no serialized receipt value changes.
 - Label the reference emulator's synthetic accelerator descriptor `vendor` as
   `EMULATED` instead of the maintainer's name, so fabricated hardware evidence cannot
   read as maintainer attestation.
@@ -52,7 +174,7 @@
 
 - Correct the SimulacraBench synthetic specimen additively: unobserved private
   artifacts now remain `IDENTIFIED`, and the public challenge stops at
-  `CHALLENGED` without a founder-authored adjudication.
+  `CHALLENGED` without a maintainer-authored adjudication.
 - Require content-bound observed bytes before deriving `AVAILABLE` or `PORTABLE`;
   locator and retention declarations alone no longer elevate availability.
 - Expand the public presentation gate to reject drive-qualified paths, private
@@ -62,7 +184,7 @@
 ## 1.1.1 - 2026-08-22
 
 - Replace the overview's generic maturity badges with the exact status of every
-  object and graph layer, so the presentation cannot imply evidence or
+  object and Graph numbered profile, so the presentation cannot imply evidence or
   implementation maturity that the specifications do not establish.
 - Enforce those visual labels in the presentation gate and publish canonical
   receipt schemas at their declared GitHub Pages `$id` routes.
@@ -88,13 +210,13 @@
 
 ## 1.0.1 - 2026-08-22
 
-- State explicitly that each VSTD layer requires its own evidence: layer 4 does not
-  supply, entail, upgrade, or repair layers 3, 2, or 1.
+- State explicitly that each VSTD closure coordinate requires its own evidence:
+  Refutability does not supply, entail, upgrade, or repair prerequisite coordinates.
 - Replace unsupported Tarski, generic NP-certificate, CNF-equals-3-SAT, and
   physical-world co-NP claims with bounded statements tied to implemented formal
   languages and declared observation surfaces.
-- Replace adopter-migration framing with a frozen wire-identifier and historical
-  project-filename registry; no external adoption is claimed.
+- Replace adopter-migration framing with an exact current wire-dispatch registry; no
+  external adoption is claimed.
 - Generate source releases from exact public Git objects and publish a separate
   manifest binding the resolvable ref, commit, archive digest, file set, and member
   bytes. Line-ending equivalence is not accepted as byte identity.
@@ -111,27 +233,29 @@
 
 ## 1.0.0 - 2026-08-22
 
-- Redesign specification numbers as verification-depth layers: VSTD-1 through
+- Redesign specification numbers as cumulative numbered profiles: VSTD-1 through
   VSTD-5 on the object axis and VSTD-Graph-1 through VSTD-Graph-5 on the
   collection axis.
-- Hard-rename the historical specification paths while preserving issued receipt
-  wire identifiers and the `v0.1.0` and `v0.2.0` release history.
-- Implement the fourteen-rung VSTD-4 refutability ladder and compute depth by
-  iterated satisfiability rather than accepting a declared level.
+- Establish integer numbered-profile specification paths while release history remains available in
+  the corresponding Git tags.
+- Add the fourteen-rung VSTD-4 structural calculation and compute its candidate depth by
+  iterated satisfiability rather than copying a declared depth. Version 1.2.0 clarifies
+  that its caller-supplied references do not establish VSTD-4 conformance.
 - Add the `VSTD4-GDC-1` grounded decision-certificate format, independent bounded
   checker, Horn/unit-propagation tier, width-bounded and general-resolution tiers,
   and evidence-bearing `UNKNOWN` results on exhaustion.
 - Add machine-readable refutation surfaces, precommitment envelopes, availability
   assessment, append-only challenge adjudication, monotonic degradation, and
   refutability closure.
-- Compute VSTD-Graph level from membership, provenance closure, status, and edge
-  evidence, with a certificate explaining the next unreachable level.
+- Preserve the historical `graph_level` compatibility calculation from membership, provenance closure,
+  status, and caller-supplied edge ratings, with a certificate explaining the next
+  unreachable candidate Graph profile. Version 1.2.0 labels conformance `NOT_ESTABLISHED`.
 - Replace fabricated conflict evidence, literal trust-boundary claims, and
   decorative policy certificates with checked evidence and fail-closed divergence.
 - Publish a draft VSTD-5 witness-corroboration interface. No independent witness
   implementation or interoperability claim is included.
-- Move layer-specific and profile documentation under `docs/` and publish schemas
-  with stable layer-oriented filenames.
+- Move profile-specific documentation under `docs/` and publish schemas with stable
+  compatibility filenames and paths.
 
 ## 0.2.0 - 2026-08-21
 
@@ -157,7 +281,8 @@
 
 ## 0.1.0 - 2026-08-21
 
-- Publish VSTD-0.1, VSTD-DATA-0.1, and experimental VSTD-0.2.
+- Publish the initial claim-mechanics, provenance-graph, and experimental
+  verification-geometry surfaces.
 - Publish zero-required-dependency receipt, provenance, geometry, and policy primitives.
 - Publish an optional logits-level constraint kernel with atomic dependency profiles.
 - Add a target-neutral public CLI for generic-run and stored VSTD-DATA receipts.

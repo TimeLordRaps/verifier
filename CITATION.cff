@@ -1,11 +1,10 @@
 cff-version: 1.2.0
-message: "If you use VSTD or its reference implementation, cite this release."
-title: "VSTD: A Two-Axis Ladder for Refutable Verification"
+message: "This describes the Verifier Standard (VSTD) 1.2.0 release candidate; cite the published release after it exists."
+title: "Verifier Standard (VSTD): Bounded, Refutable Evidence for Computational Claims"
 type: software
 authors:
   - name: "TimeLordRaps"
-version: 1.1.3
-date-released: 2026-08-22
+version: 1.2.0
 license: Apache-2.0
 repository-code: "https://github.com/TimeLordRaps/verifier"
 keywords:
@@ -17,3 +16,4 @@ keywords:
   - accelerator accountability
   - refutability
   - proof certificates
+  - bounded claims

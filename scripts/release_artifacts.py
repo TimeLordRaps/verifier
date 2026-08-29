@@ -1,4 +1,7 @@
-"""Build and verify public release artifacts from an exact public Git ref.
+"""Terminology: Secure Hash Algorithm 256-bit (SHA-256); Software Bill of Materials
+(SBOM); uniform resource locator (URL); Verifier Standard (VSTD); ZIP archive format (ZIP).
+
+Build and verify public release artifacts from an exact public Git ref.
 
 The release manifest is an artifact beside the source ZIP, not a tracked file inside
 the source tree. That avoids a self-referential commit hash and makes ``source_commit``
@@ -28,10 +31,11 @@ import tarfile
 import tempfile
 import zipfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 
 SCHEMA_VERSION = "VSTD-PUBLIC-RELEASE-1.1"
+CYCLONEDX_SPEC_VERSION = "1.6"
 # Archive stem for releases built from this tree. Releases up to and including v1.1.1
 # were published as `verifiable-standard-<release>.zip`; their manifests carry that
 # prefix and are still verified from the manifest itself.
@@ -73,6 +77,95 @@ def _sha256(data: bytes) -> str:
 def _file_record(path: Path) -> dict[str, Any]:
     data = path.read_bytes()
     return {"byte_size": len(data), "sha256": _sha256(data)}
+
+
+def _cyclonedx_component(filename: str, record: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "type": "file",
+        "bom-ref": f"artifact:{filename}",
+        "name": filename,
+        "hashes": [{"alg": "SHA-256", "content": str(record["sha256"])}],
+        "properties": [{"name": "vstd:byte-size", "value": str(record["byte_size"])}],
+    }
+
+
+def _cyclonedx_payload(
+    *,
+    commit: str,
+    epoch: str,
+    release: str,
+    artifacts: Mapping[str, Mapping[str, Any]],
+) -> dict[str, Any]:
+    timestamp = datetime.fromtimestamp(int(epoch), timezone.utc).isoformat().replace(
+        "+00:00", "Z"
+    )
+    root_ref = f"pkg:pypi/{DISTRIBUTION_NAME}@{release}"
+    components = [
+        _cyclonedx_component(name, artifacts[name]) for name in sorted(artifacts)
+    ]
+    return {
+        "$schema": "https://cyclonedx.org/schema/bom-1.6.schema.json",
+        "bomFormat": "CycloneDX",
+        "specVersion": CYCLONEDX_SPEC_VERSION,
+        "version": 1,
+        "metadata": {
+            "timestamp": timestamp,
+            "component": {
+                "type": "library",
+                "bom-ref": root_ref,
+                "name": DISTRIBUTION_NAME,
+                "version": release,
+                "purl": root_ref,
+                "licenses": [{"license": {"id": "Apache-2.0"}}],
+                "properties": [{"name": "vstd:source-commit", "value": commit}],
+            },
+        },
+        "components": components,
+        "dependencies": [
+            {
+                "ref": root_ref,
+                "dependsOn": [component["bom-ref"] for component in components],
+            }
+        ],
+    }
+
+
+def _write_cyclonedx_sbom(
+    destination: Path,
+    *,
+    commit: str,
+    epoch: str,
+    release: str,
+    artifacts: Mapping[str, Mapping[str, Any]],
+) -> None:
+    destination.write_text(
+        json.dumps(
+            _cyclonedx_payload(
+                commit=commit, epoch=epoch, release=release, artifacts=artifacts
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+
+def _verify_cyclonedx_sbom(
+    path: Path,
+    *,
+    commit: str,
+    epoch: str,
+    release: str,
+    artifacts: Mapping[str, Mapping[str, Any]],
+) -> None:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    expected = _cyclonedx_payload(
+        commit=commit, epoch=epoch, release=release, artifacts=artifacts
+    )
+    if payload != expected:
+        raise ReleaseError("CycloneDX SBOM bytes do not match the bound release subjects")
 
 
 def _resolved_commit(repo: Path, ref: str) -> str:
@@ -522,7 +615,7 @@ def _build_sdist_once(
 
 def build_all(
     repo: Path, ref: str, release: str, output_dir: Path
-) -> tuple[Path, Path, Path, Path]:
+) -> tuple[Path, Path, Path, Path, Path]:
     archive, manifest_path = build_source(repo, ref, release, output_dir)
     commit = _resolved_commit(repo.resolve(), ref)
     epoch = _run(repo.resolve(), "git", "show", "-s", "--format=%ct", commit).decode().strip()
@@ -550,11 +643,26 @@ def build_all(
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest["artifacts"][wheel.name] = _file_record(wheel)
     manifest["artifacts"][sdist.name] = _file_record(sdist)
+    sbom = output_dir / f"{ARCHIVE_STEM}-{release}.cdx.json"
+    _write_cyclonedx_sbom(
+        sbom,
+        commit=commit,
+        epoch=epoch,
+        release=release,
+        artifacts=manifest["artifacts"],
+    )
+    manifest["sbom"] = {
+        "filename": sbom.name,
+        "format": "CycloneDX",
+        "spec_version": CYCLONEDX_SPEC_VERSION,
+        "subjects": sorted(manifest["artifacts"]),
+    }
+    manifest["artifacts"][sbom.name] = _file_record(sbom)
     manifest_path.write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
     )
     verify_manifest(repo, manifest_path, output_dir)
-    return archive, wheel, sdist, manifest_path
+    return archive, wheel, sdist, sbom, manifest_path
 
 
 def compare_artifact_directories(first: Path, second: Path) -> int:
@@ -613,6 +721,29 @@ def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None =
         path = artifact_dir / filename
         if not path.is_file() or _file_record(path) != expected:
             raise ReleaseError(f"artifact digest or byte size mismatch: {filename}")
+
+    sbom_record = manifest.get("sbom")
+    if sbom_record is not None:
+        sbom_name = str(sbom_record.get("filename", ""))
+        subjects = sorted(name for name in artifacts if name != sbom_name)
+        if sbom_record != {
+            "filename": sbom_name,
+            "format": "CycloneDX",
+            "spec_version": CYCLONEDX_SPEC_VERSION,
+            "subjects": subjects,
+        }:
+            raise ReleaseError("release manifest SBOM binding is not canonical")
+        if not sbom_name.endswith(".cdx.json") or sbom_name not in artifacts:
+            raise ReleaseError("release manifest does not bind its declared SBOM")
+        _verify_cyclonedx_sbom(
+            artifact_dir / sbom_name,
+            commit=commit,
+            epoch=_run(repo, "git", "show", "-s", "--format=%ct", commit)
+            .decode()
+            .strip(),
+            release=str(manifest["release"]),
+            artifacts={name: artifacts[name] for name in subjects},
+        )
 
     distribution = manifest.get("distribution")
     if distribution is not None:
@@ -690,12 +821,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[PASS] source archive: {archive}")
             print(f"[PASS] release manifest: {manifest}")
         elif args.command == "build":
-            archive, wheel, sdist, manifest = build_all(
+            archive, wheel, sdist, sbom, manifest = build_all(
                 args.repo, args.ref, args.release, args.output_dir
             )
             print(f"[PASS] source archive: {archive}")
             print(f"[PASS] reproducible wheel: {wheel}")
             print(f"[PASS] reproducible sdist: {sdist}")
+            print(f"[PASS] CycloneDX SBOM: {sbom}")
             print(f"[PASS] release manifest: {manifest}")
         elif args.command == "verify":
             verify_manifest(args.repo, args.manifest, args.artifact_dir)
