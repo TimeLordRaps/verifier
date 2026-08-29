@@ -29,6 +29,12 @@ closed:
 | `VSTD-5.md` | `schema_version = "VSTD-5"` |
 | `VSTD-Graph-1.md` | `schema_version = "VSTD-DATA-0.1"` |
 
+The frozen `VSTD-DATA-0.1` reader preserves its original separate artifact and
+transformation identifier namespaces. New Graph construction, evidence-bound Graph
+establishment, and the separate `VSTD-GRAPH-ASSURANCE-1` mechanism require global
+cross-kind disjointness; that stricter admission rule does not retroactively narrow which
+historical `VSTD-DATA-0.1` bytes can be decoded and replayed.
+
 VSTD-1 has two current receipt profiles:
 
 | `receipt_kind` | Schema | Meaning |

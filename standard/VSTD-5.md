@@ -44,8 +44,9 @@ The reference receipt contains:
   offline.
 
 Schema validity establishes only shape. `recheck_vstd5_receipt` imports and hashes
-the embedded bytes, checks the admitted VSTD-4 result digest, reruns every registered
-mechanism, and compares the complete derived result. Assessment and receipt construction
+the embedded bytes, compares every carried VSTD-4 entry coordinate—including the result
+digest and witness digest—with the admitted entry, reruns every registered mechanism, and
+compares the complete derived result. Assessment and receipt construction
 are separate boundaries: `assess_witness_corroboration` may diagnose an arbitrary malformed
 or incomplete bundle as `UNKNOWN` / `NOT_ESTABLISHED`, but that assessment object is not
 thereby a VSTD-5 receipt. `build_vstd5_receipt` MUST fail before returning unless the object
@@ -87,6 +88,7 @@ A corroboration mechanism MUST bind and check the exact:
 * claim commitment;
 * VSTD-4 certificate digest;
 * checker descriptor digest;
+* corroboration class;
 * witness coordinate;
 * observation time;
 * observation evidence bytes; and
@@ -95,6 +97,8 @@ A corroboration mechanism MUST bind and check the exact:
 A record's certificate digest MUST equal the admitted evidence-bound VSTD-4 witness,
 not merely a caller-selected digest repeated in both fields. Every identified witness
 MUST contribute a corroboration record; dangling identities do not create plurality.
+`corroboration_class` is part of the mechanism-checked expected proposition, not declared
+metadata and not an assurance-bearing label by itself.
 
 A mechanism-earned negative result remains negative. Conflicting checked records
 produce `CONFLICTED`; witnesses are not votes, and majority count never cleans the
@@ -121,9 +125,10 @@ separate ordered arrays so representable duplicate, orphan, reused-identity, and
 assertion failures survive round trip. It refuses empty witness/corroboration collections,
 empty required identifiers, invalid receipt identifiers, malformed nested records, and
 missing verdict-material bytes rather than naming them receipts. `recheck_vstd5_receipt`
-applies the same zero-dependency structural gate before replay. Neither function turns an
-identity coordinate into trust or establishes a fact outside the propositions checked by
-its registered mechanisms.
+applies the same zero-dependency structural gate, rejects any inconsistent redundant VSTD-4
+entry coordinate, and mechanism-checks the corroboration class before accepting exact replay.
+Neither function turns an identity coordinate into trust or establishes a fact outside the
+propositions checked by its registered mechanisms.
 
 ---
 

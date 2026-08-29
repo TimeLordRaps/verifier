@@ -308,14 +308,18 @@ ordered arrays, so duplicates, orphan assertions, and missing cardinality surviv
 build and replay rather than disappearing inside a keyed map. Permissive assessment remains
 separate from portable-record admission: the builder raises unless the result inhabits the
 strict VSTD-5 schema and embeds every verdict-material evidence byte, and the rechecker
-enforces the same zero-dependency shape gate before replay. This path does not upgrade the
-legacy generic-run fields.
+enforces the same zero-dependency shape gate before replay. It also compares every redundant
+VSTD-4 entry coordinate and treats `corroboration_class` as part of the mechanism-checked
+expected proposition, so relabeling either cannot retain an established result. This path
+does not upgrade the legacy generic-run fields.
 
 Graph conflict records retain incompatible values and their evidence references without
 adding a scalar score or changing the frozen artifact-status vocabulary. A conflict makes
-the subject inadmissible to a clean candidate Graph profile. Artifact and transformation
-identifiers are globally disjoint, so the conflict overlay's `subject_id` cannot ambiguously
-name both kinds of Graph object.
+the subject inadmissible to a clean candidate Graph profile. The frozen `VSTD-DATA-0.1`
+reader retains its historical separate artifact/transformation namespaces. Direct new
+construction, evidence-bound Graph establishment, and the assurance overlay require global
+cross-kind disjointness, so an untyped `subject_id` cannot ambiguously name both kinds of
+Graph object.
 
 ### Recursive current-state audit
 

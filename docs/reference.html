@@ -537,7 +537,7 @@
 <tr><td><code>outgoing_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that consume artifact_id as an input.</td></tr>
 <tr><td><code>root_sources(self) -&gt; 'set[str]'</code></td><td>Artifacts with zero incoming hyperedges (genesis roots).</td></tr>
 <tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>validate_structure(self) -&gt; 'list[str]'</code></td><td>Return deterministic errors for the implemented graph surface.</td></tr>
+<tr><td><code>validate_structure(self, *, allow_legacy_identifier_overlap: 'bool' = False) -&gt; 'list[str]'</code></td><td>Return deterministic errors for the implemented graph surface.</td></tr>
 <tr><td><code>verify_acyclicity(self, artifact_ids: 'Optional[Iterable[str]]' = None) -&gt; 'bool'</code></td><td>Check whether all or a selected artifact-induced subgraph contains cycles.</td></tr>
 </tbody></table>
 </article>

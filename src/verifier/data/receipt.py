@@ -278,7 +278,9 @@ def validate_data_receipt(receipt_path_or_dir: Path) -> int:
     except (KeyError, TypeError, ValueError) as exc:
         print(f"[FAIL] Cannot parse hypergraph: {exc}", file=sys.stderr)
         return 1
-    graph_errors.extend(hypergraph.validate_structure())
+    graph_errors.extend(
+        hypergraph.validate_structure(allow_legacy_identifier_overlap=True)
+    )
 
     target_artifact_id = data.get("dataset_spec", {}).get("target_artifact_id")
     if target_artifact_id not in hypergraph.artifacts:

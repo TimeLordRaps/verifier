@@ -5,9 +5,11 @@ Target-neutral VSTD-DATA receipt validation and mechanism replay."""
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
+from jsonschema import Draft202012Validator
 
 from verifier.core.checker import VerificationVerdict
 from verifier.core.provenance import GitProvenance, ProvenanceRecord, RuntimeEnvironment
@@ -22,6 +24,7 @@ from verifier.data.models import (
     TransformationHyperedge,
     TransformationType,
 )
+from verifier.data.assurance import AssuranceFlowError, AssuranceLedger
 from verifier.data.policy import ProvenancePolicyVerifier
 from verifier.data.receipt import (
     DataIndependentAudit,
@@ -274,6 +277,84 @@ def test_artifact_and_transformation_identifiers_are_globally_disjoint() -> None
     assert graph.validate_structure()[0] == (
         "artifact and transformation identifiers must be disjoint: shared:id"
     )
+
+
+def test_frozen_graph_reader_preserves_separate_identifier_namespaces(
+    tmp_path: Path, capsys
+) -> None:
+    artifact = ArtifactNode(
+        artifact_id="artifact:input",
+        label="input",
+        artifact_type=ArtifactType.RAW_SOURCE_FILE,
+        content_digest="a" * 64,
+    )
+    output = ArtifactNode(
+        artifact_id="artifact:output",
+        label="output",
+        artifact_type=ArtifactType.EVALUATION_REPORT,
+        content_digest="b" * 64,
+    )
+    transformation = TransformationHyperedge(
+        transformation_id="artifact:input",
+        label="historical overlapping identifier",
+        transformation_type=TransformationType.EVALUATION,
+        inputs=(HyperedgePort("artifact:input", "INPUT"),),
+        outputs=(HyperedgePort("artifact:output", "OUTPUT"),),
+        software_provenance={},
+        parameters={},
+        execution_environment={},
+    )
+    payload = {
+        "artifacts": [artifact.to_dict(), output.to_dict()],
+        "transformations": [transformation.to_dict()],
+        "contributors": [],
+        "rights": [],
+        "conflicts": [],
+    }
+    graph_schema = json.loads(
+        (
+            Path(__file__).resolve().parents[1]
+            / "receipts/schema/vstd_graph_receipt.json"
+        ).read_text()
+    )["properties"]["hypergraph"]
+    Draft202012Validator(graph_schema).validate(payload)
+
+    restored = ProvenanceHypergraph.from_dict(payload)
+    assert restored.to_dict() == payload
+    assert restored.validate_structure(
+        allow_legacy_identifier_overlap=True
+    ) == []
+    assert restored.validate_structure()[0] == (
+        "artifact and transformation identifiers must be disjoint: artifact:input"
+    )
+    with pytest.raises(ValueError, match="identifiers must be disjoint"):
+        ProvenanceHypergraph.from_dict(
+            payload, allow_legacy_identifier_overlap=False
+        )
+    duplicate_artifact = {
+        **payload,
+        "artifacts": [*payload["artifacts"], artifact.to_dict()],
+    }
+    with pytest.raises(ValueError, match="duplicate graph identifier"):
+        ProvenanceHypergraph.from_dict(duplicate_artifact)
+    with pytest.raises(AssuranceFlowError, match="invalid source graph"):
+        AssuranceLedger(restored)
+
+    receipt = _receipt()
+    receipt.hypergraph = restored
+    receipt.completeness_metrics = restored.compute_completeness()
+    receipt.independent_audit = replace(
+        receipt.independent_audit,
+        acyclic_hypergraph=True,
+        integrity_passed=True,
+        root_sources_count=1,
+        terminal_outputs_count=1,
+        transformations_count=1,
+    )
+    receipt.save_to_directory(tmp_path)
+    assert validate_data_receipt(tmp_path) == 0
+    assert "[VALIDATION OK]" in capsys.readouterr().out
+    assert reproduce_data_receipt(tmp_path) == 0
 
 
 def test_completeness_rejects_non_hex_digest() -> None:

@@ -65,6 +65,15 @@ outputs. The edge records ancestry; it does not by itself establish causal influ
 - `parameters`: Exact hyperparameter dictionary, filter criteria, or random seeds.
 - `execution_environment`: Python runtime, host OS, hardware acceleration class, timestamp.
 
+The frozen `VSTD-DATA-0.1` serialization defines artifact and transformation identifiers
+inside separate collections; historical readers therefore retain a payload in which one
+string occurs once in each collection. Direct new construction, evidence-bound Graph
+establishment, and `VSTD-GRAPH-ASSURANCE-1` require the two sets to be globally
+disjoint because current evidence maps and the assurance overlay's `subject_id` do not carry
+an artifact/transformation kind. A historical overlap is readable and reproducible as
+recorded lineage but is inadmissible to those stricter current mechanisms. This compatibility
+rule does not let duplicates within either collection replace recorded evidence.
+
 ### 2.3 Contributor Nodes ($\mathcal{C}$)
 - `contributor_id`, `name`, `contributor_type` (`INDIVIDUAL`, `ORGANIZATION`, `MODEL_GENERATOR`, `AUTOMATED_SYSTEM`), `uri`.
 
@@ -76,9 +85,6 @@ outputs. The edge records ancestry; it does not by itself establish causal influ
   bounded CNF with its minimal DPLL implementation; general SMT is not implemented.
 
 ### 2.6 Conflict Records ($\mathcal{X}$)
-- Artifact and transformation identifiers share one globally disjoint subject namespace.
-  An identifier collision is structurally invalid because an untyped `subject_id` must name
-  exactly one kind of Graph object.
 - `conflict_id`, `subject_id`, and `predicate` identify the disputed coordinate.
 - `competing_values` retains at least two incompatible values.
 - `evidence_refs` retains at least two evidence records rather than selecting a winner.

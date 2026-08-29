@@ -355,18 +355,23 @@ class ProvenanceHypergraph:
                 roots.add(art_id)
         return roots
 
-    def validate_structure(self) -> list[str]:
+    def validate_structure(
+        self, *, allow_legacy_identifier_overlap: bool = False
+    ) -> list[str]:
         """Return deterministic errors for the implemented graph surface.
 
         This validates the stored representation.  It does not prove that the graph
-        captures every real-world input or transformation.
+        captures every real-world input or transformation.  The compatibility flag
+        preserves the two identifier namespaces of frozen ``VSTD-DATA-0.1`` bytes;
+        new construction and assurance mechanisms keep the stricter default.
         """
         errors: list[str] = []
-        for identifier in sorted(set(self.artifacts) & set(self.transformations)):
-            errors.append(
-                "artifact and transformation identifiers must be disjoint: "
-                f"{identifier}"
-            )
+        if not allow_legacy_identifier_overlap:
+            for identifier in sorted(set(self.artifacts) & set(self.transformations)):
+                errors.append(
+                    "artifact and transformation identifiers must be disjoint: "
+                    f"{identifier}"
+                )
         digest_pattern = re.compile(r"^[0-9a-fA-F]{64}$")
 
         for artifact_id, artifact in sorted(self.artifacts.items()):
@@ -545,7 +550,19 @@ class ProvenanceHypergraph:
         }
 
     @classmethod
-    def from_dict(cls, data: Mapping[str, Any]) -> "ProvenanceHypergraph":
+    def from_dict(
+        cls,
+        data: Mapping[str, Any],
+        *,
+        allow_legacy_identifier_overlap: bool = True,
+    ) -> "ProvenanceHypergraph":
+        """Decode stored Graph bytes without rewriting their identifier semantics.
+
+        Frozen ``VSTD-DATA-0.1`` used separate artifact and transformation
+        namespaces.  The default therefore retains cross-kind overlap while still
+        refusing duplicates inside either collection.  Pass ``False`` for a strict
+        new-mechanism decoder; direct ``add_*`` construction is always strict.
+        """
         g = cls()
         for c_data in data.get("contributors", []):
             g.add_contributor(ContributorSpec(**c_data))
@@ -572,25 +589,29 @@ class ProvenanceHypergraph:
                 )
             )
         for a_data in data.get("artifacts", []):
-            g.add_artifact(
-                ArtifactNode(
-                    artifact_id=a_data["artifact_id"],
-                    label=a_data["label"],
-                    artifact_type=ArtifactType(a_data["artifact_type"]),
-                    content_digest=a_data["content_digest"],
-                    byte_size=a_data.get("byte_size", 0),
-                    record_count=a_data.get("record_count"),
-                    mime_type=a_data.get("mime_type", "application/octet-stream"),
-                    metadata_digest=a_data.get("metadata_digest", ""),
-                    provenance_digest=a_data.get("provenance_digest", ""),
-                    status=ArtifactStatus(a_data.get("status", "UNKNOWN")),
-                    evidence_class=EvidenceClassification(a_data.get("evidence_class", "DECLARED")),
-                    rights_id=a_data.get("rights_id"),
-                    contributor_id=a_data.get("contributor_id"),
-                    storage_uris=tuple(a_data.get("storage_uris", ())),
-                    attributes=a_data.get("attributes", {}),
-                )
+            artifact = ArtifactNode(
+                artifact_id=a_data["artifact_id"],
+                label=a_data["label"],
+                artifact_type=ArtifactType(a_data["artifact_type"]),
+                content_digest=a_data["content_digest"],
+                byte_size=a_data.get("byte_size", 0),
+                record_count=a_data.get("record_count"),
+                mime_type=a_data.get("mime_type", "application/octet-stream"),
+                metadata_digest=a_data.get("metadata_digest", ""),
+                provenance_digest=a_data.get("provenance_digest", ""),
+                status=ArtifactStatus(a_data.get("status", "UNKNOWN")),
+                evidence_class=EvidenceClassification(
+                    a_data.get("evidence_class", "DECLARED")
+                ),
+                rights_id=a_data.get("rights_id"),
+                contributor_id=a_data.get("contributor_id"),
+                storage_uris=tuple(a_data.get("storage_uris", ())),
+                attributes=a_data.get("attributes", {}),
             )
+            if allow_legacy_identifier_overlap:
+                g._add_unique(g.artifacts, artifact.artifact_id, artifact)
+            else:
+                g.add_artifact(artifact)
         for t_data in data.get("transformations", []):
             inputs = tuple(
                 HyperedgePort(artifact_id=p["artifact_id"], role=p["role"])
@@ -600,18 +621,28 @@ class ProvenanceHypergraph:
                 HyperedgePort(artifact_id=p["artifact_id"], role=p["role"])
                 for p in t_data.get("outputs", [])
             )
-            g.add_transformation(
-                TransformationHyperedge(
-                    transformation_id=t_data["transformation_id"],
-                    label=t_data["label"],
-                    transformation_type=TransformationType(t_data["transformation_type"]),
-                    inputs=inputs,
-                    outputs=outputs,
-                    software_provenance=t_data.get("software_provenance", {}),
-                    parameters=t_data.get("parameters", {}),
-                    execution_environment=t_data.get("execution_environment", {}),
-                    evidence_class=EvidenceClassification(t_data.get("evidence_class", "DECLARED")),
-                    status=t_data.get("status", "COMPLETED"),
-                )
+            transformation = TransformationHyperedge(
+                transformation_id=t_data["transformation_id"],
+                label=t_data["label"],
+                transformation_type=TransformationType(
+                    t_data["transformation_type"]
+                ),
+                inputs=inputs,
+                outputs=outputs,
+                software_provenance=t_data.get("software_provenance", {}),
+                parameters=t_data.get("parameters", {}),
+                execution_environment=t_data.get("execution_environment", {}),
+                evidence_class=EvidenceClassification(
+                    t_data.get("evidence_class", "DECLARED")
+                ),
+                status=t_data.get("status", "COMPLETED"),
             )
+            if allow_legacy_identifier_overlap:
+                g._add_unique(
+                    g.transformations,
+                    transformation.transformation_id,
+                    transformation,
+                )
+            else:
+                g.add_transformation(transformation)
         return g

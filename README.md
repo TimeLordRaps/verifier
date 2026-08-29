@@ -302,8 +302,10 @@ reference](https://timelordraps.github.io/verifier/reference.html).
 - [VSTD-1 receipts](standard/VSTD-1.md) carry claim coordinates, evidence,
   checker results, trust boundaries, and reproducibility information.
 - [VSTD-Graph-1](standard/VSTD-Graph-1.md) records content-addressed artifacts,
-  many-to-many transformations, globally disjoint artifact/transformation identifiers,
-  conflicts, and bounded downstream reachability.
+  many-to-many transformations, conflicts, and bounded downstream reachability. Its frozen
+  reader preserves separate historical artifact/transformation namespaces; new construction
+  plus evidence-bound establishment and assurance propagation require global cross-kind
+  disjointness.
 - [`VSTD4-GDC-1`](standard/VSTD-4.md) binds a decision certificate to a formula,
   grounding, claim coordinate, verifier descriptor, roots, and resource bounds.
 

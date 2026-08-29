@@ -604,6 +604,15 @@ def establish_graph_level(
 
     if not members:
         raise GraphEncodingError("an evidence-bound Graph collection must have members")
+    identifier_overlap = sorted(
+        set(graph.artifacts) & set(graph.transformations)
+    )
+    if identifier_overlap:
+        raise GraphEncodingError(
+            "evidence-bound Graph establishment requires globally disjoint "
+            "artifact and transformation identifiers: "
+            + ", ".join(identifier_overlap)
+        )
     normalized_members = tuple(sorted(set(members)))
     closure = graph.ancestors(normalized_members)
     edges = {

@@ -110,7 +110,8 @@
   during receipt construction. Keep permissive malformed-input assessment distinct from
   portable receipt admission: the builder now raises unless the strict schema and complete
   verdict-material evidence coverage hold, and the rechecker applies the same zero-dependency
-  gate before replay. This does not
+  gate before replay. The rechecker also compares the complete carried VSTD-4 entry, and
+  `corroboration_class` is mechanism-bound rather than relabelable metadata. This does not
   claim a real external witness or independent implementation; a positive observation with
   unresolved independence is overall `UNKNOWN`.
 - Add evidence-bound Graph profile computation and replay. The compatibility `graph_level`
@@ -130,8 +131,10 @@
   selected state into current admissibility; arbitrary resolved predicates remain blocked.
   The current runtime has no general non-status admissibility-effect mechanism. RUST follows
   historically recorded contributing ancestry even when current lifecycle state excludes a
-  route from TRUST. Artifact and transformation identifiers are globally disjoint so an
-  assurance `subject_id` cannot ambiguously name both.
+  route from TRUST. New construction, evidence-bound Graph establishment, and assurance
+  propagation require globally disjoint artifact/transformation identifiers so an untyped
+  `subject_id` cannot ambiguously name both; the frozen `VSTD-DATA-0.1` reader retains its
+  original two namespaces.
   Add complete offline event replay,
   current TRUST filtering, and deduplicated descendant reassessment discovery.
 

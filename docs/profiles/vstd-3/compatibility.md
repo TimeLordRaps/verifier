@@ -15,7 +15,10 @@ only its emulator-scoped claims.
 
 - `VSTD-1` claim-mechanics and generic-run receipts retain their separate required
   `receipt_kind` values.
-- `VSTD-DATA-0.1` hypergraphs remain readable as historical VSTD-Graph-1 receipts.
+- `VSTD-DATA-0.1` hypergraphs remain readable as historical VSTD-Graph-1 receipts, including
+  their original separate artifact and transformation identifier namespaces. Direct new
+  construction, evidence-bound Graph establishment, and current Graph assurance require
+  global cross-kind disjointness.
 - `VSTD-2` geometry remains a separate verification-surface receipt.
 - The public `validate`, `inspect`, `reproduce`, `data`, and `impact` commands retain
   their earlier behavior.

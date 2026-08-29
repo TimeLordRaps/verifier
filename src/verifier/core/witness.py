@@ -682,6 +682,7 @@ def assess_witness_corroboration(
             "claim_binding_digest": bundle.claim_binding_digest,
             "vstd4_certificate_digest": record.vstd4_certificate_digest,
             "checker_descriptor_digest": record.checker_descriptor_digest,
+            "corroboration_class": record.corroboration_class,
             "result": record.result.value,
         }
         proposition = record.verification
@@ -776,6 +777,17 @@ def assess_witness_corroboration(
     )
 
 
+def _vstd5_entry_record(entry: EvidenceBoundDepthResult) -> dict[str, Any]:
+    """Return every redundant VSTD-4 coordinate carried by a VSTD-5 receipt."""
+
+    return {
+        "result_digest": canonical_digest(entry.to_dict()),
+        "depth": entry.depth,
+        "conformance_status": entry.conformance_status,
+        "witness_digest": entry.witness.digest(),  # type: ignore[union-attr]
+    }
+
+
 def build_vstd5_receipt(
     entry: EvidenceBoundDepthResult,
     bundle: WitnessBundle,
@@ -801,12 +813,7 @@ def build_vstd5_receipt(
     receipt = {
         "schema_version": "VSTD-5",
         "receipt_id": receipt_id,
-        "entry_vstd4": {
-            "result_digest": canonical_digest(entry.to_dict()),
-            "depth": entry.depth,
-            "conformance_status": entry.conformance_status,
-            "witness_digest": entry.witness.digest(),  # type: ignore[union-attr]
-        },
+        "entry_vstd4": _vstd5_entry_record(entry),
         "bundle": bundle.to_dict(),
         "evidence_payloads": session.evidence.export_base64(tuple(sorted(references))),
         "result": result.to_dict(),
@@ -829,8 +836,8 @@ def recheck_vstd5_receipt(
     payloads = receipt.get("evidence_payloads")
     if not isinstance(entry_record, Mapping) or not isinstance(bundle_data, Mapping) or not isinstance(payloads, Mapping):
         raise ValueError("VSTD-5 receipt is missing replay inputs")
-    if entry_record.get("result_digest") != canonical_digest(entry.to_dict()):
-        raise ValueError("VSTD-5 receipt references a different VSTD-4 result")
+    if dict(entry_record) != _vstd5_entry_record(entry):
+        raise ValueError("VSTD-5 receipt references an inconsistent VSTD-4 entry")
     store = EvidenceStore()
     store.import_base64({str(key): str(value) for key, value in payloads.items()})
     session = VerificationSession(store)

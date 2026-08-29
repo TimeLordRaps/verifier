@@ -59,6 +59,7 @@ from verifier.data.assurance import (
     recheck_assurance_log,
 )
 from verifier.data.graph_level import (
+    GraphEncodingError,
     GraphCollection,
     build_evidence_bound_graph_level_record,
     establish_graph_level,
@@ -349,6 +350,7 @@ def _witness_components(
         "claim_binding_digest": binding_digest,
         "vstd4_certificate_digest": certificate_digest,
         "checker_descriptor_digest": checker_digest,
+        "corroboration_class": "TEST",
         "result": CorroborationOutcome.CORROBORATED.value,
     }
     verification = _proposition(
@@ -631,6 +633,23 @@ def test_graph_profile_can_be_established_from_mechanism_evaluated_ratings() -> 
         graph, record, mechanisms=(ExactFactMechanism(),)
     )
     assert rechecked.conformance_status == "ESTABLISHED"
+
+
+def test_evidence_bound_graph_refuses_frozen_cross_kind_identifier_overlap() -> None:
+    graph = _graph()
+    graph.transformations["source"] = replace(
+        graph.transformations["first"], transformation_id="source"
+    )
+    with pytest.raises(GraphEncodingError, match="globally disjoint"):
+        establish_graph_level(
+            graph,
+            collection_id="collection:fixture",
+            members=("result",),
+            object_evidence={},
+            edge_evidence={},
+            session=_session()[1],
+            binding=_binding(),
+        )
 
 
 def test_graph_ratings_are_bound_to_exact_collection_and_integer_type() -> None:
@@ -1595,6 +1614,7 @@ def test_vstd5_requires_every_independence_seam_and_preserves_disagreement() -> 
             "claim_binding_digest": binding_digest,
             "vstd4_certificate_digest": certificate_digest,
             "checker_descriptor_digest": "b" * 64,
+            "corroboration_class": "TEST",
             "result": outcome.value,
         }
         verification = _proposition(
@@ -2001,3 +2021,57 @@ def test_vstd5_rechecker_refuses_external_shape_and_payload_defects() -> None:
     )
     with pytest.raises(ValueError, match="missing verdict-material bytes"):
         recheck_vstd5_receipt(entry, missing_payload, mechanisms=())
+
+
+def test_vstd5_rechecker_refuses_schema_valid_cross_field_contradictions() -> None:
+    store, session = _session()
+    entry = _established_vstd4(store, session)
+    witness, assertion, corroboration = _witness_components(
+        store, entry, "witness:one"
+    )
+    bundle = WitnessBundle(
+        "claim:fixture",
+        "declarant:one",
+        entry.witness.header.binding,  # type: ignore[union-attr]
+        (witness,),
+        (assertion,),
+        (corroboration,),
+    )
+    result = assess_witness_corroboration(entry, bundle, session=session)
+    receipt = build_vstd5_receipt(
+        entry,
+        bundle,
+        result,
+        receipt_id="VFY-5-CROSS-FIELD",
+        session=session,
+    )
+    validator = _vstd5_schema_validator()
+
+    for field_name in ("result_digest", "witness_digest"):
+        candidate = copy.deepcopy(receipt)
+        candidate["entry_vstd4"][field_name] = "0" * 64
+        validator.validate(candidate)
+        with pytest.raises(ValueError, match="inconsistent VSTD-4 entry"):
+            recheck_vstd5_receipt(
+                entry, candidate, mechanisms=(ExactFactMechanism(),)
+            )
+
+    relabeled = copy.deepcopy(receipt)
+    relabeled["bundle"]["corroborations"][0][
+        "corroboration_class"
+    ] = "UNIVERSAL_FORMAL_PROOF"
+    validator.validate(relabeled)
+    with pytest.raises(ValueError, match="recomputed VSTD-5 result"):
+        recheck_vstd5_receipt(
+            entry, relabeled, mechanisms=(ExactFactMechanism(),)
+        )
+
+    relabeled_bundle = WitnessBundle.from_dict(relabeled["bundle"])
+    relabeled_result = assess_witness_corroboration(
+        entry, relabeled_bundle, session=session
+    )
+    assert relabeled_result.status is WitnessResultStatus.UNKNOWN
+    assert relabeled_result.conformance_status == "NOT_ESTABLISHED"
+    assert relabeled_result.corroboration_errors == (
+        "corroboration corroboration:witness:one is not exactly bound",
+    )

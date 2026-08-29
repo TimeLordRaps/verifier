@@ -39,7 +39,16 @@ conformance results merely because the evidence-bound APIs also exist.
 result. The supported `build_vstd5_receipt` boundary is stricter: it either raises or returns
 an object satisfying the published receipt shape with all verdict-material evidence bytes.
 `recheck_vstd5_receipt` applies the same zero-dependency structural gate before replay and
-does not accept a schema-invalid assessment object as a portable receipt.
+does not accept a schema-invalid assessment object as a portable receipt. It also compares
+the complete carried VSTD-4 entry and mechanism-checks `corroboration_class`; schema-valid
+field relabeling cannot retain an established replay result.
+
+`ProvenanceHypergraph.from_dict` retains the frozen `VSTD-DATA-0.1` two-namespace reader:
+one identifier may occur once as an artifact and once as a transformation. Direct `add_*`
+construction and default structural validation are stricter and globally disjoint. Such a
+historical overlap remains readable but cannot enter evidence-bound Graph establishment or
+assurance mechanisms. The compatibility candidate computation retains its historical scope
+and remains `NOT_ESTABLISHED`.
 
 Direct imports from `verifier.core`, `verifier.data`, `verifier.hardware`, other
 subpackages, or underscore-prefixed names are internal unless another published policy
