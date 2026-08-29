@@ -40,8 +40,9 @@ result. The supported `build_vstd5_receipt` boundary is stricter: it either rais
 an object satisfying the published receipt shape with all verdict-material evidence bytes.
 `recheck_vstd5_receipt` applies the same zero-dependency structural gate before replay and
 does not accept a schema-invalid assessment object as a portable receipt. It also compares
-the complete carried VSTD-4 entry and mechanism-checks `corroboration_class`; schema-valid
-field relabeling cannot retain an established replay result.
+the complete carried VSTD-4 entry, requires the bundle `claim_id` to equal the admitted
+VSTD-4 claim identifier, and mechanism-checks `corroboration_class`; schema-valid field
+relabeling cannot retain an established replay result.
 
 `ProvenanceHypergraph.from_dict` retains the frozen `VSTD-DATA-0.1` two-namespace reader:
 one identifier may occur once as an artifact and once as a transformation. Direct `add_*`

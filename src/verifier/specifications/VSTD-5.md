@@ -20,6 +20,12 @@ Every VSTD-5 procedure MUST reject a claim unless VSTD-1, VSTD-2, and VSTD-3
 preconditions and all VSTD-4 rung propositions were evidence-bound and checked,
 establishing VSTD-4 conformance at depth 14.
 
+The VSTD-5 bundle `claim_id` MUST equal the exact `claim_id` admitted by that
+evidence-bound VSTD-4 result. A shared claim-binding or certificate digest does not
+establish that a neighboring identifier is an alias. Any future identifier mapping
+would require its own bounded proposition and mechanism; the reference mechanism does
+not implement such aliases.
+
 The compatibility `vstd4_depth` candidate never satisfies this gate. The reference
 `establish_vstd4` path may satisfy it only after rerunning every exact evidence
 binding and checking its depth certificate. `require_vstd5_entry` distinguishes the
@@ -112,7 +118,7 @@ another corroboration identifier is rejected rather than counted twice.
 
 `verifier.core.witness.assess_witness_corroboration` performs, in order:
 
-1. evidence-bound VSTD-4 entry validation;
+1. evidence-bound VSTD-4 entry and exact claim-identifier validation;
 2. identity-evidence availability and duplicate detection;
 3. exact seven-dimension independence evaluation;
 4. exact corroboration binding and mechanism execution;

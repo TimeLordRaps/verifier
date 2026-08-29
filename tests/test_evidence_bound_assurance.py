@@ -530,6 +530,7 @@ def test_evidence_bound_vstd4_receipt_replays_offline_and_matches_schema() -> No
     rechecked = recheck_evidence_bound_vstd4_receipt(
         receipt, mechanisms=(ExactFactMechanism(),)
     )
+    assert rechecked.claim_id == "claim:fixture"
     assert rechecked.conformance_status == "ESTABLISHED"
 
     reference = next(iter(receipt["evidence_payloads"]))
@@ -1967,6 +1968,112 @@ def test_vstd5_builder_returns_only_strict_replayable_receipts() -> None:
                 receipt_id=receipt_id,
                 session=session,
             )
+
+
+def test_vstd5_claim_id_must_match_the_admitted_vstd4_claim() -> None:
+    store, session = _session()
+    entry = _established_vstd4(store, session)
+    witness, assertion, corroboration = _witness_components(
+        store, entry, "witness:one"
+    )
+    valid = WitnessBundle(
+        entry.claim_id,
+        "declarant:one",
+        entry.witness.header.binding,  # type: ignore[union-attr]
+        (witness,),
+        (assertion,),
+        (corroboration,),
+    )
+    positive = assess_witness_corroboration(entry, valid, session=session)
+    assert positive.status is WitnessResultStatus.CORROBORATED
+    assert positive.conformance_status == "ESTABLISHED"
+
+    name_only = assess_witness_corroboration(
+        entry, replace(valid, claim_id="claim:neighbor"), session=session
+    )
+    assert name_only.status is WitnessResultStatus.UNKNOWN
+    assert name_only.conformance_status == "NOT_ESTABLISHED"
+    assert (
+        "witness bundle claim_id does not match the admitted VSTD-4 claim_id"
+        in name_only.binding_errors
+    )
+
+    neighbor_verification = _proposition(
+        store,
+        "claim:neighbor",
+        "vstd5.corroboration",
+        dict(corroboration.verification.expected),
+        parameters=dict(corroboration.verification.parameters),
+    )
+    neighbor_record = replace(
+        corroboration,
+        observed_evidence_refs=neighbor_verification.evidence_refs,
+        verification=neighbor_verification,
+    )
+    neighbor = replace(
+        valid,
+        claim_id="claim:neighbor",
+        corroborations=(neighbor_record,),
+    )
+    result = assess_witness_corroboration(entry, neighbor, session=session)
+    assert result.status is WitnessResultStatus.UNKNOWN
+    assert result.conformance_status == "NOT_ESTABLISHED"
+    assert result.binding_errors == (
+        "witness bundle claim_id does not match the admitted VSTD-4 claim_id",
+    )
+
+    receipt = build_vstd5_receipt(
+        entry,
+        neighbor,
+        result,
+        receipt_id="VFY-5-NEIGHBOR-CLAIM",
+        session=session,
+    )
+    _vstd5_schema_validator().validate(receipt)
+    assert recheck_vstd5_receipt(
+        entry, receipt, mechanisms=(ExactFactMechanism(),)
+    ).to_dict() == result.to_dict()
+
+    positive_receipt = build_vstd5_receipt(
+        entry,
+        valid,
+        positive,
+        receipt_id="VFY-5-CLAIM-TAMPER",
+        session=session,
+    )
+    positive_receipt["bundle"]["claim_id"] = "claim:neighbor"
+    _vstd5_schema_validator().validate(positive_receipt)
+    with pytest.raises(ValueError, match="recomputed VSTD-5 result"):
+        recheck_vstd5_receipt(
+            entry, positive_receipt, mechanisms=(ExactFactMechanism(),)
+        )
+
+
+def test_vstd5_claim_id_is_distinct_from_the_claim_coordinate_subject() -> None:
+    store, session = _session()
+    binding = replace(
+        _binding(),
+        coordinate=ClaimCoordinate(
+            "artifact:coordinate-subject", "fixture", {"scope": "test"}
+        ),
+    )
+    entry = _established_vstd4(store, session, binding=binding)
+    witness, assertion, corroboration = _witness_components(
+        store, entry, "witness:one"
+    )
+    bundle = WitnessBundle(
+        "claim:fixture",
+        "declarant:one",
+        entry.witness.header.binding,  # type: ignore[union-attr]
+        (witness,),
+        (assertion,),
+        (corroboration,),
+    )
+    result = assess_witness_corroboration(entry, bundle, session=session)
+    assert entry.claim_id == "claim:fixture"
+    assert entry.claim_id != binding.coordinate.subject
+    assert result.status is WitnessResultStatus.CORROBORATED
+    assert result.conformance_status == "ESTABLISHED"
 
 
 def test_vstd5_rechecker_refuses_external_shape_and_payload_defects() -> None:

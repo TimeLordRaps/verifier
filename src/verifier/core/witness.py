@@ -545,6 +545,10 @@ def assess_witness_corroboration(
 
     if bundle.claim_id == "":
         binding_errors.append("claim_id must not be empty")
+    if bundle.claim_id != entry.claim_id:
+        binding_errors.append(
+            "witness bundle claim_id does not match the admitted VSTD-4 claim_id"
+        )
     if bundle.declarant_id == "":
         identity_errors.append("declarant_id must not be empty")
     if bundle.claim_binding_digest != entry.witness.header.binding:  # type: ignore[union-attr]

@@ -203,6 +203,7 @@ class EvidenceBoundDepthResult:
     rung_evaluations: tuple[tuple[str, EvaluatedProposition], ...]
     binding_errors: tuple[str, ...]
     kernel_outcome: str
+    claim_id: str
 
     @property
     def depth(self) -> int:
@@ -255,6 +256,7 @@ class EvidenceBoundDepthResult:
                 },
                 "binding_errors": list(self.binding_errors),
                 "kernel_outcome": self.kernel_outcome,
+                "claim_id": self.claim_id,
             }
         )
         return payload
@@ -528,6 +530,7 @@ def establish_vstd4(
         tuple(rung_results),
         tuple(errors),
         kernel_outcome,
+        claim_id,
     )
 
 

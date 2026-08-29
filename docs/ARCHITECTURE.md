@@ -310,8 +310,10 @@ separate from portable-record admission: the builder raises unless the result in
 strict VSTD-5 schema and embeds every verdict-material evidence byte, and the rechecker
 enforces the same zero-dependency shape gate before replay. It also compares every redundant
 VSTD-4 entry coordinate and treats `corroboration_class` as part of the mechanism-checked
-expected proposition, so relabeling either cannot retain an established result. This path
-does not upgrade the legacy generic-run fields.
+expected proposition. The admitted evidence-bound VSTD-4 result retains its exact `claim_id`,
+and VSTD-5 requires the bundle to use that identifier; a shared binding or certificate digest
+cannot turn a neighboring identifier into an alias. Thus relabeling any of these coordinates
+cannot retain an established result. This path does not upgrade the legacy generic-run fields.
 
 Graph conflict records retain incompatible values and their evidence references without
 adding a scalar score or changing the frozen artifact-status vocabulary. A conflict makes
