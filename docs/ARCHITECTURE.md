@@ -303,7 +303,10 @@ them `EVIDENCED`, and never derives `EVIDENCED`. The distinct VSTD-5 reference p
 establish only its exact declarant/witness separation propositions after all seven seams are
 rerun by registered mechanisms. Typed binding, identity, separation, and corroboration
 errors keep `computed_independence` fail-closed; no error-message text is interpreted as a
-semantic category. This path does not upgrade the legacy generic-run fields.
+semantic category. Witness identities and independence assertions serialize as separate
+ordered arrays, so duplicates, orphan assertions, and missing cardinality survive receipt
+build and replay rather than disappearing inside a keyed map. This path does not upgrade the
+legacy generic-run fields.
 
 Graph conflict records retain incompatible values and their evidence references without
 adding a scalar score or changing the frozen artifact-status vocabulary. A conflict makes
@@ -318,11 +321,11 @@ question is a new assessment over the retained graph and applicable lifecycle re
 |---|---|
 | An ancestor is `CHALLENGED`, `REVOKED`, or `STALE` | Candidate/evidence-bound Graph recomputation follows the full ancestor closure and returns compatibility field `level = 0`. `AssuranceLedger` also records typed ROT or projects append-only challenge-ledger state into a derived current view; historical Graph bytes remain unchanged. |
 | An ancestor is `SUPERSEDED` | The historical Graph candidate remains admissible by design; the stricter all-ancestors-`VALID` policy rejects it for current-use admission. Supersession does not retroactively falsify its prior lineage role. |
-| Upstream evidence conflicts | A retained `ConflictRecord` or a mechanism-established `CONFLICT_DECLARATION` event blocks every dependent edge-local TRUST route. `resolve_conflict` accepts only a mechanism-passing proposition bound to the exact conflict and one retained competing value; the original conflict remains in history while the derived current view records the additive resolution. |
+| Upstream evidence conflicts | A retained `ConflictRecord` or a mechanism-established `CONFLICT_DECLARATION` event blocks every dependent edge-local TRUST route. `resolve_conflict` accepts only a mechanism-passing proposition bound to the exact conflict and one retained competing value. A status resolution projects the selected artifact or transformation state: only `VALID` / `COMPLETED` can restore the route. An arbitrary resolved predicate remains admissibility-blocking because value adjudication does not establish support effect. The original conflict and resolution evidence remain historical. |
 | Evidence arrives by multiple paths or one run receipt repeats a reference | Reachability and impact sets deduplicate identifiers. Multiplicity supplies no independence or strength. |
-| A descendant deviation points toward shared ancestors | A mechanism-passing deviation emits RUST over the deduplicated recorded ancestor set. Structural concentration counts unique deviating descendants, not paths or causal strength. Localization, BLAME, and GUILT require separate exact mechanisms. |
+| A descendant deviation points toward shared ancestors | A mechanism-passing deviation emits RUST over the deduplicated recorded ancestor set. Structural concentration counts unique deviating descendants, not paths or causal strength. Localization selects and binds one exact passing RUST event, its descendant-deviation binding digest, and an ancestor contained in that event. BLAME and GUILT bind that localization event and require separate exact mechanisms. |
 | A challenge ledger changes a claim's current status | `project_challenges` binds its complete append-only records into a current Graph overlay and embeds those records for replay. Existing TRUST remains historical, while recursively dependent events disappear from `current_trust_events`; `impacted_descendants` reports the deduplicated reassessment surface. It never mutates the historical graph. |
-| Later evidence clears a conflict | The additive resolution retains the original competing evidence and its mechanism evaluation. Removing or rewriting the conflict remains invalid. |
+| Later evidence adjudicates a conflict | The additive resolution retains the original competing evidence and its mechanism evaluation. VSTD-Graph-1 receipts remain immutable; the separate assurance overlay owns the resolution and current-state projection. Removing or rewriting historical evidence remains invalid. |
 | Candidate calculation encounters cyclic ancestry | Rejected before candidate calculation; recursive topology cannot manufacture assurance. |
 
 The forward blast-radius query remains discovery only. `AssuranceLedger` is the distinct

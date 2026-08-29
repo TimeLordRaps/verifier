@@ -81,9 +81,11 @@ outputs. The edge records ancestry; it does not by itself establish causal influ
 - `evidence_refs` retains at least two evidence records rather than selecting a winner.
 
 A conflict record does not mutate the frozen artifact-status vocabulary. It makes the
-subject inadmissible to a clean candidate Graph profile. The current reference implementation
-has no conflict-resolution transition; later resolution must be additive and must retain the
-competing evidence.
+subject inadmissible to a clean candidate Graph profile. The VSTD-Graph-1 receipt has no
+conflict-resolution transition and remains immutable. The separate non-receipt
+`VSTD-GRAPH-ASSURANCE-1` overlay can record additive, mechanism-checked resolution while
+retaining the competing evidence. A selected status is projected into that overlay's current
+view; resolving any other predicate does not by itself establish a clean admissibility effect.
 
 ---
 

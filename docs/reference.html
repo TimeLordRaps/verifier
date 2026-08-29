@@ -432,12 +432,14 @@
 <p class="ref-help">Append-only current-state overlay for an immutable provenance graph.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>admissibility_blocking_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td>Return conflicts whose effect still blocks a clean TRUST route.</td></tr>
 <tr><td><code>current_status(self, artifact_id: 'str') -&gt; 'ArtifactStatus'</code></td><td></td></tr>
+<tr><td><code>current_transformation_status(self, transformation_id: 'str') -&gt; 'str'</code></td><td>Return a transformation's additive current status projection.</td></tr>
 <tr><td><code>current_trust_events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return recursively current edge-local TRUST records.</td></tr>
 <tr><td><code>diagnose(self, kind: 'DiagnosticKind', ancestor_id: 'str', descendant_id: 'str', proposition: 'Optional[BoundProposition]', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compute bounded artifact-relative BLAME or GUILT just in time.</td></tr>
 <tr><td><code>events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td></td></tr>
 <tr><td><code>impacted_descendants(self, artifact_id: 'str') -&gt; 'tuple[str, ...]'</code></td><td>Return the deduplicated recorded forward impact set, not a verdict.</td></tr>
-<tr><td><code>localize_cause(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
+<tr><td><code>localize_cause(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, rust_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Bind one ancestor to one exact passing descendant-deviation event.</td></tr>
 <tr><td><code>materialize_current_graph(self) -&gt; 'ProvenanceHypergraph'</code></td><td>Create a derived current view; never mutate the historical graph.</td></tr>
 <tr><td><code>project_challenges(self, challenges: 'ChallengeLedger', *, recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Project challenge state into an additive current Graph overlay.</td></tr>
 <tr><td><code>record_conflict(self, conflict: 'ConflictRecord', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Add mechanism-established current conflict evidence without rewriting Graph.</td></tr>
@@ -446,7 +448,7 @@
 <tr><td><code>record_status_projection(self, artifact_id: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Record a mechanism-checked current-status projection additively.</td></tr>
 <tr><td><code>record_trust(self, target_id: 'str', source_ids: 'Iterable[str]', proposition: 'BoundProposition', *, transformation_id: 'str', prerequisite_trust_event_digests: 'Iterable[str]' = (), session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
 <tr><td><code>resolutions(self) -&gt; 'tuple[ConflictResolution, ...]'</code></td><td></td></tr>
-<tr><td><code>resolve_conflict(self, conflict_id: 'str', selected_value: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'ConflictResolution'</code></td><td></td></tr>
+<tr><td><code>resolve_conflict(self, conflict_id: 'str', selected_value: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'ConflictResolution'</code></td><td>Adjudicate one value without equating selection with admissibility.</td></tr>
 <tr><td><code>rust_concentration(self) -&gt; 'tuple[StructuralConcentration, ...]'</code></td><td></td></tr>
 <tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
 <tr><td><code>unresolved_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td></td></tr>
@@ -589,7 +591,7 @@
 <article class="ref-item" id="api-WitnessBundle">
 <h3><code>WitnessBundle</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>WitnessBundle(claim_id: 'str', declarant_id: 'str', claim_binding_digest: 'str', witnesses: 'tuple[WitnessIdentity, ...]', independence: 'tuple[IndependenceAssertion, ...]', corroborations: 'tuple[CorroborationRecord, ...]') -&gt; None</code></pre>
-<p class="ref-help">Claim-bound witnesses, separation assertions, and corroboration records.</p>
+<p class="ref-help">Claim-bound identities, ordered separation assertions, and corroborations.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/witness.py"><code>verifier.core.witness</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
 <tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>

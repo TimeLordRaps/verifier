@@ -54,7 +54,11 @@ RUST concentration as a triage count of unique deviating descendants, never caus
 strength. A bounded artifact-relative `BLAME` or `GUILT` result exists only after separate
 localization and attribution mechanisms pass. BLAME establishes responsibility or material
 contribution for the exact deviation; GUILT is the stronger obligation-relative result and
-is not BLAME flowing in the opposite direction. Neither evaluates an actor's character.
+is not BLAME flowing in the opposite direction. The localization must name the exact passing
+RUST event and descendant-deviation binding; sharing a descendant identifier is insufficient.
+Neither evaluates an actor's character. A resolved conflict restores current TRUST only when
+its selected value has a checked admissible status consequence; selecting an arbitrary value
+does not establish admissibility.
 For reliance, replay the portable log with `recheck_assurance_log`: a stored event word or
 hash chain without successful evidence rehash and mechanism execution is not current
 assurance. When upstream status changes, inspect `current_trust_events` and the deduplicated

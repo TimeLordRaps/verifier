@@ -123,7 +123,7 @@ class CorroborationRecord:
 
 @dataclass(frozen=True)
 class WitnessBundle:
-    """Claim-bound witnesses, separation assertions, and corroboration records."""
+    """Claim-bound identities, ordered separation assertions, and corroborations."""
 
     claim_id: str
     declarant_id: str
@@ -133,21 +133,13 @@ class WitnessBundle:
     corroborations: tuple[CorroborationRecord, ...]
 
     def to_dict(self) -> dict[str, Any]:
-        assertions = {item.witness_id: item for item in self.independence}
         return {
             "claim_id": self.claim_id,
             "declarant_id": self.declarant_id,
             "claim_binding_digest": self.claim_binding_digest,
-            "witnesses": [
-                {
-                    **witness.to_dict(),
-                    "independence": (
-                        None
-                        if assertions.get(witness.witness_id) is None
-                        else assertions[witness.witness_id].to_dict()["dimensions"]
-                    ),
-                }
-                for witness in self.witnesses
+            "witnesses": [witness.to_dict() for witness in self.witnesses],
+            "independence_assertions": [
+                item.to_dict() for item in self.independence
             ],
             "corroborations": [item.to_dict() for item in self.corroborations],
         }
@@ -161,7 +153,8 @@ class WitnessBundle:
                 str(item["witness_id"]), str(item["identity_evidence_ref"])
             )
             witnesses.append(witness)
-            dimensions = item.get("independence")
+        for item in data.get("independence_assertions", ()):
+            dimensions = item.get("dimensions")
             if not isinstance(dimensions, Mapping):
                 continue
             relationships: dict[IndependenceDimension, RelationshipState] = {}
@@ -177,7 +170,7 @@ class WitnessBundle:
                 if isinstance(binding, Mapping):
                     evidence[dimension] = BoundProposition.from_dict(binding)
             assertions.append(
-                IndependenceAssertion(witness.witness_id, relationships, evidence)
+                IndependenceAssertion(str(item["witness_id"]), relationships, evidence)
             )
         corroborations = tuple(
             CorroborationRecord(

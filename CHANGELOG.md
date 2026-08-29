@@ -104,7 +104,10 @@
   dimensions, duplicate-witness/evidence refusal, exact admitted-certificate and
   corroboration binding, typed binding/identity/separation/corroboration errors,
   disagreement preservation, embedded evidence, and offline result recheck. Independence
-  fails closed on any identity or separation defect without parsing error-message text. This does not
+  fails closed on any identity or separation defect without parsing error-message text.
+  Witness identities and assertions serialize separately and in order, so duplicate,
+  orphan, missing, and reused-identity error inputs remain replayable instead of collapsing
+  during receipt construction. This does not
   claim a real external witness or independent implementation; a positive observation with
   unresolved independence is overall `UNKNOWN`.
 - Add evidence-bound Graph profile computation and replay. The compatibility `graph_level`
@@ -119,7 +122,10 @@
   dependency degrades or conflicts. Duplicate paths remain set-valued, historical graph bytes
   remain immutable, and topology alone earns no causal or moral conclusion. BLAME establishes
   bounded responsibility or material contribution; GUILT additionally binds an exact violated
-  obligation and is not BLAME in the opposite direction. Add complete offline event replay,
+  obligation and is not BLAME in the opposite direction. Localization binds one exact passing
+  RUST event and descendant-deviation proposition. Status-conflict resolution projects the
+  selected state into current admissibility; arbitrary resolved predicates remain blocked.
+  Add complete offline event replay,
   current TRUST filtering, and deduplicated descendant reassessment discovery.
 
 - Preserve incompatible Graph assertions as evidence-linked conflict records and label

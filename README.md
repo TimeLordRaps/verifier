@@ -178,7 +178,8 @@ historical evidence; RUST is the inverse-TRUST diagnostic mechanic moving backwa
 descendant deviation toward recorded ancestor candidates. This memetic propagation does
 not by itself prove guilt, responsibility, falsehood, causal localization, or automatic
 ancestor falsification. The reference runtime requires a separate passing localization
-mechanism and an exact artifact-relative diagnostic proposition before it can emit bounded
+mechanism bound to one exact passing RUST event and descendant-deviation proposition before
+it can emit a bounded
 `BLAME` or `GUILT`. BLAME establishes bounded responsibility or material contribution;
 GUILT is not its opposite, but the stronger combined result that additionally establishes
 an exact violated obligation. Neither result concerns actor character. See [the governing
@@ -187,7 +188,9 @@ architecture](standard/LADDER.md#11-artifact-first-causal-provenance-orientation
 `VSTD-GRAPH-ASSURANCE-1` carries the immutable historical Graph, exact event bindings,
 embedded evidence bytes, event hash chain, and derived current-view digest.
 `recheck_assurance_log` rehashes the evidence, reruns each exact registered mechanism, and
-rejects any event or current view that does not reproduce.
+rejects any event or current view that does not reproduce. Conflict adjudication and current
+admissibility are separate: a selected status affects the current artifact or transformation
+state, while resolving an arbitrary predicate cannot silently restore TRUST.
 
 This is VSTD's **ZIZK artifact-first TRUST architecture**, not an optional research
 profile. Zero identity means zero identity-derived verdict weight, not anonymity or the

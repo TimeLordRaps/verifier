@@ -7,6 +7,7 @@ Adversarial tests for evidence-bound object, Graph, lifecycle, and witness paths
 from __future__ import annotations
 
 import copy
+from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
@@ -837,7 +838,7 @@ def test_challenge_recovery_does_not_undo_independent_rot() -> None:
         )
 
 
-def test_conflict_resolution_is_additive_and_mechanism_bound() -> None:
+def test_non_status_conflict_resolution_remains_admissibility_blocking() -> None:
     graph = _graph()
     graph.add_conflict(
         ConflictRecord(
@@ -866,7 +867,10 @@ def test_conflict_resolution_is_additive_and_mechanism_bound() -> None:
     )
     assert "conflict:digest" in graph.conflicts
     assert ledger.unresolved_conflicts() == ()
-    assert ledger.materialize_current_graph().conflicts == {}
+    assert tuple(
+        item.conflict_id for item in ledger.admissibility_blocking_conflicts()
+    ) == ("conflict:digest",)
+    assert "conflict:digest" in ledger.materialize_current_graph().conflicts
 
 
 def test_trust_rot_and_rust_follow_direction_without_recursive_amplification() -> None:
@@ -987,7 +991,7 @@ def test_intermediate_degradation_excludes_but_does_not_rewrite_trust(
 
 
 @pytest.mark.parametrize("conflict_subject", ("middle", "first"))
-def test_dependency_conflict_invalidates_and_additive_resolution_restores_trust(
+def test_non_status_resolution_does_not_manufacture_current_trust(
     conflict_subject: str,
 ) -> None:
     ledger = AssuranceLedger(_graph())
@@ -1034,10 +1038,17 @@ def test_dependency_conflict_invalidates_and_additive_resolution_restores_trust(
         session=session,
         recorded_at="2026-08-29T00:02:00Z",
     )
-    assert tuple(event.digest() for event in ledger.current_trust_events()) == (
-        first.digest(),
-        second.digest(),
-    )
+    assert ledger.current_trust_events() == ()
+    assert conflict.conflict_id in ledger.materialize_current_graph().conflicts
+    with pytest.raises(AssuranceFlowError, match="admissible current-state consequence"):
+        ledger.record_trust(
+            "middle",
+            ("source",),
+            _trust_proposition(store, ledger, "first", "middle"),
+            transformation_id="first",
+            session=session,
+            recorded_at="2026-08-29T00:02:01Z",
+        )
     root = Path(__file__).resolve().parents[1]
     schema = json.loads(
         (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
@@ -1052,10 +1063,83 @@ def test_dependency_conflict_invalidates_and_additive_resolution_restores_trust(
     replayed = recheck_assurance_log(
         ledger.to_dict(), mechanisms=(ExactFactMechanism(),)
     )
-    assert tuple(event.digest() for event in replayed.current_trust_events()) == (
-        first.digest(),
-        second.digest(),
+    assert replayed.current_trust_events() == ()
+    assert conflict.conflict_id in replayed.materialize_current_graph().conflicts
+
+
+@pytest.mark.parametrize(
+    ("conflict_subject", "selected_value", "expected_current"),
+    (
+        ("middle", "VALID", True),
+        ("middle", "REVOKED", False),
+        ("first", "COMPLETED", True),
+        ("first", "FAILED", False),
+    ),
+)
+def test_status_resolution_projects_current_admissibility_and_replays(
+    conflict_subject: str,
+    selected_value: str,
+    expected_current: bool,
+) -> None:
+    ledger = AssuranceLedger(_graph())
+    store, session = _session()
+    first, second = _record_trust_chain(ledger, store, session)
+    competing = (
+        ("VALID", "REVOKED")
+        if conflict_subject == "middle"
+        else ("COMPLETED", "FAILED")
     )
+    conflict = ConflictRecord(
+        f"conflict:{conflict_subject}-status",
+        conflict_subject,
+        "status",
+        competing,
+        ("evidence:admissible", "evidence:inadmissible"),
+    )
+    ledger.record_conflict(
+        conflict,
+        _proposition(store, conflict_subject, "vstd.graph.conflict", conflict.to_dict()),
+        session=session,
+        recorded_at="2026-08-29T00:01:00Z",
+    )
+    assert ledger.current_trust_events() == ()
+    ledger.resolve_conflict(
+        conflict.conflict_id,
+        selected_value,
+        _proposition(
+            store,
+            conflict_subject,
+            "vstd.graph.resolve.status",
+            selected_value,
+            parameters={"conflict_id": conflict.conflict_id},
+        ),
+        session=session,
+        recorded_at="2026-08-29T00:02:00Z",
+    )
+
+    expected_digests = (first.digest(), second.digest()) if expected_current else ()
+    assert tuple(event.digest() for event in ledger.current_trust_events()) == expected_digests
+    if conflict_subject == "middle":
+        assert ledger.current_status("middle").value == selected_value
+    else:
+        assert ledger.current_transformation_status("first") == selected_value
+    assert conflict.conflict_id not in ledger.materialize_current_graph().conflicts
+
+    serialized = ledger.to_dict()
+    assert any(
+        event["kind"] == AssuranceEventKind.CONFLICT_DECLARATION.value
+        and event["attributes"]["conflict"]["conflict_id"] == conflict.conflict_id
+        for event in serialized["events"]
+    )
+    assert serialized["conflict_resolutions"][0]["conflict_id"] == conflict.conflict_id
+    replayed = recheck_assurance_log(
+        serialized, mechanisms=(ExactFactMechanism(),)
+    )
+    assert tuple(event.digest() for event in replayed.current_trust_events()) == expected_digests
+    if conflict_subject == "middle":
+        assert replayed.current_status("middle").value == selected_value
+    else:
+        assert replayed.current_transformation_status("first") == selected_value
 
 
 def test_rust_requires_separate_localization_before_blame_or_guilt() -> None:
@@ -1063,7 +1147,7 @@ def test_rust_requires_separate_localization_before_blame_or_guilt() -> None:
     ledger = AssuranceLedger(graph)
     store, session = _session()
     rust = _proposition(store, "result", "vstd.graph.descendant_deviation", True)
-    ledger.record_rust(
+    rust_event = ledger.record_rust(
         "result", rust, session=session, recorded_at="2026-08-29T00:00:00Z"
     )
     refused = ledger.diagnose(
@@ -1080,10 +1164,16 @@ def test_rust_requires_separate_localization_before_blame_or_guilt() -> None:
         store,
         "result",
         "vstd.graph.causal_localization",
-        {"ancestor": "source", "descendant": "result"},
+        {
+            "ancestor": "source",
+            "descendant": "result",
+            "rust_event_digest": rust_event.digest(),
+            "deviation_binding_digest": rust.digest(),
+        },
     )
     event = ledger.localize_cause(
         "source", "result", localization,
+        rust_event_digest=rust_event.digest(),
         session=session, recorded_at="2026-08-29T00:02:00Z",
     )
     attribution = _proposition(
@@ -1150,6 +1240,218 @@ def test_rust_requires_separate_localization_before_blame_or_guilt() -> None:
     assert guilt_result.status == "ESTABLISHED"
     assert guilt_result.evaluation is not None
     assert guilt_result.evaluation.passed is True
+
+
+def test_localization_selects_one_exact_passing_deviation() -> None:
+    ledger = AssuranceLedger(_graph())
+    store, session = _session()
+    first_deviation = _proposition(
+        store,
+        "result",
+        "vstd.graph.descendant_deviation",
+        True,
+        parameters={"deviation_id": "D1"},
+    )
+    second_deviation = _proposition(
+        store,
+        "result",
+        "vstd.graph.descendant_deviation",
+        True,
+        parameters={"deviation_id": "D2"},
+    )
+    first_rust = ledger.record_rust(
+        "result",
+        first_deviation,
+        session=session,
+        recorded_at="2026-08-29T00:00:00Z",
+    )
+    second_rust = ledger.record_rust(
+        "result",
+        second_deviation,
+        session=session,
+        recorded_at="2026-08-29T00:01:00Z",
+    )
+
+    with pytest.raises(AssuranceFlowError, match="exact passing RUST event"):
+        ledger.localize_cause(
+            "source",
+            "result",
+            _proposition(
+                store,
+                "result",
+                "vstd.graph.causal_localization",
+                {
+                    "ancestor": "source",
+                    "descendant": "result",
+                    "rust_event_digest": "0" * 64,
+                    "deviation_binding_digest": first_deviation.digest(),
+                },
+            ),
+            rust_event_digest="0" * 64,
+            session=session,
+            recorded_at="2026-08-29T00:02:00Z",
+        )
+
+    neighboring_rust = ledger.record_rust(
+        "middle",
+        _proposition(
+            store,
+            "middle",
+            "vstd.graph.descendant_deviation",
+            True,
+            parameters={"deviation_id": "neighbor"},
+        ),
+        session=session,
+        recorded_at="2026-08-29T00:03:00Z",
+    )
+    with pytest.raises(AssuranceFlowError, match="exact passing RUST event"):
+        ledger.localize_cause(
+            "source",
+            "result",
+            _proposition(
+                store,
+                "result",
+                "vstd.graph.causal_localization",
+                {
+                    "ancestor": "source",
+                    "descendant": "result",
+                    "rust_event_digest": neighboring_rust.digest(),
+                    "deviation_binding_digest": str(
+                        neighboring_rust.attributes["binding_digest"]
+                    ),
+                },
+            ),
+            rust_event_digest=neighboring_rust.digest(),
+            session=session,
+            recorded_at="2026-08-29T00:04:00Z",
+        )
+
+    failed_reference = store.add(
+        json.dumps(
+            {
+                "subject_id": "result",
+                "predicate": "vstd.graph.descendant_deviation",
+                "expected": False,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    )
+    failed_deviation = replace(first_deviation, evidence_refs=(failed_reference,))
+    failed_rust = ledger.record_rust(
+        "result",
+        failed_deviation,
+        session=session,
+        recorded_at="2026-08-29T00:05:00Z",
+    )
+    assert failed_rust.outcome is MechanismOutcome.FAIL
+    with pytest.raises(AssuranceFlowError, match="exact passing RUST event"):
+        ledger.localize_cause(
+            "source",
+            "result",
+            _proposition(
+                store,
+                "result",
+                "vstd.graph.causal_localization",
+                {
+                    "ancestor": "source",
+                    "descendant": "result",
+                    "rust_event_digest": failed_rust.digest(),
+                    "deviation_binding_digest": failed_deviation.digest(),
+                },
+            ),
+            rust_event_digest=failed_rust.digest(),
+            session=session,
+            recorded_at="2026-08-29T00:06:00Z",
+        )
+
+    missing_ancestor_ledger = AssuranceLedger(_graph())
+    missing_ancestor_store, missing_ancestor_session = _session()
+    complete_rust = missing_ancestor_ledger.record_rust(
+        "result",
+        _proposition(
+            missing_ancestor_store,
+            "result",
+            "vstd.graph.descendant_deviation",
+            True,
+        ),
+        session=missing_ancestor_session,
+        recorded_at="2026-08-29T00:06:01Z",
+    )
+    missing_ancestor_event = replace(complete_rust, source_ids=("middle",))
+    missing_ancestor_ledger._events[0] = missing_ancestor_event
+    with pytest.raises(AssuranceFlowError, match="exact passing RUST event"):
+        missing_ancestor_ledger.localize_cause(
+            "source",
+            "result",
+            _proposition(
+                missing_ancestor_store,
+                "result",
+                "vstd.graph.causal_localization",
+                {
+                    "ancestor": "source",
+                    "descendant": "result",
+                    "rust_event_digest": missing_ancestor_event.digest(),
+                    "deviation_binding_digest": str(
+                        missing_ancestor_event.attributes["binding_digest"]
+                    ),
+                },
+            ),
+            rust_event_digest=missing_ancestor_event.digest(),
+            session=missing_ancestor_session,
+            recorded_at="2026-08-29T00:06:02Z",
+        )
+
+    localization = ledger.localize_cause(
+        "source",
+        "result",
+        _proposition(
+            store,
+            "result",
+            "vstd.graph.causal_localization",
+            {
+                "ancestor": "source",
+                "descendant": "result",
+                "rust_event_digest": first_rust.digest(),
+                "deviation_binding_digest": first_deviation.digest(),
+            },
+        ),
+        rust_event_digest=first_rust.digest(),
+        session=session,
+        recorded_at="2026-08-29T00:07:00Z",
+    )
+    assert localization.attributes["rust_event_digest"] == first_rust.digest()
+    assert localization.attributes["deviation_binding_digest"] == first_deviation.digest()
+    assert second_rust.digest() not in json.dumps(localization.to_dict())
+
+    blame = _proposition(
+        store,
+        "source",
+        "vstd.graph.diagnostic.blame",
+        {
+            "ancestor": "source",
+            "descendant": "result",
+            "localization_event_digest": localization.digest(),
+        },
+    )
+    assert ledger.diagnose(
+        DiagnosticKind.BLAME,
+        "source",
+        "result",
+        blame,
+        session=session,
+        recorded_at="2026-08-29T00:08:00Z",
+    ).status == "ESTABLISHED"
+
+    tampered = copy.deepcopy(ledger.to_dict())
+    localization_record = next(
+        event
+        for event in tampered["events"]
+        if event["kind"] == AssuranceEventKind.CAUSAL_LOCALIZATION.value
+    )
+    localization_record["attributes"]["rust_event_digest"] = second_rust.digest()
+    with pytest.raises(AssuranceFlowError):
+        recheck_assurance_log(tampered, mechanisms=(ExactFactMechanism(),))
 
 
 def test_assurance_event_log_is_portable_strict_and_evidence_complete() -> None:
@@ -1495,3 +1797,103 @@ def test_computed_independence_fails_closed_on_identity_and_assertion_errors() -
     )
     assert duplicate_assertion.computed_independence == "UNKNOWN"
     assert any("duplicate independence assertion" in item for item in duplicate_assertion.separation_errors)
+
+
+def test_vstd5_receipts_preserve_noncanonical_replay_inputs() -> None:
+    store, session = _session()
+    entry = _established_vstd4(store, session)
+    binding_digest = entry.witness.header.binding  # type: ignore[union-attr]
+    witness, assertion, corroboration = _witness_components(
+        store, entry, "witness:one"
+    )
+    shared_identity = store.add(b"shared identity evidence for replay")
+    first = _witness_components(
+        store,
+        entry,
+        "witness:first",
+        identity_evidence_ref=shared_identity,
+    )
+    second = _witness_components(
+        store,
+        entry,
+        "witness:second",
+        identity_evidence_ref=shared_identity,
+    )
+    orphan = replace(assertion, witness_id="witness:orphan")
+    bundles = {
+        "duplicate-assertion": WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (witness,),
+            (assertion, assertion),
+            (corroboration,),
+        ),
+        "orphan-assertion": WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (witness,),
+            (assertion, orphan),
+            (corroboration,),
+        ),
+        "duplicate-witness": WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (witness, witness),
+            (assertion,),
+            (corroboration,),
+        ),
+        "missing-assertion": WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (witness,),
+            (),
+            (corroboration,),
+        ),
+        "reused-identity": WitnessBundle(
+            "claim:fixture",
+            "declarant:one",
+            binding_digest,
+            (first[0], second[0]),
+            (first[1], second[1]),
+            (first[2], second[2]),
+        ),
+    }
+    root = Path(__file__).resolve().parents[1]
+    schema = json.loads((root / "receipts/schema/vstd5_receipt.json").read_text())
+    vstd4_schema = json.loads(
+        (root / "receipts/schema/vstd4_receipt.json").read_text()
+    )
+    assurance_schema = json.loads(
+        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+    )
+    registry = Registry()
+    registry = registry.with_resource(
+        vstd4_schema["$id"], Resource.from_contents(vstd4_schema)
+    )
+    registry = registry.with_resource(
+        assurance_schema["$id"], Resource.from_contents(assurance_schema)
+    )
+    validator = Draft202012Validator(schema, registry=registry)
+
+    for name, bundle in bundles.items():
+        result = assess_witness_corroboration(entry, bundle, session=session)
+        assert result.conformance_status == "NOT_ESTABLISHED", name
+        receipt = build_vstd5_receipt(
+            entry,
+            bundle,
+            result,
+            receipt_id=f"VFY-5-{name.upper()}",
+            session=session,
+        )
+        validator.validate(receipt)
+        assert len(receipt["bundle"]["independence_assertions"]) == len(
+            bundle.independence
+        )
+        rechecked = recheck_vstd5_receipt(
+            entry, receipt, mechanisms=(ExactFactMechanism(),)
+        )
+        assert rechecked.to_dict() == result.to_dict(), name

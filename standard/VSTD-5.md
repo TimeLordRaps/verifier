@@ -32,8 +32,10 @@ two result types and fails closed.
 The reference receipt contains:
 
 * `WitnessIdentity` — witness coordinate plus content-addressed identity evidence;
-* `IndependenceAssertion` — one state and evidence binding for each required
-  declarant/witness separation dimension;
+* an ordered `independence_assertions` array — every supplied
+  `IndependenceAssertion`, including duplicates, orphan references, and missing
+  cardinality as an empty or incomplete array, so negative assessment inputs are not
+  collapsed during serialization;
 * `CorroborationRecord` — exact VSTD-4 commitment, certificate, checker descriptor,
   observations, result, time, class, and executable verification binding;
 * derived disagreements — conflicting checked records retained without voting or
@@ -43,7 +45,9 @@ The reference receipt contains:
 
 Schema validity establishes only shape. `recheck_vstd5_receipt` imports and hashes
 the embedded bytes, checks the admitted VSTD-4 result digest, reruns every registered
-mechanism, and compares the complete derived result.
+mechanism, and compares the complete derived result. Every receipt emitted by
+`build_vstd5_receipt`, including `UNKNOWN` / `NOT_ESTABLISHED` error receipts, MUST
+preserve the exact error-producing input and recheck identically.
 
 ---
 
@@ -106,9 +110,11 @@ another corroboration identifier is rejected rather than counted twice.
 6. disagreement derivation; and
 7. bounded result emission with all errors and limitations retained.
 
-`build_vstd5_receipt` serializes the replay inputs. `recheck_vstd5_receipt` reruns
-them. Neither function turns an identity coordinate into trust or establishes a
-fact outside the propositions checked by its registered mechanisms.
+`build_vstd5_receipt` serializes witness identities and independence assertions as
+separate ordered arrays so duplicate and orphan assertions survive round trip.
+`recheck_vstd5_receipt` reruns them. Neither function turns an identity coordinate
+into trust or establishes a fact outside the propositions checked by its registered
+mechanisms.
 
 ---
 

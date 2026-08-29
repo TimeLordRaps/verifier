@@ -388,7 +388,56 @@ class AssuranceLedger:
         statuses = [node.status, *rot_statuses]
         if latest_projection is not None:
             statuses.append(latest_projection)
+        for resolution in self._resolutions.values():
+            conflict = self._conflicts[resolution.conflict_id]
+            if conflict.subject_id == artifact_id and conflict.predicate == "status":
+                statuses.append(ArtifactStatus(resolution.selected_value))
         return most_degraded(statuses)
+
+    def current_transformation_status(self, transformation_id: str) -> str:
+        """Return a transformation's additive current status projection."""
+        transform = self.graph.transformations.get(transformation_id)
+        if transform is None:
+            return "UNKNOWN"
+        if transform.status != "COMPLETED":
+            return transform.status
+        for resolution in self._resolutions.values():
+            conflict = self._conflicts[resolution.conflict_id]
+            if (
+                conflict.subject_id == transformation_id
+                and conflict.predicate == "status"
+                and resolution.selected_value != "COMPLETED"
+            ):
+                return resolution.selected_value
+        return "COMPLETED"
+
+    def admissibility_blocking_conflicts(self) -> tuple[ConflictRecord, ...]:
+        """Return conflicts whose effect still blocks a clean TRUST route.
+
+        A passing resolution decides which retained value prevailed.  It restores
+        admissibility only when the conflict is exactly about ``status`` and the
+        selected current state is itself admissible.  Arbitrary resolved fields
+        remain blockers because adjudicating a value does not establish its
+        effect on edge-local support.
+        """
+        resolutions = {
+            item.conflict_id: item for item in self._resolutions.values()
+        }
+        blocking: list[ConflictRecord] = []
+        for conflict_id, conflict in self._conflicts.items():
+            resolution = resolutions.get(conflict_id)
+            if resolution is None:
+                blocking.append(conflict)
+                continue
+            if conflict.predicate != "status":
+                blocking.append(conflict)
+                continue
+            if conflict.subject_id in self.graph.artifacts:
+                if self.current_status(conflict.subject_id) is not ArtifactStatus.VALID:
+                    blocking.append(conflict)
+            elif self.current_transformation_status(conflict.subject_id) != "COMPLETED":
+                blocking.append(conflict)
+        return tuple(blocking)
 
     def impacted_descendants(self, artifact_id: str) -> tuple[str, ...]:
         """Return the deduplicated recorded forward impact set, not a verdict."""
@@ -400,7 +449,9 @@ class AssuranceLedger:
         """Return recursively current edge-local TRUST records."""
         if canonical_digest(self.graph.to_dict()) != self.graph_digest:
             return ()
-        unresolved_subjects = {item.subject_id for item in self.unresolved_conflicts()}
+        blocked_subjects = {
+            item.subject_id for item in self.admissibility_blocking_conflicts()
+        }
         trust_events = {
             event.digest(): event
             for event in self._events
@@ -457,10 +508,10 @@ class AssuranceLedger:
                 and attribute_output == event.subject_id
                 and event.source_ids == exact_inputs
                 and event.subject_id in output_ids
-                and transform.status == "COMPLETED"
-                and event.subject_id not in unresolved_subjects
-                and transformation_id not in unresolved_subjects
-                and all(source not in unresolved_subjects for source in exact_inputs)
+                and self.current_transformation_status(transformation_id) == "COMPLETED"
+                and event.subject_id not in blocked_subjects
+                and transformation_id not in blocked_subjects
+                and all(source not in blocked_subjects for source in exact_inputs)
                 and self.current_status(event.subject_id) is ArtifactStatus.VALID
                 and all(
                     self.current_status(source) is ArtifactStatus.VALID
@@ -514,9 +565,15 @@ class AssuranceLedger:
             current.artifacts[artifact_id] = replace(
                 node, status=self.current_status(artifact_id)
             )
-        resolved = {item.conflict_id for item in self._resolutions.values()}
-        for conflict_id in resolved:
-            current.conflicts.pop(conflict_id, None)
+        for transformation_id, transform in tuple(current.transformations.items()):
+            current.transformations[transformation_id] = replace(
+                transform,
+                status=self.current_transformation_status(transformation_id),
+            )
+        for resolution in self._resolutions.values():
+            conflict = self._conflicts[resolution.conflict_id]
+            if conflict.predicate == "status":
+                current.conflicts.pop(resolution.conflict_id, None)
         return current
 
     def project_challenges(
@@ -664,6 +721,7 @@ class AssuranceLedger:
         session: VerificationSession,
         recorded_at: str,
     ) -> ConflictResolution:
+        """Adjudicate one value without equating selection with admissibility."""
         conflict = self._conflicts.get(conflict_id)
         if conflict is None:
             raise AssuranceFlowError(f"unknown conflict {conflict_id}")
@@ -671,6 +729,18 @@ class AssuranceLedger:
             raise AssuranceFlowError(f"conflict {conflict_id} is already resolved additively")
         if selected_value not in conflict.competing_values:
             raise AssuranceFlowError("resolution must select one retained competing value")
+        if conflict.predicate == "status":
+            if conflict.subject_id in self.graph.artifacts:
+                try:
+                    ArtifactStatus(selected_value)
+                except ValueError as exc:
+                    raise AssuranceFlowError(
+                        "artifact status resolution must select a defined status"
+                    ) from exc
+            elif not selected_value:
+                raise AssuranceFlowError(
+                    "transformation status resolution must not be empty"
+                )
         if (
             proposition.subject_id != conflict.subject_id
             or proposition.predicate != f"vstd.graph.resolve.{conflict.predicate}"
@@ -740,7 +810,7 @@ class AssuranceLedger:
             raise AssuranceFlowError(
                 "TRUST target must be an output of the bound transformation"
             )
-        if transform.status != "COMPLETED":
+        if self.current_transformation_status(transformation_id) != "COMPLETED":
             raise AssuranceFlowError("incomplete transformation cannot provide TRUST")
         if self.current_status(target_id) is not ArtifactStatus.VALID or any(
             self.current_status(source) is not ArtifactStatus.VALID
@@ -749,13 +819,17 @@ class AssuranceLedger:
             raise AssuranceFlowError(
                 "inadmissible target or transformation input cannot provide current TRUST"
             )
-        unresolved_subjects = {item.subject_id for item in self.unresolved_conflicts()}
+        blocked_subjects = {
+            item.subject_id for item in self.admissibility_blocking_conflicts()
+        }
         if (
-            target_id in unresolved_subjects
-            or transformation_id in unresolved_subjects
-            or any(source in unresolved_subjects for source in sources)
+            target_id in blocked_subjects
+            or transformation_id in blocked_subjects
+            or any(source in blocked_subjects for source in sources)
         ):
-            raise AssuranceFlowError("unresolved conflict blocks clean TRUST")
+            raise AssuranceFlowError(
+                "conflict without an admissible current-state consequence blocks clean TRUST"
+            )
 
         prerequisite_digests = tuple(sorted(set(prerequisite_trust_event_digests)))
         current_by_digest = {
@@ -898,20 +972,35 @@ class AssuranceLedger:
         descendant_id: str,
         proposition: BoundProposition,
         *,
+        rust_event_digest: str,
         session: VerificationSession,
         recorded_at: str,
     ) -> AssuranceEvent:
+        """Bind one ancestor to one exact passing descendant-deviation event."""
         if ancestor_id not in self.graph.ancestors((descendant_id,)) - {descendant_id}:
             raise AssuranceFlowError("causal candidate is not a recorded ancestor")
-        rust_exists = any(
-            event.kind is AssuranceEventKind.RUST
-            and event.subject_id == descendant_id
-            and event.outcome is MechanismOutcome.PASS
-            for event in self._events
+        rust_event = next(
+            (event for event in self._events if event.digest() == rust_event_digest),
+            None,
         )
-        if not rust_exists:
-            raise AssuranceFlowError("localization requires a verified descendant deviation")
-        expected = {"ancestor": ancestor_id, "descendant": descendant_id}
+        if (
+            rust_event is None
+            or rust_event.kind is not AssuranceEventKind.RUST
+            or rust_event.outcome is not MechanismOutcome.PASS
+            or rust_event.subject_id != descendant_id
+            or ancestor_id not in rust_event.source_ids
+        ):
+            raise AssuranceFlowError(
+                "localization requires the exact passing RUST event for this "
+                "descendant and ancestor"
+            )
+        deviation_binding_digest = str(rust_event.attributes["binding_digest"])
+        expected = {
+            "ancestor": ancestor_id,
+            "descendant": descendant_id,
+            "rust_event_digest": rust_event_digest,
+            "deviation_binding_digest": deviation_binding_digest,
+        }
         if (
             proposition.subject_id != descendant_id
             or proposition.predicate != "vstd.graph.causal_localization"
@@ -928,6 +1017,10 @@ class AssuranceLedger:
             recorded_at=recorded_at,
             evaluation=evaluation,
             evidence_payloads=session.evidence.export_base64(evaluation.evidence_refs),
+            attributes={
+                "rust_event_digest": rust_event_digest,
+                "deviation_binding_digest": deviation_binding_digest,
+            },
         )
 
     def diagnose(
@@ -948,6 +1041,11 @@ class AssuranceLedger:
         obligation. Neither result concerns an actor's moral character,
         reputation, or general trust.
         """
+        requested_localization_digest = ""
+        if proposition is not None and isinstance(proposition.expected, Mapping):
+            requested_localization_digest = str(
+                proposition.expected.get("localization_event_digest", "")
+            )
         localization = next(
             (
                 event
@@ -956,6 +1054,10 @@ class AssuranceLedger:
                 and event.subject_id == descendant_id
                 and event.source_ids == (ancestor_id,)
                 and event.outcome is MechanismOutcome.PASS
+                and (
+                    not requested_localization_digest
+                    or event.digest() == requested_localization_digest
+                )
             ),
             None,
         )
@@ -1161,6 +1263,7 @@ def recheck_assurance_log(
                     source_ids[0],
                     subject_id,
                     proposition,
+                    rust_event_digest=str(attributes["rust_event_digest"]),
                     session=session,
                     recorded_at=recorded_at,
                 )

@@ -34,22 +34,30 @@
     "digestRef": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"},
     "bundle": {
       "type": "object", "additionalProperties": false,
-      "required": ["claim_id", "declarant_id", "claim_binding_digest", "witnesses", "corroborations"],
+      "required": ["claim_id", "declarant_id", "claim_binding_digest", "witnesses", "independence_assertions", "corroborations"],
       "properties": {
         "claim_id": {"type": "string", "minLength": 1},
         "declarant_id": {"type": "string", "minLength": 1},
         "claim_binding_digest": {"$ref": "#/$defs/digest"},
         "witnesses": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/witness"}},
+        "independence_assertions": {"type": "array", "items": {"$ref": "#/$defs/independenceAssertion"}},
         "corroborations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/corroboration"}}
       }
     },
     "witness": {
       "type": "object", "additionalProperties": false,
-      "required": ["witness_id", "identity_evidence_ref", "independence"],
+      "required": ["witness_id", "identity_evidence_ref"],
       "properties": {
         "witness_id": {"type": "string", "minLength": 1},
-        "identity_evidence_ref": {"$ref": "#/$defs/digestRef"},
-        "independence": {
+        "identity_evidence_ref": {"$ref": "#/$defs/digestRef"}
+      }
+    },
+    "independenceAssertion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["witness_id", "dimensions"],
+      "properties": {
+        "witness_id": {"type": "string", "minLength": 1},
+        "dimensions": {
           "type": "object", "additionalProperties": false,
           "required": ["control", "verdict_code", "trust_root", "evidence_source", "infrastructure", "financial_dependence", "jurisdictional_dependence"],
           "properties": {

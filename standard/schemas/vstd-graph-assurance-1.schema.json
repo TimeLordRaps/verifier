@@ -75,6 +75,14 @@
         {
           "if": {"properties": {"kind": {"const": "CONFLICT_DECLARATION"}}, "required": ["kind"]},
           "then": {"properties": {"attributes": {"$ref": "#/$defs/conflictAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "CONFLICT_RESOLUTION"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/resolutionAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "CAUSAL_LOCALIZATION"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/localizationAttributes"}}}
         }
       ]
     },
@@ -109,6 +117,27 @@
             "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
           }
         }
+      }
+    },
+    "resolutionAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "conflict_id", "selected_value", "resolution_id"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "conflict_id": {"type": "string", "minLength": 1},
+        "selected_value": {"type": "string"},
+        "resolution_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "localizationAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "rust_event_digest", "deviation_binding_digest"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "rust_event_digest": {"$ref": "#/$defs/digest"},
+        "deviation_binding_digest": {"$ref": "#/$defs/digest"}
       }
     },
     "binding": {

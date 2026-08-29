@@ -172,7 +172,11 @@ The reference event mechanism realizes that rule edge by edge. Each TRUST event 
 historical Graph digest, one exact transformation, its complete input artifact set, one
 output artifact, and the exact prerequisite TRUST event for every derived input. A
 descendant event is current only while every recursively required event, input, output,
-and transformation remains admissible and free of unresolved conflict. Alternate or
+and transformation remains admissible and free of an admissibility-blocking conflict. A
+status-conflict resolution projects its selected state into the current view: `VALID` or
+`COMPLETED` may restore the affected route, while `REVOKED`, `FAILED`, or another
+inadmissible state cannot. Resolving an arbitrary predicate selects a retained value but
+does not establish its admissibility effect, so the route remains blocked. Alternate or
 duplicate paths remain distinct recorded routes; their count supplies no added strength
 or witness independence.
 
@@ -194,6 +198,10 @@ observation, falsehood, or causal responsibility; localization requires addition
 intervention, ablation, independently bound execution evidence, or an equivalent declared
 mechanism.
 
+Reference causal localization MUST select one exact passing RUST event, bind that event's
+digest and the exact descendant-deviation proposition digest, confirm the selected artifact
+is among that event's recorded ancestors, and preserve those coordinates through replay.
+
 **BLAME** and **GUILT** are bounded artifact-relative diagnostic results, not opposite
 directions on the Graph. BLAME requires a named mechanism to establish that an exact
 artifact bears responsibility for or materially contributed to an exact localized
@@ -202,7 +210,9 @@ plus an exact obligation that the artifact violated. Thus GUILT contains a respo
 component, while BLAME alone establishes no obligation or violation. Neither term concerns
 actor morality, character, identity, or reputation. Exoneration, obligation satisfaction,
 or not-guilty conclusions require their own exact propositions and mechanisms; absent such
-evidence the result remains `UNKNOWN`.
+evidence the result remains `UNKNOWN`. BLAME and GUILT bind the causal-localization event
+digest; that event transitively binds the selected RUST event and exact deviation, so neither
+result can float across two deviations on the same descendant.
 
 The word *causal* is required here for recorded developmental and provenance causality:
 the graph states which artifacts and transformations produced later claim architecture.
