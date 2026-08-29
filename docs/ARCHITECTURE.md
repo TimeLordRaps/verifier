@@ -31,17 +31,19 @@ shape only; a passing validator establishes only its named implemented checks.
 | VSTD-1 generic run | `standard/VSTD-1.md` | `verifier.core.run` capture/facade plus `run_planning`, `run_validation`, `run_inspection`, `run_reproduction`, and `run_impact` | `vstd1_generic_run_receipt.json` | `test_generic_run.py` |
 | VSTD-2 | `standard/VSTD-2.md` | `verifier.core.geometry` | `vstd2_receipt.json` | `test_verification_geometry.py` |
 | VSTD-3 | `standard/VSTD-3.md` | `verifier.hardware` | `vstd3_receipt.json`, `vstd3_accelerator_profile.json` | `test_vstd3_schema.py`, hardware tests |
-| VSTD-4 | `standard/VSTD-4.md` | certificate/kernel checks plus unbound candidate depth in `verifier.core.depth` | `vstd4_certificate.json`, `vstd4_receipt.json` | `test_gdc_certificate.py`, `test_vstd4_depth.py` |
-| VSTD-5 | `standard/VSTD-5.md` | fail-closed candidate rejection only | `vstd5_receipt.json` | `test_vstd4_depth.py`, `test_vstd_schemas.py` |
+| VSTD-4 | `standard/VSTD-4.md` | certificate/kernel checks plus candidate and evidence-bound paths in `verifier.core.depth` / `verifier.core.evidence` | `vstd4_certificate.json`, `vstd4_receipt.json` | `test_gdc_certificate.py`, `test_vstd4_depth.py`, `test_evidence_bound_assurance.py` |
+| VSTD-5 | `standard/VSTD-5.md` | `verifier.core.witness` evidence-bound entry, independence, corroboration, disagreement, build, and replay | `vstd5_receipt.json` | `test_evidence_bound_assurance.py`, `test_vstd_schemas.py` |
 | VSTD-Graph-1 | `standard/VSTD-Graph-1.md` | `verifier.data.models`, `verifier.data.receipt` | `vstd_graph_receipt.json` | `test_public_data.py` |
-| VSTD-Graph-2..5 | matching Graph documents | `verifier.data.graph_level` | `computed_graph_level` within `vstd_graph_receipt.json` | `test_graph_level.py` |
-| ZIZK artifact-first TRUST/ROT/RUST | `standard/LADDER.md` section 1.1 | Governs every mechanism; bounded RISC Zero example under `examples/zizk_artifact_first/` | No separate serialized receipt identifier or profile | presentation, experiment-manifest, and ZIZK mechanism tests |
+| VSTD-Graph-2..5 | matching Graph documents | `verifier.data.graph_level` candidate/evidence-bound paths | `computed_graph_level` within `vstd_graph_receipt.json` | `test_graph_level.py`, `test_evidence_bound_assurance.py` |
+| ZIZK artifact-first TRUST/ROT/RUST | `standard/LADDER.md` section 1.1 | `verifier.data.assurance`; bounded RISC Zero example under `examples/zizk_artifact_first/` | `vstd-graph-assurance-1.schema.json`; not a numbered-profile receipt | assurance, presentation, experiment-manifest, and ZIZK mechanism tests |
 | Artifact freeze, seal, and thaw | `standard/ARTIFACT_CONTROL.md` | `verifier.artifact_control` and `vstd artifact` | `standard/schemas/artifact-control-1.schema.json`; these are mechanism objects, not receipts | `test_artifact_control.py`, public API/CLI tests |
 
-VSTD-5 is draft. The VSTD-4 candidate-depth runtime and Graph-2 through Graph-5 compute candidates
-from caller-supplied references or ratings and return
-`conformance_status = NOT_ESTABLISHED`; evidence binding is not implemented. Neither
-candidate is numbered-profile conformance.
+Compatibility VSTD-4 and Graph paths still compute candidates from caller-supplied
+references or ratings and return `conformance_status = NOT_ESTABLISHED`. Separate
+evidence-bound paths resolve exact bytes, pin and rerun registered mechanisms, enforce
+bounds, and recheck certificates before they can report `ESTABLISHED`. A mechanism result
+is limited to its proposition, evidence, trust roots, implementation digest, and bounds;
+the repository claims no external witness or independent implementation.
 
 Artifact control is an orthogonal mechanism beneath the axes. It can preserve and close
 an artifact used in any numbered profile, but its successful verification establishes only exact-byte
@@ -110,13 +112,13 @@ assessment must examine.
 
 A materialized Graph result must retain or bind the source Graph receipt, target collection
 or induced subgraph, selection query, object and edge ratings with their evidence, selected
-surface, lifecycle and conflict state, candidate Graph profile certificate, materialization mechanism,
+surface, lifecycle and conflict state, Graph profile certificate, materialization mechanism,
 and declared information loss. It earns no strength from size, path count, repetition,
 storage, or agreement. Its result is capped by every applicable member, transformation,
-mapping, substrate, refutation, witness, and materialization obligation. Because current
-Graph-2 through Graph-5 ratings are caller-supplied, present materialization can establish
-only the candidate computation over those ratings, not independently verified Graph
-conformance.
+mapping, substrate, refutation, witness, and materialization obligation. The compatibility
+path establishes only its candidate computation. The evidence-bound path can establish a
+Graph profile only after rerunning every required rating mechanism across the complete
+closure.
 
 ## Governing ZIZK architecture and mechanism ownership
 
@@ -156,9 +158,10 @@ Maturity attaches to mechanisms beneath that architecture:
 |---|---|---|
 | RISC Zero hidden-witness predicate | Bounded reference mechanism with tracked public proof artifacts | `examples/zizk_artifact_first/risc0/`; native verification only, no VSTD receipt mapping |
 | Bounded identity-disclosure evaluator | Bounded non-normative reference mechanism | `examples/zizk_artifact_first/zero_identity/`; no identity-derived trust |
-| Event serialization and TRUST-transfer algebra | Experimental and unimplemented | May implement the governing direction but cannot redefine it |
-| ROT derivation and cross-surface propagation | Experimental and incomplete | Current Graph admission handles some lifecycle states; no general ROT result or propagation protocol exists |
-| RUST concentration and localization | Experimental and unimplemented | Diagnostic reachability only until a separately specified mechanism earns more |
+| Assurance event serialization and replay | Implemented bounded reference mechanism | `VSTD-GRAPH-ASSURANCE-1` embeds the historical Graph, exact bindings, evidence bytes, a hash chain, and a current-view digest; `recheck_assurance_log` reruns every event mechanism |
+| TRUST transfer | Implemented proposition-dispatch reference mechanism | `record_trust` accepts only recorded ancestors and an exact passing support proposition; current lifecycle or conflict state can invalidate the event for current use without deleting history. No universal scalar support algebra exists. |
+| ROT derivation and cross-surface propagation | Implemented bounded reference mechanisms | Strictly degrading status propositions and complete challenge-ledger projections produce additive current-state overlays; the deduplicated descendant impact set is discovery, and a descendant status change still needs its own mechanism |
+| RUST concentration and localization | Implemented bounded reference mechanisms | A passing descendant-deviation proposition produces deduplicated reverse reachability; concentration counts unique descendants; localization and artifact-relative diagnostic attribution require separate passing propositions |
 | Complete `PASS`/`FAIL`/`UNKNOWN`/`CONFLICTED` hidden-witness derivation | Experimental and unimplemented | A caller-supplied state tag is not an earned verdict |
 | Specific optional proof backends | Backend-specific maturity; the RISC Zero example has one recorded native proof | Optional proof machinery cannot make the governing architecture optional or establish broader VSTD conformance |
 
@@ -233,9 +236,9 @@ score. No receipt or schema format is defined here.
 |---|---|---|---|
 | `ASSURANCE_0` | Identified evidence or a previously assessed claim, with its evidence basis, provenance, bounds, trust roots, limitations, current state, and unresolved conflicts or unknowns. | Generic-run receipts and external-evaluation evidence; `EvidenceClassification`; Graph artifacts, statuses, and `ConflictRecord`; VSTD-3 evidence sources, gaps, and claim evaluations; VSTD-4 certificates and kernel results. | There is no universal Assurance record or cross-profile scalar ordering. |
 | `ATTRIBUTION` | The explicit relation from evidence to the exact subject/predicate it supports, including the mapping, extraction, or transformation, scope, bounds, provenance, and information loss. | Generic-run bound-output extraction and recorded external references; Graph transformation hyperedges; VSTD-4 `ClaimCoordinate`, `ClaimBinding`, and `Grounding`; loss-sensitive SCITT coordinates. | Mapping and loss declarations remain profile-specific; a reference alone is not a checked mapping. |
-| `ASSIGNMENT` | The most precise evidenced execution coordinate available: computation, execution instance, software/runtime, machine/substrate, then optional actor/operator bindings. Missing coordinates remain partial or `UNKNOWN`. | Generic-run execution and source-state records; VSTD-3 `WorkloadIdentity`, `ExecutionIdentity`, topology, device, runtime, and evidence-source records; VSTD-1 `independence_basis` for the separate independence question. | Generic actor/execution evidence binding is not implemented. Assignment alone establishes no trust, authorization, independence, or responsibility. |
+| `ASSIGNMENT` | The most precise evidenced execution coordinate available: computation, execution instance, software/runtime, machine/substrate, then optional actor/operator bindings. Missing coordinates remain partial or `UNKNOWN`. | Generic-run execution and source-state records; VSTD-3 `WorkloadIdentity`, `ExecutionIdentity`, topology, device, runtime, and evidence-source records; VSTD-1 `independence_basis` for the separate independence question; generic `BoundProposition` mechanism dispatch for an exact assignment proposition. | The legacy generic-run declaration does not self-promote into an evidenced Assignment. A deployment supplies the mechanism and observations; Assignment alone establishes no trust, authorization, independence, or responsibility. |
 | `ASSESSMENT` | An identified verifier or mechanism evaluates one bounded proposition under the applicable input Assurance, Attribution, Assignment, specification/profile, trust roots, and bounds. It earns only the predicates it checks. | Generic validation, artifact rehash, and rerun mechanisms; VSTD-3 recomputed `ClaimEvaluation`; Graph validation and candidate-profile certificates; the VSTD-4 grounded certificate kernel; native VSTD plus native SCITT composition. | No one verifier covers every profile; mechanism results remain adjacent rather than silently merged. |
-| `ASSURANCE_1` | The assessment output recorded as new evidence with complete lineage to its inputs, mechanism, proposition, and limits. It may be `PASS`, `FAIL`, `UNKNOWN`, `CONFLICTED`, or a profile-specific equivalent. | Receipts, claim evaluations, kernel results, certificates, artifact digests, Graph artifacts/hyperedges, and prior commitments can preserve and reference the output. | There is no universal recursive-loop envelope; any future wire representation requires a separate proposal. |
+| `ASSURANCE_1` | The assessment output recorded as new evidence with complete lineage to its inputs, mechanism, proposition, and limits. It may be `PASS`, `FAIL`, `UNKNOWN`, `CONFLICTED`, or a profile-specific equivalent. | Receipts, claim evaluations, kernel results, certificates, artifact digests, Graph artifacts/hyperedges, prior commitments, and the replayable `VSTD-GRAPH-ASSURANCE-1` event envelope preserve and reference the output. | The Graph envelope is not a universal scalar or an automatic cross-profile cast; each later loop still names and reruns its mechanism. |
 
 First-hand and second-hand describe **provenance**, not strength. A first-hand
 self-observation may be weak; a second-hand certificate may be strongly bound to a narrow
@@ -264,9 +267,10 @@ the child still discharges its new obligations. ROT is typed, time-indexed degra
 current admissibility while historical evidence remains immutable. RUST is inverse-TRUST
 diagnostic reachability from a downstream deviation toward recorded ancestors. Together
 they describe memetic causal-provenance and lifecycle behavior over one development graph.
-They do not establish actor standing, guilt, responsibility, causal localization, or
-automatic ancestor falsification, and no current runtime emits a general TRUST, ROT, or
-RUST transfer result.
+They do not establish actor standing, moral character, responsibility, or automatic
+ancestor falsification. The reference runtime emits bounded TRUST, ROT, and RUST events
+only after their exact mechanisms run. Causal localization and artifact-relative `BLAME`
+or `GUILT` require additional exact propositions and never become actor reputation.
 
 ### Recursive-amplification falsification outcomes
 
@@ -291,10 +295,11 @@ The historical `independent_audit` field name does not prove independence. Its
 `independence_basis` records actor, implementation, and runtime separation. Repeated or
 matching results are artifact agreement, not evidence that separate actors performed the
 runs; absent separation evidence is `NOT_DEMONSTRATED`. Serialized status words and
-evidence-reference strings cannot self-promote that result. Because version 1.2.0 has no
-actor/execution evidence-binding adapter, the bundled runtime treats supplied assertions
-as no stronger than `DECLARED`, rejects receipts that label them `EVIDENCED`, and never
-derives `EVIDENCED`.
+evidence-reference strings cannot self-promote that result. The generic-run compatibility
+path treats supplied assertions as no stronger than `DECLARED`, rejects receipts that label
+them `EVIDENCED`, and never derives `EVIDENCED`. The distinct VSTD-5 reference path can
+establish only its exact declarant/witness separation propositions after all seven seams are
+rerun by registered mechanisms; it does not upgrade the legacy generic-run fields.
 
 Graph conflict records retain incompatible values and their evidence references without
 adding a scalar score or changing the frozen artifact-status vocabulary. A conflict makes
@@ -307,19 +312,20 @@ question is a new assessment over the retained graph and applicable lifecycle re
 
 | Scenario | Implemented outcome |
 |---|---|
-| An ancestor is `CHALLENGED`, `REVOKED`, or `STALE` | Candidate Graph recomputation follows the full ancestor closure and returns compatibility field `level = 0`, meaning no numbered Graph profile is satisfied. This implements a bounded ROT consequence for that query; it does not emit a general ROT result or rewrite the historical receipt. |
+| An ancestor is `CHALLENGED`, `REVOKED`, or `STALE` | Candidate/evidence-bound Graph recomputation follows the full ancestor closure and returns compatibility field `level = 0`. `AssuranceLedger` also records typed ROT or projects append-only challenge-ledger state into a derived current view; historical Graph bytes remain unchanged. |
 | An ancestor is `SUPERSEDED` | The historical Graph candidate remains admissible by design; the stricter all-ancestors-`VALID` policy rejects it for current-use admission. Supersession does not retroactively falsify its prior lineage role. |
-| Upstream evidence conflicts | A retained `ConflictRecord` blocks a clean candidate. Conflict resolution is not implemented; any future resolution must be additive and retain the competing evidence. |
+| Upstream evidence conflicts | A retained `ConflictRecord` blocks a clean result. `resolve_conflict` accepts only a mechanism-passing proposition bound to the exact conflict and one retained competing value; the original conflict remains in history while the derived current view records the additive resolution. |
 | Evidence arrives by multiple paths or one run receipt repeats a reference | Reachability and impact sets deduplicate identifiers. Multiplicity supplies no independence or strength. |
-| A descendant deviation points toward shared ancestors | Existing ancestor queries establish recorded reverse reachability only. No runtime emits RUST, measures independent concentration, or attributes causal responsibility. |
-| A challenge ledger changes a claim's current status | The append-only ledger derives `CHALLENGED` or `REVOKED`, but no adapter binds that claim status into a Graph artifact. Cross-surface propagation is `NOT_ESTABLISHED`, not silently clean. |
-| Later evidence is intended to clear a conflict | No conflict-resolution transition exists in version 1.2.0. Removing the old record would violate additive correction; a future mechanism must preserve it and identify what resolved it. |
+| A descendant deviation points toward shared ancestors | A mechanism-passing deviation emits RUST over the deduplicated recorded ancestor set. Structural concentration counts unique deviating descendants, not paths or causal strength. Localization, BLAME, and GUILT require separate exact mechanisms. |
+| A challenge ledger changes a claim's current status | `project_challenges` binds its complete append-only records into a current Graph overlay and embeds those records for replay. Existing TRUST remains historical but disappears from `current_trust_events`; `impacted_descendants` reports the deduplicated reassessment surface. It never mutates the historical graph. |
+| Later evidence clears a conflict | The additive resolution retains the original competing evidence and its mechanism evaluation. Removing or rewriting the conflict remains invalid. |
 | Candidate calculation encounters cyclic ancestry | Rejected before candidate calculation; recursive topology cannot manufacture assurance. |
 
-The implemented forward blast-radius query discovers recorded downstream artifacts and
-generic-run receipts that require reconsideration when given an invalidated artifact. It is
-a discovery mechanism, not automatic status mutation, current-admissibility adjudication,
-or proof of causal influence. Automatic propagation for challenge, staleness, supersession,
-conflict resolution, general TRUST transfer, ROT propagation, and RUST remains
-`NOT_ESTABLISHED` until a distinct mechanism binds the lifecycle event to the exact Graph
-artifact and proposition.
+The forward blast-radius query remains discovery only. `AssuranceLedger` is the distinct
+binding mechanism for explicit TRUST, ROT, RUST, challenge projection, and conflict
+resolution. `recheck_assurance_log` reconstructs the historical Graph, rehashes every
+embedded evidence item, reruns the exact registered mechanisms, reproduces the event chain,
+and compares the derived current view. The ledger never infers an unrecorded edge, converts
+topology into assurance, or treats RUST as causality. Domain-specific transfer and
+localization propositions still require their registered mechanisms and may return
+`UNKNOWN`.

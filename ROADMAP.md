@@ -203,7 +203,7 @@ and ownership decision.
 
 ## Current experimental development tracks
 
-This dated register records substantive work as of **2026-08-25**. A committed experiment,
+This dated register records substantive work as of **2026-08-29**. A committed experiment,
 passing test, or generated index is not normative, released, reproduced by a distinct actor,
 or evidence of adoption merely because it exists. Profile manifests and the generated
 [`experiments/INDEX.md`](experiments/INDEX.md) are the portable experiment register when
@@ -212,7 +212,7 @@ intentional experiment artifacts are present.
 | Track | Public artifact | Current boundary | Next gate |
 |---|---|---|---|
 | SCITT interoperability | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) | Experimental adapter, rerunnable real-COSE specimen with ephemeral keys, and adversarial tests; no IETF review or external interoperability result. | Independent implementation and interoperability result. |
-| Artifact-first mechanism completion | [`experiments/artifact_first_mechanisms/experiment.json`](experiments/artifact_first_mechanisms/experiment.json) | Experimental event serialization, TRUST-transfer algebra, ROT derivation/propagation, RUST concentration/localization, complete trichotomy derivation, and specific unfinished optional proof backends under the already-governing ZIZK architecture. The bounded identity evaluator and tracked RISC Zero reference mechanism are under `examples/`. | Implement and falsify each mechanism without treating the governing orientation as contingent or creating actor-tied trust. |
+| Artifact-first mechanism completion | [`standard/schemas/vstd-graph-assurance-1.schema.json`](standard/schemas/vstd-graph-assurance-1.schema.json) | Event serialization, evidence-bound TRUST/ROT/RUST dispatch, challenge projection, conflict resolution, structural concentration, explicit localization, and bounded diagnostic attribution are implemented and adversarially tested. The complete domain-independent transfer algebra, complete trichotomy derivation, cross-implementation replay, and specific optional proof backends remain open. | Supply and falsify real domain mechanisms without creating actor-tied trust or topology-derived assurance. |
 | Workflow and allocation | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Strict validator, verdict-neutral GitHub adapter, generated index, and allocation records; no optimality claim or independent consumer. | A second observable adapter and independent consumer. |
 
 ## Milestone 1 — make refutation the front door
@@ -279,12 +279,24 @@ intentional experiment artifacts are present.
 
 ## Milestone 4 — challenge and degradation network
 
-**Build**
+**Implemented reference mechanism**
 
 - append-only challenge envelopes and adjudication records;
-- transitive blast-radius computation over object and transformation nodes;
-- freshness and availability policies for evidence that disappears;
-- portable bundles for disconnected verification.
+- challenge-ledger projection into an additive current Graph view;
+- transitive, deduplicated descendant impact discovery;
+- strictly degrading ROT status propositions without historical mutation;
+- current TRUST invalidation when a required ancestor becomes inadmissible;
+- portable `VSTD-GRAPH-ASSURANCE-1` logs with embedded evidence and exact offline
+  mechanism replay; and
+- additive conflict resolution, RUST reachability/concentration, explicit localization,
+  and bounded artifact-relative diagnostic attribution.
+
+**Still supply per deployment**
+
+- freshness and availability mechanisms for the deployment's clocks, dependencies, and
+  retention boundary;
+- domain mechanisms that decide whether an affected descendant actually changes status;
+- external independent replay evidence and interoperable implementations.
 
 **Exit evidence**
 
@@ -295,7 +307,9 @@ intentional experiment artifacts are present.
 
 ## Milestone 5 — corroboration without pseudo-independence
 
-VSTD-5 remains draft until operating experience and actual outside participants exist.
+The VSTD-5 meta-verification path and replayable receipt are implemented. A real
+independent-witness claim remains unavailable until outside participants supply evidence
+that passes every required separation and corroboration mechanism.
 
 **Exit evidence**
 

@@ -68,10 +68,10 @@
     </g>
     <g fill="#91a9b4" font-size="13" font-weight="600" text-anchor="end">
       <text data-profile="vstd-1" x="558" y="188">REF. SUBSET</text><text data-profile="graph-1" x="1118" y="188">REF. SUBSET</text>
-      <text data-profile="vstd-2" x="558" y="268" fill="#f2bf68">EXPERIMENTAL</text><text data-profile="graph-2" x="1118" y="268">CANDIDATE</text>
-      <text data-profile="vstd-3" x="558" y="348">IMPLEMENTED</text><text data-profile="graph-3" x="1118" y="348">CANDIDATE</text>
-      <text data-profile="vstd-4" x="558" y="428">CANDIDATE</text><text data-profile="graph-4" x="1118" y="428">CANDIDATE</text>
-      <text data-profile="vstd-5" x="558" y="508" fill="#f2bf68">DRAFT</text><text data-profile="graph-5" x="1118" y="508" fill="#f2bf68">DRAFT</text>
+      <text data-profile="vstd-2" x="558" y="268" fill="#f2bf68">EXPERIMENTAL</text><text data-profile="graph-2" x="1118" y="268">REF. MECH.</text>
+      <text data-profile="vstd-3" x="558" y="348">IMPLEMENTED</text><text data-profile="graph-3" x="1118" y="348">REF. MECH.</text>
+      <text data-profile="vstd-4" x="558" y="428">REF. MECH.</text><text data-profile="graph-4" x="1118" y="428">REF. MECH.</text>
+      <text data-profile="vstd-5" x="558" y="508">REF. MECH.</text><text data-profile="graph-5" x="1118" y="508">REF. MECH.</text>
     </g>
 
     <rect x="242" y="562" width="716" height="40" rx="20" fill="#0b1b27" stroke="#38515e"/>

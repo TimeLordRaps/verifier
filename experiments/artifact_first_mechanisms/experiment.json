@@ -7,7 +7,7 @@
   "experiment": {
     "id": "experiment-artifact-first-mechanisms",
     "title": "Mechanism completion under VSTD's governing ZIZK artifact-first architecture",
-    "question": "Which bounded event serialization, TRUST (mechanism-earned forward artifact support) transfer algebra, ROT (typed time-indexed current-admissibility degradation) derivation and propagation, RUST (inverse-TRUST diagnostic backtrace) concentration and localization rules, and hidden-witness trichotomy mechanisms can implement the governing artifact-first causal-provenance orientation without actor reputation, scalar cancellation, causal-localization overclaim, or making that orientation contingent on the study?",
+    "question": "Which remaining domain-specific TRUST (mechanism-earned forward artifact support) transfer rules, ROT (typed time-indexed current-admissibility degradation) policies, RUST (inverse-TRUST diagnostic backtrace) localization mechanisms, hidden-witness trichotomy mechanisms, and independent implementations can extend the shipped reference event/dispatch substrate without actor reputation, scalar cancellation, causal-localization overclaim, or making the governing orientation contingent on the study?",
     "state": "RUNNING",
     "started_at": "2026-08-23T00:00:00Z"
   },
@@ -66,8 +66,8 @@
     "recorded_at": "2026-08-24T00:00:00Z",
     "artifact_id": "artifact-round2-design",
     "limitations": [
-      "This experimental workflow manifest records only unfinished mechanisms and their evidence; it does not classify VSTD's governing ZIZK artifact-first architecture as experimental.",
-      "Round 2 is a design synthesis rather than a completed trustless protocol.",
+      "This experimental workflow manifest records remaining domain mechanisms and external evidence; it does not classify VSTD's governing ZIZK artifact-first architecture or the shipped reference event/dispatch substrate as experimental.",
+      "Round 2 remains a design synthesis for the domain-independent transfer algebra and external protocol, not a denial of the bounded reference implementation.",
       "The bounded identity-disclosure reference evaluator is semantic and does not itself provide cryptographic anonymity or unlinkability."
     ]
   },
@@ -335,8 +335,8 @@
         "observation-zk-proof",
         "observation-identity-boundary"
       ],
-      "decision": "Treat standard/LADDER.md section 1.1 as the controlling semantic invariant and confine Round 2 to candidate operational mechanics for TRUST transfer, ROT derivation/propagation, and RUST backtrace/concentration.",
-      "reason": "The architecture is normative; only event serialization, TRUST-transfer algebra, ROT derivation and propagation, RUST concentration and localization, complete trichotomy derivation, and specific unfinished optional proof backends remain experimental.",
+      "decision": "Treat standard/LADDER.md section 1.1 and VSTD-GRAPH-ASSURANCE-1 as the controlling semantic and implemented reference boundaries; confine Round 2 to domain-specific TRUST transfer, ROT derivation/propagation, RUST backtrace/concentration and localization mechanisms, independent cross-implementation replay, and remaining proof research.",
+      "reason": "The architecture and bounded reference event/dispatch mechanisms are implemented; the complete domain-independent transfer algebra, complete trichotomy derivation, external independent replay, and specific unfinished optional proof backends remain experimental.",
       "action_ids": [
         "action-reverification-synthesis"
       ],
@@ -358,7 +358,7 @@
     {
       "id": "amendment-actor-artifact-rust-correction",
       "recorded_at": "2026-08-25T00:00:00Z",
-      "reason": "Correct the object-only framing and distinguish the normative causal-provenance orientation from its experimental event, transfer, RUST, trichotomy, and optional proof-backend mechanisms: artifact support propagates ancestor-to-descendant, while RUST memetically backtraces descendant-to-ancestor without becoming actor reputation, scalar cancellation, causal localization, or guilt.",
+      "reason": "Correct the object-only framing and distinguish the normative causal-provenance orientation and implemented reference events from remaining domain transfer, localization, trichotomy, and optional proof-backend research: artifact support propagates ancestor-to-descendant, while RUST memetically backtraces descendant-to-ancestor without becoming actor reputation, scalar cancellation, causal localization, or guilt.",
       "supersedes": [
         "amendment-round2-design"
       ],
@@ -379,8 +379,8 @@
     {
       "id": "horizon-operational-protocol",
       "status": "UNKNOWN",
-      "description": "End-to-end trustless reverification protocol",
-      "reason": "Round 2 records a design substrate; no complete operational protocol or independent implementation is included."
+      "description": "Independent end-to-end deployment of the reference reverification protocol",
+      "reason": "The repository ships a bounded operational reference substrate; no external independent implementation or deployment evidence is included."
     },
     {
       "id": "horizon-anonymity",
@@ -403,20 +403,20 @@
     {
       "id": "horizon-rot-current-admissibility",
       "status": "UNKNOWN",
-      "description": "Typed ROT derivation and dependency-aware current-admissibility propagation",
-      "reason": "Some Graph queries enforce bounded lifecycle consequences, but no general ROT result, cross-surface binder, or propagation protocol is implemented."
+      "description": "Domain-specific ROT policies beyond the reference dispatcher",
+      "reason": "AssuranceLedger implements typed ROT and challenge-ledger projection without rewriting history; production lifecycle mechanisms and cross-implementation evidence remain unavailable."
     },
     {
       "id": "horizon-rust-memetic-backtrace",
       "status": "UNKNOWN",
-      "description": "Typed backward RUST transfer, concentration, and localization over bound ancestry",
-      "reason": "The child-to-parent transfer states and concentration boundary are design-only; no event ledger, propagation implementation, or localization experiment is included."
+      "description": "Independent domain localization beyond structural RUST concentration",
+      "reason": "AssuranceLedger implements typed backward RUST, deduplicated structural concentration, and explicit localization dispatch; no external intervention mechanism or independent replay is included."
     },
     {
       "id": "horizon-forward-artifact-trust",
       "status": "UNKNOWN",
-      "description": "Scoped forward TRUST transfer through developmental claim space",
-      "reason": "The design requires meet-like bounded support and child-local obligations, but no transfer algebra or implementation is included."
+      "description": "Complete domain-independent TRUST transfer algebra",
+      "reason": "AssuranceLedger implements evidence-bound forward TRUST over recorded ancestry; no universal algebra can replace the domain mechanism that checks each exact support proposition."
     }
   ],
   "publication": {
@@ -432,5 +432,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:98f1aaf7d5d7c8fa3cea8e3f58ce93c50111fbd1e41bf5e49ead8276b438e9dc"
+  "manifest_digest": "sha256:1994591c49cccc8e99bc5233564b5b8eeed3810c6859f4e8c36f41d4797c4639"
 }

@@ -46,8 +46,8 @@
   preserving unresolved horizons and native-system authority.
 - Formally distinguish TRUST as mechanism-earned forward artifact support, ROT as typed
   time-indexed degradation of current admissibility, and RUST as an inverse-TRUST memetic
-  causal backtrace toward recorded ancestor states. None is actor-tied trust, a scalar,
-  or permission to infer guilt, responsibility, or causal localization from reachability.
+  causal backtrace toward recorded ancestor states. None is actor-tied trust or a scalar;
+  reachability alone never infers guilt, responsibility, or causal localization.
 - Present current reports, schemas, module descriptions, and examples under the full
   VSTD-1 and VSTD-2 numbered-profile identifiers; remove retired partial-profile object identifiers from
   active readers and add a regression preventing their return.
@@ -82,8 +82,9 @@
   and never infer independent actors from a historical field name, repeated runs, or
   matching results.
 - Reject self-promoted independence even when every supplied status and digest agrees;
-  version 1.2.0 has no actor/execution evidence-binding adapter and therefore never
-  derives `EVIDENCED` from serialized references.
+  the generic-run compatibility path never derives `EVIDENCED` from serialized references.
+  The distinct VSTD-5 path reruns all seven separation propositions and does not upgrade
+  the legacy generic-run fields.
 - Require the real optional SCITT/COSE cryptographic example in the protected
   repository-check aggregate
   rather than allowing its dependency-gated tests to disappear from the base matrix.
@@ -93,21 +94,45 @@
 
 ### Graph and conformance semantics
 
+- Add a zero-dependency evidence execution core that resolves and rehashes exact evidence
+  bytes, pins a registered mechanism implementation digest, enforces byte/item bounds,
+  reruns the mechanism, and preserves `PASS`, `FAIL`, or `UNKNOWN` under explicit trust roots.
+- Add an evidence-bound VSTD-4 path and replayable receipt form. Compatibility
+  `vstd4_depth` remains a `NOT_ESTABLISHED` candidate; only exact passing VSTD-1/2/3 and
+  fourteen-rung mechanisms plus an accepted kernel witness admit VSTD-5.
+- Implement the VSTD-5 reference mechanism and receipt: seven evidence-bound separation
+  dimensions, duplicate-witness/evidence refusal, exact admitted-certificate and
+  corroboration binding,
+  disagreement preservation, embedded evidence, and offline result recheck. This does not
+  claim a real external witness or independent implementation; a positive observation with
+  unresolved independence is overall `UNKNOWN`.
+- Add evidence-bound Graph profile computation and replay. The compatibility `graph_level`
+  path remains caller-supplied; the new path reruns every member, ancestor, and reached-edge
+  rating mechanism bound to the exact Graph, members, collection, and claim before profile
+  1–5 can report `ESTABLISHED`. Profile zero remains `NOT_ESTABLISHED`.
+- Add `VSTD-GRAPH-ASSURANCE-1` and `AssuranceLedger` for hash-chained TRUST, ROT, RUST,
+  challenge-ledger projection, additive conflict resolution, structural RUST concentration,
+  explicit causal localization, and bounded artifact-relative BLAME/GUILT propositions.
+  Duplicate paths remain set-valued, historical graph bytes remain immutable, and topology
+  alone earns no causal or moral conclusion. Add complete offline event replay, current TRUST
+  filtering, and deduplicated descendant reassessment discovery.
+
 - Preserve incompatible Graph assertions as evidence-linked conflict records and label
   rating-derived Graph profile numbers as `CALLER_SUPPLIED` candidates with conformance `NOT_ESTABLISHED`.
 - Classify the current VSTD-4 candidate-depth calculation as a structural result over
   caller-supplied rung references with conformance `NOT_ESTABLISHED`; reject that
   candidate at the VSTD-5 entry gate even when its candidate depth is 14.
-- Label Graph 2-4 candidates consistently on first-view, documentation, command, schema,
-  and SCITT surfaces. Keep challenge-ledger state, degradation from status already
-  recorded in a Graph, and the missing challenge-to-Graph adapter distinct.
+- Label compatibility Graph 2–5 candidates consistently while separately presenting the
+  implemented evidence-bound reference paths. Bind complete challenge-ledger state into an
+  additive current Graph view without mutating history.
 
 ### Release and maintainer controls
 
 - Mark 1.2.0 metadata as an unreleased release candidate, omit any fabricated release
   date, and require the exact tagged checkout to have `TIME.md` set to `Status: CLEAR`.
-- Make package/reference status explicitly say VSTD-4 candidate conformance is
-  `NOT_ESTABLISHED`, and require finalized release metadata in the tag workflow.
+- Make package/reference status identify VSTD-5 as the highest exposed project
+  specification with an evidence-bound reference mechanism, without claiming a real
+  independent witness, and require finalized release metadata in the tag workflow.
 - Publish the architecture ownership map linking normative documents, runtime validators,
   schemas, and conformance tests.
 - Document the five-As human traversal over existing receipt, Graph, hardware, certificate,

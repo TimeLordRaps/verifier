@@ -106,20 +106,20 @@ MATURITY_CONFORMANCE = {
     "VSTD-1": "Implemented reference subset",
     "VSTD-2": "Implemented vertical slice",
     "VSTD-3": "Implemented reference surface",
-    "VSTD-4": "`NOT_ESTABLISHED`",
-    "VSTD-5": "Not implemented",
+    "VSTD-4": "Candidate path `NOT_ESTABLISHED`; evidence-bound path can establish conformance",
+    "VSTD-5": "Mechanism can establish a bounded result; a positive observation with unresolved independence remains overall `UNKNOWN`; no repository claim of a real independent witness",
     "VSTD-Graph-1": "Implemented reference subset",
-    "VSTD-Graph-2": "`NOT_ESTABLISHED`",
-    "VSTD-Graph-3": "`NOT_ESTABLISHED`",
-    "VSTD-Graph-4": "`NOT_ESTABLISHED`",
-    "VSTD-Graph-5": "`NOT_ESTABLISHED`",
+    "VSTD-Graph-2": "Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot",
+    "VSTD-Graph-3": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
+    "VSTD-Graph-4": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
+    "VSTD-Graph-5": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
     "Generic run": "Implemented VSTD-1 profile",
     "Experimental workflow": "No VSTD conformance claim",
     "Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability": (
         "VSTD-4 remains `NOT_ESTABLISHED`"
     ),
     "zero-identity/zero-knowledge (ZIZK) artifact-first TRUST": (
-        "Governing architectural invariant; not a separate VSTD conformance result"
+        "Implemented reference mechanism; no universal support score or actor trust"
     ),
     "RISC Zero proof-carrying reference mechanism": (
         "Native proof verified; no VSTD receipt mapping"
@@ -418,8 +418,8 @@ def check_claim_boundaries(errors: list[str]) -> None:
             errors.append(f"{relative} uses reputation-centric founder-maintained wording")
     if "`vstd` is the canonical cross-platform CLI name" not in wire:
         errors.append("WIRE_IDENTIFIERS.md does not preserve the CLI compatibility rule")
-    if "VSTD-4 CANDIDATE; CONFORMANCE NOT_ESTABLISHED" not in reference:
-        errors.append("generated reference does not bound its VSTD-4 implementation status")
+    if "VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM" not in reference:
+        errors.append("generated reference does not report its VSTD-5 mechanism status")
     if "reproducible COSE specimen" in changelog or "reproducible specimen" in roadmap:
         errors.append("SCITT ephemeral-key specimen is described as byte-reproducible")
     if "ephemeral-key COSE artifacts" not in scitt_demo:
@@ -505,13 +505,13 @@ def check_visual_assets(errors: list[str]) -> None:
         "vstd-1": "REF. SUBSET",
         "vstd-2": "EXPERIMENTAL",
         "vstd-3": "IMPLEMENTED",
-        "vstd-4": "CANDIDATE",
-        "vstd-5": "DRAFT",
+        "vstd-4": "REF. MECH.",
+        "vstd-5": "REF. MECH.",
         "graph-1": "REF. SUBSET",
-        "graph-2": "CANDIDATE",
-        "graph-3": "CANDIDATE",
-        "graph-4": "CANDIDATE",
-        "graph-5": "DRAFT",
+        "graph-2": "REF. MECH.",
+        "graph-3": "REF. MECH.",
+        "graph-4": "REF. MECH.",
+        "graph-5": "REF. MECH.",
     }
     observed_status = {
         element.attrib["data-profile"]: "".join(element.itertext()).strip()

@@ -21,9 +21,12 @@ and `vstd` is the canonical command.
 Two independent axes: `VSTD-1..5` (object mechanics) and `VSTD-Graph-1..5` (collection
 dynamics). These are cumulative **numbered profiles** over named **closure coordinates**,
 not interchangeable layers or scalar assurance levels. Implementation status is
-profile-specific: the current VSTD-4 candidate-depth and Graph 2-4 candidate-profile
+profile-specific: the compatibility VSTD-4 candidate-depth and Graph candidate-profile
 mechanisms compute over caller-supplied references or ratings with conformance
-`NOT_ESTABLISHED`; **profile 5 is DRAFT**. Object profile depth `N` holds only when
+`NOT_ESTABLISHED`. Separate evidence-bound paths rerun exact registered mechanisms and
+may establish VSTD-4, VSTD-5, or Graph conformance under their named evidence, trust
+roots, bounds, and exact collection or claim binding. Evidence-bound Graph profile zero
+remains `NOT_ESTABLISHED`. Object profile depth `N` holds only when
 distinct evidence passes every required coordinate in profiles 1 through `N`. A
 later-profile result never supplies, implies, upgrades, or repairs a prerequisite
 coordinate.
@@ -83,13 +86,21 @@ reason, not a pass. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ### Artifact-first state vocabulary
 
-`TRUST`, `RUST`, and `ROT` are formal semantic names, not acronyms, serialized receipt values, scalar
-scores, or references to the Rust programming language. `TRUST` is mechanism-earned
+`TRUST`, `RUST`, and `ROT` are formal semantic names, not acronyms, scalar scores,
+numbered-profile verdicts, or references to the Rust programming language. They serialize
+only as typed events in `VSTD-GRAPH-ASSURANCE-1`. `TRUST` is mechanism-earned
 forward artifact support; `RUST` is inverse-direction diagnostic traversal from a
 descendant deviation toward recorded ancestors; `ROT` is typed, time-indexed degradation
 of current admissibility without rewriting historical evidence. Define the terms at first
 use in every independently readable surface and preserve their normative meaning from
 [`standard/LADDER.md`](standard/LADDER.md).
+
+Assurance events are not self-authenticating status words. Portable reliance requires
+`recheck_assurance_log` to reconstruct the historical Graph, rehash embedded evidence,
+rerun every registered mechanism, reproduce the event chain, and compare the current view.
+When upstream admissibility changes, preserve historical events, exclude no-longer-current
+TRUST through `current_trust_events`, and use `impacted_descendants` only as a deduplicated
+reassessment surface—not as a verdict on descendants.
 
 Never turn identity, authorship, authorization, popularity, reputation, or actor separation
 into `TRUST` in computational validity. A mechanism may check an exact proposition about
@@ -193,10 +204,12 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 ## 4. Layout
 
 - `standard/` — normative numbered-profile documents plus `WIRE_IDENTIFIERS.md`.
-- `src/verifier/core/` — receipt, checker, certificate, grounding, kernel, and the
+- `src/verifier/core/` — receipt, checker, certificate, grounding, kernel, evidence-bound
+  mechanism execution, witness corroboration, and the
   generic-run capture/facade with planning, validation, inspection, reproduction, and
   impact modules.
-- `src/verifier/constraints/`, `hardware/`, `layer4/`, `data/` — profile-specific runtime surfaces; `layer4/` is a retained module path.
+- `src/verifier/constraints/`, `hardware/`, `layer4/`, `data/` — profile-specific runtime
+  surfaces, including additive Graph assurance propagation; `layer4/` is a retained module path.
 - `src/verifier/runtime/` — `public_cli.py` (every CLI entry point) and `demo.py`.
 - `src/verifier/specifications/` — byte-identical copies of normative spec files.
 - `receipts/schema/` — receipt JSON Schemas. `standard/schemas/` — strict non-receipt

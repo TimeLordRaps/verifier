@@ -31,10 +31,12 @@ would overturn it. VSTD carries those boundaries with the result.
 
 **Current boundary:** implemented reference paths cover receipts, generic computation
 capture, provenance graphs, verification geometry, accelerator evidence, grounded
-certificate checking, reproduction, exact-byte artifact freezing, finite self-closing
-seals, copy-on-write thawing, and a flagship adversarial demo. VSTD-4 candidate depth and
-Graph profiles 2–5 are candidate computations with conformance `NOT_ESTABLISHED`;
-VSTD-5 is not implemented. See [current maturity](#current-maturity) and
+certificate checking, evidence-bound VSTD-4/VSTD-5 assessment, evidence-bound Graph
+ratings, replayable additive Graph lifecycle/assurance propagation, reproduction, exact-byte artifact
+freezing, finite self-closing seals, copy-on-write thawing, and a flagship adversarial demo.
+Compatibility candidate paths remain `NOT_ESTABLISHED`; evidence-bound paths rerun exact
+registered mechanisms and preserve their evidence, trust roots, bounds, and limitations.
+No real external witness or independent implementation is claimed. See [current maturity](#current-maturity) and
 [claims and limits](docs/CLAIMS_AND_LIMITS.md).
 
 [Normative specifications](standard/LADDER.md) ·
@@ -81,7 +83,7 @@ bound:
 | `FAIL` | The mechanism found a checked violation, rejected certificate, or counterexample at the named surface. | Every broader interpretation is false. |
 | `UNKNOWN` | Available evidence, capability, or resources did not establish `PASS` or `FAIL`. | False, safe, unsupported forever, or “probably PASS.” |
 | `CONFLICTED` | Incompatible evidence or assertions remain explicit. | The conflict was resolved by choosing one side. |
-| `NOT_ESTABLISHED` | The repository computes a candidate, but a required evidence-binding or conformance mechanism is absent. | Conformance, readiness, or a weak form of `PASS`. |
+| `NOT_ESTABLISHED` | The evaluated path did not establish conformance: it may be a compatibility candidate, or required evidence, exact binding, mechanism availability, mechanism result, prerequisite, or profile floor was missing or non-passing. | Conformance, readiness, or a weak form of `PASS`. |
 
 A VSTD `PASS` never means “true in the real world” without the exact real-world
 proposition and observation boundary being part of the checked claim.
@@ -97,18 +99,18 @@ or a second implementation.
 | VSTD-1 | Project specification with implemented reference subset | Claim receipts, checker reports, strict generic-run profile, inspection, and current-profile reads | Claim coordinates, stable digests, mechanism descriptors, and declared provenance; actor separation is not inferred | Implemented reference subset | External implementation and a validator binding distinct producer/checker actors and execution seams |
 | VSTD-2 | Additive experimental project specification | Typed verification geometry, residuals, closure checks, schema, and tests | Geometry and declared reconstruction evidence inside the receipt | Implemented vertical slice | Independent implementation and broader geometry interoperability |
 | VSTD-3 | Implemented project specification | Typed accelerator model, strict validator, emulator, offline adapters, continuity, fleet, and claim evaluation | Conditional on source-specific signatures, nonces, reference values, topology, events, and trust roots; host inventory remains weak evidence | Implemented reference surface | Vendor firmware integration, production trust roots, and complete-mediation evidence outside the emulator boundary |
-| VSTD-4 | Project specification | A grounded decision certificate (GDC) parser/kernel plus VSTD-4 candidate-depth computation | The certificate binds formula, grounding, claim, roots, and bounds; rung references and VSTD-1/2/3 preconditions are not evidence-bound by the candidate-depth runtime | `NOT_ESTABLISHED` | Rung-by-rung evidence validation, prerequisite-profile composition, and an independent checker implementation |
-| VSTD-5 | Draft | Fail-closed rejection of current VSTD-4 candidates only | No witness-corroboration binding is implemented | Not implemented | Witness protocol, qualifying VSTD-4 input, distinct actors, independence evidence, and operational experience |
+| VSTD-4 | Project specification with implemented reference paths | grounded decision certificate (GDC) parser/kernel, compatibility candidate depth, and evidence-bound establishment/recheck | Exact VSTD-1/2/3 and fourteen-rung propositions, content-addressed evidence bytes, mechanism implementation digests, trust roots, and bounds | Candidate path `NOT_ESTABLISHED`; evidence-bound path can establish conformance | Independent implementation, external interoperability, and deployment-specific rung mechanisms/evidence |
+| VSTD-5 | Project specification with implemented reference mechanism | Evidence-bound entry gate, seven separation dimensions, exact admitted-certificate binding, corroboration checks, duplicate refusal, disagreement preservation, receipt build/recheck | Witness coordinate, exact negative separation propositions, VSTD-4 commitment/certificate, checker, observations, mechanisms, trust roots, bounds, and embedded evidence | Mechanism can establish a bounded result; a positive observation with unresolved independence remains overall `UNKNOWN`; no repository claim of a real independent witness | Real independent witnesses, second implementation, external attack, and operational interoperability |
 | VSTD-Graph-1 | Project specification with implemented reference subset | Content-addressed artifacts, transformations, conflicts, policy queries, receipts, and recorded reachability | Binds recorded objects and edges; it does not establish real-world completeness or causality | Implemented reference subset | Independent implementation and external provenance-profile interoperability |
-| VSTD-Graph-2 | Project specification | Candidate Bounded Collection Surface profile and ceiling-certificate computation | Uses caller-supplied object and edge ratings; the ratings are not validated against profile-2 evidence | `NOT_ESTABLISHED` | Rating-to-evidence validators for members, ancestors, statuses, and transformation edges |
-| VSTD-Graph-3 | Project specification | Candidate Accountable Provenance Closure profile and ceiling-certificate computation | Uses caller-supplied object and edge ratings; no mechanism establishes that VSTD-3 produced them | `NOT_ESTABLISHED` | VSTD-3 rating evidence for every member, reachable ancestor, and transformation edge |
-| VSTD-Graph-4 | Project specification | Candidate Refutable Transformation Closure profile and ceiling-certificate computation | Uses caller-supplied object and edge ratings; claimed refutability-closure records are not validated | `NOT_ESTABLISHED` | VSTD-4 rating evidence and validation of every reached refutability closure |
-| VSTD-Graph-5 | Draft profile | Candidate Graph profile 5 can be computed from caller-supplied ratings | No independent-witness or rating-evidence binding | `NOT_ESTABLISHED` | Graph-2–4 evidence binding plus a corroborated verification-network protocol |
+| VSTD-Graph-2 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Bounded Collection Surface computation/recheck | Registered mechanisms rerun exact member, ancestor, and edge ratings bound to the Graph bytes, deduplicated members, collection, and claim | Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot | External rating mechanisms, independent implementation, and interoperability |
+| VSTD-Graph-3 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Accountable Provenance Closure computation/recheck | Same complete closure binding, including VSTD-3 rating propositions | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Production VSTD-3 rating evidence across a real collection |
+| VSTD-Graph-4 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Refutable Transformation Closure computation/recheck | Same complete closure binding; an edge mechanism must actually check its refutability closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | External closure mechanisms and independent replay |
+| VSTD-Graph-5 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Corroborated Verification Network computation/recheck | Exact VSTD-5 object and transformation rating mechanisms across the complete closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Real independently corroborated collection, second implementation, and interoperability |
 | Generic run | VSTD-1 generic-computation profile | Plan, execute, capture, inspect, strict shape/digest validation, and declared-output rerun | Captures command, source state, outputs, environment, and manifest declarations; generic validation is not native claim verification or VSTD-4 conformance | Implemented VSTD-1 profile | Sandbox, generic external-evidence resolver, and actor/execution binder |
 | Artifact freeze, seal, and thaw | Normative artifact-control mechanism; not a numbered VSTD or receipt profile | Exact regular-file byte preservation, dual-digest artifact identity, read-only guards, finite self-closing Ed25519 seals, external anchor checks, and copy-on-write thaw status | Binds artifact bytes, paths, media type, freeze manifest, carried key, signature, and optional expected artifact/key coordinates | Implemented mechanism version 1 | Durable external archive, privileged-write prevention, trusted time, encryption, semantic correctness, and realm/continuity verification |
 | Experimental workflow | Non-normative experimental profile 0.1 | Strict validator, verdict-neutral GitHub event projector, allocation records, and command-line interface (CLI) | Preserves native platform results and explicit horizons with `verification_effect = NONE` | No VSTD conformance claim | Independent consumer, additional platform adapter, and evidence for allocation optimality |
 | Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability | Experimental, non-normative application profile and crosswalk | Real local Concise Binary Object Representation (CBOR) plus CBOR Object Signing and Encryption (COSE) signatures/receipt, loss-declared adapter, and adjacent native-result composition | Binds the exact payload under emitted test keys and local policy; registration never establishes payload truth | VSTD-4 remains `NOT_ESTABLISHED` | Public Transparency Service, external implementation/interoperability result, and Internet Engineering Task Force (IETF) review |
-| zero-identity/zero-knowledge (ZIZK) artifact-first TRUST | Governing VSTD architecture in `standard/LADDER.md` section 1.1; not a separate numbered or receipt profile | Artifact-bound process semantics, forward TRUST, time-indexed ROT, and reverse diagnostic RUST | Existing mechanism-specific evidence only; identity or reputation alone, repetition, age, and topology add no assurance | Governing architectural invariant; not a separate VSTD conformance result | Event serialization, TRUST-transfer algebra, ROT derivation/propagation, RUST concentration/localization, complete trichotomy derivation, and maturation of specific optional proof backends |
+| zero-identity/zero-knowledge (ZIZK) artifact-first TRUST | Governing VSTD architecture in `standard/LADDER.md` section 1.1; not a separate numbered profile | Hash-chained event serialization and offline replay, evidence-bound forward TRUST, typed ROT, challenge projection, reverse RUST, structural concentration, conflict resolution, explicit localization, and bounded diagnostic attribution | Exact Graph topology, proposition bindings, embedded evidence bytes, mechanisms, trust roots, bounds, and immutable history | Implemented reference mechanism; no universal support score or actor trust | Domain-specific transfer/localization mechanisms, independent cross-implementation replay, complete trichotomy derivation, and maturation of optional proof backends |
 | RISC Zero proof-carrying reference mechanism | Bounded non-normative mechanism example under the governing ZIZK architecture | Pinned prover/verifier source plus a tracked real receipt, public envelope, self-test result, and verifier command that can run network-offline after setup | Authenticates one fixed hidden-witness predicate and expected image identifier; it does not establish the witness's external truth | Native proof verified; no VSTD receipt mapping | Complete VSTD trichotomy predicate, second build, external audit, and additional proof backends |
 
 The authoritative implementation-to-specification map is
@@ -160,18 +162,28 @@ record independently evidenced witness corroboration through VSTD-5. This traver
 not collapse the named coordinates. VSTD-Graph is the orthogonal collection axis: a bounded Graph result
 may be materialized as a content-addressed artifact and enter a later verification loop only
 with its source graph, selected surface, mechanism, lineage, losses, limitations, conflicts,
-and current admissibility preserved. Current Graph-2 through Graph-5 results remain
-`NOT_ESTABLISHED` candidates because their supplied ratings are not evidence-bound.
+and current admissibility preserved. The compatibility `graph_level` result remains a
+`NOT_ESTABLISHED` candidate. `establish_graph_level` can establish only profile 1–5 after
+every required rating mechanism is rerun from exact evidence bound to the exact Graph,
+member set, collection, and claim. Profile zero remains `NOT_ESTABLISHED`.
 
 The formal names **TRUST**, **ROT**, and **RUST** are semantic terms, not acronyms, actor
-ratings, scalar scores, serialized receipt values, or references to the Rust programming language.
+ratings, scalar scores, numbered-profile verdicts, or references to the Rust programming language.
+They serialize only as typed events in `VSTD-GRAPH-ASSURANCE-1`.
 TRUST is mechanism-earned artifact support moving forward through checked development;
 ROT is typed, time-indexed degradation of current admissibility without rewriting
 historical evidence; RUST is the inverse-TRUST diagnostic mechanic moving backward from a
 descendant deviation toward recorded ancestor candidates. This memetic propagation does
-not prove guilt, responsibility, falsehood, causal localization, or automatic ancestor
-falsification. See [the governing
+not by itself prove guilt, responsibility, falsehood, causal localization, or automatic
+ancestor falsification. The reference runtime requires a separate passing localization
+mechanism and an exact artifact-relative diagnostic proposition before it can emit bounded
+`BLAME` or `GUILT`; those results never concern actor character. See [the governing
 architecture](standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
+
+`VSTD-GRAPH-ASSURANCE-1` carries the immutable historical Graph, exact event bindings,
+embedded evidence bytes, event hash chain, and derived current-view digest.
+`recheck_assurance_log` rehashes the evidence, reruns each exact registered mechanism, and
+rejects any event or current view that does not reproduce.
 
 This is VSTD's **ZIZK artifact-first TRUST architecture**, not an optional research
 profile. Zero identity means zero identity-derived verdict weight, not anonymity or the

@@ -34,7 +34,7 @@
 
   <main id="top">
     <div class="wrap ref-hero">
-      <div class="eyebrow">Reference &middot; verifier-standard 1.2.0 &middot; VSTD-4 CANDIDATE; CONFORMANCE NOT_ESTABLISHED</div>
+      <div class="eyebrow">Reference &middot; verifier-standard 1.2.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
       <h1>Inspect the whole pipeline.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
@@ -426,6 +426,42 @@
 <tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
 </tbody></table>
 </article>
+<article class="ref-item" id="api-AssuranceLedger">
+<h3><code>AssuranceLedger</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>AssuranceLedger(graph: 'ProvenanceHypergraph') -&gt; 'None'</code></pre>
+<p class="ref-help">Append-only current-state overlay for an immutable provenance graph.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>current_status(self, artifact_id: 'str') -&gt; 'ArtifactStatus'</code></td><td></td></tr>
+<tr><td><code>current_trust_events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return passing TRUST records still admissible under the current view.</td></tr>
+<tr><td><code>diagnose(self, kind: 'DiagnosticKind', ancestor_id: 'str', descendant_id: 'str', proposition: 'Optional[BoundProposition]', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compute bounded artifact-relative BLAME or GUILT just in time.</td></tr>
+<tr><td><code>events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td></td></tr>
+<tr><td><code>impacted_descendants(self, artifact_id: 'str') -&gt; 'tuple[str, ...]'</code></td><td>Return the deduplicated recorded forward impact set, not a verdict.</td></tr>
+<tr><td><code>localize_cause(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
+<tr><td><code>materialize_current_graph(self) -&gt; 'ProvenanceHypergraph'</code></td><td>Create a derived current view; never mutate the historical graph.</td></tr>
+<tr><td><code>project_challenges(self, challenges: 'ChallengeLedger', *, recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Project challenge state into an additive current Graph overlay.</td></tr>
+<tr><td><code>record_rot(self, artifact_id: 'str', resulting_status: 'ArtifactStatus', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
+<tr><td><code>record_rust(self, descendant_id: 'str', deviation: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
+<tr><td><code>record_status_projection(self, artifact_id: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Record a mechanism-checked current-status projection additively.</td></tr>
+<tr><td><code>record_trust(self, target_id: 'str', source_ids: 'Iterable[str]', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
+<tr><td><code>resolutions(self) -&gt; 'tuple[ConflictResolution, ...]'</code></td><td></td></tr>
+<tr><td><code>resolve_conflict(self, conflict_id: 'str', selected_value: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'ConflictResolution'</code></td><td></td></tr>
+<tr><td><code>rust_concentration(self) -&gt; 'tuple[StructuralConcentration, ...]'</code></td><td></td></tr>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr><td><code>unresolved_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td></td></tr>
+<tr><td><code>verify_hash_chain(self) -&gt; 'bool'</code></td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-BoundProposition">
+<h3><code>BoundProposition</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>BoundProposition(subject_id: 'str', predicate: 'str', expected: 'Any', mechanism_id: 'str', mechanism_digest: 'str', evidence_refs: 'tuple[str, ...]', trust_roots: 'tuple[str, ...]', bounds: 'EvidenceBounds', parameters: 'Mapping[str, str]' = &lt;factory&gt;) -&gt; None</code></pre>
+<p class="ref-help">Exact proposition, evidence, mechanism, trust-root, and bound binding.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="api-DecisionCertificate">
 <h3><code>DecisionCertificate</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>DecisionCertificate(header: 'CertificateHeader', formula: 'tuple[tuple[int, ...], ...]', grounding: 'Grounding', decision: 'DecisionBlock', hints: 'dict[str, Any]' = &lt;factory&gt;) -&gt; None</code></pre>
@@ -435,6 +471,71 @@
 <tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
 <tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
 <tr><td><code>without_hints(self) -&gt; "'DecisionCertificate'"</code></td><td>Hint-stripped form.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-EvidenceBindingError">
+<h3><code>EvidenceBindingError</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>EvidenceBindingError</code></pre>
+<p class="ref-help">An evidence binding is malformed or cannot be resolved exactly.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
+
+</article>
+<article class="ref-item" id="api-EvidenceBounds">
+<h3><code>EvidenceBounds</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>EvidenceBounds(max_evidence_items: 'int', max_evidence_bytes: 'int') -&gt; None</code></pre>
+<p class="ref-help">Resource ceilings enforced before invoking a domain mechanism.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, int]'</code></td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-EvidenceStore">
+<h3><code>EvidenceStore</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>EvidenceStore() -&gt; 'None'</code></pre>
+<p class="ref-help">In-memory content-addressed evidence store with collision/fork refusal.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>add(self, payload: 'bytes') -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>export_base64(self, references: 'Sequence[str]') -&gt; 'dict[str, str]'</code></td><td>Export exact evidence bytes for portable, offline mechanism replay.</td></tr>
+<tr><td><code>import_base64(self, payloads: 'Mapping[str, str]') -&gt; 'None'</code></td><td>Import a portable bundle and refuse every reference/byte mismatch.</td></tr>
+<tr><td><code>resolve(self, reference: 'str') -&gt; 'bytes'</code></td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-MechanismDecision">
+<h3><code>MechanismDecision</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>MechanismDecision(outcome: 'MechanismOutcome', details: 'str', observations: 'Mapping[str, Any]' = &lt;factory&gt;) -&gt; None</code></pre>
+<p class="ref-help">One bounded mechanism result plus its exact observations.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
+
+</article>
+<article class="ref-item" id="api-MechanismOutcome">
+<h3><code>MechanismOutcome</code> <span class="ref-tag">enum</span></h3>
+<p class="ref-help">Enumeration of the exported result values.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
+<p class="ref-help">Members: <code>PASS, FAIL, UNKNOWN</code></p>
+</article>
+<article class="ref-item" id="api-ProvenanceHypergraph">
+<h3><code>ProvenanceHypergraph</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>ProvenanceHypergraph() -&gt; 'None'</code></pre>
+<p class="ref-help">N-ary Hypergraph structure for dataset, training, and artifact lineage.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/models.py"><code>verifier.data.models</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>add_artifact(self, artifact: 'ArtifactNode') -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>add_conflict(self, conflict: 'ConflictRecord') -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>add_contributor(self, contributor: 'ContributorSpec') -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>add_rights(self, rights: 'RightsSpec') -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>add_transformation(self, transform: 'TransformationHyperedge') -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>ancestors(self, artifact_ids: 'Iterable[str]') -&gt; 'set[str]'</code></td><td>Backward reachability closure across transformation hyperedges.</td></tr>
+<tr><td><code>blast_radius(self, revoked_artifact_id: 'str') -&gt; 'list[str]'</code></td><td>Compute the forward blast radius of affected downstream artifacts when one node is revoked.</td></tr>
+<tr><td><code>compute_completeness(self) -&gt; 'CompletenessMetrics'</code></td><td></td></tr>
+<tr><td><code>descendants(self, artifact_ids: 'Iterable[str]') -&gt; 'set[str]'</code></td><td>Forward reachability closure across transformation hyperedges.</td></tr>
+<tr><td><code>has_conflict(self, subject_id: 'str') -&gt; 'bool'</code></td><td></td></tr>
+<tr><td><code>incoming_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that produce artifact_id as an output.</td></tr>
+<tr><td><code>outgoing_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that consume artifact_id as an input.</td></tr>
+<tr><td><code>root_sources(self) -&gt; 'set[str]'</code></td><td>Artifacts with zero incoming hyperedges (genesis roots).</td></tr>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr><td><code>validate_structure(self) -&gt; 'list[str]'</code></td><td>Return deterministic errors for the implemented graph surface.</td></tr>
+<tr><td><code>verify_acyclicity(self, artifact_ids: 'Optional[Iterable[str]]' = None) -&gt; 'bool'</code></td><td>Check whether all or a selected artifact-induced subgraph contains cycles.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-ReproducibilityLevel">
@@ -453,6 +554,16 @@
 <tr><td><code>canonical_digest(self) -&gt; 'str'</code></td><td></td></tr>
 <tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
 <tr><td><code>validate(self) -&gt; 'list[str]'</code></td><td>Return structural and epistemic errors; an empty list means valid.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-VerificationSession">
+<h3><code>VerificationSession</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>VerificationSession(evidence: 'EvidenceStore') -&gt; 'None'</code></pre>
+<p class="ref-help">Resolve evidence and rerun only explicitly registered mechanisms.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>evaluate(self, binding: 'BoundProposition') -&gt; 'EvaluatedProposition'</code></td><td></td></tr>
+<tr><td><code>register(self, mechanism: 'VerificationMechanism') -&gt; 'None'</code></td><td></td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-VerificationVerdict">
@@ -474,6 +585,43 @@
 <tr><td><code>verify_digest_integrity(self) -&gt; 'bool'</code></td><td></td></tr>
 </tbody></table>
 </article>
+<article class="ref-item" id="api-WitnessBundle">
+<h3><code>WitnessBundle</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>WitnessBundle(claim_id: 'str', declarant_id: 'str', claim_binding_digest: 'str', witnesses: 'tuple[WitnessIdentity, ...]', independence: 'tuple[IndependenceAssertion, ...]', corroborations: 'tuple[CorroborationRecord, ...]') -&gt; None</code></pre>
+<p class="ref-help">Claim-bound witnesses, separation assertions, and corroboration records.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/witness.py"><code>verifier.core.witness</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-assess_witness_corroboration">
+<h3><code>assess_witness_corroboration</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>assess_witness_corroboration(entry: 'EvidenceBoundDepthResult', bundle: 'WitnessBundle', *, session: 'VerificationSession') -&gt; 'WitnessCorroborationResult'</code></pre>
+<p class="ref-help">Recheck VSTD-5 entry, separation evidence, and corroboration evidence.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/witness.py"><code>verifier.core.witness</code></a></p>
+
+</article>
+<article class="ref-item" id="api-build_evidence_bound_graph_level_record">
+<h3><code>build_evidence_bound_graph_level_record</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>build_evidence_bound_graph_level_record(result: 'EvidenceBoundGraphLevelResult', *, graph: 'ProvenanceHypergraph', members: 'Sequence[str]', binding: 'ClaimBinding', object_evidence: 'Mapping[str, BoundProposition]', edge_evidence: 'Mapping[str, BoundProposition]', session: 'VerificationSession') -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Serialize exact Graph rating bindings and bytes for offline replay.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/graph_level.py"><code>verifier.data.graph_level</code></a></p>
+
+</article>
+<article class="ref-item" id="api-build_evidence_bound_vstd4_receipt">
+<h3><code>build_evidence_bound_vstd4_receipt</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>build_evidence_bound_vstd4_receipt(result: 'EvidenceBoundDepthResult', *, receipt_id: 'str', claim_id: 'str', binding: 'ClaimBinding', prerequisite_evidence: 'Mapping[int, BoundProposition]', rung_evidence: 'Mapping[str, BoundProposition]', session: 'VerificationSession', status: 'str' = 'VALID') -&gt; 'dict[str, object]'</code></pre>
+<p class="ref-help">Serialize every input needed to rerun an evidence-bound VSTD-4 result.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
+
+</article>
+<article class="ref-item" id="api-build_vstd5_receipt">
+<h3><code>build_vstd5_receipt</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>build_vstd5_receipt(entry: 'EvidenceBoundDepthResult', bundle: 'WitnessBundle', result: 'WitnessCorroborationResult', *, receipt_id: 'str', session: 'VerificationSession') -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Serialize a replayable VSTD-5 receipt without treating names as trust.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/witness.py"><code>verifier.core.witness</code></a></p>
+
+</article>
 <article class="ref-item" id="api-capture_run">
 <h3><code>capture_run</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>capture_run(manifest: 'Mapping[str, Any]', manifest_dir: 'Path', receipt_id: 'Optional[str]' = None) -&gt; 'GenericRunReceipt'</code></pre>
@@ -488,11 +636,32 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/certificate.py"><code>verifier.core.certificate</code></a></p>
 
 </article>
+<article class="ref-item" id="api-claim_binding_from_dict">
+<h3><code>claim_binding_from_dict</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>claim_binding_from_dict(data: 'Mapping[str, object]') -&gt; 'ClaimBinding'</code></pre>
+<p class="ref-help">Reconstruct the exact VSTD-4 claim binding carried by a receipt.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
+
+</article>
 <article class="ref-item" id="api-compute_canonical_digest">
 <h3><code>compute_canonical_digest</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>compute_canonical_digest(stable_payload: 'Mapping[str, Any]') -&gt; 'str'</code></pre>
 <p class="ref-help">Compute SHA-256 digest of canonicalized stable payload.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt</code></a></p>
+
+</article>
+<article class="ref-item" id="api-establish_graph_level">
+<h3><code>establish_graph_level</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>establish_graph_level(graph: 'ProvenanceHypergraph', *, collection_id: 'str', members: 'Sequence[str]', object_evidence: 'Mapping[str, BoundProposition]', edge_evidence: 'Mapping[str, BoundProposition]', session: 'VerificationSession', binding: 'ClaimBinding') -&gt; 'EvidenceBoundGraphLevelResult'</code></pre>
+<p class="ref-help">Rerun rating mechanisms before computing a conforming Graph profile.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/graph_level.py"><code>verifier.data.graph_level</code></a></p>
+
+</article>
+<article class="ref-item" id="api-establish_vstd4">
+<h3><code>establish_vstd4</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>establish_vstd4(rung_evidence: 'Mapping[str, BoundProposition]', *, prerequisite_evidence: 'Mapping[int, BoundProposition]', session: 'VerificationSession', claim_id: 'str', binding: 'ClaimBinding') -&gt; 'EvidenceBoundDepthResult'</code></pre>
+<p class="ref-help">Rerun evidence mechanisms and establish VSTD-4 only if all pass.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
 
 </article>
 <article class="ref-item" id="api-freeze_artifact">
@@ -502,9 +671,44 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control</code></a></p>
 
 </article>
+<article class="ref-item" id="api-graph_collection_binding_digest">
+<h3><code>graph_collection_binding_digest</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>graph_collection_binding_digest(graph: 'ProvenanceHypergraph', *, collection_id: 'str', members: 'Sequence[str]', binding: 'ClaimBinding') -&gt; 'str'</code></pre>
+<p class="ref-help">Bind ratings to one Graph, member set, collection, and claim coordinate.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/graph_level.py"><code>verifier.data.graph_level</code></a></p>
+
+</article>
+<article class="ref-item" id="api-recheck_assurance_log">
+<h3><code>recheck_assurance_log</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>recheck_assurance_log(payload: 'Mapping[str, Any]', *, mechanisms: 'Iterable[VerificationMechanism]') -&gt; 'AssuranceLedger'</code></pre>
+<p class="ref-help">Rebuild and replay a portable assurance log from its embedded bytes.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
+
+</article>
+<article class="ref-item" id="api-recheck_evidence_bound_graph_level_record">
+<h3><code>recheck_evidence_bound_graph_level_record</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>recheck_evidence_bound_graph_level_record(graph: 'ProvenanceHypergraph', record: 'Mapping[str, Any]', *, mechanisms: 'Sequence[VerificationMechanism]') -&gt; 'EvidenceBoundGraphLevelResult'</code></pre>
+<p class="ref-help">Rebuild the evidence store, rerun rating mechanisms, and compare result.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/graph_level.py"><code>verifier.data.graph_level</code></a></p>
+
+</article>
+<article class="ref-item" id="api-recheck_evidence_bound_vstd4_receipt">
+<h3><code>recheck_evidence_bound_vstd4_receipt</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>recheck_evidence_bound_vstd4_receipt(receipt: 'Mapping[str, object]', *, mechanisms: 'Sequence[VerificationMechanism]') -&gt; 'EvidenceBoundDepthResult'</code></pre>
+<p class="ref-help">Reconstruct evidence bytes and rerun an evidence-bound VSTD-4 receipt.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
+
+</article>
+<article class="ref-item" id="api-recheck_vstd5_receipt">
+<h3><code>recheck_vstd5_receipt</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>recheck_vstd5_receipt(entry: 'EvidenceBoundDepthResult', receipt: 'Mapping[str, Any]', *, mechanisms: 'tuple[VerificationMechanism, ...]') -&gt; 'WitnessCorroborationResult'</code></pre>
+<p class="ref-help">Import exact bytes, rerun all witness mechanisms, and compare the result.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/witness.py"><code>verifier.core.witness</code></a></p>
+
+</article>
 <article class="ref-item" id="api-require_vstd5_entry">
 <h3><code>require_vstd5_entry</code> <span class="ref-tag">function</span></h3>
-<pre class="ref-signature"><code>require_vstd5_entry(result: 'DepthResult') -&gt; 'DepthResult'</code></pre>
+<pre class="ref-signature"><code>require_vstd5_entry(result: 'DepthResult | EvidenceBoundDepthResult') -&gt; 'EvidenceBoundDepthResult'</code></pre>
 <p class="ref-help">Reject the current unbound candidate result at the VSTD-5 boundary.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
 

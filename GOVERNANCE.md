@@ -16,9 +16,12 @@ specification.
 VSTD-4 ships grounded-certificate/kernel checks and separate availability,
 precommitment, challenge, degradation, and composition mechanisms. Its candidate-depth runtime
 computes only a structural candidate over caller-supplied references with conformance
-`NOT_ESTABLISHED`; no mechanism binds all rung propositions and VSTD-1/2/3 preconditions
-into VSTD-4 conformance. `VSTD4-GDC-1` has no demonstrated independent implementation
-or external interoperability. VSTD-5 remains draft and has no shipped witness procedure.
+`NOT_ESTABLISHED`. The separate evidence-bound runtime rehashes and reruns exact VSTD-1/2/3
+and fourteen-rung propositions before it may establish VSTD-4 conformance; its receipt
+rechecker reproduces that result offline with the supplied mechanism implementations.
+`VSTD4-GDC-1` has no demonstrated independent implementation or external interoperability.
+VSTD-5 has a shipped evidence-bound reference procedure, but the repository claims no real
+external witness or second implementation.
 
 ## Numbered-profile and release states
 

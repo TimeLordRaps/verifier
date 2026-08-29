@@ -22,6 +22,19 @@ The supported artifact-control exports are `freeze_artifact`, `seal_artifact`,
 require the optional `seal` dependency extra; importing the base package and freeze-only
 operations retain the zero-third-party-dependency boundary.
 
+The supported evidence-bound construction exports are `BoundProposition`,
+`EvidenceBindingError`, `EvidenceBounds`, `EvidenceStore`, `MechanismDecision`,
+`MechanismOutcome`, `VerificationSession`, `WitnessBundle`, `ProvenanceHypergraph`,
+`claim_binding_from_dict`, `establish_vstd4`, `assess_witness_corroboration`,
+`establish_graph_level`, `graph_collection_binding_digest`, and `AssuranceLedger`.
+The matching supported portable-record exports are
+`build_evidence_bound_vstd4_receipt`, `recheck_evidence_bound_vstd4_receipt`,
+`build_vstd5_receipt`, `recheck_vstd5_receipt`,
+`build_evidence_bound_graph_level_record`,
+`recheck_evidence_bound_graph_level_record`, and `recheck_assurance_log`.
+Compatibility `vstd4_depth` and `graph_level`-style candidate results do not become
+conformance results merely because the evidence-bound APIs also exist.
+
 Direct imports from `verifier.core`, `verifier.data`, `verifier.hardware`, other
 subpackages, or underscore-prefixed names are internal unless another published policy
 explicitly names them. They may change in a minor release. That freedom does not override

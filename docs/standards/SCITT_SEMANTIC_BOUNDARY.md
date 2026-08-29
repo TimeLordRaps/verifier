@@ -47,8 +47,9 @@ VSTD numbered profiles can establish:
   code;
 - a bounded cost/memory/certificate-size ceiling and honest refusal when exceeded;
 - Graph lineage and blast-radius queries plus candidate degradation from statuses already
-  recorded in VSTD-Graph. Rating evidence and challenge-to-Graph propagation remain
-  `NOT_ESTABLISHED`.
+  recorded in VSTD-Graph. This SCITT example does not invoke the evidence-bound Graph
+  rating or challenge-projection mechanisms, so those results remain `NOT_ESTABLISHED`
+  for this example.
 
 The native solver, proof engine, signature checker, identity service, transparency
 log, or provenance system retains its own semantics and result. A loss-declared
@@ -56,7 +57,8 @@ adapter maps that result into VSTD's verification interlingua and records the
 boundary around its portable composition; VSTD does not absorb or reimplement the
 substrate.
 
-VSTD-5 and VSTD-Graph-5 remain draft. A later VSTD profile does not supply a missing
+VSTD-5 and VSTD-Graph-5 have implemented evidence-bound reference paths, but this SCITT
+example supplies neither a qualifying witness nor profile-5 rating evidence. A later VSTD profile does not supply a missing
 prerequisite coordinate.
 
 ## Identity, disclosure, trust, and reputation
@@ -92,7 +94,7 @@ VSTD-Graph can preserve artifact history, challenges, lifecycle changes, and
 refutations, but the current standard does not define a scalar artifact-reputation
 score. The governing semantics instead distinguish TRUST, mechanism-earned artifact
 support; ROT, typed time-indexed degradation of current admissibility; and RUST,
-inverse-TRUST diagnostic traversal toward recorded ancestors. Their unfinished transfer
+inverse-TRUST diagnostic traversal toward recorded ancestors. Their reference transfer
 mechanisms must never overwrite a native verdict or turn actor identity, repeated
 registrations, signatures, observations, age, or reputation into process validity.
 

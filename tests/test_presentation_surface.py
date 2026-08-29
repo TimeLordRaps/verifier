@@ -536,9 +536,12 @@ def test_generated_reference_covers_commands_and_top_level_exports() -> None:
         assert anchor in page, f"reference page omits {command['prog']}"
     for name in verifier.__all__:
         assert f'id="api-{name}"' in page, f"reference page omits export {name}"
-    assert verifier.__standard__ == "VSTD-4"
-    assert verifier.__standard_status__ == "CANDIDATE; CONFORMANCE NOT_ESTABLISHED"
-    assert "VSTD-4 CANDIDATE; CONFORMANCE NOT_ESTABLISHED" in page
+    assert verifier.__standard__ == "VSTD-5"
+    assert (
+        verifier.__standard_status__
+        == "PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM"
+    )
+    assert "VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM" in page
     assert "Monotone reproduction-fidelity states" in page
 
 
