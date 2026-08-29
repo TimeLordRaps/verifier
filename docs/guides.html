@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Navigation to the maintained Verifier Standard (VSTD) guides, standards, profiles, and project documents.">
+  <meta property="og:title" content="VSTD guides and specifications">
+  <meta property="og:description" content="Maintained Verifier Standard guides, specifications, profiles, and project controls.">
+  <meta property="og:image" content="https://timelordraps.github.io/verifier/assets/vstd-overview.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://timelordraps.github.io/verifier/guides.html">
+  <title>VSTD guides and standards</title>
+  <link rel="canonical" href="https://timelordraps.github.io/verifier/guides.html">
+  <link rel="icon" href="assets/vstd-overview.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#top">Skip to content</a>
+  <header class="wrap">
+    <nav aria-label="Primary">
+      <a class="brand" href="index.html">VSTD</a>
+      <div class="links">
+        <a href="index.html">Overview</a>
+        <a href="guides.html" aria-current="page">Guides</a>
+        <a href="reference.html">Reference</a>
+        <a href="https://github.com/TimeLordRaps/verifier#30-60-second-demonstration">Demo</a>
+        <a href="standard/">Standard</a>
+        <a href="experiments/">Experiments</a>
+        <a href="project/ROADMAP.html">Project</a>
+        <a href="https://github.com/TimeLordRaps/verifier">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <div class="wrap ref-hero">
+      <div class="eyebrow">Public documentation</div>
+      <h1>Find the exact boundary.</h1>
+      <p class="lead">This page links the maintained guides and specifications without
+      restating them. Normative requirements live under <code>standard/</code>; guides and
+      profiles must not silently strengthen those requirements.</p>
+      <p class="terms">Interoperability material below uses Supply Chain Integrity,
+      Transparency, and Trust (SCITT).</p>
+      <p class="release-coordinate"><strong>Documentation coordinate:</strong>
+      <code>verifier-standard 1.2.0</code> unreleased candidate. The assembled site also
+      carries <a href="https://timelordraps.github.io/verifier/documentation-coordinate.json">machine-readable build metadata</a>;
+      published tags and <a href="https://github.com/TimeLordRaps/verifier/releases">release
+      artifacts</a> preserve historical coordinates. Normative ownership remains under
+      <code>standard/</code>.</p>
+      <div class="actions">
+        <a class="button primary" href="docs/QUICKSTART.html">Start with the quickstart</a>
+        <a class="button" href="standard/">Read the specifications</a>
+        <a class="button" href="reference.html">Inspect the implementation reference</a>
+      </div>
+    </div>
+
+    <section class="wrap guide-grid" aria-label="Documentation index">
+      <article class="guide-card">
+        <h2>Start here</h2>
+        <ul>
+          <li><a href="docs/QUICKSTART.html">Quickstart</a> &mdash; install, inspect, capture, validate, and refute.</li>
+          <li><a href="project/README.html#current-maturity">Current maturity</a> &mdash; normative, implementation, evidence-binding, conformance, and missing-mechanism status.</li>
+          <li><a href="docs/CLAIMS_AND_LIMITS.html">Claims and limits</a> &mdash; allowed wording and prohibited inference.</li>
+          <li><a href="docs/CONCEPTS_AND_PRECEDENTS.html">Concepts and precedents</a> &mdash; terminology and intellectual lineage.</li>
+          <li><a href="docs/ACRONYMS.html">Acronyms and abbreviated terms</a> &mdash; canonical repository expansion key.</li>
+          <li><a href="docs/ARCHITECTURE.html">Conformance architecture</a> &mdash; normative, wire, schema, runtime, and test ownership.</li>
+          <li><a href="standard/ARTIFACT_CONTROL.html">Artifact freeze, seal, and thaw</a> &mdash; exact-byte preservation, finite self-closing seals, external anchors, and copy-on-write descendants.</li>
+          <li><a href="docs/REALMS_AND_TIME_CAPSULES.html">Realms and time capsules</a> &mdash; discrete, continuous, causal, problem-space, branching, cyclic, and atemporal structures with explicit mappings.</li>
+          <li><a href="https://github.com/TimeLordRaps/verifier/tree/main/examples/zizk_artifact_first">Artifact-first reference mechanisms</a> &mdash; governing zero-identity/zero-knowledge (ZIZK) boundaries; process-bound TRUST, ROT, and RUST semantics; bounded identity disclosure; and the recorded reduced instruction set computer (RISC) Zero proof.</li>
+          <li><a href="reference.html">command-line interface (CLI) and application programming interface (API) reference</a> &mdash; generated from the importable package.</li>
+          <li><a href="docs/API_STABILITY.html">Python API stability</a> &mdash; supported exports, versioning, and deprecation lifecycle.</li>
+        </ul>
+      </article>
+
+      <article class="guide-card" id="standards">
+        <h2>Normative specifications</h2>
+        <ul>
+          <li><a href="standard/">Verification complex and conformance</a> &mdash; numbering, evidence independence, and aggregation.</li>
+          <li><a href="standard/VSTD-1.html">Object and Graph specifications</a> &mdash; VSTD-1..5 and VSTD-Graph-1..5, with persistent site navigation.</li>
+          <li><a href="standard/WIRE_IDENTIFIERS.html">Wire identifiers</a> &mdash; frozen dispatch values and historical names.</li>
+        </ul>
+      </article>
+
+      <article class="guide-card" id="experiments">
+        <h2>Profiles and interoperability</h2>
+        <ul>
+          <li><a href="docs/profiles/experimental-workflow.html">Experimental workflow</a> &mdash; allocation, platform events, and explicit horizons.</li>
+          <li><a href="docs/profiles/competition-evaluation.html">Competition evaluation</a> &mdash; bounded scored-evaluation claims.</li>
+          <li><a href="docs/profiles/vstd-3/compatibility.html">VSTD-3 profile guidance</a> &mdash; compatibility, threat-model, reference, and vendor-integration entry point.</li>
+          <li><a href="docs/standards/SCITT_SEMANTIC_BOUNDARY.html">SCITT semantic boundary</a> &mdash; explicit non-substitution between transparency receipts and VSTD verdicts.</li>
+          <li><a href="docs/standards/VSTD_SCITT_CROSSWALK.html">Supply Chain Integrity, Transparency, and Trust (SCITT) crosswalk</a> &mdash; separate verdicts and current source status.</li>
+          <li><a href="docs/ECOSYSTEM.html">Ecosystem map</a> &mdash; what adjacent systems supply and VSTD must not replace.</li>
+        </ul>
+      </article>
+
+      <article class="guide-card" id="project">
+        <h2>Project and contribution</h2>
+        <ul>
+          <li><a href="project/HUMANS.html">Human maintainer guide</a> &mdash; five-As claim traversal and bounded conclusions.</li>
+          <li><a href="project/AGENTS.html">Automated-contributor rules</a> &mdash; repository invariants and safe change behavior.</li>
+          <li><a href="project/TIME.html">Repository contradiction status</a> &mdash; the current live maintainer annunciator.</li>
+          <li><a href="project/ROADMAP.html">Roadmap</a> &mdash; implemented surface, open gates, and non-goals.</li>
+          <li><a href="project/CONTRIBUTING.html">Contributing</a> &mdash; tests, compatibility, and claim discipline.</li>
+          <li><a href="project/GOVERNANCE.html">Governance</a> &mdash; current decision rights and centralization boundary.</li>
+          <li><a href="project/SECURITY.html">Security</a> &mdash; private vulnerability reporting boundary.</li>
+          <li><a href="project/RELEASING.html">Releases</a> &mdash; reproducible artifacts, manifests, attestations, and publication gates.</li>
+          <li><a href="project/CHANGELOG.html">Changelog</a> &mdash; released and pending coordinates.</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <footer><div class="wrap">VSTD &middot; Apache-2.0 &middot; Maintainer-led alpha &middot; No standards-body endorsement claimed.</div></footer>
+</body>
+</html>
