@@ -1,4 +1,8 @@
-"""Executable reference model for the VSTD 3 firmware-accountability contract."""
+"""Terminology: artificial intelligence (AI); application-specific integrated circuit (ASIC);
+hash-based message authentication code (HMAC); Secure Hash Algorithm 256-bit (SHA-256);
+Verifier Standard (VSTD).
+
+Executable reference model for the VSTD 3 firmware-accountability contract."""
 
 from __future__ import annotations
 

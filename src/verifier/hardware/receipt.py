@@ -1,4 +1,6 @@
-"""Strict persistence helpers for VSTD 3 receipts."""
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+
+Strict persistence helpers for VSTD 3 receipts."""
 
 from __future__ import annotations
 

@@ -1,4 +1,6 @@
-"""Data-driven accelerator profile registry; profiles do not define claim policy."""
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+
+Data-driven accelerator profile registry; profiles do not define claim policy."""
 
 from __future__ import annotations
 

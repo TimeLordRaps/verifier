@@ -1,14 +1,22 @@
-# VSTD-3 implementation compatibility
+# Verifier Standard (VSTD)-3 implementation compatibility
 
-VSTD-3 is additive. It does not reinterpret earlier receipt wire formats. For
-the historical filename and wire-identifier table, see
+> Reader aid: [concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
+
+VSTD-3 is additive. It does not reinterpret adjacent receipt surfaces. For the current
+wire-identifier table, see
 `../../../standard/WIRE_IDENTIFIERS.md`.
+
+The currently shipped adapter boundary is centralized in
+[`docs/CLAIMS_AND_LIMITS.md`](../../CLAIMS_AND_LIMITS.md#what-the-current-adapters-can-say):
+host-visible metadata is not device attestation, and the virtual accelerator establishes
+only its emulator-scoped claims.
 
 ## Existing receipts
 
-- `VSTD-0.1` receipt validators keep their existing VSTD-1 wire semantics.
+- `VSTD-1` claim-mechanics and generic-run receipts retain their separate required
+  `receipt_kind` values.
 - `VSTD-DATA-0.1` hypergraphs remain readable as historical VSTD-Graph-1 receipts.
-- `VSTD-0.2` geometry remains the frozen VSTD-2 wire surface.
+- `VSTD-2` geometry remains a separate verification-surface receipt.
 - The public `validate`, `inspect`, `reproduce`, `data`, and `impact` commands retain
   their earlier behavior.
 
@@ -42,5 +50,5 @@ execution records are not converted into device attestation without new evidence
 
 ## Schema/version dispatch
 
-Dispatch by exact `schema_version`. VSTD-3 receipts use the frozen `VSTD-3.0` wire identifier. Unknown versions
+Dispatch by exact `schema_version`. VSTD-3 receipts use the serialized receipt identifier `VSTD-3.0`. Unknown versions
 must fail closed. Do not guess a compatible decoder from field similarity.

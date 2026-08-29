@@ -1,3 +1,5 @@
+"""Terminology: identifier (ID); Verifier Standard (VSTD)."""
+
 from __future__ import annotations
 
 import json

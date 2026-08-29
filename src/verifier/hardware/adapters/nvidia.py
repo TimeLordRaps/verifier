@@ -1,4 +1,8 @@
-"""NVIDIA NVML/nvidia-smi discovery and offline evidence normalization."""
+"""Terminology: JavaScript Object Notation (JSON); NVIDIA Management Library (NVML);
+Reference Integrity Manifest (RIM); Security Protocol and Data Model (SPDM);
+Verifier Standard (VSTD).
+
+NVIDIA NVML/nvidia-smi discovery and offline evidence normalization."""
 
 from __future__ import annotations
 

@@ -1,4 +1,15 @@
-# VSTD-3 official public references
+# Verifier Standard (VSTD)-3 official public references
+
+> **Acronyms:** Advanced Micro Devices (AMD); application programming interface (API); Amazon Web Services (AWS);
+> command-line interface (CLI); Device Identifier Composition Engine (DICE); DMTF standards organization (DMTF);
+> design of experiments (DOE); Engineering Change Notice (ECN); graphics processing unit (GPU);
+> integrated development environment (IDE); Internet Engineering Task Force (IETF); multi-instance GPU (MIG);
+> NVIDIA Management Library (NVML); Peripheral Component Interconnect (PCI); PCI Special Interest Group (PCI-SIG);
+> Remote Attestation Procedures (RATS); Request for Comments (RFC); Reference Integrity Manifest (RIM);
+> software development kit (SDK); system management interface (SMI); Security Protocol and Data Model (SPDM);
+> Trusted Device Interface Security Protocol (TDISP).
+
+> Reader aid: [cross-profile concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
 
 **Retrieved:** 2026-08-21
 

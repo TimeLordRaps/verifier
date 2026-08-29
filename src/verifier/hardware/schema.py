@@ -1,4 +1,8 @@
-"""Deterministic JSON Schema generation for the normative VSTD 3 records."""
+"""Terminology: artificial intelligence (AI); application-specific integrated circuit (ASIC);
+graphics processing unit (GPU); JavaScript Object Notation (JSON); neural processing unit (NPU);
+tensor processing unit (TPU); Verifier Standard (VSTD).
+
+Deterministic JSON Schema generation for the normative VSTD 3 records."""
 
 from __future__ import annotations
 
@@ -117,6 +121,12 @@ def schema_for(model_type: type, *, schema_id: str, title: str) -> dict[str, obj
     builder = _SchemaBuilder()
     root = builder.reference(model_type)
     return {
+        "$comment": (
+            "Terminology: artificial intelligence (AI); application-specific integrated "
+            "circuit (ASIC); graphics processing unit (GPU); JavaScript Object Notation "
+            "(JSON); neural processing unit (NPU); tensor processing unit (TPU); "
+            "Verifier Standard (VSTD)."
+        ),
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "$id": SCHEMA_BASE + schema_id,
         "title": title,

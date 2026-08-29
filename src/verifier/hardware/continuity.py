@@ -1,4 +1,7 @@
-"""Authenticated event sequencing and reset-epoch verification for VSTD 3."""
+"""Terminology: hash-based message authentication code (HMAC);
+International Organization for Standardization (ISO); Verifier Standard (VSTD).
+
+Authenticated event sequencing and reset-epoch verification for VSTD 3."""
 
 from __future__ import annotations
 

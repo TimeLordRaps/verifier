@@ -1,4 +1,6 @@
-"""External continuity-anchor interfaces and deterministic local implementations."""
+"""Terminology: JavaScript Object Notation (JSON); JSON Lines (JSONL); Verifier Standard (VSTD).
+
+External continuity-anchor interfaces and deterministic local implementations."""
 
 from __future__ import annotations
 
