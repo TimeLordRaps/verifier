@@ -1,22 +1,29 @@
-"""Adversarial and lifecycle tests for the generic proof-carrying computational run
+"""Terminology: Verifier Standard (VSTD).
+
+Adversarial and lifecycle tests for the generic computational run receipt
 primitive (`verifier.core.run`).
 
 Covers the acceptance-test flow (capture -> validate -> inspect -> reproduce) plus a
 hostile-scrutiny mini-corpus: tampered receipts, tampered outputs, missing declared
 inputs/outputs, shell-indirection rejection, non-promotable external evaluation
-claims, and determinism-bounded reproduction ceilings.
+claims, and mechanism-bounded reproduction ceilings.
 """
 
 from __future__ import annotations
 
+import copy
+import hashlib
 import json
+import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+from jsonschema import Draft202012Validator
 
 from verifier.core.run import (
     RunError,
+    _rebuild_stable_payload_from_dict,
     capture_run,
     find_run_receipts_impacted_by_revocation,
     inspect_run_receipt,
@@ -24,9 +31,17 @@ from verifier.core.run import (
     reproduce_run_receipt,
     validate_run_receipt,
 )
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-
+from verifier.core.receipt import compute_canonical_digest
+from verifier.data.models import (
+    ArtifactNode,
+    ArtifactStatus,
+    ArtifactType,
+    HyperedgePort,
+    ProvenanceHypergraph,
+    TransformationHyperedge,
+    TransformationType,
+)
+from verifier.runtime.public_cli import _write_reproduction_bundle
 
 def _write_tiny_project(tmp_path: Path) -> Path:
     """A minimal deterministic project: script reads input.txt, writes output.json."""
@@ -41,6 +56,20 @@ def _write_tiny_project(tmp_path: Path) -> Path:
     )
     (tmp_path / "input.txt").write_text("21", encoding="utf-8")
     return tmp_path
+
+
+def test_digest_consistent_empty_generic_receipt_is_rejected(tmp_path, capsys):
+    receipt = {"receipt_kind": "generic_computational_run"}
+    receipt["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(receipt)
+    )
+    path = tmp_path / "receipt.json"
+    path.write_text(json.dumps(receipt), encoding="utf-8")
+
+    assert validate_run_receipt(path) == 1
+    output = capsys.readouterr().out
+    assert "[INTEGRITY OK]" not in output
+    assert "missing required fields" in output
 
 
 def _base_manifest() -> dict:
@@ -59,6 +88,41 @@ def _base_manifest() -> dict:
         "outputs": [{"path": "output.json", "role": "primary_output"}],
         "determinism_declared": "DETERMINISTIC",
     }
+
+
+def _write_data_receipt(tmp_path: Path) -> tuple[Path, str]:
+    """Write the smallest public graph fixture needed by linkage/blast-radius tests."""
+
+    graph = ProvenanceHypergraph()
+    for artifact_id in ("artifact:source", "artifact:derived"):
+        graph.add_artifact(
+            ArtifactNode(
+                artifact_id,
+                artifact_id,
+                ArtifactType.CORPUS,
+                "a" * 64,
+                status=ArtifactStatus.VALID,
+            )
+        )
+    graph.add_transformation(
+        TransformationHyperedge(
+            "transform:derive",
+            "derive",
+            TransformationType.EXTRACTION,
+            (HyperedgePort("artifact:source", "INPUT"),),
+            (HyperedgePort("artifact:derived", "OUTPUT"),),
+            {},
+            {},
+            {},
+        )
+    )
+    receipt_file = tmp_path / "dataset-receipt" / "receipt.json"
+    receipt_file.parent.mkdir()
+    receipt_file.write_text(
+        json.dumps({"hypergraph": graph.to_dict()}),
+        encoding="utf-8",
+    )
+    return receipt_file, "artifact:source"
 
 
 def test_full_lifecycle_capture_validate_inspect_reproduce(tmp_path, capsys):
@@ -81,27 +145,46 @@ def test_full_lifecycle_capture_validate_inspect_reproduce(tmp_path, capsys):
     assert (out_dir / "manifest.json").exists() is False  # test manifest was never written to disk
 
     data = json.loads(receipt_file.read_text(encoding="utf-8"))
+    schema = json.loads(
+        (Path(__file__).resolve().parents[1] / "receipts" / "schema" / "vstd1_generic_run_receipt.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator(schema).validate(data)
     assert is_generic_run_receipt(data)
     assert data["canonical_digest"] == receipt.canonical_digest
-    layer4 = data["layer4_binding"]
-    assert layer4["verifier"]["implementation_hash"].startswith("sha256:")
-    assert layer4["verifier"]["parser_hash"].startswith("sha256:")
-    assert layer4["resource_bounds"] == {
+    context = data["assessment_context"]
+    assert context["verifier"]["implementation_hash"].startswith("sha256:")
+    assert context["verifier"]["parser_hash"].startswith("sha256:")
+    assert context["resource_bounds"] == {
         "verification_cost_bound": 0,
         "memory_bound": 0,
         "certificate_size_bound": 0,
     }
-    assert layer4["prior_commitment"] == ""
-    assert layer4["refutation_surface"]["admissible_refutations"] == []
-    assert "PHYSICAL_WORLD_COMPLETENESS" in layer4["refutation_surface"][
+    assert context["prior_commitment"] == ""
+    assert context["refutation_surface"]["admissible_refutations"] == []
+    assert "PHYSICAL_WORLD_COMPLETENESS" in context["refutation_surface"][
         "excluded_claims"
     ]
 
     assert validate_run_receipt(out_dir) == 0
+    assert "[INTEGRITY OK]" in capsys.readouterr().out
     assert inspect_run_receipt(out_dir) == 0
 
     # Default reproduce: artifact rehash only, no side effects.
     assert reproduce_run_receipt(out_dir) == 0
+
+
+def test_reproduce_honors_an_explicit_receipt_filename(tmp_path):
+    proj = _write_tiny_project(tmp_path)
+    receipt = capture_run(_base_manifest(), manifest_dir=proj)
+    receipt_file = receipt.save_to_directory(proj)
+    renamed_receipt = proj / "renamed-receipt.json"
+    receipt_file.rename(renamed_receipt)
+
+    assert validate_run_receipt(renamed_receipt) == 0
+    assert inspect_run_receipt(renamed_receipt) == 0
+    assert reproduce_run_receipt(renamed_receipt) == 0
 
 
 def test_new_run_receipt_binds_precommitment_bounds_and_refutation_surface(tmp_path):
@@ -119,25 +202,61 @@ def test_new_run_receipt_binds_precommitment_bounds_and_refutation_surface(tmp_p
     }
     receipt = capture_run(manifest, manifest_dir=proj)
     before = receipt.canonical_digest
-    layer4 = receipt.get_stable_payload()["layer4_binding"]
-    assert layer4["prior_commitment"] == manifest["prior_commitment"]
-    assert layer4["resource_bounds"] == manifest["resource_bounds"]
-    assert layer4["refutation_surface"]["admissible_refutations"] == [
+    context = receipt.get_stable_payload()["assessment_context"]
+    assert context["prior_commitment"] == manifest["prior_commitment"]
+    assert context["resource_bounds"] == manifest["resource_bounds"]
+    assert context["refutation_surface"]["admissible_refutations"] == [
         "evidence_hash_mismatch"
     ]
 
-    layer4["prior_commitment"] = "sha256:" + "b" * 64
-    receipt.layer4_binding = layer4
+    context["prior_commitment"] = "sha256:" + "b" * 64
+    receipt.assessment_context = context
     assert receipt.compute_and_set_digest() != before
 
 
-def test_historical_generic_run_digest_is_unchanged_by_optional_layer4_block():
-    receipt_path = REPO_ROOT / "examples" / "generic_run" / "receipt.json"
-    if not receipt_path.exists():
-        pytest.skip("historical private-path receipt is intentionally excluded publicly")
-    data = json.loads(receipt_path.read_text(encoding="utf-8"))
-    assert "layer4_binding" not in data
-    assert validate_run_receipt(receipt_path) == 0
+def test_generic_run_requires_assessment_context(tmp_path, capsys):
+    proj = _write_tiny_project(tmp_path)
+    data = capture_run(_base_manifest(), manifest_dir=proj).to_dict()
+    data.pop("assessment_context")
+    data["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(data)
+    )
+    path = tmp_path / "missing-assessment-context.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    assert is_generic_run_receipt(data)
+    assert validate_run_receipt(path) == 1
+    assert "missing required fields: assessment_context" in capsys.readouterr().out
+
+
+def test_retired_generic_run_identifier_is_rejected(tmp_path, capsys):
+    proj = _write_tiny_project(tmp_path)
+    data = capture_run(_base_manifest(), manifest_dir=proj).to_dict()
+    data["schema_version"] = "VSTD-" + "0.1"
+    data["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(data)
+    )
+    path = tmp_path / "retired-identifier.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    assert not is_generic_run_receipt(data)
+    assert validate_run_receipt(path) == 1
+    assert "schema_version must be VSTD-1" in capsys.readouterr().out
+
+
+def test_assessment_context_rejects_layer_specific_fields(tmp_path, capsys):
+    proj = _write_tiny_project(tmp_path)
+    data = capture_run(_base_manifest(), manifest_dir=proj).to_dict()
+    prohibited_field = "vstd4_" + "conformance"
+    data["assessment_context"][prohibited_field] = "PASS"
+    data["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(data)
+    )
+    path = tmp_path / "hostile-vstd4-claim.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    assert validate_run_receipt(path) == 1
+    assert f"unexpected fields: {prohibited_field}" in capsys.readouterr().out
 
 
 def test_missing_input_fails_closed_without_executing(tmp_path):
@@ -248,7 +367,84 @@ def test_external_evaluation_never_auto_promoted_to_attested(tmp_path):
     assert ext.attested is False, "an unverified assertion must never be silently promoted to attested"
 
 
-def test_external_evaluation_with_linked_artifact_and_ref_can_be_attested(tmp_path):
+def test_validator_rejects_digest_consistent_independence_and_attestation_upgrades(
+    tmp_path,
+):
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    manifest["evaluator_claims"] = [
+        {"evaluator_name": "declared", "metric_name": "score", "value": 1}
+    ]
+    manifest["external_evaluation"] = {
+        "source": "declared",
+        "description": "unverified",
+        "reported_value": 1,
+    }
+    receipt = capture_run(manifest, manifest_dir=proj)
+    original = receipt.to_dict()
+
+    for mutate in (
+        lambda data: data["claims"]["evaluator_claims"][0].update(
+            verified_independently=True
+        ),
+        lambda data: data["claims"]["external_evaluation"].update(attested=True),
+        lambda data: data.update(unbound_claim_upgrade=True),
+    ):
+        data = copy.deepcopy(original)
+        mutate(data)
+        data["canonical_digest"] = compute_canonical_digest(
+            _rebuild_stable_payload_from_dict(data)
+        )
+        path = tmp_path / "hostile-receipt.json"
+        path.write_text(json.dumps(data), encoding="utf-8")
+        assert validate_run_receipt(path) == 1
+
+
+@pytest.mark.parametrize(
+    ("container_path", "field_name"),
+    (
+        (("source_state",), "unknown_source_field"),
+        (("source_state", "git"), "unknown_git_field"),
+        (("source_state", "runtime"), "unknown_runtime_field"),
+        (("assessment_context",), "unknown_binding_field"),
+        (("assessment_context", "verifier"), "unknown_verifier_field"),
+        (("assessment_context", "resource_bounds"), "unknown_bound_field"),
+    ),
+)
+def test_validator_rejects_digest_consistent_unknown_nested_fields(
+    tmp_path, container_path, field_name
+):
+    proj = _write_tiny_project(tmp_path)
+    receipt = capture_run(_base_manifest(), manifest_dir=proj)
+    data = receipt.to_dict()
+    container = data
+    for segment in container_path:
+        container = container[segment]
+    container[field_name] = "attacker-controlled"
+    data["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(data)
+    )
+    path = tmp_path / "hostile-nested-receipt.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    assert validate_run_receipt(path) == 1
+
+
+def test_refutation_surface_is_the_explicit_extension_map(tmp_path):
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    manifest["refutation_surface"] = {"domain_refutation": "declared extension"}
+    receipt = capture_run(manifest, manifest_dir=proj)
+    path = receipt.save_to_directory(proj)
+
+    assert (
+        receipt.assessment_context["refutation_surface"]["domain_refutation"]
+        == "declared extension"
+    )
+    assert validate_run_receipt(path) == 0
+
+
+def test_external_evaluation_reference_remains_unverified_by_capture_runtime(tmp_path):
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()
     manifest["external_evaluation"] = {
@@ -261,7 +457,7 @@ def test_external_evaluation_with_linked_artifact_and_ref_can_be_attested(tmp_pa
     }
     receipt = capture_run(manifest, manifest_dir=proj)
     ext = receipt.claims.external_evaluation
-    assert ext.attested is True
+    assert ext.attested is False
     assert ext.evidence_ref == "sha256:deadbeef"
 
 
@@ -279,11 +475,11 @@ def test_evaluator_claim_reads_true_value_from_output_not_manifest_assertion(tmp
     receipt = capture_run(manifest, manifest_dir=proj)
     claim = receipt.claims.evaluator_claims[0]
     assert claim.value == 42  # actual value read from the produced artifact, not the bogus 999999
-    assert claim.computed_by == "local_reference_evaluator"
-    assert claim.verified_independently is True
+    assert claim.computed_by == "bound_output_extraction"
+    assert claim.verified_independently is False
 
 
-def test_nondeterministic_run_cannot_declare_bitwise_ceiling(tmp_path):
+def test_determinism_declaration_cannot_raise_reproduction_ceiling(tmp_path):
     proj = _write_tiny_project(tmp_path)
     script = proj / "rand.py"
     script.write_text(
@@ -295,14 +491,15 @@ def test_nondeterministic_run_cannot_declare_bitwise_ceiling(tmp_path):
     manifest = _base_manifest()
     manifest["command"] = [sys.executable, "rand.py", "output.json"]
     manifest["inputs"] = [{"path": "rand.py", "role": "entrypoint_source"}]
-    manifest["determinism_declared"] = "NONDETERMINISTIC"
+    manifest["determinism_declared"] = "DETERMINISTIC"
     receipt = capture_run(manifest, manifest_dir=proj)
 
-    assert receipt.reproducibility["declared_ceiling"] != "BITWISE_IDENTICAL"
-    assert "BITWISE_IDENTICAL" not in receipt.reproducibility["supported_levels"]
+    assert receipt.reproducibility["declared_ceiling"] == "CONTENT_IDENTICAL"
+    assert receipt.reproducibility["supported_levels"] == ["CONTENT_IDENTICAL"]
+    assert receipt.reproducibility["highest_demonstrated_level"] is None
 
 
-def test_rerun_reproduction_achieves_bitwise_identical_for_deterministic_example(tmp_path):
+def test_rerun_demonstrates_only_declared_output_content_identity(tmp_path, capsys):
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()
     receipt = capture_run(manifest, manifest_dir=proj)
@@ -310,37 +507,80 @@ def test_rerun_reproduction_achieves_bitwise_identical_for_deterministic_example
     (proj / "manifest.source.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     assert reproduce_run_receipt(proj, rerun=True) == 0
+    output = capsys.readouterr().out
+    assert "Fidelity state: CONTENT_IDENTICAL (declared-output scope)" in output
+    assert "BITWISE_IDENTICAL" not in output
 
 
-def test_provenance_linkage_against_real_vfy_data_receipt():
-    """Dogfood check: link a run to the real VFY-DATA-000001 hypergraph in this repo."""
-    data_receipt_dir = REPO_ROOT / "receipts" / "VFY-DATA-000001"
-    if not (data_receipt_dir / "receipt.json").exists():
-        pytest.skip("VFY-DATA-000001 receipt not present in this checkout")
+def test_relocated_bundle_rerun_keeps_declared_output_scope(tmp_path, capsys):
+    source = tmp_path / "source"
+    source.mkdir()
+    _write_tiny_project(source)
+    subprocess.run(["git", "init", "-q"], cwd=source, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test" + "@" + "example.invalid"],
+        cwd=source,
+        check=True,
+    )
+    subprocess.run(["git", "config", "user.name", "VSTD Test"], cwd=source, check=True)
+    subprocess.run(["git", "add", "double.py", "input.txt"], cwd=source, check=True)
+    subprocess.run(["git", "commit", "-q", "-m", "fixture"], cwd=source, check=True)
 
-    data = json.loads((data_receipt_dir / "receipt.json").read_text(encoding="utf-8"))
-    arts = data.get("hypergraph", {}).get("artifacts", [])
-    # Artifacts are serialized as a list of dicts on disk (see VstdDataReceipt.to_dict
-    # -> ProvenanceHypergraph.to_dict); normalize defensively in case that ever changes to a
-    # dict keyed by artifact_id.
-    if isinstance(arts, dict):
-        artifact_ids = list(arts.keys())
-    else:
-        artifact_ids = [a["artifact_id"] for a in arts]
-    assert artifact_ids, "expected at least one artifact in VFY-DATA-000001's hypergraph"
+    manifest = _base_manifest()
+    receipt = capture_run(manifest, manifest_dir=source)
+    bundle = tmp_path / "bundle"
+    _write_reproduction_bundle(manifest, source, bundle)
+    receipt.save_to_directory(bundle)
+
+    assert reproduce_run_receipt(bundle, rerun=True) == 0
+    output = capsys.readouterr().out
+    assert "Fidelity state: CONTENT_IDENTICAL (declared-output scope)" in output
+    assert "Scope: declared output artifacts and execution outcome" in output
+
+
+def test_same_outcome_with_changed_output_earns_no_reproduction_level(tmp_path, capsys):
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    receipt = capture_run(manifest, manifest_dir=proj)
+    receipt.save_to_directory(proj)
+    (proj / "manifest.source.json").write_text(json.dumps(manifest), encoding="utf-8")
+    (proj / "input.txt").write_text("22", encoding="utf-8")
+
+    assert reproduce_run_receipt(proj, rerun=True) == 1
+    output = capsys.readouterr().out
+    assert "Fidelity state: NOT_DEMONSTRATED" in output
+    assert "RESULT_EQUIVALENT" not in output
+    assert "SEMANTIC_REPRODUCTION" not in output
+
+
+def test_no_declared_outputs_cannot_vacuously_reproduce(tmp_path, capsys):
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    manifest["outputs"] = []
+    receipt = capture_run(manifest, manifest_dir=proj)
+    receipt.save_to_directory(proj)
+    (proj / "manifest.source.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    assert reproduce_run_receipt(proj, rerun=True) == 1
+    assert "Fidelity state: NOT_DEMONSTRATED" in capsys.readouterr().out
+
+
+def test_provenance_linkage_uses_public_graph_fixture(tmp_path):
+    """Resolve linkage without depending on a receipt absent from the public tree."""
+    data_receipt_file, artifact_id = _write_data_receipt(tmp_path)
 
     from verifier.core.run import _resolve_provenance_linkage
 
     linkage = _resolve_provenance_linkage(
-        REPO_ROOT,
-        {"dataset_receipt_path": "receipts/VFY-DATA-000001", "artifact_id": artifact_ids[0]},
+        tmp_path,
+        {"dataset_receipt_path": str(data_receipt_file.parent.name), "artifact_id": artifact_id},
     )
     assert linkage.found_in_hypergraph is True
     assert linkage.ancestor_count is not None
 
     missing = _resolve_provenance_linkage(
-        REPO_ROOT,
-        {"dataset_receipt_path": "receipts/VFY-DATA-000001", "artifact_id": "art:does_not_exist_12345"},
+        tmp_path,
+        {"dataset_receipt_path": str(data_receipt_file.parent.name), "artifact_id": "artifact:missing"},
     )
     assert missing.found_in_hypergraph is False
     assert missing.ancestor_count is None
@@ -351,19 +591,13 @@ def test_blast_radius_revocation_flags_dependent_run_receipts(tmp_path):
     consumed it (directly or via a downstream derivative) — composing dataset
     provenance into run-receipt impact analysis rather than a parallel system.
     """
-    data_receipt_dir = REPO_ROOT / "receipts" / "VFY-DATA-000001"
-    data_receipt_file = data_receipt_dir / "receipt.json"
-    if not data_receipt_file.exists():
-        pytest.skip("VFY-DATA-000001 receipt not present in this checkout")
-
-    data = json.loads(data_receipt_file.read_text(encoding="utf-8"))
-    artifact_id = data["hypergraph"]["artifacts"][0]["artifact_id"]
+    data_receipt_file, artifact_id = _write_data_receipt(tmp_path)
 
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()
     manifest["provenance_roots"] = [
         {
-            "dataset_receipt_path": str(data_receipt_dir),
+            "dataset_receipt_path": str(data_receipt_file.parent),
             "artifact_id": artifact_id,
         }
     ]
@@ -399,3 +633,65 @@ def test_blast_radius_revocation_flags_dependent_run_receipts(tmp_path):
     matched_ids = {e["receipt_id"] for e in impacted_again}
     assert "RUN-TEST-000" in matched_ids
     assert "RUN-UNRELATED-000" not in matched_ids
+
+
+def test_repeated_provenance_reference_does_not_duplicate_impact(tmp_path):
+    data_receipt_file, artifact_id = _write_data_receipt(tmp_path)
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    repeated = {
+        "dataset_receipt_path": str(data_receipt_file.parent),
+        "artifact_id": artifact_id,
+    }
+    manifest["provenance_roots"] = [repeated, dict(repeated)]
+    receipt = capture_run(manifest, manifest_dir=proj)
+    assert len(receipt.provenance_linkage) == 2
+    receipt.save_to_directory(tmp_path / "receipts_tree" / "RUN-TEST-000")
+
+    impacted = find_run_receipts_impacted_by_revocation(
+        search_root=tmp_path / "receipts_tree",
+        dataset_receipt_file=data_receipt_file,
+        revoked_artifact_id=artifact_id,
+    )
+
+    assert [item["receipt_id"] for item in impacted] == ["RUN-TEST-000"]
+
+
+def test_generic_run_facade_preserves_imports_across_bounded_modules() -> None:
+    from verifier.core import run
+
+    expected_modules = {
+        "load_manifest": "verifier.core.run_planning",
+        "describe_run_plan": "verifier.core.run_planning",
+        "validate_run_receipt": "verifier.core.run_validation",
+        "inspect_run_receipt": "verifier.core.run_inspection",
+        "reproduce_run_receipt": "verifier.core.run_reproduction",
+        "find_run_receipts_impacted_by_revocation": "verifier.core.run_impact",
+    }
+    assert run.capture_run.__module__ == "verifier.core.run"
+    for name, module_name in expected_modules.items():
+        assert getattr(run, name).__module__ == module_name
+
+
+def test_generic_run_mechanism_hash_binds_every_decomposed_module() -> None:
+    from verifier.core import run
+
+    module_names = (
+        "run.py",
+        "run_support.py",
+        "run_planning.py",
+        "run_validation.py",
+        "run_inspection.py",
+        "run_reproduction.py",
+        "run_impact.py",
+    )
+    directory = Path(run.__file__).resolve().parent
+    expected = run._implementation_inventory_digest(
+        tuple(directory / name for name in module_names)
+    )
+    binding = run._assessment_context({}, falsification_condition="fixture")
+
+    assert binding["verifier"]["implementation_hash"] == expected
+    assert binding["verifier"]["parser_hash"] == "sha256:" + hashlib.sha256(
+        (directory / "run_validation.py").read_bytes()
+    ).hexdigest()

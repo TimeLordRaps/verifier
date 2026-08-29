@@ -1,21 +1,21 @@
 {
   "claim": {
     "id": "RUN-000001",
-    "title": "Deterministic word-frequency computation over a fixed input corpus",
-    "statement": "Running compute.py against the declared input.txt deterministically produces output.json (a sorted word-frequency table) and metrics.json (a total-token-count metric), reproducing byte-identically on rerun.",
-    "scope": "A single, self-contained, dependency-free Python computation used to demonstrate the VERIFIABLE generic proof-carrying run primitive end-to-end: source -> inputs -> execution -> outputs -> claim -> receipt -> independent validation -> reproduction.",
+    "title": "Word-frequency computation over a fixed input corpus",
+    "statement": "The recorded command produced output.json (a sorted word-frequency table) and metrics.json (token-count metrics) from the declared input.txt; an explicit rerun can compare those output bytes.",
+    "scope": "A single, self-contained, dependency-free Python computation used to demonstrate the VSTD generic receipt-carrying run workflow end-to-end: source -> inputs -> execution -> outputs -> claim -> receipt -> separate validation -> reproduction.",
     "limitations": [
-      "This is a deliberately small worked example chosen for zero external dependencies and full determinism, not a claim about any production model, dataset, or benchmark.",
-      "Determinism is declared only for this exact recorded Python version and platform; the computation performs no floating point and no hash-order-dependent operations, so cross-run determinism is expected but not independently proven for other environments.",
+      "This is a deliberately small worked example chosen for zero external dependencies and exact output comparison, not a claim about any production model, dataset, or benchmark.",
+      "The computation avoids floating point and hash-order-dependent output, but this generic capture path does not independently verify determinism or bind a complete execution environment.",
       "No external evaluation evidence is claimed anywhere in this receipt — it is a purely local, self-contained computation."
     ],
-    "falsification_condition": "If `verifiable reproduce --rerun` regenerates output.json/metrics.json with a different SHA-256 digest than recorded, or `verifiable validate` finds the recomputed canonical_digest does not match receipt.json's recorded canonical_digest, this claim is falsified."
+    "falsification_condition": "A `vstd validate` digest mismatch falsifies stable-content integrity. A `vstd reproduce --rerun` output mismatch falsifies byte-identical reproducibility for that rerun, not the recorded original execution by itself."
   },
   "command": ["python", "compute.py", "input.txt", "output.json", "metrics.json"],
   "cwd": ".",
   "repo_dir": "../..",
-  "target_name": "verifiable-generic-run-example",
-  "portable_repository_id": "github.com/TimeLordRaps/Verifiable",
+  "target_name": "vstd-generic-run-example",
+  "portable_repository_id": "github.com/TimeLordRaps/verifier",
   "inputs": [
     {"path": "input.txt", "role": "primary_input"},
     {"path": "compute.py", "role": "entrypoint_source"}
@@ -24,7 +24,7 @@
     {"path": "output.json", "role": "primary_output"},
     {"path": "metrics.json", "role": "metrics"}
   ],
-  "determinism_declared": "DETERMINISTIC",
+  "determinism_declared": "UNKNOWN",
   "seed": null,
   "evaluator_claims": [
     {
