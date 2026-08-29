@@ -40,6 +40,8 @@ class EvidenceBindingError(ValueError):
 
 
 class MechanismOutcome(str, Enum):
+    """Enumeration of the exported result values."""
+
     PASS = "PASS"
     FAIL = "FAIL"
     UNKNOWN = "UNKNOWN"

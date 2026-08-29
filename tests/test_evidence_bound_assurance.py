@@ -259,6 +259,7 @@ def _graph_rating_evidence(graph, store, binding, *, members=("result",), rating
 
 
 def test_serialized_pass_is_not_an_input_to_evidence_evaluation() -> None:
+    assert MechanismOutcome.__doc__ == "Enumeration of the exported result values."
     store, session = _session()
     proposition = _proposition(store, "a", "p", True)
     assert not hasattr(proposition, "outcome")
