@@ -1,4 +1,7 @@
-"""Public, target-neutral CLI for the VSTD reference implementation.
+"""Terminology: command-line interface (CLI); identifier (ID); JavaScript Object Notation (JSON);
+Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
+
+Public, target-neutral CLI for the VSTD reference implementation.
 
 This entry point deliberately excludes repository-specific generators and verifiers.
 It operates only on declared generic-run manifests and stored VSTD-Graph receipts.
@@ -7,12 +10,22 @@ It operates only on declared generic-run manifests and stored VSTD-Graph receipt
 from __future__ import annotations
 
 import argparse
+import contextlib
+import io
 import json
 import shutil
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
+from verifier.artifact_control import (
+    freeze_artifact,
+    seal_artifact,
+    thaw_artifact,
+    thawed_artifact_status,
+    verify_frozen_artifact,
+)
+from verifier.core.checker import independence_is_evidenced
 from verifier.core.run import (
     RunError,
     capture_run,
@@ -32,6 +45,10 @@ from verifier.runtime.hardware_cli import (
     add_vstd3_parsers,
     handle_vstd3_command,
     parse_verification_keys,
+)
+from verifier.runtime.experimental_workflow_cli import (
+    add_experiment_parsers,
+    handle_experiment_command,
 )
 from verifier.runtime.demo import SCENARIOS, demo_report, emit_specimens, run_demo
 
@@ -59,7 +76,7 @@ def _load_hypergraph(path_or_dir: Path) -> tuple[dict[str, Any], ProvenanceHyper
     payload = _read_receipt(path_or_dir)
     if payload is None or not _is_data_receipt(payload):
         raise ValueError(
-            "not a readable VSTD-Graph-1 receipt with frozen wire identifier "
+            "not a readable VSTD-Graph-1 receipt with serialized schema_version identifier "
             f"VSTD-DATA-0.1: {_receipt_file(path_or_dir)}"
         )
     return payload, ProvenanceHypergraph.from_dict(payload["hypergraph"])
@@ -114,11 +131,70 @@ def _inspect_data_receipt(path_or_dir: Path) -> int:
     print("=" * 70)
     print(f"Canonical Digest: {payload.get('canonical_digest')}")
     print(f"Target Artifact:  {payload.get('dataset_spec', {}).get('target_artifact_id')}")
-    print(f"Audit Verdict:    {payload.get('independent_audit', {}).get('overall_verdict')}")
+    print(f"Checker Verdict:  {payload.get('independent_audit', {}).get('overall_verdict')}")
+    basis = payload.get("independent_audit", {}).get("independence_basis", {})
+    print(
+        "Independence:     "
+        + ("EVIDENCED" if independence_is_evidenced(basis) else "NOT_DEMONSTRATED")
+    )
     print(f"Artifacts:        {len(graph.artifacts)}")
     print(f"Transformations:  {len(graph.transformations)}")
     print("=" * 70)
     return 0
+
+
+def _run_receipt_handler_as_json(
+    command: str, receipt_kind: str, handler: Callable[[], int]
+) -> int:
+    """Keep the common receipt commands machine-readable without changing their APIs."""
+
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+    with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+        exit_code = handler()
+    result = (
+        "COMPLETED"
+        if exit_code == 0
+        else "UNSUPPORTED"
+        if exit_code == 2
+        else "FAILED"
+    )
+    print(
+        json.dumps(
+            {
+                "command": command,
+                "receipt_kind": receipt_kind,
+                "result": result,
+                "exit_code": exit_code,
+                "messages": stdout.getvalue().splitlines(),
+                "errors": stderr.getvalue().splitlines(),
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return exit_code
+
+
+def _receipt_command_failure(args: argparse.Namespace, message: str) -> int:
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "command": args.command,
+                    "receipt_kind": "UNKNOWN",
+                    "result": "FAILED",
+                    "exit_code": 1,
+                    "messages": [],
+                    "errors": [message],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+    else:
+        print(f"[FAIL] {message}", file=sys.stderr)
+    return 1
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -160,8 +236,8 @@ def build_parser() -> argparse.ArgumentParser:
     plan_parser.add_argument("--json", action="store_true")
 
     for command, help_text in (
-        ("validate", "Validate a generic-run or VSTD-Graph receipt."),
-        ("inspect", "Inspect a generic-run or VSTD-Graph receipt."),
+        ("validate", "Run implemented receipt checks; Graph candidate validation is not conformance."),
+        ("inspect", "Inspect a generic-run or VSTD-Graph receipt; validate and report VSTD-3."),
         ("reproduce", "Replay the mechanisms available in a stored receipt."),
     ):
         command_parser = subparsers.add_parser(command, help=help_text)
@@ -200,6 +276,60 @@ def build_parser() -> argparse.ArgumentParser:
 
     export_parser = data_commands.add_parser("export")
     export_parser.add_argument("receipt")
+
+    artifact_parser = subparsers.add_parser(
+        "artifact",
+        help="Freeze exact artifact bytes, add or verify a seal, or thaw a descendant.",
+    )
+    artifact_commands = artifact_parser.add_subparsers(
+        dest="artifact_command", required=True
+    )
+    freeze_parser = artifact_commands.add_parser(
+        "freeze", help="Copy exact file or directory bytes into a guarded artifact bundle."
+    )
+    freeze_parser.add_argument("source")
+    freeze_parser.add_argument("bundle")
+    freeze_parser.add_argument("--media-type", default="application/octet-stream")
+    freeze_parser.add_argument("--parent", action="append", default=[])
+    freeze_parser.add_argument("--context", action="append", default=[])
+    freeze_parser.add_argument("--json", action="store_true")
+
+    seal_parser = artifact_commands.add_parser(
+        "seal", help="Add a readable finite self-closing Ed25519 seal."
+    )
+    seal_parser.add_argument("bundle")
+    seal_parser.add_argument("--private-key", required=True)
+    seal_parser.add_argument("--json", action="store_true")
+
+    verify_parser = artifact_commands.add_parser(
+        "verify", help="Recompute exact bytes, guards, seals, and optional external anchors."
+    )
+    verify_parser.add_argument("bundle")
+    verify_parser.add_argument("--expected-artifact-id")
+    verify_parser.add_argument("--expected-key-id")
+    verify_parser.add_argument(
+        "--freeze-only",
+        action="store_true",
+        help="Accept a clean freeze without claiming seal-backed identity.",
+    )
+    verify_parser.add_argument("--json", action="store_true")
+
+    thaw_parser = artifact_commands.add_parser(
+        "thaw", help="Copy a clean sealed parent into a mutable descendant."
+    )
+    thaw_parser.add_argument("bundle")
+    thaw_parser.add_argument("destination")
+    thaw_parser.add_argument("--expected-artifact-id")
+    thaw_parser.add_argument("--expected-key-id")
+    thaw_parser.add_argument("--json", action="store_true")
+
+    status_parser = artifact_commands.add_parser(
+        "status", help="Compare a thawed descendant with its sealed parent identity."
+    )
+    status_parser.add_argument("artifact")
+    status_parser.add_argument("--record")
+    status_parser.add_argument("--json", action="store_true")
+    add_experiment_parsers(subparsers)
     add_vstd3_parsers(subparsers)
     return parser
 
@@ -208,34 +338,55 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
     receipt_path = Path(args.receipt).resolve()
     payload = _read_receipt(receipt_path)
     if payload is None:
-        print(f"[FAIL] Receipt is missing or malformed: {_receipt_file(receipt_path)}", file=sys.stderr)
-        return 1
+        return _receipt_command_failure(
+            args, f"Receipt is missing or malformed: {_receipt_file(receipt_path)}"
+        )
 
     if is_generic_run_receipt(payload):
         if args.command == "validate":
-            return validate_run_receipt(receipt_path)
-        if args.command == "inspect":
-            return inspect_run_receipt(receipt_path)
-        return reproduce_run_receipt(receipt_path, rerun=args.rerun)
+            handler = lambda: validate_run_receipt(receipt_path)
+        elif args.command == "inspect":
+            handler = lambda: inspect_run_receipt(receipt_path)
+        else:
+            handler = lambda: reproduce_run_receipt(receipt_path, rerun=args.rerun)
+        return (
+            _run_receipt_handler_as_json(args.command, "generic_computational_run", handler)
+            if args.json
+            else handler()
+        )
 
     if _is_data_receipt(payload):
         if args.command == "validate":
-            return validate_data_receipt(receipt_path)
-        if args.command == "inspect":
-            return _inspect_data_receipt(receipt_path)
-        if args.rerun:
-            print("[FAIL] --rerun is not defined for stored VSTD-Graph receipts", file=sys.stderr)
-            return 1
-        return reproduce_data_receipt(receipt_path)
+            handler = lambda: validate_data_receipt(receipt_path)
+        elif args.command == "inspect":
+            handler = lambda: _inspect_data_receipt(receipt_path)
+        elif args.rerun:
+            handler = lambda: _receipt_command_failure(
+                argparse.Namespace(command=args.command, json=False),
+                "--rerun is not defined for stored VSTD-Graph receipts",
+            )
+        else:
+            handler = lambda: reproduce_data_receipt(receipt_path)
+        return (
+            _run_receipt_handler_as_json(args.command, "vstd_graph", handler)
+            if args.json
+            else handler()
+        )
 
     if is_vstd3_receipt(payload):
         receipt = load_vstd3_receipt(receipt_path)
         if args.command == "reproduce":
-            print(
-                "[UNSUPPORTED] A stored hardware receipt cannot replay physical execution; "
-                "use its declared emulator or vendor collection mechanism.",
-                file=sys.stderr,
+            message = (
+                "A stored hardware receipt cannot replay physical execution; use its "
+                "declared emulator or vendor collection mechanism."
             )
+            if args.json:
+                return _run_receipt_handler_as_json(
+                    args.command,
+                    "vstd3_hardware",
+                    lambda: (print(f"[UNSUPPORTED] {message}", file=sys.stderr) or 2),
+                )
+            print(f"[UNSUPPORTED] {message}", file=sys.stderr)
             return 2
         resolver, _ = parse_verification_keys(args.key)
         validation = validate_vstd3_receipt(receipt, key_resolver=resolver)
@@ -258,8 +409,7 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
                 print(f"  - {message}")
         return 0 if validation.status.value == "PASS" else (1 if validation.status.value == "FAIL" else 2)
 
-    print("[FAIL] Unsupported receipt kind or schema", file=sys.stderr)
-    return 1
+    return _receipt_command_failure(args, "Unsupported receipt kind or schema")
 
 
 def _handle_data_command(args: argparse.Namespace) -> int:
@@ -306,6 +456,60 @@ def _handle_data_command(args: argparse.Namespace) -> int:
         selected = graph.blast_radius(artifact_id)
     print(json.dumps({"artifact_id": artifact_id, "direction": args.direction, "matches": selected}))
     return 0
+
+
+def _print_artifact_result(result: dict[str, Any], as_json: bool) -> None:
+    if as_json:
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return
+    print(f"[{result.get('state', 'COMPLETED')}] artifact control")
+    for key, value in result.items():
+        if key != "state":
+            print(f"  {key}: {value}")
+
+
+def _handle_artifact_command(args: argparse.Namespace) -> int:
+    if args.artifact_command == "freeze":
+        result = freeze_artifact(
+            args.source,
+            args.bundle,
+            media_type=args.media_type,
+            parent_bundles=args.parent,
+            context_bundles=args.context,
+        )
+        output = {"state": "FROZEN_UNSEALED", **result}
+        _print_artifact_result(output, args.json)
+        return 0
+    if args.artifact_command == "seal":
+        result = seal_artifact(args.bundle, args.private_key)
+        output = {"state": "SEALED", **result}
+        _print_artifact_result(output, args.json)
+        return 0
+    if args.artifact_command == "verify":
+        verification = verify_frozen_artifact(
+            args.bundle,
+            expected_artifact_id=args.expected_artifact_id,
+            expected_key_id=args.expected_key_id,
+            require_seal=not args.freeze_only,
+        )
+        output = verification.to_dict()
+        _print_artifact_result(output, args.json)
+        if verification.state in {"SEALED", "FROZEN_UNSEALED"}:
+            return 0
+        return 2 if verification.state == "NOT_ESTABLISHED" else 1
+    if args.artifact_command == "thaw":
+        result = thaw_artifact(
+            args.bundle,
+            args.destination,
+            expected_artifact_id=args.expected_artifact_id,
+            expected_key_id=args.expected_key_id,
+        )
+        output = {"state": "THAWED_CLEAN", **result}
+        _print_artifact_result(output, args.json)
+        return 0
+    result = thawed_artifact_status(args.artifact, args.record)
+    _print_artifact_result(result, args.json)
+    return 0 if result["state"] == "THAWED_CLEAN" else 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -390,6 +594,10 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.command == "data":
             return _handle_data_command(args)
+        if args.command == "artifact":
+            return _handle_artifact_command(args)
+        if args.command == "experiment":
+            return handle_experiment_command(args)
         if args.command in {"hardware", "continuity", "fleet", "evidence", "claims"}:
             return handle_vstd3_command(args)
     except (OSError, RunError, ValueError, KeyError) as exc:
