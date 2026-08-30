@@ -878,7 +878,7 @@ def thawed_artifact_status(
     independently observed.
     """
 
-    artifact_path = Path(artifact).resolve()
+    artifact_path = Path(artifact).absolute()
     record_path = (
         Path(thaw_record).resolve()
         if thaw_record is not None
