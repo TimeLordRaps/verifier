@@ -841,7 +841,13 @@ def thaw_artifact(
     record["thaw_id"] = _identity("vstd-thaw-1", _canonical_bytes(record))
     try:
         _write_json(record_path, record)
-        status = thawed_artifact_status(destination_path, record_path)
+        status = thawed_artifact_status(
+            destination_path,
+            record_path,
+            parent_bundle=bundle_path,
+            expected_artifact_id=expected_artifact_id,
+            expected_key_id=expected_key_id,
+        )
         if status["state"] != "THAWED_CLEAN":
             raise ArtifactControlError("thawed descendant did not match the sealed parent")
     except Exception:
@@ -856,9 +862,21 @@ def thaw_artifact(
 
 
 def thawed_artifact_status(
-    artifact: str | Path, thaw_record: str | Path | None = None
+    artifact: str | Path,
+    thaw_record: str | Path | None = None,
+    *,
+    parent_bundle: str | Path | None = None,
+    expected_artifact_id: str | None = None,
+    expected_key_id: str | None = None,
 ) -> dict[str, Any]:
-    """Compare a mutable descendant with its sealed parent's initial identity."""
+    """Assess current descendant equality without authenticating the historical copy.
+
+    A sidecar alone can report only agreement with its own recorded metadata. A
+    ``THAWED_CLEAN`` or ``THAWED_DIRTY`` result requires an actual supplied parent
+    bundle whose freeze and seals verify and whose exact coordinates match the
+    sidecar. Even that result does not prove that the historical copy operation was
+    independently observed.
+    """
 
     artifact_path = Path(artifact).resolve()
     record_path = (
@@ -883,30 +901,164 @@ def thawed_artifact_status(
     )
     if record["schema_version"] != THAW_SCHEMA:
         raise ArtifactControlError(f"unsupported thaw schema {record['schema_version']!r}")
+    identifier_fields = {
+        "parent_artifact_id": "vstd-artifact-1:",
+        "parent_content_id": "vstd-content-1:",
+        "parent_freeze_id": "vstd-freeze-1:",
+        "thaw_id": "vstd-thaw-1:",
+    }
+    for name, prefix in identifier_fields.items():
+        value = record[name]
+        if (
+            not isinstance(value, str)
+            or not value.startswith(prefix)
+            or _DUAL_ID.fullmatch(value) is None
+        ):
+            raise ArtifactControlError(f"thaw record {name} is invalid")
+    seal_ids = record["parent_seal_ids"]
+    if not isinstance(seal_ids, list) or not seal_ids:
+        raise ArtifactControlError("thaw record parent_seal_ids must be a nonempty array")
+    if not all(
+        isinstance(value, str)
+        and value.startswith("vstd-seal-1:")
+        and _DUAL_ID.fullmatch(value) is not None
+        for value in seal_ids
+    ):
+        raise ArtifactControlError("thaw record parent_seal_ids contains an invalid seal ID")
+    if len(set(seal_ids)) != len(seal_ids):
+        raise ArtifactControlError("thaw record parent_seal_ids must not contain duplicates")
+    if record["artifact_kind"] not in {"file", "directory"}:
+        raise ArtifactControlError("thaw record artifact_kind is invalid")
+    if not isinstance(record["media_type"], str) or not record["media_type"]:
+        raise ArtifactControlError("thaw record media_type must be a nonempty string")
     stable = {key: record[key] for key in record if key != "thaw_id"}
     if record["thaw_id"] != _identity("vstd-thaw-1", _canonical_bytes(stable)):
         raise ArtifactControlError("thaw_id does not close the thaw record")
-    observed_kind = "file" if artifact_path.is_file() else "directory" if artifact_path.is_dir() else ""
-    if observed_kind != record["artifact_kind"]:
-        state = "THAWED_DIRTY"
-        observed_id = None
-    else:
-        entries = _source_entries(artifact_path)
-        observed_id = _identity(
-            "vstd-artifact-1",
-            _canonical_bytes(_descriptor(observed_kind, record["media_type"], entries)),
-        )
-        state = (
-            "THAWED_CLEAN"
-            if observed_id == record["parent_artifact_id"]
-            else "THAWED_DIRTY"
-        )
-    return {
-        "state": state,
+
+    observed_kind = (
+        "file"
+        if artifact_path.is_file()
+        else "directory"
+        if artifact_path.is_dir()
+        else ""
+    )
+
+    recorded_observed_id: str | None = None
+    try:
+        if observed_kind == record["artifact_kind"]:
+            recorded_observed_id = _identity(
+                "vstd-artifact-1",
+                _canonical_bytes(
+                    _descriptor(
+                        observed_kind,
+                        record["media_type"],
+                        _source_entries(artifact_path),
+                    )
+                ),
+            )
+    except ArtifactControlError:
+        recorded_observed_id = None
+    recorded_identity_match = recorded_observed_id == record["parent_artifact_id"]
+
+    result: dict[str, Any] = {
+        "state": "NOT_ESTABLISHED",
+        "lineage_state": "NOT_ESTABLISHED",
+        "recorded_identity_match": recorded_identity_match,
+        "verified_parent_identity_match": None,
+        "identity_basis": "SIDECAR_RECORDED_METADATA",
+        "parent_verification_state": "NOT_CHECKED",
+        "external_anchor_state": "NOT_CHECKED",
+        "historical_operation": "NOT_ESTABLISHED",
         "parent_artifact_id": record["parent_artifact_id"],
-        "observed_artifact_id": observed_id,
+        "observed_artifact_id": recorded_observed_id,
         "thaw_id": record["thaw_id"],
+        "errors": [],
+        "warnings": [
+            "sidecar agreement does not establish an actual sealed parent or historical thaw operation"
+        ],
     }
+    if parent_bundle is None:
+        return result
+
+    parent_path = Path(parent_bundle).resolve()
+    parent_verification = verify_frozen_artifact(
+        parent_path,
+        expected_artifact_id=expected_artifact_id,
+        expected_key_id=expected_key_id,
+        require_seal=True,
+    )
+    result["parent_verification_state"] = parent_verification.state
+    result["external_anchor_state"] = parent_verification.external_anchor
+    result["errors"] = list(parent_verification.errors)
+    if not parent_verification.sealed:
+        result["state"] = "FAIL"
+        result["errors"].append(
+            "supplied parent bundle is not cleanly sealed"
+        )
+        return result
+
+    parent_freeze = _load_freeze(parent_path)
+    coordinate_errors: list[str] = []
+    comparisons = (
+        ("parent_artifact_id", parent_verification.artifact_id),
+        ("parent_content_id", parent_verification.content_id),
+        ("parent_freeze_id", parent_verification.freeze_id),
+        ("artifact_kind", parent_freeze["artifact_kind"]),
+        ("media_type", parent_freeze["media_type"]),
+    )
+    for name, expected in comparisons:
+        if record[name] != expected:
+            coordinate_errors.append(
+                f"thaw record {name} does not match the supplied sealed parent"
+            )
+    valid_parent_seals = set(parent_verification.valid_seal_ids)
+    missing_seals = sorted(set(seal_ids) - valid_parent_seals)
+    if missing_seals:
+        coordinate_errors.append(
+            "thaw record names a seal that is not valid on the supplied parent: "
+            + ", ".join(missing_seals)
+        )
+
+    authoritative_observed_id: str | None = None
+    try:
+        if observed_kind == parent_freeze["artifact_kind"]:
+            authoritative_observed_id = _identity(
+                "vstd-artifact-1",
+                _canonical_bytes(
+                    _descriptor(
+                        observed_kind,
+                        parent_freeze["media_type"],
+                        _source_entries(artifact_path),
+                    )
+                ),
+            )
+    except ArtifactControlError:
+        authoritative_observed_id = None
+
+    result["identity_basis"] = "VERIFIED_PARENT_METADATA"
+    result["observed_artifact_id"] = authoritative_observed_id
+    result["verified_parent_identity_match"] = (
+        authoritative_observed_id == parent_verification.artifact_id
+    )
+    result["warnings"] = [
+        "current equality does not prove that the historical thaw operation was independently observed"
+    ]
+    if parent_verification.external_anchor == "NOT_CHECKED":
+        result["warnings"].append(
+            "supplied parent is internally consistent; external continuity was not checked"
+        )
+    if coordinate_errors:
+        result["state"] = "FAIL"
+        result["errors"].extend(coordinate_errors)
+        return result
+
+    result["lineage_state"] = "PARENT_COORDINATES_ESTABLISHED"
+    result["state"] = (
+        "THAWED_CLEAN"
+        if result["verified_parent_identity_match"]
+        else "THAWED_DIRTY"
+    )
+    return result
 
 
 __all__ = [

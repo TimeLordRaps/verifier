@@ -157,6 +157,11 @@ jobs:
           /tmp/vstd-wheel/bin/vstd reproduce /tmp/vstd-receipt --rerun
           /tmp/vstd-wheel/bin/verifier demo --scenario honest-unknown --json
           /tmp/vstd-wheel/bin/python -c 'import json; from pathlib import Path; from verifier.core.checker import IndependentAuditor; receipt=json.loads(Path("/tmp/vstd-receipt/receipt.json").read_text()); hashes=(receipt["assessment_context"]["verifier"]["specification_hash"], IndependentAuditor.verifier_descriptor().specification_hash); assert all(value.startswith("sha256:") for value in hashes), hashes'
+          printf 'installed-wheel-artifact\n' > /tmp/vstd-wheel-artifact.bin
+          /tmp/vstd-wheel/bin/vstd artifact freeze /tmp/vstd-wheel-artifact.bin /tmp/vstd-wheel-artifact --json
+          /tmp/vstd-wheel/bin/vstd artifact verify /tmp/vstd-wheel-artifact --freeze-only --json
+          /tmp/vstd-wheel/bin/python -c 'import inspect; from verifier import thawed_artifact_status; assert "parent_bundle" in inspect.signature(thawed_artifact_status).parameters'
+          /tmp/vstd-wheel/bin/vstd artifact status --help | grep -- --parent-bundle
 
   presentation:
     runs-on: ubuntu-latest

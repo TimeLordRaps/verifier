@@ -6,12 +6,14 @@ Terminology: Privacy-Enhanced Mail (PEM); Verifier Standard (VSTD).
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import stat
 from pathlib import Path
 
 import pytest
 
+import verifier.artifact_control as artifact_control_module
 from verifier.artifact_control import (
     ArtifactControlError,
     freeze_artifact,
@@ -57,6 +59,44 @@ def _sealed_file(tmp_path: Path, name: str = "case") -> tuple[Path, dict[str, ob
 
 def _seal_path(bundle: Path) -> Path:
     return next((bundle / "seals").glob("*.json"))
+
+
+def _dual_id(kind: str, payload: bytes) -> str:
+    return (
+        f"vstd-{kind}-1:sha256:{hashlib.sha256(payload).hexdigest()}:"
+        f"sha3-256:{hashlib.sha3_256(payload).hexdigest()}"
+    )
+
+
+def _fake_dual_id(kind: str, digit: str = "0") -> str:
+    return f"vstd-{kind}-1:sha256:{digit * 64}:sha3-256:{digit * 64}"
+
+
+def _reclose_thaw_record(path: Path, **changes: object) -> dict[str, object]:
+    record = json.loads(path.read_text(encoding="utf-8"))
+    record.update(changes)
+    stable = {key: record[key] for key in record if key != "thaw_id"}
+    canonical = json.dumps(
+        stable,
+        ensure_ascii=False,
+        allow_nan=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    record["thaw_id"] = _dual_id("thaw", canonical)
+    path.write_text(
+        json.dumps(record, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return record
+
+
+def _thawed_file(tmp_path: Path, name: str = "thaw") -> tuple[Path, Path, Path]:
+    bundle, _ = _sealed_file(tmp_path, name)
+    descendant = tmp_path / f"{name}-descendant.bin"
+    record = thaw_artifact(bundle, descendant)
+    return bundle, descendant, Path(str(record["record_path"]))
 
 
 def test_freeze_preserves_exact_file_bytes_without_claiming_a_seal(tmp_path: Path) -> None:
@@ -251,9 +291,18 @@ def test_thaw_is_copy_on_write_and_dirtying_is_observable(tmp_path: Path) -> Non
     record = thaw_artifact(bundle, descendant)
 
     assert descendant.read_bytes() == parent_before
-    assert thawed_artifact_status(descendant)["state"] == "THAWED_CLEAN"
+    sidecar_only = thawed_artifact_status(descendant)
+    assert sidecar_only["state"] == "NOT_ESTABLISHED"
+    assert sidecar_only["recorded_identity_match"] is True
+    assert sidecar_only["lineage_state"] == "NOT_ESTABLISHED"
+    assert thawed_artifact_status(
+        descendant, parent_bundle=bundle
+    )["state"] == "THAWED_CLEAN"
     descendant.write_bytes(b"changed")
-    assert thawed_artifact_status(descendant)["state"] == "THAWED_DIRTY"
+    assert thawed_artifact_status(descendant)["state"] == "NOT_ESTABLISHED"
+    assert thawed_artifact_status(
+        descendant, parent_bundle=bundle
+    )["state"] == "THAWED_DIRTY"
     assert (bundle / "payload").read_bytes() == parent_before
     assert record["parent_artifact_id"] == verify_frozen_artifact(bundle).artifact_id
 
@@ -282,6 +331,370 @@ def test_sealed_parent_and_context_bindings_are_explicit_and_deduplicated(
             tmp_path / "duplicate",
             context_bundles=[context, context],
         )
+
+
+def test_fabricated_thaw_sidecar_without_parent_never_establishes_lineage(
+    tmp_path: Path,
+) -> None:
+    artifact = tmp_path / "fabricated.bin"
+    artifact.write_bytes(b"fabricated")
+    probe = tmp_path / "probe"
+    manifest = freeze_artifact(artifact, probe, media_type="application/x-fabricated")
+    record_path = tmp_path / "fabricated.bin.vstd-thaw.json"
+    record_path.write_text(
+        json.dumps(
+            {
+                "schema_version": "VSTD-ARTIFACT-THAW-1",
+                "parent_artifact_id": manifest["artifact_id"],
+                "parent_content_id": _fake_dual_id("content"),
+                "parent_freeze_id": _fake_dual_id("freeze"),
+                "parent_seal_ids": [_fake_dual_id("seal")],
+                "artifact_kind": "file",
+                "media_type": "application/x-fabricated",
+                "thaw_id": _fake_dual_id("thaw"),
+            }
+        ),
+        encoding="utf-8",
+    )
+    _reclose_thaw_record(record_path)
+
+    result = thawed_artifact_status(artifact, record_path)
+
+    assert result["state"] == "NOT_ESTABLISHED"
+    assert result["recorded_identity_match"] is True
+    assert result["verified_parent_identity_match"] is None
+    assert result["lineage_state"] == "NOT_ESTABLISHED"
+    assert result["historical_operation"] == "NOT_ESTABLISHED"
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    (
+        ("parent_content_id", _fake_dual_id("content")),
+        ("parent_freeze_id", _fake_dual_id("freeze")),
+        ("parent_seal_ids", [_fake_dual_id("seal")]),
+    ),
+)
+def test_reclosed_false_parent_coordinates_do_not_establish_clean_lineage(
+    tmp_path: Path, field: str, replacement: object
+) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, field)
+    _reclose_thaw_record(record_path, **{field: replacement})
+
+    result = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert result["state"] == "FAIL"
+    assert result["lineage_state"] == "NOT_ESTABLISHED"
+    assert result["historical_operation"] == "NOT_ESTABLISHED"
+
+
+def test_fabricated_parent_artifact_and_matching_descendant_need_actual_parent(
+    tmp_path: Path,
+) -> None:
+    _, descendant, record_path = _thawed_file(tmp_path, "fabricated-parent")
+    descendant.write_bytes(b"neighboring fabricated descendant")
+    probe = tmp_path / "fabricated-parent-probe"
+    manifest = freeze_artifact(
+        descendant, probe, media_type="application/x-test"
+    )
+    _reclose_thaw_record(record_path, parent_artifact_id=manifest["artifact_id"])
+
+    result = thawed_artifact_status(descendant, record_path)
+
+    assert result["recorded_identity_match"] is True
+    assert result["state"] == "NOT_ESTABLISHED"
+    assert result["parent_verification_state"] == "NOT_CHECKED"
+
+
+def test_neighboring_sealed_parent_bundle_is_refused(tmp_path: Path) -> None:
+    _, descendant, record_path = _thawed_file(tmp_path, "original-parent")
+    neighbor, _ = _sealed_file(tmp_path, "neighbor-parent")
+
+    result = thawed_artifact_status(
+        descendant, record_path, parent_bundle=neighbor
+    )
+
+    assert result["state"] == "FAIL"
+    assert any("seal" in error for error in result["errors"])
+
+
+def test_recorded_seal_must_be_valid_on_supplied_parent(tmp_path: Path) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "invalid-recorded-seal")
+    _reclose_thaw_record(record_path, parent_seal_ids=[_fake_dual_id("seal", "1")])
+
+    result = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert result["state"] == "FAIL"
+    assert any("not valid" in error for error in result["errors"])
+
+
+def test_later_additional_valid_parent_seal_preserves_thaw_lineage(
+    tmp_path: Path,
+) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "additional-seal")
+    original = json.loads(record_path.read_text(encoding="utf-8"))["parent_seal_ids"]
+    seal_artifact(bundle, _private_key(tmp_path / "additional-seal-later.pem"))
+
+    result = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert result["state"] == "THAWED_CLEAN"
+    assert set(original).issubset(verify_frozen_artifact(bundle).valid_seal_ids)
+
+
+def test_unsealed_parent_cannot_establish_thaw_lineage(tmp_path: Path) -> None:
+    source = tmp_path / "unsealed-parent.bin"
+    source.write_bytes(b"unsealed")
+    unsealed = tmp_path / "unsealed-parent"
+    freeze_artifact(source, unsealed, media_type="application/x-test")
+    _, descendant, record_path = _thawed_file(tmp_path, "sealed-origin")
+
+    result = thawed_artifact_status(
+        descendant, record_path, parent_bundle=unsealed
+    )
+
+    assert result["state"] == "FAIL"
+    assert result["parent_verification_state"] == "NOT_ESTABLISHED"
+
+
+def test_conflicted_parent_cannot_establish_thaw_lineage(tmp_path: Path) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "conflicted-parent")
+    invalid = bundle / "seals" / "invalid.json"
+    invalid.write_text("{}\n", encoding="utf-8")
+    invalid.chmod(invalid.stat().st_mode & ~stat.S_IWUSR)
+
+    result = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert result["state"] == "FAIL"
+    assert result["parent_verification_state"] == "CONFLICTED"
+
+
+@pytest.mark.parametrize(
+    ("anchor_name", "anchor_value"),
+    (
+        ("expected_artifact_id", _fake_dual_id("artifact")),
+        ("expected_key_id", "vstd-seal-key-1:sha256:" + "0" * 64),
+    ),
+)
+def test_parent_external_anchor_mismatch_refuses_thaw_lineage(
+    tmp_path: Path, anchor_name: str, anchor_value: str
+) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, anchor_name)
+
+    result = thawed_artifact_status(
+        descendant,
+        record_path,
+        parent_bundle=bundle,
+        **{anchor_name: anchor_value},
+    )
+
+    assert result["state"] == "FAIL"
+    assert result["external_anchor_state"] == "MISMATCH"
+
+
+def test_verified_parent_distinguishes_clean_and_dirty_without_claiming_history(
+    tmp_path: Path,
+) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "verified-parent")
+
+    clean = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+    descendant.write_bytes(b"dirty descendant")
+    dirty = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert clean["state"] == "THAWED_CLEAN"
+    assert clean["lineage_state"] == "PARENT_COORDINATES_ESTABLISHED"
+    assert clean["verified_parent_identity_match"] is True
+    assert dirty["state"] == "THAWED_DIRTY"
+    assert dirty["lineage_state"] == "PARENT_COORDINATES_ESTABLISHED"
+    assert dirty["verified_parent_identity_match"] is False
+    assert clean["historical_operation"] == dirty["historical_operation"] == "NOT_ESTABLISHED"
+    assert any("historical" in warning for warning in clean["warnings"])
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    (("artifact_kind", "directory"), ("media_type", "application/x-neighbor")),
+)
+def test_sidecar_kind_and_media_type_must_match_authoritative_parent_metadata(
+    tmp_path: Path, field: str, replacement: str
+) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, field)
+    _reclose_thaw_record(record_path, **{field: replacement})
+
+    result = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert result["state"] == "FAIL"
+    assert result["identity_basis"] == "VERIFIED_PARENT_METADATA"
+    assert any(field in error for error in result["errors"])
+
+
+def test_status_check_does_not_modify_parent_bytes_seals_or_modes(tmp_path: Path) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "parent-immutability")
+
+    def snapshot() -> list[tuple[str, bytes | None, int]]:
+        return [
+            (
+                path.relative_to(bundle).as_posix(),
+                path.read_bytes() if path.is_file() else None,
+                stat.S_IMODE(path.stat().st_mode),
+            )
+            for path in sorted(bundle.rglob("*"), key=lambda item: item.as_posix())
+        ]
+
+    before = snapshot()
+    result = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+    after = snapshot()
+
+    assert result["state"] == "THAWED_CLEAN"
+    assert after == before
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    (
+        "schema",
+        "identifier",
+        "empty_seals",
+        "invalid_seal",
+        "duplicate_seal",
+        "kind",
+        "media_type",
+        "thaw_id",
+    ),
+)
+def test_malformed_thaw_sidecar_fields_fail_closed(
+    tmp_path: Path, mutation: str
+) -> None:
+    _, descendant, record_path = _thawed_file(tmp_path, f"malformed-{mutation}")
+    record = json.loads(record_path.read_text(encoding="utf-8"))
+    if mutation == "schema":
+        record["schema_version"] = "UNKNOWN"
+    elif mutation == "identifier":
+        record["parent_content_id"] = "not-an-identifier"
+    elif mutation == "empty_seals":
+        record["parent_seal_ids"] = []
+    elif mutation == "invalid_seal":
+        record["parent_seal_ids"] = ["not-a-seal"]
+    elif mutation == "duplicate_seal":
+        record["parent_seal_ids"] = record["parent_seal_ids"] * 2
+    elif mutation == "kind":
+        record["artifact_kind"] = "device"
+    elif mutation == "media_type":
+        record["media_type"] = ""
+    else:
+        record["thaw_id"] = _fake_dual_id("thaw")
+    record_path.write_text(json.dumps(record), encoding="utf-8")
+
+    with pytest.raises(ArtifactControlError):
+        thawed_artifact_status(descendant, record_path)
+
+
+def test_verified_parent_kind_change_is_dirty_not_clean(tmp_path: Path) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "kind-change")
+    descendant.unlink()
+    descendant.mkdir()
+
+    result = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert result["state"] == "THAWED_DIRTY"
+    assert result["verified_parent_identity_match"] is False
+
+
+def test_symlink_descendant_cannot_match_recorded_or_verified_parent(
+    tmp_path: Path,
+) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "symlink-descendant")
+    target = tmp_path / "symlink-target.bin"
+    target.write_bytes(descendant.read_bytes())
+    descendant.unlink()
+    try:
+        descendant.symlink_to(target)
+    except OSError as exc:
+        pytest.skip(f"symlink creation is unavailable: {exc}")
+
+    sidecar_only = thawed_artifact_status(descendant, record_path)
+    verified = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert sidecar_only["state"] == "NOT_ESTABLISHED"
+    assert sidecar_only["recorded_identity_match"] is False
+    assert verified["state"] == "THAWED_DIRTY"
+    assert verified["verified_parent_identity_match"] is False
+
+
+def test_unreadable_descendant_inventory_cannot_match_any_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "unreadable-descendant")
+    original = artifact_control_module._source_entries
+
+    def refuse_descendant(path: Path) -> list[dict[str, object]]:
+        if path.resolve() == descendant.resolve():
+            raise ArtifactControlError("simulated unsupported descendant")
+        return original(path)
+
+    monkeypatch.setattr(artifact_control_module, "_source_entries", refuse_descendant)
+
+    sidecar_only = thawed_artifact_status(descendant, record_path)
+    verified = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert sidecar_only["recorded_identity_match"] is False
+    assert verified["state"] == "THAWED_DIRTY"
+    assert verified["verified_parent_identity_match"] is False
+
+
+def test_matching_external_parent_anchors_are_reported_without_claiming_history(
+    tmp_path: Path,
+) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "matching-anchors")
+    parent = verify_frozen_artifact(bundle)
+
+    result = thawed_artifact_status(
+        descendant,
+        record_path,
+        parent_bundle=bundle,
+        expected_artifact_id=parent.artifact_id,
+        expected_key_id=parent.key_ids[0],
+    )
+
+    assert result["state"] == "THAWED_CLEAN"
+    assert result["external_anchor_state"] == "ARTIFACT_AND_KEY_MATCHED"
+    assert not any("external continuity was not checked" in item for item in result["warnings"])
+    assert result["historical_operation"] == "NOT_ESTABLISHED"
+
+
+def test_parent_mutation_after_thaw_refuses_current_lineage(tmp_path: Path) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "mutated-parent")
+    payload = bundle / "payload"
+    _writable(payload)
+    payload.write_bytes(b"mutated parent")
+
+    result = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert result["state"] == "FAIL"
+    assert result["parent_verification_state"] == "FAIL"
 
 
 def test_unknown_bundle_or_manifest_fields_fail_closed(tmp_path: Path) -> None:
@@ -343,6 +756,28 @@ def test_public_cli_exposes_the_complete_artifact_lifecycle(
         ["artifact", "thaw", str(bundle), str(descendant), "--json"]
     ) == 0
     assert json.loads(capsys.readouterr().out)["state"] == "THAWED_CLEAN"
+    assert main(["artifact", "status", str(descendant), "--json"]) == 2
+    assert json.loads(capsys.readouterr().out)["state"] == "NOT_ESTABLISHED"
+    assert main(
+        [
+            "artifact",
+            "status",
+            str(descendant),
+            "--parent-bundle",
+            str(bundle),
+            "--json",
+        ]
+    ) == 0
+    assert json.loads(capsys.readouterr().out)["state"] == "THAWED_CLEAN"
     descendant.write_bytes(b"dirty")
-    assert main(["artifact", "status", str(descendant), "--json"]) == 1
+    assert main(
+        [
+            "artifact",
+            "status",
+            str(descendant),
+            "--parent-bundle",
+            str(bundle),
+            "--json",
+        ]
+    ) == 1
     assert json.loads(capsys.readouterr().out)["state"] == "THAWED_DIRTY"

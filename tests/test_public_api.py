@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 from pathlib import Path
 
 import pytest
@@ -60,6 +61,18 @@ def test_supported_top_level_exports_are_explicit_and_resolvable() -> None:
     assert set(verifier._LAZY_EXPORTS) == EXPECTED_EXPORTS
     for name in verifier.__all__:
         assert getattr(verifier, name) is not None
+
+
+def test_thaw_status_public_api_requires_explicit_parent_evidence_for_establishment() -> None:
+    parameters = inspect.signature(verifier.thawed_artifact_status).parameters
+    assert tuple(parameters) == (
+        "artifact",
+        "thaw_record",
+        "parent_bundle",
+        "expected_artifact_id",
+        "expected_key_id",
+    )
+    assert parameters["parent_bundle"].kind is inspect.Parameter.KEYWORD_ONLY
 
 
 def test_deprecation_registry_warns_without_replacing_the_export(

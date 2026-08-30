@@ -324,10 +324,20 @@ def build_parser() -> argparse.ArgumentParser:
     thaw_parser.add_argument("--json", action="store_true")
 
     status_parser = artifact_commands.add_parser(
-        "status", help="Compare a thawed descendant with its sealed parent identity."
+        "status",
+        help=(
+            "Compare a descendant with recorded sidecar metadata, or verify current "
+            "equality against a supplied sealed parent."
+        ),
     )
     status_parser.add_argument("artifact")
     status_parser.add_argument("--record")
+    status_parser.add_argument(
+        "--parent-bundle",
+        help="Actual frozen parent bundle required to establish THAWED_CLEAN or THAWED_DIRTY.",
+    )
+    status_parser.add_argument("--expected-artifact-id")
+    status_parser.add_argument("--expected-key-id")
     status_parser.add_argument("--json", action="store_true")
     add_experiment_parsers(subparsers)
     add_vstd3_parsers(subparsers)
@@ -507,9 +517,19 @@ def _handle_artifact_command(args: argparse.Namespace) -> int:
         output = {"state": "THAWED_CLEAN", **result}
         _print_artifact_result(output, args.json)
         return 0
-    result = thawed_artifact_status(args.artifact, args.record)
+    result = thawed_artifact_status(
+        args.artifact,
+        args.record,
+        parent_bundle=args.parent_bundle,
+        expected_artifact_id=args.expected_artifact_id,
+        expected_key_id=args.expected_key_id,
+    )
     _print_artifact_result(result, args.json)
-    return 0 if result["state"] == "THAWED_CLEAN" else 1
+    if result["state"] == "THAWED_CLEAN":
+        return 0
+    if result["state"] == "NOT_ESTABLISHED":
+        return 2
+    return 1
 
 
 def main(argv: list[str] | None = None) -> int:

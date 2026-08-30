@@ -231,10 +231,13 @@
 </article>
 <article class="ref-item" id="cli-vstd-artifact-status">
 <h3><code>vstd artifact status</code></h3>
-<p class="ref-help">Compare a thawed descendant with its sealed parent identity.</p>
+<p class="ref-help">Compare a descendant with recorded sidecar metadata, or verify current equality against a supplied sealed parent.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>artifact</code></td><td>positional</td><td></td></tr>
 <tr><td><code>--record</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--parent-bundle</code></td><td>optional</td><td>Actual frozen parent bundle required to establish THAWED_CLEAN or THAWED_DIRTY.</td></tr>
+<tr><td><code>--expected-artifact-id</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--expected-key-id</code></td><td>optional</td><td></td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
 </tbody></table>
 </article>
@@ -748,8 +751,8 @@
 </article>
 <article class="ref-item" id="api-thawed_artifact_status">
 <h3><code>thawed_artifact_status</code> <span class="ref-tag">function</span></h3>
-<pre class="ref-signature"><code>thawed_artifact_status(artifact: 'str | Path', thaw_record: 'str | Path | None' = None) -&gt; 'dict[str, Any]'</code></pre>
-<p class="ref-help">Compare a mutable descendant with its sealed parent's initial identity.</p>
+<pre class="ref-signature"><code>thawed_artifact_status(artifact: 'str | Path', thaw_record: 'str | Path | None' = None, *, parent_bundle: 'str | Path | None' = None, expected_artifact_id: 'str | None' = None, expected_key_id: 'str | None' = None) -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Assess current descendant equality without authenticating the historical copy.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control</code></a></p>
 
 </article>

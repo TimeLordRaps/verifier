@@ -49,7 +49,11 @@ Artifact control is an orthogonal mechanism beneath the axes. It can preserve an
 an artifact used in any numbered profile, but its successful verification establishes only exact-byte
 integrity, structural closure, and any separately supplied external anchor. It cannot
 supply a numbered-profile result, semantic correctness, encryption, trusted time, actor trust, or
-continuous temporal mediation.
+continuous temporal mediation. A thaw sidecar is additive lineage metadata, not parent
+authentication: sidecar-only agreement remains `NOT_ESTABLISHED`. Current clean or dirty
+status requires an actual supplied, cleanly sealed parent whose artifact, content, freeze,
+seal, kind, and media-type coordinates match. Even that comparison does not authenticate
+the historical copy operation.
 
 ## Verification complex and profile satisfaction
 

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/artifact-control-1.schema.json",
   "title": "Verifier Standard (VSTD) artifact-control mechanism formats",
-  "description": "Strict shapes for freeze manifests, finite self-closing seal envelopes, and copy-on-write thaw lineage records. These objects are mechanism formats, not VSTD receipts or numbered-profile conformance claims.",
+  "description": "Strict shapes for freeze manifests, finite self-closing seal envelopes, and copy-on-write thaw lineage records. Shape-valid thaw metadata does not verify a parent or historical copy operation. These objects are mechanism formats, not VSTD receipts or numbered-profile conformance claims.",
   "oneOf": [
     {"$ref": "#/$defs/freeze"},
     {"$ref": "#/$defs/seal"},
@@ -105,6 +105,7 @@
     },
     "thaw": {
       "type": "object",
+      "description": "Unkeyed lineage metadata whose self-derived thaw_id establishes field agreement only. Established clean or dirty status requires separate verification against the actual supplied sealed parent.",
       "additionalProperties": false,
       "required": ["schema_version", "parent_artifact_id", "parent_content_id", "parent_freeze_id", "parent_seal_ids", "artifact_kind", "media_type", "thaw_id"],
       "properties": {

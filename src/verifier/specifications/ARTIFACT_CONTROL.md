@@ -18,7 +18,7 @@ encryption format, archival service, correctness proof, or actor reputation syst
 |---|---|---|
 | **Freeze** | The bundle's current regular-file bytes and portable paths match its manifest, and its guarded payload tree is read-only. | Durable external preservation, privileged-write prevention, correctness, freshness, or a cryptographic signer. |
 | **Seal** | A carried public key verifies a signature over the exact freeze closure, and the seal identifier closes the signature-bearing envelope. | Encryption, secrecy, ownership, authorization, trusted time, signer reputation, or protection against whole-bundle substitution. |
-| **Thaw** | A new mutable descendant initially matched a clean sealed parent and retained a lineage sidecar. | Mutation of the parent, continued equality after thaw, or a sealed descendant. |
+| **Thaw** | The creation operation copied a clean sealed parent into a new mutable descendant and emitted a lineage sidecar. Later `THAWED_CLEAN` status establishes current equality only when the actual supplied parent verifies and every recorded parent coordinate agrees. | Authentication of the historical copy operation, mutation of the parent, continued equality after thaw, or a sealed descendant. |
 
 Sealing and encryption are independent. Version 1 seals are readable and authenticated;
 they do not encrypt any byte. A future encrypted container MUST still identify a separate
@@ -109,10 +109,26 @@ path and emits a `VSTD-ARTIFACT-THAW-1` sidecar beside the descendant. The sidec
 the parent artifact, content, freeze, and seal identifiers. It is lineage metadata, not a
 seal. The parent remains unchanged.
 
-`THAWED_CLEAN` means the descendant still has the parent's initial artifact identity.
-`THAWED_DIRTY` means it no longer does. To produce a new frozen artifact, freeze the
-descendant into a new bundle and bind the sealed parent through `lineage`. This is an
-additive state transition; no operation edits or erases the parent.
+A sidecar's self-derived `thaw_id` establishes only internal agreement among its fields.
+Sidecar-only status is `NOT_ESTABLISHED`, even when current descendant bytes match the
+recorded artifact identifier. `THAWED_CLEAN` requires the actual supplied parent bundle to
+verify as cleanly `SEALED`; its artifact, content, freeze, artifact-kind, and media-type
+coordinates must equal the sidecar; and every sidecar seal identifier must remain valid on
+that parent. Later additional valid parent seals are permitted. A conflicted parent or any
+coordinate mismatch fails closed. Authoritative parent metadata—not sidecar metadata—is
+used for the established descendant comparison.
+
+`THAWED_CLEAN` means the current descendant matches that supplied, cleanly sealed parent.
+`THAWED_DIRTY` means the verified parent coordinates still agree but the descendant no
+longer does. Neither result proves that a verifier independently observed or authenticated
+the historical copy operation. That claim requires a separately signed, logged, attested,
+or otherwise mechanism-checked event. Without an expected artifact identifier, expected
+key identifier, or separately verified external log coordinate, a supplied parent proves
+internal parent consistency rather than external continuity.
+
+To produce a new frozen artifact, freeze the descendant into a new bundle and bind the
+sealed parent through `lineage`. This is an additive state transition; no operation edits
+or erases the parent.
 
 `bound_contexts` similarly binds the artifact identifiers of clean sealed context
 bundles. It does not interpret or validate their subject matter. A sealed realm descriptor,
@@ -128,7 +144,7 @@ checks it.
 | `SEALED` | Freeze, guards, and at least one seal verified with no contradictory seal. |
 | `CONFLICTED` | Valid and invalid seal evidence coexist. |
 | `FAIL` | A checked structural, byte, guard, seal, or external-anchor condition failed. |
-| `THAWED_CLEAN` / `THAWED_DIRTY` | A mutable descendant currently matches or differs from its recorded parent identity. |
+| `THAWED_CLEAN` / `THAWED_DIRTY` | With an actual cleanly verified supplied parent whose exact recorded coordinates agree, a mutable descendant currently matches or differs from that parent. Historical execution of the copy remains `NOT_ESTABLISHED`. |
 
 A clean freeze or seal can earn bounded **TRUST** in integrity and closure. It earns no
 support for semantic correctness. Freezing does not stop **ROT** caused by staleness,

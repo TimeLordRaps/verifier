@@ -22,6 +22,13 @@ The supported artifact-control exports are `freeze_artifact`, `seal_artifact`,
 require the optional `seal` dependency extra; importing the base package and freeze-only
 operations retain the zero-third-party-dependency boundary.
 
+`thawed_artifact_status` treats a `VSTD-ARTIFACT-THAW-1` sidecar as unkeyed lineage
+metadata. Without `parent_bundle`, it returns `NOT_ESTABLISHED` even when descendant bytes
+agree with the sidecar's recorded identifier. `THAWED_CLEAN` or `THAWED_DIRTY` requires an
+actual supplied parent that verifies as cleanly sealed and matches every recorded parent
+coordinate. Optional expected artifact and key identifiers add external-anchor checks.
+The result still does not authenticate the historical copy operation.
+
 The supported evidence-bound construction exports are `BoundProposition`,
 `EvidenceBindingError`, `EvidenceBounds`, `EvidenceStore`, `MechanismDecision`,
 `MechanismOutcome`, `VerificationSession`, `WitnessBundle`, `ProvenanceHypergraph`,

@@ -241,7 +241,7 @@ vstd artifact verify ARTIFACT.vstd --freeze-only
 vstd artifact seal ARTIFACT.vstd --private-key ed25519-private.pem
 vstd artifact verify ARTIFACT.vstd --expected-artifact-id EXPECTED_ID
 vstd artifact thaw ARTIFACT.vstd MUTABLE_COPY
-vstd artifact status MUTABLE_COPY
+vstd artifact status MUTABLE_COPY --parent-bundle ARTIFACT.vstd
 ```
 
 The finite seal signs the complete envelope with its signature and identifier fields
@@ -254,7 +254,12 @@ manifest/log coordinate is still required to detect whole-bundle substitution.
 A freeze or seal establishes bounded integrity and closure only—not correctness,
 freshness, ownership, authorization, trusted time, external preservation, or actor trust.
 Thaw is copy-on-write: it creates a mutable descendant and leaves the sealed parent
-unchanged. See the normative
+unchanged. Later `THAWED_CLEAN` or `THAWED_DIRTY` status requires that actual parent bundle,
+clean seal verification, and exact agreement with every sidecar parent coordinate. Without
+the parent, sidecar agreement remains `NOT_ESTABLISHED`. The sidecar's unkeyed hash does not
+prove that the historical copy occurred. A supplied parent establishes only internal
+consistency unless an expected artifact/key identifier or separately verified external log
+also supplies continuity. See the normative
 [artifact-control mechanism](standard/ARTIFACT_CONTROL.md) and the architectural
 [realm/time-capsule model](docs/REALMS_AND_TIME_CAPSULES.md).
 

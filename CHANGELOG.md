@@ -63,6 +63,11 @@
 
 ### Claim boundaries and validation
 
+- Require `thawed_artifact_status` and `vstd artifact status` to verify an actual supplied,
+  cleanly sealed parent and every recorded parent coordinate before returning
+  `THAWED_CLEAN` or `THAWED_DIRTY`. Sidecar-only agreement is now `NOT_ESTABLISHED`; even a
+  verified current match does not authenticate the historical copy operation or external
+  parent continuity.
 - Remove the live SimulacraBench rehearsal and its front-door promotion; the repository
   never contained or reproduced the submission, hosted image, hardware, or protected
   evaluation identified by that name.
