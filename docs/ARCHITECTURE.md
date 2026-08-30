@@ -161,7 +161,7 @@ Maturity attaches to mechanisms beneath that architecture:
 | Assurance event serialization and replay | Implemented bounded reference mechanism | `VSTD-GRAPH-ASSURANCE-1` embeds the historical Graph, exact bindings, evidence bytes, a hash chain, and a current-view digest; `recheck_assurance_log` reruns every event mechanism |
 | TRUST transfer | Implemented edge-local proposition-dispatch reference mechanism | `record_trust` binds one exact transformation, its complete inputs and output, the historical Graph digest, and the prerequisite TRUST event for every derived input. Recursive current-admissibility checking excludes the route if any required event, artifact, or transformation degrades or conflicts, without deleting history. No universal scalar support algebra exists. |
 | ROT derivation and cross-surface propagation | Implemented bounded reference mechanisms | Strictly degrading status propositions and complete challenge-ledger projections produce additive current-state overlays; the deduplicated descendant impact set is discovery, and a descendant status change still needs its own mechanism |
-| RUST concentration and localization | Implemented bounded reference mechanisms | A passing descendant-deviation proposition produces deduplicated reverse reachability; concentration counts unique descendants; localization and artifact-relative diagnostic attribution require separate passing propositions |
+| RUST concentration, localization, and diagnostic attribution | Implemented bounded reference mechanisms | A passing descendant-deviation proposition produces deduplicated reverse reachability; concentration counts unique descendants; localization and BLAME require separate passing propositions. GUILT additionally composes exact responsibility, obligation-applicability, and obligation-violation components; an opaque obligation label cannot establish it. |
 | Complete `PASS`/`FAIL`/`UNKNOWN`/`CONFLICTED` hidden-witness derivation | Experimental and unimplemented | A caller-supplied state tag is not an earned verdict |
 | Specific optional proof backends | Backend-specific maturity; the RISC Zero example has one recorded native proof | Optional proof machinery cannot make the governing architecture optional or establish broader VSTD conformance |
 
@@ -271,8 +271,13 @@ They do not establish actor standing, moral character, responsibility, or automa
 ancestor falsification. The reference runtime emits bounded TRUST, ROT, and RUST events
 only after their exact mechanisms run. Causal localization and artifact-relative `BLAME`
 or `GUILT` require additional exact propositions. BLAME establishes bounded responsibility
-or material contribution; GUILT is not directionally opposite, but additionally binds and
-checks an exact violated obligation. Neither becomes actor reputation.
+or material contribution. GUILT is not directionally opposite: it composes three separately
+bound passing evaluations for responsibility, applicability of an exact scoped obligation,
+and violation of that same obligation relative to the same localized deviation. The final
+evaluation binds all three component digests. One compound mechanism may emit those three
+evaluations in one invocation, but one opaque combined result cannot substitute for them.
+Neither becomes actor reputation, moral character, automatic legal liability, or social
+scoring; missing GUILT does not establish innocence or exoneration.
 
 ### Recursive-amplification falsification outcomes
 

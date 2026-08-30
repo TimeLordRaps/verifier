@@ -18,6 +18,7 @@ never establishes falsity, causality, blame, guilt, or responsibility.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field, replace
 from enum import Enum
 from typing import Any, Iterable, Mapping, Optional
@@ -56,12 +57,87 @@ class AssuranceEventKind(str, Enum):
     CONFLICT_DECLARATION = "CONFLICT_DECLARATION"
     CONFLICT_RESOLUTION = "CONFLICT_RESOLUTION"
     CAUSAL_LOCALIZATION = "CAUSAL_LOCALIZATION"
+    RESPONSIBILITY_COMPONENT = "RESPONSIBILITY_COMPONENT"
+    OBLIGATION_APPLICABILITY = "OBLIGATION_APPLICABILITY"
+    OBLIGATION_VIOLATION = "OBLIGATION_VIOLATION"
     DIAGNOSTIC_ATTRIBUTION = "DIAGNOSTIC_ATTRIBUTION"
 
 
 class DiagnosticKind(str, Enum):
     BLAME = "BLAME"
     GUILT = "GUILT"
+
+
+_DIGEST_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
+
+
+@dataclass(frozen=True)
+class ObligationCoordinate:
+    """Exact technical obligation and the declared scope in which it applies.
+
+    An identifier or content digest names the obligation.  ``scope`` carries
+    every material time, realm, jurisdiction, contract, policy, or version
+    coordinate.  Assumptions and exclusions remain part of the exact coordinate;
+    the evaluating proposition separately binds its evidence, mechanism, trust
+    roots, and resource bounds.
+    """
+
+    obligation_id: str = ""
+    content_digest: str = ""
+    scope: Mapping[str, str] = field(default_factory=dict)
+    assumptions: tuple[str, ...] = ()
+    exclusions: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.obligation_id and not self.content_digest:
+            raise AssuranceFlowError(
+                "an obligation coordinate requires an identifier or content digest"
+            )
+        if self.content_digest and not _DIGEST_REF.fullmatch(self.content_digest):
+            raise AssuranceFlowError(
+                "obligation content_digest must be a sha256 content reference"
+            )
+        if not self.scope:
+            raise AssuranceFlowError("an obligation coordinate requires declared scope")
+        normalized_scope: dict[str, str] = {}
+        for key, value in self.scope.items():
+            if not isinstance(key, str) or not key or not isinstance(value, str) or not value:
+                raise AssuranceFlowError(
+                    "obligation scope keys and values must be nonempty strings"
+                )
+            normalized_scope[key] = value
+        if any(not isinstance(item, str) or not item for item in self.assumptions):
+            raise AssuranceFlowError("obligation assumptions must be nonempty strings")
+        if any(not isinstance(item, str) or not item for item in self.exclusions):
+            raise AssuranceFlowError("obligation exclusions must be nonempty strings")
+        object.__setattr__(self, "scope", dict(sorted(normalized_scope.items())))
+        object.__setattr__(self, "assumptions", tuple(sorted(set(self.assumptions))))
+        object.__setattr__(self, "exclusions", tuple(sorted(set(self.exclusions))))
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "obligation_id": self.obligation_id,
+            "content_digest": self.content_digest,
+            "scope": dict(self.scope),
+            "assumptions": list(self.assumptions),
+            "exclusions": list(self.exclusions),
+        }
+
+    def digest(self) -> str:
+        return canonical_digest(self.to_dict())
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> "ObligationCoordinate":
+        scope = data.get("scope")
+        if not isinstance(scope, Mapping):
+            raise AssuranceFlowError("obligation scope is not an object")
+        return cls(
+            obligation_id=str(data.get("obligation_id", "")),
+            content_digest=str(data.get("content_digest", "")),
+            scope={str(key): str(value) for key, value in scope.items()},
+            assumptions=tuple(str(item) for item in data.get("assumptions", ())),
+            exclusions=tuple(str(item) for item in data.get("exclusions", ())),
+        )
 
 
 class ChallengeProjectionMechanism:
@@ -269,9 +345,13 @@ class DiagnosticAttribution:
     localization_event_digest: str
     evaluation: Optional[EvaluatedProposition]
     details: str
+    obligation_coordinate: Optional[ObligationCoordinate] = None
+    responsibility_component_digest: str = ""
+    applicability_component_digest: str = ""
+    violation_component_digest: str = ""
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        result = {
             "kind": self.kind.value,
             "ancestor_id": self.ancestor_id,
             "descendant_id": self.descendant_id,
@@ -280,6 +360,15 @@ class DiagnosticAttribution:
             "evaluation": None if self.evaluation is None else self.evaluation.to_dict(),
             "details": self.details,
         }
+        if self.obligation_coordinate is not None:
+            result["obligation_coordinate"] = self.obligation_coordinate.to_dict()
+        if self.responsibility_component_digest:
+            result["responsibility_component_digest"] = self.responsibility_component_digest
+        if self.applicability_component_digest:
+            result["applicability_component_digest"] = self.applicability_component_digest
+        if self.violation_component_digest:
+            result["violation_component_digest"] = self.violation_component_digest
+        return result
 
 
 class AssuranceLedger:
@@ -1023,6 +1112,529 @@ class AssuranceLedger:
             },
         )
 
+    def _event_by_digest(self, event_digest: str) -> Optional[AssuranceEvent]:
+        return next(
+            (event for event in self._events if event.digest() == event_digest),
+            None,
+        )
+
+    def _require_localization(
+        self,
+        ancestor_id: str,
+        descendant_id: str,
+        localization_event_digest: str,
+    ) -> AssuranceEvent:
+        localization = self._event_by_digest(localization_event_digest)
+        if (
+            localization is None
+            or localization.kind is not AssuranceEventKind.CAUSAL_LOCALIZATION
+            or localization.outcome is not MechanismOutcome.PASS
+            or localization.subject_id != descendant_id
+            or localization.source_ids != (ancestor_id,)
+        ):
+            raise AssuranceFlowError(
+                "component requires the exact passing localization event for this "
+                "ancestor and descendant"
+            )
+        return localization
+
+    @staticmethod
+    def _unestablished_guilt(
+        ancestor_id: str,
+        descendant_id: str,
+        localization_event_digest: str,
+        details: str,
+        *,
+        obligation: Optional[ObligationCoordinate] = None,
+        responsibility_component_digest: str = "",
+        applicability_component_digest: str = "",
+        violation_component_digest: str = "",
+    ) -> DiagnosticAttribution:
+        return DiagnosticAttribution(
+            DiagnosticKind.GUILT,
+            ancestor_id,
+            descendant_id,
+            "NOT_ESTABLISHED",
+            localization_event_digest,
+            None,
+            details,
+            obligation,
+            responsibility_component_digest,
+            applicability_component_digest,
+            violation_component_digest,
+        )
+
+    def establish_responsibility(
+        self,
+        ancestor_id: str,
+        descendant_id: str,
+        proposition: BoundProposition,
+        *,
+        localization_event_digest: str,
+        session: VerificationSession,
+        recorded_at: str,
+    ) -> AssuranceEvent:
+        """Evaluate one separately bound material-contribution component."""
+
+        localization = self._require_localization(
+            ancestor_id, descendant_id, localization_event_digest
+        )
+        expected = {
+            "ancestor_id": ancestor_id,
+            "descendant_id": descendant_id,
+            "localization_event_digest": localization_event_digest,
+            "rust_event_digest": str(localization.attributes["rust_event_digest"]),
+            "deviation_binding_digest": str(
+                localization.attributes["deviation_binding_digest"]
+            ),
+        }
+        if (
+            proposition.subject_id != ancestor_id
+            or proposition.predicate != "vstd.graph.responsibility"
+            or proposition.expected != expected
+        ):
+            raise AssuranceFlowError(
+                "responsibility component is not exactly artifact/deviation-bound"
+            )
+        evaluation = session.evaluate(proposition)
+        return self._append(
+            kind=AssuranceEventKind.RESPONSIBILITY_COMPONENT,
+            subject_id=ancestor_id,
+            source_ids=(descendant_id,),
+            proposition=proposition.predicate,
+            binding=proposition.to_dict(),
+            recorded_at=recorded_at,
+            evaluation=evaluation,
+            evidence_payloads=session.evidence.export_base64(evaluation.evidence_refs),
+            attributes=expected,
+        )
+
+    def establish_obligation_applicability(
+        self,
+        artifact_id: str,
+        obligation: ObligationCoordinate,
+        proposition: BoundProposition,
+        *,
+        session: VerificationSession,
+        recorded_at: str,
+    ) -> AssuranceEvent:
+        """Evaluate whether one exact obligation applies to one exact artifact."""
+
+        if artifact_id not in self.graph.artifacts:
+            raise AssuranceFlowError(f"unknown obligation subject {artifact_id}")
+        expected = {
+            "artifact_id": artifact_id,
+            "obligation_coordinate": obligation.to_dict(),
+        }
+        if (
+            proposition.subject_id != artifact_id
+            or proposition.predicate != "vstd.graph.obligation_applicability"
+            or proposition.expected != expected
+        ):
+            raise AssuranceFlowError(
+                "obligation applicability is not exactly artifact/scope-bound"
+            )
+        evaluation = session.evaluate(proposition)
+        return self._append(
+            kind=AssuranceEventKind.OBLIGATION_APPLICABILITY,
+            subject_id=artifact_id,
+            source_ids=(),
+            proposition=proposition.predicate,
+            binding=proposition.to_dict(),
+            recorded_at=recorded_at,
+            evaluation=evaluation,
+            evidence_payloads=session.evidence.export_base64(evaluation.evidence_refs),
+            attributes=expected,
+        )
+
+    def establish_obligation_violation(
+        self,
+        ancestor_id: str,
+        descendant_id: str,
+        obligation: ObligationCoordinate,
+        proposition: BoundProposition,
+        *,
+        localization_event_digest: str,
+        applicability_component_digest: str,
+        session: VerificationSession,
+        recorded_at: str,
+    ) -> AssuranceEvent:
+        """Evaluate violation after exact applicability and deviation localization."""
+
+        localization = self._require_localization(
+            ancestor_id, descendant_id, localization_event_digest
+        )
+        applicability = self._event_by_digest(applicability_component_digest)
+        if (
+            applicability is None
+            or applicability.kind is not AssuranceEventKind.OBLIGATION_APPLICABILITY
+            or applicability.outcome is not MechanismOutcome.PASS
+            or applicability.subject_id != ancestor_id
+            or applicability.source_ids
+            or applicability.attributes.get("obligation_coordinate")
+            != obligation.to_dict()
+        ):
+            raise AssuranceFlowError(
+                "violation requires the exact passing applicability component"
+            )
+        expected = {
+            "artifact_id": ancestor_id,
+            "descendant_id": descendant_id,
+            "localization_event_digest": localization_event_digest,
+            "rust_event_digest": str(localization.attributes["rust_event_digest"]),
+            "deviation_binding_digest": str(
+                localization.attributes["deviation_binding_digest"]
+            ),
+            "obligation_coordinate": obligation.to_dict(),
+            "applicability_binding_digest": str(
+                applicability.attributes["binding_digest"]
+            ),
+        }
+        if (
+            proposition.subject_id != ancestor_id
+            or proposition.predicate != "vstd.graph.obligation_violation"
+            or proposition.expected != expected
+        ):
+            raise AssuranceFlowError(
+                "obligation violation is not exactly obligation/deviation-bound"
+            )
+        evaluation = session.evaluate(proposition)
+        return self._append(
+            kind=AssuranceEventKind.OBLIGATION_VIOLATION,
+            subject_id=ancestor_id,
+            source_ids=(descendant_id,),
+            proposition=proposition.predicate,
+            binding=proposition.to_dict(),
+            recorded_at=recorded_at,
+            evaluation=evaluation,
+            evidence_payloads=session.evidence.export_base64(evaluation.evidence_refs),
+            attributes={
+                **expected,
+                "applicability_component_digest": applicability_component_digest,
+            },
+        )
+
+    def establish_guilt_components(
+        self,
+        ancestor_id: str,
+        descendant_id: str,
+        obligation: ObligationCoordinate,
+        responsibility_proposition: BoundProposition,
+        applicability_proposition: BoundProposition,
+        violation_proposition: BoundProposition,
+        *,
+        localization_event_digest: str,
+        session: VerificationSession,
+        recorded_at: str,
+    ) -> tuple[AssuranceEvent, AssuranceEvent, AssuranceEvent]:
+        """Run one compound mechanism and retain three separately bound results."""
+
+        localization = self._require_localization(
+            ancestor_id, descendant_id, localization_event_digest
+        )
+        responsibility_expected = {
+            "ancestor_id": ancestor_id,
+            "descendant_id": descendant_id,
+            "localization_event_digest": localization_event_digest,
+            "rust_event_digest": str(localization.attributes["rust_event_digest"]),
+            "deviation_binding_digest": str(
+                localization.attributes["deviation_binding_digest"]
+            ),
+        }
+        applicability_expected = {
+            "artifact_id": ancestor_id,
+            "obligation_coordinate": obligation.to_dict(),
+        }
+        violation_expected = {
+            "artifact_id": ancestor_id,
+            "descendant_id": descendant_id,
+            "localization_event_digest": localization_event_digest,
+            "rust_event_digest": str(localization.attributes["rust_event_digest"]),
+            "deviation_binding_digest": str(
+                localization.attributes["deviation_binding_digest"]
+            ),
+            "obligation_coordinate": obligation.to_dict(),
+            "applicability_binding_digest": applicability_proposition.digest(),
+        }
+        required = (
+            (
+                responsibility_proposition,
+                "vstd.graph.responsibility",
+                responsibility_expected,
+            ),
+            (
+                applicability_proposition,
+                "vstd.graph.obligation_applicability",
+                applicability_expected,
+            ),
+            (
+                violation_proposition,
+                "vstd.graph.obligation_violation",
+                violation_expected,
+            ),
+        )
+        if any(
+            proposition.subject_id != ancestor_id
+            or proposition.predicate != predicate
+            or proposition.expected != expected
+            for proposition, predicate, expected in required
+        ):
+            raise AssuranceFlowError(
+                "compound GUILT components are not separately and exactly bound"
+            )
+        group_payload = {
+            "component_bindings": [
+                responsibility_proposition.to_dict(),
+                applicability_proposition.to_dict(),
+                violation_proposition.to_dict(),
+            ],
+            "component_roles": [
+                "RESPONSIBILITY",
+                "OBLIGATION_APPLICABILITY",
+                "OBLIGATION_VIOLATION",
+            ],
+        }
+        compound_group_digest = canonical_digest(group_payload)
+        evaluations = session.evaluate_compound(
+            (
+                responsibility_proposition,
+                applicability_proposition,
+                violation_proposition,
+            )
+        )
+        responsibility = self._append(
+            kind=AssuranceEventKind.RESPONSIBILITY_COMPONENT,
+            subject_id=ancestor_id,
+            source_ids=(descendant_id,),
+            proposition=responsibility_proposition.predicate,
+            binding=responsibility_proposition.to_dict(),
+            recorded_at=recorded_at,
+            evaluation=evaluations[0],
+            evidence_payloads=session.evidence.export_base64(
+                evaluations[0].evidence_refs
+            ),
+            attributes={
+                **responsibility_expected,
+                "compound_group_digest": compound_group_digest,
+                "compound_component_index": 0,
+            },
+        )
+        applicability = self._append(
+            kind=AssuranceEventKind.OBLIGATION_APPLICABILITY,
+            subject_id=ancestor_id,
+            source_ids=(),
+            proposition=applicability_proposition.predicate,
+            binding=applicability_proposition.to_dict(),
+            recorded_at=recorded_at,
+            evaluation=evaluations[1],
+            evidence_payloads=session.evidence.export_base64(
+                evaluations[1].evidence_refs
+            ),
+            attributes={
+                **applicability_expected,
+                "compound_group_digest": compound_group_digest,
+                "compound_component_index": 1,
+            },
+        )
+        violation = self._append(
+            kind=AssuranceEventKind.OBLIGATION_VIOLATION,
+            subject_id=ancestor_id,
+            source_ids=(descendant_id,),
+            proposition=violation_proposition.predicate,
+            binding=violation_proposition.to_dict(),
+            recorded_at=recorded_at,
+            evaluation=evaluations[2],
+            evidence_payloads=session.evidence.export_base64(
+                evaluations[2].evidence_refs
+            ),
+            attributes={
+                **violation_expected,
+                "applicability_component_digest": applicability.digest(),
+                "compound_group_digest": compound_group_digest,
+                "compound_component_index": 2,
+            },
+        )
+        return responsibility, applicability, violation
+
+    def compose_guilt(
+        self,
+        ancestor_id: str,
+        descendant_id: str,
+        obligation: ObligationCoordinate,
+        proposition: BoundProposition,
+        *,
+        localization_event_digest: str,
+        responsibility_component_digest: str,
+        applicability_component_digest: str,
+        violation_component_digest: str,
+        session: VerificationSession,
+        recorded_at: str,
+    ) -> DiagnosticAttribution:
+        """Compose technical GUILT from three exact, separately earned components.
+
+        GUILT is artifact-relative.  It does not establish moral character, actor
+        reputation, automatic legal liability, innocence, exoneration, obligation
+        satisfaction, or absence of hidden contributors.
+        """
+
+        component_digests = (
+            responsibility_component_digest,
+            applicability_component_digest,
+            violation_component_digest,
+        )
+        if any(not item for item in component_digests) or len(set(component_digests)) != 3:
+            return self._unestablished_guilt(
+                ancestor_id,
+                descendant_id,
+                localization_event_digest,
+                "GUILT requires three distinct component event digests",
+                obligation=obligation,
+                responsibility_component_digest=responsibility_component_digest,
+                applicability_component_digest=applicability_component_digest,
+                violation_component_digest=violation_component_digest,
+            )
+        try:
+            self._require_localization(
+                ancestor_id, descendant_id, localization_event_digest
+            )
+        except AssuranceFlowError as exc:
+            return self._unestablished_guilt(
+                ancestor_id,
+                descendant_id,
+                localization_event_digest,
+                str(exc),
+                obligation=obligation,
+                responsibility_component_digest=responsibility_component_digest,
+                applicability_component_digest=applicability_component_digest,
+                violation_component_digest=violation_component_digest,
+            )
+
+        responsibility = self._event_by_digest(responsibility_component_digest)
+        responsibility_matches = False
+        if responsibility is not None and responsibility.outcome is MechanismOutcome.PASS:
+            responsibility_matches = (
+                responsibility.subject_id == ancestor_id
+                and responsibility.source_ids == (descendant_id,)
+                and responsibility.attributes.get("localization_event_digest")
+                == localization_event_digest
+                and (
+                    responsibility.kind is AssuranceEventKind.RESPONSIBILITY_COMPONENT
+                    or (
+                        responsibility.kind
+                        is AssuranceEventKind.DIAGNOSTIC_ATTRIBUTION
+                        and responsibility.attributes.get("diagnostic_kind")
+                        == DiagnosticKind.BLAME.value
+                    )
+                )
+            )
+        if not responsibility_matches:
+            return self._unestablished_guilt(
+                ancestor_id,
+                descendant_id,
+                localization_event_digest,
+                "responsibility component is missing, non-passing, or coordinate-mismatched",
+                obligation=obligation,
+                responsibility_component_digest=responsibility_component_digest,
+                applicability_component_digest=applicability_component_digest,
+                violation_component_digest=violation_component_digest,
+            )
+
+        applicability = self._event_by_digest(applicability_component_digest)
+        if not (
+            applicability is not None
+            and applicability.kind is AssuranceEventKind.OBLIGATION_APPLICABILITY
+            and applicability.outcome is MechanismOutcome.PASS
+            and applicability.subject_id == ancestor_id
+            and not applicability.source_ids
+            and applicability.attributes.get("obligation_coordinate")
+            == obligation.to_dict()
+        ):
+            return self._unestablished_guilt(
+                ancestor_id,
+                descendant_id,
+                localization_event_digest,
+                "applicability component is missing, non-passing, or coordinate-mismatched",
+                obligation=obligation,
+                responsibility_component_digest=responsibility_component_digest,
+                applicability_component_digest=applicability_component_digest,
+                violation_component_digest=violation_component_digest,
+            )
+
+        violation = self._event_by_digest(violation_component_digest)
+        if not (
+            violation is not None
+            and violation.kind is AssuranceEventKind.OBLIGATION_VIOLATION
+            and violation.outcome is MechanismOutcome.PASS
+            and violation.subject_id == ancestor_id
+            and violation.source_ids == (descendant_id,)
+            and violation.attributes.get("localization_event_digest")
+            == localization_event_digest
+            and violation.attributes.get("obligation_coordinate")
+            == obligation.to_dict()
+            and violation.attributes.get("applicability_component_digest")
+            == applicability_component_digest
+        ):
+            return self._unestablished_guilt(
+                ancestor_id,
+                descendant_id,
+                localization_event_digest,
+                "violation component is missing, non-passing, or coordinate-mismatched",
+                obligation=obligation,
+                responsibility_component_digest=responsibility_component_digest,
+                applicability_component_digest=applicability_component_digest,
+                violation_component_digest=violation_component_digest,
+            )
+
+        expected = {
+            "ancestor_id": ancestor_id,
+            "descendant_id": descendant_id,
+            "localization_event_digest": localization_event_digest,
+            "obligation_coordinate": obligation.to_dict(),
+            "responsibility_component_digest": responsibility_component_digest,
+            "applicability_component_digest": applicability_component_digest,
+            "violation_component_digest": violation_component_digest,
+        }
+        if (
+            proposition.subject_id != ancestor_id
+            or proposition.predicate != "vstd.graph.diagnostic.guilt"
+            or proposition.expected != expected
+        ):
+            raise AssuranceFlowError(
+                "GUILT proposition is not exactly component-composition-bound"
+            )
+        evaluation = session.evaluate(proposition)
+        event = self._append(
+            kind=AssuranceEventKind.DIAGNOSTIC_ATTRIBUTION,
+            subject_id=ancestor_id,
+            source_ids=(descendant_id,),
+            proposition=proposition.predicate,
+            binding=proposition.to_dict(),
+            recorded_at=recorded_at,
+            evaluation=evaluation,
+            evidence_payloads=session.evidence.export_base64(evaluation.evidence_refs),
+            attributes={
+                "diagnostic_kind": DiagnosticKind.GUILT.value,
+                "localization_event_digest": localization_event_digest,
+                "obligation_coordinate": obligation.to_dict(),
+                "responsibility_component_digest": responsibility_component_digest,
+                "applicability_component_digest": applicability_component_digest,
+                "violation_component_digest": violation_component_digest,
+            },
+        )
+        return DiagnosticAttribution(
+            DiagnosticKind.GUILT,
+            ancestor_id,
+            descendant_id,
+            "ESTABLISHED" if evaluation.passed else "NOT_ESTABLISHED",
+            localization_event_digest,
+            evaluation,
+            event.details,
+            obligation,
+            responsibility_component_digest,
+            applicability_component_digest,
+            violation_component_digest,
+        )
+
     def diagnose(
         self,
         kind: DiagnosticKind,
@@ -1033,13 +1645,12 @@ class AssuranceLedger:
         session: VerificationSession,
         recorded_at: str,
     ) -> DiagnosticAttribution:
-        """Compute bounded artifact-relative BLAME or GUILT just in time.
+        """Compute BLAME, or fail closed for legacy opaque GUILT calls.
 
         BLAME means only that the named artifact-relative responsibility
-        proposition passed. GUILT is not its directional opposite: it checks
-        that same localized responsibility together with an exact violated
-        obligation. Neither result concerns an actor's moral character,
-        reputation, or general trust.
+        proposition passed.  GUILT must use :meth:`compose_guilt`; one opaque
+        proposition cannot substitute for separately bound responsibility,
+        applicability, and violation evaluations.
         """
         requested_localization_digest = ""
         if proposition is not None and isinstance(proposition.expected, Mapping):
@@ -1081,16 +1692,19 @@ class AssuranceLedger:
                 None,
                 "diagnostic attribution requires a separate exact mechanism",
             )
-        obligation = proposition.parameters.get("obligation", "")
-        if kind is DiagnosticKind.GUILT and not obligation:
-            raise AssuranceFlowError("GUILT requires an exact violated obligation")
+        if kind is DiagnosticKind.GUILT:
+            return self._unestablished_guilt(
+                ancestor_id,
+                descendant_id,
+                localization.digest(),
+                "opaque GUILT evaluation is insufficient; separately establish "
+                "responsibility, obligation applicability, and obligation violation",
+            )
         expected = {
             "ancestor": ancestor_id,
             "descendant": descendant_id,
             "localization_event_digest": localization.digest(),
         }
-        if kind is DiagnosticKind.GUILT:
-            expected["violated_obligation"] = obligation
         if (
             proposition.subject_id != ancestor_id
             or proposition.predicate != f"vstd.graph.diagnostic.{kind.value.lower()}"
@@ -1110,7 +1724,6 @@ class AssuranceLedger:
             attributes={
                 "diagnostic_kind": kind.value,
                 "localization_event_digest": localization.digest(),
-                "obligation": obligation,
             },
         )
         return DiagnosticAttribution(
@@ -1178,7 +1791,11 @@ def recheck_assurance_log(
             )
         session.register(mechanism)
 
-    for expected in events_data:
+    replayed_compound_positions: set[int] = set()
+    for event_position, expected in enumerate(events_data):
+        if event_position in replayed_compound_positions:
+            continue
+        compound_replayed = False
         try:
             kind = AssuranceEventKind(str(expected["kind"]))
             subject_id = str(expected["subject_id"])
@@ -1267,22 +1884,196 @@ def recheck_assurance_log(
                     session=session,
                     recorded_at=recorded_at,
                 )
-            else:
+            elif kind is AssuranceEventKind.RESPONSIBILITY_COMPONENT:
                 if len(source_ids) != 1:
                     raise AssuranceFlowError(
-                        "diagnostic attribution must name exactly one descendant"
+                        "responsibility component must name exactly one descendant"
                     )
-                ledger.diagnose(
-                    DiagnosticKind(str(attributes["diagnostic_kind"])),
+                if "compound_group_digest" in attributes:
+                    if event_position + 2 >= len(events_data):
+                        raise AssuranceFlowError(
+                            "compound component group is incomplete"
+                        )
+                    applicability_expected = events_data[event_position + 1]
+                    violation_expected = events_data[event_position + 2]
+                    if not isinstance(applicability_expected, Mapping) or not isinstance(
+                        violation_expected, Mapping
+                    ):
+                        raise TypeError("compound component event is not an object")
+                    applicability_attributes = applicability_expected.get(
+                        "attributes", {}
+                    )
+                    violation_attributes = violation_expected.get("attributes", {})
+                    if not isinstance(applicability_attributes, Mapping) or not isinstance(
+                        violation_attributes, Mapping
+                    ):
+                        raise TypeError("compound component attributes are not objects")
+                    compound_group_digest = str(attributes["compound_group_digest"])
+                    if (
+                        int(attributes.get("compound_component_index", -1)) != 0
+                        or applicability_expected.get("kind")
+                        != AssuranceEventKind.OBLIGATION_APPLICABILITY.value
+                        or violation_expected.get("kind")
+                        != AssuranceEventKind.OBLIGATION_VIOLATION.value
+                        or applicability_attributes.get("compound_group_digest")
+                        != compound_group_digest
+                        or violation_attributes.get("compound_group_digest")
+                        != compound_group_digest
+                        or int(
+                            applicability_attributes.get(
+                                "compound_component_index", -1
+                            )
+                        )
+                        != 1
+                        or int(
+                            violation_attributes.get("compound_component_index", -1)
+                        )
+                        != 2
+                        or applicability_expected.get("recorded_at") != recorded_at
+                        or violation_expected.get("recorded_at") != recorded_at
+                    ):
+                        raise AssuranceFlowError(
+                            "compound component group order or coordinate is invalid"
+                        )
+                    applicability_binding = applicability_expected.get("binding")
+                    violation_binding = violation_expected.get("binding")
+                    obligation_data = applicability_attributes.get(
+                        "obligation_coordinate"
+                    )
+                    if (
+                        not isinstance(applicability_binding, Mapping)
+                        or not isinstance(violation_binding, Mapping)
+                        or not isinstance(obligation_data, Mapping)
+                    ):
+                        raise TypeError("compound component binding is not an object")
+                    compound_events = ledger.establish_guilt_components(
+                        subject_id,
+                        source_ids[0],
+                        ObligationCoordinate.from_dict(obligation_data),
+                        proposition,
+                        BoundProposition.from_dict(applicability_binding),
+                        BoundProposition.from_dict(violation_binding),
+                        localization_event_digest=str(
+                            attributes["localization_event_digest"]
+                        ),
+                        session=session,
+                        recorded_at=recorded_at,
+                    )
+                    expected_group = (
+                        expected,
+                        applicability_expected,
+                        violation_expected,
+                    )
+                    for recomputed, recorded in zip(
+                        compound_events, expected_group
+                    ):
+                        if recomputed.to_dict() != dict(recorded):
+                            raise AssuranceFlowError(
+                                "recomputed compound component event does not match the log"
+                            )
+                    replayed_compound_positions.update(
+                        (event_position + 1, event_position + 2)
+                    )
+                    event = compound_events[0]
+                    compound_replayed = True
+                else:
+                    event = ledger.establish_responsibility(
+                        subject_id,
+                        source_ids[0],
+                        proposition,
+                        localization_event_digest=str(
+                            attributes["localization_event_digest"]
+                        ),
+                        session=session,
+                        recorded_at=recorded_at,
+                    )
+            elif kind is AssuranceEventKind.OBLIGATION_APPLICABILITY:
+                if source_ids:
+                    raise AssuranceFlowError(
+                        "obligation applicability cannot name a neighboring source"
+                    )
+                obligation_data = attributes["obligation_coordinate"]
+                if not isinstance(obligation_data, Mapping):
+                    raise TypeError("obligation coordinate is not an object")
+                event = ledger.establish_obligation_applicability(
                     subject_id,
-                    source_ids[0],
+                    ObligationCoordinate.from_dict(obligation_data),
                     proposition,
                     session=session,
                     recorded_at=recorded_at,
                 )
+            elif kind is AssuranceEventKind.OBLIGATION_VIOLATION:
+                if len(source_ids) != 1:
+                    raise AssuranceFlowError(
+                        "obligation violation must name exactly one descendant"
+                    )
+                obligation_data = attributes["obligation_coordinate"]
+                if not isinstance(obligation_data, Mapping):
+                    raise TypeError("obligation coordinate is not an object")
+                event = ledger.establish_obligation_violation(
+                    subject_id,
+                    source_ids[0],
+                    ObligationCoordinate.from_dict(obligation_data),
+                    proposition,
+                    localization_event_digest=str(
+                        attributes["localization_event_digest"]
+                    ),
+                    applicability_component_digest=str(
+                        attributes["applicability_component_digest"]
+                    ),
+                    session=session,
+                    recorded_at=recorded_at,
+                )
+            elif kind is AssuranceEventKind.DIAGNOSTIC_ATTRIBUTION:
+                if len(source_ids) != 1:
+                    raise AssuranceFlowError(
+                        "diagnostic attribution must name exactly one descendant"
+                    )
+                diagnostic_kind = DiagnosticKind(str(attributes["diagnostic_kind"]))
+                if diagnostic_kind is DiagnosticKind.GUILT:
+                    obligation_data = attributes["obligation_coordinate"]
+                    if not isinstance(obligation_data, Mapping):
+                        raise TypeError("obligation coordinate is not an object")
+                    result = ledger.compose_guilt(
+                        subject_id,
+                        source_ids[0],
+                        ObligationCoordinate.from_dict(obligation_data),
+                        proposition,
+                        localization_event_digest=str(
+                            attributes["localization_event_digest"]
+                        ),
+                        responsibility_component_digest=str(
+                            attributes["responsibility_component_digest"]
+                        ),
+                        applicability_component_digest=str(
+                            attributes["applicability_component_digest"]
+                        ),
+                        violation_component_digest=str(
+                            attributes["violation_component_digest"]
+                        ),
+                        session=session,
+                        recorded_at=recorded_at,
+                    )
+                    if result.evaluation is None:
+                        raise AssuranceFlowError(
+                            "recorded GUILT event cannot satisfy component composition"
+                        )
+                else:
+                    ledger.diagnose(
+                        diagnostic_kind,
+                        subject_id,
+                        source_ids[0],
+                        proposition,
+                        session=session,
+                        recorded_at=recorded_at,
+                    )
                 event = ledger.events()[-1]
+            else:  # pragma: no cover - exhaustive enum guard
+                raise AssuranceFlowError(f"unsupported assurance event kind {kind.value}")
         except (KeyError, TypeError, ValueError) as exc:
             raise AssuranceFlowError(f"cannot replay assurance event: {exc}") from exc
+        if compound_replayed:
+            continue
         if event.to_dict() != dict(expected):
             raise AssuranceFlowError(
                 f"recomputed assurance event {event.sequence} does not match the log"
@@ -1304,6 +2095,7 @@ __all__ = [
     "ConflictResolution",
     "DiagnosticAttribution",
     "DiagnosticKind",
+    "ObligationCoordinate",
     "StructuralConcentration",
     "recheck_assurance_log",
 ]

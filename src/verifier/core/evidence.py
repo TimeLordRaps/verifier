@@ -320,6 +320,137 @@ class VerificationSession:
             dict(decision.observations),
         )
 
+    def evaluate_compound(
+        self, bindings: Sequence[BoundProposition]
+    ) -> tuple[EvaluatedProposition, ...]:
+        """Run one compound mechanism invocation over separately bound propositions.
+
+        Every returned evaluation retains its own binding digest, evidence
+        references, trust roots, bounds, and outcome.  A mechanism without an
+        explicit ``evaluate_compound`` entry point cannot use this path; three
+        ordinary evaluations are not relabeled as one compound invocation.
+        """
+
+        items = tuple(bindings)
+        if not items:
+            raise EvidenceBindingError(
+                "compound evaluation requires at least one bound proposition"
+            )
+        mechanism_id = items[0].mechanism_id
+        mechanism_digest = _normalize_ref(items[0].mechanism_digest)
+        if any(
+            item.mechanism_id != mechanism_id
+            or _normalize_ref(item.mechanism_digest) != mechanism_digest
+            for item in items
+        ):
+            return tuple(
+                self._unknown(
+                    item,
+                    "compound propositions do not bind one exact mechanism",
+                    0,
+                )
+                for item in items
+            )
+        mechanism = self._mechanisms.get(mechanism_id)
+        if mechanism is None:
+            return tuple(
+                self._unknown(item, "bound mechanism is not registered", 0)
+                for item in items
+            )
+        if _normalize_ref(mechanism.mechanism_digest) != mechanism_digest:
+            return tuple(
+                self._unknown(
+                    item, "registered mechanism digest does not match", 0
+                )
+                for item in items
+            )
+        evaluator = getattr(mechanism, "evaluate_compound", None)
+        if not callable(evaluator):
+            return tuple(
+                self._unknown(
+                    item,
+                    "bound mechanism has no compound evaluation entry point",
+                    0,
+                )
+                for item in items
+            )
+
+        evidence_sets: list[tuple[bytes, ...]] = []
+        observed_sizes: list[int] = []
+        for item in items:
+            if len(item.evidence_refs) > item.bounds.max_evidence_items:
+                return tuple(
+                    self._unknown(
+                        other,
+                        "compound evidence item bound exceeded before invocation",
+                        0,
+                    )
+                    for other in items
+                )
+            try:
+                payloads = tuple(
+                    self.evidence.resolve(reference)
+                    for reference in item.evidence_refs
+                )
+            except EvidenceBindingError as exc:
+                return tuple(
+                    self._unknown(
+                        other,
+                        f"compound evidence resolution failed: {exc}",
+                        0,
+                    )
+                    for other in items
+                )
+            observed_bytes = sum(len(payload) for payload in payloads)
+            if observed_bytes > item.bounds.max_evidence_bytes:
+                return tuple(
+                    self._unknown(
+                        other,
+                        "compound evidence byte bound exceeded before invocation",
+                        observed_bytes if other is item else 0,
+                    )
+                    for other in items
+                )
+            evidence_sets.append(payloads)
+            observed_sizes.append(observed_bytes)
+
+        try:
+            decisions = tuple(evaluator(items, tuple(evidence_sets)))
+        except Exception as exc:
+            return tuple(
+                self._unknown(
+                    item,
+                    f"compound mechanism execution failed: {type(exc).__name__}: {exc}",
+                    observed_sizes[index],
+                )
+                for index, item in enumerate(items)
+            )
+        if len(decisions) != len(items) or any(
+            not isinstance(decision, MechanismDecision) for decision in decisions
+        ):
+            return tuple(
+                self._unknown(
+                    item,
+                    "compound mechanism did not return one decision per binding",
+                    observed_sizes[index],
+                )
+                for index, item in enumerate(items)
+            )
+        return tuple(
+            EvaluatedProposition(
+                item.digest(),
+                decision.outcome,
+                item.mechanism_id,
+                _normalize_ref(item.mechanism_digest),
+                item.evidence_refs,
+                item.trust_roots,
+                observed_sizes[index],
+                decision.details,
+                dict(decision.observations),
+            )
+            for index, (item, decision) in enumerate(zip(items, decisions))
+        )
+
     @staticmethod
     def _unknown(
         binding: BoundProposition, details: str, observed_bytes: int

@@ -46,7 +46,7 @@
       "required": ["sequence", "kind", "subject_id", "source_ids", "proposition", "binding", "recorded_at", "outcome", "mechanism_id", "mechanism_digest", "evidence_refs", "evidence_payloads", "trust_roots", "details", "previous_event_digest", "attributes", "event_digest"],
       "properties": {
         "sequence": {"type": "integer", "minimum": 0},
-        "kind": {"enum": ["TRUST", "ROT", "RUST", "STATUS_PROJECTION", "CONFLICT_DECLARATION", "CONFLICT_RESOLUTION", "CAUSAL_LOCALIZATION", "DIAGNOSTIC_ATTRIBUTION"]},
+        "kind": {"enum": ["TRUST", "ROT", "RUST", "STATUS_PROJECTION", "CONFLICT_DECLARATION", "CONFLICT_RESOLUTION", "CAUSAL_LOCALIZATION", "RESPONSIBILITY_COMPONENT", "OBLIGATION_APPLICABILITY", "OBLIGATION_VIOLATION", "DIAGNOSTIC_ATTRIBUTION"]},
         "subject_id": {"type": "string", "minLength": 1},
         "source_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "proposition": {"type": "string", "minLength": 1},
@@ -83,6 +83,22 @@
         {
           "if": {"properties": {"kind": {"const": "CAUSAL_LOCALIZATION"}}, "required": ["kind"]},
           "then": {"properties": {"attributes": {"$ref": "#/$defs/localizationAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "RESPONSIBILITY_COMPONENT"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/responsibilityAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "OBLIGATION_APPLICABILITY"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/applicabilityAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "OBLIGATION_VIOLATION"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/violationAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "DIAGNOSTIC_ATTRIBUTION"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/diagnosticAttributes"}}}
         }
       ]
     },
@@ -139,6 +155,88 @@
         "rust_event_digest": {"$ref": "#/$defs/digest"},
         "deviation_binding_digest": {"$ref": "#/$defs/digest"}
       }
+    },
+    "obligationCoordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligation_id", "content_digest", "scope", "assumptions", "exclusions"],
+      "properties": {
+        "obligation_id": {"type": "string"},
+        "content_digest": {"type": "string", "pattern": "^(?:sha256:[0-9a-f]{64})?$"},
+        "scope": {"type": "object", "minProperties": 1, "propertyNames": {"minLength": 1}, "additionalProperties": {"type": "string", "minLength": 1}},
+        "assumptions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "exclusions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      },
+      "anyOf": [
+        {"properties": {"obligation_id": {"type": "string", "minLength": 1}}},
+        {"properties": {"content_digest": {"$ref": "#/$defs/digestRef"}}}
+      ]
+    },
+    "responsibilityAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "ancestor_id", "descendant_id", "localization_event_digest", "rust_event_digest", "deviation_binding_digest"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "ancestor_id": {"type": "string", "minLength": 1},
+        "descendant_id": {"type": "string", "minLength": 1},
+        "localization_event_digest": {"$ref": "#/$defs/digest"},
+        "rust_event_digest": {"$ref": "#/$defs/digest"},
+        "deviation_binding_digest": {"$ref": "#/$defs/digest"},
+        "compound_group_digest": {"$ref": "#/$defs/digest"},
+        "compound_component_index": {"const": 0}
+      },
+      "dependentRequired": {"compound_group_digest": ["compound_component_index"], "compound_component_index": ["compound_group_digest"]}
+    },
+    "applicabilityAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "artifact_id", "obligation_coordinate"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "artifact_id": {"type": "string", "minLength": 1},
+        "obligation_coordinate": {"$ref": "#/$defs/obligationCoordinate"},
+        "compound_group_digest": {"$ref": "#/$defs/digest"},
+        "compound_component_index": {"const": 1}
+      },
+      "dependentRequired": {"compound_group_digest": ["compound_component_index"], "compound_component_index": ["compound_group_digest"]}
+    },
+    "violationAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "artifact_id", "descendant_id", "localization_event_digest", "rust_event_digest", "deviation_binding_digest", "obligation_coordinate", "applicability_binding_digest", "applicability_component_digest"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "artifact_id": {"type": "string", "minLength": 1},
+        "descendant_id": {"type": "string", "minLength": 1},
+        "localization_event_digest": {"$ref": "#/$defs/digest"},
+        "rust_event_digest": {"$ref": "#/$defs/digest"},
+        "deviation_binding_digest": {"$ref": "#/$defs/digest"},
+        "obligation_coordinate": {"$ref": "#/$defs/obligationCoordinate"},
+        "applicability_binding_digest": {"$ref": "#/$defs/digest"},
+        "applicability_component_digest": {"$ref": "#/$defs/digest"},
+        "compound_group_digest": {"$ref": "#/$defs/digest"},
+        "compound_component_index": {"const": 2}
+      },
+      "dependentRequired": {"compound_group_digest": ["compound_component_index"], "compound_component_index": ["compound_group_digest"]}
+    },
+    "diagnosticAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "diagnostic_kind", "localization_event_digest"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "diagnostic_kind": {"enum": ["BLAME", "GUILT"]},
+        "localization_event_digest": {"$ref": "#/$defs/digest"},
+        "obligation_coordinate": {"$ref": "#/$defs/obligationCoordinate"},
+        "responsibility_component_digest": {"$ref": "#/$defs/digest"},
+        "applicability_component_digest": {"$ref": "#/$defs/digest"},
+        "violation_component_digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [{
+        "if": {"properties": {"diagnostic_kind": {"const": "GUILT"}}, "required": ["diagnostic_kind"]},
+        "then": {"required": ["obligation_coordinate", "responsibility_component_digest", "applicability_component_digest", "violation_component_digest"]}
+      }]
     },
     "binding": {
       "type": "object",

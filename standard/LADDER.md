@@ -208,14 +208,22 @@ is among that event's recorded ancestors, and preserve those coordinates through
 **BLAME** and **GUILT** are bounded artifact-relative diagnostic results, not opposite
 directions on the Graph. BLAME requires a named mechanism to establish that an exact
 artifact bears responsibility for or materially contributed to an exact localized
-deviation. GUILT is the stronger combined proposition: the same localized responsibility
-plus an exact obligation that the artifact violated. Thus GUILT contains a responsibility
-component, while BLAME alone establishes no obligation or violation. Neither term concerns
-actor morality, character, identity, or reputation. Exoneration, obligation satisfaction,
-or not-guilty conclusions require their own exact propositions and mechanisms; absent such
-evidence the result remains `UNKNOWN`. BLAME and GUILT bind the causal-localization event
-digest; that event transitively binds the selected RUST event and exact deviation, so neither
-result can float across two deviations on the same descendant.
+deviation. GUILT requires three separately bound passing components whose coordinates agree:
+(1) responsibility or material contribution by exact artifact A for exact localized
+deviation D; (2) applicability to A of exact obligation O under its declared scope,
+assumptions, exclusions, roots, and bounds; and (3) violation by A of that same O relative to
+that same D and applicable scope. The final GUILT proposition MUST bind the exact obligation
+coordinate, causal-localization event digest, and all three component digests. A single
+compound mechanism MAY check the components in one invocation only when it emits three
+separately bound evaluations; one opaque combined result or nonempty obligation string is
+insufficient. An existing passing BLAME event can supply the responsibility component only
+when its exact event digest and all coordinates match. Neither term concerns actor morality,
+character, identity, reputation, automatic legal liability, or social scoring. Exoneration,
+innocence, obligation satisfaction, absence of hidden contributors, or not-guilty conclusions
+require their own exact propositions and mechanisms; a missing component remains `UNKNOWN`,
+not evidence of the opposite. The localization event transitively binds the selected RUST
+event and exact deviation, so neither result can float across two deviations on the same
+descendant.
 
 The word *causal* is required here for recorded developmental and provenance causality:
 the graph states which artifacts and transformations produced later claim architecture.
@@ -230,12 +238,14 @@ the complete historical Graph, exact proposition bindings, and embedded evidence
 `AssuranceLedger` implements mechanism-earned forward TRUST edge by edge, typed ROT,
 challenge-ledger status projection, reverse RUST reachability, unique-descendant structural
 concentration, additive conflict declaration and resolution, explicit causal localization,
-and bounded artifact-relative diagnostic attribution. Duplicate paths and repeated records
-remain set-valued and earn no strength. `recheck_assurance_log` reconstructs the historical Graph, rehashes the embedded
-evidence, reruns every exact mechanism, reproduces the event hash chain, and compares the
-derived current view. A deployment still supplies the proposition-specific mechanisms: the
-event format and dispatcher do not create a universal support-transfer algebra or infer
-causality from topology.
+separately bound responsibility/applicability/violation components, and component-composed
+artifact-relative GUILT. Duplicate paths and repeated records remain set-valued and earn no
+strength. `recheck_assurance_log` reconstructs the historical Graph, rehashes the embedded
+evidence, reruns every exact component mechanism—including one-invocation compound groups as
+such—reproduces the event hash chain, and compares the derived current view. A deployment
+still supplies the proposition-specific mechanisms: the event format and dispatcher do not
+establish real-world obligation applicability, legal culpability, a universal support-transfer
+algebra, or causality from topology.
 
 Artifact freezing and sealing are bounded mechanisms under this orientation, specified
 separately in [`ARTIFACT_CONTROL.md`](ARTIFACT_CONTROL.md). A verified freeze preserves

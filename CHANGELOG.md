@@ -125,9 +125,15 @@
   and prerequisite TRUST events; current eligibility recursively fails closed when any bound
   dependency degrades or conflicts. Duplicate paths remain set-valued, historical graph bytes
   remain immutable, and topology alone earns no causal or moral conclusion. BLAME establishes
-  bounded responsibility or material contribution; GUILT additionally binds an exact violated
-  obligation and is not BLAME in the opposite direction. Localization binds one exact passing
-  RUST event and descendant-deviation proposition. Status-conflict resolution projects the
+  bounded responsibility or material contribution. GUILT is not BLAME in the opposite
+  direction: it composes separately bound responsibility, exact scoped-obligation
+  applicability, and same-obligation violation components, then binds their exact event
+  digests. One compound mechanism may emit all three component evaluations in one invocation;
+  an opaque combined pass or decorative obligation string remains `NOT_ESTABLISHED`.
+  Localization binds one exact passing RUST event and descendant-deviation proposition.
+  Neither result establishes actor morality, reputation, automatic legal liability,
+  innocence, exoneration, obligation satisfaction, or absence of hidden contributors.
+  Status-conflict resolution projects the
   selected state into current admissibility; arbitrary resolved predicates remain blocked.
   The current runtime has no general non-status admissibility-effect mechanism. RUST follows
   historically recorded contributing ancestry even when current lifecycle state excludes a

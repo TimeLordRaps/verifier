@@ -1234,27 +1234,7 @@ def test_rust_requires_separate_localization_before_blame_or_guilt() -> None:
     assert result.status == "ESTABLISHED"
     assert "actor" not in result.details.lower()
 
-    guilt = _proposition(
-        store,
-        "source",
-        "vstd.graph.diagnostic.guilt",
-        {
-            "ancestor": "source",
-            "descendant": "result",
-            "localization_event_digest": event.digest(),
-        },
-    )
-    with pytest.raises(AssuranceFlowError, match="violated obligation"):
-        ledger.diagnose(
-            DiagnosticKind.GUILT,
-            "source",
-            "result",
-            guilt,
-            session=session,
-            recorded_at="2026-08-29T00:04:00Z",
-        )
-
-    established_guilt = _proposition(
+    opaque_guilt = _proposition(
         store,
         "source",
         "vstd.graph.diagnostic.guilt",
@@ -1270,13 +1250,12 @@ def test_rust_requires_separate_localization_before_blame_or_guilt() -> None:
         DiagnosticKind.GUILT,
         "source",
         "result",
-        established_guilt,
+        opaque_guilt,
         session=session,
-        recorded_at="2026-08-29T00:05:00Z",
+        recorded_at="2026-08-29T00:04:00Z",
     )
-    assert guilt_result.status == "ESTABLISHED"
-    assert guilt_result.evaluation is not None
-    assert guilt_result.evaluation.passed is True
+    assert guilt_result.status == "NOT_ESTABLISHED"
+    assert guilt_result.evaluation is None
 
 
 def test_localization_selects_one_exact_passing_deviation() -> None:

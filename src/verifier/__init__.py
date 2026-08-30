@@ -67,6 +67,7 @@ _LAZY_EXPORTS = {
     "build_vstd5_receipt": ("verifier.core.witness", "build_vstd5_receipt"),
     "recheck_vstd5_receipt": ("verifier.core.witness", "recheck_vstd5_receipt"),
     "AssuranceLedger": ("verifier.data.assurance", "AssuranceLedger"),
+    "ObligationCoordinate": ("verifier.data.assurance", "ObligationCoordinate"),
     "recheck_assurance_log": (
         "verifier.data.assurance",
         "recheck_assurance_log",
@@ -160,6 +161,7 @@ if TYPE_CHECKING:
     )
     from verifier.data.assurance import (
         AssuranceLedger as AssuranceLedger,
+        ObligationCoordinate as ObligationCoordinate,
         recheck_assurance_log as recheck_assurance_log,
     )
     from verifier.data.graph_level import (

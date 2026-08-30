@@ -21,6 +21,7 @@ EXPECTED_EXPORTS = {
     "EvidenceStore",
     "MechanismDecision",
     "MechanismOutcome",
+    "ObligationCoordinate",
     "ProvenanceHypergraph",
     "ReproducibilityLevel",
     "VerificationSession",

@@ -17,6 +17,7 @@ from verifier.data.assurance import (
     ChallengeProjectionMechanism,
     DiagnosticAttribution,
     DiagnosticKind,
+    ObligationCoordinate,
     recheck_assurance_log,
 )
 
@@ -66,6 +67,7 @@ __all__ = [
     "ChallengeProjectionMechanism",
     "DiagnosticAttribution",
     "DiagnosticKind",
+    "ObligationCoordinate",
     "recheck_assurance_log",
     "PolicyEvaluationResult",
     "ProvenancePolicyVerifier",

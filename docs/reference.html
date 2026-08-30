@@ -433,10 +433,15 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
 <tr><td><code>admissibility_blocking_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td>Return conflicts whose effect still blocks a clean TRUST route.</td></tr>
+<tr><td><code>compose_guilt(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, localization_event_digest: 'str', responsibility_component_digest: 'str', applicability_component_digest: 'str', violation_component_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compose technical GUILT from three exact, separately earned components.</td></tr>
 <tr><td><code>current_status(self, artifact_id: 'str') -&gt; 'ArtifactStatus'</code></td><td></td></tr>
 <tr><td><code>current_transformation_status(self, transformation_id: 'str') -&gt; 'str'</code></td><td>Return a transformation's additive current status projection.</td></tr>
 <tr><td><code>current_trust_events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return recursively current edge-local TRUST records.</td></tr>
-<tr><td><code>diagnose(self, kind: 'DiagnosticKind', ancestor_id: 'str', descendant_id: 'str', proposition: 'Optional[BoundProposition]', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compute bounded artifact-relative BLAME or GUILT just in time.</td></tr>
+<tr><td><code>diagnose(self, kind: 'DiagnosticKind', ancestor_id: 'str', descendant_id: 'str', proposition: 'Optional[BoundProposition]', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compute BLAME, or fail closed for legacy opaque GUILT calls.</td></tr>
+<tr><td><code>establish_guilt_components(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', responsibility_proposition: 'BoundProposition', applicability_proposition: 'BoundProposition', violation_proposition: 'BoundProposition', *, localization_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, AssuranceEvent, AssuranceEvent]'</code></td><td>Run one compound mechanism and retain three separately bound results.</td></tr>
+<tr><td><code>establish_obligation_applicability(self, artifact_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate whether one exact obligation applies to one exact artifact.</td></tr>
+<tr><td><code>establish_obligation_violation(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, localization_event_digest: 'str', applicability_component_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate violation after exact applicability and deviation localization.</td></tr>
+<tr><td><code>establish_responsibility(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, localization_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate one separately bound material-contribution component.</td></tr>
 <tr><td><code>events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td></td></tr>
 <tr><td><code>impacted_descendants(self, artifact_id: 'str') -&gt; 'tuple[str, ...]'</code></td><td>Return the deduplicated recorded forward impact set, not a verdict.</td></tr>
 <tr><td><code>localize_cause(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, rust_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Bind one ancestor to one exact passing descendant-deviation event.</td></tr>
@@ -517,6 +522,16 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <p class="ref-help">Members: <code>PASS, FAIL, UNKNOWN</code></p>
 </article>
+<article class="ref-item" id="api-ObligationCoordinate">
+<h3><code>ObligationCoordinate</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>ObligationCoordinate(obligation_id: 'str' = '', content_digest: 'str' = '', scope: 'Mapping[str, str]' = &lt;factory&gt;, assumptions: 'tuple[str, ...]' = (), exclusions: 'tuple[str, ...]' = ()) -&gt; None</code></pre>
+<p class="ref-help">Exact technical obligation and the declared scope in which it applies.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="api-ProvenanceHypergraph">
 <h3><code>ProvenanceHypergraph</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>ProvenanceHypergraph() -&gt; 'None'</code></pre>
@@ -566,6 +581,7 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
 <tr><td><code>evaluate(self, binding: 'BoundProposition') -&gt; 'EvaluatedProposition'</code></td><td></td></tr>
+<tr><td><code>evaluate_compound(self, bindings: 'Sequence[BoundProposition]') -&gt; 'tuple[EvaluatedProposition, ...]'</code></td><td>Run one compound mechanism invocation over separately bound propositions.</td></tr>
 <tr><td><code>register(self, mechanism: 'VerificationMechanism') -&gt; 'None'</code></td><td></td></tr>
 </tbody></table>
 </article>
