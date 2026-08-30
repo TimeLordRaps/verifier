@@ -28,6 +28,13 @@ require absent lexical destination entries, including refusal of dangling symbol
 This fail-closed creation contract does not promise universal race-free filesystem security
 against concurrent privileged replacement.
 
+Verification also requires authoritative internal bundle members to have their ordinary
+lexical file or directory type. The freeze manifest, payload, seals container, and seal
+envelopes cannot inherit authoritative bytes through symbolic links or supported
+reparse-point aliases. This does not change the accepted read-only alias behavior of an
+outer parent-bundle or explicit thaw-record argument. Ordinary hard links remain regular
+file byte-and-path semantics rather than an exclusive-inode claim.
+
 `thawed_artifact_status` treats a `VSTD-ARTIFACT-THAW-1` sidecar as unkeyed lineage
 metadata. Without `parent_bundle`, it returns `NOT_ESTABLISHED` even when descendant bytes
 agree with the sidecar's recorded identifier. `THAWED_CLEAN` or `THAWED_DIRTY` requires an

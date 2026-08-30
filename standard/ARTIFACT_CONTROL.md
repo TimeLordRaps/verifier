@@ -49,6 +49,19 @@ directory, special object, symbolic link, or dangling symbolic link refuses crea
 Exclusive file and sidecar creation narrows replacement races, but version 1 does not claim
 universal race-free filesystem security against a concurrent privileged process.
 
+Authoritative entries inside a bundle have a stricter role-specific boundary.
+`freeze.json` and every `seals/*.json` member must be lexical ordinary files; `seals` and a
+directory payload must be lexical ordinary directories; and a file payload must be a
+lexical ordinary file. An internal symbolic link or supported reparse-point alias fails
+structurally even when its target is byte-identical, correctly signed, read-only, or inside
+the same bundle. Manifest parsing and closure use one captured ordinary-file byte snapshot.
+This differs from a caller-supplied outer parent-bundle path or explicit thaw-record path,
+which may be a read-only alias because the resolved bytes and every applicable seal, anchor,
+and binding are subsequently verified. Version 1 identifies accepted ordinary files by
+portable path and bytes, not exclusive inode ownership; hard-link identity remains outside
+its claims. Mount, network-filesystem, and concurrent-replacement behavior remains bounded
+by the host and does not establish universal alias resistance.
+
 “Portable” means slash-normalized relative path representation. Case sensitivity,
 Unicode normalization, reserved names, and path-length limits remain properties of the
 host filesystem; version 1 does not claim that every valid source tree can be materialized

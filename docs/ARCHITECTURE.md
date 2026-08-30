@@ -57,6 +57,12 @@ the historical copy operation. Creation paths preserve the caller-supplied final
 through classification: freeze refuses symbolic-link sources, while bundle, descendant,
 and sidecar creation require an absent lexical destination. These checks do not claim
 universal race-free filesystem security against concurrent privileged replacement.
+Authoritative members inside a bundle are stricter: the freeze manifest, payload, seals
+container, and seal envelopes must have their required ordinary lexical types and cannot
+borrow bytes through symbolic links or supported reparse-point aliases. That internal
+closure rule does not reject an outer parent-bundle or explicit thaw-record read alias,
+whose resolved bytes and bindings are verified. Ordinary hard links remain byte-and-path
+objects rather than claims of exclusive inode ownership.
 
 ## Verification complex and profile satisfaction
 

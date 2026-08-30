@@ -72,6 +72,10 @@
   symbolic-link sources, and bundle, thaw-descendant, and sidecar outputs refuse every
   preexisting lexical entry, including dangling symbolic links, without claiming universal
   race-free filesystem security.
+- Require authoritative freeze-manifest, payload, seals-container, and seal-envelope
+  members to have ordinary lexical types; linked external or in-bundle targets cannot lend
+  bytes to bundle closure, while verified outer read aliases and ordinary hard-link
+  byte-and-path semantics remain explicitly distinct.
 - Remove the live SimulacraBench rehearsal and its front-door promotion; the repository
   never contained or reproduced the submission, hosted image, hardware, or protected
   evaluation identified by that name.

@@ -1,6 +1,7 @@
 """Adversarial tests for exact-byte freezing and finite self-closing seals.
 
-Terminology: Privacy-Enhanced Mail (PEM); Verifier Standard (VSTD).
+Terminology: JavaScript Object Notation (JSON); Privacy-Enhanced Mail (PEM);
+Verifier Standard (VSTD).
 """
 
 from __future__ import annotations
@@ -11,6 +12,7 @@ import json
 import os
 import stat
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -105,6 +107,15 @@ def _symlink_or_skip(link: Path, target: Path, *, target_is_directory: bool = Fa
         link.symlink_to(target, target_is_directory=target_is_directory)
     except OSError as exc:
         pytest.skip(f"symlink creation is unavailable: {exc}")
+
+
+def _fifo_or_skip(path: Path) -> None:
+    if not hasattr(os, "mkfifo"):
+        pytest.skip("first-in, first-out special objects are unavailable")
+    try:
+        os.mkfifo(path)
+    except OSError as exc:
+        pytest.skip(f"first-in, first-out special-object creation is unavailable: {exc}")
 
 
 def test_freeze_preserves_exact_file_bytes_without_claiming_a_seal(tmp_path: Path) -> None:
@@ -203,6 +214,171 @@ def test_freeze_refuses_symlink_bundle_destination_without_mutating_target(
         assert not target.exists()
 
 
+def test_linked_external_freeze_manifest_is_structural_failure(tmp_path: Path) -> None:
+    bundle, _ = _sealed_file(tmp_path, "linked-external-freeze")
+    freeze_path = bundle / "freeze.json"
+    external = tmp_path / "external-freeze.json"
+    _writable(freeze_path)
+    freeze_path.replace(external)
+    external.chmod(external.stat().st_mode & ~stat.S_IWUSR)
+    _symlink_or_skip(freeze_path, external)
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert freeze_path.is_symlink()
+    assert not bool(external.stat().st_mode & stat.S_IWUSR)
+    assert any("freeze manifest must not" in error for error in result.errors)
+
+
+def test_linked_in_bundle_freeze_manifest_fails_even_with_identical_bytes(
+    tmp_path: Path,
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, "linked-in-bundle-freeze")
+    freeze_path = bundle / "freeze.json"
+    target = bundle / "seals" / "freeze-manifest-copy"
+    _writable(freeze_path)
+    freeze_path.replace(target)
+    target.chmod(target.stat().st_mode & ~stat.S_IWUSR)
+    _symlink_or_skip(freeze_path, target)
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert any("freeze manifest must not" in error for error in result.errors)
+
+
+def test_dangling_freeze_manifest_link_is_structural_failure(tmp_path: Path) -> None:
+    bundle, _ = _sealed_file(tmp_path, "dangling-freeze")
+    freeze_path = bundle / "freeze.json"
+    _writable(freeze_path)
+    freeze_path.unlink()
+    _symlink_or_skip(freeze_path, tmp_path / "absent-freeze.json")
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert any("freeze manifest must not" in error for error in result.errors)
+
+
+@pytest.mark.parametrize("replacement", ("directory", "fifo"))
+def test_nonregular_freeze_manifest_is_structural_failure(
+    tmp_path: Path, replacement: str
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, f"nonregular-freeze-{replacement}")
+    freeze_path = bundle / "freeze.json"
+    _writable(freeze_path)
+    freeze_path.unlink()
+    if replacement == "directory":
+        freeze_path.mkdir()
+    else:
+        _fifo_or_skip(freeze_path)
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert any("freeze manifest must be an ordinary file" in error for error in result.errors)
+
+
+def test_missing_and_nonobject_freeze_manifests_fail_closed(tmp_path: Path) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    missing_bundle = tmp_path / "missing-bundle"
+    freeze_artifact(source, missing_bundle)
+    freeze_path = missing_bundle / "freeze.json"
+    _writable(freeze_path)
+    freeze_path.unlink()
+    assert verify_frozen_artifact(missing_bundle, require_seal=False).state == "FAIL"
+
+    nonobject_bundle = tmp_path / "nonobject-bundle"
+    freeze_artifact(source, nonobject_bundle)
+    freeze_path = nonobject_bundle / "freeze.json"
+    _writable(freeze_path)
+    freeze_path.write_text("[]\n", encoding="utf-8")
+    result = verify_frozen_artifact(nonobject_bundle, require_seal=False)
+    assert result.state == "FAIL"
+    assert any("one JSON object" in error for error in result.errors)
+
+
+def test_internal_snapshot_fails_if_open_or_identity_changes_after_classification(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "bundle"
+    freeze_artifact(source, bundle)
+    freeze_path = bundle / "freeze.json"
+    original_open = artifact_control_module.os.open
+
+    def refuse_open(path: object, flags: int) -> int:
+        if Path(path) == freeze_path:
+            raise OSError("simulated no-follow refusal")
+        return original_open(path, flags)
+
+    monkeypatch.setattr(artifact_control_module.os, "open", refuse_open)
+    assert verify_frozen_artifact(bundle, require_seal=False).state == "FAIL"
+    monkeypatch.setattr(artifact_control_module.os, "open", original_open)
+
+    original_fstat = artifact_control_module.os.fstat
+
+    def changed_fstat(descriptor: int) -> SimpleNamespace:
+        observed = original_fstat(descriptor)
+        return SimpleNamespace(
+            st_mode=observed.st_mode,
+            st_dev=observed.st_dev,
+            st_ino=observed.st_ino + 1,
+        )
+
+    monkeypatch.setattr(artifact_control_module.os, "fstat", changed_fstat)
+    result = verify_frozen_artifact(bundle, require_seal=False)
+    assert result.state == "FAIL"
+    assert any("changed during lexical classification" in error for error in result.errors)
+
+
+def test_missing_generic_json_alias_reports_read_failure(tmp_path: Path) -> None:
+    with pytest.raises(ArtifactControlError, match="cannot read"):
+        artifact_control_module._read_json_object(tmp_path / "absent.json", "record")
+
+
+def test_missing_and_special_sources_fail_without_creating_bundle(tmp_path: Path) -> None:
+    missing_bundle = tmp_path / "missing-bundle"
+    with pytest.raises(ArtifactControlError, match="cannot inspect artifact source"):
+        freeze_artifact(tmp_path / "absent", missing_bundle)
+    assert not os.path.lexists(missing_bundle)
+
+    special = tmp_path / "special"
+    _fifo_or_skip(special)
+    special_bundle = tmp_path / "special-bundle"
+    with pytest.raises(ArtifactControlError, match="regular file or directory"):
+        freeze_artifact(special, special_bundle)
+    assert not os.path.lexists(special_bundle)
+
+
+def test_nested_special_or_uninspectable_source_entry_fails_closed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    special = source / "special"
+    _fifo_or_skip(special)
+    with pytest.raises(ArtifactControlError, match="special filesystem object"):
+        freeze_artifact(source, tmp_path / "special-bundle")
+
+    special.unlink()
+    ordinary = source / "ordinary"
+    ordinary.write_bytes(b"ordinary")
+    original_lstat = Path.lstat
+
+    def refuse_entry(path: Path):
+        if path == ordinary:
+            raise OSError("simulated entry race")
+        return original_lstat(path)
+
+    monkeypatch.setattr(Path, "lstat", refuse_entry)
+    with pytest.raises(ArtifactControlError, match="cannot inspect frozen artifact entry"):
+        freeze_artifact(source, tmp_path / "uninspectable-bundle")
+
+
 def test_payload_mutation_and_guard_removal_fail_closed(tmp_path: Path) -> None:
     bundle, _ = _sealed_file(tmp_path)
     payload = bundle / "payload"
@@ -215,6 +391,21 @@ def test_payload_mutation_and_guard_removal_fail_closed(tmp_path: Path) -> None:
     assert not result.freeze_valid
     assert not result.guard_valid
     assert any("payload" in error or "inventory" in error for error in result.errors)
+
+
+def test_linked_payload_member_remains_structural_failure(tmp_path: Path) -> None:
+    bundle, _ = _sealed_file(tmp_path, "linked-payload")
+    payload = bundle / "payload"
+    external = tmp_path / "external-payload"
+    _writable(payload)
+    payload.replace(external)
+    external.chmod(external.stat().st_mode & ~stat.S_IWUSR)
+    _symlink_or_skip(payload, external)
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert any("payload must not" in error for error in result.errors)
 
 
 def test_directory_addition_requires_breaking_the_tree_guard_and_fails(tmp_path: Path) -> None:
@@ -344,6 +535,527 @@ def test_valid_and_invalid_seals_remain_conflicted(tmp_path: Path) -> None:
     assert result.errors
     with pytest.raises(ArtifactControlError, match="cleanly frozen"):
         seal_artifact(bundle, _private_key(tmp_path / "other.pem"))
+
+
+@pytest.mark.parametrize("target_location", ("external", "internal"))
+def test_linked_seals_container_is_structural_failure(
+    tmp_path: Path, target_location: str
+) -> None:
+    if target_location == "external":
+        bundle, _ = _sealed_file(tmp_path, "external-seals-container")
+        target = tmp_path / "external-seals"
+    else:
+        source = tmp_path / "directory-source"
+        (source / "seal-store").mkdir(parents=True)
+        (source / "value").write_bytes(b"value")
+        bundle = tmp_path / "internal-seals-container"
+        freeze_artifact(source, bundle)
+        seal_artifact(bundle, _private_key(tmp_path / "internal-seals.pem"))
+        target = bundle / "payload" / "seal-store"
+        _writable(bundle / "payload")
+        _writable(target)
+        target.rmdir()
+    seals = bundle / "seals"
+    if target_location == "external":
+        seals.replace(target)
+    else:
+        target.mkdir()
+        for seal_path in seals.iterdir():
+            seal_path.replace(target / seal_path.name)
+        seals.rmdir()
+    _symlink_or_skip(seals, target, target_is_directory=True)
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert any("seals container must not" in error for error in result.errors)
+
+
+def test_dangling_seals_container_link_is_structural_failure(tmp_path: Path) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "dangling-seals-container"
+    freeze_artifact(source, bundle)
+    _symlink_or_skip(bundle / "seals", tmp_path / "absent-seals", target_is_directory=True)
+
+    result = verify_frozen_artifact(bundle, require_seal=False)
+
+    assert result.state == "FAIL"
+    assert any("seals container must not" in error for error in result.errors)
+
+
+@pytest.mark.parametrize("replacement", ("file", "fifo"))
+def test_non_directory_seals_container_is_structural_failure(
+    tmp_path: Path, replacement: str
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / f"non-directory-seals-{replacement}"
+    freeze_artifact(source, bundle)
+    seals = bundle / "seals"
+    if replacement == "file":
+        seals.write_bytes(b"not a directory")
+    else:
+        _fifo_or_skip(seals)
+
+    result = verify_frozen_artifact(bundle, require_seal=False)
+
+    assert result.state == "FAIL"
+    assert any("seals container must be an ordinary directory" in error for error in result.errors)
+
+
+def test_linked_external_seal_member_is_structural_failure(tmp_path: Path) -> None:
+    bundle, _ = _sealed_file(tmp_path, "external-seal-member")
+    seal_path = _seal_path(bundle)
+    external = tmp_path / "external-seal.json"
+    _writable(seal_path)
+    seal_path.replace(external)
+    external.chmod(external.stat().st_mode & ~stat.S_IWUSR)
+    _symlink_or_skip(seal_path, external)
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert seal_path.is_symlink()
+    assert not bool(external.stat().st_mode & stat.S_IWUSR)
+    assert any("seal member" in error and "must not" in error for error in result.errors)
+
+
+def test_linked_internal_identical_seal_member_is_structural_failure(tmp_path: Path) -> None:
+    bundle, _ = _sealed_file(tmp_path, "internal-seal-member")
+    seal_path = _seal_path(bundle)
+    target = seal_path.with_name("identical-target.json")
+    target.write_bytes(seal_path.read_bytes())
+    target.chmod(target.stat().st_mode & ~stat.S_IWUSR)
+    _writable(seal_path)
+    seal_path.unlink()
+    _symlink_or_skip(seal_path, target)
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert any("seal member" in error and "must not" in error for error in result.errors)
+
+
+def test_dangling_seal_member_link_is_structural_failure(tmp_path: Path) -> None:
+    bundle, _ = _sealed_file(tmp_path, "dangling-seal-member")
+    seal_path = _seal_path(bundle)
+    _writable(seal_path)
+    seal_path.unlink()
+    _symlink_or_skip(seal_path, tmp_path / "absent-seal.json")
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert any("seal member" in error and "must not" in error for error in result.errors)
+
+
+@pytest.mark.parametrize("replacement", ("directory", "fifo"))
+def test_nonregular_seal_member_is_structural_failure(
+    tmp_path: Path, replacement: str
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, f"nonregular-seal-{replacement}")
+    seal_path = _seal_path(bundle)
+    _writable(seal_path)
+    seal_path.unlink()
+    if replacement == "directory":
+        seal_path.mkdir()
+    else:
+        _fifo_or_skip(seal_path)
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert any("seal member" in error for error in result.errors)
+
+
+def test_unexpected_non_json_seal_member_is_structural_failure(tmp_path: Path) -> None:
+    bundle, _ = _sealed_file(tmp_path, "unexpected-seal-member")
+    (bundle / "seals" / "unexpected.txt").write_bytes(b"unexpected")
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "FAIL"
+    assert any("unsupported entry" in error for error in result.errors)
+
+
+def test_absent_seals_container_preserves_zero_seal_semantics(tmp_path: Path) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "unsealed"
+    freeze_artifact(source, bundle)
+
+    assert not os.path.lexists(bundle / "seals")
+    assert verify_frozen_artifact(bundle, require_seal=False).state == "FROZEN_UNSEALED"
+    assert verify_frozen_artifact(bundle, require_seal=True).state == "NOT_ESTABLISHED"
+
+
+def test_seal_creation_refuses_existing_linked_valid_target_without_mutating_it(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "bundle"
+    key = _private_key(tmp_path / "key.pem")
+    freeze_artifact(source, bundle)
+    seal_artifact(bundle, key)
+    target = _seal_path(bundle)
+    external = tmp_path / "external-envelope.json"
+    _writable(target)
+    target.replace(external)
+    external.chmod(external.stat().st_mode & ~stat.S_IWUSR)
+    before = external.read_bytes()
+    _symlink_or_skip(target, external)
+
+    with pytest.raises(ArtifactControlError, match="cleanly frozen"):
+        seal_artifact(bundle, key)
+
+    assert target.is_symlink()
+    assert external.read_bytes() == before
+
+
+@pytest.mark.parametrize("target_state", ("dangling", "different"))
+def test_seal_creation_refuses_nonordinary_or_different_deterministic_target(
+    tmp_path: Path, target_state: str
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"same source")
+    key = _private_key(tmp_path / "key.pem")
+    probe = tmp_path / "probe"
+    freeze_artifact(source, probe)
+    seal_artifact(probe, key)
+    filename = _seal_path(probe).name
+
+    bundle = tmp_path / "bundle"
+    freeze_artifact(source, bundle)
+    seals = bundle / "seals"
+    seals.mkdir()
+    target = seals / filename
+    if target_state == "dangling":
+        external = tmp_path / "absent-envelope.json"
+        _symlink_or_skip(target, external)
+    else:
+        target.write_bytes(b"{}")
+
+    with pytest.raises(ArtifactControlError, match="cleanly frozen"):
+        seal_artifact(bundle, key)
+
+    if target_state == "dangling":
+        assert target.is_symlink()
+        assert not external.exists()
+    else:
+        assert target.read_bytes() == b"{}"
+
+
+@pytest.mark.parametrize("target_state", ("directory", "dangling"))
+def test_seal_creation_refuses_linked_seals_container_without_writing_through_it(
+    tmp_path: Path, target_state: str
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "bundle"
+    key = _private_key(tmp_path / "key.pem")
+    freeze_artifact(source, bundle)
+    target = tmp_path / "seals-target"
+    if target_state == "directory":
+        target.mkdir()
+    seals = bundle / "seals"
+    _symlink_or_skip(seals, target, target_is_directory=True)
+
+    with pytest.raises(ArtifactControlError, match="cleanly frozen"):
+        seal_artifact(bundle, key)
+
+    assert seals.is_symlink()
+    if target_state == "directory":
+        assert list(target.iterdir()) == []
+    else:
+        assert not target.exists()
+
+
+def test_seal_creation_deduplicates_only_an_ordinary_identical_envelope(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "bundle"
+    key = _private_key(tmp_path / "key.pem")
+    freeze_artifact(source, bundle)
+
+    first = seal_artifact(bundle, key)
+    path = _seal_path(bundle)
+    before = path.read_bytes()
+    second = seal_artifact(bundle, key)
+
+    assert second == first
+    assert path.read_bytes() == before
+    assert not path.is_symlink()
+
+
+def test_seal_creation_recovers_from_directory_creation_race(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "bundle"
+    key = _private_key(tmp_path / "key.pem")
+    freeze_artifact(source, bundle)
+    seals = bundle / "seals"
+    original_mkdir = Path.mkdir
+
+    def raced_mkdir(path: Path, *args: object, **kwargs: object) -> None:
+        if path == seals:
+            original_mkdir(path)
+            raise FileExistsError("simulated directory race")
+        original_mkdir(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "mkdir", raced_mkdir)
+
+    envelope = seal_artifact(bundle, key)
+
+    assert verify_frozen_artifact(bundle).state == "SEALED"
+    assert envelope["seal_id"] in verify_frozen_artifact(bundle).valid_seal_ids
+
+
+def test_seal_creation_compares_existing_ordinary_target_before_reuse(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"same source")
+    key = _private_key(tmp_path / "key.pem")
+    probe = tmp_path / "probe"
+    freeze_artifact(source, probe)
+    seal_artifact(probe, key)
+    filename = _seal_path(probe).name
+
+    bundle = tmp_path / "bundle"
+    freeze_artifact(source, bundle)
+    seals = bundle / "seals"
+    seals.mkdir()
+    target = seals / filename
+    target.write_text("{}\n", encoding="utf-8")
+    original_verify = artifact_control_module.verify_frozen_artifact
+    first = True
+
+    def allow_initial_inspection(*args: object, **kwargs: object):
+        nonlocal first
+        if first:
+            first = False
+            return artifact_control_module.ArtifactVerification(
+                state="FROZEN_UNSEALED",
+                artifact_id=None,
+                content_id=None,
+                freeze_id=None,
+                freeze_valid=True,
+                guard_valid=True,
+                valid_seal_ids=(),
+                key_ids=(),
+                external_anchor="NOT_CHECKED",
+                errors=(),
+                warnings=(),
+            )
+        return original_verify(*args, **kwargs)
+
+    monkeypatch.setattr(
+        artifact_control_module, "verify_frozen_artifact", allow_initial_inspection
+    )
+
+    with pytest.raises(ArtifactControlError, match="different bytes"):
+        seal_artifact(bundle, key)
+
+    assert target.read_text(encoding="utf-8") == "{}\n"
+
+
+def test_seal_creation_failure_before_target_ownership_removes_created_container(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "bundle"
+    key = _private_key(tmp_path / "key.pem")
+    freeze_artifact(source, bundle)
+
+    def refuse_write(*args: object, **kwargs: object) -> None:
+        raise ArtifactControlError("simulated exclusive-write refusal")
+
+    monkeypatch.setattr(artifact_control_module, "_write_json_exclusive", refuse_write)
+
+    with pytest.raises(ArtifactControlError, match="exclusive-write refusal"):
+        seal_artifact(bundle, key)
+
+    assert not os.path.lexists(bundle / "seals")
+
+
+def test_failed_seal_creation_removes_only_created_target_and_empty_container(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "bundle"
+    key = _private_key(tmp_path / "key.pem")
+    freeze_artifact(source, bundle)
+    original_verify = artifact_control_module.verify_frozen_artifact
+    calls = 0
+
+    def fail_final_verification(*args: object, **kwargs: object):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return original_verify(*args, **kwargs)
+        return artifact_control_module.ArtifactVerification(
+            state="FAIL",
+            artifact_id=None,
+            content_id=None,
+            freeze_id=None,
+            freeze_valid=False,
+            guard_valid=False,
+            valid_seal_ids=(),
+            key_ids=(),
+            external_anchor="NOT_CHECKED",
+            errors=("simulated final failure",),
+            warnings=(),
+        )
+
+    monkeypatch.setattr(
+        artifact_control_module, "verify_frozen_artifact", fail_final_verification
+    )
+
+    with pytest.raises(ArtifactControlError, match="did not produce"):
+        seal_artifact(bundle, key)
+
+    assert not os.path.lexists(bundle / "seals")
+
+
+def test_seal_cleanup_unlinks_replacement_link_without_touching_target(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "bundle"
+    key = _private_key(tmp_path / "key.pem")
+    freeze_artifact(source, bundle)
+    external = tmp_path / "replacement-target"
+    external.write_bytes(b"unchanged")
+    original_make_read_only = artifact_control_module._make_read_only
+
+    def replace_then_fail(path: Path) -> None:
+        if path.parent.name == "seals":
+            path.unlink()
+            _symlink_or_skip(path, external)
+            raise ArtifactControlError("simulated seal cleanup")
+        original_make_read_only(path)
+
+    monkeypatch.setattr(artifact_control_module, "_make_read_only", replace_then_fail)
+
+    with pytest.raises(ArtifactControlError, match="simulated seal cleanup"):
+        seal_artifact(bundle, key)
+
+    assert external.read_bytes() == b"unchanged"
+    assert not os.path.lexists(bundle / "seals")
+
+
+def test_seal_cleanup_unlinks_replacement_container_alias_without_traversal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "bundle"
+    key = _private_key(tmp_path / "key.pem")
+    freeze_artifact(source, bundle)
+    external = tmp_path / "replacement-container"
+    external.mkdir()
+    marker = external / "unchanged"
+    marker.write_bytes(b"unchanged")
+    original_make_read_only = artifact_control_module._make_read_only
+
+    def replace_container_then_fail(path: Path) -> None:
+        if path.parent.name == "seals":
+            path.unlink()
+            path.parent.rmdir()
+            _symlink_or_skip(path.parent, external, target_is_directory=True)
+            raise ArtifactControlError("simulated container replacement")
+        original_make_read_only(path)
+
+    monkeypatch.setattr(
+        artifact_control_module, "_make_read_only", replace_container_then_fail
+    )
+
+    with pytest.raises(ArtifactControlError, match="container replacement"):
+        seal_artifact(bundle, key)
+
+    assert marker.read_bytes() == b"unchanged"
+    assert not os.path.lexists(bundle / "seals")
+
+
+def test_cleanup_handles_reparse_directory_branch_and_chmod_refusal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    directory = tmp_path / "junction-shaped"
+    directory.mkdir()
+    monkeypatch.setattr(artifact_control_module, "_is_link_like", lambda entry: True)
+    artifact_control_module._remove_created_entry(directory)
+    assert not directory.exists()
+
+    monkeypatch.undo()
+    file_path = tmp_path / "ordinary"
+    file_path.write_bytes(b"ordinary")
+    original_chmod = Path.chmod
+
+    def refuse_chmod(path: Path, mode: int) -> None:
+        if path == file_path:
+            raise OSError("simulated chmod refusal")
+        original_chmod(path, mode)
+
+    monkeypatch.setattr(Path, "chmod", refuse_chmod)
+    artifact_control_module._remove_created_entry(file_path)
+    assert not file_path.exists()
+
+
+def test_seal_cleanup_preserves_precise_failure_when_empty_container_cannot_be_removed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    bundle = tmp_path / "bundle"
+    key = _private_key(tmp_path / "key.pem")
+    freeze_artifact(source, bundle)
+    original_verify = artifact_control_module.verify_frozen_artifact
+    original_rmdir = Path.rmdir
+    calls = 0
+
+    def fail_final_verification(*args: object, **kwargs: object):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return original_verify(*args, **kwargs)
+        return artifact_control_module.ArtifactVerification(
+            state="FAIL",
+            artifact_id=None,
+            content_id=None,
+            freeze_id=None,
+            freeze_valid=False,
+            guard_valid=False,
+            valid_seal_ids=(),
+            key_ids=(),
+            external_anchor="NOT_CHECKED",
+            errors=("simulated final failure",),
+            warnings=(),
+        )
+
+    def refuse_seals_rmdir(path: Path) -> None:
+        if path == bundle / "seals":
+            raise OSError("simulated inaccessible cleanup path")
+        original_rmdir(path)
+
+    monkeypatch.setattr(
+        artifact_control_module, "verify_frozen_artifact", fail_final_verification
+    )
+    monkeypatch.setattr(Path, "rmdir", refuse_seals_rmdir)
+
+    with pytest.raises(ArtifactControlError, match="did not produce"):
+        seal_artifact(bundle, key)
+
+    assert (bundle / "seals").is_dir()
+    assert list((bundle / "seals").iterdir()) == []
 
 
 def test_thaw_is_copy_on_write_and_dirtying_is_observable(tmp_path: Path) -> None:
@@ -1010,6 +1722,68 @@ def test_matching_external_parent_anchors_are_reported_without_claiming_history(
     assert result["external_anchor_state"] == "ARTIFACT_AND_KEY_MATCHED"
     assert not any("external continuity was not checked" in item for item in result["warnings"])
     assert result["historical_operation"] == "NOT_ESTABLISHED"
+
+
+def test_outer_parent_bundle_alias_remains_an_accepted_read_only_coordinate(
+    tmp_path: Path,
+) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "outer-parent-alias")
+    alias = tmp_path / "parent-alias"
+    _symlink_or_skip(alias, bundle, target_is_directory=True)
+
+    verification = verify_frozen_artifact(alias)
+    status = thawed_artifact_status(
+        descendant, record_path, parent_bundle=alias
+    )
+
+    assert verification.state == "SEALED"
+    assert status["state"] == "THAWED_CLEAN"
+    assert status["historical_operation"] == "NOT_ESTABLISHED"
+
+
+def test_explicit_thaw_record_alias_remains_readable_without_authenticating_history(
+    tmp_path: Path,
+) -> None:
+    bundle, descendant, record_path = _thawed_file(tmp_path, "record-alias")
+    external = tmp_path / "external-record.json"
+    record_path.replace(external)
+    _symlink_or_skip(record_path, external)
+
+    status = thawed_artifact_status(
+        descendant, record_path, parent_bundle=bundle
+    )
+
+    assert status["state"] == "THAWED_CLEAN"
+    assert status["historical_operation"] == "NOT_ESTABLISHED"
+
+
+def test_hard_linked_internal_json_members_remain_regular_file_semantics(
+    tmp_path: Path,
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, "hard-linked-members")
+    freeze_path = bundle / "freeze.json"
+    seal_path = _seal_path(bundle)
+    external_freeze = tmp_path / "hard-freeze.json"
+    external_seal = tmp_path / "hard-seal.json"
+    _writable(freeze_path)
+    _writable(seal_path)
+    freeze_path.replace(external_freeze)
+    seal_path.replace(external_seal)
+    try:
+        os.link(external_freeze, freeze_path)
+        os.link(external_seal, seal_path)
+    except OSError as exc:
+        pytest.skip(f"hard-link creation is unavailable: {exc}")
+    external_freeze.chmod(external_freeze.stat().st_mode & ~stat.S_IWUSR)
+    external_seal.chmod(external_seal.stat().st_mode & ~stat.S_IWUSR)
+
+    result = verify_frozen_artifact(bundle)
+
+    assert result.state == "SEALED"
+    assert not freeze_path.is_symlink()
+    assert not seal_path.is_symlink()
+    assert freeze_path.stat().st_ino == external_freeze.stat().st_ino
+    assert seal_path.stat().st_ino == external_seal.stat().st_ino
 
 
 def test_parent_mutation_after_thaw_refuses_current_lineage(tmp_path: Path) -> None:

@@ -143,7 +143,7 @@ def _strict_object(
     return value
 
 
-def _read_json_object(path: Path, label: str) -> dict[str, Any]:
+def _parse_json_object(value: str | bytes, label: str, path: Path) -> dict[str, Any]:
     def reject_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
         result: dict[str, Any] = {}
         for key, value in pairs:
@@ -156,18 +156,26 @@ def _read_json_object(path: Path, label: str) -> dict[str, Any]:
         raise ArtifactControlError(f"{label} contains non-finite number {value}")
 
     try:
-        value = json.loads(
-            path.read_text(encoding="utf-8"),
+        parsed = json.loads(
+            value,
             object_pairs_hook=reject_duplicates,
             parse_constant=reject_constant,
         )
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise ArtifactControlError(f"{label} is not readable JSON: {path}") from exc
+    if not isinstance(parsed, dict):
+        raise ArtifactControlError(f"{label} must contain one JSON object")
+    return parsed
+
+
+def _read_json_object(path: Path, label: str) -> dict[str, Any]:
+    """Read a generic JSON coordinate, retaining accepted read-only alias behavior."""
+
+    try:
+        value = path.read_text(encoding="utf-8")
     except OSError as exc:
         raise ArtifactControlError(f"cannot read {label}: {path}") from exc
-    except json.JSONDecodeError as exc:
-        raise ArtifactControlError(f"{label} is not readable JSON: {path}") from exc
-    if not isinstance(value, dict):
-        raise ArtifactControlError(f"{label} must contain one JSON object")
-    return value
+    return _parse_json_object(value, label, path)
 
 
 def _write_json(path: Path, value: Mapping[str, Any]) -> None:
@@ -209,6 +217,63 @@ def _lexists(path: Path) -> bool:
     return os.path.lexists(path)
 
 
+def _is_link_like(entry: os.stat_result) -> bool:
+    """Identify symbolic links and Windows reparse-point aliases from lexical metadata."""
+
+    if stat.S_ISLNK(entry.st_mode):
+        return True
+    reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    return bool(getattr(entry, "st_file_attributes", 0) & reparse_flag)
+
+
+def _internal_entry_stat(path: Path, label: str, expected: str) -> os.stat_result:
+    """Require one authoritative bundle member to have an ordinary lexical type."""
+
+    try:
+        entry = path.lstat()
+    except OSError as exc:
+        raise ArtifactControlError(f"cannot inspect {label}: {path}") from exc
+    if _is_link_like(entry):
+        raise ArtifactControlError(f"{label} must not be a symbolic link or reparse point")
+    matches = stat.S_ISREG(entry.st_mode) if expected == "file" else stat.S_ISDIR(entry.st_mode)
+    if not matches:
+        raise ArtifactControlError(f"{label} must be an ordinary {expected}: {path}")
+    return entry
+
+
+def _read_internal_regular_bytes(path: Path, label: str) -> bytes:
+    """Capture one ordinary internal file snapshot without following its final entry."""
+
+    before = _internal_entry_stat(path, label, "file")
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_CLOEXEC", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as exc:
+        raise ArtifactControlError(f"cannot open {label}: {path}") from exc
+    try:
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode) or (
+            opened.st_dev,
+            opened.st_ino,
+        ) != (before.st_dev, before.st_ino):
+            raise ArtifactControlError(f"{label} changed during lexical classification")
+        blocks: list[bytes] = []
+        while True:
+            block = os.read(descriptor, 1024 * 1024)
+            if not block:
+                break
+            blocks.append(block)
+        return b"".join(blocks)
+    finally:
+        os.close(descriptor)
+
+
+def _read_internal_json_object(path: Path, label: str) -> tuple[dict[str, Any], bytes]:
+    raw = _read_internal_regular_bytes(path, label)
+    return _parse_json_object(raw, label, path), raw
+
+
 def _require_absent(path: Path, label: str) -> None:
     if _lexists(path):
         raise ArtifactControlError(f"{label} already exists: {path}")
@@ -217,11 +282,22 @@ def _require_absent(path: Path, label: str) -> None:
 def _remove_created_entry(path: Path) -> None:
     """Remove one invocation-owned lexical entry without traversing a replacement link."""
 
-    if path.is_symlink():
-        path.unlink()
-    elif path.is_dir():
+    try:
+        entry = path.lstat()
+    except FileNotFoundError:
+        return
+    if _is_link_like(entry):
+        if stat.S_ISDIR(entry.st_mode) and not stat.S_ISLNK(entry.st_mode):
+            path.rmdir()
+        else:
+            path.unlink()
+    elif stat.S_ISDIR(entry.st_mode):
         shutil.rmtree(path, ignore_errors=True)
-    elif _lexists(path):
+    else:
+        try:
+            path.chmod(entry.st_mode | stat.S_IWUSR)
+        except OSError:
+            pass
         path.unlink()
 
 
@@ -230,24 +306,37 @@ def _relative_posix(path: Path, root: Path) -> str:
 
 
 def _source_entries(source: Path) -> list[dict[str, Any]]:
-    if source.is_symlink():
-        raise ArtifactControlError("symbolic links are not accepted as frozen artifacts")
-    if source.is_file():
+    try:
+        source_entry = source.lstat()
+    except OSError as exc:
+        raise ArtifactControlError(f"cannot inspect artifact source: {source}") from exc
+    if _is_link_like(source_entry):
+        raise ArtifactControlError(
+            "symbolic links or reparse-point aliases are not accepted as frozen artifacts"
+        )
+    if stat.S_ISREG(source_entry.st_mode):
         digests, size = _digests_file(source)
         return [{"kind": "file", "path": ".", "byte_size": size, "digests": digests}]
-    if not source.is_dir():
+    if not stat.S_ISDIR(source_entry.st_mode):
         raise ArtifactControlError("artifact source must be a regular file or directory")
 
     entries: list[dict[str, Any]] = []
     for path in sorted(source.rglob("*"), key=lambda item: item.relative_to(source).as_posix()):
-        if path.is_symlink():
+        try:
+            entry = path.lstat()
+        except OSError as exc:
             raise ArtifactControlError(
-                f"symbolic links are not accepted as frozen artifacts: {_relative_posix(path, source)}"
+                f"cannot inspect frozen artifact entry: {_relative_posix(path, source)}"
+            ) from exc
+        if _is_link_like(entry):
+            raise ArtifactControlError(
+                "symbolic links or reparse-point aliases are not accepted as frozen artifacts: "
+                f"{_relative_posix(path, source)}"
             )
         relative = _relative_posix(path, source)
-        if path.is_dir():
+        if stat.S_ISDIR(entry.st_mode):
             entries.append({"kind": "directory", "path": relative})
-        elif path.is_file():
+        elif stat.S_ISREG(entry.st_mode):
             digests, size = _digests_file(path)
             entries.append(
                 {
@@ -288,7 +377,7 @@ def _make_writable(path: Path) -> None:
 
 
 def _is_read_only(path: Path) -> bool:
-    return not bool(path.stat().st_mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH))
+    return not bool(path.lstat().st_mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH))
 
 
 def _set_bundle_guard(bundle: Path) -> None:
@@ -371,8 +460,10 @@ def _validate_entries(entries: Any) -> list[dict[str, Any]]:
     return validated
 
 
-def _load_freeze(bundle: Path) -> dict[str, Any]:
-    freeze = _read_json_object(bundle / "freeze.json", "freeze manifest")
+def _load_freeze_snapshot(bundle: Path) -> tuple[dict[str, Any], bytes]:
+    freeze, freeze_bytes = _read_internal_json_object(
+        bundle / "freeze.json", "freeze manifest"
+    )
     _strict_object(
         freeze,
         {
@@ -437,7 +528,11 @@ def _load_freeze(bundle: Path) -> dict[str, Any]:
     )
     if mechanism != _MECHANISM:
         raise ArtifactControlError("freeze.mechanism is unsupported")
-    return freeze
+    return freeze, freeze_bytes
+
+
+def _load_freeze(bundle: Path) -> dict[str, Any]:
+    return _load_freeze_snapshot(bundle)[0]
 
 
 def _stable_freeze(freeze: Mapping[str, Any]) -> dict[str, Any]:
@@ -447,11 +542,9 @@ def _stable_freeze(freeze: Mapping[str, Any]) -> dict[str, Any]:
 def _observed_bundle_entries(bundle: Path, kind: str) -> list[dict[str, Any]]:
     payload = bundle / "payload"
     if kind == "file":
-        if not payload.is_file() or payload.is_symlink():
-            raise ArtifactControlError("frozen file payload is missing or not a regular file")
+        _internal_entry_stat(payload, "frozen file payload", "file")
     else:
-        if not payload.is_dir() or payload.is_symlink():
-            raise ArtifactControlError("frozen directory payload is missing or not a directory")
+        _internal_entry_stat(payload, "frozen directory payload", "directory")
     return _source_entries(payload)
 
 
@@ -505,14 +598,15 @@ def _seal_payload(
 
 def _seal_file_paths(bundle: Path) -> list[Path]:
     seals = bundle / "seals"
-    if not seals.exists():
+    if not _lexists(seals):
         return []
-    if not seals.is_dir() or seals.is_symlink():
-        raise ArtifactControlError("seals must be a regular directory")
-    unexpected = [path for path in seals.iterdir() if not path.is_file() or path.suffix != ".json"]
-    if unexpected:
-        raise ArtifactControlError("seals directory contains an unsupported entry")
-    return sorted(seals.glob("*.json"), key=lambda path: path.name)
+    _internal_entry_stat(seals, "seals container", "directory")
+    paths = sorted(seals.iterdir(), key=lambda path: path.name)
+    for path in paths:
+        if path.suffix != ".json":
+            raise ArtifactControlError("seals directory contains an unsupported entry")
+        _internal_entry_stat(path, f"seal member {path.name}", "file")
+    return paths
 
 
 def freeze_artifact(
@@ -608,8 +702,7 @@ def seal_artifact(bundle: str | Path, private_key: str | Path) -> dict[str, Any]
     verification = verify_frozen_artifact(bundle_path, require_seal=False)
     if verification.state not in {"FROZEN_UNSEALED", "SEALED"}:
         raise ArtifactControlError("artifact must be cleanly frozen before it can be sealed")
-    freeze = _load_freeze(bundle_path)
-    freeze_bytes = (bundle_path / "freeze.json").read_bytes()
+    freeze, freeze_bytes = _load_freeze_snapshot(bundle_path)
 
     _, serialization, Ed25519PrivateKey, _ = _seal_dependencies()
     key_bytes = Path(private_key).read_bytes()
@@ -639,21 +732,45 @@ def seal_artifact(bundle: str | Path, private_key: str | Path) -> dict[str, Any]
     )
 
     seals = bundle_path / "seals"
-    seals.mkdir(exist_ok=True)
+    seals_created = False
+    if _lexists(seals):
+        _internal_entry_stat(seals, "seals container", "directory")
+    else:
+        try:
+            seals.mkdir()
+            seals_created = True
+        except FileExistsError:
+            _internal_entry_stat(seals, "seals container", "directory")
     filename = hashlib.sha256(_canonical_bytes(envelope)).hexdigest() + ".json"
     target = seals / filename
-    if target.exists():
-        if _read_json_object(target, "seal") != envelope:
-            raise ArtifactControlError("existing seal filename contains different bytes")
+    target_created = False
+    try:
+        if _lexists(target):
+            existing, _ = _read_internal_json_object(target, "seal")
+            if existing != envelope:
+                raise ArtifactControlError("existing seal filename contains different bytes")
+            return envelope
+        _write_json_exclusive(target, envelope)
+        target_created = True
+        _make_read_only(target)
+        final = verify_frozen_artifact(bundle_path, require_seal=True)
+        if not final.sealed or envelope["seal_id"] not in final.valid_seal_ids:
+            raise ArtifactControlError(
+                f"seal did not produce a cleanly sealed artifact; observed {final.state}"
+            )
         return envelope
-    _write_json(target, envelope)
-    _make_read_only(target)
-    final = verify_frozen_artifact(bundle_path, require_seal=True)
-    if not final.sealed or envelope["seal_id"] not in final.valid_seal_ids:
-        raise ArtifactControlError(
-            f"seal did not produce a cleanly sealed artifact; observed {final.state}"
-        )
-    return envelope
+    except Exception:
+        if target_created:
+            _remove_created_entry(target)
+        if seals_created:
+            try:
+                if _is_link_like(seals.lstat()):
+                    _remove_created_entry(seals)
+                else:
+                    seals.rmdir()
+            except OSError:
+                pass
+        raise
 
 
 def _verify_seal(
@@ -735,7 +852,7 @@ def verify_frozen_artifact(
                 "artifact bundle contains unsupported top-level entries: "
                 + ", ".join(unexpected)
             )
-        freeze = _load_freeze(bundle_path)
+        freeze, freeze_bytes = _load_freeze_snapshot(bundle_path)
         artifact_id = freeze["artifact_id"]
         content_id = freeze["content_id"]
         freeze_id = freeze["freeze_id"]
@@ -760,10 +877,9 @@ def verify_frozen_artifact(
         freeze_valid = not freeze_errors
         guard_errors.extend(_guard_errors(bundle_path))
         guard_valid = not guard_errors
-        freeze_bytes = (bundle_path / "freeze.json").read_bytes()
         for seal_path in _seal_file_paths(bundle_path):
             try:
-                seal = _read_json_object(seal_path, "seal")
+                seal, _ = _read_internal_json_object(seal_path, "seal")
                 seal_id, key_id = _verify_seal(seal, freeze, freeze_bytes)
                 valid_seals.append(seal_id)
                 key_ids.append(key_id)
