@@ -8,6 +8,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import os
 import stat
 from pathlib import Path
 
@@ -99,6 +100,13 @@ def _thawed_file(tmp_path: Path, name: str = "thaw") -> tuple[Path, Path, Path]:
     return bundle, descendant, Path(str(record["record_path"]))
 
 
+def _symlink_or_skip(link: Path, target: Path, *, target_is_directory: bool = False) -> None:
+    try:
+        link.symlink_to(target, target_is_directory=target_is_directory)
+    except OSError as exc:
+        pytest.skip(f"symlink creation is unavailable: {exc}")
+
+
 def test_freeze_preserves_exact_file_bytes_without_claiming_a_seal(tmp_path: Path) -> None:
     source = tmp_path / "source.bin"
     source.write_bytes(b"\x00\r\n\xff")
@@ -132,6 +140,67 @@ def test_freeze_preserves_directory_paths_files_and_empty_directories(tmp_path: 
         "nested/value.txt",
     ]
     assert verify_frozen_artifact(bundle, require_seal=False).freeze_valid
+
+
+@pytest.mark.parametrize("target_kind", ("file", "directory", "dangling"))
+def test_freeze_refuses_top_level_source_symlink_without_creating_bundle(
+    tmp_path: Path, target_kind: str
+) -> None:
+    target = tmp_path / "target"
+    if target_kind == "file":
+        target.write_bytes(b"target")
+    elif target_kind == "directory":
+        target.mkdir()
+        (target / "value").write_bytes(b"target")
+    link = tmp_path / "source-link"
+    _symlink_or_skip(link, target, target_is_directory=target_kind == "directory")
+    bundle = tmp_path / "bundle"
+
+    with pytest.raises(ArtifactControlError, match="symbolic links"):
+        freeze_artifact(link, bundle)
+
+    assert link.is_symlink()
+    assert not os.path.lexists(bundle)
+
+
+def test_freeze_refuses_nested_symlink_without_leaving_partial_bundle(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "ordinary").write_bytes(b"ordinary")
+    _symlink_or_skip(source / "nested-link", tmp_path / "absent")
+    bundle = tmp_path / "bundle"
+
+    with pytest.raises(ArtifactControlError, match="symbolic links"):
+        freeze_artifact(source, bundle)
+
+    assert not os.path.lexists(bundle)
+
+
+@pytest.mark.parametrize("target_kind", ("file", "directory", "dangling"))
+def test_freeze_refuses_symlink_bundle_destination_without_mutating_target(
+    tmp_path: Path, target_kind: str
+) -> None:
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"source")
+    target = tmp_path / "target"
+    if target_kind == "file":
+        target.write_bytes(b"unchanged")
+    elif target_kind == "directory":
+        target.mkdir()
+        (target / "unchanged").write_bytes(b"unchanged")
+    bundle = tmp_path / "bundle-link"
+    _symlink_or_skip(bundle, target, target_is_directory=target_kind == "directory")
+
+    with pytest.raises(ArtifactControlError, match="already exists"):
+        freeze_artifact(source, bundle)
+
+    assert bundle.is_symlink()
+    if target_kind == "file":
+        assert target.read_bytes() == b"unchanged"
+    elif target_kind == "directory":
+        assert (target / "unchanged").read_bytes() == b"unchanged"
+    else:
+        assert not target.exists()
 
 
 def test_payload_mutation_and_guard_removal_fail_closed(tmp_path: Path) -> None:
@@ -305,6 +374,266 @@ def test_thaw_is_copy_on_write_and_dirtying_is_observable(tmp_path: Path) -> Non
     )["state"] == "THAWED_DIRTY"
     assert (bundle / "payload").read_bytes() == parent_before
     assert record["parent_artifact_id"] == verify_frozen_artifact(bundle).artifact_id
+
+
+@pytest.mark.parametrize("target_kind", ("file", "directory", "dangling"))
+def test_thaw_refuses_symlink_destination_without_mutating_target(
+    tmp_path: Path, target_kind: str
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, f"destination-{target_kind}")
+    target = tmp_path / "target"
+    if target_kind == "file":
+        target.write_bytes(b"unchanged")
+    elif target_kind == "directory":
+        target.mkdir()
+        (target / "unchanged").write_bytes(b"unchanged")
+    destination = tmp_path / "descendant-link"
+    _symlink_or_skip(
+        destination, target, target_is_directory=target_kind == "directory"
+    )
+
+    with pytest.raises(ArtifactControlError, match="already exists"):
+        thaw_artifact(bundle, destination)
+
+    assert destination.is_symlink()
+    assert not os.path.lexists(Path(str(destination) + ".vstd-thaw.json"))
+    assert not os.path.lexists(Path(str(target) + ".vstd-thaw.json"))
+    if target_kind == "file":
+        assert target.read_bytes() == b"unchanged"
+    elif target_kind == "directory":
+        assert (target / "unchanged").read_bytes() == b"unchanged"
+    else:
+        assert not target.exists()
+
+
+@pytest.mark.parametrize("destination_kind", ("file", "directory"))
+def test_thaw_refuses_existing_ordinary_destination(
+    tmp_path: Path, destination_kind: str
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, f"existing-{destination_kind}")
+    destination = tmp_path / "existing"
+    if destination_kind == "file":
+        destination.write_bytes(b"unchanged")
+    else:
+        destination.mkdir()
+
+    with pytest.raises(ArtifactControlError, match="already exists"):
+        thaw_artifact(bundle, destination)
+
+    assert destination.is_file() if destination_kind == "file" else destination.is_dir()
+
+
+@pytest.mark.parametrize("target_kind", ("file", "dangling"))
+def test_thaw_refuses_symlink_record_destination_without_mutating_target(
+    tmp_path: Path, target_kind: str
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, f"record-{target_kind}")
+    destination = tmp_path / "descendant"
+    record_path = Path(str(destination) + ".vstd-thaw.json")
+    target = tmp_path / "record-target"
+    if target_kind == "file":
+        target.write_bytes(b"unchanged")
+    _symlink_or_skip(record_path, target)
+
+    with pytest.raises(ArtifactControlError, match="already exists"):
+        thaw_artifact(bundle, destination)
+
+    assert not os.path.lexists(destination)
+    assert record_path.is_symlink()
+    if target_kind == "file":
+        assert target.read_bytes() == b"unchanged"
+    else:
+        assert not target.exists()
+
+
+def test_thaw_directory_succeeds_and_mutation_becomes_dirty(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    (source / "empty").mkdir(parents=True)
+    (source / "value").write_bytes(b"value")
+    bundle = tmp_path / "bundle"
+    freeze_artifact(source, bundle)
+    seal_artifact(bundle, _private_key(tmp_path / "key.pem"))
+    destination = tmp_path / "descendant"
+
+    record = thaw_artifact(bundle, destination)
+    record_path = Path(str(record["record_path"]))
+    clean = thawed_artifact_status(destination, record_path, parent_bundle=bundle)
+    (destination / "value").write_bytes(b"changed")
+    dirty = thawed_artifact_status(destination, record_path, parent_bundle=bundle)
+
+    assert (destination / "empty").is_dir()
+    assert clean["state"] == "THAWED_CLEAN"
+    assert dirty["state"] == "THAWED_DIRTY"
+
+
+def test_failed_thaw_cleanup_unlinks_replacement_symlink_without_touching_target(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, "cleanup")
+    destination = tmp_path / "descendant"
+    record_path = Path(str(destination) + ".vstd-thaw.json")
+    replacement_target = tmp_path / "replacement-target"
+    replacement_target.write_bytes(b"unchanged")
+
+    def fail_after_creation(*args: object, **kwargs: object) -> dict[str, object]:
+        destination.unlink()
+        _symlink_or_skip(destination, replacement_target)
+        raise ArtifactControlError("simulated post-copy refusal")
+
+    monkeypatch.setattr(
+        artifact_control_module, "thawed_artifact_status", fail_after_creation
+    )
+
+    with pytest.raises(ArtifactControlError, match="simulated post-copy refusal"):
+        thaw_artifact(bundle, destination)
+
+    assert not os.path.lexists(destination)
+    assert not os.path.lexists(record_path)
+    assert replacement_target.read_bytes() == b"unchanged"
+
+
+def test_exclusive_sidecar_write_removes_a_partial_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = tmp_path / "record.json"
+    original = json.dumps
+
+    def fail_serialization(*args: object, **kwargs: object) -> str:
+        if kwargs.get("indent") == 2:
+            raise RuntimeError("simulated serialization failure")
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(artifact_control_module.json, "dumps", fail_serialization)
+
+    with pytest.raises(RuntimeError, match="simulated serialization failure"):
+        artifact_control_module._write_json_exclusive(target, {"value": 1})
+
+    assert not os.path.lexists(target)
+
+
+def test_exclusive_sidecar_write_never_removes_a_preexisting_file(tmp_path: Path) -> None:
+    target = tmp_path / "record.json"
+    target.write_bytes(b"preexisting")
+
+    with pytest.raises(FileExistsError):
+        artifact_control_module._write_json_exclusive(target, {"value": 1})
+
+    assert target.read_bytes() == b"preexisting"
+
+
+def test_cleanup_tolerates_an_already_absent_invocation_entry(tmp_path: Path) -> None:
+    missing = tmp_path / "already-absent"
+
+    artifact_control_module._remove_created_entry(missing)
+
+    assert not os.path.lexists(missing)
+
+
+def test_failed_sidecar_creation_cleans_the_created_descendant(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, "sidecar-cleanup")
+    destination = tmp_path / "descendant"
+
+    def refuse_sidecar(*args: object, **kwargs: object) -> None:
+        raise ArtifactControlError("simulated sidecar refusal")
+
+    monkeypatch.setattr(artifact_control_module, "_write_json_exclusive", refuse_sidecar)
+
+    with pytest.raises(ArtifactControlError, match="simulated sidecar refusal"):
+        thaw_artifact(bundle, destination)
+
+    assert not os.path.lexists(destination)
+    assert not os.path.lexists(Path(str(destination) + ".vstd-thaw.json"))
+
+
+def test_raced_file_destination_is_not_deleted_when_exclusive_creation_refuses_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, "raced-destination")
+    destination = tmp_path / "descendant"
+    original_open = Path.open
+
+    def raced_open(path: Path, mode: str = "r", *args: object, **kwargs: object):
+        if path == destination and mode == "xb":
+            path.write_bytes(b"raced")
+            raise FileExistsError("simulated concurrent destination")
+        return original_open(path, mode, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", raced_open)
+
+    with pytest.raises(FileExistsError, match="concurrent destination"):
+        thaw_artifact(bundle, destination)
+
+    assert destination.read_bytes() == b"raced"
+    assert not os.path.lexists(Path(str(destination) + ".vstd-thaw.json"))
+
+
+def test_post_copy_nonclean_status_removes_created_descendant_and_sidecar(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bundle, _ = _sealed_file(tmp_path, "nonclean-post-copy")
+    destination = tmp_path / "descendant"
+
+    monkeypatch.setattr(
+        artifact_control_module,
+        "thawed_artifact_status",
+        lambda *args, **kwargs: {"state": "THAWED_DIRTY"},
+    )
+
+    with pytest.raises(ArtifactControlError, match="did not match"):
+        thaw_artifact(bundle, destination)
+
+    assert not os.path.lexists(destination)
+    assert not os.path.lexists(Path(str(destination) + ".vstd-thaw.json"))
+
+
+def test_failed_directory_post_check_cleans_only_created_entries(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source"
+    (source / "empty").mkdir(parents=True)
+    bundle = tmp_path / "bundle"
+    freeze_artifact(source, bundle)
+    seal_artifact(bundle, _private_key(tmp_path / "directory-cleanup.pem"))
+    destination = tmp_path / "descendant"
+
+    def refuse_status(*args: object, **kwargs: object) -> dict[str, object]:
+        raise ArtifactControlError("simulated directory post-check refusal")
+
+    monkeypatch.setattr(artifact_control_module, "thawed_artifact_status", refuse_status)
+
+    with pytest.raises(ArtifactControlError, match="post-check refusal"):
+        thaw_artifact(bundle, destination)
+
+    assert not os.path.lexists(destination)
+    assert not os.path.lexists(Path(str(destination) + ".vstd-thaw.json"))
+
+
+def test_directory_thaw_rejects_a_link_injected_during_copy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "value").write_bytes(b"value")
+    bundle = tmp_path / "bundle"
+    freeze_artifact(source, bundle)
+    seal_artifact(bundle, _private_key(tmp_path / "injected-link.pem"))
+    destination = tmp_path / "descendant"
+    original_copytree = artifact_control_module.shutil.copytree
+
+    def inject_link(*args: object, **kwargs: object) -> Path:
+        copied = original_copytree(*args, **kwargs)
+        _symlink_or_skip(destination / "injected", tmp_path / "absent")
+        return copied
+
+    monkeypatch.setattr(artifact_control_module.shutil, "copytree", inject_link)
+
+    with pytest.raises(ArtifactControlError, match="did not match"):
+        thaw_artifact(bundle, destination)
+
+    assert not os.path.lexists(destination)
+    assert not os.path.lexists(Path(str(destination) + ".vstd-thaw.json"))
 
 
 def test_sealed_parent_and_context_bindings_are_explicit_and_deduplicated(

@@ -188,7 +188,7 @@
 </article>
 <article class="ref-item" id="cli-vstd-artifact-freeze">
 <h3><code>vstd artifact freeze</code></h3>
-<p class="ref-help">Copy exact file or directory bytes into a guarded artifact bundle.</p>
+<p class="ref-help">Copy exact ordinary file or directory bytes into a new guarded bundle; symbolic-link sources are refused.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>source</code></td><td>positional</td><td></td></tr>
 <tr><td><code>bundle</code></td><td>positional</td><td></td></tr>
@@ -220,7 +220,7 @@
 </article>
 <article class="ref-item" id="cli-vstd-artifact-thaw">
 <h3><code>vstd artifact thaw</code></h3>
-<p class="ref-help">Copy a clean sealed parent into a mutable descendant.</p>
+<p class="ref-help">Copy a clean sealed parent into a new, lexically absent mutable descendant.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>bundle</code></td><td>positional</td><td></td></tr>
 <tr><td><code>destination</code></td><td>positional</td><td></td></tr>

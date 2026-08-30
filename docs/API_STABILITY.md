@@ -22,6 +22,12 @@ The supported artifact-control exports are `freeze_artifact`, `seal_artifact`,
 require the optional `seal` dependency extra; importing the base package and freeze-only
 operations retain the zero-third-party-dependency boundary.
 
+`freeze_artifact` classifies the supplied final source entry before dereferencing it and
+refuses symbolic links. New freeze bundles, thaw descendants, and generated thaw sidecars
+require absent lexical destination entries, including refusal of dangling symbolic links.
+This fail-closed creation contract does not promise universal race-free filesystem security
+against concurrent privileged replacement.
+
 `thawed_artifact_status` treats a `VSTD-ARTIFACT-THAW-1` sidecar as unkeyed lineage
 metadata. Without `parent_bundle`, it returns `NOT_ESTABLISHED` even when descendant bytes
 agree with the sidecar's recorded identifier. `THAWED_CLEAN` or `THAWED_DIRTY` requires an

@@ -285,7 +285,11 @@ def build_parser() -> argparse.ArgumentParser:
         dest="artifact_command", required=True
     )
     freeze_parser = artifact_commands.add_parser(
-        "freeze", help="Copy exact file or directory bytes into a guarded artifact bundle."
+        "freeze",
+        help=(
+            "Copy exact ordinary file or directory bytes into a new guarded bundle; "
+            "symbolic-link sources are refused."
+        ),
     )
     freeze_parser.add_argument("source")
     freeze_parser.add_argument("bundle")
@@ -315,7 +319,8 @@ def build_parser() -> argparse.ArgumentParser:
     verify_parser.add_argument("--json", action="store_true")
 
     thaw_parser = artifact_commands.add_parser(
-        "thaw", help="Copy a clean sealed parent into a mutable descendant."
+        "thaw",
+        help="Copy a clean sealed parent into a new, lexically absent mutable descendant.",
     )
     thaw_parser.add_argument("bundle")
     thaw_parser.add_argument("destination")

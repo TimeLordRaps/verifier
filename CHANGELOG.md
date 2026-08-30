@@ -68,6 +68,10 @@
   `THAWED_CLEAN` or `THAWED_DIRTY`. Sidecar-only agreement is now `NOT_ESTABLISHED`; even a
   verified current match does not authenticate the historical copy operation or external
   parent continuity.
+- Preserve final filesystem-entry identity during artifact creation: freeze refuses
+  symbolic-link sources, and bundle, thaw-descendant, and sidecar outputs refuse every
+  preexisting lexical entry, including dangling symbolic links, without claiming universal
+  race-free filesystem security.
 - Remove the live SimulacraBench rehearsal and its front-door promotion; the repository
   never contained or reproduced the submission, hosted image, hardware, or protected
   evaluation identified by that name.

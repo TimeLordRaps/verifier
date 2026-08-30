@@ -18,6 +18,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import os
 import re
 import shutil
 import stat
@@ -176,6 +177,52 @@ def _write_json(path: Path, value: Mapping[str, Any]) -> None:
         encoding="utf-8",
         newline="\n",
     )
+
+
+def _write_json_exclusive(path: Path, value: Mapping[str, Any]) -> None:
+    created = False
+    try:
+        with path.open("x", encoding="utf-8", newline="\n") as stream:
+            created = True
+            stream.write(
+                json.dumps(
+                    value, ensure_ascii=False, allow_nan=False, indent=2, sort_keys=True
+                )
+                + "\n"
+            )
+    except Exception:
+        if created:
+            _remove_created_entry(path)
+        raise
+
+
+def _absolute_lexical(path: str | Path) -> Path:
+    """Resolve parent directories but preserve the final filesystem entry."""
+
+    absolute = Path(os.path.abspath(os.fspath(path)))
+    return absolute.parent.resolve() / absolute.name
+
+
+def _lexists(path: Path) -> bool:
+    """Report whether the lexical entry exists, including a dangling symbolic link."""
+
+    return os.path.lexists(path)
+
+
+def _require_absent(path: Path, label: str) -> None:
+    if _lexists(path):
+        raise ArtifactControlError(f"{label} already exists: {path}")
+
+
+def _remove_created_entry(path: Path) -> None:
+    """Remove one invocation-owned lexical entry without traversing a replacement link."""
+
+    if path.is_symlink():
+        path.unlink()
+    elif path.is_dir():
+        shutil.rmtree(path, ignore_errors=True)
+    elif _lexists(path):
+        path.unlink()
 
 
 def _relative_posix(path: Path, root: Path) -> str:
@@ -478,12 +525,12 @@ def freeze_artifact(
 ) -> dict[str, Any]:
     """Preserve exact bytes in a new guarded bundle without creating a seal."""
 
-    source_path = Path(source).resolve()
-    bundle_path = Path(bundle).resolve()
+    source_path = _absolute_lexical(source)
+    bundle_path = _absolute_lexical(bundle)
     if not isinstance(media_type, str) or not media_type:
         raise ArtifactControlError("media_type must be a nonempty string")
-    if bundle_path.exists():
-        raise ArtifactControlError(f"freeze bundle already exists: {bundle_path}")
+    _require_absent(bundle_path, "freeze bundle")
+    entries = _source_entries(source_path)
     if source_path.is_dir():
         try:
             bundle_path.relative_to(source_path)
@@ -507,8 +554,7 @@ def freeze_artifact(
     if len(set(lineage)) != len(lineage) or len(set(contexts)) != len(contexts):
         raise ArtifactControlError("duplicate parent or context bundles do not add assurance")
 
-    kind = "file" if source_path.is_file() else "directory" if source_path.is_dir() else ""
-    entries = _source_entries(source_path)
+    kind = "file" if source_path.is_file() else "directory"
     descriptor = _descriptor(kind, media_type, entries)
     artifact_id = _identity("vstd-artifact-1", _canonical_bytes(descriptor))
     content_id = _identity(
@@ -801,7 +847,7 @@ def thaw_artifact(
     """Create a mutable descendant from a cleanly sealed frozen artifact."""
 
     bundle_path = Path(bundle).resolve()
-    destination_path = Path(destination).resolve()
+    destination_path = _absolute_lexical(destination)
     result = verify_frozen_artifact(
         bundle_path,
         expected_artifact_id=expected_artifact_id,
@@ -812,23 +858,14 @@ def thaw_artifact(
         raise ArtifactControlError(
             f"thaw requires a cleanly sealed artifact; observed {result.state}"
         )
-    if destination_path.exists():
-        raise ArtifactControlError(f"thaw destination already exists: {destination_path}")
+    _require_absent(destination_path, "thaw destination")
     record_path = destination_path.with_name(destination_path.name + ".vstd-thaw.json")
-    if record_path.exists():
-        raise ArtifactControlError(f"thaw record already exists: {record_path}")
+    _require_absent(record_path, "thaw record")
     freeze = _load_freeze(bundle_path)
     payload = bundle_path / "payload"
     destination_path.parent.mkdir(parents=True, exist_ok=True)
-    if freeze["artifact_kind"] == "file":
-        shutil.copyfile(payload, destination_path)
-        _make_writable(destination_path)
-    else:
-        shutil.copytree(payload, destination_path)
-        for path in destination_path.rglob("*"):
-            if path.is_file() or path.is_dir():
-                _make_writable(path)
-        _make_writable(destination_path)
+    destination_created = False
+    record_created = False
     record: dict[str, Any] = {
         "schema_version": THAW_SCHEMA,
         "parent_artifact_id": result.artifact_id,
@@ -840,7 +877,24 @@ def thaw_artifact(
     }
     record["thaw_id"] = _identity("vstd-thaw-1", _canonical_bytes(record))
     try:
-        _write_json(record_path, record)
+        if freeze["artifact_kind"] == "file":
+            with (
+                payload.open("rb") as source_stream,
+                destination_path.open("xb") as target_stream,
+            ):
+                destination_created = True
+                shutil.copyfileobj(source_stream, target_stream)
+            _make_writable(destination_path)
+        else:
+            destination_path.mkdir()
+            destination_created = True
+            shutil.copytree(payload, destination_path, dirs_exist_ok=True)
+            for path in destination_path.rglob("*"):
+                if path.is_file() or path.is_dir():
+                    _make_writable(path)
+            _make_writable(destination_path)
+        _write_json_exclusive(record_path, record)
+        record_created = True
         status = thawed_artifact_status(
             destination_path,
             record_path,
@@ -851,12 +905,10 @@ def thaw_artifact(
         if status["state"] != "THAWED_CLEAN":
             raise ArtifactControlError("thawed descendant did not match the sealed parent")
     except Exception:
-        if record_path.exists():
-            record_path.unlink()
-        if destination_path.is_dir():
-            shutil.rmtree(destination_path, ignore_errors=True)
-        elif destination_path.exists():
-            destination_path.unlink()
+        if record_created:
+            _remove_created_entry(record_path)
+        if destination_created:
+            _remove_created_entry(destination_path)
         raise
     return {**record, "record_path": str(record_path)}
 
@@ -878,7 +930,7 @@ def thawed_artifact_status(
     independently observed.
     """
 
-    artifact_path = Path(artifact).absolute()
+    artifact_path = _absolute_lexical(artifact)
     record_path = (
         Path(thaw_record).resolve()
         if thaw_record is not None

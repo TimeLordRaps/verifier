@@ -42,6 +42,13 @@ allocation, and filesystem-specific metadata are outside version 1. The portable
 read-only guard is an observable tripwire, not an access-control boundary against a
 privileged writer.
 
+Freeze classifies the caller-supplied final source entry before dereferencing it, so a
+symbolic link cannot inherit its target's artifact identity. A new bundle, thaw descendant,
+or generated thaw sidecar requires an absent lexical destination: an existing file,
+directory, special object, symbolic link, or dangling symbolic link refuses creation.
+Exclusive file and sidecar creation narrows replacement races, but version 1 does not claim
+universal race-free filesystem security against a concurrent privileged process.
+
 “Portable” means slash-normalized relative path representation. Case sensitivity,
 Unicode normalization, reserved names, and path-length limits remain properties of the
 host filesystem; version 1 does not claim that every valid source tree can be materialized
@@ -107,7 +114,9 @@ evidence.
 Thaw requires a cleanly verified seal. It copies the parent payload to a new writable
 path and emits a `VSTD-ARTIFACT-THAW-1` sidecar beside the descendant. The sidecar records
 the parent artifact, content, freeze, and seal identifiers. It is lineage metadata, not a
-seal. The parent remains unchanged.
+seal. The requested descendant and sidecar paths must both be lexically absent; thaw never
+uses a preexisting symbolic link as permission to create or label its target. The parent
+remains unchanged.
 
 A sidecar's self-derived `thaw_id` establishes only internal agreement among its fields.
 Sidecar-only status is `NOT_ESTABLISHED`, even when current descendant bytes match the

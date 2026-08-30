@@ -53,7 +53,10 @@ continuous temporal mediation. A thaw sidecar is additive lineage metadata, not 
 authentication: sidecar-only agreement remains `NOT_ESTABLISHED`. Current clean or dirty
 status requires an actual supplied, cleanly sealed parent whose artifact, content, freeze,
 seal, kind, and media-type coordinates match. Even that comparison does not authenticate
-the historical copy operation.
+the historical copy operation. Creation paths preserve the caller-supplied final entry
+through classification: freeze refuses symbolic-link sources, while bundle, descendant,
+and sidecar creation require an absent lexical destination. These checks do not claim
+universal race-free filesystem security against concurrent privileged replacement.
 
 ## Verification complex and profile satisfaction
 
