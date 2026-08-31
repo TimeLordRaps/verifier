@@ -44,6 +44,9 @@
   architecture, publish the bounded RISC Zero reference mechanism and exact recorded
   public proof artifacts, and keep only unfinished mechanisms experimental while
   preserving unresolved horizons and native-system authority.
+- Bind the recorded RISC Zero proof to the image produced from the tracked guest and
+  locked toolchain in the governed offline verifier, rather than accepting source/proof
+  correspondence from a neighboring historical image identifier.
 - Formally distinguish TRUST as mechanism-earned forward artifact support, ROT as typed
   time-indexed degradation of current admissibility, and RUST as an inverse-TRUST memetic
   causal backtrace toward recorded ancestor states. None is actor-tied trust or a scalar;

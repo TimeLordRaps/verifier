@@ -76,21 +76,21 @@
       "id": "artifact-zk-report",
       "role": "round-1-zero-knowledge-report",
       "media_type": "text/markdown",
-      "digest": "sha256:ea53f18c4bc46a26a311ebf7ba6d5a44b924d18f3f5b51ce3fabb99f3fe0a4c3",
+      "digest": "sha256:a3b0cdc18e81216cedd3adcaaa65119d20cd755eaa530e2a5d9219d26eda1758",
       "locator": "repo:examples/zizk_artifact_first/risc0/ROUND1_ZERO_KNOWLEDGE_REPORT.md"
     },
     {
       "id": "artifact-zk-receipt",
       "role": "recorded-risc0-proof-receipt",
       "media_type": "application/msgpack",
-      "digest": "sha256:5fd33b0fbf6b54e34d4dd19c5ff068a8f82bacacc21881b5fa2cc5c0a90090df",
+      "digest": "sha256:04813c4757ba4efbdad9d51d50d7402f3a98f6c23e53b9b58cce8af12ef9caa2",
       "locator": "repo:examples/zizk_artifact_first/risc0/recorded-proof/receipt.msgpack"
     },
     {
       "id": "artifact-zk-public-envelope",
       "role": "recorded-risc0-public-envelope",
       "media_type": "application/json",
-      "digest": "sha256:6324c3c5d77ea4df4034f61131059289d5228f190d69e34c59bd7416fa9ac823",
+      "digest": "sha256:188098e6ba1ac940475f15e0a4304ff08d678d98a9ed708dbe41dc6dde596b76",
       "locator": "repo:examples/zizk_artifact_first/risc0/recorded-proof/public.json"
     },
     {
@@ -432,5 +432,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:1994591c49cccc8e99bc5233564b5b8eeed3810c6859f4e8c36f41d4797c4639"
+  "manifest_digest": "sha256:81ce95f54a1ca98cd9fb897cf0568329aff03d5cb7334ffd367c915c2f6835dc"
 }

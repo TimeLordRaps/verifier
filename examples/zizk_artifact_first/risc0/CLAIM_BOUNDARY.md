@@ -17,6 +17,11 @@ The concrete verified statement is:
 > predicate and was bound to the journal's subject, policy, challenge, threshold, and
 > salted evidence commitment.
 
+The repository's governed offline command additionally builds the tracked guest with
+the locked toolchain and refuses the receipt unless that build's image ID equals the
+recorded image ID. Proof verification alone binds an image identifier; this separate
+comparison is what connects the tracked source-facing build to that identifier.
+
 The zero-knowledge basis is the selected protocol and implementation, not merely the
 absence of witness text from JSON. The artifact scan is an additional serialization
 check, not a proof of zero knowledge.

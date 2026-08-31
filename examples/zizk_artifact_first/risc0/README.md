@@ -130,8 +130,8 @@ The exact non-secret artifacts from the recorded run are tracked under
 
 | Artifact | Bytes | Secure Hash Algorithm 256-bit (SHA-256) |
 |---|---:|---|
-| `receipt.msgpack` | 301811 | `5fd33b0fbf6b54e34d4dd19c5ff068a8f82bacacc21881b5fa2cc5c0a90090df` |
-| `public.json` | 2575 | `6324c3c5d77ea4df4034f61131059289d5228f190d69e34c59bd7416fa9ac823` |
+| `receipt.msgpack` | 301835 | `04813c4757ba4efbdad9d51d50d7402f3a98f6c23e53b9b58cce8af12ef9caa2` |
+| `public.json` | 2590 | `188098e6ba1ac940475f15e0a4304ff08d678d98a9ed708dbe41dc6dde596b76` |
 | `self-test-results.json` | 377 | `e4c1bff21fb6161221276157fa96af6661af8635da35970ba12e462881f2c6fe` |
 
 The private witness and salt are not tracked and are not required for verification.
@@ -142,24 +142,28 @@ this command from this directory:
 ./scripts/verify_recorded_proof.sh
 ```
 
-The script executes this direct verifier command:
+The script first builds the tracked guest with the locked toolchain and requires its
+image ID to equal the recorded proof's image ID. It then executes the direct verifier:
 
 ```bash
 export PATH="$HOME/.risc0/bin:$HOME/.cargo/bin:$PATH"
 export CARGO_TARGET_DIR="${HOME}/.cache/vstd-zk-target"
 export RISC0_DEV_MODE=0
+EXPECTED_IMAGE_ID="91df751f5764f81ba4995994afb43e87928dc32d23c81799c767794c27eabcff"
+ACTUAL_IMAGE_ID="$(cargo run --locked --release -q -p vstd-zk-host -- image-id)"
+test "${ACTUAL_IMAGE_ID}" = "${EXPECTED_IMAGE_ID}"
 cargo run --locked --release -p vstd-zk-host -- \
   verify recorded-proof/receipt.msgpack recorded-proof/public.json \
-  e1e9bf4f68ef60ff9af6b50e144082bc475cc20cab47e8187201153da597dcd8
+  "${EXPECTED_IMAGE_ID}"
 ```
 
 The final argument is the exact RISC Zero guest image identifier recorded by the
-public envelope and independently pinned by this repository. It is an explicit
-program trust coordinate, not actor identity or reputation. Omitting it verifies
-newly produced artifacts against the guest image built by the current checkout;
-supplying it permits offline verification of this immutable historical receipt
-without silently substituting the current build's image identifier. To require Cargo to
-use only an already populated local cache, run
+public envelope. The preceding comparison binds that identifier to the program built
+from this checkout's tracked source and lock files. It is an explicit program trust
+coordinate, not actor identity or reputation. The host verifier can separately accept an
+explicit historical image ID, but that direct operation alone does not establish that the
+current source builds the historical program. To require Cargo to use only an already
+populated local cache, run
 `CARGO_NET_OFFLINE=true ./scripts/verify_recorded_proof.sh`.
 
 The expected successful output is:

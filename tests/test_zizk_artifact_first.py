@@ -1,4 +1,4 @@
-"""Terminology: Verifier Standard (VSTD)."""
+"""Terminology: identifier (ID); Verifier Standard (VSTD)."""
 
 from __future__ import annotations
 
@@ -105,8 +105,8 @@ def test_private_inputs_are_excluded_and_public_proof_artifacts_are_versioned() 
 
 def test_recorded_public_proof_artifact_hashes_match_the_reported_run() -> None:
     expected = {
-        "receipt.msgpack": "5fd33b0fbf6b54e34d4dd19c5ff068a8f82bacacc21881b5fa2cc5c0a90090df",
-        "public.json": "6324c3c5d77ea4df4034f61131059289d5228f190d69e34c59bd7416fa9ac823",
+        "receipt.msgpack": "04813c4757ba4efbdad9d51d50d7402f3a98f6c23e53b9b58cce8af12ef9caa2",
+        "public.json": "188098e6ba1ac940475f15e0a4304ff08d678d98a9ed708dbe41dc6dde596b76",
         "self-test-results.json": "e4c1bff21fb6161221276157fa96af6661af8635da35970ba12e462881f2c6fe",
     }
     for name, digest in expected.items():
@@ -114,7 +114,7 @@ def test_recorded_public_proof_artifact_hashes_match_the_reported_run() -> None:
         assert hashlib.sha256(artifact.read_bytes()).hexdigest() == digest
 
 
-def test_recorded_verification_pins_the_historical_program_trust_coordinate() -> None:
+def test_recorded_verification_binds_the_tracked_guest_to_the_proof() -> None:
     public = json.loads(
         (MECHANISM / "recorded-proof" / "public.json").read_text(encoding="utf-8")
     )
@@ -125,6 +125,8 @@ def test_recorded_verification_pins_the_historical_program_trust_coordinate() ->
     host = (MECHANISM / "host" / "src" / "main.rs").read_text(encoding="utf-8")
 
     assert expected_image_id in script
+    assert "cargo run --locked --release -q -p vstd-zk-host -- image-id" in script
+    assert 'if [[ "${ACTUAL_IMAGE_ID}" != "${EXPECTED_IMAGE_ID}" ]]; then' in script
     assert "verify recorded-proof/receipt.msgpack recorded-proof/public.json" in script
     assert "let trusted_id = expected_id.unwrap_or_else(method_id);" in host
     assert "trusted_id != method_id()" not in host

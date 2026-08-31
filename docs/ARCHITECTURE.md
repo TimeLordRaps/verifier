@@ -1,7 +1,7 @@
 # Verifier Standard (VSTD) conformance architecture
 
 > **Acronyms:** application programming interface (API); Boolean satisfiability problem (SAT); command-line interface (CLI);
-> JavaScript Object Notation (JSON); reduced instruction set computer (RISC);
+> identifier (ID); JavaScript Object Notation (JSON); reduced instruction set computer (RISC);
 > Supply Chain Integrity, Transparency, and Trust (SCITT); Verifier Standard (VSTD);
 > zero-identity/zero-knowledge (ZIZK).
 
@@ -169,7 +169,7 @@ Maturity attaches to mechanisms beneath that architecture:
 
 | Mechanism surface | Current status | Ownership boundary |
 |---|---|---|
-| RISC Zero hidden-witness predicate | Bounded reference mechanism with tracked public proof artifacts | `examples/zizk_artifact_first/risc0/`; native verification only, no VSTD receipt mapping |
+| RISC Zero hidden-witness predicate | Bounded reference mechanism with tracked public proof artifacts and a governed tracked-source-build/image-ID equality gate | `examples/zizk_artifact_first/risc0/`; native verification only, no VSTD receipt mapping or independent build host |
 | Bounded identity-disclosure evaluator | Bounded non-normative reference mechanism | `examples/zizk_artifact_first/zero_identity/`; no identity-derived trust |
 | Assurance event serialization and replay | Implemented bounded reference mechanism | `VSTD-GRAPH-ASSURANCE-1` embeds the historical Graph, exact bindings, evidence bytes, a hash chain, and a current-view digest; `recheck_assurance_log` reruns every event mechanism |
 | TRUST transfer | Implemented edge-local proposition-dispatch reference mechanism | `record_trust` binds one exact transformation, its complete inputs and output, the historical Graph digest, and the prerequisite TRUST event for every derived input. Recursive current-admissibility checking excludes the route if any required event, artifact, or transformation degrades or conflicts, without deleting history. No universal scalar support algebra exists. |

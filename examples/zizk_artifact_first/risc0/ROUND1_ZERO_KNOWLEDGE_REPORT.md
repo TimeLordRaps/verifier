@@ -6,20 +6,23 @@
 > Verifier Standard (VSTD); Windows Subsystem for Linux 2 (WSL2); zero-identity/zero-knowledge (ZIZK);
 > zero-knowledge virtual machine (zkVM).
 
-**Date:** 2026-08-23
-**Status:** completed recorded run; non-secret proof artifacts tracked as a bounded
-reference mechanism; no VSTD receipt mapping
+**Original run:** 2026-08-23
+**Recorded artifact refresh:** 2026-08-31
+**Status:** completed real-proof run refreshed against the tracked guest image; non-secret
+proof artifacts tracked as a bounded reference mechanism; no VSTD receipt mapping
 
 ## Repository coordinates
 
 - Repository: `TimeLordRaps/verifier`
-- Immutable base: `598c545be3833d6d81bb7e252ca5837f3bb2a449`
-- Branch: `codex/zizk-zero-knowledge`
-- Worktree: isolated worktree named `zizk-zk-codex`; its machine-specific absolute
-  path is intentionally excluded from this public report
-- Primary worktree modified: no
+- Original development base: `598c545be3833d6d81bb7e252ca5837f3bb2a449`
+- Regeneration source commit: `e9d2b13eb22342934789bf94ee894bb5faed6d98`
+- Regeneration source tree: `6fcf0a4d391815f7218a61fb32ca6bac0b71df63`
+- Branch: `codex/post-1.2-professionalization`
+- Worktree: the pull-request worktree; its machine-specific absolute path is
+  intentionally excluded from this public report
 - Existing serialized receipt identifiers modified: no
-- Push, pull request, merge, tag, release, or publication performed: no
+- The proof command performed no Git or network publication action. No merge, tag,
+  release, or publication was performed.
 
 ## Selected proof system
 
@@ -30,7 +33,7 @@ Exactly one proof system was selected and used:
 | SDK and verifier | RISC Zero zkVM `3.0.6` |
 | Receipt kind | composite STARK |
 | Program trust coordinate | RISC Zero image ID |
-| Image ID | `e1e9bf4f68ef60ff9af6b50e144082bc475cc20cab47e8187201153da597dcd8` |
+| Image ID | `91df751f5764f81ba4995994afb43e87928dc32d23c81799c767794c27eabcff` |
 | Tool manager | `rzup 0.5.0` |
 | Prover executable | `r0vm 3.0.6` |
 | Guest build tool | `cargo-risczero 3.0.6` |
@@ -111,34 +114,43 @@ PASS
 
 cargo build --locked --release -p vstd-zk-host
 PASS
+
+two clean target directories:
+vstd-zk-host image-id
+91df751f5764f81ba4995994afb43e87928dc32d23c81799c767794c27eabcff
 ```
 
 Real proof plus automated negative cases:
 
 ```text
-RISC0_DEV_MODE=0 vstd-zk-host self-test local-artifacts/recorded-final
+RISC0_DEV_MODE=0 CARGO_NET_OFFLINE=true \
+  ./scripts/run_real_proof.sh
 PASS
-elapsed wall time: 6.10 seconds
-maximum resident set: 1,214,664 KiB
 ```
 
 Offline verifier invocation without the witness:
 
 ```text
-RISC0_DEV_MODE=0 vstd-zk-host verify receipt.msgpack public.json
+CARGO_NET_OFFLINE=true ./scripts/verify_recorded_proof.sh
 PASS
-elapsed wall time: 0.10 seconds
-maximum resident set: 5,632 KiB
 ```
 
 Repository validation:
 
 ```text
 python -m pytest -q
-258 passed, 3 skipped
+552 passed, 38 skipped
+
+python scripts/build_experiment_index.py --check
+[EXPERIMENT INDEX OK] manifests and repository artifacts verified
+
+python scripts/build_reference.py --check
+[REFERENCE OK] docs/reference.html matches the implementation
 
 python scripts/check_presentation.py
-[PRESENTATION OK] links, versions, boundaries, paths, and visual assets
+[PRESENTATION OK] links, accessibility, versions, boundaries, paths, maturity, transient
+status, visual assets, generated reference, experiment index, acronym expansion, and
+structural terminology
 
 python -m compileall -q src scripts
 PASS
@@ -168,24 +180,26 @@ All ten recorded Boolean checks were `true`.
 
 The exact receipt, public envelope, and self-test result are tracked under
 [`recorded-proof/`](recorded-proof/) so a consumer can verify the recorded run rather than
-only generating a new proof. The ephemeral private witness and salt remain excluded.
+only generating a new proof. The governed offline command first requires the locked build
+of the tracked guest to reproduce the recorded image ID. The ephemeral private witness
+and salt remain excluded.
 
 | Artifact | Bytes | SHA-256 |
 |---|---:|---|
-| `receipt.msgpack` | 301811 | `5fd33b0fbf6b54e34d4dd19c5ff068a8f82bacacc21881b5fa2cc5c0a90090df` |
-| `public.json` | 2575 | `6324c3c5d77ea4df4034f61131059289d5228f190d69e34c59bd7416fa9ac823` |
+| `receipt.msgpack` | 301835 | `04813c4757ba4efbdad9d51d50d7402f3a98f6c23e53b9b58cce8af12ef9caa2` |
+| `public.json` | 2590 | `188098e6ba1ac940475f15e0a4304ff08d678d98a9ed708dbe41dc6dde596b76` |
 | `self-test-results.json` | 377 | `e4c1bff21fb6161221276157fa96af6661af8635da35970ba12e462881f2c6fe` |
-| `corrupted-receipt.msgpack` | 301811 | `389117e63a429e55c3f3616b9cbf2339fb1c99b48712ef7a3e5f5f16b32b6d81` |
-| `tampered-journal.msgpack` | 301811 | `4e443f5084b8665a7185e6e4e62fd72eed5130673b3d7bfde488cdc6c405555c` |
-| `mutated-public.json` | 2575 | `c2a056b71b2019daa8ac9f3aefcb4c2cc28a1b56ef97f8c61947bf37c5f2b7b9` |
-| `transplanted-public.json` | 2575 | `95cf0d97e20777e2ad49234b7b27074dc8931ee7de215632a7d22a6b5466f2b6` |
+| `corrupted-receipt.msgpack` | 301835 | `a37fbceb5cd234a991deb8c530d29551534fe04be881defa716d9fdcf1cbcf1f` |
+| `tampered-journal.msgpack` | 301835 | `e210702b95557d76d4a2c285b14c738f4ddb7160017e92ae082dd6d9ef48b4f8` |
+| `mutated-public.json` | 2590 | `c04651e41f50682bdae40049bdd73084d1ac2a98816f8e051ace7ed3ca24d360` |
+| `transplanted-public.json` | 2590 | `997ac9107ab917838517acddbaf2bf2d01ad074e4c08b01e251b1bb3d7dc1db7` |
 
 ## Unresolved assumptions
 
 - The selected cryptographic implementation and transitive dependencies were not
   independently audited in this work.
-- The image ID was produced once in this environment; a second independent build has not
-  yet corroborated it.
+- Two clean builds in the same recorded WSL2 environment produced the same image ID. A
+  build on an independent host and an independent implementation remain unavailable.
 - The host, compiler, installer, and operating system remain trusted for witness secrecy.
 - The experiment does not establish constant-time or side-channel-resistant proving.
 - The challenge is cryptographically bound, but challenge issuance, expiry, uniqueness,
@@ -197,10 +211,11 @@ only generating a new proof. The ephemeral private witness and salt remain exclu
 
 ## Public claims currently justified
 
-The local evidence justifies saying that the bounded RISC Zero 3.0.6 reference mechanism produced
-and re-verified within the reference program a real composite STARK receipt for one bounded
-hidden-witness predicate, with the recorded negative cases rejected. It does not establish
-distinct prover/verifier actors.
+The local evidence justifies saying that the bounded RISC Zero 3.0.6 reference mechanism
+produced and re-verified a real composite STARK receipt for one bounded hidden-witness
+predicate, with the recorded negative cases rejected, and that two clean builds under the
+same recorded local environment produced its recorded image ID. It does not establish an
+independent build environment, implementation, or distinct prover/verifier actors.
 
 It also supports keeping VSTD core disclosure-neutral: this result demonstrates one
 optional privacy mechanism without requiring or invalidating full-disclosure receipts.

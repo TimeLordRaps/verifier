@@ -19,13 +19,15 @@ threshold, predicate result, and salted evidence commitment are not secrets.
 
 Acceptance depends on all of the following:
 
-1. the expected RISC Zero image ID obtained from the reviewed guest ELF;
+1. the expected RISC Zero image ID reproduced from the tracked guest source and locked
+   toolchain by the governed offline command;
 2. RISC Zero zkVM 3.0.6 verification code and its proof-system parameters;
 3. the pinned Rust sources and `Cargo.lock`;
 4. SHA-256 collision and preimage resistance for the public digests;
 5. correct public-statement comparison after receipt verification; and
-6. a verifier obtaining the expected image ID independently rather than trusting an
-   unbound metadata field supplied by the prover.
+6. the governed source-build comparison or another verifier obtaining the expected image
+   ID independently rather than trusting an unbound metadata field supplied by the
+   prover.
 
 The composite STARK uses transparent public setup. Its non-interactive security relies
 on the proof system's Fiat-Shamir construction and its documented hash assumptions.
@@ -84,9 +86,9 @@ receipts.
 ### Supply chain
 
 Version pins and a committed lock file constrain dependencies but do not independently
-audit every transitive crate, compiler binary, installer, or build host. Reproducing an
-image ID on another trusted build host is useful evidence, not supplied here as an
-independent implementation.
+audit every transitive crate, compiler binary, installer, or build host. Two clean builds
+under the same recorded Windows Subsystem for Linux 2 environment reproduced the image
+ID; a build on another trusted host and an independent implementation remain unavailable.
 
 ### Semantic overreach
 
