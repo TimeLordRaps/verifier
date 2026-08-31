@@ -20,6 +20,7 @@ from verifier.core.certificate import (
     ClaimBinding,
     ClaimCoordinate,
     ResourceBounds,
+    canonical_digest,
 )
 from verifier.core.depth import (
     build_evidence_bound_vstd4_receipt,
@@ -2026,6 +2027,37 @@ def test_vstd5_claim_id_must_match_the_admitted_vstd4_claim() -> None:
         recheck_vstd5_receipt(
             entry, positive_receipt, mechanisms=(ExactFactMechanism(),)
         )
+
+
+def test_vstd5_entry_digest_binds_the_admitted_vstd4_claim_id() -> None:
+    store, session = _session()
+    entry = _established_vstd4(store, session)
+    neighbor = replace(entry, claim_id="claim:neighbor")
+    entry_digest = canonical_digest(entry.to_dict())
+    neighbor_digest = canonical_digest(neighbor.to_dict())
+    assert neighbor_digest != entry_digest
+
+    witness, assertion, corroboration = _witness_components(
+        store, entry, "witness:one"
+    )
+    bundle = WitnessBundle(
+        entry.claim_id,
+        "declarant:one",
+        entry.witness.header.binding,  # type: ignore[union-attr]
+        (witness,),
+        (assertion,),
+        (corroboration,),
+    )
+    result = assess_witness_corroboration(entry, bundle, session=session)
+    receipt = build_vstd5_receipt(
+        entry,
+        bundle,
+        result,
+        receipt_id="VFY-5-ENTRY-CLAIM-DIGEST",
+        session=session,
+    )
+    assert receipt["entry_vstd4"]["result_digest"] == entry_digest
+    assert receipt["entry_vstd4"]["result_digest"] != neighbor_digest
 
 
 def test_vstd5_claim_id_is_distinct_from_the_claim_coordinate_subject() -> None:
