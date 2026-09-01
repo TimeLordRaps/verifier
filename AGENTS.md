@@ -65,7 +65,7 @@ Use TIME for disagreements among normative documents, schemas, runtime behavior,
 conformance tests, or public implementation claims. Do not use it for an honestly represented
 `UNKNOWN`, a receipt or Graph `CONFLICTED` state, ordinary design work, or a roadmap item.
 `TIME == CLEAR` is a release invariant for version 1.2.0. Development branches and normal
-pull-request checks may retain exact unresolved entries, but the tag-triggered publication
+pull-request checks may retain exact unresolved entries, but the owner-dispatched publication
 workflow must reject the exact tagged checkout unless its status is `CLEAR`.
 
 ## 2. Prime directive

@@ -140,6 +140,6 @@ coordinates; resolve only from evidence.
 
 Do **not** escalate a receipt's `CONFLICTED` evidence, an honest `UNKNOWN`, a roadmap item,
 or speculative research to TIME. Development branches may keep precise open contradictions.
-For publication, the tag-triggered workflow checks the exact tagged `TIME.md` and fails
+For publication, the owner-dispatched release workflow checks the exact tagged `TIME.md` and fails
 unless it contains exactly one `Status: CLEAR` line; maintainer judgment cannot override
 that release invariant.
