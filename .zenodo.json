@@ -4,7 +4,7 @@
       "name": "Roost, Tyler"
     }
   ],
-  "description": "Release-candidate metadata for a verification-domain language and Python reference implementation that packages bounded computational claims with explicit evidence, checking mechanisms, limits, refutation conditions, provenance, and reproducibility information. It does not replace native domain verifiers or strengthen their results. Publication metadata is assigned only after the release exists.",
+  "description": "Version 1.2.0 of a verification-domain language and Python reference implementation that packages bounded computational claims with explicit evidence, checking mechanisms, limits, refutation conditions, provenance, and reproducibility information. It does not replace native domain verifiers or strengthen their results.",
   "keywords": [
     "verification",
     "provenance",
@@ -17,6 +17,7 @@
     "bounded claims"
   ],
   "license": "Apache-2.0",
+  "publication_date": "2026-09-01",
   "title": "Verifier Standard (VSTD): Bounded, Refutable Evidence for Computational Claims",
   "version": "1.2.0",
   "upload_type": "software"

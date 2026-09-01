@@ -272,6 +272,7 @@ def check_versions(errors: list[str]) -> None:
         re.MULTILINE,
     )
     zenodo = json.loads((ROOT / ".zenodo.json").read_text(encoding="utf-8"))
+    zenodo_date = zenodo.get("publication_date")
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     found = {
         "src/verifier/__init__.py": None if init_match is None else init_match.group(1),
@@ -297,8 +298,14 @@ def check_versions(errors: list[str]) -> None:
             errors.append("unreleased CITATION.cff must not fabricate date-released")
         if "release candidate" not in citation_text.lower():
             errors.append("unreleased CITATION.cff must identify the release candidate")
-    elif citation_date is None or citation_date.group(1) != dated.group(1):
-        errors.append("CITATION.cff date-released must match the dated CHANGELOG heading")
+        if zenodo_date is not None:
+            errors.append("unreleased .zenodo.json must not fabricate publication_date")
+    else:
+        assert dated is not None
+        if citation_date is None or citation_date.group(1) != dated.group(1):
+            errors.append("CITATION.cff date-released must match the dated CHANGELOG heading")
+        if zenodo_date != dated.group(1):
+            errors.append(".zenodo.json publication_date must match the dated CHANGELOG heading")
 
 
 def maturity_table_violations(readme: str) -> list[str]:
@@ -377,7 +384,7 @@ def check_claim_boundaries(errors: list[str]) -> None:
         "VSTD evaluates bounded validity propositions about computational processes",
         "RUST is the inverse-TRUST diagnostic mechanic",
         "cryptographic zero knowledge can enclose",
-        "The current checkout is an unreleased",
+        "Version 1.2.0 is the current release",
     )
     for phrase in required_readme:
         if phrase not in readme:

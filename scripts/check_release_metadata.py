@@ -69,6 +69,10 @@ def require_finalized(root: Path, version: str) -> None:
     zenodo = json.loads((root / ".zenodo.json").read_text(encoding="utf-8"))
     if zenodo.get("version") != version:
         raise ValueError("Zenodo version does not match the release coordinate")
+    if zenodo.get("publication_date") != release_date:
+        raise ValueError(
+            "Zenodo publication_date must match the CHANGELOG release date"
+        )
     description = str(zenodo.get("description", "")).lower()
     if "release-candidate" in description or "after the release exists" in description:
         raise ValueError("Zenodo metadata still describes an unpublished candidate")
