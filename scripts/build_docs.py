@@ -329,8 +329,8 @@ class MarkdownRenderer:
             lambda match: f'<a href="{match.group(1)}">{match.group(1)}</a>',
             value,
         )
-        for index, rendered in enumerate(tokens):
-            value = value.replace(f"\x00{index}\x00", rendered)
+        for index in reversed(range(len(tokens))):
+            value = value.replace(f"\x00{index}\x00", tokens[index])
         return value
 
     @staticmethod

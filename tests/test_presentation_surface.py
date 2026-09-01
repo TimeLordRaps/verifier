@@ -276,6 +276,8 @@ def test_every_declared_document_is_rendered_with_source_aware_navigation(
     for document in declared:
         target = output / Path(document.route.as_posix())
         assert target.is_file(), f"documentation omits {document.source.relative_to(ROOT)}"
+    for target in written:
+        assert "\x00" not in target.read_text(encoding="utf-8")
 
     ladder = (output / "standard/index.html").read_text(encoding="utf-8")
     assert 'class="doc-sidebar"' in ladder
@@ -284,6 +286,14 @@ def test_every_declared_document_is_rendered_with_source_aware_navigation(
     assert '>Specifications</a>' not in ladder
     assert 'href="VSTD-1.html"' in ladder
     assert 'href="../docs/CONCEPTS_AND_PRECEDENTS.html"' in ladder
+    assert (
+        '<a href="../docs/CONCEPTS_AND_PRECEDENTS.html"><code>Concept guide and '
+        'intellectual precedents</code></a>' in ladder
+    )
+    assert (
+        '<a href="../docs/CONCEPTS_AND_PRECEDENTS.html"><code>concept guide</code></a>'
+        in ladder
+    )
     assert (
         "github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md"
         not in ladder
