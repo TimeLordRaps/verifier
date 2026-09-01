@@ -416,7 +416,13 @@ def _write_final_release_metadata(root: Path) -> None:
         encoding="utf-8",
     )
     (root / ".zenodo.json").write_text(
-        json.dumps({"version": "1.2.0", "description": "Final publication metadata."}),
+        json.dumps(
+            {
+                "version": "1.2.0",
+                "publication_date": "2026-08-26",
+                "description": "Final publication metadata.",
+            }
+        ),
         encoding="utf-8",
     )
 
@@ -429,6 +435,7 @@ def _write_final_release_metadata(root: Path) -> None:
         "mismatched_citation_date",
         "candidate_citation",
         "candidate_zenodo",
+        "mismatched_zenodo_date",
         "package_version",
     ),
 )
@@ -451,8 +458,17 @@ def test_release_metadata_gate_rejects_unfinalized_or_inconsistent_state(
     elif fault == "candidate_zenodo":
         path = tmp_path / ".zenodo.json"
         path.write_text(
-            json.dumps({"version": "1.2.0", "description": "Release-candidate metadata."})
+            json.dumps(
+                {
+                    "version": "1.2.0",
+                    "publication_date": "2026-08-26",
+                    "description": "Release-candidate metadata.",
+                }
+            )
         )
+    elif fault == "mismatched_zenodo_date":
+        path = tmp_path / ".zenodo.json"
+        path.write_text(path.read_text().replace("2026-08-26", "2026-08-25"))
     else:
         path = tmp_path / "pyproject.toml"
         path.write_text(path.read_text().replace("1.2.0", "1.1.3"))

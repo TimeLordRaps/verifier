@@ -11,7 +11,7 @@
 > Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
 > zero-identity/zero-knowledge (ZIZK).
 
-## 1.2.0 - UNRELEASED
+## 1.2.0 - 2026-09-01
 
 ### Public surface and integrations
 

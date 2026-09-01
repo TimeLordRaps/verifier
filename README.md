@@ -213,8 +213,8 @@ The distribution name is `verifier-standard`. The published base package has no
 required third-party runtime dependencies.
 
 ```bash
-python -m pip install verifier-standard  # latest published release
-python -m pip install .                  # current release-candidate checkout
+python -m pip install "verifier-standard==1.2.0"  # exact published release
+python -m pip install .                            # current source checkout
 python -m pip install ".[yaml]"          # YAML Ain't Markup Language (YAML) manifests
 python -m pip install ".[jsonschema]"    # JSON Schema validation
 python -m pip install ".[seal]"          # optional Ed25519 artifact sealing
@@ -378,8 +378,8 @@ gh attestation verify PATH_TO_DOWNLOADED_ASSET --repo TimeLordRaps/verifier
 ```
 
 Use [RELEASING.md](RELEASING.md) to verify the manifest, tag, artifact attestations,
-package name, and historical compatibility. The current checkout is an unreleased
-1.2.0 candidate; use the [latest release page](https://github.com/TimeLordRaps/verifier/releases/latest)
+package name, and historical compatibility. Version 1.2.0 is the current release,
+published on 2026-09-01; use its [versioned release page](https://github.com/TimeLordRaps/verifier/releases/tag/v1.2.0)
 for published citation and artifact coordinates.
 
 ## Claims, security, and contribution
