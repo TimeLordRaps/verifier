@@ -87,6 +87,8 @@
   extraction is not independent verification, and unverified determinism is `UNKNOWN`.
 - Publish a Pages guide index and enforce language, title, viewport, main-region, skip-link,
   image-alt, labelled-navigation, generated-reference, and local-link checks in CI.
+- Preserve explicit ordered-list starting numbers in generated Pages so procedures split
+  by code blocks retain their source step numbers instead of restarting at one.
 - Require CodeQL security-extended Python analysis in the protected repository-check
   aggregate with only read access to content and write access to security results.
 - Fail closed on malformed generic-run receipts, publish their exact schema, and dispatch

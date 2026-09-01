@@ -290,6 +290,11 @@ def test_every_declared_document_is_rendered_with_source_aware_navigation(
         '<a href="../docs/CONCEPTS_AND_PRECEDENTS.html"><code>Concept guide and '
         'intellectual precedents</code></a>' in ladder
     )
+    releasing = (output / "project/RELEASING.html").read_text(encoding="utf-8")
+    assert '<ol start="4"><li>Run ' in releasing
+    assert '<li>Confirm <code>python scripts/check_time_status.py</code> passes' in releasing
+    assert '<ol start="8"><li>Push the tag ' in releasing
+    assert '<ol start="10"><li>Let Zenodo ' in releasing
     assert (
         '<a href="../docs/CONCEPTS_AND_PRECEDENTS.html"><code>concept guide</code></a>'
         in ladder

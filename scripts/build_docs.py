@@ -368,6 +368,8 @@ class MarkdownRenderer:
         base_indent = len(first.group(1).replace("\t", "    "))
         ordered = first.group(2)[0].isdigit()
         tag = "ol" if ordered else "ul"
+        start = int(first.group(2)[:-1]) if ordered else 1
+        start_attribute = f' start="{start}"' if ordered and start != 1 else ""
         items: list[str] = []
         while index < len(lines):
             match = self.LIST_ITEM.match(lines[index])
@@ -401,7 +403,9 @@ class MarkdownRenderer:
                 break
             items.append(self.inline(" ".join(parts)) + "".join(nested))
         return (
-            f"<{tag}>" + "".join(f"<li>{item}</li>" for item in items) + f"</{tag}>",
+            f"<{tag}{start_attribute}>"
+            + "".join(f"<li>{item}</li>" for item in items)
+            + f"</{tag}>",
             index,
         )
 
