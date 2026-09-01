@@ -17,7 +17,7 @@ are useful contributions.
 | Reference implementation | `src/verifier/` | Tests for the exact implemented proposition and failure boundary |
 | Command-line behavior | `src/verifier/runtime/public_cli.py` | Generated reference, installed-wheel smoke, and machine-readable output tests |
 | Ecosystem adapter or application profile | `src/verifier/interoperability/` or an explicitly experimental profile | Accepted upstream versions, native-verifier boundary, information-loss declaration, trust roots, and substitution/replay/scope-widening tests |
-| Non-normative research | `experiments/` | Experiment manifest, fixtures, unresolved horizons, and generated index |
+| Non-normative research | `examples/experimental_profiles/` | Experiment manifest, fixtures, unresolved horizons, and generated index |
 | Explanatory documentation | `docs/` | Local-link, acronym, presentation, and semantic-drift review |
 
 The authority order is:

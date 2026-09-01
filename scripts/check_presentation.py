@@ -322,8 +322,11 @@ def maturity_table_violations(readme: str) -> list[str]:
     errors: list[str] = []
     if header not in section:
         errors.append("README.md maturity table does not expose all six required fields")
+        table = section
+    else:
+        table = section.split(header, 1)[1]
     rows: dict[str, list[str]] = {}
-    for line in section.splitlines():
+    for line in table.splitlines():
         if not line.startswith("|") or line.startswith("|---"):
             continue
         cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
@@ -371,6 +374,7 @@ def check_claim_boundaries(errors: list[str]) -> None:
         "VSTD is a verification-domain language and Python reference implementation",
         "does **not**\nreplace native domain verifiers",
         "## 30–60 second demonstration",
+        "## The 90-second mental model",
         "## What a result means",
         "## Current maturity",
         "## Why VSTD exists",
@@ -395,6 +399,7 @@ def check_claim_boundaries(errors: list[str]) -> None:
     expected_order = (
         "VSTD is a verification-domain language",
         "## 30–60 second demonstration",
+        "## The 90-second mental model",
         "## What a result means",
         "## Current maturity",
         "## Why VSTD exists",
@@ -639,10 +644,10 @@ def check_experiment_index(errors: list[str]) -> None:
     except Exception as exc:  # the gate reports any bounded generation failure
         errors.append(f"experiment index cannot be generated: {exc}")
         return
-    target = ROOT / "experiments/INDEX.md"
+    target = ROOT / "examples/experimental_profiles/INDEX.md"
     if not target.is_file() or target.read_text(encoding="utf-8") != rendered:
         errors.append(
-            "experiments/INDEX.md drifted from profile manifests; "
+            "examples/experimental_profiles/INDEX.md drifted from profile manifests; "
             "run python scripts/build_experiment_index.py"
         )
 

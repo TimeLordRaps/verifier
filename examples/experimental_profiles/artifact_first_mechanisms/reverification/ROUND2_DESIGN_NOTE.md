@@ -15,7 +15,7 @@ mean assumption-free, trust-root-free, or immune to compromised software, unavai
 evidence, or false observations.
 
 The controlling semantic orientation is normative in
-[`standard/LADDER.md` section 1.1](../../../standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
+[`standard/LADDER.md` section 1.1](../../../../standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
 This experiment does not decide whether that orientation is valid repository architecture;
 it tests the still-open event format, transfer algebra, concentration rule, and localization
 mechanics needed to operationalize it.

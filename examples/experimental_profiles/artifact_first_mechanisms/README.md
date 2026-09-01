@@ -5,7 +5,7 @@
 
 This directory does **not** make VSTD's ZIZK artifact-first architecture experimental.
 That governing orientation is normative in
-[`standard/LADDER.md` section 1.1](../../standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
+[`standard/LADDER.md` section 1.1](../../../standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
 
 TRUST is mechanism-earned forward artifact support; ROT is typed, time-indexed
 degradation of current admissibility; and RUST is the inverse-TRUST diagnostic backtrace
@@ -23,6 +23,6 @@ Only the following unfinished mechanisms are experimental here:
 
 The bounded identity-disclosure evaluator and tracked RISC Zero proof-carrying reference
 mechanism are under
-[`examples/zizk_artifact_first/`](../../examples/zizk_artifact_first/). The
+[`examples/zizk_artifact_first/`](../../zizk_artifact_first/). The
 [`experiment.json`](experiment.json) manifest records the mechanism studies and their
 remaining horizons without assigning experimental status to the governing architecture.

@@ -206,7 +206,7 @@ and ownership decision.
 This dated register records substantive work as of **2026-08-29**. A committed experiment,
 passing test, or generated index is not normative, released, reproduced by a distinct actor,
 or evidence of adoption merely because it exists. Profile manifests and the generated
-[`experiments/INDEX.md`](experiments/INDEX.md) are the portable experiment register when
+[`examples/experimental_profiles/INDEX.md`](examples/experimental_profiles/INDEX.md) are the portable experiment register when
 intentional experiment artifacts are present.
 
 | Track | Public artifact | Current boundary | Next gate |

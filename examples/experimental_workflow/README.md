@@ -4,7 +4,7 @@ This deterministic example maps a normalized GitHub snapshot containing a succes
 workflow, an available artifact, a closed issue, a commit, and a merged pull request.
 All five records remain platform observations with `verification_effect = "NONE"`.
 The canonical profile manifest is indexed at
-[`experiments/github_verdict_neutrality/experiment.json`](../../experiments/github_verdict_neutrality/experiment.json).
+[`examples/experimental_profiles/github_verdict_neutrality/experiment.json`](../experimental_profiles/github_verdict_neutrality/experiment.json).
 
 From the repository root:
 

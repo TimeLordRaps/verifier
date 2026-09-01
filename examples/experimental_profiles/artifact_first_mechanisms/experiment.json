@@ -111,8 +111,8 @@
       "id": "artifact-round2-design",
       "role": "round-2-reverification-design",
       "media_type": "text/markdown",
-      "digest": "sha256:7c119945d1446ad2253dc3d9d51ef15024e32be86d92924eca0ab27587d09a46",
-      "locator": "repo:experiments/artifact_first_mechanisms/reverification/ROUND2_DESIGN_NOTE.md"
+      "digest": "sha256:4f7af277122506cb23e858c0da9ca2366d2f81ac5882514ef9918f6b93722505",
+      "locator": "repo:examples/experimental_profiles/artifact_first_mechanisms/reverification/ROUND2_DESIGN_NOTE.md"
     }
   ],
   "budgets": [
@@ -249,7 +249,7 @@
         "kind": "design-review",
         "name": "ZIZK artifact-first actor-artifact reverification synthesis",
         "version": "round-2",
-        "coordinate": "repo:experiments/artifact_first_mechanisms/reverification"
+        "coordinate": "repo:examples/experimental_profiles/artifact_first_mechanisms/reverification"
       },
       "native_result_ids": [],
       "produced_artifact_ids": [
@@ -432,5 +432,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:81ce95f54a1ca98cd9fb897cf0568329aff03d5cb7334ffd367c915c2f6835dc"
+  "manifest_digest": "sha256:3d6bcf9c7812ff7381628d604e98b478447513aa486f05814a7c4dfd3733d0da"
 }

@@ -14,30 +14,28 @@
 
 > **Acronyms used below:** identifier (ID); reduced instruction set computer (RISC).
 
-VSTD is a verification-domain language and Python reference implementation for packaging
-bounded computational claims with their evidence, checking mechanisms, limits,
-refutation conditions, provenance, and reproducibility information. It does **not**
+VSTD is a verification-domain language and Python reference implementation for turning a
+bare computational result into an inspectable package: **the exact claim, artifact,
+evidence, checking mechanism, limits, and conditions that could overturn it**. It does **not**
 replace native domain verifiers, proof systems, signatures, identity systems,
-transparency logs, or provenance formats, and it never strengthens their results merely
-by translating or storing them.
+transparency logs, or provenance formats.
+
+The shortest useful description is:
+
+```text
+result + exact claim + evidence + mechanism + bounds + provenance + refutation route
+```
 
 VSTD evaluates bounded validity propositions about computational processes represented by
 software and evidence-bearing artifacts. It does not decide whether an actor is good, bad,
-reputable, or trustworthy; identity and reputation alone contribute no verdict weight.
+reputable, or trustworthy, and translating or storing a result never strengthens it.
 
-It addresses a practical review problem: a final answer or green check rarely says
-exactly what was checked, which evidence was used, where the conclusion stops, or what
-would overturn it. VSTD carries those boundaries with the result.
-
-**Current boundary:** implemented reference paths cover receipts, generic computation
-capture, provenance graphs, verification geometry, accelerator evidence, grounded
-certificate checking, evidence-bound VSTD-4/VSTD-5 assessment, evidence-bound Graph
-ratings, replayable additive Graph lifecycle/assurance propagation, reproduction, exact-byte artifact
-freezing, finite self-closing seals, copy-on-write thawing, and a flagship adversarial demo.
-Compatibility candidate paths remain `NOT_ESTABLISHED`; evidence-bound paths rerun exact
-registered mechanisms and preserve their evidence, trust roots, bounds, and limitations.
-No real external witness or independent implementation is claimed. See [current maturity](#current-maturity) and
-[claims and limits](docs/CLAIMS_AND_LIMITS.md).
+**Current boundary:** the repository contains usable reference paths for receipts, generic
+run capture, provenance Graphs, bounded certificate checking, artifact freezing and
+sealing, reproduction, and evidence-bound assessment. Some compatibility paths remain
+`NOT_ESTABLISHED`, and no real external witness, independent implementation, accreditation,
+or external adoption is claimed. See [current maturity](#current-maturity) and
+[claims and limits](docs/CLAIMS_AND_LIMITS.md) for the exact surface-by-surface boundary.
 
 [Normative specifications](standard/LADDER.md) ·
 [60-second quickstart](docs/QUICKSTART.md) ·
@@ -72,6 +70,58 @@ external adoption, independent implementation, or general artificial intelligenc
 safety. Use `vstd demo --json` for JavaScript Object Notation (JSON) output or
 `vstd demo --emit-specimens PATH` to inspect the generated files.
 
+## The 90-second mental model
+
+A normal tool may report `PASS`. VSTD asks what that word is allowed to mean:
+
+```text
+claim ──checked against──> evidence
+  │                           │
+  └── bounded by ─────────────┤
+                              v
+                    named mechanism
+                              │
+                              v
+                 PASS / FAIL / UNKNOWN
+                    + limits + provenance
+                    + refutation conditions
+```
+
+The native verifier still performs the domain work. VSTD records the exact boundary of
+that work so another person or program can inspect, replay, challenge, or reject it without
+silently receiving a stronger claim.
+
+VSTD has two independent axes:
+
+- **Object profiles** describe what is established about one computational claim.
+- **Graph profiles** describe what is established about a bounded collection of artifacts
+  and transformations.
+
+| Profile | One claim asks… | A collection asks… |
+|---:|---|---|
+| 1 | What was claimed and recorded? | What artifacts and lineage were recorded? |
+| 2 | What exact surface was checked? | What bounded collection surface was checked? |
+| 3 | What execution substrate is evidenced? | Which provenance paths have substrate evidence? |
+| 4 | How can the result be refuted? | Which transformations are refutable? |
+| 5 | Was an independent witness actually evidenced? | Is corroboration evidenced across the network? |
+
+Three rules prevent most misreadings:
+
+1. Each profile answers a different question and needs its own evidence.
+2. A later-profile result cannot repair missing evidence for an earlier profile.
+3. `UNKNOWN` is a correct result when the mechanism, evidence, or bound is insufficient.
+
+Choose the smallest useful starting point:
+
+| Goal | Start here |
+|---|---|
+| See defensive behavior immediately | Run [`vstd demo`](#30-60-second-demonstration) |
+| Capture and reproduce one command | [Generic computation](#capture-a-generic-computation) |
+| Preserve and seal exact artifact bytes | [Artifact control](#freeze-seal-verify-and-thaw-an-artifact) |
+| Understand the formal profile composition | [Normative Ladder](standard/LADDER.md) |
+| Integrate or independently review the code | [Architecture map](docs/ARCHITECTURE.md) |
+| Challenge an overclaim or ambiguous rule | [Issue forms](https://github.com/TimeLordRaps/verifier/issues/new/choose) |
+
 ## What a result means
 
 VSTD result terms remain tied to one exact proposition, mechanism, evidence set, and
@@ -90,9 +140,21 @@ proposition and observation boundary being part of the checked claim.
 
 ## Current maturity
 
-This is the canonical repository status table. “Implemented” applies only to the named
-reference surface; it does not imply adoption, external interoperability, certification,
-or a second implementation.
+Use this summary before opening the exact matrix:
+
+| Category | Current meaning |
+|---|---|
+| Usable reference paths | Receipts, generic run capture and reproduction, Graph recording, grounded-certificate checks, evidence-bound assessment, and artifact freeze/seal/thaw mechanisms are implemented within their documented bounds. |
+| Mechanism-dependent paths | VSTD-4, VSTD-5, and Graph profiles above recorded lineage establish results only when their exact registered mechanisms rerun successfully over bound evidence. |
+| Compatibility candidates | Candidate depth/profile calculations remain `NOT_ESTABLISHED`; caller-supplied references or ratings cannot create conformance. |
+| Experimental integrations | The workflow and Supply Chain Integrity, Transparency, and Trust (SCITT) profiles remain non-normative and grant no VSTD verdict from platform state alone. |
+| Not claimed | Accreditation, consensus-standard status, external adoption, a second implementation, a real independent witness, or third-party security review. |
+
+<details>
+<summary><strong>Exact surface-by-surface matrix for reviewers and integrators</strong></summary>
+
+“Implemented” applies only to the named reference surface. It does not imply adoption,
+external interoperability, certification, or a second implementation.
 
 | Surface | Normative status | Reference implementation | Evidence binding | Conformance status | Missing mechanism or evidence |
 |---|---|---|---|---|---|
@@ -112,6 +174,8 @@ or a second implementation.
 | Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability | Experimental, non-normative application profile and crosswalk | Real local Concise Binary Object Representation (CBOR) plus CBOR Object Signing and Encryption (COSE) signatures/receipt, loss-declared adapter, and adjacent native-result composition | Binds the exact payload under emitted test keys and local policy; registration never establishes payload truth | VSTD-4 remains `NOT_ESTABLISHED` | Public Transparency Service, external implementation/interoperability result, and Internet Engineering Task Force (IETF) review |
 | zero-identity/zero-knowledge (ZIZK) artifact-first TRUST | Governing VSTD architecture in `standard/LADDER.md` section 1.1; not a separate numbered profile | Hash-chained event serialization and offline replay, evidence-bound forward TRUST, typed ROT, challenge projection, reverse RUST, structural concentration, conflict resolution, explicit localization, and bounded diagnostic attribution | Exact Graph topology, proposition bindings, embedded evidence bytes, mechanisms, trust roots, bounds, and immutable history | Implemented reference mechanism; no universal support score or actor trust | Domain-specific transfer/localization mechanisms, independent cross-implementation replay, complete trichotomy derivation, and maturation of optional proof backends |
 | RISC Zero proof-carrying reference mechanism | Bounded non-normative mechanism example under the governing ZIZK architecture | Pinned prover/verifier source plus a tracked real receipt, public envelope, self-test result, and network-offline command that requires the tracked guest build and recorded proof to share one image identifier | Authenticates one fixed hidden-witness predicate and expected image identifier; it does not establish the witness's external truth | Native proof verified; no VSTD receipt mapping | Independent build host, external audit, complete VSTD trichotomy predicate, and additional proof backends |
+
+</details>
 
 The authoritative implementation-to-specification map is
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Normative meaning remains under
@@ -137,75 +201,66 @@ design rule is:
 
 <img src="docs/assets/vstd-overview.svg" alt="Verifier Standard object and Graph numbered profiles, each requiring separate evidence for its closure coordinate" width="920">
 
-VSTD is a verification complex of named closure coordinates and evidence-bearing
-relations. Specification numbers select cumulative profiles, not software revisions,
-interchangeable layers, or scalar assurance levels. The object axis evaluates one
-computational claim; the Graph axis evaluates a bounded collection and its recorded
-transformations.
+The five profile numbers are cumulative verification questions, not software versions,
+interchangeable layers, or assurance scores. The object axis evaluates one claim; the
+Graph axis evaluates a bounded collection and its recorded transformations.
 
-| Profile number | Object closure coordinate | Graph closure coordinate |
-|---:|---|---|
-| 1 | Claim mechanics | Recorded lineage |
-| 2 | Verification surface | Bounded collection surface |
-| 3 | Substrate accountability | Accountable provenance closure |
-| 4 | Refutability | Refutable transformation closure |
-| 5 | Witness corroboration | Corroborated verification network |
+A typical object traversal is:
+
+```text
+VSTD-1 claim record
+   → VSTD-2 bounded verification surface
+   → VSTD-3 execution-substrate evidence
+   → VSTD-4 portable refutation boundary
+   → VSTD-5 evidence-bound witness corroboration
+```
 
 A later-profile result does **not** supply, imply, upgrade, or repair a prerequisite
-coordinate. Object profile depth requires separate passing evidence for every required
-coordinate.
+coordinate. Object profile depth `N` requires separate passing evidence for every required
+coordinate from 1 through `N`.
 
-As an operational traversal, an implementation may capture a run through VSTD-1, map
-profiler or domain observations through adjacent adapters into a VSTD-2 surface, bind the
-execution substrate through VSTD-3, make the result portably refutable through VSTD-4, and
-record independently evidenced witness corroboration through VSTD-5. This traversal does
-not collapse the named coordinates. VSTD-Graph is the orthogonal collection axis: a bounded Graph result
-may be materialized as a content-addressed artifact and enter a later verification loop only
-with its source graph, selected surface, mechanism, lineage, losses, limitations, conflicts,
-and current admissibility preserved. The compatibility `graph_level` result remains a
-`NOT_ESTABLISHED` candidate. `establish_graph_level` can establish only profile 1–5 after
-every required rating mechanism is rerun from exact evidence bound to the exact Graph,
-member set, collection, and claim. Profile zero remains `NOT_ESTABLISHED`.
+VSTD-Graph is orthogonal. It records artifacts, transformations, conflicts, lifecycle
+changes, and deduplicated reachability across a bounded collection. The compatibility
+`graph_level` calculation remains a `NOT_ESTABLISHED` candidate. Evidence-bound Graph
+establishment must rerun every required rating mechanism over evidence bound to the exact
+Graph, member set, collection, and claim. Profile zero never becomes established conformance.
+
+### Artifact support and diagnostic traversal
 
 The formal names **TRUST**, **ROT**, and **RUST** are semantic terms, not acronyms, actor
-ratings, scalar scores, numbered-profile verdicts, or references to the Rust programming language.
-They serialize only as typed events in `VSTD-GRAPH-ASSURANCE-1`.
-TRUST is mechanism-earned artifact support moving forward edge by edge through checked
-development, with each event binding one exact transformation, its inputs and output, the
-historical Graph digest, and any prerequisite TRUST events;
-ROT is typed, time-indexed degradation of current admissibility without rewriting
-historical evidence; RUST is the inverse-TRUST diagnostic mechanic moving backward from a
-descendant deviation through historically recorded contributing ancestry. Current
-revocation or conflict can remove a route from current TRUST without erasing that diagnostic
-history. This memetic propagation does not by itself prove guilt, responsibility, falsehood,
-causal localization, or automatic ancestor falsification. The reference runtime requires a separate passing localization
-mechanism bound to one exact passing RUST event and descendant-deviation proposition before
-it can emit a bounded
-`BLAME` or `GUILT`. BLAME establishes bounded responsibility or material contribution;
-GUILT is not its opposite, but the stronger combined result that additionally establishes
-an exact violated obligation. Neither result concerns actor character. See [the governing
-architecture](standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
+ratings, scalar scores, numbered-profile verdicts, or references to the Rust programming
+language:
 
-`VSTD-GRAPH-ASSURANCE-1` carries the immutable historical Graph, exact event bindings,
-embedded evidence bytes, event hash chain, and derived current-view digest.
-`recheck_assurance_log` rehashes the evidence, reruns each exact registered mechanism, and
-rejects any event or current view that does not reproduce. Conflict adjudication and current
-admissibility are separate: a selected status affects the current artifact or transformation
-state, while resolving an arbitrary predicate cannot silently restore TRUST. No general
-non-status admissibility-effect mechanism is currently implemented, so that route remains
-blocked.
+- TRUST is mechanism-earned artifact support moving forward through one exactly checked
+  transformation.
+- ROT is typed, time-indexed degradation of current admissibility without rewriting
+  historical evidence.
+- RUST is the inverse-TRUST diagnostic mechanic moving backward from a descendant deviation
+  toward recorded contributing ancestors.
 
-This is VSTD's **ZIZK artifact-first TRUST architecture**, not an optional research
-profile. Zero identity means zero identity-derived verdict weight, not anonymity or the
-absence of identifiers. Zero knowledge means zero unevidenced knowledge is presumed: a
-proposition remains `UNKNOWN` until a named mechanism earns a bounded result. When a
-witness must remain confidential, cryptographic zero knowledge can enclose that
-architectural rule by binding the exact program, predicate, public commitments, output,
-proof parameters, and verifier without attaching TRUST to the prover's identity. Only a
-named proof system can earn that privacy property; a digest or hidden input cannot. The
-runnable
-[RISC Zero reference mechanism](examples/zizk_artifact_first/) is one bounded backend,
-while its proof system and unfinished transfer mechanics remain mechanism-specific.
+RUST identifies where reassessment should look; it does not by itself establish falsehood,
+causal localization, responsibility, BLAME, or GUILT. A separately registered localization
+mechanism must earn BLAME, and GUILT additionally requires an exact violated obligation.
+Neither result evaluates actor character. The replayable `VSTD-GRAPH-ASSURANCE-1` event log
+binds its historical Graph, evidence, mechanisms, event chain, and derived current view.
+
+### Zero identity and zero unevidenced knowledge
+
+The zero-identity/zero-knowledge (ZIZK) artifact-first orientation is **Governing VSTD
+architecture**, not an optional research profile. Zero identity means zero identity-derived verdict weight,
+not anonymity. Architectural zero knowledge means zero unevidenced knowledge is presumed:
+unsupported propositions remain `UNKNOWN`.
+
+When a witness must remain confidential, cryptographic zero knowledge can enclose that
+boundary only through a named proof system that binds the exact program, predicate, public
+commitments, output, parameters, and verifier without attaching TRUST to the prover's identity.
+A digest, encrypted file, or omitted input is not a zero-knowledge proof. The
+[RISC Zero reference mechanism](examples/zizk_artifact_first/) is one bounded optional
+backend under this governing architecture.
+
+For exact ownership, dispatch paths, schemas, compatibility surfaces, and unimplemented
+horizons, use the [architecture map](docs/ARCHITECTURE.md) and
+[normative Ladder](standard/LADDER.md).
 
 ## Install and use
 
@@ -360,7 +415,7 @@ Additional entry points:
 | Install and exercise the first-run path | [Quickstart](docs/QUICKSTART.md) |
 | Understand terminology and precedents | [Concepts and precedents](docs/CONCEPTS_AND_PRECEDENTS.md) |
 | Inspect abbreviated terms | [Acronyms](docs/ACRONYMS.md) |
-| Review experimental profiles | [Experiment index](experiments/INDEX.md) |
+| Review experimental profiles | [Experiment index](examples/experimental_profiles/INDEX.md) |
 | Understand human claim traversal | [Human operating guide](HUMANS.md) |
 | Inspect project direction and non-goals | [Roadmap](ROADMAP.md) |
 
