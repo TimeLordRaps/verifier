@@ -3,22 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="VSTD makes computational claims portable, bounded, and refutable.">
+  <meta name="description" content="The Verifier Standard (VSTD) is a verification-domain language and Python reference implementation for bounded computational claims.">
   <meta property="og:title" content="VSTD — portable, bounded, refutable evidence">
   <meta property="og:description" content="A project specification and reference implementation for bounded computational claims and provenance graphs.">
   <meta property="og:image" content="https://timelordraps.github.io/verifier/assets/vstd-overview.png">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://timelordraps.github.io/verifier/">
   <title>VSTD — portable, bounded, refutable</title>
+  <link rel="canonical" href="https://timelordraps.github.io/verifier/">
+  <link rel="icon" href="assets/vstd-overview.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
+  <a class="skip-link" href="#top">Skip to content</a>
   <header class="wrap">
     <nav aria-label="Primary">
       <a class="brand" href="#top">VSTD</a>
       <div class="links">
-        <a href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Demo</a>
-        <a href="https://github.com/TimeLordRaps/verifier/blob/main/standard/LADDER.md">Standard</a>
-        <a href="https://github.com/TimeLordRaps/verifier/blob/main/ROADMAP.md">Roadmap</a>
+        <a href="guides.html">Guides</a>
+        <a href="reference.html">Reference</a>
+        <a href="https://github.com/TimeLordRaps/verifier#30-60-second-demonstration">Demo</a>
+        <a href="standard/">Standard</a>
+        <a href="experiments/">Experiments</a>
+        <a href="project/ROADMAP.html">Project</a>
         <a href="https://github.com/TimeLordRaps/verifier">GitHub</a>
       </div>
     </nav>
@@ -29,14 +36,27 @@
       <div>
         <div class="eyebrow">Verification language for computational work</div>
         <h1>Make the claim challengeable.</h1>
-        <p class="lead">VSTD makes computational claims portable, bounded, and refutable—so a result travels with its meaning, evidence, limits, and failure route.</p>
-        <div class="actions">
-          <a class="button primary" href="https://github.com/TimeLordRaps/verifier#see-it-fail-correctly">Run the four-scenario demo</a>
-          <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/QUICKSTART.md">Read the quickstart</a>
+        <p class="lead">VSTD packages bounded computational claims with their evidence,
+        checking mechanisms, limits, refutation conditions, provenance, and
+        reproducibility information. It does not replace native domain verifiers or
+        strengthen their results.</p>
+        <div class="actions hero-actions">
+          <a class="button primary" href="https://github.com/TimeLordRaps/verifier#30-60-second-demonstration">Run the four-scenario demo</a>
+          <a class="button" href="docs/QUICKSTART.html">Read the quickstart</a>
         </div>
+        <p class="lead">VSTD makes computational claims:</p>
+        <dl class="lead-defs">
+          <dt>Portable:</dt>
+          <dd>checkable without post-verdict cooperation from the declarant because every verdict-critical byte is included or retrievable and digest-bound; a locator or retention promise alone does not qualify.</dd>
+          <dt>Bounded:</dt>
+          <dd>carrying their own claim coordinates and resource ceilings, so exhausted work remains <code>UNKNOWN</code> rather than being answered outside the checked boundary.</dd>
+          <dt>Refutable:</dt>
+          <dd>exposing falsification conditions, admissible counterevidence, exclusions, and decision rules so another party can challenge the exact result.</dd>
+        </dl>
+        <p class="lead lead-close">A result travels with its meaning, evidence, limits, and failure routes so downstream humans and agents can draw conclusions without silently widening it.</p>
       </div>
       <div class="hero-card">
-        <img src="assets/vstd-overview.svg" alt="The VSTD object and graph axes, where every layer requires its own separate evidence">
+        <img src="assets/vstd-overview.svg" alt="The VSTD object and Graph numbered profiles, where every closure coordinate requires separate evidence">
       </div>
     </div>
 
@@ -56,6 +76,19 @@
 
     <section>
       <div class="wrap">
+        <div class="eyebrow">Artifact-first semantics</div>
+        <h2>Verify the process, not the actor.</h2>
+        <p class="section-lead">VSTD evaluates bounded validity propositions about computational processes represented by software and evidence-bearing artifacts. Identity, popularity, and reputation alone add no verdict weight. TRUST, ROT, and RUST are formal semantic names, not acronyms or actor ratings; the reference Graph assurance log records them as evidence-bound events and can replay their embedded evidence and mechanisms offline. Architectural zero knowledge presumes no unevidenced proposition; cryptographic zero knowledge can enclose a confidential witness only through a named proof system bound to the exact program and predicate.</p>
+        <div class="grid">
+          <article class="card"><div class="number">TRUST · FORWARD</div><h3>Mechanism-earned support</h3><p>Exact artifact support moves edge by edge through a checked transformation bound to its inputs, output, Graph, and prerequisite support. It is never an actor rating.</p></article>
+          <article class="card"><div class="number">ROT · CURRENT STATE</div><h3>Admissibility degrades</h3><p>Typed lifecycle evidence can require reassessment without rewriting an immutable historical result. Age alone is insufficient.</p></article>
+          <article class="card"><div class="number">RUST · BACKWARD</div><h3>Diagnostic ancestry</h3><p>A checked descendant deviation traces over deduplicated recorded ancestors. BLAME requires localized responsibility; GUILT additionally requires an exact violated obligation. Neither follows from reachability alone.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
         <div class="eyebrow">Executable first impression</div>
         <h2>See it reject, preserve uncertainty, and degrade.</h2>
         <p class="section-lead">The flagship demo is side-effect free. It runs checked specimens and exits successfully only when every defensive outcome matches its explicit invariant.</p>
@@ -66,7 +99,7 @@ $ vstd demo
 <span class="ok">[DEMO OK]</span> Valid-looking proof, wrong artifact       → REJECTED
 <span class="unknown">[DEMO OK]</span> Bound exhausted without a false answer    → ACCEPTED/UNKNOWN
 <span class="ok">[DEMO OK]</span> Inflated verification-cost claim          → REJECTED
-<span class="ok">[DEMO OK]</span> Revoked ancestor behind valid descendants → GRAPH-LEVEL-0</code></pre></div>
+<span class="ok">[DEMO OK]</span> Revoked ancestor behind valid descendants → GRAPH-CANDIDATE-0</code></pre></div>
       </div>
     </section>
 
@@ -75,8 +108,8 @@ $ vstd demo
         <div class="eyebrow">Boundaries</div>
         <h2>Useful without pretending to be total.</h2>
         <div class="boundary">
-          <article class="card"><h3>VSTD can help</h3><ul><li>carry exact claims and evidence between systems;</li><li>preserve PASS, FAIL, and UNKNOWN distinctly;</li><li>trace poisoned ancestry and downstream impact;</li><li>make challenge conditions machine-readable.</li></ul></article>
-          <article class="card"><h3>VSTD cannot establish</h3><ul><li>general AI safety, alignment, or intent;</li><li>hidden model state or unobserved tool context;</li><li>complete physical-world execution history;</li><li>truth outside the declared observation surface.</li></ul></article>
+          <article class="card"><h3>VSTD can help</h3><ul><li>carry exact claims and evidence between systems;</li><li>preserve PASS, FAIL, and UNKNOWN distinctly;</li><li>query recorded ancestry and bounded downstream impact;</li><li>make challenge conditions machine-readable.</li></ul></article>
+          <article class="card"><h3>VSTD cannot establish</h3><ul><li>general artificial intelligence (AI) safety, alignment, or intent;</li><li>hidden model state or unobserved tool context;</li><li>complete physical-world execution history;</li><li>truth outside the declared observation surface.</li></ul></article>
         </div>
       </div>
     </section>
@@ -84,12 +117,17 @@ $ vstd demo
     <section>
       <div class="wrap">
         <div class="eyebrow">Current status</div>
-        <h2>Built for adversarial review, not ceremonial adoption.</h2>
-        <p class="status">VSTD is a founder-maintained alpha project specification. It has no demonstrated external adoption, independent implementation, interoperability deployment, or third-party security review. VSTD-5 remains draft.</p>
+        <h2>Current implementation status</h2>
+        <p class="status">VSTD is a maintainer-led alpha project specification. Compatibility VSTD-4 and Graph paths remain <code>NOT_ESTABLISHED</code> candidates. Separate evidence-bound VSTD-4, VSTD-5, Graph-profile, and assurance-event paths rerun exact registered mechanisms from embedded evidence; no real external witness is claimed by this repository. The project has no demonstrated external adoption, independent implementation, interoperability deployment, or third-party security review.</p>
+        <p class="status"><strong>Artifact-control boundary:</strong> freeze preserves exact bytes and sealing is not encryption. A thaw sidecar alone is unkeyed metadata and remains <code>NOT_ESTABLISHED</code>; clean or dirty status requires the actual supplied parent to verify as sealed with every recorded parent coordinate matching. This current comparison does not authenticate the historical copy operation or external continuity.</p>
+        <p class="release-coordinate"><strong>Release coordinate:</strong> this branch
+        documents <code>verifier-standard 1.2.0</code> as an unreleased candidate. Use
+        <a href="https://github.com/TimeLordRaps/verifier/releases">GitHub Releases</a> for
+        the latest published artifact.</p>
         <div class="actions">
-          <a class="button primary" href="https://github.com/TimeLordRaps/verifier/discussions/8">Challenge the design</a>
-          <a class="button" href="https://github.com/TimeLordRaps/verifier/issues/new/choose">Report a concrete issue</a>
-          <a class="button" href="https://github.com/TimeLordRaps/verifier/blob/main/docs/CLAIMS_AND_LIMITS.md">Read claim limits</a>
+          <a class="button primary" href="https://github.com/TimeLordRaps/verifier#current-maturity">Review the maturity table</a>
+          <a class="button" href="https://github.com/TimeLordRaps/verifier/issues/new/choose">Report an ambiguity or counterexample</a>
+          <a class="button" href="docs/CLAIMS_AND_LIMITS.html">Read claim limits</a>
         </div>
       </div>
     </section>

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Fail closed when a release archive contains private or secret-shaped text."""
+"""Terminology: Unicode Transformation Format, 8-bit (UTF-8); Verifier Standard (VSTD).
+
+Fail closed when a release archive contains private or secret-shaped text."""
 
 from __future__ import annotations
 
@@ -70,6 +72,9 @@ def check_artifact(path: Path, errors: list[str]) -> int:
         return _scan_zip(path, errors)
     if path.name.endswith(".tar.gz"):
         return _scan_tar(path, errors)
+    if path.name.endswith(".json"):
+        _scan_text(path, path.name, path.read_bytes(), errors)
+        return 1
     raise ValueError(f"unsupported release artifact: {path}")
 
 

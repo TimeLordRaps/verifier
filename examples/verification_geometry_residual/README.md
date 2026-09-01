@@ -1,7 +1,10 @@
 # Reconstruction residual and bounded closure
 
-This example is the smallest VSTD-0.2 verification-geometry vertical slice. Its
-machine-readable form is [`geometry.json`](geometry.json).
+> **Acronym:** Verifier Standard (VSTD).
+
+This example is the smallest VSTD-2 verification-geometry vertical slice. Its
+machine-readable form is [`geometry.json`](geometry.json) under the current `VSTD-2`
+identifier.
 
 ## 1. Apparently complete decomposition
 
@@ -53,8 +56,9 @@ the bounded geometry earn self-closure.
 
 ## 5. Higher-order verification without infinite workflow abstraction
 
-`layer:v0` verifies the formatter surface. `layer:v1` treats the V0 geometry as a
-secondary subject and verifies the immediately preceding layer. The typed validator
-requires orders to be finite, contiguous, and adjacent. A skipped or recursively
-invented workflow layer is invalid; an inability to continue is represented as a
+The serialized compatibility identifiers `layer:v0` and `layer:v1` denote VSTD-2
+**verification orders**, not numbered VSTD profiles. V0 verifies the formatter surface;
+V1 treats the V0 geometry as a secondary subject and verifies the immediately preceding
+order. The typed validator requires orders to be finite, contiguous, and adjacent. A
+skipped or recursively invented verification order is invalid; an inability to continue is represented as a
 horizon rather than hidden behind a trust assumption.

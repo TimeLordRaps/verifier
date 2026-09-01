@@ -1,4 +1,6 @@
-"""Fleet-boundary and partition-safe accounting checks for VSTD 3."""
+"""Terminology: Verifier Standard (VSTD).
+
+Fleet-boundary and partition-safe accounting checks for VSTD 3."""
 
 from __future__ import annotations
 

@@ -1,4 +1,7 @@
-"""Translation-boundary assurance: the missing dimension between "a formal
+"""Terminology: finite-state machine (FSM); JavaScript Object Notation (JSON);
+Boolean satisfiability problem (SAT); Verifier Standard (VSTD).
+
+Translation-boundary assurance: the missing dimension between "a formal
 system said yes" and "the formal system was fed an honest encoding of the
 real thing."
 
@@ -182,8 +185,8 @@ class TranslationRecord:
         return rec
 
     def canonical_digest(self) -> str:
-        """Reuses the same canonicalization/digest machinery as VSTD-0.1
-        receipts (``verifier.core.receipt.compute_canonical_digest``)
+        """Reuse the VSTD-1 receipt canonicalization and digest machinery
+        (``verifier.core.receipt.compute_canonical_digest``)
         rather than inventing a second canonical-JSON scheme."""
         return compute_canonical_digest(self.to_dict())
 
@@ -297,7 +300,7 @@ def canonical_json_digest(obj: Any) -> str:
     """Small helper for hashing an arbitrary source document (e.g. a JSON
     Schema) into ``source_digest``, using plain sorted-key JSON -- not the
     receipt payload schema, since the source document is not itself a
-    receipt. Kept separate from ``compute_canonical_digest`` (VSTD-0.1
+    receipt. Kept separate from ``compute_canonical_digest`` (VSTD-1 receipt
     stable-payload canonicalization) to avoid implying the source document
     conforms to that schema."""
     import hashlib

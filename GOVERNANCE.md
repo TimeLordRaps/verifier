@@ -1,8 +1,10 @@
-# VSTD governance
+# Verifier Standard (VSTD) governance
+
+> **Acronym:** grounded decision certificate (GDC).
 
 ## Current phase
 
-VSTD is founder-maintained project specification work. Publication makes the text and
+VSTD is maintainer-led project specification work. Publication makes the text and
 reference implementation inspectable; it does not manufacture multi-stakeholder
 consensus or standards-body recognition.
 
@@ -11,24 +13,29 @@ emulator, offline adapters, provenance composition, and conformance suite. It is
 claim that accelerator vendors implemented the firmware contract or accepted the
 specification.
 
-VSTD-4 is implemented for the declared grounded-certificate, computed-depth,
-availability, precommitment, challenge, degradation, and composition surfaces.
-`VSTD4-GDC-1` has no demonstrated independent implementation or external
-interoperability. VSTD-5 remains draft and has no shipped witness procedure.
+VSTD-4 ships grounded-certificate/kernel checks and separate availability,
+precommitment, challenge, degradation, and composition mechanisms. Its candidate-depth runtime
+computes only a structural candidate over caller-supplied references with conformance
+`NOT_ESTABLISHED`. The separate evidence-bound runtime rehashes and reruns exact VSTD-1/2/3
+and fourteen-rung propositions before it may establish VSTD-4 conformance; its receipt
+rechecker reproduces that result offline with the supplied mechanism implementations.
+`VSTD4-GDC-1` has no demonstrated independent implementation or external interoperability.
+VSTD-5 has a shipped evidence-bound reference procedure, but the repository claims no real
+external witness or second implementation.
 
-## Layer and release states
+## Numbered-profile and release states
 
-- **Implemented base:** a layer has a published specification, schema or typed model,
+- **Implemented base:** a numbered profile has a published specification, schema or typed model,
   executable reference path, and passing conformance tests for its declared surface.
 - **Experimental:** the vocabulary and a bounded vertical slice exist, but independent
   implementations or broader interoperability evidence are still missing.
 - **Challenged:** current evidence no longer supports a previously published claim.
 - **Superseded:** an additive correction replaces a bounded document while historical
-  release bytes and wire identifiers remain unchanged.
+  release bytes and serialized receipt identifiers remain unchanged.
 
-Specification layers use integer names; repository releases use semantic versions.
+Numbered profiles use integer names; repository releases use semantic versions.
 Released artifacts are frozen. Corrections are additive and identify the affected
-layer, release, claim, evidence, and downstream impact.
+numbered profile, release, claim, evidence, and downstream impact.
 
 ## Change process
 
@@ -50,12 +57,12 @@ intended next governance step is independent implementation feedback followed by
 venue with explicit copyright and patent terms.
 
 The repository's Apache License 2.0 governs the specification, documentation, and
-reference implementation in this release. Its contributor patent grant is a project
+reference implementation at this source coordinate. Its contributor patent grant is a project
 license term, not a substitute for a neutral standards venue's intellectual-property
 policy or a separate contributor agreement.
 
 ## Conformance and marks
 
 No organization is currently an accredited VSTD certifier. Implementers may state the
-exact VSTD layer, repository release, receipt type, tests, and evidence they support. They must not imply
+exact VSTD profile, repository release, receipt type, tests, and evidence they support. They must not imply
 endorsement, comprehensive safety, or verification beyond that surface.

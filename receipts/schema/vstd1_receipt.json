@@ -1,11 +1,13 @@
 {
+  "$comment": "Terminology: Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd1_receipt.json",
   "title": "VSTD-1 Claim Mechanics Receipt",
-  "description": "Schema for VSTD-1 claim-mechanics receipts. The VSTD-0.1 wire identifier is frozen for compatibility.",
+  "description": "Schema for VSTD-1 claim-mechanics receipts.",
   "type": "object",
   "required": [
     "schema_version",
+    "receipt_kind",
     "receipt_id",
     "canonical_digest",
     "claim",
@@ -18,7 +20,10 @@
   "properties": {
     "schema_version": {
       "type": "string",
-      "enum": ["VSTD-0.1"]
+      "enum": ["VSTD-1"]
+    },
+    "receipt_kind": {
+      "const": "claim_mechanics"
     },
     "receipt_id": {
       "type": "string",
@@ -92,7 +97,39 @@
         "grounding_result": { "type": "object" },
         "structural_integrity_passed": { "type": "boolean" },
         "trusted_computing_base": { "type": "object" },
-        "audit_notes": { "type": "array", "items": { "type": "string" } }
+        "audit_notes": { "type": "array", "items": { "type": "string" } },
+        "independence_basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["independently_verified", "actor_independence", "implementation_separation", "runtime_separation", "evidence"],
+          "properties": {
+            "independently_verified": {
+              "type": "boolean",
+              "description": "A conformance claim, not a structural inference. VSTD 1.2.0's bundled runtime accepts only false because it has no actor/execution evidence-binding validator."
+            },
+            "actor_independence": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "implementation_separation": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "runtime_separation": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "evidence": {
+              "type": "array",
+              "description": "References are declarations until an implemented profile resolves and validates their execution bindings.",
+              "items": { "type": "string", "minLength": 1 }
+            }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "independently_verified": { "const": true } } },
+              "then": {
+                "properties": {
+                  "actor_independence": { "const": "EVIDENCED" },
+                  "implementation_separation": { "const": "EVIDENCED" },
+                  "runtime_separation": { "const": "EVIDENCED" },
+                  "evidence": { "minItems": 1 }
+                }
+              }
+            }
+          ]
+        }
       }
     },
     "provenance": {

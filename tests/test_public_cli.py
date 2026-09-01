@@ -1,4 +1,6 @@
-"""Tests for the target-neutral public CLI surface."""
+"""Terminology: command-line interface (CLI); Verifier Standard (VSTD).
+
+Tests for the target-neutral public CLI surface."""
 
 from __future__ import annotations
 
@@ -46,6 +48,14 @@ def test_public_parser_has_no_target_specific_generation_commands() -> None:
     assert parser.parse_args(["data", "export", "receipt.json"]).data_command == "export"
     assert parser.parse_args(["plan", "manifest.json"]).command == "plan"
     assert parser.parse_args(["demo"]).command == "demo"
+    assert (
+        parser.parse_args(["artifact", "verify", "bundle"]).artifact_command
+        == "verify"
+    )
+    assert (
+        parser.parse_args(["experiment", "validate", "experiment.json"]).experiment_command
+        == "validate"
+    )
 
 
 def test_public_cli_flagship_demo_is_side_effect_free_and_machine_readable(
@@ -113,6 +123,31 @@ def test_public_cli_generic_run_lifecycle(tmp_path: Path, capsys) -> None:
     assert main(["inspect", str(receipt_dir)]) == 0
     assert main(["reproduce", str(receipt_dir), "--rerun"]) == 0
     assert "[UNSANDBOXED EXECUTION]" in capsys.readouterr().err
+
+
+def test_generic_receipt_validate_and_inspect_honor_json(tmp_path: Path, capsys) -> None:
+    manifest = _manifest(tmp_path)
+    receipt_dir = tmp_path / "receipt"
+    assert main(["run", str(manifest), "--output", str(receipt_dir)]) == 0
+    capsys.readouterr()
+
+    for command in ("validate", "inspect"):
+        assert main([command, str(receipt_dir), "--json"]) == 0
+        result = json.loads(capsys.readouterr().out)
+        assert result["command"] == command
+        assert result["receipt_kind"] == "generic_computational_run"
+        assert result["result"] == "COMPLETED"
+        assert result["exit_code"] == 0
+
+
+def test_unknown_receipt_failure_honors_json(tmp_path: Path, capsys) -> None:
+    path = tmp_path / "receipt.json"
+    path.write_text('{"schema_version": "UNKNOWN"}', encoding="utf-8")
+
+    assert main(["validate", str(path), "--json"]) == 1
+    result = json.loads(capsys.readouterr().out)
+    assert result["result"] == "FAILED"
+    assert result["errors"] == ["Unsupported receipt kind or schema"]
 
 
 def test_public_cli_rejects_unknown_receipt(tmp_path: Path) -> None:

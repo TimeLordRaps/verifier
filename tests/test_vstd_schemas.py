@@ -1,6 +1,8 @@
-"""Published JSON Schema coverage for the integer-layer release.
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
 
-JSON Schema checks document shape.  The independent kernel remains authoritative
+Published JavaScript Object Notation (JSON) Schema coverage for the numbered-profile release.
+
+JSON Schema checks document shape. The separately implemented kernel remains authoritative
 for grounding, tier, count, binding, and proof semantics.
 """
 
@@ -25,11 +27,19 @@ from verifier.core.certificate import (
 )
 from verifier.core.kernel import check, reference_descriptor
 from verifier.core.refutation import build_horn_certificate
+from verifier.data.models import (
+    ArtifactNode,
+    ArtifactStatus,
+    ArtifactType,
+    ConflictRecord,
+    ProvenanceHypergraph,
+)
 
 
 SCHEMA_DIR = Path(__file__).resolve().parents[1] / "receipts" / "schema"
 PUBLISHED_SCHEMAS = (
     "vstd1_receipt.json",
+    "vstd1_generic_run_receipt.json",
     "vstd2_receipt.json",
     "vstd3_receipt.json",
     "vstd4_receipt.json",
@@ -93,6 +103,57 @@ def test_every_published_schema_is_valid_draft_2020_12() -> None:
         Draft202012Validator.check_schema(_load(name))
 
 
+def test_graph_schema_and_runtime_share_status_and_conflict_shapes() -> None:
+    schema = _load("vstd_graph_receipt.json")["properties"]["hypergraph"]
+    graph = ProvenanceHypergraph()
+    graph.add_artifact(
+        ArtifactNode("artifact:a", "a", ArtifactType.CORPUS, "a" * 64, status=ArtifactStatus.VALID)
+    )
+    graph.add_conflict(
+        ConflictRecord(
+            "conflict:a",
+            "artifact:a",
+            "content_digest",
+            ("sha256:a", "sha256:b"),
+            ("receipt:a", "receipt:b"),
+        )
+    )
+    payload = graph.to_dict()
+    Draft202012Validator(schema).validate(payload)
+    assert ProvenanceHypergraph.from_dict(payload).to_dict() == payload
+
+
+def test_graph_schema_keeps_legacy_candidate_blocks_additively_valid() -> None:
+    candidate_schema = _load("vstd_graph_receipt.json")["properties"][
+        "computed_graph_level"
+    ]
+    legacy = {
+        "collection_id": "collection:legacy",
+        "level": 2,
+        "max_level": 5,
+        "blocking_obligations": [],
+        "witness_digest": HEX,
+        "refutation_digest": HEX,
+    }
+    Draft202012Validator(candidate_schema).validate(legacy)
+    assert "rating_basis" not in candidate_schema["required"]
+    assert "conformance_status" not in candidate_schema["required"]
+
+
+def test_independence_schema_rejects_actorless_independence_claim() -> None:
+    basis_schema = _load("vstd1_receipt.json")["properties"]["independent_audit"][
+        "properties"
+    ]["independence_basis"]
+    basis = {
+        "independently_verified": True,
+        "actor_independence": "NOT_DEMONSTRATED",
+        "implementation_separation": "EVIDENCED",
+        "runtime_separation": "EVIDENCED",
+        "evidence": ["receipt:checker"],
+    }
+    assert list(Draft202012Validator(basis_schema).iter_errors(basis))
+
+
 def test_vstd4_gdc_certificate_matches_its_published_schema() -> None:
     certificate, _binding = _certificate()
     Draft202012Validator(_load("vstd4_certificate.json")).validate(
@@ -100,7 +161,7 @@ def test_vstd4_gdc_certificate_matches_its_published_schema() -> None:
     )
 
 
-def test_vstd4_receipt_requires_the_computed_ceiling_certificate() -> None:
+def test_vstd4_candidate_receipt_is_explicit_and_keeps_legacy_shape_valid() -> None:
     certificate, binding = _certificate()
     schema = _load("vstd4_receipt.json")
     validator = Draft202012Validator(schema, registry=_registry())
@@ -110,6 +171,7 @@ def test_vstd4_receipt_requires_the_computed_ceiling_certificate() -> None:
         "claim_id": "claim:schema-test",
         "binding": binding.to_dict(),
         "vstd4_depth": 13,
+        "conformance_status": "NOT_ESTABLISHED",
         "rung_evidence": {f"4.{index}": f"sha256:{HEX}" for index in range(1, 14)},
         "witness": certificate.to_dict(),
         "ceiling_refutation": certificate.to_dict(),
@@ -117,6 +179,15 @@ def test_vstd4_receipt_requires_the_computed_ceiling_certificate() -> None:
         "status": "VALID",
     }
     validator.validate(receipt)
+    assert "does not establish VSTD-4 conformance" in schema["properties"]["status"]["description"]
+
+    legacy = dict(receipt)
+    del legacy["conformance_status"]
+    validator.validate(legacy)
+
+    receipt["conformance_status"] = "ESTABLISHED"
+    assert list(validator.iter_errors(receipt))
+    receipt["conformance_status"] = "NOT_ESTABLISHED"
 
     receipt["ceiling_refutation"] = None
     errors = list(validator.iter_errors(receipt))
@@ -124,62 +195,30 @@ def test_vstd4_receipt_requires_the_computed_ceiling_certificate() -> None:
     assert any("not of type 'object'" in error.message for error in errors)
 
 
-def test_vstd5_draft_schema_enforces_the_vstd4_entry_gate() -> None:
+def test_vstd5_schema_requires_replayable_evidence_bound_inputs() -> None:
     schema = _load("vstd5_receipt.json")
-    validator = Draft202012Validator(schema, format_checker=FormatChecker())
-    receipt = {
+    assert schema["properties"]["schema_version"]["const"] == "VSTD-5"
+    assert "must recheck" in schema["description"]
+    legacy_draft = {
         "schema_version": "VSTD-5-DRAFT",
         "status": "DRAFT",
         "receipt_id": "VFY-5-SCHEMA-TEST",
-        "claim_id": "claim:schema-test",
-        "claim_binding": HEX,
-        "entry_vstd4_depth": 14,
-        "witnesses": [
-            {
-                "witness_id": "witness:test",
-                "identity_evidence": "sha256:" + HEX,
-                "independence": {
-                    "shared_control": "UNKNOWN",
-                    "shared_code": "UNKNOWN",
-                    "shared_trust_root": "UNKNOWN",
-                    "shared_evidence_source": "UNKNOWN",
-                    "shared_infrastructure": "UNKNOWN",
-                    "financial_dependence": "UNKNOWN",
-                    "jurisdictional_dependence": "UNKNOWN",
-                    "evidence": [],
-                },
-            }
-        ],
-        "corroborations": [
-            {
-                "corroboration_id": "corroboration:test",
-                "witness_id": "witness:test",
-                "class": "PHYSICAL_INSPECTION",
-                "vstd4_certificate_digest": HEX,
-                "checker_descriptor_digest": HEX,
-                "observed_evidence": [HEX],
-                "result": "UNKNOWN",
-                "observed_at": "2026-08-22T12:00:00Z",
-            }
-        ],
-        "disagreements": [],
-        "computed_independence": "UNKNOWN",
     }
-    validator.validate(receipt)
+    assert list(Draft202012Validator(schema).iter_errors(legacy_draft))
 
-    receipt["entry_vstd4_depth"] = 13
-    errors = list(validator.iter_errors(receipt))
-    assert errors
-    assert any("14 was expected" in error.message for error in errors)
+    dimension = schema["$defs"]["dimension"]
+    assert dimension["required"] == ["state", "binding"]
+    assert {"type": "null"} in dimension["properties"]["binding"]["anyOf"]
 
 
-def test_layer_filenames_do_not_change_historical_wire_identifiers() -> None:
-    assert _load("vstd1_receipt.json")["properties"]["schema_version"]["enum"] == [
-        "VSTD-0.1"
-    ]
-    assert _load("vstd2_receipt.json")["properties"]["schema_version"]["const"] == (
-        "VSTD-0.2"
-    )
+def test_current_wire_identifiers_and_profile_discriminators() -> None:
+    claim = _load("vstd1_receipt.json")["properties"]
+    generic = _load("vstd1_generic_run_receipt.json")["properties"]
+    assert claim["schema_version"]["enum"] == ["VSTD-1"]
+    assert claim["receipt_kind"]["const"] == "claim_mechanics"
+    assert generic["schema_version"]["const"] == "VSTD-1"
+    assert generic["receipt_kind"]["const"] == "generic_computational_run"
+    assert _load("vstd2_receipt.json")["properties"]["schema_version"]["const"] == "VSTD-2"
     assert _load("vstd_graph_receipt.json")["properties"]["schema_version"][
         "enum"
     ] == ["VSTD-DATA-0.1"]

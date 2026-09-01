@@ -1,0 +1,7 @@
+# One exact URL or trailing-* prefix and a tab-separated reason per line.
+# Entries are limited to publishers that reject this audit's automated request.
+https://doi.org/10.1145/263699.263712	Publisher returns HTTP 403 to automated probes.
+https://journals.ametsoc.org/view/journals/mwre/78/1/1520-0493_1950_078_0001_vofeit_2_0_co_2.xml	Publisher returns HTTP 403 to automated probes.
+https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1430-9134.2001.00173.x	Publisher returns HTTP 403 to automated probes.
+https://rss.onlinelibrary.wiley.com/doi/10.1111/j.2517-6161.1952.tb00104.x	Publisher returns HTTP 403 to automated probes.
+https://www.sciencedirect.com/science/article/pii/S1574013710000560	Publisher returns HTTP 400 to automated probes.

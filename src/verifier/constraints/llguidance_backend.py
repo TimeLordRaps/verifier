@@ -1,4 +1,6 @@
-"""Strict llguidance backend for the VSTD logits constraint seam."""
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+
+Strict llguidance backend for the VSTD logits constraint seam."""
 
 from __future__ import annotations
 

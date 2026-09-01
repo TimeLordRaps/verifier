@@ -1,22 +1,22 @@
-"""Generic proof-carrying computational run capture for VSTD.
+"""Terminology: JavaScript Object Notation (JSON); Boolean satisfiability problem (SAT);
+Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD);
+YAML Ain't Markup Language (YAML).
+
+Generic computational run receipt capture for VSTD-1.
 
 This module implements the smallest working version of the "wrap any consequential
 computation and get a receipt" primitive described in the VSTD program graph.
-It deliberately reuses the existing VSTD-0.1 canonicalization/digest machinery
-(``verifier.core.receipt``), provenance discovery (``verifier.core.provenance``),
-and reproducibility taxonomy (``verifier.core.reproducibility``) rather than
-introducing a parallel schema. No new standard version is declared here — this is
-an implementation living under ``schema_version = "VSTD-0.1"`` with a distinct
-``receipt_kind`` discriminator (``generic_computational_run``) so existing
-``VstdReceipt`` (SAT/derivation-shaped, ``receipt_kind = "claim_verification"``)
-and ``VstdDataReceipt`` (dataset-provenance-shaped) documents are untouched.
+It reuses the VSTD-1 receipt canonicalization, provenance discovery, and
+reproducibility taxonomy rather than introducing a parallel schema. The required
+``receipt_kind`` discriminator ``generic_computational_run`` distinguishes this
+profile from VSTD-1 claim-mechanics receipts.
 
 Design commitments (do not weaken without updating tests + docs):
 
 1. **Claims are not flattened.** "The command exited 0", "the declared output files
    exist with these digests", "an evaluator computed this metric", "the run's inputs
    trace to a provenance root", and "an external party reported a score" are five
-   different, independently falsifiable statements. They are recorded as five
+   different, separately falsifiable statements. They are recorded as five
    distinct fields under :class:`RunClaims`, never collapsed into one boolean.
 2. **Fail closed.** A missing declared input aborts the run *before* executing the
    command (no fabricated "it probably would have worked"). A missing declared
@@ -25,13 +25,15 @@ Design commitments (do not weaken without updating tests + docs):
    commands are accepted, closing off the shell-indirection attack class.
 3. **External evaluation is never auto-promoted.** If a manifest declares that an
    organizer/leaderboard reported a score, that is stored as an
-   :class:`ExternalEvaluationEvidence` record with ``attested=False`` unless the
-   manifest itself supplies a checkable evidence reference. Its presence never
-   flips ``execution_completed`` or any other locally-checked claim to true.
+   :class:`ExternalEvaluationEvidence` record with ``attested=False``. A supplied
+   evidence reference is recorded but not dereferenced or verified by this runtime.
+   Its presence never flips any locally checked claim to true.
 4. **Reproduction fidelity is classified, not asserted.** Rehashing on-disk output
    artifacts (always available, side-effect free) is distinguished from re-running
-   the recorded command (only performed when explicitly requested via ``rerun``),
-   and nondeterministic runs are never permitted to claim ``BITWISE_IDENTICAL``.
+   the recorded command (only performed when explicitly requested via ``rerun``).
+   The generic rerun compares the declared output bytes and execution outcome, so
+   it can establish only scoped ``CONTENT_IDENTICAL``; a determinism declaration
+   earns no reproduction-fidelity state.
 """
 
 from __future__ import annotations
@@ -43,7 +45,6 @@ import subprocess
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from enum import Enum
 from pathlib import Path
 from typing import Any, Mapping, Optional
 
@@ -54,42 +55,62 @@ from verifier.core.provenance import (
 )
 from verifier.core.receipt import compute_canonical_digest
 from verifier.core.reproducibility import ReproducibilityLevel
-
-RUN_SCHEMA_VERSION = "VSTD-0.1"
-RUN_RECEIPT_KIND = "generic_computational_run"
+from verifier.core.run_support import (
+    RUN_RECEIPT_KIND,
+    RUN_SCHEMA_VERSION,
+    DeterminismDeclaration,
+    RunError,
+    RunOutcome,
+)
+from verifier.core.run_planning import _validated_command, describe_run_plan, load_manifest
 
 _SNIPPET_LIMIT = 4000
 _DEFAULT_TIMEOUT_SECONDS = 300
 
 
-def _digest_if_available(path: Path, label: str) -> str:
+def _digest_if_available(path: Path, label: str, *alternatives: Path) -> str:
+    for candidate in (path, *alternatives):
+        try:
+            return "sha256:" + hashlib.sha256(candidate.read_bytes()).hexdigest()
+        except OSError:
+            continue
+    return f"UNAVAILABLE:{label}"
+
+
+def _implementation_inventory_digest(paths: tuple[Path, ...]) -> str:
+    """Hash the named module bytes without collapsing producer/checker boundaries."""
+
+    digest = hashlib.sha256()
     try:
-        return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in paths:
+            payload = path.read_bytes()
+            digest.update(path.name.encode("utf-8") + b"\0")
+            digest.update(len(payload).to_bytes(8, "big"))
+            digest.update(payload)
     except OSError:
-        return f"UNAVAILABLE:{label}"
+        return "UNAVAILABLE:generic-run-module-inventory"
+    return "sha256:" + digest.hexdigest()
 
 
-def _run_layer4_binding(
+def _assessment_context(
     manifest: Mapping[str, Any],
     *,
     falsification_condition: str,
 ) -> dict[str, Any]:
-    """Bind the verifier, bounds, precommitment, and refutation surface.
-
-    Historical generic-run receipts omit this block and retain their canonical
-    digests. New captures always include it, including explicit empty or
-    undeclared values; absence is evidence of a missing rung, not permission to
-    infer that a bound or precommitment existed.
-    """
+    """Serialize bounded generic-run mechanism and refutation context."""
     raw_bounds = manifest.get("resource_bounds", {})
     if not isinstance(raw_bounds, Mapping):
         raise RunError("resource_bounds must be an object")
-    bounds: dict[str, int] = {}
-    for name in (
+    bound_fields = (
         "verification_cost_bound",
         "memory_bound",
         "certificate_size_bound",
-    ):
+    )
+    unknown_bounds = sorted(set(raw_bounds) - set(bound_fields))
+    if unknown_bounds:
+        raise RunError(f"resource_bounds has unknown fields: {', '.join(unknown_bounds)}")
+    bounds: dict[str, int] = {}
+    for name in bound_fields:
         value = raw_bounds.get(name, 0)
         if type(value) is not int or value < 0:
             raise RunError(f"resource_bounds.{name} must be a non-negative integer")
@@ -101,16 +122,38 @@ def _run_layer4_binding(
     surface = dict(raw_surface or {})
     surface.setdefault("admissible_refutations", [])
     surface.setdefault("excluded_claims", ["PHYSICAL_WORLD_COMPLETENESS"])
-    surface.setdefault("legacy_falsification_condition", falsification_condition)
+    surface.setdefault("falsification_condition", falsification_condition)
+    for name in ("admissible_refutations", "excluded_claims"):
+        if not isinstance(surface[name], list) or not all(
+            isinstance(item, str) for item in surface[name]
+        ):
+            raise RunError(f"refutation_surface.{name} must be an array of strings")
+    if not isinstance(surface["falsification_condition"], str):
+        raise RunError("refutation_surface.falsification_condition must be a string")
 
     here = Path(__file__).resolve()
+    implementation_modules = tuple(
+        here.with_name(name)
+        for name in (
+            "run.py",
+            "run_support.py",
+            "run_planning.py",
+            "run_validation.py",
+            "run_inspection.py",
+            "run_reproduction.py",
+            "run_impact.py",
+        )
+    )
     specification = here.parents[3] / "standard" / "VSTD-1.md"
+    packaged_specification = here.parents[1] / "specifications" / "VSTD-1.md"
     verifier = {
         "specification_hash": _digest_if_available(
-            specification, "standard/VSTD-1.md"
+            specification, "standard/VSTD-1.md", packaged_specification
         ),
-        "implementation_hash": _digest_if_available(here, "core/run.py"),
-        "parser_hash": _digest_if_available(here, "core/run.py"),
+        "implementation_hash": _implementation_inventory_digest(implementation_modules),
+        "parser_hash": _digest_if_available(
+            here.with_name("run_validation.py"), "core/run_validation.py"
+        ),
         "certificate_format": "VSTD1-GENERIC-RUN",
         "format_fragment": "CAPTURE,VALIDATE,REPRODUCE",
         "dependencies": ["python-stdlib"],
@@ -122,25 +165,6 @@ def _run_layer4_binding(
         "prior_commitment": str(manifest.get("prior_commitment", "")),
         "refutation_surface": surface,
     }
-
-
-class RunError(RuntimeError):
-    """Raised for manifest or capture errors that must fail closed."""
-
-
-class RunOutcome(str, Enum):
-    COMPLETED = "COMPLETED"
-    NONZERO_EXIT = "NONZERO_EXIT"
-    MISSING_INPUT = "MISSING_INPUT"
-    MISSING_OUTPUT = "MISSING_OUTPUT"
-    TIMEOUT = "TIMEOUT"
-    EXCEPTION = "EXCEPTION"
-
-
-class DeterminismDeclaration(str, Enum):
-    DETERMINISTIC = "DETERMINISTIC"
-    NONDETERMINISTIC = "NONDETERMINISTIC"
-    UNKNOWN = "UNKNOWN"
 
 
 def _now_utc() -> str:
@@ -237,7 +261,7 @@ class EvaluatorClaim:
     evaluator_name: str
     metric_name: str
     value: Any
-    computed_by: str  # "local_reference_evaluator" | "declared_by_manifest_author"
+    computed_by: str  # "bound_output_extraction" | "declared_by_manifest_author"
     verified_independently: bool
 
     def to_dict(self) -> dict[str, Any]:
@@ -255,10 +279,10 @@ class ExternalEvaluationEvidence:
     """Explicit, bounded slot for organizer/third-party reported results.
 
     Presence of this record NEVER means the runtime cryptographically or
-    independently verified the external event described. ``attested``
-    distinguishes a claim carrying real checkable evidence (a signature, a
-    linked artifact digest) from a bare unverifiable assertion. Default is
-    the least trusting classification.
+    verified the external event described through a separate mechanism or actor.
+    ``evidence_kind`` and
+    ``evidence_ref`` preserve what the manifest supplied; ``attested`` remains
+    false because this capture path does not dereference or verify that evidence.
     """
 
     source: str
@@ -281,17 +305,13 @@ class ExternalEvaluationEvidence:
     @classmethod
     def from_manifest(cls, d: Mapping[str, Any]) -> "ExternalEvaluationEvidence":
         evidence_kind = str(d.get("evidence_kind", "UNVERIFIED_ASSERTION")).upper()
-        # Fail closed: only LINKED_ARTIFACT/SIGNED_ATTESTATION with a concrete
-        # evidence_ref may claim attested=True. A bare assertion never can,
-        # regardless of what the manifest author writes in "attested".
-        attested = bool(d.get("attested", False)) and evidence_kind != "UNVERIFIED_ASSERTION" and bool(d.get("evidence_ref"))
         return cls(
             source=str(d.get("source", "unspecified")),
             description=str(d.get("description", "")),
             reported_value=d.get("reported_value"),
             evidence_kind=evidence_kind,
             evidence_ref=d.get("evidence_ref"),
-            attested=attested,
+            attested=False,
         )
 
 
@@ -355,7 +375,7 @@ def _resolve_provenance_linkage(base_dir: Path, root: Mapping[str, Any]) -> Prov
 class RunClaims:
     """Distinct, non-flattened claims a run receipt may make.
 
-    Each field is an independently falsifiable statement. They must never be
+    Each field is a separately falsifiable statement. They must never be
     collapsed into a single pass/fail boolean — see module docstring.
     """
 
@@ -392,7 +412,7 @@ class GenericRunReceipt:
     claims: RunClaims
     provenance_linkage: tuple[ProvenanceLinkage, ...]
     reproducibility: dict[str, Any]
-    layer4_binding: Optional[dict[str, Any]] = None
+    assessment_context: dict[str, Any]
     canonical_digest: str = ""
 
     def get_stable_payload(self) -> dict[str, Any]:
@@ -440,9 +460,8 @@ class GenericRunReceipt:
             "claims": self.claims.to_dict(),
             "provenance_linkage": [p.to_dict() for p in self.provenance_linkage],
             "reproducibility": self.reproducibility,
+            "assessment_context": self.assessment_context,
         }
-        if self.layer4_binding is not None:
-            payload["layer4_binding"] = self.layer4_binding
         return payload
 
     def compute_and_set_digest(self) -> str:
@@ -472,9 +491,8 @@ class GenericRunReceipt:
             "claims": self.claims.to_dict(),
             "provenance_linkage": [p.to_dict() for p in self.provenance_linkage],
             "reproducibility": self.reproducibility,
+            "assessment_context": self.assessment_context,
         }
-        if self.layer4_binding is not None:
-            payload["layer4_binding"] = self.layer4_binding
         return payload
 
     def save_to_directory(self, out_dir: Path) -> Path:
@@ -549,8 +567,8 @@ def generate_run_receipt_markdown(receipt: GenericRunReceipt) -> str:
             f"- **Reported value:** `{ext.reported_value}`\n"
             f"- **Evidence kind:** `{ext.evidence_kind}`\n"
             f"- **Evidence reference:** `{ext.evidence_ref}`\n"
-            f"- **Attested by the runtime:** `{ext.attested}` "
-            f"({'a checkable evidence reference backs this value' if ext.attested else 'this is an UNVERIFIED external assertion — recorded for bookkeeping only, NOT independently checked'})\n"
+            f"- **Verified by this runtime:** `{ext.attested}` "
+            "(the reference is recorded but not checked by a separate mechanism or actor)\n"
         )
     else:
         external_md = "_(no external evaluation evidence declared — this run makes no claim about any external score, leaderboard, or organizer report)_"
@@ -637,94 +655,19 @@ def generate_run_receipt_markdown(receipt: GenericRunReceipt) -> str:
 ## 8. Reproduction
 
 ```bash
-vstd reproduce {receipt.receipt_id if False else '<receipt-dir>'}
+vstd reproduce <receipt-dir>
 ```
 
 Highest demonstrated reproduction fidelity: `{receipt.reproducibility.get("highest_demonstrated_level") or "NOT YET REPRODUCED"}`.
-Declared supported ceiling (determinism-bounded): `{receipt.reproducibility.get("declared_ceiling")}`.
+Declared supported ceiling (bundled mechanism): `{receipt.reproducibility.get("declared_ceiling")}`.
 
 ---
 
-*Generated by VSTD Generic Run Runtime (VSTD-0.1, receipt_kind=generic_computational_run).*
+*Generated by the VSTD-1 generic-run reference runtime
+(`receipt_kind = generic_computational_run`).*
 """
 
 
-def load_manifest(manifest_path: Path) -> dict[str, Any]:
-    text = manifest_path.read_text(encoding="utf-8")
-    if manifest_path.suffix.lower() in (".yaml", ".yml"):
-        try:
-            import yaml  # type: ignore[import-untyped]
-        except ImportError as exc:
-            raise RunError(
-                "YAML manifest support is optional; install verifier-standard[yaml] or use JSON"
-            ) from exc
-        data = yaml.safe_load(text)
-    else:
-        data = json.loads(text)
-    if not isinstance(data, dict):
-        raise RunError(f"Manifest at {manifest_path} must decode to a JSON/YAML object.")
-    return data
-
-
-def _validated_command(manifest: Mapping[str, Any]) -> tuple[str, ...]:
-    command = manifest.get("command")
-    if not isinstance(command, list) or not command or not all(isinstance(c, str) for c in command):
-        raise RunError(
-            "manifest 'command' must be a non-empty list of strings (argv form). "
-            "String/shell commands are rejected to close off shell-indirection attacks."
-        )
-    return tuple(command)
-
-
-def describe_run_plan(manifest: Mapping[str, Any], manifest_dir: Path) -> dict[str, Any]:
-    """Return the observable execution and capture paths without executing them.
-
-    This is a review aid, not a sandbox analysis. A subprocess may access resources
-    that are not named in a manifest, so the result deliberately says that the
-    command's effective access remains outside VSTD's observation boundary.
-    """
-
-    command = _validated_command(manifest)
-    root = manifest_dir.resolve()
-
-    def path_record(path_value: Any) -> dict[str, Any]:
-        declared = str(path_value)
-        resolved = (root / declared).resolve()
-        try:
-            resolved.relative_to(root)
-            outside = False
-        except ValueError:
-            outside = True
-        return {
-            "declared": declared,
-            "resolved": str(resolved),
-            "outside_manifest_directory": outside,
-        }
-
-    def artifacts(key: str) -> list[dict[str, Any]]:
-        result: list[dict[str, Any]] = []
-        for entry in manifest.get(key, []):
-            if not isinstance(entry, Mapping) or "path" not in entry:
-                raise RunError(f"manifest '{key}' entries must be objects with a path")
-            record = path_record(entry["path"])
-            record["role"] = str(entry.get("role", key[:-1]))
-            record["present_before_execution"] = Path(record["resolved"]).is_file()
-            result.append(record)
-        return result
-
-    return {
-        "executes_without_sandbox": True,
-        "manifest_directory": str(root),
-        "command": list(command),
-        "cwd": path_record(manifest.get("cwd", ".")),
-        "repo_dir": path_record(manifest.get("repo_dir", ".")),
-        "inputs": artifacts("inputs"),
-        "outputs": artifacts("outputs"),
-        "observation_limit": (
-            "Declared paths describe receipt capture only; they do not confine the "
-            "subprocess or enumerate everything it may access."
-        ),
-    }
 
 
 def capture_run(
@@ -732,7 +675,7 @@ def capture_run(
     manifest_dir: Path,
     receipt_id: Optional[str] = None,
 ) -> GenericRunReceipt:
-    """Execute the manifest-declared command and capture a proof-carrying receipt.
+    """Execute the manifest-declared command and capture a computational run receipt.
 
     Fails closed (raises :class:`RunError`) on manifest shape errors that would
     otherwise silently under-specify the claim (non-list command, absent claim
@@ -896,11 +839,11 @@ def capture_run(
                     for key in [k for k in pointer.split(".") if k]:
                         node = node[key]
                     value = node
-                    computed_by = "local_reference_evaluator"
-                    verified_independently = True
+                    computed_by = "bound_output_extraction"
+                    verified_independently = False
                 except Exception:
                     value = None
-                    computed_by = "local_reference_evaluator"
+                    computed_by = "bound_output_extraction"
                     verified_independently = False
         evaluator_claims.append(
             EvaluatorClaim(
@@ -929,17 +872,8 @@ def capture_run(
         key_files=key_files,
     )
 
-    supported_levels = [
-        ReproducibilityLevel.CONTENT_IDENTICAL.value,
-        ReproducibilityLevel.EVIDENCE_EQUIVALENT.value,
-        ReproducibilityLevel.RESULT_EQUIVALENT.value,
-        ReproducibilityLevel.SEMANTIC_REPRODUCTION.value,
-    ]
-    if determinism == DeterminismDeclaration.DETERMINISTIC.value:
-        supported_levels.insert(0, ReproducibilityLevel.BITWISE_IDENTICAL.value)
-        ceiling = ReproducibilityLevel.BITWISE_IDENTICAL.value
-    else:
-        ceiling = ReproducibilityLevel.CONTENT_IDENTICAL.value
+    supported_levels = [ReproducibilityLevel.CONTENT_IDENTICAL.value]
+    ceiling = ReproducibilityLevel.CONTENT_IDENTICAL.value
 
     receipt = GenericRunReceipt(
         schema_version=RUN_SCHEMA_VERSION,
@@ -968,7 +902,7 @@ def capture_run(
             "supported_levels": supported_levels,
             "reproduction_command": "vstd reproduce <receipt-dir>",
         },
-        layer4_binding=_run_layer4_binding(
+        assessment_context=_assessment_context(
             manifest,
             falsification_condition=str(
                 claim_block.get("falsification_condition", "")
@@ -979,234 +913,15 @@ def capture_run(
     return receipt
 
 
-def _rebuild_stable_payload_from_dict(data: Mapping[str, Any]) -> dict[str, Any]:
-    src = data.get("source_state", {})
-    payload = {
-        "schema_version": data.get("schema_version"),
-        "receipt_kind": data.get("receipt_kind"),
-        "receipt_id": data.get("receipt_id"),
-        "claim_title": data.get("claim_title"),
-        "claim_statement": data.get("claim_statement"),
-        "claim_scope": data.get("claim_scope"),
-        "claim_limitations": data.get("claim_limitations"),
-        "falsification_condition": data.get("falsification_condition"),
-        "source_state_stable": {
-            "target_name": src.get("target_name"),
-            "portable_repository_id": src.get("portable_repository_id"),
-            "git_commit_sha": src.get("git", {}).get("commit_sha"),
-            "git_branch": src.get("git", {}).get("branch"),
-            "git_is_dirty": src.get("git", {}).get("is_dirty"),
-            "git_dirty_files": src.get("git", {}).get("dirty_files", []),
-            "source_file_hashes": src.get("source_file_hashes", {}),
-            "runtime_python_version": src.get("runtime", {}).get("python_version"),
-        },
-        "inputs": data.get("inputs", []),
-        "outputs": data.get("outputs", []),
-        "execution_stable": {
-            "command": data.get("execution", {}).get("command"),
-            "cwd": data.get("execution", {}).get("cwd"),
-            "exit_code": data.get("execution", {}).get("exit_code"),
-            "outcome": data.get("execution", {}).get("outcome"),
-            "python_version": data.get("execution", {}).get("python_version"),
-            "platform_system": data.get("execution", {}).get("platform_system"),
-            "determinism_declared": data.get("execution", {}).get("determinism_declared"),
-            "seed_declared": data.get("execution", {}).get("seed_declared"),
-            "stdout_sha256": data.get("execution", {}).get("stdout_sha256"),
-            "stderr_sha256": data.get("execution", {}).get("stderr_sha256"),
-        },
-        "claims": data.get("claims", {}),
-        "provenance_linkage": data.get("provenance_linkage", []),
-        "reproducibility": data.get("reproducibility", {}),
-    }
-    if "layer4_binding" in data:
-        payload["layer4_binding"] = data.get("layer4_binding")
-    return payload
-
-
-def is_generic_run_receipt(data: Mapping[str, Any]) -> bool:
-    return data.get("receipt_kind") == RUN_RECEIPT_KIND
-
-
-def validate_run_receipt(receipt_path_or_dir: Path) -> int:
-    receipt_file = receipt_path_or_dir / "receipt.json" if receipt_path_or_dir.is_dir() else receipt_path_or_dir
-    if not receipt_file.exists():
-        print(f"[FAIL] Receipt file not found: {receipt_file}")
-        return 1
-    data = json.loads(receipt_file.read_text(encoding="utf-8"))
-    recorded_digest = data.get("canonical_digest", "")
-    recomputed = compute_canonical_digest(_rebuild_stable_payload_from_dict(data))
-    if recomputed != recorded_digest:
-        print(f"[FAIL] Canonical digest mismatch:\n  Recorded:   {recorded_digest}\n  Recomputed: {recomputed}")
-        return 1
-    print(f"[PASS] Run receipt {data.get('receipt_id')} is valid.")
-    print(f"       Digest: {recorded_digest}")
-    print(f"       Outcome: {data.get('execution', {}).get('outcome')}")
-    return 0
-
-
-def inspect_run_receipt(receipt_path_or_dir: Path) -> int:
-    receipt_file = receipt_path_or_dir / "receipt.json" if receipt_path_or_dir.is_dir() else receipt_path_or_dir
-    if not receipt_file.exists():
-        print(f"Error: receipt not found at {receipt_file}")
-        return 1
-    data = json.loads(receipt_file.read_text(encoding="utf-8"))
-    print("=" * 70)
-    print(f"GENERIC RUN RECEIPT: {data.get('receipt_id')} ({data.get('schema_version')}/{data.get('receipt_kind')})")
-    print("=" * 70)
-    print(f"Canonical Digest: {data.get('canonical_digest')}")
-    print(f"Claim: {data.get('claim_statement')}")
-    ex = data.get("execution", {})
-    print(f"Command: {' '.join(ex.get('command', []))}")
-    print(f"Outcome: {ex.get('outcome')}  (exit={ex.get('exit_code')})")
-    c = data.get("claims", {})
-    print("-" * 70)
-    print("CLAIMS (distinct, not flattened):")
-    print(f"  execution_completed:            {c.get('execution_completed')}")
-    print(f"  output_digests_recorded:        {c.get('output_digests_recorded')}")
-    print(f"  all_declared_artifacts_present: {c.get('all_declared_artifacts_present')}")
-    ext = c.get("external_evaluation")
-    if ext:
-        print(f"  external_evaluation:            reported={ext.get('reported_value')} attested={ext.get('attested')}")
-    else:
-        print("  external_evaluation:            (none declared)")
-    print("=" * 70)
-    return 0
-
-
-def reproduce_run_receipt(receipt_path_or_dir: Path, rerun: bool = False) -> int:
-    """Assess reproduction fidelity.
-
-    By default this rehashes the declared output artifacts as they currently
-    exist on disk relative to the receipt directory's manifest base (safe,
-    side-effect free, always available). Pass ``rerun=True`` to additionally
-    re-execute the recorded command and compare freshly produced outputs —
-    this mutates on-disk state at the declared output paths and is therefore
-    opt-in only.
-    """
-    receipt_dir = receipt_path_or_dir if receipt_path_or_dir.is_dir() else receipt_path_or_dir.parent
-    receipt_file = receipt_dir / "receipt.json"
-    if not receipt_file.exists():
-        print(f"Error: receipt not found at {receipt_file}")
-        return 1
-    data = json.loads(receipt_file.read_text(encoding="utf-8"))
-    # Inputs/outputs in the receipt are recorded as paths relative to the manifest's
-    # own directory. The convention this runtime uses (see `vstd run`) is that
-    # a receipt directory colocates receipt.json with a copy of the originating
-    # manifest (manifest.source.json), so that directory is also the correct base
-    # for resolving those relative paths during reproduction.
-    base_dir = receipt_dir
-
-    determinism = data.get("execution", {}).get("determinism_declared")
-
-    if rerun:
-        manifest_path = base_dir / "manifest.source.json"
-        if not manifest_path.exists():
-            manifest_path = base_dir / "manifest.json"
-        if not manifest_path.exists():
-            print(f"[WARN] No source manifest found under {base_dir}; cannot rerun. Falling back to artifact rehash.")
-            rerun = False
-        else:
-            manifest = load_manifest(manifest_path)
-            reproduced = capture_run(manifest, manifest_dir=base_dir, receipt_id=data.get("receipt_id"))
-            original_outcome = data.get("execution", {}).get("outcome")
-            reproduced_outcome = reproduced.execution.outcome
-            outputs_match = all(
-                o.sha256 == next((x.get("sha256") for x in data.get("outputs", []) if x.get("path") == o.path), None)
-                for o in reproduced.outputs
-            )
-            if determinism == DeterminismDeclaration.DETERMINISTIC.value and outputs_match and original_outcome == reproduced_outcome:
-                level = ReproducibilityLevel.BITWISE_IDENTICAL
-            elif outputs_match and original_outcome == reproduced_outcome:
-                level = ReproducibilityLevel.CONTENT_IDENTICAL
-            elif original_outcome == reproduced_outcome:
-                level = ReproducibilityLevel.RESULT_EQUIVALENT
-            else:
-                level = ReproducibilityLevel.SEMANTIC_REPRODUCTION
-            print(f"[REPRODUCTION RESULT - RERUN] Level: {level.value}")
-            print(f"  Original outcome:   {original_outcome}")
-            print(f"  Reproduced outcome: {reproduced_outcome}")
-            print(f"  Outputs match:      {outputs_match}")
-            return 0 if outputs_match and original_outcome == reproduced_outcome else 1
-
-    # Default path: rehash on-disk artifacts only (no execution).
-    mismatches: list[tuple[Any, Any, Optional[str]]] = []
-    checked = 0
-    for out in data.get("outputs", []):
-        recorded_hash = out.get("sha256")
-        path = base_dir / out["path"]
-        if not path.exists():
-            mismatches.append((out["path"], recorded_hash, None))
-            continue
-        checked += 1
-        current_hash = sha256_file(path)
-        if current_hash != recorded_hash:
-            mismatches.append((out["path"], recorded_hash, current_hash))
-
-    if not data.get("outputs"):
-        print("[REPRODUCTION RESULT - ARTIFACT REHASH] No outputs were declared; nothing to compare.")
-        return 0
-
-    if mismatches:
-        print(f"[REPRODUCTION RESULT - ARTIFACT REHASH] MISMATCH ({len(mismatches)} of {len(data.get('outputs', []))} outputs)")
-        for path, recorded, current in mismatches:
-            print(f"  {path}: recorded={recorded} current={current}")
-        return 1
-
-    print(f"[REPRODUCTION RESULT - ARTIFACT REHASH] All {checked} on-disk output artifact(s) match recorded digests.")
-    print(f"  Reproduction level: {ReproducibilityLevel.CONTENT_IDENTICAL.value} (artifact-level; command was not re-executed - pass --rerun for a full rerun comparison)")
-    return 0
-
-
-def compute_blast_radius_impacted_artifacts(dataset_receipt_file: Path, revoked_artifact_id: str) -> set[str]:
-    """Forward blast radius of a revoked/invalidated artifact, plus the artifact itself.
-
-    Reuses ``ProvenanceHypergraph.blast_radius`` from the existing VSTD-Graph-1
-    runtime rather than reimplementing graph traversal here.
-    """
-    from verifier.data.models import ProvenanceHypergraph
-
-    data = json.loads(dataset_receipt_file.read_text(encoding="utf-8"))
-    hg = ProvenanceHypergraph.from_dict(data["hypergraph"])
-    if revoked_artifact_id not in hg.artifacts:
-        raise RunError(f"Artifact '{revoked_artifact_id}' not found in {dataset_receipt_file}.")
-    affected = set(hg.blast_radius(revoked_artifact_id))
-    affected.add(revoked_artifact_id)
-    return affected
-
-
-def find_run_receipts_impacted_by_revocation(
-    search_root: Path,
-    dataset_receipt_file: Path,
-    revoked_artifact_id: str,
-) -> list[dict[str, Any]]:
-    """Answer: "which recorded runs need to be reconsidered because this upstream
-    dataset-provenance artifact changed or became invalid?"
-
-    Scans ``search_root`` recursively for ``receipt.json`` files that are generic
-    run receipts (``receipt_kind == generic_computational_run``) and whose
-    ``provenance_linkage`` references an artifact inside the forward blast radius
-    of ``revoked_artifact_id`` (or the artifact itself). This composes the
-    dataset-provenance hypergraph directly into run-receipt impact analysis
-    instead of introducing a parallel lineage system.
-    """
-    impacted_artifacts = compute_blast_radius_impacted_artifacts(dataset_receipt_file, revoked_artifact_id)
-    results: list[dict[str, Any]] = []
-    for receipt_file in search_root.rglob("receipt.json"):
-        try:
-            data = json.loads(receipt_file.read_text(encoding="utf-8"))
-        except Exception:
-            continue
-        if not is_generic_run_receipt(data):
-            continue
-        for link in data.get("provenance_linkage", []):
-            if link.get("artifact_id") in impacted_artifacts:
-                results.append(
-                    {
-                        "receipt_path": str(receipt_file),
-                        "receipt_id": data.get("receipt_id"),
-                        "matched_artifact_id": link.get("artifact_id"),
-                        "claim_statement": data.get("claim_statement"),
-                    }
-                )
-                break
-    return results
+# Compatibility facade: historical imports continue to resolve from verifier.core.run.
+from verifier.core.run_impact import (
+    compute_blast_radius_impacted_artifacts,
+    find_run_receipts_impacted_by_revocation,
+)
+from verifier.core.run_inspection import inspect_run_receipt
+from verifier.core.run_reproduction import reproduce_run_receipt
+from verifier.core.run_validation import (
+    _rebuild_stable_payload_from_dict,
+    is_generic_run_receipt,
+    validate_run_receipt,
+)

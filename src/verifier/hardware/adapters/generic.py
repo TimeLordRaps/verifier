@@ -1,4 +1,6 @@
-"""Registry-driven generic fixture adapter for unknown and future accelerators."""
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+
+Registry-driven generic fixture adapter for unknown and future accelerators."""
 
 from __future__ import annotations
 

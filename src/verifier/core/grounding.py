@@ -1,4 +1,7 @@
-"""Grounding validation for ``VSTD4-GDC-1`` -- rung 4.2, semantic binding.
+"""Terminology: grounded decision certificate (GDC); Boolean satisfiability problem (SAT);
+Verifier Standard (VSTD).
+
+Grounding validation for ``VSTD4-GDC-1`` -- rung 4.2, semantic binding.
 
 A resolution proof establishes a fact about a *formula*. A VSTD claim is about
 the *world*. The gap between them is an encoding, and an encoding is exactly

@@ -1,9 +1,24 @@
-"""Target-neutral VSTD-Graph reference types and receipt mechanisms."""
+"""Terminology: Verifier Standard (VSTD).
+
+Target-neutral VSTD-Graph reference types and receipt mechanisms."""
 
 from verifier.data.graph_level import (
+    EvidenceBoundGraphLevelResult,
     GraphCollection,
     GraphLevelResult,
+    establish_graph_level,
+    graph_collection_binding_digest,
     graph_level,
+)
+from verifier.data.assurance import (
+    AssuranceEvent,
+    AssuranceEventKind,
+    AssuranceLedger,
+    ChallengeProjectionMechanism,
+    DiagnosticAttribution,
+    DiagnosticKind,
+    ObligationCoordinate,
+    recheck_assurance_log,
 )
 
 from verifier.data.models import (
@@ -11,6 +26,7 @@ from verifier.data.models import (
     ArtifactStatus,
     ArtifactType,
     CompletenessMetrics,
+    ConflictRecord,
     ContributorSpec,
     HyperedgePort,
     ProvenanceHypergraph,
@@ -32,6 +48,7 @@ __all__ = [
     "ArtifactStatus",
     "ArtifactType",
     "CompletenessMetrics",
+    "ConflictRecord",
     "ContributorSpec",
     "HyperedgePort",
     "ProvenanceHypergraph",
@@ -40,7 +57,18 @@ __all__ = [
     "TransformationType",
     "GraphCollection",
     "GraphLevelResult",
+    "EvidenceBoundGraphLevelResult",
+    "establish_graph_level",
+    "graph_collection_binding_digest",
     "graph_level",
+    "AssuranceEvent",
+    "AssuranceEventKind",
+    "AssuranceLedger",
+    "ChallengeProjectionMechanism",
+    "DiagnosticAttribution",
+    "DiagnosticKind",
+    "ObligationCoordinate",
+    "recheck_assurance_log",
     "PolicyEvaluationResult",
     "ProvenancePolicyVerifier",
     "DataIndependentAudit",

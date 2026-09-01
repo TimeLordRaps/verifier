@@ -1,64 +1,160 @@
 {
+  "$comment": "Terminology: Verifier Standard (VSTD). Witness identity is a coordinate, not computational trust.",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd5_receipt.json",
-  "title": "VSTD-5 Witness Corroboration Receipt (DRAFT)",
-  "$comment": "Draft interface only. A document matching this schema is not proof of independent corroboration.",
+  "title": "VSTD-5 Witness Corroboration Receipt",
+  "description": "Replayable evidence-bound witness record. Schema validity establishes shape only. The reference runtime must recheck the admitted evidence-bound VSTD-4 result, identity evidence availability, every independence dimension, every corroboration mechanism, embedded evidence bytes, and the derived result.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "status", "receipt_id", "claim_id", "claim_binding", "entry_vstd4_depth", "witnesses", "corroborations", "disagreements", "computed_independence"],
+  "required": ["schema_version", "receipt_id", "entry_vstd4", "bundle", "evidence_payloads", "result"],
   "properties": {
-    "schema_version": {"const": "VSTD-5-DRAFT"},
-    "status": {"const": "DRAFT"},
+    "schema_version": {"const": "VSTD-5"},
     "receipt_id": {"type": "string", "pattern": "^VFY-5-[A-Za-z0-9._:-]+$"},
-    "claim_id": {"type": "string", "minLength": 1},
-    "claim_binding": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "entry_vstd4_depth": {"const": 14},
-    "witnesses": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/witness"}},
-    "corroborations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/corroboration"}},
-    "disagreements": {"type": "array", "items": {"$ref": "#/$defs/disagreement"}},
-    "computed_independence": {"enum": ["INDEPENDENT", "PARTIALLY_INDEPENDENT", "NOT_INDEPENDENT", "UNKNOWN", "CONFLICTED"]}
+    "entry_vstd4": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result_digest", "depth", "conformance_status", "witness_digest"],
+      "properties": {
+        "result_digest": {"$ref": "#/$defs/digest"},
+        "depth": {"const": 14},
+        "conformance_status": {"const": "ESTABLISHED"},
+        "witness_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "bundle": {"$ref": "#/$defs/bundle"},
+    "evidence_payloads": {
+      "type": "object",
+      "propertyNames": {"pattern": "^sha256:[0-9a-f]{64}$"},
+      "additionalProperties": {"type": "string", "contentEncoding": "base64"}
+    },
+    "result": {"$ref": "#/$defs/result"}
   },
   "$defs": {
-    "digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "digestRef": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"},
+    "bundle": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_id", "declarant_id", "claim_binding_digest", "witnesses", "independence_assertions", "corroborations"],
+      "properties": {
+        "claim_id": {"type": "string", "minLength": 1},
+        "declarant_id": {"type": "string", "minLength": 1},
+        "claim_binding_digest": {"$ref": "#/$defs/digest"},
+        "witnesses": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/witness"}},
+        "independence_assertions": {"type": "array", "items": {"$ref": "#/$defs/independenceAssertion"}},
+        "corroborations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/corroboration"}}
+      }
+    },
     "witness": {
       "type": "object", "additionalProperties": false,
-      "required": ["witness_id", "identity_evidence", "independence"],
+      "required": ["witness_id", "identity_evidence_ref"],
       "properties": {
         "witness_id": {"type": "string", "minLength": 1},
-        "identity_evidence": {"$ref": "#/$defs/digest"},
-        "independence": {
+        "identity_evidence_ref": {"$ref": "#/$defs/digestRef"}
+      }
+    },
+    "independenceAssertion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["witness_id", "dimensions"],
+      "properties": {
+        "witness_id": {"type": "string", "minLength": 1},
+        "dimensions": {
           "type": "object", "additionalProperties": false,
-          "required": ["shared_control", "shared_code", "shared_trust_root", "shared_evidence_source", "shared_infrastructure", "financial_dependence", "jurisdictional_dependence", "evidence"],
+          "required": ["control", "verdict_code", "trust_root", "evidence_source", "infrastructure", "financial_dependence", "jurisdictional_dependence"],
           "properties": {
-            "shared_control": {"$ref": "#/$defs/triState"}, "shared_code": {"$ref": "#/$defs/triState"},
-            "shared_trust_root": {"$ref": "#/$defs/triState"}, "shared_evidence_source": {"$ref": "#/$defs/triState"},
-            "shared_infrastructure": {"$ref": "#/$defs/triState"}, "financial_dependence": {"$ref": "#/$defs/triState"},
-            "jurisdictional_dependence": {"$ref": "#/$defs/triState"}, "evidence": {"type": "array", "items": {"$ref": "#/$defs/digest"}}
+            "control": {"$ref": "#/$defs/dimension"},
+            "verdict_code": {"$ref": "#/$defs/dimension"},
+            "trust_root": {"$ref": "#/$defs/dimension"},
+            "evidence_source": {"$ref": "#/$defs/dimension"},
+            "infrastructure": {"$ref": "#/$defs/dimension"},
+            "financial_dependence": {"$ref": "#/$defs/dimension"},
+            "jurisdictional_dependence": {"$ref": "#/$defs/dimension"}
           }
         }
       }
     },
-    "triState": {"enum": ["YES", "NO", "UNKNOWN"]},
-    "corroboration": {
+    "dimension": {
       "type": "object", "additionalProperties": false,
-      "required": ["corroboration_id", "witness_id", "class", "vstd4_certificate_digest", "checker_descriptor_digest", "observed_evidence", "result", "observed_at"],
+      "required": ["state", "binding"],
       "properties": {
-        "corroboration_id": {"type": "string", "minLength": 1}, "witness_id": {"type": "string", "minLength": 1},
-        "class": {"enum": ["PROCUREMENT", "POWER_THERMAL_ENVELOPE", "NETWORK_EGRESS", "VENDOR_TELEMETRY", "FINANCIAL_ATTESTATION", "PHYSICAL_INSPECTION"]},
-        "vstd4_certificate_digest": {"$ref": "#/$defs/digest"}, "checker_descriptor_digest": {"$ref": "#/$defs/digest"},
-        "observed_evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/digest"}},
-        "result": {"enum": ["CORROBORATED", "REFUTED", "UNKNOWN"]}, "observed_at": {"type": "string", "format": "date-time"}
+        "state": {"enum": ["SHARED", "SEPARATE", "UNKNOWN"]},
+        "binding": {"anyOf": [{"$ref": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json#/$defs/evidenceBinding"}, {"type": "null"}]}
       }
     },
-    "disagreement": {
+    "corroboration": {
       "type": "object", "additionalProperties": false,
-      "required": ["disagreement_id", "corroboration_ids", "status_effect", "recorded_at"],
+      "required": ["corroboration_id", "witness_id", "claim_binding_digest", "vstd4_certificate_digest", "checker_descriptor_digest", "observed_evidence_refs", "result", "observed_at", "verification", "corroboration_class"],
       "properties": {
-        "disagreement_id": {"type": "string", "minLength": 1},
-        "corroboration_ids": {"type": "array", "minItems": 2, "items": {"type": "string"}, "uniqueItems": true},
-        "status_effect": {"enum": ["CHALLENGED", "REVOKED", "UNKNOWN", "CONFLICTED"]},
-        "recorded_at": {"type": "string", "format": "date-time"}
+        "corroboration_id": {"type": "string", "minLength": 1},
+        "witness_id": {"type": "string", "minLength": 1},
+        "claim_binding_digest": {"$ref": "#/$defs/digest"},
+        "vstd4_certificate_digest": {"$ref": "#/$defs/digestRef"},
+        "checker_descriptor_digest": {"$ref": "#/$defs/digestRef"},
+        "observed_evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/digestRef"}},
+        "result": {"enum": ["CORROBORATED", "REFUTED", "UNKNOWN"]},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "verification": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json#/$defs/evidenceBinding"},
+        "corroboration_class": {"type": "string", "minLength": 1}
       }
+    },
+    "evaluation": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json#/$defs/evaluation"},
+    "result": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_id", "status", "conformance_status", "computed_independence", "independence_evaluations", "corroboration_evaluations", "disagreements", "binding_errors", "identity_errors", "separation_errors", "corroboration_errors", "errors", "limitations"],
+      "properties": {
+        "claim_id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["CORROBORATED", "REFUTED", "UNKNOWN", "CONFLICTED"]},
+        "conformance_status": {"enum": ["ESTABLISHED", "NOT_ESTABLISHED"]},
+        "computed_independence": {"enum": ["INDEPENDENT", "UNKNOWN"]},
+        "independence_evaluations": {
+          "type": "array",
+          "items": {"type": "object", "additionalProperties": false, "required": ["witness_id", "dimension", "evaluation"], "properties": {"witness_id": {"type": "string"}, "dimension": {"type": "string"}, "evaluation": {"$ref": "#/$defs/evaluation"}}}
+        },
+        "corroboration_evaluations": {
+          "type": "array",
+          "items": {"type": "object", "additionalProperties": false, "required": ["corroboration_id", "evaluation"], "properties": {"corroboration_id": {"type": "string"}, "evaluation": {"$ref": "#/$defs/evaluation"}}}
+        },
+        "disagreements": {"type": "array", "items": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}}},
+        "binding_errors": {"type": "array", "items": {"type": "string"}},
+        "identity_errors": {"type": "array", "items": {"type": "string"}},
+        "separation_errors": {"type": "array", "items": {"type": "string"}},
+        "corroboration_errors": {"type": "array", "items": {"type": "string"}},
+        "errors": {"type": "array", "items": {"type": "string"}},
+        "limitations": {"type": "array", "items": {"type": "string"}}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "CORROBORATED"}}, "required": ["status"]},
+          "then": {
+            "properties": {
+              "conformance_status": {"const": "ESTABLISHED"},
+              "computed_independence": {"const": "INDEPENDENT"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"computed_independence": {"const": "INDEPENDENT"}}, "required": ["computed_independence"]},
+          "then": {
+            "properties": {
+              "binding_errors": {"maxItems": 0},
+              "identity_errors": {"maxItems": 0},
+              "separation_errors": {"maxItems": 0}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"conformance_status": {"const": "ESTABLISHED"}}, "required": ["conformance_status"]},
+          "then": {
+            "properties": {
+              "computed_independence": {"const": "INDEPENDENT"},
+              "binding_errors": {"maxItems": 0},
+              "identity_errors": {"maxItems": 0},
+              "separation_errors": {"maxItems": 0},
+              "corroboration_errors": {"maxItems": 0},
+              "errors": {"maxItems": 0}
+            }
+          }
+        }
+      ]
     }
   }
 }

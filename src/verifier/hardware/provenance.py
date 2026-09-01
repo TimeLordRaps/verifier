@@ -1,4 +1,6 @@
-"""Composition of VSTD 3 hardware evidence into the existing provenance hypergraph."""
+"""Terminology: Verifier Standard (VSTD).
+
+Composition of VSTD 3 hardware evidence into the existing provenance hypergraph."""
 
 from __future__ import annotations
 
@@ -60,8 +62,8 @@ def attach_vstd3_receipt(
 ) -> HardwareProvenanceBinding:
     """Attach a validated receipt so evidence invalidation reaches derived artifacts.
 
-    The function refuses receipts whose passing claims cannot be independently
-    reproduced under the supplied key resolver. ``output_artifact_ids`` defaults to
+    The function refuses receipts whose passing claims cannot be recomputed from bound
+    evidence under the supplied key resolver. ``output_artifact_ids`` defaults to
     the receipt's declared provenance links and every target must already exist.
     """
 

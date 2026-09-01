@@ -1,4 +1,6 @@
-"""The public source archive must bind exact, publicly resolvable Git bytes."""
+"""Terminology: Verifier Standard (VSTD); ZIP archive format (ZIP).
+
+The public source archive must bind exact, publicly resolvable Git bytes."""
 
 from __future__ import annotations
 
@@ -19,11 +21,20 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = REPO_ROOT / "scripts" / "release_artifacts.py"
 RELEASE_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "release.yml"
+TIME_GATE = REPO_ROOT / "scripts" / "check_time_status.py"
+RELEASE_METADATA_GATE = REPO_ROOT / "scripts" / "check_release_metadata.py"
 
 SPEC = importlib.util.spec_from_file_location("vstd_release_artifacts", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 release_artifacts = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(release_artifacts)
+
+METADATA_SPEC = importlib.util.spec_from_file_location(
+    "vstd_release_metadata", RELEASE_METADATA_GATE
+)
+assert METADATA_SPEC is not None and METADATA_SPEC.loader is not None
+release_metadata = importlib.util.module_from_spec(METADATA_SPEC)
+METADATA_SPEC.loader.exec_module(release_metadata)
 
 
 def test_source_release_manifest_binds_head_and_exact_archive_bytes(tmp_path: Path) -> None:
@@ -130,16 +141,16 @@ def test_repository_url_spellings_are_canonical(raw: str, expected: str) -> None
 
 
 def _write_raw_wheel(path: Path, *, newline: bytes, reverse: bool) -> None:
-    dist_info = "verifier_standard-1.1.3.dist-info"
+    dist_info = "verifier_standard-1.2.0.dist-info"
     members = [
-        ("verifier/__init__.py", b'__version__ = "1.1.3"\n'),
+        ("verifier/__init__.py", b'__version__ = "1.2.0"\n'),
         (
             f"{dist_info}/METADATA",
             newline.join(
                 [
                     b"Metadata-Version: 2.4",
                     b"Name: verifier-standard",
-                    b"Version: 1.1.3",
+                    b"Version: 1.2.0",
                     b"",
                     b"Canonical metadata.",
                     b"",
@@ -200,9 +211,9 @@ def test_wheel_normalization_removes_host_newlines_and_zip_metadata(tmp_path: Pa
         infos = bundle.infolist()
         assert all(info.create_system == 3 for info in infos)
         assert all(info.compress_type == zipfile.ZIP_STORED for info in infos)
-        metadata_name = "verifier_standard-1.1.3.dist-info/METADATA"
+        metadata_name = "verifier_standard-1.2.0.dist-info/METADATA"
         assert b"\r" not in bundle.read(metadata_name)
-        record_name = "verifier_standard-1.1.3.dist-info/RECORD"
+        record_name = "verifier_standard-1.2.0.dist-info/RECORD"
         rows = list(csv.reader(io.StringIO(bundle.read(record_name).decode("utf-8"))))
         records = {row[0]: row[1:] for row in rows}
         for info in infos:
@@ -217,7 +228,7 @@ def test_wheel_normalization_removes_host_newlines_and_zip_metadata(tmp_path: Pa
 
 
 def _write_raw_sdist(path: Path, *, newline: bytes, reverse: bool) -> None:
-    root = "verifier_standard-1.1.3"
+    root = "verifier_standard-1.2.0"
     members = [
         (
             f"{root}/PKG-INFO",
@@ -225,7 +236,7 @@ def _write_raw_sdist(path: Path, *, newline: bytes, reverse: bool) -> None:
                 [
                     b"Metadata-Version: 2.4",
                     b"Name: verifier-standard",
-                    b"Version: 1.1.3",
+                    b"Version: 1.2.0",
                     b"",
                 ]
             ),
@@ -237,7 +248,7 @@ def _write_raw_sdist(path: Path, *, newline: bytes, reverse: bool) -> None:
                 [
                     b"Metadata-Version: 2.4",
                     b"Name: verifier-standard",
-                    b"Version: 1.1.3",
+                    b"Version: 1.2.0",
                     b"",
                 ]
             ),
@@ -272,7 +283,7 @@ def test_sdist_normalization_removes_host_newlines_and_tar_metadata(tmp_path: Pa
 
     with tarfile.open(first, "r:gz") as bundle:
         files = {member.name: member for member in bundle.getmembers()}
-        root = "verifier_standard-1.1.3"
+        root = "verifier_standard-1.2.0"
         metadata = bundle.extractfile(files[f"{root}/PKG-INFO"])
         assert metadata is not None and b"\r" not in metadata.read()
         readme = bundle.extractfile(files[f"{root}/README.md"])
@@ -295,6 +306,44 @@ def test_artifact_directory_comparison_fails_closed(tmp_path: Path) -> None:
         release_artifacts.compare_artifact_directories(first, second)
 
 
+def test_cyclonedx_sbom_is_deterministic_bound_and_non_self_referential(
+    tmp_path: Path,
+) -> None:
+    artifacts = {
+        "verifier-standard-1.2.0.zip": {
+            "byte_size": 3,
+            "sha256": release_artifacts._sha256(b"zip"),
+        },
+        "verifier_standard-1.2.0-py3-none-any.whl": {
+            "byte_size": 5,
+            "sha256": release_artifacts._sha256(b"wheel"),
+        },
+    }
+    arguments = {
+        "commit": "a" * 40,
+        "epoch": "1787446816",
+        "release": "1.2.0",
+        "artifacts": artifacts,
+    }
+    first = tmp_path / "first.cdx.json"
+    second = tmp_path / "second.cdx.json"
+    release_artifacts._write_cyclonedx_sbom(first, **arguments)
+    release_artifacts._write_cyclonedx_sbom(second, **arguments)
+
+    assert first.read_bytes() == second.read_bytes()
+    payload = json.loads(first.read_text(encoding="utf-8"))
+    assert payload["bomFormat"] == "CycloneDX"
+    assert payload["specVersion"] == "1.6"
+    assert {component["name"] for component in payload["components"]} == set(artifacts)
+    assert first.name not in {component["name"] for component in payload["components"]}
+    release_artifacts._verify_cyclonedx_sbom(first, **arguments)
+
+    payload["components"][0]["hashes"][0]["content"] = "0" * 64
+    first.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(release_artifacts.ReleaseError, match="bound release subjects"):
+        release_artifacts._verify_cyclonedx_sbom(first, **arguments)
+
+
 def test_release_notes_use_the_github_tag_object_verification() -> None:
     workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
     assert 'git/tags/$TAG_OBJECT' in workflow
@@ -302,3 +351,135 @@ def test_release_notes_use_the_github_tag_object_verification() -> None:
     assert ".verification.reason" in workflow
     assert "SIGNED_AND_GITHUB_VERIFIED" in workflow
     assert 'git verify-tag "$GITHUB_REF_NAME"' not in workflow
+
+
+def test_release_is_drafted_with_attested_sbom_before_publication() -> None:
+    workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
+    create = workflow.index('gh release create "$GITHUB_REF_NAME"')
+    publish = workflow.index('gh release edit "$GITHUB_REF_NAME"')
+
+    assert "dist/*.cdx.json" in workflow
+    assert "--draft" in workflow[create:publish]
+    assert "--draft=false" in workflow[publish:]
+    assert create < publish
+
+
+@pytest.mark.parametrize(
+    "status", ["OPEN", "CONFLICTED", "", "CLEAR\nStatus: CLEAR", "CLEAR\nStatus: open"]
+)
+def test_release_time_gate_rejects_every_non_exact_clear_state(
+    tmp_path: Path, status: str
+) -> None:
+    time_file = tmp_path / "TIME.md"
+    time_file.write_text(f"# TIME\n\nStatus: {status}\n", encoding="utf-8")
+    result = subprocess.run(
+        [sys.executable, str(TIME_GATE), str(time_file)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 1
+    assert "[TIME BLOCKED]" in result.stderr
+
+
+def test_tag_release_requires_clear_time_from_the_exact_checkout(tmp_path: Path) -> None:
+    time_file = tmp_path / "TIME.md"
+    time_file.write_text("# TIME\n\nStatus: CLEAR\n", encoding="utf-8")
+    result = subprocess.run(
+        [sys.executable, str(TIME_GATE), str(time_file)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert "[TIME CLEAR]" in result.stdout
+
+    workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
+    assert "Require TIME CLEAR in the exact tagged checkout" in workflow
+    assert "python scripts/check_time_status.py" in workflow
+    assert workflow.index("python scripts/check_time_status.py") < workflow.index(
+        "python -m pytest -q"
+    )
+
+
+def _write_final_release_metadata(root: Path) -> None:
+    (root / "pyproject.toml").write_text(
+        '[project]\nname = "verifier-standard"\nversion = "1.2.0"\n',
+        encoding="utf-8",
+    )
+    (root / "CHANGELOG.md").write_text(
+        "# Changelog\n\n## 1.2.0 - 2026-08-26\n", encoding="utf-8"
+    )
+    (root / "CITATION.cff").write_text(
+        'cff-version: 1.2.0\nmessage: "Cite this published release."\n'
+        "version: 1.2.0\ndate-released: 2026-08-26\n",
+        encoding="utf-8",
+    )
+    (root / ".zenodo.json").write_text(
+        json.dumps({"version": "1.2.0", "description": "Final publication metadata."}),
+        encoding="utf-8",
+    )
+
+
+@pytest.mark.parametrize(
+    "fault",
+    (
+        "unreleased_changelog",
+        "missing_citation_date",
+        "mismatched_citation_date",
+        "candidate_citation",
+        "candidate_zenodo",
+        "package_version",
+    ),
+)
+def test_release_metadata_gate_rejects_unfinalized_or_inconsistent_state(
+    tmp_path: Path, fault: str
+) -> None:
+    _write_final_release_metadata(tmp_path)
+    if fault == "unreleased_changelog":
+        path = tmp_path / "CHANGELOG.md"
+        path.write_text(path.read_text().replace("2026-08-26", "UNRELEASED"))
+    elif fault == "missing_citation_date":
+        path = tmp_path / "CITATION.cff"
+        path.write_text(path.read_text().replace("date-released: 2026-08-26\n", ""))
+    elif fault == "mismatched_citation_date":
+        path = tmp_path / "CITATION.cff"
+        path.write_text(path.read_text().replace("2026-08-26", "2026-08-25"))
+    elif fault == "candidate_citation":
+        path = tmp_path / "CITATION.cff"
+        path.write_text(path.read_text().replace("published release", "release candidate"))
+    elif fault == "candidate_zenodo":
+        path = tmp_path / ".zenodo.json"
+        path.write_text(
+            json.dumps({"version": "1.2.0", "description": "Release-candidate metadata."})
+        )
+    else:
+        path = tmp_path / "pyproject.toml"
+        path.write_text(path.read_text().replace("1.2.0", "1.1.3"))
+
+    with pytest.raises(ValueError):
+        release_metadata.require_finalized(tmp_path, "1.2.0")
+
+
+def test_release_metadata_gate_accepts_one_final_consistent_coordinate(tmp_path: Path) -> None:
+    _write_final_release_metadata(tmp_path)
+    release_metadata.require_finalized(tmp_path, "1.2.0")
+
+
+def test_tag_release_contract_binds_main_version_gate_and_final_metadata() -> None:
+    workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
+    required = (
+        'git merge-base --is-ancestor "$GITHUB_SHA" origin/main',
+        'git rev-parse "${GITHUB_REF}^{commit}"',
+        'test "$VERSION" = "$PACKAGE_VERSION"',
+        'commits/$GITHUB_SHA/check-runs',
+        'select(.name == "conformance-gate" and .conclusion == "success")',
+        'repos/$GITHUB_REPOSITORY/immutable-releases',
+        "--jq '.enabled')\" = true",
+        'python scripts/check_release_metadata.py --version "${GITHUB_REF_NAME#v}"',
+    )
+    for fragment in required:
+        assert fragment in workflow
+    assert workflow.index('repos/$GITHUB_REPOSITORY/immutable-releases') < workflow.index(
+        'gh release create "$GITHUB_REF_NAME"'
+    )

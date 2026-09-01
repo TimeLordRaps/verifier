@@ -1,8 +1,9 @@
 {
+  "$comment": "Terminology: Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd_graph_receipt.json",
   "title": "VSTD-Graph Provenance Hypergraph Receipt",
-  "description": "VSTD-Graph receipt. The VSTD-DATA-0.1 wire identifier is frozen for historical Graph-1 receipts; computed_graph_level records the independently computed 1-5 profile when present.",
+  "description": "VSTD-Graph receipt. The VSTD-DATA-0.1 serialized receipt identifier is frozen for historical Graph-1 receipts; computed_graph_level and its level field are compatibility names for a candidate Graph profile number over caller-supplied ratings and do not establish conformance. Historical blocks without rating_basis or conformance_status have the same unestablished interpretation.",
   "type": "object",
   "required": [
     "schema_version",
@@ -43,10 +44,47 @@
       "type": "object",
       "required": ["artifacts", "transformations", "contributors", "rights"],
       "properties": {
-        "artifacts": { "type": "array" },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["artifact_id", "status"],
+            "properties": {
+              "artifact_id": { "type": "string" },
+              "status": {
+                "enum": ["VALID", "CHALLENGED", "STALE", "SUPERSEDED", "REVOKED", "UNKNOWN"]
+              }
+            }
+          }
+        },
         "transformations": { "type": "array" },
         "contributors": { "type": "array" },
-        "rights": { "type": "array" }
+        "rights": { "type": "array" },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["conflict_id", "subject_id", "predicate", "competing_values", "evidence_refs"],
+            "properties": {
+              "conflict_id": { "type": "string", "minLength": 1 },
+              "subject_id": { "type": "string", "minLength": 1 },
+              "predicate": { "type": "string", "minLength": 1 },
+              "competing_values": {
+                "type": "array",
+                "minItems": 2,
+                "uniqueItems": true,
+                "items": { "type": "string" }
+              },
+              "evidence_refs": {
+                "type": "array",
+                "minItems": 2,
+                "uniqueItems": true,
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
       }
     },
     "completeness_metrics": {
@@ -75,7 +113,41 @@
     },
     "independent_audit": {
       "type": "object",
-      "required": ["overall_verdict", "acyclic_hypergraph", "integrity_passed", "trusted_computing_base"]
+      "required": ["overall_verdict", "acyclic_hypergraph", "integrity_passed", "trusted_computing_base"],
+      "properties": {
+        "independence_basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["independently_verified", "actor_independence", "implementation_separation", "runtime_separation", "evidence"],
+          "properties": {
+            "independently_verified": {
+              "type": "boolean",
+              "description": "A conformance claim, not a structural inference. VSTD 1.2.0's bundled runtime accepts only false because it has no actor/execution evidence-binding validator."
+            },
+            "actor_independence": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "implementation_separation": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "runtime_separation": { "enum": ["EVIDENCED", "DECLARED", "NOT_DEMONSTRATED", "CONFLICTED"] },
+            "evidence": {
+              "type": "array",
+              "description": "References are declarations until an implemented profile resolves and validates their execution bindings.",
+              "items": { "type": "string", "minLength": 1 }
+            }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "independently_verified": { "const": true } } },
+              "then": {
+                "properties": {
+                  "actor_independence": { "const": "EVIDENCED" },
+                  "implementation_separation": { "const": "EVIDENCED" },
+                  "runtime_separation": { "const": "EVIDENCED" },
+                  "evidence": { "minItems": 1 }
+                }
+              }
+            }
+          ]
+        }
+      }
     },
     "provenance": {
       "type": "object",
@@ -93,11 +165,53 @@
         "collection_id": {"type": "string", "minLength": 1},
         "level": {"type": "integer", "minimum": 0, "maximum": 5},
         "max_level": {"const": 5},
+        "rating_basis": {"enum": ["CALLER_SUPPLIED", "MECHANISM_EVALUATED"]},
+        "conformance_status": {"enum": ["NOT_ESTABLISHED", "ESTABLISHED"]},
         "blocking_obligations": {"type": "array", "items": {"type": "object"}},
         "witness_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
         "refutation_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
-        "explanation": {"type": "string"}
-      }
+        "explanation": {"type": "string"},
+        "kernel_outcome": {"enum": ["ACCEPTED", "REJECTED", "REFUSED"]},
+        "members": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "binding": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json#/$defs/binding"},
+        "object_evaluations": {
+          "type": "object",
+          "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json#/$defs/evaluation"}
+        },
+        "edge_evaluations": {
+          "type": "object",
+          "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json#/$defs/evaluation"}
+        },
+        "binding_errors": {"type": "array", "items": {"type": "string"}},
+        "evidence_bindings": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["objects", "edges"],
+          "properties": {
+            "objects": {"type": "object", "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json#/$defs/evidenceBinding"}},
+            "edges": {"type": "object", "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json#/$defs/evidenceBinding"}}
+          }
+        },
+        "evidence_payloads": {
+          "type": "object",
+          "propertyNames": {"pattern": "^sha256:[0-9a-f]{64}$"},
+          "additionalProperties": {"type": "string", "contentEncoding": "base64"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"required": ["conformance_status"], "properties": {"conformance_status": {"const": "ESTABLISHED"}}},
+          "then": {
+            "required": ["rating_basis", "kernel_outcome", "members", "binding", "object_evaluations", "edge_evaluations", "binding_errors", "evidence_bindings", "evidence_payloads"],
+            "properties": {
+              "rating_basis": {"const": "MECHANISM_EVALUATED"},
+              "level": {"minimum": 1},
+              "kernel_outcome": {"const": "ACCEPTED"},
+              "binding_errors": {"maxItems": 0}
+            }
+          }
+        }
+      ]
     }
   }
 }

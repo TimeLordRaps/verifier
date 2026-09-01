@@ -1,4 +1,6 @@
-"""Rung 4.14 -- refutability closure, and the handoff out of layer 4.
+"""Terminology: Verifier Standard (VSTD).
+
+Candidate rung 4.14 -- structural refutability closure.
 
 ``A`` is VSTD-4 and ``B`` is VSTD-4 does **not** make ``C = f(A, B)`` VSTD-4.
 Refutability is not preserved by arbitrary transformation, and assuming it is
@@ -12,21 +14,23 @@ on the composition itself. A challenger reading it knows what to attack.
 
 This rung is simultaneously three things, which is why it sits at the top:
 
-* the top of layer 4;
-* the precondition for VSTD-Graph condition 4 -- edges carry evidence, not just
-  nodes, because a graph is only as verified as its edges;
-* the entry gate to VSTD-5. An external witness can only corroborate a claim
-  whose refutability composes, so ``vstd4_depth(claim) == 14`` is the gate.
+* the structural top of the current VSTD-4 candidate;
+* a candidate input to VSTD-Graph condition 4 -- edges need evidence, not just
+  nodes, because a graph is only as verified as its edges.
+
+The depths and certificate references accepted here are caller-supplied and are not
+resolved by this module. Its accepted result is therefore a candidate with conformance
+``NOT_ESTABLISHED``; it is not a VSTD-5 entry gate.
 
 :meth:`RefutabilityClosure.closed_depth` is the load-bearing computation: the
 output is capped at the *minimum* depth across its inputs and its transformation.
 Not the average, and emphatically not the maximum -- an unevidenced edge between
-two layer-5 artifacts does not yield a layer-5 collection.
+two profile-5 artifacts does not yield a Graph-5 collection.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Optional
 
@@ -53,7 +57,7 @@ class InputBinding:
     input_id: str
     certificate_digest: str
     depth: int
-    """``vstd4_depth`` of this input, computed by :mod:`verifier.core.depth`."""
+    """Caller-supplied VSTD-4 candidate depth of this input."""
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -87,6 +91,7 @@ class ClosureCheck:
     closed_depth: int
     details: str
     unmapped: tuple[str, ...] = ()
+    conformance_status: str = field(default="NOT_ESTABLISHED", init=False)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -94,6 +99,7 @@ class ClosureCheck:
             "closed_depth": self.closed_depth,
             "details": self.details,
             "unmapped": list(self.unmapped),
+            "conformance_status": self.conformance_status,
         }
 
 
@@ -209,12 +215,12 @@ class RefutabilityClosure:
             True,
             depth,
             f"closure over {len(self.inputs)} input(s) is complete; output is capped "
-            f"at vstd4_depth {depth}",
+            f"at VSTD-4 candidate depth {depth}; conformance is not established",
         )
 
 
 def cap_output_depth(closure: RefutabilityClosure, claimed_depth: int) -> ClosureCheck:
-    """Refuse an output claiming more layer-4 depth than its closure supports.
+    """Refuse an output claiming more candidate depth than its closure supports.
 
     This is rung 4.13 acting across a transformation rather than across time,
     and it is the specific check VSTD-Graph condition 4 calls into.
@@ -226,11 +232,12 @@ def cap_output_depth(closure: RefutabilityClosure, claimed_depth: int) -> Closur
         return ClosureCheck(
             False,
             check.closed_depth,
-            f"output claims vstd4_depth {claimed_depth} but its closure supports only "
+            f"output claims VSTD-4 candidate depth {claimed_depth} but its closure supports only "
             f"{check.closed_depth}; refutability does not increase under composition",
         )
     return ClosureCheck(
         True,
         check.closed_depth,
-        f"output depth {claimed_depth} is within the closure's ceiling of {check.closed_depth}",
+        f"output candidate depth {claimed_depth} is within the closure's ceiling of "
+        f"{check.closed_depth}; conformance is not established",
     )

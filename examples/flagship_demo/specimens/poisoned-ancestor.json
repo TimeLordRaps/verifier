@@ -1,9 +1,9 @@
 {
-  "details": "collection:demo holds at graph level 0. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
-  "expected": "GRAPH-LEVEL-0; REVOKED blocker; checked refutation",
-  "observed": "GRAPH-LEVEL-0; REVOKED",
+  "details": "collection:demo computes to candidate Graph profile 0 from caller-supplied ratings; conformance is not established. Graph profile 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
+  "expected": "GRAPH-CANDIDATE-0; REVOKED blocker; checked refutation",
+  "observed": "GRAPH-CANDIDATE-0; REVOKED",
   "ok": true,
-  "question": "Does a poisoned transitive ancestor cap the collection's graph level?",
+  "question": "Does a poisoned transitive ancestor cap the collection's candidate Graph profile?",
   "scenario": "poisoned-ancestor",
   "specimen": {
     "binding": {
@@ -12,13 +12,13 @@
         "memory_bound": 10000,
         "verification_cost_bound": 10000
       },
-      "claim": "compute the bounded graph level for collection:demo",
+      "claim": "compute the bounded candidate Graph profile for collection:demo",
       "coordinate": {
         "parameters": {},
         "predicate": "vstd_graph_level",
         "subject": "collection:demo"
       },
-      "evidence_root": "4cd50c61d6162451488a984b85a9a209e708095186132c33d1529adeeacd6ca5",
+      "evidence_root": "8d42243ad0124e5946c34fbd3d6175daf5712a3cd75560f47ec950885866e483",
       "policy_root": "e8e31ddeae93b0e85ec8cb26487489781efeab36ccef7676922a9e18b36155d8",
       "prior_commitment": "",
       "verifier": {
@@ -28,9 +28,9 @@
         ],
         "deterministic": true,
         "format_fragment": "UP,WIDTH-K,RES",
-        "implementation_hash": "sha256:49afe96d327f99b12a518529d47b1b68c16228c4688be14eca279ea3e5b14d5b",
-        "parser_hash": "sha256:a49fc58d15ec1b925b4e2bd48f5dfb350d9e9fca28044c5a0fa9ff051dc70c01",
-        "specification_hash": "sha256:f2420f7826531ffdfadb1fcb9c0d3317d330d47a1cc367328ebd1c6921af36eb"
+        "implementation_hash": "sha256:a7d3c7b3123e9932395eff82f231c53e5b701888abbd203a47f155644cd10a64",
+        "parser_hash": "sha256:c657e7777a850e584b7c010f8f7ff778b5269507db3eb0b2ac362a7cdac4cd67",
+        "specification_hash": "sha256:e1eb5bea41c03b0cfc58c9af5cc23d47b1128253c504c8d3674f87bf6da7ed52"
       }
     },
     "collection": {
@@ -48,7 +48,7 @@
         "artifact:source": 5
       }
     },
-    "fixture_boundary": "Object and edge levels are declared scenario inputs. This graph-level refutation does not establish or upgrade their separate evidence.",
+    "fixture_boundary": "Object and edge profile ratings are declared scenario inputs. This Graph-profile refutation does not establish or upgrade their separate evidence.",
     "graph_result": {
       "blocking_obligations": [
         {
@@ -60,10 +60,12 @@
         }
       ],
       "collection_id": "collection:demo",
-      "explanation": "collection:demo holds at graph level 0. Level 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
+      "conformance_status": "NOT_ESTABLISHED",
+      "explanation": "collection:demo computes to candidate Graph profile 0 from caller-supplied ratings; conformance is not established. Graph profile 1 is refuted by: STATUS_ADMISSIBILITY: artifact:source is REVOKED.",
       "level": 0,
       "max_level": 5,
-      "refutation_digest": "87e9b1889e745c83c4a2dfc3968eadc9a4015146884a99f892e70b2d04d27eed",
+      "rating_basis": "CALLER_SUPPLIED",
+      "refutation_digest": "022ac984bda6a4e63f65ba8e294f1fabdecb1660e70fe6442cb4819a27434d84",
       "witness_digest": null
     },
     "hypergraph": {
@@ -120,6 +122,7 @@
           "storage_uris": []
         }
       ],
+      "conflicts": [],
       "contributors": [],
       "rights": [],
       "transformations": [
@@ -589,7 +592,7 @@
         ]
       },
       "header": {
-        "binding": "23c087d7ef52a1995c2f54f51940f82faef60dc5262627fcee68dd9c9d78eb8e",
+        "binding": "d17ad10464fab5b474fc36cc5ce9a9b2ba54a3aa081ccb0e8feceea68bf1d7b6",
         "clause_count": 17,
         "format": "VSTD4-GDC-1",
         "literal_count": 25,

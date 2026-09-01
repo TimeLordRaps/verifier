@@ -1,4 +1,6 @@
-"""Semantic tests for the additive VSTD-0.2 verification geometry slice."""
+"""Terminology: Verifier Standard (VSTD).
+
+Semantic tests for the additive VSTD-2 verification geometry slice."""
 
 import json
 from dataclasses import replace
@@ -254,6 +256,13 @@ def test_locus_and_facet_are_distinct_and_grain_is_orthogonal_to_stratum() -> No
     assert geometry.validate() == []
 
 
+def test_retired_geometry_identifier_is_rejected() -> None:
+    geometry = replace(
+        geometry_with_reconstruction_horizon(), schema_version="VSTD-" + "0.2"
+    )
+    assert any("schema_version must be 'VSTD-2'" in error for error in geometry.validate())
+
+
 def test_assumptions_cannot_manufacture_a_verified_judgment() -> None:
     geometry = geometry_with_reconstruction_horizon()
     geometry.judgments[0] = CoordinateJudgment(
@@ -335,7 +344,7 @@ def test_verification_orders_must_be_adjacent_not_infinitely_abstracted() -> Non
     errors = geometry.validate()
 
     assert any("contiguous and start at 0" in error for error in errors)
-    assert any("adjacent-layer invariant" in error for error in errors)
+    assert any("order-adjacency invariant" in error for error in errors)
 
 
 def test_geometry_digest_is_deterministic() -> None:

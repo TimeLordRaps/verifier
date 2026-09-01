@@ -1,6 +1,7 @@
-"""Typed verification geometry for the additive VSTD-0.2 vertical slice.
+"""Terminology: abstract syntax tree (AST); intermediate representation (IR);
+Verifier Standard (VSTD).
 
-This module does not alter VSTD-0.1 or VSTD-DATA-0.1 receipts.  It supplies a
+Typed verification geometry for the VSTD-2 vertical slice. This module supplies a
 small common representation for describing *where* verification attaches,
 *in what respect*, and why apparent closure must sometimes be refused.
 
@@ -18,7 +19,7 @@ from enum import Enum
 from typing import Any, Iterable, Optional
 
 
-GEOMETRY_SCHEMA_VERSION = "VSTD-0.2"
+GEOMETRY_SCHEMA_VERSION = "VSTD-2"
 
 
 class LocusKind(str, Enum):
@@ -259,7 +260,11 @@ class ReconstructionAttempt:
 
 @dataclass(frozen=True)
 class VerificationLayer:
-    """One bounded order of verification under the adjacent-layer invariant."""
+    """One bounded adjacent verification order.
+
+    The class and its ``*_layer*`` fields retain their published compatibility
+    names. They represent VSTD-2 meta-verification orders, not numbered VSTD profiles.
+    """
 
     layer_id: str
     order: int
@@ -568,35 +573,54 @@ class VerificationGeometry:
                         f"reconstruction {reconstruction.reconstruction_id!r} references unknown residual {residual_id!r}"
                     )
 
-        layers_by_id = {layer.layer_id: layer for layer in self.verification_layers}
-        orders = sorted(layer.order for layer in self.verification_layers)
+        orders_by_id = {
+            verification_order.layer_id: verification_order
+            for verification_order in self.verification_layers
+        }
+        orders = sorted(
+            verification_order.order
+            for verification_order in self.verification_layers
+        )
         if orders and orders != list(range(orders[-1] + 1)):
-            errors.append("verification layer orders must be contiguous and start at 0")
-        for layer in self.verification_layers:
-            if layer.order < 0:
-                errors.append(f"verification layer {layer.layer_id!r} has negative order")
-            if layer.subject_id not in subject_ids:
-                errors.append(f"verification layer {layer.layer_id!r} has unknown subject")
-            if layer.order == 0 and layer.verifies_layer_id is not None:
-                errors.append("verification layer order 0 cannot verify another layer")
-            if layer.order > 0:
-                target = layers_by_id.get(layer.verifies_layer_id or "")
+            errors.append("verification orders must be contiguous and start at 0")
+        for verification_order in self.verification_layers:
+            if verification_order.order < 0:
+                errors.append(
+                    f"verification order {verification_order.layer_id!r} has negative order"
+                )
+            if verification_order.subject_id not in subject_ids:
+                errors.append(
+                    f"verification order {verification_order.layer_id!r} has unknown subject"
+                )
+            if verification_order.order == 0 and verification_order.verifies_layer_id is not None:
+                errors.append("verification order 0 cannot verify another order")
+            if verification_order.order > 0:
+                target = orders_by_id.get(verification_order.verifies_layer_id or "")
                 if target is None:
                     errors.append(
-                        f"verification layer {layer.layer_id!r} does not identify a previous layer"
+                        f"verification order {verification_order.layer_id!r} does not identify a previous order"
                     )
-                elif target.order != layer.order - 1:
+                elif target.order != verification_order.order - 1:
                     errors.append(
-                        f"verification layer {layer.layer_id!r} violates the adjacent-layer invariant"
+                        f"verification order {verification_order.layer_id!r} violates the order-adjacency invariant"
                     )
-            for coordinate_id in layer.coordinate_ids:
+            for coordinate_id in verification_order.coordinate_ids:
                 if coordinate_id not in coordinate_ids:
-                    errors.append(f"verification layer {layer.layer_id!r} has unknown coordinate")
-            for mechanism_id in layer.mechanism_ids:
+                    errors.append(
+                        f"verification order {verification_order.layer_id!r} has unknown coordinate"
+                    )
+            for mechanism_id in verification_order.mechanism_ids:
                 if mechanism_id not in mechanism_ids:
-                    errors.append(f"verification layer {layer.layer_id!r} has unknown mechanism")
-            if layer.horizon_id and layer.horizon_id not in horizon_ids:
-                errors.append(f"verification layer {layer.layer_id!r} has unknown horizon")
+                    errors.append(
+                        f"verification order {verification_order.layer_id!r} has unknown mechanism"
+                    )
+            if (
+                verification_order.horizon_id
+                and verification_order.horizon_id not in horizon_ids
+            ):
+                errors.append(
+                    f"verification order {verification_order.layer_id!r} has unknown horizon"
+                )
 
         for novelty in self.novelties:
             if novelty.residual_id not in residual_ids:
@@ -611,7 +635,7 @@ class VerificationGeometry:
         coordinates must pass, and every material residual must be resolved or
         honestly terminated at a horizon.  Self-closure is stronger and refuses
         all unresolved horizons, open valence, unverified mechanisms, and
-        unaccounted verification layers.
+        unaccounted verification orders.
         """
 
         ordinary: list[str] = list(self.validate())
@@ -659,29 +683,32 @@ class VerificationGeometry:
                 self_blockers.append(
                     f"mechanism {mechanism.mechanism_id!r} is not post-verified"
                 )
-        for layer in self.verification_layers:
-            if layer.horizon_id:
+        for verification_order in self.verification_layers:
+            if verification_order.horizon_id:
                 self_blockers.append(
-                    f"verification layer {layer.layer_id!r} terminates at a horizon"
+                    f"verification order {verification_order.layer_id!r} terminates at a horizon"
                 )
 
         if self.secondary_subject_id is None:
             self_blockers.append("self-closure requires a secondary verification subject")
         if not self.meta_focus_coordinate_ids:
             self_blockers.append("self-closure requires an explicit meta-focus")
-        layer_orders = {layer.order for layer in self.verification_layers}
-        if not {0, 1}.issubset(layer_orders):
-            self_blockers.append("self-closure requires adjacent V0 and V1 verification layers")
-        for layer in self.verification_layers:
-            for coordinate_id in layer.coordinate_ids:
+        verification_orders = {
+            verification_order.order
+            for verification_order in self.verification_layers
+        }
+        if not {0, 1}.issubset(verification_orders):
+            self_blockers.append("self-closure requires adjacent V0 and V1 verification orders")
+        for verification_order in self.verification_layers:
+            for coordinate_id in verification_order.coordinate_ids:
                 judgment = judgments.get(coordinate_id)
                 if judgment is None or judgment.status is not CoordinateStatus.VERIFIED:
                     self_blockers.append(
-                        f"verification layer {layer.layer_id!r} coordinate {coordinate_id!r} is not VERIFIED"
+                        f"verification order {verification_order.layer_id!r} coordinate {coordinate_id!r} is not VERIFIED"
                     )
-            if layer.order > 0 and not layer.evidence_ids:
+            if verification_order.order > 0 and not verification_order.evidence_ids:
                 self_blockers.append(
-                    f"higher verification layer {layer.layer_id!r} has no sufficiency evidence"
+                    f"higher verification order {verification_order.layer_id!r} has no sufficiency evidence"
                 )
 
         return ClosureAssessment(

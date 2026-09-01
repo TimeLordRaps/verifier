@@ -1,4 +1,6 @@
-"""VSTD 3 accelerator-accountability reference implementation."""
+"""Terminology: Verifier Standard (VSTD).
+
+VSTD 3 accelerator-accountability reference implementation."""
 
 from .conformance import ConformanceProfile, evaluate_conformance
 from .emulator import VirtualVSTDAccelerator

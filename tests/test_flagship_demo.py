@@ -1,4 +1,6 @@
-"""Conformance tests for the public, adversarial VSTD flagship demo."""
+"""Terminology: Verifier Standard (VSTD).
+
+Conformance tests for the public, adversarial VSTD flagship demo."""
 
 from __future__ import annotations
 
@@ -12,7 +14,7 @@ EXPECTED_OBSERVATIONS = {
     "wrong-artifact": "REJECTED",
     "honest-unknown": "ACCEPTED/UNKNOWN",
     "inflated-tier": "REJECTED",
-    "poisoned-ancestor": "GRAPH-LEVEL-0; REVOKED",
+    "poisoned-ancestor": "GRAPH-CANDIDATE-0; REVOKED",
 }
 
 

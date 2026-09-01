@@ -1,3 +1,5 @@
+"""Terminology: Verifier Standard (VSTD)."""
+
 from __future__ import annotations
 
 import json

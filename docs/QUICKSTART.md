@@ -1,4 +1,6 @@
-# VSTD quickstart
+# Verifier Standard (VSTD) quickstart
+
+> Reader aid: [concept glossary and primary precedents](CONCEPTS_AND_PRECEDENTS.md).
 
 ## 1. Install the public source
 
@@ -13,6 +15,10 @@ python -m pip install .
 
 Use `vstd` as the cross-platform command. The `verifier` compatibility alias can be
 shadowed by Windows Driver Verifier.
+
+Before evaluating a broader claim, review the canonical
+[implementation-maturity table](../README.md#current-maturity). It separates implemented
+checks from candidate calculations and unimplemented mechanisms.
 
 ## 2. Run the adversarial demo
 
@@ -55,9 +61,11 @@ vstd validate /tmp/vstd-receipt
 vstd inspect /tmp/vstd-receipt
 ```
 
-This establishes that the receipt is structurally valid and that its stable recorded
-content agrees with the declared artifacts. It does not establish that the claim is
-empirically true beyond that observation surface.
+`validate` applies the bundled profile's structural checks and recomputes the receipt's
+stable-payload digest. It does not invoke an external JavaScript Object Notation (JSON)
+Schema engine, rehash the
+declared artifacts, verify external evidence, or establish that the claim is true. Use
+`reproduce` for the separately bounded artifact comparison.
 
 ## 5. Exercise the falsification route
 
@@ -72,7 +80,7 @@ silently converted into success.
 
 ## 6. Read the normative path
 
-1. [`standard/LADDER.md`](../standard/LADDER.md) — numbering, independent evidence,
+1. [`standard/LADDER.md`](../standard/LADDER.md) — verification-complex terminology, numbered profiles, separate evidence per closure coordinate,
    and composition.
 2. [`standard/VSTD-4.md`](../standard/VSTD-4.md) — refutability and the grounded
    decision certificate.
@@ -81,4 +89,7 @@ silently converted into success.
 
 To evaluate the project rather than merely run it, start by trying to create a receipt
 that passes outside its declared coordinate. A reproducible counterexample is more
-valuable than a general endorsement.
+valuable than a general endorsement. Report a
+[specification ambiguity](https://github.com/TimeLordRaps/verifier/issues/new?template=specification-ambiguity.yml),
+[counterexample](https://github.com/TimeLordRaps/verifier/issues/new?template=counterexample.yml),
+or [security issue](../SECURITY.md) through its designated route.

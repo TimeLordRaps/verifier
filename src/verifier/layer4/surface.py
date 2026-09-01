@@ -1,7 +1,9 @@
-"""Rung 4.10 -- the explicit refutation surface.
+"""Terminology: Verifier Standard (VSTD).
+
+Rung 4.10 -- the explicit refutation surface.
 
 VSTD-2 defines the *claim* surface. VSTD-4 defines the *refutation* surface of
-that claim surface. This is where the two layers compose, and it is the rung
+that claim surface. This is where the two profile coordinates compose, and it is the rung
 that turns "someone could theoretically challenge this" into a list: here are
 the predicates they may challenge, the coordinates on which each applies, and
 the evidence that would overturn the verdict.
@@ -16,7 +18,7 @@ The invariant this rung serves:
 
 which is enforced literally: a surface with an empty ``admissible`` list is
 refused. A claim nobody is permitted to refute is not a strong claim, it is an
-unfalsifiable one, and layer 4 exists to say so out loud.
+unfalsifiable one, and the Refutability coordinate exists to say so out loud.
 
 ``excluded_claims`` is the other half, and it is not a disclaimer. It gives
 ``PHYSICAL_WORLD_COMPLETENESS`` a permanent machine-readable home: ordinary

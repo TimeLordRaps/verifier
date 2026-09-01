@@ -1,4 +1,6 @@
-"""Evidence-monotone VSTD 3 claim evaluation."""
+"""Terminology: Verifier Standard (VSTD).
+
+Evidence-monotone VSTD 3 claim evaluation."""
 
 from __future__ import annotations
 

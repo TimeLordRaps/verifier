@@ -1,23 +1,72 @@
 # AGENTS.md
 
+> **Acronyms:** application programming interface (API); Concise Binary Object Representation (CBOR);
+> CBOR Object Signing and Encryption (COSE); continuous integration (CI); command-line interface (CLI);
+> carriage return and line feed (CRLF); GNU Privacy Guard (GPG); hash-based message authentication code (HMAC);
+> Hypertext Markup Language (HTML); Internet Engineering Task Force (IETF);
+> International Organization for Standardization (ISO); JavaScript Object Notation (JSON); line feed (LF);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); Verifier Standard (VSTD);
+> World Wide Web Consortium (W3C).
+
 Working rules for automated contributors to VSTD. Read this before editing anything.
 
 ## 1. What this repository is
 
-VSTD is a **specification** plus its **reference implementation** for portable, bounded,
-refutable evidence about computational claims. The distribution is `verifier-standard`,
-the import package is `verifier`, and `vstd` is the canonical command.
+VSTD is a **verification domain language** plus its **reference implementation** for
+portable, bounded, refutable evidence about computational claims. It standardizes claim
+boundaries and portable result semantics across domain verifiers without replacing their
+native work. The distribution is `verifier-standard`, the import package is `verifier`,
+and `vstd` is the canonical command.
 
 Two independent axes: `VSTD-1..5` (object mechanics) and `VSTD-Graph-1..5` (collection
-dynamics). Layers 1-4 are implemented; **layer 5 is DRAFT**. An aggregate depth of `N`
-holds only when distinct evidence passes every layer from 1 through `N`. A higher-layer
-result never supplies, implies, upgrades, or repairs a lower-layer one.
+dynamics). These are cumulative **numbered profiles** over named **closure coordinates**,
+not interchangeable layers or scalar assurance levels. Implementation status is
+profile-specific: the compatibility VSTD-4 candidate-depth and Graph candidate-profile
+mechanisms compute over caller-supplied references or ratings with conformance
+`NOT_ESTABLISHED`. Separate evidence-bound paths rerun exact registered mechanisms and
+may establish VSTD-4, VSTD-5, or Graph conformance under their named evidence, trust
+roots, bounds, and exact collection or claim binding. Evidence-bound Graph profile zero
+remains `NOT_ESTABLISHED`. Object profile depth `N` holds only when
+distinct evidence passes every required coordinate in profiles 1 through `N`. A
+later-profile result never supplies, implies, upgrades, or repairs a prerequisite
+coordinate.
 
-This is founder-maintained alpha project work. It is **not** an accredited, consensus,
+Follow the terminology contract in [`standard/LADDER.md`](standard/LADDER.md#terminology-contract).
+Use **layer** only for a literal implementation, protocol, or physical stack; use **level**
+only for an explicitly named external taxonomy or retained compatibility identifier. In
+new prose, qualify **profile** as numbered, receipt, application, or geometry profile;
+qualify **depth** as object profile depth, VSTD-4 normative or candidate depth, or lineage topological
+depth; and qualify **closure** by the proposition it closes. VSTD-4 **rung** is reserved
+for obligations 4.1 through 4.14. Do not rename frozen serialized fields, supported API
+symbols, historical module paths, or published artifact bytes to satisfy an editorial
+preference; explain their compatibility meaning adjacent to them.
+
+This is maintainer-led alpha project work. It is **not** an accredited, consensus,
 IETF, ISO, or W3C standard, and it has no demonstrated external adoption. Do not write
 text implying otherwise. Orientation: [`README.md`](README.md),
 [`standard/LADDER.md`](standard/LADDER.md),
 [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md), [`GOVERNANCE.md`](GOVERNANCE.md).
+
+### 1.1 Operating control surfaces
+
+- [`AGENTS.md`](AGENTS.md) contains automated-contributor rules.
+- [`HUMANS.md`](HUMANS.md) contains the human operating and reasoning guide.
+- [`TIME.md`](TIME.md) announces unresolved contradictions in the repository's current
+  authoritative state; it is not a standard, roadmap, or runtime receipt.
+
+Read `TIME.md` before substantive work. `Status: CLEAR` means only that no unresolved
+repository contradiction is currently recorded. If its status is not clear, preserve both
+claims and their exact coordinates, apply the authority order in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), and repair only what the evidence resolves.
+Do not continue work whose conclusion depends on the unresolved seam; if safe repair is not
+possible, leave a precise live entry instead of deleting or harmonizing either side.
+
+Use TIME for disagreements among normative documents, schemas, runtime behavior,
+conformance tests, or public implementation claims. Do not use it for an honestly represented
+`UNKNOWN`, a receipt or Graph `CONFLICTED` state, ordinary design work, or a roadmap item.
+`TIME == CLEAR` is a release invariant for version 1.2.0. Development branches and normal
+pull-request checks may retain exact unresolved entries, but the tag-triggered publication
+workflow must reject the exact tagged checkout unless its status is `CLEAR`.
 
 ## 2. Prime directive
 
@@ -35,13 +84,93 @@ This inverts the usual agent instinct. An uncertain or negative result here is o
 When a check cannot be discharged, the conforming output is the uncertain verdict with a
 reason, not a pass. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
+### Artifact-first state vocabulary
+
+`TRUST`, `RUST`, and `ROT` are formal semantic names, not acronyms, scalar scores,
+numbered-profile verdicts, or references to the Rust programming language. They serialize
+only as typed events in `VSTD-GRAPH-ASSURANCE-1`. `TRUST` is mechanism-earned
+forward artifact support; `RUST` is inverse-direction diagnostic traversal from a
+descendant deviation toward recorded ancestors; `ROT` is typed, time-indexed degradation
+of current admissibility without rewriting historical evidence. Define the terms at first
+use in every independently readable surface and preserve their normative meaning from
+[`standard/LADDER.md`](standard/LADDER.md).
+
+Assurance events are not self-authenticating status words. Portable reliance requires
+`recheck_assurance_log` to reconstruct the historical Graph, rehash embedded evidence,
+rerun every registered mechanism, reproduce the event chain, and compare the current view.
+When upstream admissibility changes, preserve historical events, exclude no-longer-current
+TRUST through `current_trust_events`, and use `impacted_descendants` only as a deduplicated
+reassessment surface—not as a verdict on descendants.
+
+Never turn identity, authorship, authorization, popularity, reputation, or actor separation
+into `TRUST` in computational validity. A mechanism may check an exact proposition about
+one of those coordinates, but that result remains adjacent to the artifact-bound process
+claim. VSTD verifies bounded propositions about processes represented by software and
+evidence-bearing artifacts; it does not rate whether an actor is good or bad.
+
+Architectural zero knowledge means zero unevidenced knowledge is presumed. When a witness
+must remain confidential, cryptographic zero knowledge may enclose that rule only through
+a named proof system binding the exact program, predicate, public commitments, output,
+parameters, and verifier. Never relabel a digest, omission, encryption, or hidden input as
+a zero-knowledge proof, and never attach the proof's TRUST to prover identity.
+
+Freeze, seal, encryption, and temporal continuity are distinct. Freeze must preserve the
+exact bytes needed for independent recomputation; hashes alone are not preservation. A
+seal closes a declared artifact state and may be readable or encrypted, but sealing is
+not encryption. The version 1 self-closing seal is readable. Thaw creates a mutable
+descendant and never edits the sealed parent. Never claim that a read-only guard prevents
+privileged writes, that a carried key prevents whole-bundle substitution, or that endpoint
+signatures prove uninterrupted closure. Realm, continuity, and transition claims require
+their own named verifiers.
+
+### 2.1 Minimum surface and blast radius
+
+This file governs the public VSTD repository. Verify the repository root and remote before
+editing; never copy private workspace coordinates or artifacts into the public tree.
+
+Use the **minimum lines of code and minimum lines of documentation** that carry the
+maximum necessary information for a reader to comprehend the complete expected
+verification standard. Minimum never permits omission of normative meaning, claim
+boundaries, wire behavior, failure/`UNKNOWN` semantics, conformance, or security.
+
+Default to the smallest change that restores truth. Reformat or restructure adjacent
+architecture only after the idea space is conditionally operationalized by a named target,
+dependency map, migration and compatibility analysis, tests, and explicit approval.
+
+Treat public onboarding examples as release surfaces. Feature one only when its declared
+subject is real, its critical artifacts are retrievable, and its claimed path is rerunnable;
+otherwise remove it from navigation and the live example/test surface instead of explaining
+away missing evidence. Preserve forensic material outside the public tree or in Git history.
+
+### 2.2 First-use acronym expansion
+
+Write every independently readable document and source file for a newcomer who starts at its
+first line. Expand each acronym at its first reader-facing use as **expanded term (ACRONYM)**;
+do not require a prior document, domain background, or the filename to supply the meaning.
+Source files place the expansion in the module documentation or the first explanatory comment.
+The canonical expansion key is [`docs/ACRONYMS.md`](docs/ACRONYMS.md), but a glossary link never
+substitutes for the local first-use expansion. Do not rename current serialized receipt identifiers, schema
+values, code symbols, filenames, commands, or third-party proper names; explain them in adjacent
+prose instead. `scripts/check_acronyms.py` enforces the registered terms on public prose and
+source-documentation surfaces.
+
+After a public credibility failure, audit adjacent first-impression claims, validation labels,
+evidence classifications, links, packaging, tests, and private/public boundary leaks. Never
+relabel digest integrity, same-process extraction, self-report, local rehearsal, or artifact
+retention as full validity, independent verification, attestation, public recomputation, or
+proof of correctness.
+
 ## 3. Environment and commands
 
 ```bash
 python -m pip install ".[test]"
 python -m pytest -q
+python -m coverage run --branch --source=src/verifier -m pytest -q
+python -m coverage report --show-missing
 python scripts/check_presentation.py
+python scripts/build_reference.py --check
 python -m compileall -q src scripts
+PYTHONPATH=src python scripts/build_experiment_index.py --check
 ```
 
 Stdlib-purity smoke, mirroring the `stdlib-smoke` CI job:
@@ -74,13 +203,24 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 
 ## 4. Layout
 
-- `standard/` — normative layer documents plus the frozen `WIRE_IDENTIFIERS.md`.
-- `src/verifier/core/` — receipt, checker, certificate, grounding, kernel, run.
-- `src/verifier/constraints/`, `hardware/`, `layer4/`, `data/` — layer surfaces.
+- `standard/` — normative numbered-profile documents plus `WIRE_IDENTIFIERS.md`.
+- `src/verifier/core/` — receipt, checker, certificate, grounding, kernel, evidence-bound
+  mechanism execution, witness corroboration, and the
+  generic-run capture/facade with planning, validation, inspection, reproduction, and
+  impact modules.
+- `src/verifier/constraints/`, `hardware/`, `layer4/`, `data/` — profile-specific runtime
+  surfaces, including additive Graph assurance propagation; `layer4/` is a retained module path.
 - `src/verifier/runtime/` — `public_cli.py` (every CLI entry point) and `demo.py`.
 - `src/verifier/specifications/` — byte-identical copies of normative spec files.
-- `receipts/schema/` — JSON Schemas. `examples/` — runnable specimens.
-- `scripts/` — `check_presentation.py`, `release_artifacts.py`, `build_pages.py`.
+- `receipts/schema/` — receipt JSON Schemas. `standard/schemas/` — strict non-receipt
+  mechanism schemas. `examples/` — runnable specimens.
+- `experiments/` — non-normative studies with profile manifests, explicit horizons,
+  and blockers.
+- `src/verifier/experimental_workflow/` — optional workflow/profile interchange; it
+  records allocation but never grants a VSTD verdict from repository state.
+- `scripts/` — presentation, release-state, artifact, Pages, reference, and experiment-index
+  gates, including `check_presentation.py`, `check_time_status.py`,
+  `check_terminology.py`, `check_release_metadata.py`, and `release_artifacts.py`.
 - `tests/` — flat `tests/test_*.py`, no `conftest.py`.
 
 ## 5. Invariants that must not be refactored away
@@ -98,25 +238,30 @@ smoke job. Anything new belongs in an optional extra in `pyproject.toml`, import
 behind that extra. A new third-party import on the base path breaks the build.
 
 **Lazy exports.** `_LAZY_EXPORTS` plus module `__getattr__` in `src/verifier/__init__.py`
-keeps import cost near zero. Do not convert these into eager imports.
+keeps import cost near zero. Do not convert these into eager imports. Names in
+`verifier.__all__` are the supported Python application programming interface (API);
+follow [`docs/API_STABILITY.md`](docs/API_STABILITY.md) for additions and deprecations.
 
 **Console scripts.** `vstd`, `verifier`, and `verifiable` all map to
 `verifier.runtime.public_cli:main`. `vstd` is canonical because an unqualified `verifier`
 on Windows commonly resolves to Windows Driver Verifier. `verifiable` is a **permanent**
-alias: published receipts bind it in falsification instructions, so removing it would
-render already-published refutation steps unrunnable.
+alias: receipts in the `v0.1.0` and `v0.2.0` release artifacts bind it in falsification
+instructions, so removing it would render already-published refutation steps unrunnable.
+The evidence is the published releases, not a file in the current checkout.
 
-**Frozen wire identifiers.** `VSTD-0.1`, `VSTD-0.2`, `VSTD-3.0`, and `VSTD-DATA-0.1` are
-frozen; readers dispatch on them, not on filenames. Released artifacts are immutable and
-corrections are additive only. See
-[`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md).
+**Wire identifiers.** Current readers dispatch on the exact identifiers and required
+profile discriminators in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md),
+not on filenames or field resemblance. VSTD-1 and VSTD-2 use their full numbered-profile identifiers;
+do not restore retired partial-profile object identifiers or compatibility reads. Published
+release bytes remain historical facts in their tags and Git history, not active current
+profiles.
 
-**Packaged specification bytes.** Editing `LADDER.md`, `VSTD-3.md`, `VSTD-4.md`, or
-`WIRE_IDENTIFIERS.md` under `standard/` requires copying the exact bytes into
-`src/verifier/specifications/`. `tests/test_packaged_specifications.py` compares them
-byte-for-byte.
+**Packaged specification bytes.** Every `standard/*.md` file has a byte-identical
+installed copy under `src/verifier/specifications/` so verifier descriptors do not depend
+on a source checkout. `tests/test_packaged_specifications.py` enforces the complete set.
 
-**Schema `$id` is a live route.** Every `receipts/schema/*.json` must carry
+**Schema `$id` is a live route.** Every `receipts/schema/*.json` and
+`standard/schemas/*.json` file must carry
 `"$id": "https://timelordraps.github.io/verifier/schemas/<filename>"`. `scripts/build_pages.py`
 refuses to assemble the site otherwise, and `tests/test_presentation_surface.py` checks that
 each schema deploys byte-identical under that route. Renaming a schema file means updating
@@ -136,20 +281,25 @@ CRLF/LF equivalence as byte identity. This matters when working on Windows.
   `CITATION.cff`, `.zenodo.json`, and a dated `## X.Y.Z - YYYY-MM-DD` heading in
   `CHANGELOG.md` — bump all five together or the gate fails;
 - a missing required boundary phrase in `README.md`, `ROADMAP.md`, or
-  `standard/WIRE_IDENTIFIERS.md` (alpha status, non-substitution of layers, canonical CLI
+  `standard/WIRE_IDENTIFIERS.md` (alpha status, non-substitution of closure coordinates, canonical CLI
   disclosure, explicit non-goals). Do not reword those sentences casually;
 - a local Windows or home-directory path leaked into committed content;
 - a change to the overview asset dimensions or its accessibility role.
+- a stale generated CLI/API reference or experiment index.
 
-The `conformance-gate` job requires `base`, `stdlib-smoke`, `release-integrity`,
-`installed-wheel-smoke`, and `presentation` to all succeed.
+The protected repository-check aggregate (the `conformance-gate` job identifier) requires `base`,
+`coverage`, `stdlib-smoke`, `scitt-crypto`, `artifact-seal`, `release-integrity`, `release-reproducibility`,
+`installed-wheel-smoke`, and `presentation` to all succeed. The dedicated SCITT/COSE job
+installs `.[test,scitt]`; the normal test matrix may skip that optional cryptographic
+integration module. The artifact-seal job installs `.[test,seal]` and must execute the
+complete freeze/seal/thaw adversarial suite.
 
 ## 7. Conventions
 
 Every substantive module opens with `from __future__ import annotations`; the only files
 without it are empty package `__init__.py` markers. Annotate all parameters and return
 types. Records are frozen dataclasses by default; verdicts and tiers are enums. Module
-docstrings are normative — they state which ladder rung the code discharges, so update the
+docstrings are normative — they state which VSTD-4 rung the code discharges, so update the
 docstring whenever behavior changes.
 
 `requires-python = ">=3.10"`, and CI runs the suite on 3.10 through 3.13. Everything under
@@ -166,9 +316,12 @@ assertion to make a suite green.
 ## 9. Change process
 
 Work lands via pull request into `main`. `.github/PULL_REQUEST_TEMPLATE.md` requires a
-Coordinate (layer, release, seam), a falsification condition, and compatibility plus
-frozen-wire impact. Commit subjects are short and imperative. Do not run release or tag
-workflows; [`RELEASING.md`](RELEASING.md) is a maintainer procedure.
+Coordinate (numbered profile, release, seam), a falsification condition, and compatibility plus
+wire-format impact. Commit subjects are short and imperative. Every commit is GPG-signed;
+never bypass a signing failure with an unsigned commit. A signature binds commit bytes to
+a key but does not establish identity, correctness, independence, authorization, or
+safety. Do not run release or tag workflows; [`RELEASING.md`](RELEASING.md) is a
+maintainer procedure.
 
 `.github/workflows/pages.yml` publishes the `scripts/build_pages.py` output to GitHub Pages
 on every push to `main`. Documentation and schema edits become public the moment they merge,

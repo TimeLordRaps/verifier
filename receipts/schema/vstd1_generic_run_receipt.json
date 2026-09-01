@@ -1,0 +1,311 @@
+{
+  "$comment": "Terminology: JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd1_generic_run_receipt.json",
+  "title": "VSTD-1 Generic Computational Run Receipt",
+  "description": "Strict shape for the VSTD-1 generic_computational_run profile.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "receipt_kind",
+    "receipt_id",
+    "canonical_digest",
+    "claim_title",
+    "claim_statement",
+    "claim_scope",
+    "claim_limitations",
+    "falsification_condition",
+    "source_state",
+    "inputs",
+    "outputs",
+    "execution",
+    "claims",
+    "provenance_linkage",
+    "reproducibility",
+    "assessment_context"
+  ],
+  "properties": {
+    "schema_version": { "const": "VSTD-1" },
+    "receipt_kind": { "const": "generic_computational_run" },
+    "receipt_id": { "type": "string", "minLength": 1 },
+    "canonical_digest": { "$ref": "#/$defs/sha256" },
+    "claim_title": { "type": "string" },
+    "claim_statement": { "type": "string" },
+    "claim_scope": { "type": "string" },
+    "claim_limitations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "falsification_condition": { "type": "string" },
+    "source_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_name",
+        "portable_repository_id",
+        "local_repository_path",
+        "git",
+        "runtime",
+        "captured_at_utc",
+        "command_executed",
+        "source_file_hashes"
+      ],
+      "properties": {
+        "target_name": { "type": "string" },
+        "portable_repository_id": { "type": "string" },
+        "local_repository_path": { "type": "string" },
+        "captured_at_utc": { "type": "string" },
+        "command_executed": { "type": "string" },
+        "source_file_hashes": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/sha256" }
+        },
+        "git": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["commit_sha", "branch", "is_dirty"],
+          "properties": {
+            "commit_sha": { "type": "string" },
+            "branch": { "type": "string" },
+            "is_dirty": { "type": "boolean" },
+            "dirty_files": { "type": "array", "items": { "type": "string" } },
+            "untracked_files": { "type": "array", "items": { "type": "string" } },
+            "remote_origin": { "type": "string" }
+          }
+        },
+        "runtime": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["python_version", "platform_system"],
+          "properties": {
+            "python_version": { "type": "string" },
+            "python_implementation": { "type": "string" },
+            "platform_system": { "type": "string" },
+            "platform_release": { "type": "string" },
+            "platform_machine": { "type": "string" },
+            "hostname_masked": { "type": "string" }
+          }
+        }
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "outputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "cwd",
+        "started_at_utc",
+        "ended_at_utc",
+        "elapsed_ms",
+        "exit_code",
+        "outcome",
+        "python_version",
+        "platform_system",
+        "determinism_declared",
+        "seed_declared",
+        "stdout_sha256",
+        "stderr_sha256",
+        "stdout_snippet",
+        "stderr_snippet"
+      ],
+      "properties": {
+        "command": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "cwd": { "type": "string" },
+        "started_at_utc": { "type": "string" },
+        "ended_at_utc": { "type": "string" },
+        "elapsed_ms": { "type": "number", "minimum": 0 },
+        "exit_code": { "type": ["integer", "null"] },
+        "outcome": {
+          "enum": ["COMPLETED", "NONZERO_EXIT", "MISSING_INPUT", "MISSING_OUTPUT", "TIMEOUT", "EXCEPTION"]
+        },
+        "python_version": { "type": "string" },
+        "platform_system": { "type": "string" },
+        "determinism_declared": {
+          "enum": ["DETERMINISTIC", "NONDETERMINISTIC", "UNKNOWN"]
+        },
+        "seed_declared": { "type": ["string", "null"] },
+        "stdout_sha256": { "$ref": "#/$defs/sha256" },
+        "stderr_sha256": { "$ref": "#/$defs/sha256" },
+        "stdout_snippet": { "type": "string" },
+        "stderr_snippet": { "type": "string" }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_completed",
+        "output_digests_recorded",
+        "all_declared_artifacts_present",
+        "evaluator_claims",
+        "external_evaluation"
+      ],
+      "properties": {
+        "execution_completed": { "type": "boolean" },
+        "output_digests_recorded": { "type": "boolean" },
+        "all_declared_artifacts_present": { "type": ["boolean", "null"] },
+        "evaluator_claims": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["evaluator_name", "metric_name", "value", "computed_by", "verified_independently"],
+            "properties": {
+              "evaluator_name": { "type": "string" },
+              "metric_name": { "type": "string" },
+              "value": {},
+              "computed_by": {
+                "enum": ["bound_output_extraction", "declared_by_manifest_author"]
+              },
+              "verified_independently": { "const": false }
+            }
+          }
+        },
+        "external_evaluation": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["source", "description", "reported_value", "evidence_kind", "evidence_ref", "attested"],
+              "properties": {
+                "source": { "type": "string" },
+                "description": { "type": "string" },
+                "reported_value": {},
+                "evidence_kind": { "type": "string" },
+                "evidence_ref": { "type": ["string", "null"] },
+                "attested": { "const": false }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "provenance_linkage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dataset_receipt_path", "artifact_id", "found_in_hypergraph", "ancestor_count", "ancestor_ids"],
+        "properties": {
+          "dataset_receipt_path": { "type": "string" },
+          "artifact_id": { "type": "string" },
+          "found_in_hypergraph": { "type": "boolean" },
+          "ancestor_count": { "type": ["integer", "null"], "minimum": 0 },
+          "ancestor_ids": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "reproducibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["highest_demonstrated_level", "declared_ceiling", "supported_levels", "reproduction_command"],
+      "properties": {
+        "highest_demonstrated_level": { "type": ["string", "null"] },
+        "declared_ceiling": { "type": "string" },
+        "supported_levels": { "type": "array", "items": { "type": "string" } },
+        "reproduction_command": { "type": "string" }
+      }
+    },
+    "assessment_context": {
+      "type": "object",
+      "description": "Mechanism, declared resource-bound, commitment, and refutation coordinates for this VSTD-1 generic run. The container does not establish VSTD-4 conformance.",
+      "additionalProperties": false,
+      "required": ["verifier", "resource_bounds", "prior_commitment", "refutation_surface"],
+      "properties": {
+        "verifier": {
+          "type": "object",
+          "description": "Identity and implementation coordinates for the generic-run mechanism; these fields do not establish actor or implementation independence.",
+          "additionalProperties": false,
+          "required": ["specification_hash", "implementation_hash", "parser_hash", "certificate_format", "format_fragment", "dependencies", "deterministic"],
+          "properties": {
+            "specification_hash": { "$ref": "#/$defs/specificationBinding" },
+            "implementation_hash": { "$ref": "#/$defs/prefixedSha256" },
+            "parser_hash": { "$ref": "#/$defs/prefixedSha256" },
+            "certificate_format": { "type": "string" },
+            "format_fragment": { "type": "string" },
+            "dependencies": { "type": "array", "items": { "type": "string" } },
+            "deterministic": { "type": "boolean" }
+          }
+        },
+        "resource_bounds": {
+          "type": "object",
+          "description": "Manifest-declared assessment bounds recorded by the generic writer; presence does not establish enforcement.",
+          "additionalProperties": false,
+          "required": ["verification_cost_bound", "memory_bound", "certificate_size_bound"],
+          "properties": {
+            "verification_cost_bound": { "type": "integer", "minimum": 0 },
+            "memory_bound": { "type": "integer", "minimum": 0 },
+            "certificate_size_bound": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "prior_commitment": {
+          "type": "string",
+          "description": "Recorded commitment declaration; receipt inclusion alone does not establish that it preceded execution."
+        },
+        "refutation_surface": {
+          "type": "object",
+          "description": "Domain-refutation map whose named fields have fixed meanings; additional fields remain declarations and earn no result without an applicable mechanism.",
+          "required": ["admissible_refutations", "excluded_claims", "falsification_condition"],
+          "properties": {
+            "admissible_refutations": { "type": "array", "items": { "type": "string" } },
+            "excluded_claims": { "type": "array", "items": { "type": "string" } },
+            "falsification_condition": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "prefixedSha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "specificationBinding": {
+      "oneOf": [
+        { "$ref": "#/$defs/prefixedSha256" },
+        { "type": "string", "pattern": "^UNAVAILABLE:.+$" }
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "role", "present", "sha256", "byte_size"],
+      "properties": {
+        "path": { "type": "string" },
+        "role": { "type": "string" },
+        "present": { "type": "boolean" },
+        "sha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
+        "byte_size": { "type": ["integer", "null"], "minimum": 0 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "present": { "const": true } } },
+          "then": {
+            "properties": {
+              "sha256": { "$ref": "#/$defs/sha256" },
+              "byte_size": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

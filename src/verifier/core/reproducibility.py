@@ -1,4 +1,6 @@
-"""Reproducibility taxonomy and verification comparison levels.
+"""Terminology: Boolean satisfiability problem (SAT); Verifier Standard (VSTD).
+
+Reproduction-fidelity taxonomy and verification comparison states.
 
 Defines the formal gradient of reproducibility for computational and formal claims.
 """
@@ -9,7 +11,7 @@ from enum import Enum
 
 
 class ReproducibilityLevel(str, Enum):
-    """Monotone levels of reproduction fidelity."""
+    """Monotone reproduction-fidelity states; class name retained for compatibility."""
 
     BITWISE_IDENTICAL = "BITWISE_IDENTICAL"
     """Exact byte-for-byte identity of all generated artifacts, receipts, and hashes."""
@@ -23,11 +25,14 @@ class ReproducibilityLevel(str, Enum):
     truth values and proof certificates, though internal trace order or solver step counts may differ."""
 
     RESULT_EQUIVALENT = "RESULT_EQUIVALENT"
-    """High-level verification verdict (VERIFIED/FALSIFIED) and primary output metrics agree within
+    """Summary verification verdict (VERIFIED/FALSIFIED) and primary output metrics agree within
     declared error tolerance, but internal intermediate proof structures may differ."""
 
     SEMANTIC_REPRODUCTION = "SEMANTIC_REPRODUCTION"
-    """The underlying formal proposition is sustained under an independent translation or alternate solver."""
+    """The proposition is sustained under a separately implemented translation or solver.
+
+    This state does not establish distinct actors.
+    """
 
 
 def compare_reproduction_level(
@@ -39,8 +44,13 @@ def compare_reproduction_level(
     reproduced_evidence_hash: str | None = None,
     original_raw_bytes: bytes | None = None,
     reproduced_raw_bytes: bytes | None = None,
-) -> ReproducibilityLevel:
-    """Classify the observed reproduction fidelity between two verification runs."""
+) -> ReproducibilityLevel | None:
+    """Return the strongest reproduction state earned by the supplied comparison evidence.
+
+    ``None`` means that these inputs do not establish a taxonomy state. A
+    matching verdict without matching primary metrics cannot establish result
+    equivalence, and a verdict mismatch cannot establish semantic reproduction.
+    """
     if original_raw_bytes is not None and reproduced_raw_bytes is not None:
         if original_raw_bytes == reproduced_raw_bytes:
             return ReproducibilityLevel.BITWISE_IDENTICAL
@@ -55,7 +65,4 @@ def compare_reproduction_level(
     ):
         return ReproducibilityLevel.EVIDENCE_EQUIVALENT
 
-    if original_verdict == reproduced_verdict:
-        return ReproducibilityLevel.RESULT_EQUIVALENT
-
-    return ReproducibilityLevel.SEMANTIC_REPRODUCTION
+    return None

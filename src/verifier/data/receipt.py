@@ -1,6 +1,9 @@
-"""VSTD-Graph receipt model and canonical serialization.
+"""Terminology: identifier (ID); JavaScript Object Notation (JSON); operating system (OS);
+Boolean satisfiability problem (SAT); trusted computing base (TCB); Verifier Standard (VSTD).
 
-Graph-1 receipts retain the frozen ``VSTD-DATA-0.1`` wire identifier.
+VSTD-Graph receipt model and canonical serialization.
+
+Graph-1 receipts retain the frozen ``VSTD-DATA-0.1`` serialized receipt identifier.
 """
 
 from __future__ import annotations
@@ -9,11 +12,11 @@ import hashlib
 import json
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
-from verifier.core.checker import VerificationVerdict
+from verifier.core.checker import IndependenceBasis, VerificationVerdict
 from verifier.core.provenance import ProvenanceRecord
 from verifier.core.receipt import compute_canonical_digest
 from verifier.data.models import CompletenessMetrics, ProvenanceHypergraph
@@ -44,6 +47,8 @@ class DatasetSpec:
 
 @dataclass(frozen=True)
 class DataIndependentAudit:
+    """Historical wire field for a checker result plus explicit separation basis."""
+
     overall_verdict: VerificationVerdict
     acyclic_hypergraph: bool
     integrity_passed: bool
@@ -52,6 +57,7 @@ class DataIndependentAudit:
     transformations_count: int
     trusted_computing_base: dict[str, str]
     audit_notes: list[str]
+    independence_basis: IndependenceBasis = field(default_factory=IndependenceBasis)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -63,6 +69,7 @@ class DataIndependentAudit:
             "transformations_count": self.transformations_count,
             "trusted_computing_base": self.trusted_computing_base,
             "audit_notes": self.audit_notes,
+            "independence_basis": self.independence_basis.to_dict(),
         }
 
 
@@ -189,7 +196,7 @@ def _duplicate_ids(items: Any, key: str) -> list[str]:
 
 
 def validate_data_receipt(receipt_path_or_dir: Path) -> int:
-    """Validate a VSTD-DATA-0.1 receipt without a target-specific adapter."""
+    """Validate a VSTD-Graph-1 receipt without a target-specific adapter."""
     receipt_file = _receipt_file(receipt_path_or_dir)
     if not receipt_file.exists():
         print(f"[FAIL] Receipt not found at {receipt_file}", file=sys.stderr)
@@ -263,6 +270,7 @@ def validate_data_receipt(receipt_path_or_dir: Path) -> int:
         ("transformations", "transformation_id"),
         ("contributors", "contributor_id"),
         ("rights", "rights_id"),
+        ("conflicts", "conflict_id"),
     ):
         graph_errors.extend(_duplicate_ids(graph_payload.get(collection), key))
     try:
@@ -270,7 +278,9 @@ def validate_data_receipt(receipt_path_or_dir: Path) -> int:
     except (KeyError, TypeError, ValueError) as exc:
         print(f"[FAIL] Cannot parse hypergraph: {exc}", file=sys.stderr)
         return 1
-    graph_errors.extend(hypergraph.validate_structure())
+    graph_errors.extend(
+        hypergraph.validate_structure(allow_legacy_identifier_overlap=True)
+    )
 
     target_artifact_id = data.get("dataset_spec", {}).get("target_artifact_id")
     if target_artifact_id not in hypergraph.artifacts:
@@ -290,6 +300,63 @@ def validate_data_receipt(receipt_path_or_dir: Path) -> int:
     if not isinstance(audit, dict):
         graph_errors.append("independent_audit must be an object")
         audit = {}
+    basis = audit.get("independence_basis")
+    if basis is not None:
+        if not isinstance(basis, dict):
+            graph_errors.append("independent_audit.independence_basis must be an object")
+        else:
+            basis_fields = {
+                "independently_verified",
+                "actor_independence",
+                "implementation_separation",
+                "runtime_separation",
+                "evidence",
+            }
+            missing_basis_fields = sorted(basis_fields - basis.keys())
+            unknown_basis_fields = sorted(basis.keys() - basis_fields)
+            if missing_basis_fields:
+                graph_errors.append(
+                    "independent_audit.independence_basis is missing fields: "
+                    + ", ".join(missing_basis_fields)
+                )
+            if unknown_basis_fields:
+                graph_errors.append(
+                    "independent_audit.independence_basis has unknown fields: "
+                    + ", ".join(unknown_basis_fields)
+                )
+            statuses = {
+                "EVIDENCED",
+                "DECLARED",
+                "NOT_DEMONSTRATED",
+                "CONFLICTED",
+            }
+            separation_fields = (
+                "actor_independence",
+                "implementation_separation",
+                "runtime_separation",
+            )
+            for field_name in separation_fields:
+                if basis.get(field_name) not in statuses:
+                    graph_errors.append(
+                        f"independent_audit.independence_basis.{field_name} is not recognized"
+                    )
+            evidence = basis.get("evidence")
+            if not isinstance(evidence, list) or not all(
+                isinstance(item, str) and item for item in evidence
+            ):
+                graph_errors.append(
+                    "independent_audit.independence_basis.evidence must be an array of nonempty strings"
+                )
+            if basis.get("independently_verified") is not False:
+                graph_errors.append(
+                    "independent_audit.independence_basis cannot be independently verified: "
+                    "VSTD 1.2.0 has no actor/execution evidence-binding validator"
+                )
+            if any(basis.get(field_name) == "EVIDENCED" for field_name in separation_fields):
+                graph_errors.append(
+                    "independent_audit.independence_basis EVIDENCED assertions are unvalidated; "
+                    "the bundled runtime treats externally supplied assertions as no stronger than DECLARED"
+                )
     expected_audit_fields = {
         "acyclic_hypergraph": acyclic,
         "integrity_passed": completeness.content_integrity == 1.0,
@@ -363,10 +430,13 @@ def validate_data_receipt(receipt_path_or_dir: Path) -> int:
             print(f"[FAIL] {error}", file=sys.stderr)
         return 1
 
-    print(f"[PASS] Dataset Receipt {data.get('receipt_id')} is valid.")
+    print(
+        f"[VALIDATION OK] Dataset Receipt {data.get('receipt_id')} passed "
+        "the implemented stored-receipt checks."
+    )
     print(f"       Schema: {data.get('schema_version')}")
     print(f"       Digest: {recorded_digest}")
-    print(f"       Verdict: {data.get('independent_audit', {}).get('overall_verdict')}")
+    print(f"       Stored checker verdict: {data.get('independent_audit', {}).get('overall_verdict')}")
     print("       Scope: stored receipt + recorded hypergraph; upstream bytes not rehashed")
     return 0
 
@@ -389,7 +459,7 @@ def reproduce_data_receipt(receipt_path_or_dir: Path) -> int:
     completeness = hypergraph.compute_completeness()
     elapsed_ms = (time.perf_counter() - start_time) * 1000.0
 
-    print("[REPRODUCTION RESULT] Level: CONTENT_IDENTICAL")
+    print("[REPRODUCTION RESULT] Fidelity state: CONTENT_IDENTICAL")
     print("  Replay scope:       stored receipt digest + hypergraph mechanisms")
     print("  Upstream execution: NOT_RECONSTRUCTED")
     print(f"  Receipt ID:         {data.get('receipt_id')}")
@@ -473,15 +543,21 @@ def generate_data_receipt_markdown(receipt: VstdDataReceipt) -> str:
 
 ---
 
-## 5. Independent Auditor & Trusted Computing Base (TCB)
+## 5. Stored Checker Result & Trusted Computing Base (TCB)
 
 - **Acyclicity Verified:** {'PASSED (No cycles)' if audit.acyclic_hypergraph else 'FAILED (Cycle detected)'}
 - **Content-Digest Declaration Check:** {'PASSED' if audit.integrity_passed else 'FAILED'}
-- **Overall Independent Verdict:** {audit.overall_verdict.value}
+- **Overall Checker Verdict:** {audit.overall_verdict.value}
+- **Independent Verification:** {'EVIDENCED' if audit.independence_basis.independently_verified else 'NOT_DEMONSTRATED'}
 
 ### TCB Declaration
 ```yaml
 {chr(10).join(f"{k}: {v}" for k, v in audit.trusted_computing_base.items())}
+```
+
+### Independence Basis
+```yaml
+{chr(10).join(f"{k}: {v}" for k, v in audit.independence_basis.to_dict().items())}
 ```
 
 ---
@@ -496,14 +572,15 @@ def generate_data_receipt_markdown(receipt: VstdDataReceipt) -> str:
 
 ---
 
-## 7. Independent Reproduction
+## 7. Reproduction of Stored Checks
 
-To independently inspect and reproduce this dataset hypergraph receipt:
+To inspect and reproduce the stored dataset-hypergraph checks:
 
 ```bash
 vstd data verify receipts/{receipt.receipt_id}
 vstd data trace {spec.target_artifact_id} --receipt receipts/{receipt.receipt_id}
 ```
 
-*Generated by VSTD Data Runtime v0.1.0 (VSTD-DATA-0.1)*
+*Generated by the VSTD-Graph-1 reference runtime
+(serialized receipt identifier `VSTD-DATA-0.1`).*
 """

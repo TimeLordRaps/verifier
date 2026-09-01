@@ -1,4 +1,7 @@
-"""Deterministic adversarial demonstration of VSTD's refutation boundaries.
+"""Terminology: command-line interface (CLI); JavaScript Object Notation (JSON);
+Verifier Standard (VSTD).
+
+Deterministic adversarial demonstration of VSTD's refutation boundaries.
 
 The demo is intentionally self-contained and side-effect free unless a caller
 explicitly asks to emit its JSON specimens.  It does not execute manifests,
@@ -328,7 +331,7 @@ def _poisoned_ancestor() -> DemoResult:
         {"transform:extract": 5, "transform:collect": 5},
     )
     binding = ClaimBinding(
-        claim="compute the bounded graph level for collection:demo",
+        claim="compute the bounded candidate Graph profile for collection:demo",
         coordinate=ClaimCoordinate("collection:demo", "vstd_graph_level"),
         policy_root=canonical_digest("flagship-demo-graph-policy"),
         evidence_root=canonical_digest(graph.to_dict()),
@@ -353,14 +356,14 @@ def _poisoned_ancestor() -> DemoResult:
         and refutation_check.verdict is Verdict.FAIL
     )
     observed = (
-        f"GRAPH-LEVEL-{result.level}; "
+        f"GRAPH-CANDIDATE-{result.level}; "
         f"{blockers[0].observed if blockers else 'NO-BLOCKER'}"
     )
     return DemoResult(
         scenario="poisoned-ancestor",
         title="Revoked ancestor behind valid descendants",
-        question="Does a poisoned transitive ancestor cap the collection's graph level?",
-        expected="GRAPH-LEVEL-0; REVOKED blocker; checked refutation",
+        question="Does a poisoned transitive ancestor cap the collection's candidate Graph profile?",
+        expected="GRAPH-CANDIDATE-0; REVOKED blocker; checked refutation",
         observed=observed,
         ok=ok,
         details=result.explanation,
@@ -373,8 +376,8 @@ def _poisoned_ancestor() -> DemoResult:
                 "edge_levels": dict(sorted(collection.edge_levels.items())),
             },
             "fixture_boundary": (
-                "Object and edge levels are declared scenario inputs. This graph-level "
-                "refutation does not establish or upgrade their separate evidence."
+                "Object and edge profile ratings are declared scenario inputs. This "
+                "Graph-profile refutation does not establish or upgrade their separate evidence."
             ),
             "hypergraph": graph.to_dict(),
             "graph_result": result.to_dict(),

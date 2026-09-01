@@ -1,4 +1,6 @@
-# VSTD flagship adversarial demo
+# Verifier Standard (VSTD) flagship adversarial demo
+
+> **Acronym:** JavaScript Object Notation (JSON).
 
 This is the shortest executable explanation of VSTD's intended behavior. It tests four
 failure boundaries rather than presenting a happy-path receipt and asking the reader to
@@ -19,7 +21,7 @@ Only `--emit-specimens DIR` writes files, and only inside the named directory.
 | `wrong-artifact` | The clause grounding names a different artifact from the grounded fact. | `REJECTED` |
 | `honest-unknown` | A deterministic proof bound is exhausted. | `ACCEPTED/UNKNOWN` |
 | `inflated-tier` | A Horn formula claims the more expensive general-resolution tier. | `REJECTED` |
-| `poisoned-ancestor` | Valid descendants conceal a transitive `REVOKED` source. | graph level `0`, named blocker, accepted refutation |
+| `poisoned-ancestor` | Valid descendants conceal a transitive `REVOKED` source. | Graph candidate `0`, named blocker, accepted refutation |
 
 The poisoned-ancestor fixture declares object and edge ratings as inputs. Its graph
 refutation checks the collection ceiling; it does not establish or upgrade the separate

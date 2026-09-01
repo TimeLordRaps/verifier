@@ -1,4 +1,7 @@
-"""Rung 4.11 -- the precommitment envelope.
+"""Terminology: International Organization for Standardization (ISO);
+Coordinated Universal Time (UTC); Verifier Standard (VSTD).
+
+Rung 4.11 -- the precommitment envelope.
 
 Committing only the claim is not enough, and the gap is not subtle. A declarant
 can honestly precommit *"my system achieves X"* and then, after looking at the
@@ -12,7 +15,7 @@ is stated in the strongest form that is still checkable:
 > A declarant MUST NOT select any verdict-material degree of freedom after
 > observing the evidence produced by that degree of freedom.
 
-Two independent checks enforce it, and they catch different cheats.
+Two separate checks enforce it, and they catch different cheats.
 :func:`audit_selections` compares what was *used* against what was *committed* --
 that catches substitution. The temporal comparison catches the subtler case
 where the committed value was left open, or committed late: a choice timestamped

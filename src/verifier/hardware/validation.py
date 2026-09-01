@@ -1,4 +1,6 @@
-"""Fail-closed structural and epistemic validation for VSTD 3 receipts."""
+"""Terminology: International Organization for Standardization (ISO); Verifier Standard (VSTD).
+
+Fail-closed structural and epistemic validation for VSTD 3 receipts."""
 
 from __future__ import annotations
 
@@ -254,10 +256,10 @@ def validate_vstd3_receipt(
             and checked_evidence.verification_state is not VerificationState.VERIFIED
         ):
             warnings.append(
-                f"attestation evidence {evidence.evidence_id} could not be independently verified: {verification_detail}"
+                f"attestation evidence {evidence.evidence_id} could not be verified against configured trust material: {verification_detail}"
             )
 
-    independently_verified_source_ids = {
+    verified_source_ids = {
         evidence.evidence_source_id
         for evidence in attestation_by_id.values()
         if evidence.verification_state is VerificationState.VERIFIED
@@ -265,7 +267,7 @@ def validate_vstd3_receipt(
     claim_source_by_id = {
         source_id: (
             source
-            if source_id in independently_verified_source_ids
+            if source_id in verified_source_ids
             or source.verification_state is not VerificationState.VERIFIED
             else replace(source, verification_state=VerificationState.NOT_VERIFIED)
         )
@@ -466,7 +468,7 @@ def validate_vstd3_receipt(
             and checked_provider.verification_state is not VerificationState.VERIFIED
         ):
             warnings.append(
-                f"provider evidence {provider_evidence.evidence_id} could not be independently verified: "
+                f"provider evidence {provider_evidence.evidence_id} could not be verified against configured trust material: "
                 f"{verification_detail}"
             )
 
@@ -600,7 +602,7 @@ def validate_vstd3_receipt(
             errors.append("physical-world completeness must remain UNSUPPORTED")
 
     epistemic_key_warning = any(
-        "could not be independently verified" in warning
+        "could not be verified against configured trust material" in warning
         and ("key unavailable" in warning or "unsupported signature verifier" in warning)
         for warning in warnings
     )

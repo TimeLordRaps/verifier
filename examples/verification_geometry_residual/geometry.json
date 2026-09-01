@@ -204,7 +204,7 @@
       "seam_id": "seam:locale-render"
     }
   ],
-  "schema_version": "VSTD-0.2",
+  "schema_version": "VSTD-2",
   "seams": [
     {
       "label": "parsed value to renderer",

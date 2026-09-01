@@ -1,11 +1,16 @@
-"""Rung 4.12 -- the challenge protocol.
+"""Terminology: Verifier Standard (VSTD).
 
-Layer 4 must define what happens when someone says *this verdict is wrong*,
+Rung 4.12 -- the challenge protocol.
+
+The Refutability coordinate must define what happens when someone says *this verdict is wrong*,
 even though nobody has yet. A challenge mechanism that exists but does not move
 verdict state is item 7 on the challenge-theater list, and until now this
 repository was on that list: ``ArtifactStatus.CHALLENGED`` has existed in
-``verifier.data.models`` with **no producer anywhere in the tree**. This
-module is its producer.
+``verifier.data.models`` with **no producer anywhere in the tree**. This module
+produces challenge-ledger claim state. The separate
+``verifier.data.assurance.AssuranceLedger.project_challenges`` mechanism now binds
+the complete serialized record set into an additive VSTD-Graph current-state view;
+this module still never mutates a historical Graph artifact.
 
 The state machine::
 
@@ -25,7 +30,7 @@ not silently mutate historical artifact nodes," it creates additive records.
 :class:`ChallengeLedger` follows it, and :meth:`ChallengeLedger.status` recomputes
 from the records every time.
 
-The split with layer 5 is clean and worth stating, because it is the whole
+The split with profile 5 is clean and worth stating, because it is the whole
 reason this rung sits at 4 and not at 5:
 
 * **VSTD-4:** is the claim structurally challengeable? Testable alone, with a

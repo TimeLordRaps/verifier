@@ -1,6 +1,8 @@
 ## Coordinate
 
-- VSTD layer/profile:
+> **Acronyms:** Verifier Standard (VSTD).
+
+- VSTD numbered profile or closure coordinate:
 - Repository release or target commit:
 - Claim, schema, or implementation seam:
 
@@ -13,7 +15,7 @@
 
 ## Consequences
 
-- Compatibility and frozen-wire impact:
+- Serialized-format and compatibility impact:
 - Trust roots, unknowns, residuals, and horizons:
 - Downstream documents, schemas, examples, and receipts reviewed:
 
@@ -23,3 +25,4 @@
 - [ ] I did not strengthen a claim without stronger evidence.
 - [ ] I did not include secrets, private data, or proprietary operational material.
 - [ ] Normative text, machine-readable surfaces, examples, and tests agree.
+- [ ] README maturity, claims guidance, generated reference, and Pages status still agree.

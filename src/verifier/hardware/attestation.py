@@ -1,4 +1,11 @@
-"""Canonical binding and independent verification for VSTD 3 attestations."""
+"""Terminology: hash-based message authentication code (HMAC);
+Security Protocol and Data Model (SPDM); Verifier Standard (VSTD).
+
+Canonical binding and verifier-side recomputation for VSTD 3 attestations.
+
+The legacy public function name ``independently_verify_attestation`` denotes recomputation
+from supplied evidence rather than trust in a collector's status field. It does not
+establish distinct producer and checker actors under VSTD-1."""
 
 from __future__ import annotations
 
@@ -17,7 +24,7 @@ def attestation_signed_payload(evidence: AttestationEvidence) -> dict[str, objec
     """Return every semantic attestation field covered by its signature.
 
     ``signature`` and the collector's ``verification_state`` are deliberately not
-    self-authenticating inputs. The latter is independently recomputed by a verifier.
+    self-authenticating inputs. The latter is recomputed by the verifier.
     """
 
     return {
@@ -50,8 +57,9 @@ def independently_verify_attestation(
     """Recompute verification state for algorithms implemented by the core.
 
     The reference package implements only its explicitly test-only HMAC envelope.
-    Vendor/SPDM evidence must be verified by an adapter that supplies an independently
-    checked result; unknown algorithms remain NOT_VERIFIED rather than being guessed.
+    Vendor/SPDM evidence must be verified by an adapter that supplies a mechanism-checked
+    result; unknown algorithms remain NOT_VERIFIED rather than being guessed. This check
+    does not establish distinct actors.
     """
 
     signature = evidence.signature

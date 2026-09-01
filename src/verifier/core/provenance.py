@@ -1,4 +1,6 @@
-"""Dynamic provenance capture and environment discovery for VSTD."""
+"""Terminology: Verifier Standard (VSTD).
+
+Dynamic provenance capture and environment discovery for VSTD."""
 
 from __future__ import annotations
 

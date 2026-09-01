@@ -1,0 +1,436 @@
+{
+  "profile": {
+    "id": "vstd.experimental-workflow",
+    "version": "0.1",
+    "status": "EXPERIMENTAL_NON_NORMATIVE"
+  },
+  "experiment": {
+    "id": "experiment-artifact-first-mechanisms",
+    "title": "Mechanism completion under VSTD's governing ZIZK artifact-first architecture",
+    "question": "Which remaining domain-specific TRUST (mechanism-earned forward artifact support) transfer rules, ROT (typed time-indexed current-admissibility degradation) policies, RUST (inverse-TRUST diagnostic backtrace) localization mechanisms, hidden-witness trichotomy mechanisms, and independent implementations can extend the shipped reference event/dispatch substrate without actor reputation, scalar cancellation, causal-localization overclaim, or making the governing orientation contingent on the study?",
+    "state": "RUNNING",
+    "started_at": "2026-08-23T00:00:00Z"
+  },
+  "hypotheses": [
+    {
+      "id": "hypothesis-hidden-witness",
+      "statement": "A real proof can establish the fixed reference-mechanism predicate without publishing the private witness bytes.",
+      "falsification_condition": "The accepted public artifacts disclose the witness bytes or a documented verifier accepts a proof not bound to the fixed predicate and program identifier.",
+      "state": "SUPPORTED"
+    },
+    {
+      "id": "hypothesis-identity-boundary",
+      "statement": "The bounded identity evaluator preserves UNKNOWN and CONFLICTED rather than inferring uniqueness, independence, or authorization from absent identity information.",
+      "falsification_condition": "A fixture with absent or contradictory identity evidence produces an unqualified accepted identity inference.",
+      "state": "SUPPORTED"
+    },
+    {
+      "id": "hypothesis-trustless-reverification",
+      "statement": "Reverification can reproduce a verdict over bound public coordinates without accumulating actor reputation or historical trust.",
+      "falsification_condition": "The proposed substrate requires actor identity or prior reputation to reproduce the bounded verdict, or repeated identical receipts increase epistemic strength without new evidence.",
+      "state": "OPEN"
+    },
+    {
+      "id": "hypothesis-artifact-first-zero-actor-trust",
+      "statement": "An operational reverification protocol can derive acceptance from bound artifacts, evidence, predicates, mechanisms, and declared trust roots while preventing actor identity, popularity, repetition, or reputation from strengthening the verdict.",
+      "falsification_condition": "Changing only actor identity or reputation changes acceptance, repeated equivalent actor events raise status, or an unbound artifact is accepted.",
+      "state": "OPEN"
+    },
+    {
+      "id": "hypothesis-contextual-actor-artifact-roles",
+      "statement": "An event schema can preserve actor and artifact as contextual roles, so a coding agent may be an artifact when created or evaluated and an actor when it creates or transforms another artifact.",
+      "falsification_condition": "The model requires permanent disjoint actor and artifact categories, loses a claim-relevant creation edge, or treats a role assignment as identity, authority, or trust.",
+      "state": "OPEN"
+    },
+    {
+      "id": "hypothesis-rust-memetic-backtrace",
+      "statement": "An operational ledger can transfer typed RUST backward from an observed child deviation through admissible bound creation paths and concentrate independent backtraces on shared ancestor claims without reporting ancestry as localized causation.",
+      "falsification_condition": "RUST cannot reproduce its child-to-ancestor paths, fails to concentrate distinct comparable sources, crosses non-contributing edges, or reports concentration as direct observation, proven causation, actor reputation, or a VSTD verdict.",
+      "state": "OPEN"
+    },
+    {
+      "id": "hypothesis-rot-current-admissibility",
+      "statement": "A typed current-state mechanism can derive ROT from exact lifecycle or dependency evidence and expose affected descendants without rewriting historical receipts or treating age as falsity.",
+      "falsification_condition": "Historical receipt bytes or results are mutated, age or actor reputation alone creates ROT, an inadmissible required dependency remains clean for current use, or ROT is treated as proof that the historical result was false.",
+      "state": "OPEN"
+    },
+    {
+      "id": "hypothesis-dual-causal-propagation",
+      "statement": "An operational substrate can carry scoped TRUST from parent to child, derive typed ROT for current admissibility, and carry diagnostic RUST from child to parent without collapsing them into one scalar or allowing any relation to bypass claim-local evidence.",
+      "falsification_condition": "TRUST flows backward, RUST flows forward as inherited guilt, ROT rewrites historical truth, parent TRUST automatically proves a child, missing or conflicted support becomes clean, or actor identity changes any relation.",
+      "state": "OPEN"
+    }
+  ],
+  "preregistration": {
+    "state": "AMENDED",
+    "recorded_at": "2026-08-24T00:00:00Z",
+    "artifact_id": "artifact-round2-design",
+    "limitations": [
+      "This experimental workflow manifest records remaining domain mechanisms and external evidence; it does not classify VSTD's governing ZIZK artifact-first architecture or the shipped reference event/dispatch substrate as experimental.",
+      "Round 2 remains a design synthesis for the domain-independent transfer algebra and external protocol, not a denial of the bounded reference implementation.",
+      "The bounded identity-disclosure reference evaluator is semantic and does not itself provide cryptographic anonymity or unlinkability."
+    ]
+  },
+  "artifacts": [
+    {
+      "id": "artifact-zk-report",
+      "role": "round-1-zero-knowledge-report",
+      "media_type": "text/markdown",
+      "digest": "sha256:a3b0cdc18e81216cedd3adcaaa65119d20cd755eaa530e2a5d9219d26eda1758",
+      "locator": "repo:examples/zizk_artifact_first/risc0/ROUND1_ZERO_KNOWLEDGE_REPORT.md"
+    },
+    {
+      "id": "artifact-zk-receipt",
+      "role": "recorded-risc0-proof-receipt",
+      "media_type": "application/msgpack",
+      "digest": "sha256:04813c4757ba4efbdad9d51d50d7402f3a98f6c23e53b9b58cce8af12ef9caa2",
+      "locator": "repo:examples/zizk_artifact_first/risc0/recorded-proof/receipt.msgpack"
+    },
+    {
+      "id": "artifact-zk-public-envelope",
+      "role": "recorded-risc0-public-envelope",
+      "media_type": "application/json",
+      "digest": "sha256:188098e6ba1ac940475f15e0a4304ff08d678d98a9ed708dbe41dc6dde596b76",
+      "locator": "repo:examples/zizk_artifact_first/risc0/recorded-proof/public.json"
+    },
+    {
+      "id": "artifact-zk-self-test",
+      "role": "recorded-risc0-self-test-result",
+      "media_type": "application/json",
+      "digest": "sha256:e4c1bff21fb6161221276157fa96af6661af8635da35970ba12e462881f2c6fe",
+      "locator": "repo:examples/zizk_artifact_first/risc0/recorded-proof/self-test-results.json"
+    },
+    {
+      "id": "artifact-zi-report",
+      "role": "round-1-zero-identity-report",
+      "media_type": "text/markdown",
+      "digest": "sha256:f303cf6a2e047c09517187a74a9bc850214b1971ca98f51997e5898ec04765ae",
+      "locator": "repo:examples/zizk_artifact_first/zero_identity/ROUND1_ZERO_IDENTITY_REPORT.md"
+    },
+    {
+      "id": "artifact-round2-design",
+      "role": "round-2-reverification-design",
+      "media_type": "text/markdown",
+      "digest": "sha256:7c119945d1446ad2253dc3d9d51ef15024e32be86d92924eca0ab27587d09a46",
+      "locator": "repo:experiments/artifact_first_mechanisms/reverification/ROUND2_DESIGN_NOTE.md"
+    }
+  ],
+  "budgets": [
+    {
+      "id": "budget-zk-proof",
+      "resource": "real-proof-runs",
+      "limit": 1,
+      "consumed": 1,
+      "unit": "proof-run",
+      "scope": "RISC Zero round-1 self-test"
+    },
+    {
+      "id": "budget-identity-fixtures",
+      "resource": "semantic-fixture-evaluations",
+      "limit": 22,
+      "consumed": 22,
+      "unit": "fixture",
+      "scope": "bounded identity round-1 fixture corpus"
+    },
+    {
+      "id": "budget-round2-design",
+      "resource": "design-synthesis",
+      "limit": 1,
+      "consumed": 1,
+      "unit": "bounded-review",
+      "scope": "trustless reverification round-2 note"
+    }
+  ],
+  "actions": [
+    {
+      "id": "action-zk-proof",
+      "kind": "CRYPTOGRAPHIC_PROOF_EXPERIMENT",
+      "target": "fixed hidden-evidence predicate and public VSTD-facing coordinates",
+      "state": "COMPLETED",
+      "priority": 1,
+      "selected_because": "A zero-knowledge claim required a real proof and offline native verification rather than a commitment-only or development-mode substitute.",
+      "selection_evidence_ids": [
+        "hypothesis-hidden-witness"
+      ],
+      "alternatives_considered": [
+        "full disclosure",
+        "commitment-only evidence"
+      ],
+      "budget_ids": [
+        "budget-zk-proof"
+      ],
+      "depends_on": [],
+      "triggered_by": [],
+      "expected_artifact_effect": "Produce a bounded proof-carrying reference mechanism and retrievable public proof artifacts without changing core VSTD receipts.",
+      "substrate": {
+        "kind": "proof-engine",
+        "name": "RISC Zero zkVM",
+        "version": "3.0.6",
+        "coordinate": "repo:examples/zizk_artifact_first/risc0"
+      },
+      "native_result_ids": [
+        "result-zk-proof"
+      ],
+      "produced_artifact_ids": [
+        "artifact-zk-report",
+        "artifact-zk-receipt",
+        "artifact-zk-public-envelope",
+        "artifact-zk-self-test"
+      ]
+    },
+    {
+      "id": "action-identity-evaluation",
+      "kind": "SEMANTIC_NEGATIVE_TESTING",
+      "target": "identity minimization, authorization boundaries, ancestry, and prohibited inferences",
+      "state": "COMPLETED",
+      "priority": 2,
+      "selected_because": "Identity minimization needed explicit negative fixtures before any operational protocol could be justified.",
+      "selection_evidence_ids": [
+        "hypothesis-identity-boundary"
+      ],
+      "alternatives_considered": [
+        "actor reputation scoring",
+        "implicit identity inference"
+      ],
+      "budget_ids": [
+        "budget-identity-fixtures"
+      ],
+      "depends_on": [],
+      "triggered_by": [],
+      "expected_artifact_effect": "Expose UNKNOWN, CONFLICTED, and rejected identity inferences in a reproducible fixture corpus.",
+      "substrate": {
+        "kind": "semantic-evaluator",
+        "name": "ZIZK zero-identity fixture evaluator",
+        "version": "round-1",
+        "coordinate": "repo:examples/zizk_artifact_first/zero_identity"
+      },
+      "native_result_ids": [
+        "result-identity-fixtures"
+      ],
+      "produced_artifact_ids": [
+        "artifact-zi-report"
+      ]
+    },
+    {
+      "id": "action-reverification-synthesis",
+      "kind": "DESIGN_SYNTHESIS",
+      "target": "candidate operational mechanics for normative artifact-first TRUST, time-indexed ROT, and backward memetic RUST across contextual actor/artifact roles",
+      "state": "COMPLETED",
+      "priority": 3,
+      "selected_because": "The normative verification complex fixes the causal-provenance orientation, while the proof and identity studies expose the still-open event, transfer, concentration, and localization mechanics needed to implement it without actor reputation or causal-localization overclaim.",
+      "selection_evidence_ids": [
+        "observation-zk-proof",
+        "observation-identity-boundary",
+        "hypothesis-contextual-actor-artifact-roles",
+        "hypothesis-rust-memetic-backtrace",
+        "hypothesis-artifact-first-zero-actor-trust",
+        "hypothesis-dual-causal-propagation",
+        "hypothesis-rot-current-admissibility"
+      ],
+      "alternatives_considered": [
+        "identity-bound trust",
+        "actor reputation accumulation",
+        "object-only RUST with erased actor-artifact relations",
+        "permanent disjoint actor and artifact categories"
+      ],
+      "budget_ids": [
+        "budget-round2-design"
+      ],
+      "depends_on": [
+        "action-zk-proof",
+        "action-identity-evaluation"
+      ],
+      "triggered_by": [
+        "observation-zk-proof",
+        "observation-identity-boundary"
+      ],
+      "expected_artifact_effect": "Specify candidate contextual-role, TRUST, ROT, RUST, and concentration mechanics while leaving event schemas, transfer/derivation algebras, and localization protocols open.",
+      "substrate": {
+        "kind": "design-review",
+        "name": "ZIZK artifact-first actor-artifact reverification synthesis",
+        "version": "round-2",
+        "coordinate": "repo:experiments/artifact_first_mechanisms/reverification"
+      },
+      "native_result_ids": [],
+      "produced_artifact_ids": [
+        "artifact-round2-design"
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "id": "observation-zk-proof",
+      "action_id": "action-zk-proof",
+      "recorded_at": "2026-08-23T00:00:00Z",
+      "statement": "The recorded round-1 run generated and re-verified one real RISC Zero receipt within the reference program and exercised the declared negative cases; distinct actors were not established.",
+      "status": "OBSERVED",
+      "evidence_artifact_ids": [
+        "artifact-zk-report",
+        "artifact-zk-receipt",
+        "artifact-zk-public-envelope",
+        "artifact-zk-self-test"
+      ],
+      "limitations": [
+        "The private witness and salt are excluded; the exact non-secret receipt, public envelope, self-test result, implementation, and report are tracked and digest-bound."
+      ]
+    },
+    {
+      "id": "observation-identity-boundary",
+      "action_id": "action-identity-evaluation",
+      "recorded_at": "2026-08-24T00:00:00Z",
+      "statement": "The recorded fixture suite preserved bounded acceptance, rejection, UNKNOWN, and CONFLICTED outcomes across the declared cases.",
+      "status": "OBSERVED",
+      "evidence_artifact_ids": [
+        "artifact-zi-report"
+      ],
+      "limitations": [
+        "Semantic fixture behavior is not a cryptographic privacy, anonymity, authorization, or Sybil-resistance guarantee."
+      ]
+    }
+  ],
+  "native_results": [
+    {
+      "id": "result-zk-proof",
+      "action_id": "action-zk-proof",
+      "verifier": {
+        "kind": "proof-verifier",
+        "name": "RISC Zero Receipt::verify",
+        "version": "3.0.6",
+        "coordinate": "repo:examples/zizk_artifact_first/risc0"
+      },
+      "native_status": "REAL_RECEIPT_VERIFIED_AND_NEGATIVE_CASES_REJECTED",
+      "result_artifact_id": "artifact-zk-receipt",
+      "mapping": {
+        "status": "NOT_EVALUATED",
+        "vstd_verdict": null,
+        "mapping_profile": null,
+        "receipt_artifact_id": null,
+        "reason": "The proof engine's native result is recorded without inventing a VSTD receipt mapping."
+      }
+    },
+    {
+      "id": "result-identity-fixtures",
+      "action_id": "action-identity-evaluation",
+      "verifier": {
+        "kind": "fixture-evaluator",
+        "name": "zero_identity.evaluate",
+        "version": "round-1",
+        "coordinate": "repo:examples/zizk_artifact_first/zero_identity/evaluate.py"
+      },
+      "native_status": "22_FIXTURES_0_FAILURES",
+      "result_artifact_id": "artifact-zi-report",
+      "mapping": {
+        "status": "NOT_EVALUATED",
+        "vstd_verdict": null,
+        "mapping_profile": null,
+        "receipt_artifact_id": null,
+        "reason": "Fixture validation is preserved as its native result and does not become a core VSTD verdict."
+      }
+    }
+  ],
+  "adaptations": [
+    {
+      "id": "adaptation-round2-trustless-boundary",
+      "trigger_ids": [
+        "observation-zk-proof",
+        "observation-identity-boundary"
+      ],
+      "decision": "Treat standard/LADDER.md section 1.1 and VSTD-GRAPH-ASSURANCE-1 as the controlling semantic and implemented reference boundaries; confine Round 2 to domain-specific TRUST transfer, ROT derivation/propagation, RUST backtrace/concentration and localization mechanisms, independent cross-implementation replay, and remaining proof research.",
+      "reason": "The architecture and bounded reference event/dispatch mechanisms are implemented; the complete domain-independent transfer algebra, complete trichotomy derivation, external independent replay, and specific unfinished optional proof backends remain experimental.",
+      "action_ids": [
+        "action-reverification-synthesis"
+      ],
+      "artifact_ids": [
+        "artifact-round2-design"
+      ]
+    }
+  ],
+  "amendments": [
+    {
+      "id": "amendment-round2-design",
+      "recorded_at": "2026-08-24T00:00:00Z",
+      "reason": "Round 1 findings narrowed the design from identity-bound trust to artifact-bound trustless reverification.",
+      "supersedes": [
+        "hypothesis-trustless-reverification"
+      ],
+      "artifact_id": "artifact-round2-design"
+    },
+    {
+      "id": "amendment-actor-artifact-rust-correction",
+      "recorded_at": "2026-08-25T00:00:00Z",
+      "reason": "Correct the object-only framing and distinguish the normative causal-provenance orientation and implemented reference events from remaining domain transfer, localization, trichotomy, and optional proof-backend research: artifact support propagates ancestor-to-descendant, while RUST memetically backtraces descendant-to-ancestor without becoming actor reputation, scalar cancellation, causal localization, or guilt.",
+      "supersedes": [
+        "amendment-round2-design"
+      ],
+      "artifact_id": "artifact-round2-design"
+    },
+    {
+      "id": "amendment-trust-rot-rust-architecture",
+      "recorded_at": "2026-08-27T00:00:00Z",
+      "reason": "Formalize artifact/process-only TRUST, ROT, and RUST under zero identity and zero unevidenced knowledge, with cryptographic zero knowledge enclosing confidential-witness mechanisms rather than importing prover identity into verdict weight.",
+      "supersedes": [
+        "amendment-actor-artifact-rust-correction"
+      ],
+      "artifact_id": "artifact-round2-design"
+    }
+  ],
+  "challenges": [],
+  "horizons": [
+    {
+      "id": "horizon-operational-protocol",
+      "status": "UNKNOWN",
+      "description": "Independent end-to-end deployment of the reference reverification protocol",
+      "reason": "The repository ships a bounded operational reference substrate; no external independent implementation or deployment evidence is included."
+    },
+    {
+      "id": "horizon-anonymity",
+      "status": "OUT_OF_SCOPE",
+      "description": "Universal anonymity or unlinkability",
+      "reason": "Neither bounded reference mechanism establishes anonymity, unlinkability, identity uniqueness, or resistance to correlation outside its declared predicate."
+    },
+    {
+      "id": "horizon-independent-reimplementation",
+      "status": "UNKNOWN",
+      "description": "Independent implementation by an unrelated party",
+      "reason": "No independent implementation has been demonstrated."
+    },
+    {
+      "id": "horizon-contextual-role-protocol",
+      "status": "UNKNOWN",
+      "description": "Operational actor/artifact role and creation-edge protocol",
+      "reason": "The design states the contextual-role invariant but includes no approved schema or implementation."
+    },
+    {
+      "id": "horizon-rot-current-admissibility",
+      "status": "UNKNOWN",
+      "description": "Domain-specific ROT policies beyond the reference dispatcher",
+      "reason": "AssuranceLedger implements typed ROT and challenge-ledger projection without rewriting history; production lifecycle mechanisms and cross-implementation evidence remain unavailable."
+    },
+    {
+      "id": "horizon-rust-memetic-backtrace",
+      "status": "UNKNOWN",
+      "description": "Independent domain localization beyond structural RUST concentration",
+      "reason": "AssuranceLedger implements typed backward RUST, deduplicated structural concentration, and explicit localization dispatch; no external intervention mechanism or independent replay is included."
+    },
+    {
+      "id": "horizon-forward-artifact-trust",
+      "status": "UNKNOWN",
+      "description": "Complete domain-independent TRUST transfer algebra",
+      "reason": "AssuranceLedger implements evidence-bound forward TRUST over recorded ancestry; no universal algebra can replace the domain mechanism that checks each exact support proposition."
+    }
+  ],
+  "publication": {
+    "state": "CANDIDATE",
+    "artifact_ids": [
+      "artifact-zk-report",
+      "artifact-zk-self-test",
+      "artifact-zk-public-envelope",
+      "artifact-zk-receipt",
+      "artifact-zi-report",
+      "artifact-round2-design"
+    ]
+  },
+  "workflow_events": [],
+  "interventions": [],
+  "manifest_digest": "sha256:81ce95f54a1ca98cd9fb897cf0568329aff03d5cb7334ffd367c915c2f6835dc"
+}

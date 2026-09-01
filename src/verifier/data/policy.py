@@ -1,4 +1,8 @@
-"""Formal Policy Verification Engine for Dataset & Computational Provenance."""
+"""Terminology: conjunctive normal form (CNF); grounded decision certificate (GDC);
+Boolean satisfiability problem (SAT); Software Package Data Exchange (SPDX);
+Verifier Standard (VSTD).
+
+Formal Policy Verification Engine for Dataset & Computational Provenance."""
 
 from __future__ import annotations
 
