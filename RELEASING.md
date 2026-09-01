@@ -69,7 +69,26 @@ release-candidate Zenodo metadata.
    credentials, and personal email addresses.
 6. Confirm `python scripts/check_time_status.py` passes, release-candidate metadata has
    been finalized with the actual intended publication date, and then create the release
-   tag locally at the exact tested commit. Prefer a cryptographically
+   tag locally at the exact tested commit. Before creating the tag, require GitHub release
+   immutability to be enabled:
+
+   ```bash
+   gh api -H "X-GitHub-Api-Version: 2026-03-10" \
+     repos/TimeLordRaps/verifier/immutable-releases
+   ```
+
+   The response MUST contain `"enabled": true`. GitHub release immutability is a
+   repository setting that applies only to future releases; GitHub documents both the
+   [repository setting](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/prevent-release-changes)
+   and the
+   [versioned API](https://docs.github.com/en/rest/repos/repos?apiVersion=2026-03-10#check-if-immutable-releases-are-enabled-for-a-repository).
+   The tag workflow repeats this check and stops before publication when the setting is
+   disabled. Immutability locks the published tag and attached assets and generates a
+   GitHub release attestation; it does not correct false metadata. Corrections,
+   revocations, and superseding releases remain additive. Enable the setting only after
+   the draft-first workflow is present on the protected release commit.
+
+   Prefer a cryptographically
    signed annotated tag when the maintainer's signing key is registered and available.
    Rebuild using the tag coordinate. The source ZIP, wheel, and source distribution MUST
    be byte-identical to the commit-coordinate candidate. The SBOM also remains
@@ -103,7 +122,8 @@ release-candidate Zenodo metadata.
 8. Push the tag only after all preceding checks pass. The tag-triggered release workflow
    rechecks protected-main ancestry, package version, the successful protected
    repository-check aggregate (the `conformance-gate` status context), the full test
-   suite, deterministic build, installed wheel, and artifact manifest.
+   suite, immutable-release setting, deterministic build, installed wheel, and artifact
+   manifest.
    It then attests the tested source ZIP, wheel, source distribution, SBOM, and external
    release manifest. The workflow creates a draft, attaches the complete set, and only
    then publishes it. A second job can
@@ -119,22 +139,6 @@ release-candidate Zenodo metadata.
    An attestation and SBOM complement but do not replace the release manifest, and neither
    turns an unsigned tag into a signed tag.
 
-   GitHub release immutability is a repository setting that applies only to future
-   releases. GitHub documents both the
-   [repository setting](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/prevent-release-changes)
-   and the
-   [versioned API](https://docs.github.com/en/rest/repos/repos?apiVersion=2026-03-10#check-if-immutable-releases-are-enabled-for-a-repository).
-   Check the endpoint before tagging:
-
-   ```bash
-   gh api -H "X-GitHub-Api-Version: 2026-03-10" \
-     repos/TimeLordRaps/verifier/immutable-releases
-   ```
-
-   Require `enabled: true`. Immutability locks the published tag and attached assets and
-   generates a GitHub release attestation; it does not correct false metadata. Corrections,
-   revocations, and superseding releases remain additive. Enable the setting only after
-   the draft-first workflow is present on the protected release commit.
 10. Let Zenodo archive the GitHub release, then record the issued DOI additively.
 11. Confirm that `https://pypi.org/project/verifier-standard/1.2.0/` lists the same wheel
     and source-distribution SHA-256 values as the GitHub release and external manifest.

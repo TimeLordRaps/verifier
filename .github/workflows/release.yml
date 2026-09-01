@@ -39,6 +39,15 @@ jobs:
           test "$VERSION" = "$PACKAGE_VERSION"
           test "$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs" --jq '[.check_runs[] | select(.name == "conformance-gate" and .conclusion == "success")] | length')" -ge 1
 
+      - name: Require immutable GitHub releases before publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "repos/$GITHUB_REPOSITORY/immutable-releases" \
+            --jq '.enabled')" = true
+
       - name: Require finalized release metadata in the exact tagged checkout
         run: python scripts/check_release_metadata.py --version "${GITHUB_REF_NAME#v}"
 

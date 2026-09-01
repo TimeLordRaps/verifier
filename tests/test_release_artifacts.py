@@ -474,7 +474,12 @@ def test_tag_release_contract_binds_main_version_gate_and_final_metadata() -> No
         'test "$VERSION" = "$PACKAGE_VERSION"',
         'commits/$GITHUB_SHA/check-runs',
         'select(.name == "conformance-gate" and .conclusion == "success")',
+        'repos/$GITHUB_REPOSITORY/immutable-releases',
+        "--jq '.enabled')\" = true",
         'python scripts/check_release_metadata.py --version "${GITHUB_REF_NAME#v}"',
     )
     for fragment in required:
         assert fragment in workflow
+    assert workflow.index('repos/$GITHUB_REPOSITORY/immutable-releases') < workflow.index(
+        'gh release create "$GITHUB_REF_NAME"'
+    )

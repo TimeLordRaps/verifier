@@ -173,6 +173,9 @@
 
 - Mark 1.2.0 metadata as an unreleased release candidate, omit any fabricated release
   date, and require the exact tagged checkout to have `TIME.md` set to `Status: CLEAR`.
+- Move the immutable-release setting check before tag creation in the documented release
+  sequence and enforce it again in the tag workflow, so a disabled setting stops
+  publication rather than producing a mutable release.
 - Make package/reference status identify VSTD-5 as the highest exposed project
   specification with an evidence-bound reference mechanism, without claiming a real
   independent witness, and require finalized release metadata in the tag workflow.
