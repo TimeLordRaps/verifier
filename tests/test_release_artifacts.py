@@ -355,8 +355,8 @@ def test_release_notes_use_the_github_tag_object_verification() -> None:
 
 def test_release_is_drafted_with_attested_sbom_before_publication() -> None:
     workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
-    create = workflow.index('gh release create "$GITHUB_REF_NAME"')
-    publish = workflow.index('gh release edit "$GITHUB_REF_NAME"')
+    create = workflow.index('gh release create "$RELEASE_TAG"')
+    publish = workflow.index('gh release edit "$RELEASE_TAG"')
 
     assert "dist/*.cdx.json" in workflow
     assert "--draft" in workflow[create:publish]
@@ -482,20 +482,31 @@ def test_release_metadata_gate_accepts_one_final_consistent_coordinate(tmp_path:
     release_metadata.require_finalized(tmp_path, "1.2.0")
 
 
-def test_tag_release_contract_binds_main_version_gate_and_final_metadata() -> None:
+def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None:
     workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
     required = (
-        'git merge-base --is-ancestor "$GITHUB_SHA" origin/main',
-        'git rev-parse "${GITHUB_REF}^{commit}"',
+        "workflow_dispatch:",
+        "immutable_releases_preflight:",
+        "ref: ${{ env.RELEASE_TAG }}",
+        'test "$GITHUB_REF" = "refs/heads/$DEFAULT_BRANCH"',
+        'git merge-base --is-ancestor "$SOURCE_COMMIT" "origin/$DEFAULT_BRANCH"',
+        'test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"',
         'test "$VERSION" = "$PACKAGE_VERSION"',
-        'commits/$GITHUB_SHA/check-runs',
+        'commits/$SOURCE_COMMIT/check-runs',
         'select(.name == "conformance-gate" and .conclusion == "success")',
-        'repos/$GITHUB_REPOSITORY/immutable-releases',
-        "--jq '.enabled')\" = true",
-        'python scripts/check_release_metadata.py --version "${GITHUB_REF_NAME#v}"',
+        'test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"',
+        'test "$IMMUTABLE_RELEASES_PREFLIGHT" = "true"',
+        'python scripts/check_release_metadata.py --version "${RELEASE_TAG#v}"',
+        'gh release create "$RELEASE_TAG"',
+        'releases/tags/$RELEASE_TAG',
+        "--jq '.immutable')\" = true",
     )
     for fragment in required:
         assert fragment in workflow
-    assert workflow.index('repos/$GITHUB_REPOSITORY/immutable-releases') < workflow.index(
-        'gh release create "$GITHUB_REF_NAME"'
+    assert "repos/$GITHUB_REPOSITORY/immutable-releases" not in workflow
+    assert workflow.index('test "$IMMUTABLE_RELEASES_PREFLIGHT" = "true"') < workflow.index(
+        'gh release create "$RELEASE_TAG"'
+    )
+    assert workflow.index('gh release create "$RELEASE_TAG"') < workflow.index(
+        "--jq '.immutable')\" = true"
     )

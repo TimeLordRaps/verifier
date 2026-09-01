@@ -19,5 +19,5 @@ When a contradiction is open, change the status to `Status: OPEN` and record the
 coordinates, both incompatible claims, evidence for each side, and affected behavior. An
 evidence-backed repair removes the resolved live entry and returns this file to
 `Status: CLEAR`; Git history preserves the prior state. Development branches may remain
-open. The tag-triggered publication workflow checks the exact tagged checkout and fails
+open. The owner-dispatched publication workflow checks the exact tagged checkout and fails
 unless this file contains exactly one `Status: CLEAR` line.

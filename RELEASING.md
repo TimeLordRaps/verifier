@@ -11,7 +11,7 @@ exact, publicly resolvable commit.
 
 Development branches may record precise contradictions with [`TIME.md`](TIME.md) set to
 `Status: OPEN`; normal pull-request checks do not prohibit that state. Publication is
-different: the tag-triggered workflow runs `python scripts/check_time_status.py` against
+different: the owner-dispatched release workflow runs `python scripts/check_time_status.py` against
 the exact tagged checkout and fails unless it contains exactly one `Status: CLEAR` line.
 There is no subjective override.
 
@@ -20,7 +20,7 @@ period, `CHANGELOG.md` says `UNRELEASED`, `CITATION.cff` identifies a release ca
 has no `date-released`, and install instructions distinguish a source checkout from the
 latest published package. Before tagging, land an explicit release-finalization change that
 uses the actual publication date consistently in the changelog and citation metadata; do
-not fabricate or backdate it. The tag workflow enforces this with
+not fabricate or backdate it. The release workflow enforces this with
 `python scripts/check_release_metadata.py --version <version>` and also refuses
 release-candidate Zenodo metadata.
 
@@ -82,8 +82,14 @@ release-candidate Zenodo metadata.
    [repository setting](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/prevent-release-changes)
    and the
    [versioned API](https://docs.github.com/en/rest/repos/repos?apiVersion=2026-03-10#check-if-immutable-releases-are-enabled-for-a-repository).
-   The tag workflow repeats this check and stops before publication when the setting is
-   disabled. Immutability locks the published tag and attached assets and generates a
+   GitHub documents this endpoint as requiring repository Administration read permission.
+   The default Actions token cannot request that permission, so the release workflow must
+   not present its token as an independent administrative recheck. Instead, the repository
+   owner performs this authenticated preflight immediately before dispatching the existing
+   `release.yml` workflow and supplies its required
+   `immutable_releases_preflight=true` control input. The workflow requires the dispatcher
+   to equal the repository owner and verifies the published release's `immutable` field as
+   a postcondition. Immutability locks the published tag and attached assets and generates a
    GitHub release attestation; it does not correct false metadata. Corrections,
    revocations, and superseding releases remain additive. Enable the setting only after
    the draft-first workflow is present on the protected release commit.
@@ -119,11 +125,15 @@ release-candidate Zenodo metadata.
    The manifest's source ref MUST resolve to its recorded public commit. The source ZIP
    file set and every member byte MUST match that commit. CRLF/LF equivalence is not
    accepted as byte identity.
-8. Push the tag only after all preceding checks pass. The tag-triggered release workflow
-   rechecks protected-main ancestry, package version, the successful protected
+8. Push the tag only after all preceding checks pass. Re-run the owner-authenticated
+   immutable-release API preflight, then dispatch `.github/workflows/release.yml` from the
+   protected default branch with the exact existing tag and
+   `immutable_releases_preflight=true`. The owner-dispatched release workflow
+   rechecks signed-tag identity, protected-main ancestry, package version, the successful protected
    repository-check aggregate (the `conformance-gate` status context), the full test
-   suite, immutable-release setting, deterministic build, installed wheel, and artifact
-   manifest.
+   suite, final metadata, deterministic build, installed wheel, and artifact manifest.
+   The administrative preflight is owner-observed rather than Actions-token-observed; the
+   workflow stops unless that fact is explicitly supplied and refuses a non-owner dispatch.
    It then attests the tested source ZIP, wheel, source distribution, SBOM, and external
    release manifest. The workflow creates a draft, attaches the complete set, and only
    then publishes it. A second job can
