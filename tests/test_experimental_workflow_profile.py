@@ -35,6 +35,11 @@ ARTIFACT_FIRST_MECHANISMS_MANIFEST = (
 )
 
 
+def test_non_normative_experiments_remain_outside_supported_examples() -> None:
+    assert (ROOT / "experiments" / "INDEX.md").is_file()
+    assert not (ROOT / "examples" / "experimental_profiles").exists()
+
+
 def _example_payload() -> dict[str, object]:
     return json.loads(EXPERIMENT_MANIFEST.read_text(encoding="utf-8"))
 
