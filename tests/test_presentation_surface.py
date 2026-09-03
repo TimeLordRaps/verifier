@@ -542,6 +542,12 @@ def test_cross_platform_comparability_uses_three_native_operating_systems() -> N
         ("windows-latest", "Windows"),
         ("macos-15-intel", "Darwin"),
     }
+    observation_setup = next(
+        step
+        for step in observation["steps"]
+        if str(step.get("uses", "")).startswith("actions/setup-python@")
+    )
+    assert observation_setup["with"]["python-version"] == "3.12.10"
     observation_commands = "\n".join(
         str(step.get("run", "")) for step in observation["steps"]
     )
@@ -554,6 +560,12 @@ def test_cross_platform_comparability_uses_three_native_operating_systems() -> N
         str(step.get("run", "")) for step in aggregate["steps"]
     )
     assert aggregate["needs"] == ["platform-comparability-observation"]
+    aggregate_setup = next(
+        step
+        for step in aggregate["steps"]
+        if str(step.get("uses", "")).startswith("actions/setup-python@")
+    )
+    assert aggregate_setup["with"]["python-version"] == "3.12.10"
     assert "vstd compare-platforms" in aggregate_commands
     assert "platform-comparison.json" in aggregate_commands
     assert "platform-comparability-observation" in jobs["conformance-gate"]["needs"]
