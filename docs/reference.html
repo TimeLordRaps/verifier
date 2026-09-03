@@ -117,6 +117,14 @@
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
 </tbody></table>
 </article>
+<article class="ref-item" id="cli-vstd-compare-platforms">
+<h3><code>vstd compare-platforms</code></h3>
+<p class="ref-help">Compare declared generic-run result surfaces across operating systems.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipts</code></td><td>positional</td><td>Receipt directories or receipt.json files, one per declared platform.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="cli-vstd-validate">
 <h3><code>vstd validate</code></h3>
 <p class="ref-help">Run implemented receipt checks; Graph candidate validation is not conformance.</p>
@@ -535,6 +543,21 @@
 <tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
 </tbody></table>
 </article>
+<article class="ref-item" id="api-PlatformComparisonResult">
+<h3><code>PlatformComparisonResult</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>PlatformComparisonResult(status: 'PlatformComparisonStatus', reason: 'str', declaration: 'dict[str, Any] | None', required_platforms: 'tuple[str, ...]', observed_platforms: 'tuple[str, ...]', comparison_binding_digest: 'str | None', observations: 'tuple[dict[str, Any], ...]', differences: 'tuple[dict[str, Any], ...]', errors: 'tuple[str, ...]') -&gt; None</code></pre>
+<p class="ref-help">Machine-readable diagnostic result; this object is not a VSTD receipt.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/platform_comparison.py"><code>verifier.core.platform_comparison</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-PlatformComparisonStatus">
+<h3><code>PlatformComparisonStatus</code> <span class="ref-tag">enum</span></h3>
+<p class="ref-help">Typed outcome of a bounded platform comparison.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/platform_comparison.py"><code>verifier.core.platform_comparison</code></a></p>
+<p class="ref-help">Members: <code>PASS, CONFLICTED, NOT_ESTABLISHED, INVALID</code></p>
+</article>
 <article class="ref-item" id="api-ProvenanceHypergraph">
 <h3><code>ProvenanceHypergraph</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>ProvenanceHypergraph() -&gt; 'None'</code></pre>
@@ -663,6 +686,13 @@
 <pre class="ref-signature"><code>claim_binding_from_dict(data: 'Mapping[str, object]') -&gt; 'ClaimBinding'</code></pre>
 <p class="ref-help">Reconstruct the exact VSTD-4 claim binding carried by a receipt.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
+
+</article>
+<article class="ref-item" id="api-compare_platform_run_receipts">
+<h3><code>compare_platform_run_receipts</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>compare_platform_run_receipts(receipts: 'Iterable[str | Path]') -&gt; 'PlatformComparisonResult'</code></pre>
+<p class="ref-help">Compare declared result surfaces across canonically intact run receipts.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/platform_comparison.py"><code>verifier.core.platform_comparison</code></a></p>
 
 </article>
 <article class="ref-item" id="api-compute_canonical_digest">

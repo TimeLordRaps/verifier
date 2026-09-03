@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Optional
@@ -22,6 +23,43 @@ CLAIM_SCHEMA_VERSION = "VSTD-1"
 CLAIM_RECEIPT_KIND = "claim_mechanics"
 
 
+class StrictJsonError(ValueError):
+    """A JSON document violates the strict VSTD-1 parsing boundary."""
+
+
+def _reject_duplicate_object_keys(
+    pairs: list[tuple[str, Any]],
+) -> dict[str, Any]:
+    parsed: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in parsed:
+            raise StrictJsonError(f"duplicate object key: {key!r}")
+        parsed[key] = value
+    return parsed
+
+
+def _reject_non_finite_constant(value: str) -> Any:
+    raise StrictJsonError(f"non-finite number is not valid JSON: {value}")
+
+
+def _parse_finite_float(value: str) -> float:
+    parsed = float(value)
+    if not math.isfinite(parsed):
+        raise StrictJsonError(f"JSON number is outside the finite float range: {value}")
+    return parsed
+
+
+def strict_json_loads(payload: str) -> Any:
+    """Parse JSON while rejecting duplicate keys and non-finite numbers."""
+
+    return json.loads(
+        payload,
+        object_pairs_hook=_reject_duplicate_object_keys,
+        parse_constant=_reject_non_finite_constant,
+        parse_float=_parse_finite_float,
+    )
+
+
 def canonical_json_dumps(payload: Any) -> str:
     """Deterministic JSON serialization.
 
@@ -30,8 +68,15 @@ def canonical_json_dumps(payload: Any) -> str:
     2. Compact separators (no trailing spaces: ',', ':').
     3. Floating point numbers formatted consistently.
     4. Strings encoded in UTF-8.
+    5. Non-finite numbers rejected rather than serialized as extensions.
     """
-    return json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    return json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+        allow_nan=False,
+    )
 
 
 def compute_canonical_digest(stable_payload: Mapping[str, Any]) -> str:

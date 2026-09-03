@@ -31,11 +31,13 @@ def main() -> int:
     # deterministic regardless of Python's dict/Counter iteration order.
     frequency_table = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
 
-    with open(output_path, "w", encoding="utf-8") as f:
+    # Explicit line-feed serialization prevents the host text layer from
+    # translating output bytes on Windows.
+    with open(output_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump({"frequency_table": frequency_table}, f, indent=2, sort_keys=True)
         f.write("\n")
 
-    with open(metrics_path, "w", encoding="utf-8") as f:
+    with open(metrics_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump({"total_tokens": len(tokens), "unique_tokens": len(counts)}, f, indent=2, sort_keys=True)
         f.write("\n")
 

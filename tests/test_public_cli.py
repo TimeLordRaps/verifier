@@ -49,6 +49,10 @@ def test_public_parser_has_no_target_specific_generation_commands() -> None:
     assert parser.parse_args(["plan", "manifest.json"]).command == "plan"
     assert parser.parse_args(["demo"]).command == "demo"
     assert (
+        parser.parse_args(["compare-platforms", "linux", "windows", "macos"]).command
+        == "compare-platforms"
+    )
+    assert (
         parser.parse_args(["artifact", "verify", "bundle"]).artifact_command
         == "verify"
     )

@@ -55,6 +55,14 @@ The matching supported portable-record exports are
 Compatibility `vstd4_depth` and `graph_level`-style candidate results do not become
 conformance results merely because the evidence-bound APIs also exist.
 
+At the current unreleased source coordinate, `compare_platform_run_receipts`,
+`PlatformComparisonResult`, and `PlatformComparisonStatus` are supported additions for
+the next minor release's bounded operating-system comparison API.
+They operate on existing VSTD-1 generic-run receipts and return a diagnostic object, not
+a new receipt or conformance result. `PASS` requires complete declared platform coverage,
+canonical integrity, equal non-platform bindings, and equal declared result projections;
+`CONFLICTED`, `NOT_ESTABLISHED`, and `INVALID` remain distinct failure states.
+
 `assess_witness_corroboration` accepts incomplete inputs so it can return a typed diagnostic
 result. The supported `build_vstd5_receipt` boundary is stricter: it either raises or returns
 an object satisfying the published receipt shape with all verdict-material evidence bytes.

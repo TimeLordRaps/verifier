@@ -32,6 +32,18 @@ _LAZY_EXPORTS = {
     "VstdReceipt": ("verifier.core.receipt", "VstdReceipt"),
     "compute_canonical_digest": ("verifier.core.receipt", "compute_canonical_digest"),
     "ReproducibilityLevel": ("verifier.core.reproducibility", "ReproducibilityLevel"),
+    "PlatformComparisonResult": (
+        "verifier.core.platform_comparison",
+        "PlatformComparisonResult",
+    ),
+    "PlatformComparisonStatus": (
+        "verifier.core.platform_comparison",
+        "PlatformComparisonStatus",
+    ),
+    "compare_platform_run_receipts": (
+        "verifier.core.platform_comparison",
+        "compare_platform_run_receipts",
+    ),
     "capture_run": ("verifier.core.run", "capture_run"),
     "validate_run_receipt": ("verifier.core.run", "validate_run_receipt"),
     "VerificationGeometry": ("verifier.core.geometry", "VerificationGeometry"),
@@ -174,6 +186,11 @@ if TYPE_CHECKING:
     from verifier.core.receipt import (
         VstdReceipt as VstdReceipt,
         compute_canonical_digest as compute_canonical_digest,
+    )
+    from verifier.core.platform_comparison import (
+        PlatformComparisonResult as PlatformComparisonResult,
+        PlatformComparisonStatus as PlatformComparisonStatus,
+        compare_platform_run_receipts as compare_platform_run_receipts,
     )
     from verifier.core.reproducibility import ReproducibilityLevel as ReproducibilityLevel
     from verifier.core.run import capture_run as capture_run, validate_run_receipt as validate_run_receipt

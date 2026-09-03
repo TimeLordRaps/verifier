@@ -10,7 +10,11 @@ from pathlib import Path
 import re
 from typing import Any, Mapping
 
-from verifier.core.receipt import compute_canonical_digest
+from verifier.core.receipt import (
+    StrictJsonError,
+    compute_canonical_digest,
+    strict_json_loads,
+)
 from verifier.core.run_support import (
     RUN_RECEIPT_KIND,
     RUN_SCHEMA_VERSION,
@@ -627,8 +631,8 @@ def validate_run_receipt(receipt_path_or_dir: Path) -> int:
         print(f"[FAIL] Receipt file not found: {receipt_file}")
         return 1
     try:
-        data = json.loads(receipt_file.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        data = strict_json_loads(receipt_file.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError, StrictJsonError) as exc:
         print(f"[FAIL] Receipt is not readable JSON: {exc}")
         return 1
     if not isinstance(data, Mapping):

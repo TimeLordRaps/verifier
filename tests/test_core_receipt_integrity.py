@@ -8,7 +8,14 @@ import pytest
 
 from verifier.core.checker import IndependentAuditor
 from verifier.core.provenance import GitProvenance, ProvenanceRecord, RuntimeEnvironment
-from verifier.core.receipt import ClaimSpec, EvidencePayload, VstdReceipt
+from verifier.core.receipt import (
+    ClaimSpec,
+    EvidencePayload,
+    StrictJsonError,
+    VstdReceipt,
+    canonical_json_dumps,
+    strict_json_loads,
+)
 
 
 def _receipt() -> VstdReceipt:
@@ -80,3 +87,27 @@ def test_recorded_digest_cannot_self_validate_after_claim_replacement() -> None:
 
     assert receipt.canonical_digest == original_digest
     assert not receipt.verify_digest_integrity()
+
+
+@pytest.mark.parametrize(
+    "payload",
+    (
+        '{"value": NaN}',
+        '{"value": Infinity}',
+        '{"value": -Infinity}',
+        '{"value": 1e999}',
+        '{"value": 1, "value": 2}',
+        '{"outer": {"value": 1, "value": 2}}',
+    ),
+)
+def test_strict_json_loader_rejects_non_finite_numbers_and_duplicate_keys(
+    payload: str,
+) -> None:
+    with pytest.raises(StrictJsonError):
+        strict_json_loads(payload)
+
+
+@pytest.mark.parametrize("value", (float("nan"), float("inf"), float("-inf")))
+def test_canonical_json_rejects_non_finite_numbers(value: float) -> None:
+    with pytest.raises(ValueError, match="Out of range float values"):
+        canonical_json_dumps({"value": value})
