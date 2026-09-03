@@ -644,10 +644,10 @@ def check_experiment_index(errors: list[str]) -> None:
     except Exception as exc:  # the gate reports any bounded generation failure
         errors.append(f"experiment index cannot be generated: {exc}")
         return
-    target = ROOT / "examples/experimental_profiles/INDEX.md"
+    target = ROOT / "experiments/INDEX.md"
     if not target.is_file() or target.read_text(encoding="utf-8") != rendered:
         errors.append(
-            "examples/experimental_profiles/INDEX.md drifted from profile manifests; "
+            "experiments/INDEX.md drifted from profile manifests; "
             "run python scripts/build_experiment_index.py"
         )
 

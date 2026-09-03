@@ -136,13 +136,13 @@ has its own digest for that check.
 
 ## 6. Dogfooding and index
 
-Experimental manifests live below `examples/experimental_profiles/` as `experiment.json`. The command
+Experimental manifests live below `experiments/` as `experiment.json`. The command
 
 ```bash
 PYTHONPATH=src python scripts/build_experiment_index.py --check
 ```
 
-validates every manifest and confirms that [`examples/experimental_profiles/INDEX.md`](../../examples/experimental_profiles/INDEX.md)
+validates every manifest and confirms that [`experiments/INDEX.md`](../../experiments/INDEX.md)
 is current. The first bound record is the deterministic GitHub verdict-neutrality
 specimen. A blocked experiment remains eligible for indexing once its intentional files
 are isolated and its manifest honestly records the blocker; indexing is not publication
@@ -155,7 +155,7 @@ that a successful GitHub workflow and merged pull request remain verdict-neutral
 The installed CLI exposes the same bounded surface:
 
 ```bash
-vstd experiment validate examples/experimental_profiles/github_verdict_neutrality/experiment.json --json
+vstd experiment validate experiments/github_verdict_neutrality/experiment.json --json
 vstd experiment github-events examples/experimental_workflow/github_snapshot.json --json
 ```
 

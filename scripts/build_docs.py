@@ -143,7 +143,7 @@ def documents() -> tuple[Document, ...]:
             )
         )
 
-    experiments = sorted((ROOT / "examples" / "experimental_profiles").rglob("*.md"))
+    experiments = sorted((ROOT / "experiments").rglob("*.md"))
     for source in experiments:
         relative = source.relative_to(ROOT).with_suffix(".html")
         if source.name == "INDEX.md":

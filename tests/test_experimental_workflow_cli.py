@@ -13,7 +13,7 @@ from verifier.runtime.public_cli import main
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "examples" / "experimental_profiles" / "github_verdict_neutrality" / "experiment.json"
+MANIFEST = ROOT / "experiments" / "github_verdict_neutrality" / "experiment.json"
 SNAPSHOT = ROOT / "examples" / "experimental_workflow" / "github_snapshot.json"
 
 

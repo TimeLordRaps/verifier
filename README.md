@@ -415,7 +415,7 @@ Additional entry points:
 | Install and exercise the first-run path | [Quickstart](docs/QUICKSTART.md) |
 | Understand terminology and precedents | [Concepts and precedents](docs/CONCEPTS_AND_PRECEDENTS.md) |
 | Inspect abbreviated terms | [Acronyms](docs/ACRONYMS.md) |
-| Review experimental profiles | [Experiment index](examples/experimental_profiles/INDEX.md) |
+| Review experimental profiles | [Experiment index](experiments/INDEX.md) |
 | Understand human claim traversal | [Human operating guide](HUMANS.md) |
 | Inspect project direction and non-goals | [Roadmap](ROADMAP.md) |
 

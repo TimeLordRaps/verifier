@@ -40,7 +40,7 @@ GENERATED_PREFIXES = (
 )
 SCAN_EXCLUSIONS = {
     "examples/zizk_artifact_first/zero_identity/ROUND1_ZERO_IDENTITY_REPORT.md",
-    "examples/experimental_profiles/artifact_first_mechanisms/reverification/ROUND2_DESIGN_NOTE.md",
+    "experiments/artifact_first_mechanisms/reverification/ROUND2_DESIGN_NOTE.md",
     "tests/test_presentation_surface.py",
 }
 AMBIGUOUS_PATTERNS = (

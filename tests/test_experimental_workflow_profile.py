@@ -28,16 +28,16 @@ from verifier.experimental_workflow import (
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "examples" / "experimental_workflow"
 EXPERIMENT_MANIFEST = (
-    ROOT / "examples" / "experimental_profiles" / "github_verdict_neutrality" / "experiment.json"
+    ROOT / "experiments" / "github_verdict_neutrality" / "experiment.json"
 )
 ARTIFACT_FIRST_MECHANISMS_MANIFEST = (
-    ROOT / "examples" / "experimental_profiles" / "artifact_first_mechanisms" / "experiment.json"
+    ROOT / "experiments" / "artifact_first_mechanisms" / "experiment.json"
 )
 
 
-def test_experimental_profiles_are_consolidated_under_examples() -> None:
-    assert not (ROOT / "experiments").exists()
-    assert (ROOT / "examples" / "experimental_profiles" / "INDEX.md").is_file()
+def test_non_normative_experiments_remain_outside_supported_examples() -> None:
+    assert (ROOT / "experiments" / "INDEX.md").is_file()
+    assert not (ROOT / "examples" / "experimental_profiles").exists()
 
 
 def _example_payload() -> dict[str, object]:
@@ -330,4 +330,4 @@ def test_experiment_index_is_current() -> None:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     expected = module.render(module.discover(ROOT))
-    assert (ROOT / "examples" / "experimental_profiles" / "INDEX.md").read_text(encoding="utf-8") == expected
+    assert (ROOT / "experiments" / "INDEX.md").read_text(encoding="utf-8") == expected

@@ -67,12 +67,11 @@ def test_experimental_scope_does_not_absorb_the_governing_architecture() -> None
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     architecture = (ROOT / "docs" / "ARCHITECTURE.md").read_text(encoding="utf-8")
     experiment_index = (
-        ROOT / "examples" / "experimental_profiles" / "artifact_first_mechanisms" / "README.md"
+        ROOT / "experiments" / "artifact_first_mechanisms" / "README.md"
     ).read_text(encoding="utf-8")
     design = (
         ROOT
-        / "examples"
-        / "experimental_profiles"
+        / "experiments"
         / "artifact_first_mechanisms"
         / "reverification"
         / "ROUND2_DESIGN_NOTE.md"
