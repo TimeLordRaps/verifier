@@ -72,6 +72,29 @@ def test_digest_consistent_empty_generic_receipt_is_rejected(tmp_path, capsys):
     assert "missing required fields" in output
 
 
+@pytest.mark.parametrize(
+    ("payload", "error_fragment"),
+    (
+        ('{"value": NaN}', "non-finite number"),
+        ('{"value": 1e999}', "outside the finite float range"),
+        ('{"value": 1, "value": 2}', "duplicate object key"),
+    ),
+)
+def test_generic_validator_rejects_nonstandard_or_ambiguous_json(
+    tmp_path: Path,
+    capsys,
+    payload: str,
+    error_fragment: str,
+) -> None:
+    path = tmp_path / "receipt.json"
+    path.write_text(payload, encoding="utf-8")
+
+    assert validate_run_receipt(path) == 1
+    output = capsys.readouterr().out
+    assert "[INTEGRITY OK]" not in output
+    assert error_fragment in output
+
+
 def _base_manifest() -> dict:
     return {
         "claim": {

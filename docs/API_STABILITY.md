@@ -55,6 +55,14 @@ The matching supported portable-record exports are
 Compatibility `vstd4_depth` and `graph_level`-style candidate results do not become
 conformance results merely because the evidence-bound APIs also exist.
 
+At the current unreleased source coordinate, `compare_platform_run_receipts`,
+`PlatformComparisonResult`, and `PlatformComparisonStatus` are supported additions for
+the next minor release's bounded operating-system comparison API.
+They operate on existing VSTD-1 generic-run receipts and return a diagnostic object, not
+a new receipt or conformance result. `PASS` requires complete declared platform coverage,
+canonical integrity, equal non-platform bindings, and equal declared result projections;
+`CONFLICTED`, `NOT_ESTABLISHED`, and `INVALID` remain distinct failure states.
+
 `assess_witness_corroboration` accepts incomplete inputs so it can return a typed diagnostic
 result. The supported `build_vstd5_receipt` boundary is stricter: it either raises or returns
 an object satisfying the published receipt shape with all verdict-material evidence bytes.
@@ -70,6 +78,40 @@ construction and default structural validation are stricter and globally disjoin
 historical overlap remains readable but cannot enter evidence-bound Graph establishment or
 assurance mechanisms. The compatibility candidate computation retains its historical scope
 and remains `NOT_ESTABLISHED`.
+
+### Experimental interoperability facade
+
+`verifier.interoperability` is an explicitly experimental import facade outside the
+supported `verifier.__all__` compatibility boundary. Its characterized names at the
+current unreleased source coordinate are:
+
+```text
+CandidateStatus
+CatalogError
+ComponentAvailability
+ComponentKind
+ComponentLifecycle
+ControlSurfaceContext
+InteractionMode
+InteroperabilityComponentDescriptor
+InteroperabilityComponentRegistry
+SurfaceAnalysis
+SurfaceAnalysisError
+SurfaceHole
+SurfaceHoleKind
+ValidationCandidate
+ValidationPlan
+analyze_verification_surface
+plan_validation
+```
+
+The redundant internal aliases `InteroperabilityCatalog` and
+`generate_validation_plan` are intentionally not facade exports. These experimental
+names may change in a minor release and must not be inferred to be top-level supported
+API. They accept typed VSTD-2 geometry, detect holes only inside the supplied modeled
+surface, match exact declared component capabilities, and produce registry-bound,
+nonexecuting plans. The facade provides no strict VSTD-2 wire loader, command-line
+interface, component executor, evidence collector, or closure result.
 
 Direct imports from `verifier.core`, `verifier.data`, `verifier.hardware`, other
 subpackages, or underscore-prefixed names are internal unless another published policy

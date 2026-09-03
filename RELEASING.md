@@ -55,7 +55,7 @@ release-candidate Zenodo metadata.
    itself, avoiding self-reference.
 
    The protected repository-check aggregate separately builds this complete artifact set
-   on Windows and Linux and compares every byte. Do not prepare a tag unless that
+   on Linux, Windows, and macOS and compares every byte. Do not prepare a tag unless that
    cross-platform comparison passed on the exact candidate commit.
 
 4. Run `twine check` on the candidate wheel and source distribution. Install the

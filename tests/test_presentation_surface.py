@@ -520,6 +520,58 @@ def test_branch_coverage_is_retained_without_a_global_threshold() -> None:
     assert "coverage" in jobs["conformance-gate"]["needs"]
 
 
+def test_cross_platform_comparability_uses_three_native_operating_systems() -> None:
+    workflow = yaml.safe_load(
+        (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    )
+    jobs = workflow["jobs"]
+    release_platforms = set(jobs["release-integrity"]["strategy"]["matrix"]["os"])
+    assert release_platforms == {
+        "ubuntu-latest",
+        "windows-latest",
+        "macos-latest",
+    }
+
+    observation = jobs["platform-comparability-observation"]
+    runner_platforms = {
+        (item["runner"], item["platform"])
+        for item in observation["strategy"]["matrix"]["include"]
+    }
+    assert runner_platforms == {
+        ("ubuntu-latest", "Linux"),
+        ("windows-latest", "Windows"),
+        ("macos-15-intel", "Darwin"),
+    }
+    observation_setup = next(
+        step
+        for step in observation["steps"]
+        if str(step.get("uses", "")).startswith("actions/setup-python@")
+    )
+    assert observation_setup["with"]["python-version"] == "3.12.10"
+    observation_commands = "\n".join(
+        str(step.get("run", "")) for step in observation["steps"]
+    )
+    assert "platform.system()" in observation_commands
+    assert "vstd validate" in observation_commands
+    assert "vstd reproduce" in observation_commands
+
+    aggregate = jobs["platform-comparability"]
+    aggregate_commands = "\n".join(
+        str(step.get("run", "")) for step in aggregate["steps"]
+    )
+    assert aggregate["needs"] == ["platform-comparability-observation"]
+    aggregate_setup = next(
+        step
+        for step in aggregate["steps"]
+        if str(step.get("uses", "")).startswith("actions/setup-python@")
+    )
+    assert aggregate_setup["with"]["python-version"] == "3.12.10"
+    assert "vstd compare-platforms" in aggregate_commands
+    assert "platform-comparison.json" in aggregate_commands
+    assert "platform-comparability-observation" in jobs["conformance-gate"]["needs"]
+    assert "platform-comparability" in jobs["conformance-gate"]["needs"]
+
+
 def test_pages_builder_refuses_to_merge_into_existing_content(tmp_path: Path) -> None:
     path = ROOT / "scripts/build_pages.py"
     spec = importlib.util.spec_from_file_location("build_pages_safety", path)

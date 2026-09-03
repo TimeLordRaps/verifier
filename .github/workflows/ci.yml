@@ -91,7 +91,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -134,8 +134,77 @@ jobs:
         with:
           name: release-integrity-windows-latest
           path: dist/windows
-      - name: Require byte-identical Linux and Windows release artifacts
-        run: python scripts/release_artifacts.py compare dist/ubuntu dist/windows
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-integrity-macos-latest
+          path: dist/macos
+      - name: Require byte-identical Linux, Windows, and macOS release artifacts
+        run: |
+          python scripts/release_artifacts.py compare dist/ubuntu dist/windows
+          python scripts/release_artifacts.py compare dist/ubuntu dist/macos
+
+  platform-comparability-observation:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            platform: Linux
+          - runner: windows-latest
+            platform: Windows
+          - runner: macos-15-intel
+            platform: Darwin
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+      - run: python -m pip install .
+      - name: Require the runner's native operating-system view
+        env:
+          EXPECTED_PLATFORM: ${{ matrix.platform }}
+        run: python -c "import os, platform; observed = platform.system(); expected = os.environ['EXPECTED_PLATFORM']; assert observed == expected, (observed, expected)"
+      - name: Capture, validate, and rerun the portable example
+        run: |
+          vstd run examples/generic_run/manifest.json --output dist/platform-comparability/${{ matrix.platform }}
+          vstd validate dist/platform-comparability/${{ matrix.platform }}
+          vstd reproduce dist/platform-comparability/${{ matrix.platform }} --rerun
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: platform-comparability-${{ matrix.platform }}
+          path: dist/platform-comparability/${{ matrix.platform }}
+          if-no-files-found: error
+          retention-days: 14
+
+  platform-comparability:
+    needs: [platform-comparability-observation]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+      - run: python -m pip install .
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: platform-comparability-*
+          path: dist/platforms
+          merge-multiple: false
+      - name: Require comparable recorded results across all declared platforms
+        run: |
+          vstd compare-platforms \
+            dist/platforms/platform-comparability-Linux \
+            dist/platforms/platform-comparability-Windows \
+            dist/platforms/platform-comparability-Darwin \
+            --json > platform-comparison.json
+          python -c 'import json; from pathlib import Path; report=json.loads(Path("platform-comparison.json").read_text(encoding="utf-8")); assert report.get("status") == "PASS" and report.get("exit_code") == 0, report'
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: platform-comparison-${{ github.sha }}
+          path: platform-comparison.json
+          if-no-files-found: error
+          retention-days: 14
 
   installed-wheel-smoke:
     runs-on: ubuntu-latest
@@ -196,7 +265,7 @@ jobs:
   # This identifier remains stable because main branch protection requires it.
   conformance-gate:
     if: always()
-    needs: [base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, release-integrity, release-reproducibility, installed-wheel-smoke, presentation, codeql]
+    needs: [base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, release-integrity, release-reproducibility, platform-comparability-observation, platform-comparability, installed-wheel-smoke, presentation, codeql]
     runs-on: ubuntu-latest
     steps:
       - name: Require every declared support and artifact check
@@ -208,6 +277,8 @@ jobs:
           ARTIFACT_SEAL: ${{ needs.artifact-seal.result }}
           RELEASE: ${{ needs.release-integrity.result }}
           REPRODUCIBLE: ${{ needs.release-reproducibility.result }}
+          PLATFORM_OBSERVATIONS: ${{ needs.platform-comparability-observation.result }}
+          PLATFORM_COMPARISON: ${{ needs.platform-comparability.result }}
           WHEEL: ${{ needs.installed-wheel-smoke.result }}
           PRESENTATION: ${{ needs.presentation.result }}
           CODEQL: ${{ needs.codeql.result }}
@@ -219,6 +290,8 @@ jobs:
           test "$ARTIFACT_SEAL" = success
           test "$RELEASE" = success
           test "$REPRODUCIBLE" = success
+          test "$PLATFORM_OBSERVATIONS" = success
+          test "$PLATFORM_COMPARISON" = success
           test "$WHEEL" = success
           test "$PRESENTATION" = success
           test "$CODEQL" = success

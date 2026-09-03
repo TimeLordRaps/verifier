@@ -26,6 +26,7 @@ from verifier.artifact_control import (
     verify_frozen_artifact,
 )
 from verifier.core.checker import independence_is_evidenced
+from verifier.core.platform_comparison import compare_platform_run_receipts
 from verifier.core.run import (
     RunError,
     capture_run,
@@ -234,6 +235,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     plan_parser.add_argument("manifest", help="JSON or YAML run manifest.")
     plan_parser.add_argument("--json", action="store_true")
+
+    compare_platforms_parser = subparsers.add_parser(
+        "compare-platforms",
+        help="Compare declared generic-run result surfaces across operating systems.",
+    )
+    compare_platforms_parser.add_argument(
+        "receipts",
+        nargs="+",
+        help="Receipt directories or receipt.json files, one per declared platform.",
+    )
+    compare_platforms_parser.add_argument("--json", action="store_true")
 
     for command, help_text in (
         ("validate", "Run implemented receipt checks; Graph candidate validation is not conformance."),
@@ -604,6 +616,33 @@ def main(argv: list[str] | None = None) -> int:
             print(f"          Receipt ID: {receipt.receipt_id}")
             print(f"          Canonical Digest: {receipt.canonical_digest}")
             return 0 if receipt.execution.outcome == "COMPLETED" else 1
+
+        if args.command == "compare-platforms":
+            comparison = compare_platform_run_receipts(args.receipts)
+            report = comparison.to_dict()
+            if args.json:
+                print(json.dumps(report, indent=2, sort_keys=True))
+            else:
+                print(f"[{comparison.status.value}] {comparison.reason}")
+                print(
+                    "  Required platforms: "
+                    + (", ".join(comparison.required_platforms) or "none")
+                )
+                print(
+                    "  Observed platforms: "
+                    + (", ".join(comparison.observed_platforms) or "none")
+                )
+                for error in comparison.errors:
+                    print(f"  Error: {error}")
+                for difference in comparison.differences:
+                    print(
+                        "  Difference: "
+                        f"{difference.get('reference_platform')} -> "
+                        f"{difference.get('observed_platform')} at "
+                        f"{difference.get('path')}"
+                    )
+                print(f"  Boundary: {report['claim_boundary']}")
+            return comparison.exit_code
 
         if args.command in {"validate", "inspect", "reproduce"}:
             return _handle_receipt_command(args)

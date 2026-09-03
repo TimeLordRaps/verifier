@@ -216,7 +216,11 @@ def capture_provenance(
     file_hashes: dict[str, str] = {}
     for kf in key_files:
         if kf.exists() and kf.is_file():
-            rel = str(kf.relative_to(repo_dir)) if kf.is_relative_to(repo_dir) else kf.name
+            rel = (
+                kf.relative_to(repo_dir).as_posix()
+                if kf.is_relative_to(repo_dir)
+                else kf.name
+            )
             file_hashes[rel] = sha256_file(kf)
 
     return ProvenanceRecord(
