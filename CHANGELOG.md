@@ -11,6 +11,36 @@
 > Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
 > zero-identity/zero-knowledge (ZIZK).
 
+## Unreleased
+
+### Experimental interoperability planning
+
+- Add an explicitly experimental `verifier.interoperability` facade for immutable,
+  domain-neutral component descriptors and registries plus typed VSTD-2 surface-hole
+  analysis and deterministic, registry-digest-bound candidate plans. Keep these names
+  outside the supported top-level `verifier.__all__` boundary.
+- Add a runnable non-critical sorted-grocery-list example that produces two exact
+  candidates and leaves three self-closure holes unmatched without invoking its checker.
+  Planning is not validation execution: strict VSTD-2 wire loading, component execution,
+  evidence collection, post-execution reanalysis, closure, safety, and critical-domain
+  readiness remain unsupported or unestablished.
+
+### Cross-platform comparison
+
+- Add a supported bounded comparator and `vstd compare-platforms` command for VSTD-1
+  generic-run receipts. A declaration alone earns no result: `PASS` requires one
+  canonically intact receipt per declared operating system, matching non-platform
+  bindings, and matching declared result projections. Preserve comparable disagreement
+  as `CONFLICTED`, incomplete or non-comparable evidence as `NOT_ESTABLISHED`, and
+  malformed or contradictory evidence as `INVALID`.
+- Add native GitHub-hosted Linux, Windows, and Intel macOS observation jobs for the
+  portable generic example and require their aggregate diagnostic in the protected
+  repository-check gate. Make the example's declared JavaScript Object Notation outputs
+  use explicit line-feed bytes so Windows text translation cannot create a false portable
+  surface. Extend release-artifact byte comparison to macOS. These checks
+  do not establish universal portability, native-execution attestation within the
+  receipt, semantic correctness, or actor independence.
+
 ## 1.2.0 - 2026-09-01
 
 ### Public surface and integrations

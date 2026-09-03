@@ -201,6 +201,27 @@ shared interoperability vocabulary without redefining VSTD outcomes. Whether an 
 belongs in an optional module or a separately governed repository remains a future coupling
 and ownership decision.
 
+### Experimental catalog-to-plan integration
+
+The current unreleased implementation connects a domain-neutral component catalog to
+surface detection and planning without adding a receipt field or executing a component:
+
+```text
+typed VSTD-2 geometry
+  -> modeled-hole analysis
+  -> exact catalog candidates
+  -> nonexecuting validation plan
+```
+
+The plan binds the geometry digest plus registry version and digest. Domain tags support
+grouping and discovery but cannot create a capability match; schema, interaction mode,
+relation, and mechanism coordinates must match exactly where applicable. **Validation**
+remains the future process of attempting to discharge holes with bound execution evidence
+and then reassessing the geometry. Strict full-parity VSTD-2 wire loading, component
+execution, evidence acquisition, contradiction adjudication, and post-execution
+reanalysis are later integration gates. No candidate association establishes closure,
+safety, authority to act, or critical-domain readiness.
+
 ## Current experimental development tracks
 
 This dated register records substantive work as of **2026-08-29**. A committed experiment,
@@ -211,6 +232,7 @@ intentional experiment artifacts are present.
 
 | Track | Public artifact | Current boundary | Next gate |
 |---|---|---|---|
+| Interoperability catalog and surface planning | [`examples/interoperability_planning/`](examples/interoperability_planning/) | Experimental immutable descriptors and registry, typed modeled-hole analysis, exact candidate matching, and registry-bound nonexecuting plans; no checker execution or closure result. | Strict VSTD-2 wire loader, execution authorization and evidence contract, post-execution reanalysis, and independent interoperability specimens. |
 | SCITT interoperability | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) | Experimental adapter, rerunnable real-COSE specimen with ephemeral keys, and adversarial tests; no IETF review or external interoperability result. | Independent implementation and interoperability result. |
 | Artifact-first mechanism completion | [`standard/schemas/vstd-graph-assurance-1.schema.json`](standard/schemas/vstd-graph-assurance-1.schema.json) | Event serialization, evidence-bound TRUST/ROT/RUST dispatch, challenge projection, conflict resolution, structural concentration, explicit localization, and bounded diagnostic attribution are implemented and adversarially tested. The complete domain-independent transfer algebra, complete trichotomy derivation, cross-implementation replay, and specific optional proof backends remain open. | Supply and falsify real domain mechanisms without creating actor-tied trust or topology-derived assurance. |
 | Workflow and allocation | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Strict validator, verdict-neutral GitHub adapter, generated index, and allocation records; no optimality claim or independent consumer. | A second observable adapter and independent consumer. |

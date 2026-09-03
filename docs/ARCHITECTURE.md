@@ -28,7 +28,7 @@ shape only; a passing validator establishes only its named implemented checks.
 | Coordinate | Normative source | Runtime owner | Published shape | Primary tests |
 |---|---|---|---|---|
 | VSTD-1 claim receipt | `standard/VSTD-1.md` | `verifier.core.receipt`, `verifier.core.checker` | `vstd1_receipt.json` | `test_independent_checker.py`, `test_vstd_schemas.py` |
-| VSTD-1 generic run | `standard/VSTD-1.md` | `verifier.core.run` capture/facade plus `run_planning`, `run_validation`, `run_inspection`, `run_reproduction`, and `run_impact` | `vstd1_generic_run_receipt.json` | `test_generic_run.py` |
+| VSTD-1 generic run | `standard/VSTD-1.md` | `verifier.core.run` capture/facade plus `run_planning`, `run_validation`, `run_inspection`, `run_reproduction`, `run_impact`, and the additive `platform_comparison` diagnostic | `vstd1_generic_run_receipt.json`; the comparison report is not a receipt | `test_generic_run.py`, `test_platform_comparison.py` |
 | VSTD-2 | `standard/VSTD-2.md` | `verifier.core.geometry` | `vstd2_receipt.json` | `test_verification_geometry.py` |
 | VSTD-3 | `standard/VSTD-3.md` | `verifier.hardware` | `vstd3_receipt.json`, `vstd3_accelerator_profile.json` | `test_vstd3_schema.py`, hardware tests |
 | VSTD-4 | `standard/VSTD-4.md` | certificate/kernel checks plus candidate and evidence-bound paths in `verifier.core.depth` / `verifier.core.evidence` | `vstd4_certificate.json`, `vstd4_receipt.json` | `test_gdc_certificate.py`, `test_vstd4_depth.py`, `test_evidence_bound_assurance.py` |
@@ -109,6 +109,39 @@ native computation
   -> content-addressed result artifact
   -> later bounded verification loop
 ```
+
+### Experimental interoperability planning side path
+
+The current unreleased source also exposes a deliberately nonexecuting planning side
+path:
+
+```text
+typed VSTD-2 geometry
+  -> modeled-hole analysis
+  -> exact catalog candidates
+  -> nonexecuting validation plan
+```
+
+`analyze_verification_surface` accepts only a typed `VerificationGeometry`, validates
+its structure, assesses its declared ordinary and self-closure state, and converts
+existing blockers into typed holes. It does not infer an omitted expected profile,
+ontology, coordinate, or real-world surface. Strict full-parity VSTD-2 wire loading is
+unsupported.
+
+`plan_validation` connects those holes to immutable component descriptors through exact
+schema and interaction-mode coordinates plus the hole's relation and mechanism
+coordinates where present. Domain tags, consequence profiles, and operating-regime text
+remain organization and planning metadata; they cannot manufacture a match. A plan binds
+the geometry digest plus registry version and digest, retains execution prerequisites and
+blockers, and fixes `plan_only` to true and `execution_performed` to false.
+
+In this architecture, **validation** is the future process of attempting to discharge
+holes with authorized component execution and bound evidence, followed by a fresh surface
+analysis. Candidate matching alone does not establish component availability at execution
+time, checker correctness, a native result, ordinary or self-closure, safety, authority,
+critical-domain readiness, or VSTD conformance. The runnable
+[sorted-grocery-list example](../examples/interoperability_planning/) intentionally leaves
+three self-closure requirements unmatched and never calls its checker.
 
 VSTD-2 is the semantic target for adjacent adapters, not the adapter implementation
 itself. Geometry profiles constrain reusable selections of VSTD-2 geometry; they are connected only
@@ -231,6 +264,20 @@ identifier as a generic container name.
 | resource bounds | Assurance input and Assessment bound | Records manifest declarations; the generic runtime does not establish their enforcement. |
 | prior commitment | Assurance input | Records a commitment string; receipt inclusion does not prove temporal priority. |
 | refutation surface | Attribution | Declares admissible refutations and exclusions; it is not the checked VSTD-4 `RefutationSurface`. |
+
+The open refutation surface may carry a `platform_comparability` declaration naming the
+compared subject mechanism, compatible operating systems, and result surfaces. The
+declaration remains data until `compare_platform_run_receipts` or
+`vstd compare-platforms` validates one
+canonically intact receipt per declared system, verifies equal non-platform bindings,
+and compares the declared result projections. Missing or duplicate platforms and binding
+drift remain `NOT_ESTABLISHED`; malformed or contradictory receipts are `INVALID`; only
+result disagreement after comparability is established is `CONFLICTED`. `PASS` establishes
+agreement only for the supplied recorded results. Python serializes macOS as `Darwin`.
+The comparator also binds normalized machine family so the current hosted Linux, Windows,
+and Intel macOS observation isolates the operating-system dimension more narrowly. It
+does not attest native execution, virtual-machine identity, semantic correctness,
+universal portability, or actor independence, and it does not create a new receipt schema.
 
 Closure coordinates identify assessment questions; they are not containers for generic
 verification context. The neutral container must not generate profile-numbered binding
