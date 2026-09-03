@@ -79,6 +79,40 @@ historical overlap remains readable but cannot enter evidence-bound Graph establ
 assurance mechanisms. The compatibility candidate computation retains its historical scope
 and remains `NOT_ESTABLISHED`.
 
+### Experimental interoperability facade
+
+`verifier.interoperability` is an explicitly experimental import facade outside the
+supported `verifier.__all__` compatibility boundary. Its characterized names at the
+current unreleased source coordinate are:
+
+```text
+CandidateStatus
+CatalogError
+ComponentAvailability
+ComponentKind
+ComponentLifecycle
+ControlSurfaceContext
+InteractionMode
+InteroperabilityComponentDescriptor
+InteroperabilityComponentRegistry
+SurfaceAnalysis
+SurfaceAnalysisError
+SurfaceHole
+SurfaceHoleKind
+ValidationCandidate
+ValidationPlan
+analyze_verification_surface
+plan_validation
+```
+
+The redundant internal aliases `InteroperabilityCatalog` and
+`generate_validation_plan` are intentionally not facade exports. These experimental
+names may change in a minor release and must not be inferred to be top-level supported
+API. They accept typed VSTD-2 geometry, detect holes only inside the supplied modeled
+surface, match exact declared component capabilities, and produce registry-bound,
+nonexecuting plans. The facade provides no strict VSTD-2 wire loader, command-line
+interface, component executor, evidence collector, or closure result.
+
 Direct imports from `verifier.core`, `verifier.data`, `verifier.hardware`, other
 subpackages, or underscore-prefixed names are internal unless another published policy
 explicitly names them. They may change in a minor release. That freedom does not override
