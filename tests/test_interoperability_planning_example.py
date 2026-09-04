@@ -19,24 +19,53 @@ import verifier.interoperability as interoperability
 ROOT = Path(__file__).resolve().parents[1]
 DEMO = ROOT / "examples" / "interoperability_planning" / "demo.py"
 EXPECTED_FACADE = [
+    "AcyclicPropositionDependency",
+    "AuthorizationDecision",
     "CandidateStatus",
+    "CandidateExecutionDeclaration",
     "CatalogError",
     "ComponentAvailability",
     "ComponentKind",
     "ComponentLifecycle",
+    "ConflictWitnessKind",
     "ControlSurfaceContext",
+    "ExecutionReadinessError",
+    "ExecutionReadinessReport",
+    "ExecutionReadinessStatus",
+    "GeometryConflictReport",
+    "GeometryConflictStatus",
+    "GeometryConflictWitness",
     "InteractionMode",
     "InteroperabilityComponentDescriptor",
     "InteroperabilityComponentRegistry",
+    "JudgmentObservation",
+    "NativeInputBinding",
+    "PlannedEvidenceMapping",
+    "PostExecutionReassessmentContract",
+    "PrerequisiteResolution",
+    "SharedPropositionIdentity",
     "SurfaceAnalysis",
     "SurfaceAnalysisError",
     "SurfaceHole",
     "SurfaceHoleKind",
+    "SuppliedAuthorizationDecision",
     "ValidationCandidate",
     "ValidationPlan",
+    "analyze_geometry_conflicts",
     "analyze_verification_surface",
+    "assess_execution_readiness",
     "plan_validation",
+    "reference_component_registry",
 ]
+STABLE_ANALYSIS_EXPORTS = {
+    "ControlSurfaceContext",
+    "InteractionMode",
+    "SurfaceAnalysis",
+    "SurfaceAnalysisError",
+    "SurfaceHole",
+    "SurfaceHoleKind",
+    "analyze_verification_surface",
+}
 
 
 def _load_demo():
@@ -47,11 +76,11 @@ def _load_demo():
     return module
 
 
-def test_experimental_facade_is_exact_and_not_promoted_to_top_level() -> None:
+def test_facade_is_exact_and_only_analysis_subset_is_stable_top_level() -> None:
     assert interoperability.__all__ == EXPECTED_FACADE
     for name in EXPECTED_FACADE:
         assert getattr(interoperability, name) is not None
-        assert name not in verifier.__all__
+        assert (name in verifier.__all__) is (name in STABLE_ANALYSIS_EXPORTS)
     assert "InteroperabilityCatalog" not in interoperability.__all__
     assert "generate_validation_plan" not in interoperability.__all__
 
@@ -119,7 +148,7 @@ def test_example_rendering_is_deterministic_and_claim_bounded() -> None:
     assert first == second
     parsed = json.loads(first)
     assert parsed["summary"]["checker_invocations"] == 0
-    assert parsed["analysis"]["strict_wire_loading_status"] == "UNSUPPORTED"
+    assert parsed["analysis"]["strict_wire_loading_status"] == "SUPPORTED"
     assert "do not establish" in parsed["plan"]["claim_boundary"]
 
 

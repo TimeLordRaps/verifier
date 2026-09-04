@@ -8,6 +8,7 @@ from dataclasses import FrozenInstanceError, replace
 import pytest
 
 from verifier.interoperability.catalog import (
+    CATALOG_SCHEMA_VERSION,
     CatalogError,
     ComponentAvailability,
     ComponentKind,
@@ -26,6 +27,7 @@ def component(
     mechanism_id: str = "mechanism:exact",
     interaction_mode: InteractionMode = InteractionMode.STATIC,
     domain_tags: tuple[str, ...] = (),
+    accepted_schema_ids: tuple[str, ...] = ("NATIVE-EXAMPLE-1",),
 ) -> InteroperabilityComponentDescriptor:
     return InteroperabilityComponentDescriptor(
         component_id=component_id,
@@ -33,7 +35,8 @@ def component(
         kind=ComponentKind.VERIFIER,
         lifecycle=ComponentLifecycle.IMPLEMENTED,
         implementation_ref=f"verifier.example:{component_id}",
-        accepted_schema_ids=(schema_id,),
+        accepted_schema_ids=accepted_schema_ids,
+        planning_surface_schema_ids=(schema_id,),
         verifier_family_ids=("schema-contract",),
         native_system="example",
         native_objects=("record",),
@@ -111,6 +114,66 @@ def test_matching_is_exact_on_schema_relation_mechanism_and_interaction_mode() -
             interaction_mode=InteractionMode.OFFLINE_REPLAY,
         )
         == ()
+    )
+
+
+def test_matching_uses_planning_schema_and_not_native_input_schema() -> None:
+    descriptor = component("component:a")
+
+    assert descriptor.accepted_schema_ids == ("NATIVE-EXAMPLE-1",)
+    assert descriptor.planning_surface_schema_ids == ("VSTD-2",)
+    assert descriptor.matches_exact(
+        schema_id="VSTD-2",
+        mechanism_id="mechanism:exact",
+        interaction_mode=InteractionMode.STATIC,
+    )
+    assert not descriptor.matches_exact(
+        schema_id="NATIVE-EXAMPLE-1",
+        mechanism_id="mechanism:exact",
+        interaction_mode=InteractionMode.STATIC,
+    )
+
+
+def test_legacy_constructor_preserves_matching_without_recasting_native_input() -> None:
+    legacy = replace(
+        component("component:a"),
+        accepted_schema_ids=("VSTD-2",),
+        planning_surface_schema_ids=(),
+    )
+
+    assert legacy.accepted_schema_ids == ()
+    assert legacy.planning_surface_schema_ids == ("VSTD-2",)
+    assert legacy.matches_exact(
+        schema_id="VSTD-2",
+        mechanism_id="mechanism:exact",
+        interaction_mode=InteractionMode.STATIC,
+    )
+
+
+def test_catalog_1_0_positional_constructor_order_is_preserved() -> None:
+    legacy = InteroperabilityComponentDescriptor(
+        "component:legacy",
+        "legacy",
+        ComponentKind.VERIFIER,
+        ComponentLifecycle.IMPLEMENTED,
+        "verifier.example:legacy",
+        ("VSTD-2",),
+        ("legacy-family",),
+        mechanism_ids=("mechanism:legacy",),
+    )
+
+    assert legacy.verifier_family_ids == ("legacy-family",)
+    assert legacy.planning_surface_schema_ids == ("VSTD-2",)
+    assert legacy.accepted_schema_ids == ()
+    assert legacy.matches_exact(
+        schema_id="VSTD-2",
+        mechanism_id="mechanism:legacy",
+        interaction_mode=InteractionMode.STATIC,
+    )
+    assert not legacy.matches_exact(
+        schema_id="legacy-family",
+        mechanism_id="mechanism:legacy",
+        interaction_mode=InteractionMode.STATIC,
     )
 
 
@@ -204,6 +267,51 @@ def test_registry_serialization_is_deterministic_and_strictly_round_trips() -> N
         InteroperabilityComponentRegistry.from_dict(malformed)
 
 
+def test_serialization_names_planning_and_native_schema_coordinates() -> None:
+    registry = InteroperabilityComponentRegistry("1.3.0", (component("component:a"),))
+    serialized = registry.to_dict()
+    serialized_component = serialized["components"][0]
+
+    assert serialized["schema_version"] == CATALOG_SCHEMA_VERSION
+    assert serialized_component["accepted_schema_ids"] == ["NATIVE-EXAMPLE-1"]
+    assert serialized_component["planning_surface_schema_ids"] == ["VSTD-2"]
+
+
+def test_legacy_catalog_preserves_planning_match_without_inventing_native_acceptance() -> None:
+    current = InteroperabilityComponentRegistry(
+        "1.3.0", (component("component:a", accepted_schema_ids=()),)
+    ).to_dict()
+    legacy_component = current["components"][0]
+    legacy_component["accepted_schema_ids"] = legacy_component.pop(
+        "planning_surface_schema_ids"
+    )
+    current["schema_version"] = "VSTD-INTEROPERABILITY-CATALOG-1.0"
+
+    migrated = InteroperabilityComponentRegistry.from_dict(current)
+    descriptor = migrated.get("component:a")
+
+    assert migrated.schema_version == CATALOG_SCHEMA_VERSION
+    assert descriptor.accepted_schema_ids == ()
+    assert descriptor.planning_surface_schema_ids == ("VSTD-2",)
+    assert descriptor.matches_exact(
+        schema_id="VSTD-2",
+        mechanism_id="mechanism:exact",
+        interaction_mode=InteractionMode.STATIC,
+    )
+
+
+def test_catalog_schema_versions_reject_mixed_descriptor_shapes() -> None:
+    current = InteroperabilityComponentRegistry("1.3.0", (component("component:a"),)).to_dict()
+    del current["components"][0]["planning_surface_schema_ids"]
+    with pytest.raises(CatalogError, match="1.1 component descriptors require"):
+        InteroperabilityComponentRegistry.from_dict(current)
+
+    legacy = InteroperabilityComponentRegistry("1.3.0", (component("component:a"),)).to_dict()
+    legacy["schema_version"] = "VSTD-INTEROPERABILITY-CATALOG-1.0"
+    with pytest.raises(CatalogError, match="1.0 component descriptors must not contain"):
+        InteroperabilityComponentRegistry.from_dict(legacy)
+
+
 def test_public_loaders_reject_non_objects_with_catalog_errors() -> None:
     for malformed in (None, [], "not-an-object"):
         with pytest.raises(CatalogError, match="descriptor must be an object"):
@@ -219,6 +327,7 @@ def test_semantic_identifiers_reject_surrounding_whitespace() -> None:
         {"label": "component a "},
         {"implementation_ref": " verifier.example:component:a"},
         {"accepted_schema_ids": ("VSTD-2 ",)},
+        {"planning_surface_schema_ids": ("VSTD-2 ",)},
         {"supported_relations": (" HAS_EXACT_EVIDENCE",)},
         {"mechanism_ids": ("mechanism:exact ",)},
         {"domain_tags": (" software",)},

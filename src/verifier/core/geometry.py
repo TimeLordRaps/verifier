@@ -581,7 +581,7 @@ class VerificationGeometry:
             verification_order.order
             for verification_order in self.verification_layers
         )
-        if orders and orders != list(range(orders[-1] + 1)):
+        if orders and orders != list(range(len(orders))):
             errors.append("verification orders must be contiguous and start at 0")
         for verification_order in self.verification_layers:
             if verification_order.order < 0:

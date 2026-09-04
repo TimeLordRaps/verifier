@@ -16,10 +16,13 @@ EXPECTED_EXPORTS = {
     "ArtifactControlError",
     "ArtifactVerification",
     "BoundProposition",
+    "ControlSurfaceContext",
     "EvidenceBindingError",
     "DecisionCertificate",
     "EvidenceBounds",
     "EvidenceStore",
+    "GeometryLoadError",
+    "InteractionMode",
     "MechanismDecision",
     "MechanismOutcome",
     "ObligationCoordinate",
@@ -27,12 +30,17 @@ EXPECTED_EXPORTS = {
     "PlatformComparisonStatus",
     "ProvenanceHypergraph",
     "ReproducibilityLevel",
+    "SurfaceAnalysis",
+    "SurfaceAnalysisError",
+    "SurfaceHole",
+    "SurfaceHoleKind",
     "VerificationSession",
     "VerificationGeometry",
     "VerificationVerdict",
     "VstdReceipt",
     "WitnessBundle",
     "assess_witness_corroboration",
+    "analyze_verification_surface",
     "build_evidence_bound_graph_level_record",
     "build_evidence_bound_vstd4_receipt",
     "build_vstd5_receipt",
@@ -45,6 +53,7 @@ EXPECTED_EXPORTS = {
     "establish_vstd4",
     "freeze_artifact",
     "graph_collection_binding_digest",
+    "load_verification_geometry",
     "recheck_assurance_log",
     "recheck_evidence_bound_graph_level_record",
     "recheck_evidence_bound_vstd4_receipt",
@@ -76,6 +85,13 @@ def test_thaw_status_public_api_requires_explicit_parent_evidence_for_establishm
         "expected_key_id",
     )
     assert parameters["parent_bundle"].kind is inspect.Parameter.KEYWORD_ONLY
+
+
+def test_geometry_loader_public_api_has_one_stable_input_and_error_type() -> None:
+    assert tuple(inspect.signature(verifier.load_verification_geometry).parameters) == (
+        "source",
+    )
+    assert issubclass(verifier.GeometryLoadError, ValueError)
 
 
 def test_deprecation_registry_warns_without_replacing_the_export(

@@ -26,6 +26,7 @@ from verifier.artifact_control import (
     verify_frozen_artifact,
 )
 from verifier.core.checker import independence_is_evidenced
+from verifier.core.geometry_io import load_verification_geometry
 from verifier.core.platform_comparison import compare_platform_run_receipts
 from verifier.core.run import (
     RunError,
@@ -52,6 +53,14 @@ from verifier.runtime.experimental_workflow_cli import (
     handle_experiment_command,
 )
 from verifier.runtime.demo import SCENARIOS, demo_report, emit_specimens, run_demo
+from verifier.interoperability.control_surface import (
+    analyze_verification_surface,
+    plan_validation,
+)
+from verifier.interoperability.reference_catalog import (
+    REFERENCE_CATALOG_CLAIM_BOUNDARY,
+    reference_component_registry,
+)
 
 
 def _receipt_file(path_or_dir: Path) -> Path:
@@ -246,6 +255,28 @@ def build_parser() -> argparse.ArgumentParser:
         help="Receipt directories or receipt.json files, one per declared platform.",
     )
     compare_platforms_parser.add_argument("--json", action="store_true")
+
+    surface_parser = subparsers.add_parser(
+        "surface",
+        help="Analyze holes in one strictly loaded VSTD-2 modeled verification surface.",
+    )
+    surface_commands = surface_parser.add_subparsers(
+        dest="surface_command", required=True
+    )
+    surface_analyze_parser = surface_commands.add_parser(
+        "analyze",
+        help="Emit deterministic modeled-surface diagnostics without executing a checker.",
+    )
+    surface_analyze_parser.add_argument("geometry", help="VSTD-2 geometry JSON path.")
+    surface_analyze_parser.add_argument("--json", action="store_true")
+    surface_analyze_parser.add_argument(
+        "--plan",
+        action="store_true",
+        help=(
+            "Add an experimental first-party catalog match plan; no component is "
+            "selected or executed."
+        ),
+    )
 
     for command, help_text in (
         ("validate", "Run implemented receipt checks; Graph candidate validation is not conformance."),
@@ -485,6 +516,54 @@ def _handle_data_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_surface_command(args: argparse.Namespace) -> int:
+    geometry = load_verification_geometry(Path(args.geometry).resolve())
+    analysis = analyze_verification_surface(geometry)
+    report: dict[str, Any] = analysis.to_dict()
+    plan = None
+    if args.plan:
+        registry = reference_component_registry()
+        plan = plan_validation(analysis, registry)
+        family_count = len(
+            {
+                family
+                for component in registry.components
+                for family in component.verifier_family_ids
+            }
+        )
+        report = {
+            "analysis": analysis.to_dict(),
+            "catalog": {
+                "registry_version": registry.registry_version,
+                "registry_digest": registry.canonical_digest(),
+                "component_count": len(registry.components),
+                "implementation_family_count": family_count,
+                "claim_boundary": REFERENCE_CATALOG_CLAIM_BOUNDARY,
+            },
+            "plan": plan.to_dict(),
+        }
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    print(f"[MODELED SURFACE] {analysis.geometry_id}")
+    print(f"  Ordinary closed: {str(analysis.ordinary_closed).lower()}")
+    print(f"  Self closed:     {str(analysis.self_closed).lower()}")
+    print(f"  Surface holes:  {len(analysis.holes)}")
+    for hole in analysis.holes:
+        print(
+            f"  - {hole.kind.value}: {hole.source_kind} {hole.source_id} "
+            f"({hole.native_status})"
+        )
+    print(f"  Boundary: {analysis.claim_boundary}")
+    if plan is not None:
+        matched = sum(candidate.component_id is not None for candidate in plan.candidates)
+        print("[EXPERIMENTAL PLAN; NO EXECUTION]")
+        print(f"  Candidates: {matched}/{len(plan.candidates)} matched")
+        print(f"  Registry:   {plan.registry_version} ({plan.registry_digest})")
+        print(f"  Boundary:   {plan.claim_boundary}")
+    return 0
+
+
 def _print_artifact_result(result: dict[str, Any], as_json: bool) -> None:
     if as_json:
         print(json.dumps(result, indent=2, sort_keys=True))
@@ -643,6 +722,9 @@ def main(argv: list[str] | None = None) -> int:
                     )
                 print(f"  Boundary: {report['claim_boundary']}")
             return comparison.exit_code
+
+        if args.command == "surface":
+            return _handle_surface_command(args)
 
         if args.command in {"validate", "inspect", "reproduce"}:
             return _handle_receipt_command(args)

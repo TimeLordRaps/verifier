@@ -47,6 +47,33 @@ _LAZY_EXPORTS = {
     "capture_run": ("verifier.core.run", "capture_run"),
     "validate_run_receipt": ("verifier.core.run", "validate_run_receipt"),
     "VerificationGeometry": ("verifier.core.geometry", "VerificationGeometry"),
+    "GeometryLoadError": ("verifier.core.geometry_io", "GeometryLoadError"),
+    "load_verification_geometry": (
+        "verifier.core.geometry_io",
+        "load_verification_geometry",
+    ),
+    "ControlSurfaceContext": (
+        "verifier.interoperability.control_surface",
+        "ControlSurfaceContext",
+    ),
+    "InteractionMode": ("verifier.interoperability.catalog", "InteractionMode"),
+    "SurfaceAnalysis": (
+        "verifier.interoperability.control_surface",
+        "SurfaceAnalysis",
+    ),
+    "SurfaceAnalysisError": (
+        "verifier.interoperability.control_surface",
+        "SurfaceAnalysisError",
+    ),
+    "SurfaceHole": ("verifier.interoperability.control_surface", "SurfaceHole"),
+    "SurfaceHoleKind": (
+        "verifier.interoperability.control_surface",
+        "SurfaceHoleKind",
+    ),
+    "analyze_verification_surface": (
+        "verifier.interoperability.control_surface",
+        "analyze_verification_surface",
+    ),
     "DecisionCertificate": ("verifier.core.certificate", "DecisionCertificate"),
     "certificate_from_canonical_bytes": (
         "verifier.core.certificate",
@@ -144,6 +171,10 @@ if TYPE_CHECKING:
     )
     from verifier.core.checker import VerificationVerdict as VerificationVerdict
     from verifier.core.geometry import VerificationGeometry as VerificationGeometry
+    from verifier.core.geometry_io import (
+        GeometryLoadError as GeometryLoadError,
+        load_verification_geometry as load_verification_geometry,
+    )
     from verifier.core.certificate import (
         DecisionCertificate as DecisionCertificate,
         certificate_from_canonical_bytes as certificate_from_canonical_bytes,
@@ -194,3 +225,12 @@ if TYPE_CHECKING:
     )
     from verifier.core.reproducibility import ReproducibilityLevel as ReproducibilityLevel
     from verifier.core.run import capture_run as capture_run, validate_run_receipt as validate_run_receipt
+    from verifier.interoperability.control_surface import (
+        ControlSurfaceContext as ControlSurfaceContext,
+        SurfaceAnalysis as SurfaceAnalysis,
+        SurfaceAnalysisError as SurfaceAnalysisError,
+        SurfaceHole as SurfaceHole,
+        SurfaceHoleKind as SurfaceHoleKind,
+        analyze_verification_surface as analyze_verification_surface,
+    )
+    from verifier.interoperability.catalog import InteractionMode as InteractionMode

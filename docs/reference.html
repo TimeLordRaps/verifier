@@ -34,7 +34,7 @@
 
   <main id="top">
     <div class="wrap ref-hero">
-      <div class="eyebrow">Reference &middot; verifier-standard 1.2.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
+      <div class="eyebrow">Reference &middot; UNRELEASED SOURCE · base package version 1.2.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
       <h1>Inspect the whole pipeline.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
@@ -65,6 +65,7 @@
         <div class="ref-table"><table><thead><tr><th>Command</th><th>What it does</th><th>Implementation entry points</th></tr></thead><tbody>
 <tr><td><code>vstd demo</code></td><td>Runs the four adversarial specimens in-process and reports whether each defensive outcome matched its declared invariant.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:run_demo</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:demo_report</code></a></td></tr>
 <tr><td><code>vstd plan</code></td><td>Resolves a manifest's command and declared paths without executing anything.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:describe_run_plan</code></a></td></tr>
+<tr><td><code>vstd surface analyze</code></td><td>Strictly loads one VSTD-2 geometry and emits deterministic modeled-surface diagnostics; its optional experimental catalog plan remains nonexecuting.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry_io.py"><code>verifier.core.geometry_io:load_verification_geometry</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface:analyze_verification_surface</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/reference_catalog.py"><code>verifier.interoperability.reference_catalog:reference_component_registry</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface:plan_validation</code></a></td></tr>
 <tr><td><code>vstd run</code></td><td>Executes a trusted manifest without sandboxing, captures the observed execution, and writes a canonically digested receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:capture_run</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt:compute_canonical_digest</code></a></td></tr>
 <tr><td><code>vstd validate</code></td><td>Dispatches on the receipt's serialized `schema_version` identifier and runs its implemented checks. Generic-run validation enforces its required structure and stable digest; other receipt kinds enforce their separately documented structure and evidence rules.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_validation.py"><code>verifier.core.run_validation:validate_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:validate_data_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
 <tr><td><code>vstd inspect</code></td><td>Prints the claim coordinate, digest, and verdict surface of a stored receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_inspection.py"><code>verifier.core.run_inspection:inspect_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/receipt.py"><code>verifier.hardware.receipt:load_vstd3_receipt</code></a></td></tr>
@@ -123,6 +124,20 @@
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>receipts</code></td><td>positional</td><td>Receipt directories or receipt.json files, one per declared platform.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-surface">
+<h3><code>vstd surface</code></h3>
+<p class="ref-help">Analyze holes in one strictly loaded VSTD-2 modeled verification surface.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-surface-analyze">
+<h3><code>vstd surface analyze</code></h3>
+<p class="ref-help">Emit deterministic modeled-surface diagnostics without executing a checker.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>geometry</code></td><td>positional</td><td>VSTD-2 geometry JSON path.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--plan</code></td><td>optional</td><td>Add an experimental first-party catalog match plan; no component is selected or executed.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="cli-vstd-validate">
@@ -481,6 +496,15 @@
 <tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
 </tbody></table>
 </article>
+<article class="ref-item" id="api-ControlSurfaceContext">
+<h3><code>ControlSurfaceContext</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>ControlSurfaceContext(schema_id: 'str' = 'VSTD-2', interaction_mode: 'InteractionMode' = &lt;InteractionMode.STATIC: 'STATIC'&gt;, domain_tags: 'tuple[str, ...]' = (), operating_regime: 'str' = '', consequence_profiles: 'tuple[str, ...]' = (), authority_requirements: 'tuple[str, ...]' = ()) -&gt; None</code></pre>
+<p class="ref-help">External planning context; only schema and interaction mode affect matches.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="api-DecisionCertificate">
 <h3><code>DecisionCertificate</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>DecisionCertificate(header: 'CertificateHeader', formula: 'tuple[tuple[int, ...], ...]', grounding: 'Grounding', decision: 'DecisionBlock', hints: 'dict[str, Any]' = &lt;factory&gt;) -&gt; None</code></pre>
@@ -519,6 +543,19 @@
 <tr><td><code>import_base64(self, payloads: 'Mapping[str, str]') -&gt; 'None'</code></td><td>Import a portable bundle and refuse every reference/byte mismatch.</td></tr>
 <tr><td><code>resolve(self, reference: 'str') -&gt; 'bytes'</code></td><td></td></tr>
 </tbody></table>
+</article>
+<article class="ref-item" id="api-GeometryLoadError">
+<h3><code>GeometryLoadError</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>GeometryLoadError</code></pre>
+<p class="ref-help">Raised when VSTD-2 wire bytes cannot produce one valid typed geometry.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry_io.py"><code>verifier.core.geometry_io</code></a></p>
+
+</article>
+<article class="ref-item" id="api-InteractionMode">
+<h3><code>InteractionMode</code> <span class="ref-tag">enum</span></h3>
+<p class="ref-help">Enumeration of the exported result values.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/catalog.py"><code>verifier.interoperability.catalog</code></a></p>
+<p class="ref-help">Members: <code>STATIC, OFFLINE_REPLAY, SIMULATION, LIVE_READ_ONLY, LIVE_MUTATING</code></p>
 </article>
 <article class="ref-item" id="api-MechanismDecision">
 <h3><code>MechanismDecision</code> <span class="ref-tag">class</span></h3>
@@ -588,6 +625,38 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/reproducibility.py"><code>verifier.core.reproducibility</code></a></p>
 <p class="ref-help">Members: <code>BITWISE_IDENTICAL, CONTENT_IDENTICAL, EVIDENCE_EQUIVALENT, RESULT_EQUIVALENT, SEMANTIC_REPRODUCTION</code></p>
 </article>
+<article class="ref-item" id="api-SurfaceAnalysis">
+<h3><code>SurfaceAnalysis</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>SurfaceAnalysis(geometry_id: 'str', geometry_digest: 'str', context: 'ControlSurfaceContext', validity_errors: 'tuple[str, ...]', ordinary_closed: 'bool', self_closed: 'bool', ordinary_blockers: 'tuple[str, ...]', self_closure_blockers: 'tuple[str, ...]', holes: 'tuple[SurfaceHole, ...]', scope: 'str' = 'MODELED_SURFACE_ONLY', input_mode: 'str' = 'TYPED_VERIFICATION_GEOMETRY_ONLY', strict_wire_loading_status: 'str' = 'SUPPORTED', claim_boundary: 'str' = 'Derived only from the supplied VSTD-2 geometry. It does not establish that the declared surface, coordinates, ontology, or evidence are complete.', schema_version: 'str' = 'VSTD-SURFACE-ANALYSIS-1.0') -&gt; None</code></pre>
+<p class="ref-help">Deterministic report over only the supplied, declared geometry.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>canonical_json_bytes(self) -&gt; 'bytes'</code></td><td></td></tr>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-SurfaceAnalysisError">
+<h3><code>SurfaceAnalysisError</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>SurfaceAnalysisError</code></pre>
+<p class="ref-help">Raised when an analysis or candidate-plan object is malformed.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
+
+</article>
+<article class="ref-item" id="api-SurfaceHole">
+<h3><code>SurfaceHole</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>SurfaceHole(hole_id: 'str', kind: 'SurfaceHoleKind', source_kind: 'str', source_id: 'str', native_status: 'str', description: 'str', blocks_ordinary_closure: 'bool', blocks_self_closure: 'bool', schema_id: 'str', interaction_mode: 'InteractionMode', required_relations: 'tuple[str, ...]' = (), mechanism_ids: 'tuple[str, ...]' = ()) -&gt; None</code></pre>
+<p class="ref-help">One structured diagnostic derived from an existing geometry blocker.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-SurfaceHoleKind">
+<h3><code>SurfaceHoleKind</code> <span class="ref-tag">enum</span></h3>
+<p class="ref-help">Enumeration of the exported result values.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
+<p class="ref-help">Members: <code>MISSING_JUDGMENT, COORDINATE_STATUS, RESIDUAL, VALENCE, HORIZON, MECHANISM, VERIFICATION_ORDER, SELF_CLOSURE_REQUIREMENT</code></p>
+</article>
 <article class="ref-item" id="api-VerificationGeometry">
 <h3><code>VerificationGeometry</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>VerificationGeometry(geometry_id: 'str', primary_subject_id: 'str', subjects: 'list[Subject]', loci: 'list[Locus]', facets: 'list[Facet]', coordinates: 'list[Coordinate]', surface: 'VerificationSurface', seams: 'list[Seam]' = &lt;factory&gt;, mechanisms: 'list[VerificationMechanism]' = &lt;factory&gt;, judgments: 'list[CoordinateJudgment]' = &lt;factory&gt;, horizons: 'list[Horizon]' = &lt;factory&gt;, residuals: 'list[Residual]' = &lt;factory&gt;, valences: 'list[VerificationValence]' = &lt;factory&gt;, reconstructions: 'list[ReconstructionAttempt]' = &lt;factory&gt;, verification_layers: 'list[VerificationLayer]' = &lt;factory&gt;, novelties: 'list[Novelty]' = &lt;factory&gt;, secondary_subject_id: 'Optional[str]' = None, focus_coordinate_ids: 'tuple[str, ...]' = (), meta_focus_coordinate_ids: 'tuple[str, ...]' = (), schema_version: 'str' = 'VSTD-2') -&gt; None</code></pre>
@@ -638,6 +707,13 @@
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
 <tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
 </tbody></table>
+</article>
+<article class="ref-item" id="api-analyze_verification_surface">
+<h3><code>analyze_verification_surface</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>analyze_verification_surface(geometry: 'VerificationGeometry', context: 'Optional[ControlSurfaceContext]' = None) -&gt; 'SurfaceAnalysis'</code></pre>
+<p class="ref-help">Derive structured holes from the supplied VSTD-2 geometry only.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
+
 </article>
 <article class="ref-item" id="api-assess_witness_corroboration">
 <h3><code>assess_witness_corroboration</code> <span class="ref-tag">function</span></h3>
@@ -728,6 +804,13 @@
 <pre class="ref-signature"><code>graph_collection_binding_digest(graph: 'ProvenanceHypergraph', *, collection_id: 'str', members: 'Sequence[str]', binding: 'ClaimBinding') -&gt; 'str'</code></pre>
 <p class="ref-help">Bind ratings to one Graph, member set, collection, and claim coordinate.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/graph_level.py"><code>verifier.data.graph_level</code></a></p>
+
+</article>
+<article class="ref-item" id="api-load_verification_geometry">
+<h3><code>load_verification_geometry</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>load_verification_geometry(source: 'str | Path | Mapping[str, Any]') -&gt; 'VerificationGeometry'</code></pre>
+<p class="ref-help">Strictly load one valid VSTD-2 geometry from a path or parsed mapping.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry_io.py"><code>verifier.core.geometry_io</code></a></p>
 
 </article>
 <article class="ref-item" id="api-recheck_assurance_log">

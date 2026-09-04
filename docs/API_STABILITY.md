@@ -63,6 +63,16 @@ a new receipt or conformance result. `PASS` requires complete declared platform 
 canonical integrity, equal non-platform bindings, and equal declared result projections;
 `CONFLICTED`, `NOT_ESTABLISHED`, and `INVALID` remain distinct failure states.
 
+The next minor release also adds supported `GeometryLoadError`,
+`load_verification_geometry`, `ControlSurfaceContext`, `InteractionMode`, `SurfaceAnalysis`,
+`SurfaceAnalysisError`, `SurfaceHole`, `SurfaceHoleKind`, and
+`analyze_verification_surface` exports. The loader accepts a strict VSTD-2 JavaScript
+Object Notation (JSON) file or an already parsed mapping, rejects unknown structure and
+invalid geometry references, and returns only a valid typed `VerificationGeometry`.
+Analysis is deterministic and limited to the supplied modeled surface. It neither infers
+omitted obligations nor establishes real-world completeness, safety, authority,
+conformance, or a native checker result.
+
 `assess_witness_corroboration` accepts incomplete inputs so it can return a typed diagnostic
 result. The supported `build_vstd5_receipt` boundary is stricter: it either raises or returns
 an object satisfying the published receipt shape with all verdict-material evidence bytes.
@@ -79,39 +89,67 @@ historical overlap remains readable but cannot enter evidence-bound Graph establ
 assurance mechanisms. The compatibility candidate computation retains its historical scope
 and remains `NOT_ESTABLISHED`.
 
-### Experimental interoperability facade
+### Interoperability facade: supported analysis and experimental planning
 
-`verifier.interoperability` is an explicitly experimental import facade outside the
-supported `verifier.__all__` compatibility boundary. Its characterized names at the
-current unreleased source coordinate are:
+`verifier.interoperability` contains both the supported analyzer names exported by
+`verifier.__all__` and an experimental planning surface. Its complete characterized names
+at the current unreleased source coordinate are:
 
 ```text
+AcyclicPropositionDependency
+AuthorizationDecision
 CandidateStatus
+CandidateExecutionDeclaration
 CatalogError
 ComponentAvailability
 ComponentKind
 ComponentLifecycle
+ConflictWitnessKind
 ControlSurfaceContext
+ExecutionReadinessError
+ExecutionReadinessReport
+ExecutionReadinessStatus
+GeometryConflictReport
+GeometryConflictStatus
+GeometryConflictWitness
 InteractionMode
 InteroperabilityComponentDescriptor
 InteroperabilityComponentRegistry
+JudgmentObservation
+NativeInputBinding
+PlannedEvidenceMapping
+PostExecutionReassessmentContract
+PrerequisiteResolution
+SharedPropositionIdentity
 SurfaceAnalysis
 SurfaceAnalysisError
 SurfaceHole
 SurfaceHoleKind
+SuppliedAuthorizationDecision
 ValidationCandidate
 ValidationPlan
+analyze_geometry_conflicts
 analyze_verification_surface
+assess_execution_readiness
 plan_validation
+reference_component_registry
 ```
 
 The redundant internal aliases `InteroperabilityCatalog` and
-`generate_validation_plan` are intentionally not facade exports. These experimental
-names may change in a minor release and must not be inferred to be top-level supported
-API. They accept typed VSTD-2 geometry, detect holes only inside the supplied modeled
-surface, match exact declared component capabilities, and produce registry-bound,
-nonexecuting plans. The facade provides no strict VSTD-2 wire loader, command-line
-interface, component executor, evidence collector, or closure result.
+`generate_validation_plan` are intentionally not facade exports. Every name above except
+the supported analysis subset also exported by top-level `verifier` remains experimental
+and may change in a minor release. The planning names match exact declared capabilities
+and produce registry-bound, nonexecuting plans. The conflict names compare only explicitly
+identified propositions across exact geometries and emit structural witnesses; they do not
+perform Boolean satisfiability analysis. The readiness names check caller-supplied native
+input, planned evidence, prerequisite, authorization, and reassessment declarations but
+never import or invoke a component. Catalog schema 1.1 serializes
+`planning_surface_schema_ids` separately from native `accepted_schema_ids`; a planning
+match is not a claim that the entry point accepts the planning document as native input. The
+`vstd surface analyze --plan` command exposes that experimental plan without selecting or
+executing a component. The facade provides no component executor, evidence collector,
+post-execution reanalysis implementation, Boolean satisfiability geometry analyzer, or new
+closure result.
 
 Direct imports from `verifier.core`, `verifier.data`, `verifier.hardware`, other
 subpackages, or underscore-prefixed names are internal unless another published policy

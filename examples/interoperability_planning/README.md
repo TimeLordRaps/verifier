@@ -29,6 +29,11 @@ only detects and plans. Catalog membership does not establish availability at ex
 time, checker correctness, a native result, ordinary or self-closure, safety, authority to
 act, critical-domain readiness, or Verifier Standard conformance.
 
-The example accepts a typed in-memory `VerificationGeometry`. Strict VSTD-2 wire loading,
-a command-line interface, component execution, and post-execution reanalysis remain
-unsupported.
+Catalog schema 1.1 matches the geometry through `planning_surface_schema_ids`. It records
+native `accepted_schema_ids` separately, so a VSTD-2 candidate association does not mean
+that the component's callable accepts a VSTD-2 document.
+
+The example constructs a typed in-memory `VerificationGeometry`. The public
+`vstd surface analyze` command can strictly load a VSTD-2 document, and its experimental
+`--plan` flag uses the first-party reference catalog. Component execution and
+post-execution reanalysis remain unsupported.

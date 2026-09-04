@@ -16,7 +16,8 @@ from enum import Enum
 from typing import Any, Mapping, Optional
 
 
-CATALOG_SCHEMA_VERSION = "VSTD-INTEROPERABILITY-CATALOG-1.0"
+CATALOG_SCHEMA_VERSION = "VSTD-INTEROPERABILITY-CATALOG-1.1"
+_LEGACY_CATALOG_SCHEMA_VERSION = "VSTD-INTEROPERABILITY-CATALOG-1.0"
 
 
 class CatalogError(ValueError):
@@ -27,6 +28,9 @@ class ComponentKind(str, Enum):
     ADAPTER = "ADAPTER"
     TRANSLATOR = "TRANSLATOR"
     COMPARATOR = "COMPARATOR"
+    SOLVER = "SOLVER"
+    PROVER = "PROVER"
+    CHECKER = "CHECKER"
     VERIFIER = "VERIFIER"
     CONSTRAINT = "CONSTRAINT"
     COLLECTOR = "COLLECTOR"
@@ -88,11 +92,15 @@ def _interaction_modes(values: Any) -> tuple[InteractionMode, ...]:
 class InteroperabilityComponentDescriptor:
     """One component's exact, declared interoperability capability.
 
-    ``domain_tags`` help callers group and present components.  The exact-match
-    operation deliberately does not read them. ``supported_relations`` and
-    ``mechanism_ids`` declare a Cartesian product: every listed relation and
-    mechanism pair is supported. A component with a narrower capability must
-    use separate descriptors rather than rely on an implicit pairing.
+    ``planning_surface_schema_ids`` names serialized planning surfaces and is
+    the only schema field used by exact matching. ``accepted_schema_ids`` names
+    serialized schemas accepted by the native implementation; it may be empty
+    when the callable accepts only typed or otherwise unversioned inputs.
+    ``domain_tags`` help callers group and present components and never affect
+    matching. ``supported_relations`` and ``mechanism_ids`` declare a Cartesian
+    product: every listed relation and mechanism pair is supported. A component
+    with a narrower capability must use separate descriptors rather than rely
+    on an implicit pairing.
     """
 
     component_id: str
@@ -121,6 +129,8 @@ class InteroperabilityComponentDescriptor:
     failure_behavior: str = ""
     availability: ComponentAvailability = ComponentAvailability.NOT_CHECKED
     claim_boundary: str = ""
+    # Appended to preserve the positional constructor order of catalog 1.0.
+    planning_surface_schema_ids: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "component_id", _nonempty(self.component_id, "component_id"))
@@ -139,8 +149,22 @@ class InteroperabilityComponentDescriptor:
             "accepted_schema_ids",
             _unique_strings(self.accepted_schema_ids, "accepted_schema_ids"),
         )
-        if not self.accepted_schema_ids:
-            raise CatalogError("accepted_schema_ids must not be empty")
+        planning_surface_schema_ids = _unique_strings(
+            self.planning_surface_schema_ids,
+            "planning_surface_schema_ids",
+        )
+        if not planning_surface_schema_ids:
+            # Compatibility for callers of the pre-1.1 constructor: that field
+            # described planning surfaces, not known native input schemas.
+            planning_surface_schema_ids = self.accepted_schema_ids
+            object.__setattr__(self, "accepted_schema_ids", ())
+        if not planning_surface_schema_ids:
+            raise CatalogError("planning_surface_schema_ids must not be empty")
+        object.__setattr__(
+            self,
+            "planning_surface_schema_ids",
+            planning_surface_schema_ids,
+        )
         object.__setattr__(
             self,
             "emitted_schema_ids",
@@ -207,7 +231,10 @@ class InteroperabilityComponentDescriptor:
             return False
         if relation_id is None and mechanism_id is None:
             return False
-        if schema_id not in self.accepted_schema_ids or mode not in self.interaction_modes:
+        if (
+            schema_id not in self.planning_surface_schema_ids
+            or mode not in self.interaction_modes
+        ):
             return False
         if relation_id is not None and relation_id not in self.supported_relations:
             return False
@@ -223,6 +250,7 @@ class InteroperabilityComponentDescriptor:
             "lifecycle": self.lifecycle.value,
             "implementation_ref": self.implementation_ref,
             "accepted_schema_ids": list(self.accepted_schema_ids),
+            "planning_surface_schema_ids": list(self.planning_surface_schema_ids),
             "verifier_family_ids": list(self.verifier_family_ids),
             "native_system": self.native_system,
             "native_objects": list(self.native_objects),
@@ -256,6 +284,7 @@ class InteroperabilityComponentDescriptor:
             "lifecycle",
             "implementation_ref",
             "accepted_schema_ids",
+            "planning_surface_schema_ids",
             "verifier_family_ids",
             "native_system",
             "native_objects",
@@ -278,18 +307,29 @@ class InteroperabilityComponentDescriptor:
             "claim_boundary",
         }
         actual = set(value)
-        if actual != expected:
+        legacy_expected = expected - {"planning_surface_schema_ids"}
+        if actual not in (expected, legacy_expected):
             raise CatalogError(
                 "component descriptor keys mismatch; "
                 f"missing={sorted(expected - actual)}, extra={sorted(actual - expected)}"
             )
+        legacy_planning_schema_ids = (
+            value["accepted_schema_ids"] if actual == legacy_expected else ()
+        )
         return cls(
             component_id=value["component_id"],
             label=value["label"],
             kind=value["kind"],
             lifecycle=value["lifecycle"],
             implementation_ref=value["implementation_ref"],
-            accepted_schema_ids=value["accepted_schema_ids"],
+            accepted_schema_ids=(
+                () if actual == legacy_expected else value["accepted_schema_ids"]
+            ),
+            planning_surface_schema_ids=(
+                legacy_planning_schema_ids
+                if actual == legacy_expected
+                else value["planning_surface_schema_ids"]
+            ),
             verifier_family_ids=value["verifier_family_ids"],
             native_system=value["native_system"],
             native_objects=value["native_objects"],
@@ -408,8 +448,22 @@ class InteroperabilityComponentRegistry:
             isinstance(item, Mapping) for item in components
         ):
             raise CatalogError("components must be an array of objects")
+        schema_version = value["schema_version"]
+        if schema_version == CATALOG_SCHEMA_VERSION:
+            if any("planning_surface_schema_ids" not in item for item in components):
+                raise CatalogError(
+                    "catalog 1.1 component descriptors require "
+                    "planning_surface_schema_ids"
+                )
+        elif schema_version == _LEGACY_CATALOG_SCHEMA_VERSION:
+            if any("planning_surface_schema_ids" in item for item in components):
+                raise CatalogError(
+                    "catalog 1.0 component descriptors must not contain "
+                    "planning_surface_schema_ids"
+                )
+            schema_version = CATALOG_SCHEMA_VERSION
         return cls(
-            schema_version=value["schema_version"],
+            schema_version=schema_version,
             registry_version=value["registry_version"],
             components=tuple(
                 InteroperabilityComponentDescriptor.from_dict(item) for item in components

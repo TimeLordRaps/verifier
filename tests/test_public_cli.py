@@ -52,6 +52,10 @@ def test_public_parser_has_no_target_specific_generation_commands() -> None:
         parser.parse_args(["compare-platforms", "linux", "windows", "macos"]).command
         == "compare-platforms"
     )
+    surface = parser.parse_args(["surface", "analyze", "geometry.json", "--plan"])
+    assert surface.command == "surface"
+    assert surface.surface_command == "analyze"
+    assert surface.plan is True
     assert (
         parser.parse_args(["artifact", "verify", "bundle"]).artifact_command
         == "verify"
@@ -89,6 +93,77 @@ def test_public_cli_can_emit_one_demo_specimen(tmp_path: Path, capsys) -> None:
         "honest-unknown.json",
         "index.json",
     ]
+
+
+def test_surface_analyze_is_deterministic_nonexecuting_and_machine_readable(
+    tmp_path: Path, capsys
+) -> None:
+    source = (
+        Path(__file__).resolve().parents[1]
+        / "examples"
+        / "verification_geometry_residual"
+        / "geometry.json"
+    )
+    geometry = tmp_path / "geometry.json"
+    geometry.write_bytes(source.read_bytes())
+    before = geometry.read_bytes()
+
+    assert main(["surface", "analyze", str(geometry), "--json"]) == 0
+    first = capsys.readouterr()
+    assert main(["surface", "analyze", str(geometry), "--json"]) == 0
+    second = capsys.readouterr()
+
+    assert first.err == second.err == ""
+    assert first.out == second.out
+    report = json.loads(first.out)
+    assert report["geometry_id"] == "geometry:formatter-v1"
+    assert report["scope"] == "MODELED_SURFACE_ONLY"
+    assert report["strict_wire_loading_status"] == "SUPPORTED"
+    assert report["holes"]
+    assert "does not establish" in report["claim_boundary"]
+    assert geometry.read_bytes() == before
+
+
+def test_surface_analyze_rejects_malformed_geometry(tmp_path: Path, capsys) -> None:
+    geometry = tmp_path / "geometry.json"
+    geometry.write_text('{"schema_version":"VSTD-2","extra":true}', encoding="utf-8")
+
+    assert main(["surface", "analyze", str(geometry), "--json"]) == 1
+    output = capsys.readouterr()
+    assert output.out == ""
+    assert "missing required fields" in output.err
+
+
+def test_surface_plan_matches_reference_component_without_execution(
+    tmp_path: Path, capsys
+) -> None:
+    source = (
+        Path(__file__).resolve().parents[1]
+        / "examples"
+        / "verification_geometry_residual"
+        / "geometry.json"
+    )
+    geometry = tmp_path / "geometry.json"
+    geometry.write_text(
+        source.read_text(encoding="utf-8").replace(
+            "mechanism:fixture-test", "mechanism:vstd2-geometry-validation"
+        ),
+        encoding="utf-8",
+    )
+
+    assert main(["surface", "analyze", str(geometry), "--plan", "--json"]) == 0
+    report = json.loads(capsys.readouterr().out)
+
+    assert report["catalog"]["component_count"] == 17
+    assert report["catalog"]["implementation_family_count"] == 12
+    assert "does not execute" in report["catalog"]["claim_boundary"]
+    assert report["plan"]["plan_only"] is True
+    assert report["plan"]["execution_performed"] is False
+    assert any(
+        candidate["component_id"] == "component:vstd2-geometry-loader"
+        and candidate["status"] == "CANDIDATE"
+        for candidate in report["plan"]["candidates"]
+    )
 
 
 def test_public_cli_plan_is_side_effect_free_and_reports_scope(

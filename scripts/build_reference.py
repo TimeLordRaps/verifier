@@ -20,6 +20,7 @@ import html
 import importlib
 import inspect
 from pathlib import Path
+import re
 import sys
 
 
@@ -46,6 +47,17 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
         (
             "verifier.core.run_planning:load_manifest",
             "verifier.core.run_planning:describe_run_plan",
+        ),
+    ),
+    (
+        "vstd surface analyze",
+        "Strictly loads one VSTD-2 geometry and emits deterministic modeled-surface "
+        "diagnostics; its optional experimental catalog plan remains nonexecuting.",
+        (
+            "verifier.core.geometry_io:load_verification_geometry",
+            "verifier.interoperability.control_surface:analyze_verification_surface",
+            "verifier.interoperability.reference_catalog:reference_component_registry",
+            "verifier.interoperability.control_surface:plan_validation",
         ),
     ),
     (
@@ -331,11 +343,33 @@ def _pipeline_section() -> str:
     )
 
 
+def _source_coordinate(version: str, changelog: str) -> str:
+    """Describe whether the package coordinate still carries unreleased changes."""
+
+    unreleased = re.search(
+        r"^## Unreleased\s*(.*?)(?=^## |\Z)",
+        changelog,
+        re.MULTILINE | re.DOTALL,
+    )
+    released = re.search(
+        rf"^## {re.escape(version)} - \d{{4}}-\d{{2}}-\d{{2}}$",
+        changelog,
+        re.MULTILINE,
+    )
+    if released is not None and unreleased is not None and not unreleased.group(1).strip():
+        return f"RELEASED SOURCE · package version {version}"
+    return f"UNRELEASED SOURCE · base package version {version}"
+
+
 def render() -> str:
     package = importlib.import_module("verifier")
     version = package.__version__
     standard = package.__standard__
     standard_status = package.__standard_status__
+    source_coordinate = _source_coordinate(
+        version,
+        (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
+    )
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -372,7 +406,7 @@ def render() -> str:
 
   <main id="top">
     <div class="wrap ref-hero">
-      <div class="eyebrow">Reference &middot; verifier-standard {_esc(version)} &middot; {_esc(standard)} {_esc(standard_status)}</div>
+      <div class="eyebrow">Reference &middot; {_esc(source_coordinate)} &middot; {_esc(standard)} {_esc(standard_status)}</div>
       <h1>Inspect the whole pipeline.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
