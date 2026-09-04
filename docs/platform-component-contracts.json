@@ -1,0 +1,304 @@
+{
+  "schema_version": "VSTD-PLATFORM-COMPONENT-CONTRACTS-1",
+  "claim_boundary": "This source manifest records configured test intent only. CONFIGURED_UNRUN is not execution evidence or a support claim. A component remains unestablished on a coordinate until a later exact run emits bounded evidence for the catalog and manifest digests named by that run.",
+  "status_vocabulary": {
+    "CONFIGURED_UNRUN": "The repository configures the mapped tests for this coordinate, but this manifest records no execution result.",
+    "NOT_CONFIGURED": "The repository does not currently configure the mapped component contract for this coordinate.",
+    "UNSUPPORTED": "The repository path explicitly does not offer this component contract on this coordinate; this does not characterize upstream capability."
+  },
+  "coordinates": [
+    {
+      "coordinate_id": "linux-x64",
+      "operating_system": "Linux",
+      "runner_operating_system": "Linux",
+      "machine_family": "x86_64",
+      "runner_architecture": "X64",
+      "runner_label": "ubuntu-24.04",
+      "python_version": "3.12.10"
+    },
+    {
+      "coordinate_id": "windows-x64",
+      "operating_system": "Windows",
+      "runner_operating_system": "Windows",
+      "machine_family": "AMD64",
+      "runner_architecture": "X64",
+      "runner_label": "windows-2025",
+      "python_version": "3.12.10"
+    },
+    {
+      "coordinate_id": "macos-x64",
+      "operating_system": "Darwin",
+      "runner_operating_system": "macOS",
+      "machine_family": "x86_64",
+      "runner_architecture": "X64",
+      "runner_label": "macos-15-intel",
+      "python_version": "3.12.10"
+    },
+    {
+      "coordinate_id": "macos-arm64",
+      "operating_system": "Darwin",
+      "runner_operating_system": "macOS",
+      "machine_family": "arm64",
+      "runner_architecture": "ARM64",
+      "runner_label": "macos-15",
+      "python_version": "3.12.10"
+    }
+  ],
+  "components": [
+    {
+      "component_id": "component:artifact-bundle-verifier",
+      "label": "Artifact freeze and seal verifier",
+      "dependency_profiles": ["seal", "test"],
+      "catalog_optional_dependencies": ["cryptography for seal verification"],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_artifact_control.py"],
+      "test_scope": "Exercise exact-byte freeze, finite cryptographic seal, external-anchor, verification, and thaw behavior. Passing does not establish privileged-write prevention, trusted time, or untested filesystem semantics.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:generic-run-validator",
+      "label": "VSTD-1 generic-run receipt validator",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_public_cli.py"],
+      "test_scope": "Execute the bounded command fixture, validate and inspect its receipt, and rerun it through the public command-line interface.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:platform-run-comparator",
+      "label": "Bounded operating-system result comparator",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_platform_comparison.py"],
+      "test_scope": "Exercise positive, conflicted, incomplete, malformed, and binding-drift platform-comparison cases over recorded receipts.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:provenance-policy-verifier",
+      "label": "Recorded provenance policy verifier",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_public_data.py"],
+      "test_scope": "Exercise provenance-policy acceptance and rejection over bounded data-receipt fixtures.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:scitt-evidence-consumer",
+      "label": "SCITT native-evidence consumer",
+      "dependency_profiles": ["scitt", "test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_scitt_crypto_example.py", "tests/test_scitt_interop.py"],
+      "test_scope": "Exercise semantic SCITT evidence mapping plus the local-key cryptographic example. Passing does not establish public transparency infrastructure or production trust roots.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:scitt-result-composer",
+      "label": "VSTD and SCITT adjacent-result composer",
+      "dependency_profiles": ["scitt", "test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_scitt_crypto_example.py", "tests/test_scitt_interop.py"],
+      "test_scope": "Exercise bounded adjacent-result composition, mismatch preservation, and the local-key cryptographic example without strengthening either native result.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd-graph-assurance-rechecker",
+      "label": "VSTD-Graph assurance-log rechecker",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_evidence_bound_assurance.py"],
+      "test_scope": "Exercise bounded assurance-log replay, dependency handling, and failure preservation.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd-graph-level-rechecker",
+      "label": "Evidence-bound VSTD-Graph level rechecker",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_evidence_bound_assurance.py"],
+      "test_scope": "Exercise evidence-bound Graph-level record rechecking and unresolved-evidence behavior.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd-graph-receipt-validator",
+      "label": "VSTD-Graph receipt validator",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_public_data.py"],
+      "test_scope": "Exercise bounded Graph receipt validation, malformed input rejection, and policy interactions.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd1-independent-auditor",
+      "label": "VSTD-1 satisfiability and grounding auditor",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_core_receipt_integrity.py"],
+      "test_scope": "Exercise the bundled satisfiability and grounding audit while constructing adversarial receipt-integrity fixtures.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd2-geometry-loader",
+      "label": "Strict VSTD-2 geometry loader and semantic validator",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_geometry_io.py"],
+      "test_scope": "Exercise valid geometry loading, canonical normalization, and adversarial structural and numeric rejection.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd3-receipt-validator",
+      "label": "VSTD-3 hardware receipt validator",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_vstd3_emulator.py"],
+      "test_scope": "Exercise hardware-receipt validation using deterministic emulated evidence; no physical-device or vendor attestation is established.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd4-evidence-rechecker",
+      "label": "VSTD-4 evidence-bound receipt rechecker",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_evidence_bound_assurance.py"],
+      "test_scope": "Exercise evidence-bound receipt replay, mechanism binding, and non-establishment when evidence or mechanisms drift.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd4-grounded-certificate-kernel",
+      "label": "VSTD-4 grounded decision certificate kernel",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_public_cli.py"],
+      "test_scope": "Exercise grounded certificate acceptance and refutation through the deterministic public demonstration scenarios.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd4-refutation-checker",
+      "label": "VSTD-4 reverse-unit-propagation proof checker",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_refutation_certificate.py"],
+      "test_scope": "Exercise accepted and rejected reverse-unit-propagation certificates without inferring formula grounding or external truth.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd4-refutation-producer",
+      "label": "Bounded VSTD-4 refutation proof producer",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_refutation_certificate.py"],
+      "test_scope": "Exercise satisfiable, unsatisfiable, and resource-bounded proof search with independently checked emitted refutations.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:vstd5-witness-rechecker",
+      "label": "VSTD-5 witness corroboration rechecker",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_evidence_bound_assurance.py"],
+      "test_scope": "Exercise witness rechecking while preserving refuted, unknown, conflicted, and independence-limited outcomes.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    }
+  ]
+}

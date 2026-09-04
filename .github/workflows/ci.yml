@@ -206,6 +206,84 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  platform-python-contracts:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            coordinate: linux-x64
+            expected_platform: Linux
+            expected_machine: x86_64
+            expected_runner_arch: X64
+          - runner: windows-2025
+            coordinate: windows-x64
+            expected_platform: Windows
+            expected_machine: AMD64
+            expected_runner_arch: X64
+          - runner: macos-15-intel
+            coordinate: macos-x64
+            expected_platform: Darwin
+            expected_machine: x86_64
+            expected_runner_arch: X64
+          - runner: macos-15
+            coordinate: macos-arm64
+            expected_platform: Darwin
+            expected_machine: arm64
+            expected_runner_arch: ARM64
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+      - name: Record and require the declared interpreter coordinate
+        env:
+          EXPECTED_PLATFORM: ${{ matrix.expected_platform }}
+          EXPECTED_MACHINE: ${{ matrix.expected_machine }}
+          EXPECTED_RUNNER_ARCH: ${{ matrix.expected_runner_arch }}
+          OBSERVED_RUNNER_OS: ${{ runner.os }}
+          OBSERVED_RUNNER_ARCH: ${{ runner.arch }}
+          OBSERVED_GITHUB_SHA: ${{ github.sha }}
+          OBSERVED_GITHUB_REF: ${{ github.ref }}
+          OBSERVED_GITHUB_EVENT_NAME: ${{ github.event_name }}
+          OBSERVED_GITHUB_RUN_ID: ${{ github.run_id }}
+          OBSERVED_GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PULL_REQUEST_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PULL_REQUEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: >-
+          python -c "import json, os, platform, sys; observed={'platform_system':platform.system(),'platform_machine':platform.machine(),'python_implementation':platform.python_implementation(),'python_version':platform.python_version(),'runner_os':os.environ['OBSERVED_RUNNER_OS'],'runner_arch':os.environ['OBSERVED_RUNNER_ARCH'],'image_os':os.environ.get('ImageOS',''),'image_version':os.environ.get('ImageVersion',''),'executed_git_sha':os.environ['OBSERVED_GITHUB_SHA'],'git_ref':os.environ['OBSERVED_GITHUB_REF'],'event_name':os.environ['OBSERVED_GITHUB_EVENT_NAME'],'run_id':os.environ['OBSERVED_GITHUB_RUN_ID'],'run_attempt':os.environ['OBSERVED_GITHUB_RUN_ATTEMPT'],'pull_request_head_sha':os.environ.get('PULL_REQUEST_HEAD_SHA',''),'pull_request_base_sha':os.environ.get('PULL_REQUEST_BASE_SHA','')}; open('platform-environment.json','w',encoding='utf-8').write(json.dumps(observed,indent=2,sort_keys=True)+'\n'); expected=(os.environ['EXPECTED_PLATFORM'],os.environ['EXPECTED_MACHINE'],os.environ['EXPECTED_RUNNER_ARCH']); actual=(observed['platform_system'],observed['platform_machine'],observed['runner_arch']); assert actual == expected, (actual, expected); assert sys.version_info[:3] == (3,12,10), sys.version; assert observed['image_os'] and observed['image_version'], observed"
+      - run: python -m pip install ".[test,seal,scitt]"
+      - name: Exercise the complete Python contract suite and optional integrations
+        run: >-
+          python -m pytest -q
+          --junitxml=platform-contracts.xml
+      - name: Build bounded platform-component report
+        if: success()
+        run: >-
+          python scripts/build_platform_component_report.py
+          --coordinate ${{ matrix.coordinate }}
+          --environment platform-environment.json
+          --junit platform-contracts.xml
+          --manifest docs/platform-component-contracts.json
+          --output platform-component-contract.json
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: platform-python-contracts-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.coordinate }}
+          path: |
+            platform-environment.json
+            platform-contracts.xml
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: success()
+        with:
+          name: platform-component-contract-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.coordinate }}
+          path: platform-component-contract.json
+          if-no-files-found: error
+          retention-days: 30
+
   installed-wheel-smoke:
     runs-on: ubuntu-latest
     steps:
@@ -224,7 +302,9 @@ jobs:
           /tmp/vstd-wheel/bin/vstd run "$GITHUB_WORKSPACE/examples/generic_run/manifest.json" --output /tmp/vstd-receipt
           /tmp/vstd-wheel/bin/vstd validate /tmp/vstd-receipt
           /tmp/vstd-wheel/bin/vstd reproduce /tmp/vstd-receipt --rerun
+          /tmp/vstd-wheel/bin/vstd surface analyze "$GITHUB_WORKSPACE/examples/verification_geometry_residual/geometry.json" --json >/dev/null
           /tmp/vstd-wheel/bin/verifier demo --scenario honest-unknown --json
+          /tmp/vstd-wheel/bin/python -c 'import verifier; names=("GeometryLoadError","load_verification_geometry","ControlSurfaceContext","InteractionMode","SurfaceAnalysis","SurfaceAnalysisError","SurfaceHole","SurfaceHoleKind","analyze_verification_surface"); assert all(hasattr(verifier, name) for name in names), names'
           /tmp/vstd-wheel/bin/python -c 'import json; from pathlib import Path; from verifier.core.checker import IndependentAuditor; receipt=json.loads(Path("/tmp/vstd-receipt/receipt.json").read_text()); hashes=(receipt["assessment_context"]["verifier"]["specification_hash"], IndependentAuditor.verifier_descriptor().specification_hash); assert all(value.startswith("sha256:") for value in hashes), hashes'
           printf 'installed-wheel-artifact\n' > /tmp/vstd-wheel-artifact.bin
           /tmp/vstd-wheel/bin/vstd artifact freeze /tmp/vstd-wheel-artifact.bin /tmp/vstd-wheel-artifact --json
@@ -265,7 +345,7 @@ jobs:
   # This identifier remains stable because main branch protection requires it.
   conformance-gate:
     if: always()
-    needs: [base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, release-integrity, release-reproducibility, platform-comparability-observation, platform-comparability, installed-wheel-smoke, presentation, codeql]
+    needs: [base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, release-integrity, release-reproducibility, platform-comparability-observation, platform-comparability, platform-python-contracts, installed-wheel-smoke, presentation, codeql]
     runs-on: ubuntu-latest
     steps:
       - name: Require every declared support and artifact check
@@ -279,6 +359,7 @@ jobs:
           REPRODUCIBLE: ${{ needs.release-reproducibility.result }}
           PLATFORM_OBSERVATIONS: ${{ needs.platform-comparability-observation.result }}
           PLATFORM_COMPARISON: ${{ needs.platform-comparability.result }}
+          PLATFORM_PYTHON_CONTRACTS: ${{ needs.platform-python-contracts.result }}
           WHEEL: ${{ needs.installed-wheel-smoke.result }}
           PRESENTATION: ${{ needs.presentation.result }}
           CODEQL: ${{ needs.codeql.result }}
@@ -292,6 +373,7 @@ jobs:
           test "$REPRODUCIBLE" = success
           test "$PLATFORM_OBSERVATIONS" = success
           test "$PLATFORM_COMPARISON" = success
+          test "$PLATFORM_PYTHON_CONTRACTS" = success
           test "$WHEEL" = success
           test "$PRESENTATION" = success
           test "$CODEQL" = success

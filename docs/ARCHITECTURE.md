@@ -116,17 +116,22 @@ The current unreleased source also exposes a deliberately nonexecuting planning 
 path:
 
 ```text
-typed VSTD-2 geometry
+strict VSTD-2 JSON document
+  -> strict wire loader and semantic validation
+  -> typed valid geometry
   -> modeled-hole analysis
   -> exact catalog candidates
   -> nonexecuting validation plan
 ```
 
-`analyze_verification_surface` accepts only a typed `VerificationGeometry`, validates
-its structure, assesses its declared ordinary and self-closure state, and converts
-existing blockers into typed holes. It does not infer an omitted expected profile,
-ontology, coordinate, or real-world surface. Strict full-parity VSTD-2 wire loading is
-unsupported.
+`load_verification_geometry` strictly accepts a VSTD-2 JSON file or parsed mapping,
+rejects unknown structure and invalid references, and returns only a semantically valid
+typed `VerificationGeometry`. `analyze_verification_surface` accepts that typed object,
+revalidates its structure, assesses its declared ordinary and self-closure state, and
+converts existing blockers into typed holes. The public `vstd surface analyze` command
+joins those two supported operations. Neither operation infers an omitted expected
+profile, ontology, coordinate, or real-world surface, and successful loading establishes
+only the declared VSTD-2 structure—not the truth or completeness of its contents.
 
 `plan_validation` connects those holes to immutable component descriptors through exact
 schema and interaction-mode coordinates plus the hole's relation and mechanism

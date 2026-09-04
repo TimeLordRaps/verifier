@@ -4,7 +4,8 @@
 > Amazon Web Services (AWS); Concise Binary Object Representation (CBOR); continuous integration (CI);
 > command-line interface (CLI); conjunctive normal form (CNF); CBOR Object Signing and Encryption (COSE);
 > grounded decision certificate (GDC); Hypertext Transfer Protocol Secure (HTTPS);
-> Internet Engineering Task Force (IETF); JavaScript Object Notation (JSON); nondeterministic polynomial time (NP);
+> Internet Engineering Task Force (IETF); Java unit test report format (JUnit);
+> JavaScript Object Notation (JSON); nondeterministic polynomial time (NP);
 > reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
 > Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
 > Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
@@ -13,17 +14,56 @@
 
 ## Unreleased
 
-### Experimental interoperability planning
+### Surface analysis and experimental interoperability planning
 
-- Add an explicitly experimental `verifier.interoperability` facade for immutable,
-  domain-neutral component descriptors and registries plus typed VSTD-2 surface-hole
-  analysis and deterministic, registry-digest-bound candidate plans. Keep these names
-  outside the supported top-level `verifier.__all__` boundary.
+- Add a strict zero-dependency VSTD-2 geometry loader, stable top-level modeled-surface
+  analysis API, and deterministic nonexecuting `vstd surface analyze` command. The loader
+  rejects duplicate keys, non-finite numbers, unknown fields, invalid types, and broken
+  geometry references before analysis.
+- Add an explicitly experimental `verifier.interoperability` planning facade for
+  immutable, domain-neutral component descriptors and registries plus deterministic,
+  registry-digest-bound candidate plans. Keep the catalog and planner names outside the
+  supported top-level `verifier.__all__` boundary. Catalog schema 1.1 separates the
+  VSTD-2 planning-surface coordinate from schemas actually accepted by each native entry
+  point; strict 1.0 migration preserves planning matches without inventing native input
+  compatibility.
+- Populate a first-party planning catalog with 17 exact implementation entry points across
+  12 explicitly counted catalog grouping labels, and expose it through the nonexecuting
+  `vstd surface analyze --plan` path. The denominator is not a count of independent or
+  external native verifiers.
 - Add a runnable non-critical sorted-grocery-list example that produces two exact
   candidates and leaves three self-closure holes unmatched without invoking its checker.
-  Planning is not validation execution: strict VSTD-2 wire loading, component execution,
-  evidence collection, post-execution reanalysis, closure, safety, and critical-domain
-  readiness remain unsupported or unestablished.
+  Planning is not validation execution: component execution, evidence collection,
+  post-execution reanalysis, safety, and critical-domain readiness remain unsupported or
+  unestablished. Modeled closure is bounded to the supplied geometry.
+- Add explicit `examples/` and `experiments/` directory maturity guidance and a
+  component-by-component platform-interoperability evidence matrix.
+- Add a non-critical executable proof-producing-solver to proof-checker composition with
+  exact formula, proof, implementation, registry, and component-entry bindings. The
+  checker rehydrates the canonical transition bytes and rejects modified proof or catalog
+  coordinates before checking. The serialized transition also binds the current producer
+  and checker implementation digest, and malformed canonical formula structures return a
+  deterministic rejection instead of escaping the typed result. Forged-proof,
+  wrong-formula, truncated-proof, transition-mutation, and bound-exhaustion tests remain
+  fail-closed. Together with the existing
+  SCITT example, this provides two bounded composition geometries without claiming actor
+  independence, external interoperability, or safety.
+- Qualify the cryptographic SCITT example against the exact installed `scitt-cose==0.2.2`,
+  `cbor2==6.1.4`, and `cryptography==50.0.0` distributions before native calls. Record the
+  statement/receipt verification entry points and direct dependency versions in the local
+  result while keeping them out of the producer-signed payload and native component
+  catalog. These coordinates observe one verifier runtime; they do not authenticate its
+  packages, identify the producer, or establish independent interoperability.
+- Add an experimental declaration-bound cross-geometry diagnostic with deterministic
+  witnesses for explicit `VERIFIED` versus `FALSIFIED` judgments and cycles in dependencies
+  declared acyclic. Missing shared identity and indeterminate judgments remain
+  `NOT_ESTABLISHED`; malformed bindings are `INVALID`. This is structural analysis, not
+  Boolean satisfiability analysis or evidence of physical truth, safety, or conformance.
+- Add an experimental nonexecuting execution-readiness preflight that binds an exact
+  analysis, plan, and registry to native-input digests, planned result-to-evidence mappings,
+  evidenced prerequisite resolutions, a caller-supplied authorization decision, and a
+  mandatory post-execution reassessment contract. `READY` establishes only internal
+  completeness of those declarations; it neither executes nor authorizes a component.
 
 ### Cross-platform comparison
 
@@ -33,6 +73,10 @@
   bindings, and matching declared result projections. Preserve comparable disagreement
   as `CONFLICTED`, incomplete or non-comparable evidence as `NOT_ESTABLISHED`, and
   malformed or contradictory evidence as `INVALID`.
+- Bind Python implementation and machine identity into newly captured comparison
+  declarations. Legacy receipts retain their historical canonical-digest semantics but
+  cannot establish comparison without this additive environment binding; a mismatch
+  between bound and reported environment data is `INVALID`.
 - Add native GitHub-hosted Linux, Windows, and Intel macOS observation jobs for the
   portable generic example and require their aggregate diagnostic in the protected
   repository-check gate. Make the example's declared JavaScript Object Notation outputs
@@ -40,6 +84,18 @@
   surface. Extend release-artifact byte comparison to macOS. These checks
   do not establish universal portability, native-execution attestation within the
   receipt, semantic correctness, or actor independence.
+- Add a separate complete Python contract matrix for Linux x86-64, Windows x86-64,
+  macOS Intel, and macOS ARM64, including the optional artifact-seal and cryptographic
+  SCITT profiles. Its diagnostic artifact binds the pull-request head and base, executed
+  checkout, runner image, operating system, machine, interpreter, run identifier, and
+  attempt before installation; its JUnit report preserves platform-specific skips and the
+  available raw evidence is retained after failure. Emit report bytes with explicit
+  platform-neutral line feeds, reject contradictory JUnit suite counts and non-exact
+  environment records, and bind the raw environment-document digest. The release workflow requires an exact successful push run
+  on the protected default branch, reconstructs all four reports from their raw environment
+  and JUnit evidence, and attaches an attested deterministic platform-evidence ZIP with its
+  own internal digest manifest. Configuring this matrix is not evidence that the unreleased
+  source has passed it.
 
 ## 1.2.0 - 2026-09-01
 

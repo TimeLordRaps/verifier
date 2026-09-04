@@ -1,4 +1,4 @@
-"""Terminology: Verifier Standard (VSTD); ZIP archive format (ZIP).
+"""Terminology: identifier (ID); Verifier Standard (VSTD); ZIP archive format (ZIP).
 
 The public source archive must bind exact, publicly resolvable Git bytes."""
 
@@ -23,6 +23,7 @@ SCRIPT = REPO_ROOT / "scripts" / "release_artifacts.py"
 RELEASE_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "release.yml"
 TIME_GATE = REPO_ROOT / "scripts" / "check_time_status.py"
 RELEASE_METADATA_GATE = REPO_ROOT / "scripts" / "check_release_metadata.py"
+RELEASE_NOTES = REPO_ROOT / "scripts" / "extract_release_notes.py"
 
 SPEC = importlib.util.spec_from_file_location("vstd_release_artifacts", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
@@ -35,6 +36,11 @@ METADATA_SPEC = importlib.util.spec_from_file_location(
 assert METADATA_SPEC is not None and METADATA_SPEC.loader is not None
 release_metadata = importlib.util.module_from_spec(METADATA_SPEC)
 METADATA_SPEC.loader.exec_module(release_metadata)
+
+NOTES_SPEC = importlib.util.spec_from_file_location("vstd_release_notes", RELEASE_NOTES)
+assert NOTES_SPEC is not None and NOTES_SPEC.loader is not None
+release_notes = importlib.util.module_from_spec(NOTES_SPEC)
+NOTES_SPEC.loader.exec_module(release_notes)
 
 
 def test_source_release_manifest_binds_head_and_exact_archive_bytes(tmp_path: Path) -> None:
@@ -487,16 +493,33 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
     required = (
         "workflow_dispatch:",
         "immutable_releases_preflight:",
+        "repository_checks_run_id:",
         "ref: ${{ env.RELEASE_TAG }}",
+        "actions: read",
         'test "$GITHUB_REF" = "refs/heads/$DEFAULT_BRANCH"',
         'git merge-base --is-ancestor "$SOURCE_COMMIT" "origin/$DEFAULT_BRANCH"',
         'test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"',
         'test "$VERSION" = "$PACKAGE_VERSION"',
-        'commits/$SOURCE_COMMIT/check-runs',
+        'actions/runs/$REPOSITORY_CHECKS_RUN_ID',
+        "'.name')\" = \"repository-checks\"",
+        "'.path')\" = \".github/workflows/ci.yml\"",
+        "'.event')\" = \"push\"",
+        "'.head_branch')\" = \"$DEFAULT_BRANCH\"",
+        "'.head_sha')\" = \"$SOURCE_COMMIT\"",
         'select(.name == "conformance-gate" and .conclusion == "success")',
         'test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"',
         'test "$IMMUTABLE_RELEASES_PREFLIGHT" = "true"',
         'python scripts/check_release_metadata.py --version "${RELEASE_TAG#v}"',
+        'python -m pip install ".[test,release,seal,scitt]"',
+        'vstd surface analyze "$GITHUB_WORKSPACE/examples/verification_geometry_residual/geometry.json"',
+        '"load_verification_geometry"',
+        '"analyze_verification_surface"',
+        "prepare_platform_release_evidence.py",
+        "platform-python-contracts-${{ steps.release-source.outputs.run_id }}",
+        "platform-component-contract-${{ steps.release-source.outputs.run_id }}",
+        "verifier-standard-$VERSION-platform-evidence.zip",
+        "The platform-evidence ZIP has its own internal manifest",
+        'python scripts/extract_release_notes.py --version "$VERSION"',
         'gh release create "$RELEASE_TAG"',
         'releases/tags/$RELEASE_TAG',
         "--jq '.immutable')\" = true",
@@ -504,9 +527,51 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
     for fragment in required:
         assert fragment in workflow
     assert "repos/$GITHUB_REPOSITORY/immutable-releases" not in workflow
+    assert "awk -v version" not in workflow
+    assert workflow.index("actions/runs/$REPOSITORY_CHECKS_RUN_ID") < workflow.index(
+        "prepare_platform_release_evidence.py"
+    )
+    assert workflow.index("prepare_platform_release_evidence.py") < workflow.index(
+        "check_release_boundary.py"
+    )
+    assert workflow.index("prepare_platform_release_evidence.py") < workflow.index(
+        "actions/attest@"
+    )
     assert workflow.index('test "$IMMUTABLE_RELEASES_PREFLIGHT" = "true"') < workflow.index(
         'gh release create "$RELEASE_TAG"'
     )
     assert workflow.index('gh release create "$RELEASE_TAG"') < workflow.index(
         "--jq '.immutable')\" = true"
     )
+
+
+def test_release_notes_select_exact_version_heading_without_regex_substitution() -> None:
+    changelog = """# Changelog
+
+## Unreleased
+
+## 1x3y0 - 2026-09-07
+
+- wrong section
+
+## 1.3.0 - 2026-09-08
+
+- exact section
+
+## 1.2.0 - 2026-09-01
+
+- old section
+"""
+
+    assert release_notes.extract_release_notes(changelog, "1.3.0") == (
+        "- exact section\n"
+    )
+    with pytest.raises(release_notes.ReleaseNotesError, match="invalid release version"):
+        release_notes.extract_release_notes(changelog, "1x3y0")
+
+
+def test_release_notes_reject_missing_or_empty_exact_section() -> None:
+    with pytest.raises(release_notes.ReleaseNotesError, match="found 0"):
+        release_notes.extract_release_notes("## 1.2.0 - 2026-09-01\n- old\n", "1.3.0")
+    with pytest.raises(release_notes.ReleaseNotesError, match="is empty"):
+        release_notes.extract_release_notes("## 1.3.0 - 2026-09-08\n", "1.3.0")

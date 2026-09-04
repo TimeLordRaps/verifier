@@ -1,6 +1,8 @@
 # Release procedure
 
-> **Acronyms:** application programming interface (API); carriage return and line feed (CRLF); digital object identifier (DOI);
+> **Acronyms:** application programming interface (API); carriage return and line feed (CRLF);
+> continuous integration (CI); digital object identifier (DOI); identifier (ID);
+> Java unit test report format (JUnit);
 > hash-based message authentication code (HMAC); line feed (LF); Secure Hash Algorithm 256-bit (SHA-256);
 > Software Bill of Materials (SBOM); Coordinated Universal Time (UTC); ZIP archive format (ZIP).
 
@@ -15,7 +17,7 @@ different: the owner-dispatched release workflow runs `python scripts/check_time
 the exact tagged checkout and fails unless it contains exactly one `Status: CLEAR` line.
 There is no subjective override.
 
-The source version may be prepared as 1.2.0 while the release does not exist. During that
+The next source version may be prepared while the release does not exist. During that
 period, `CHANGELOG.md` says `UNRELEASED`, `CITATION.cff` identifies a release candidate and
 has no `date-released`, and install instructions distinguish a source checkout from the
 latest published package. Before tagging, land an explicit release-finalization change that
@@ -25,7 +27,10 @@ not fabricate or backdate it. The release workflow enforces this with
 release-candidate Zenodo metadata.
 
 1. Merge the versioned release change through the public pull-request workflow. Require
-   the protected repository-check aggregate to pass on the exact candidate commit.
+   the protected repository-check aggregate to pass on the exact candidate commit. Record
+   the numeric workflow run identifier for the successful `repository-checks` push run on
+   the protected default branch; a pull-request run or synthetic merge is not a release
+   evidence coordinate.
 2. From a clean checkout of that commit, run:
 
    ```bash
@@ -36,7 +41,7 @@ release-candidate Zenodo metadata.
 3. Build a pre-tag candidate from the full commit SHA, not a working directory:
 
    ```bash
-   VERSION=1.2.0
+   VERSION="$(PYTHONPATH=src python -c 'import verifier; print(verifier.__version__)')"
    python scripts/release_artifacts.py build \
      --ref FULL_PUBLIC_COMMIT_SHA --release "$VERSION" --output-dir dist/candidate
    ```
@@ -48,7 +53,7 @@ release-candidate Zenodo metadata.
    Generated packaging text is normalized to LF; wheel `RECORD` is rebuilt after
    normalization; ZIP metadata, tar metadata, gzip metadata, ownership, modes, and member
    order are canonical. The build fails unless each pair is byte-identical and both
-   distributions declare `verifier-standard`, version `1.2.0`, import package `verifier`,
+   distributions declare `verifier-standard`, the exact `$VERSION`, import package `verifier`,
    and the frozen three console scripts. It also emits a deterministic CycloneDX 1.6
    SBOM whose components bind the source ZIP, wheel, and source distribution by SHA-256
    and byte size. The external manifest binds the SBOM digest; the SBOM does not list
@@ -103,7 +108,7 @@ release-candidate Zenodo metadata.
    plus the manifest's own resulting digest:
 
    ```bash
-   VERSION=1.2.0
+   VERSION="$(PYTHONPATH=src python -c 'import verifier; print(verifier.__version__)')"
    git tag -s "v$VERSION" FULL_PUBLIC_COMMIT_SHA
    python scripts/release_artifacts.py build \
      --ref "refs/tags/v$VERSION" --release "$VERSION" --output-dir dist/tagged
@@ -117,7 +122,7 @@ release-candidate Zenodo metadata.
 7. Run the verifier independently before upload:
 
    ```bash
-   VERSION=1.2.0
+   VERSION="$(PYTHONPATH=src python -c 'import verifier; print(verifier.__version__)')"
    python scripts/release_artifacts.py verify \
      "dist/tagged/verifier-standard-$VERSION.manifest.json"
    ```
@@ -127,16 +132,26 @@ release-candidate Zenodo metadata.
    accepted as byte identity.
 8. Push the tag only after all preceding checks pass. Re-run the owner-authenticated
    immutable-release API preflight, then dispatch `.github/workflows/release.yml` from the
-   protected default branch with the exact existing tag and
+   protected default branch with the exact existing tag,
+   `repository_checks_run_id=<RECORDED_NUMERIC_RUN_ID>`, and
    `immutable_releases_preflight=true`. The owner-dispatched release workflow
-   rechecks signed-tag identity, protected-main ancestry, package version, the successful protected
-   repository-check aggregate (the `conformance-gate` status context), the full test
-   suite, final metadata, deterministic build, installed wheel, and artifact manifest.
+   rechecks signed-tag identity, protected-main ancestry, package version, the selected
+   run's workflow identity, successful push event, exact commit and branch, successful
+   `conformance-gate`, the full test suite, final metadata, deterministic build, installed
+   wheel, and artifact manifest.
    The administrative preflight is owner-observed rather than Actions-token-observed; the
    workflow stops unless that fact is explicitly supplied and refuses a non-owner dispatch.
-   It then attests the tested source ZIP, wheel, source distribution, SBOM, and external
-   release manifest. The workflow creates a draft, attaches the complete set, and only
-   then publishes it. A second job can
+   It also downloads the four run- and attempt-qualified component reports and their raw
+   environment/JUnit artifacts. A fail-closed preparation step reconstructs every report,
+   rejects coordinate substitution, malformed or contradictory JUnit summaries, unknown
+   or duplicate environment fields, changed raw environment bytes, and changed report
+   bytes. It builds a deterministic ZIP whose internal
+   manifest binds the release, repository, commit, workflow run, member digests, and byte
+   lengths. It then boundary-scans and attests that observational evidence bundle alongside
+   the tested source ZIP, wheel, source distribution, SBOM, and external release manifest.
+   The platform bundle has `verification_effect = NONE`; its existence does not turn the
+   mapped tests into universal platform support. The workflow creates a draft, attaches the
+   complete set, and only then publishes it. A second job can
    access only the wheel and source distribution, requires approval in the protected
    `pypi` environment, and publishes them through the configured PyPI Trusted Publisher.
    Existing tags and release assets remain untouched; corrections are additive.
@@ -150,7 +165,8 @@ release-candidate Zenodo metadata.
    turns an unsigned tag into a signed tag.
 
 10. Let Zenodo archive the GitHub release, then record the issued DOI additively.
-11. Confirm that `https://pypi.org/project/verifier-standard/1.2.0/` lists the same wheel
+11. Confirm that the PyPI page at `https://pypi.org/project/verifier-standard/VERSION/`
+    for the exact release version lists the same wheel
     and source-distribution SHA-256 values as the GitHub release and external manifest.
     PyPI ownership establishes control of the distribution coordinate only; it does not
     establish adoption, consensus, certification, or exclusive control of the Python
