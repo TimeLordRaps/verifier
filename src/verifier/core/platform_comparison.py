@@ -32,9 +32,18 @@ from verifier.core.run_validation import (
     _rebuild_stable_payload_from_dict,
     _run_payload_errors,
 )
+from verifier.core.run_support import (
+    PLATFORM_COMPARISON_ENVIRONMENT_BINDING_VERSION,
+)
 
 
 PLATFORM_COMPARISON_MECHANISM = "VSTD-PLATFORM-COMPARISON-0.1"
+_IMPLEMENTATION_SOURCE_NAMES = (
+    "platform_comparison.py",
+    "receipt.py",
+    "run_support.py",
+    "run_validation.py",
+)
 _ALLOWED_RESULT_SURFACES = (
     "execution",
     "declared_outputs",
@@ -45,11 +54,8 @@ _ALLOWED_RESULT_SURFACES = (
 
 def _implementation_digest() -> str:
     digest = hashlib.sha256()
-    for path in (
-        Path(__file__),
-        Path(__file__).with_name("run_validation.py"),
-        Path(__file__).with_name("receipt.py"),
-    ):
+    for name in _IMPLEMENTATION_SOURCE_NAMES:
+        path = Path(__file__).with_name(name)
         payload = path.read_bytes()
         digest.update(path.name.encode("utf-8") + b"\0")
         digest.update(len(payload).to_bytes(8, "big"))
@@ -118,6 +124,7 @@ class PlatformComparisonResult:
             ),
             "limitations": [
                 "The declaration does not prove that its named mechanism is compatible across operating systems.",
+                "Legacy receipts without a digest-bound comparison environment cannot establish comparison.",
                 "The receipt platform value is an operating-system observation, not native-hardware or virtual-machine attestation.",
                 "The comparison does not establish semantic correctness, universal portability, actor independence, or behavior outside the supplied coordinates.",
                 "Receipt validation checks canonical integrity; this comparison does not independently rehash external artifacts or rerun recorded commands.",
@@ -170,15 +177,16 @@ def _load_receipt(path: Path) -> tuple[dict[str, Any] | None, list[str]]:
 
 def _parse_declaration(
     receipt: Mapping[str, Any],
-) -> tuple[dict[str, Any] | None, list[str], bool]:
+) -> tuple[dict[str, Any] | None, dict[str, str] | None, list[str], bool]:
     surface = receipt.get("assessment_context", {}).get("refutation_surface", {})
     raw = surface.get("platform_comparability") if isinstance(surface, Mapping) else None
     if raw is None:
-        return None, ["platform_comparability declaration is absent"], True
+        return None, None, ["platform_comparability declaration is absent"], True
     if not isinstance(raw, Mapping):
-        return None, ["platform_comparability must be an object"], False
+        return None, None, ["platform_comparability must be an object"], False
     expected = {"mechanism_id", "compatible_platforms", "result_surfaces"}
-    unexpected = sorted(set(raw) - expected)
+    allowed = expected | {"environment_binding"}
+    unexpected = sorted(set(raw) - allowed)
     missing = sorted(expected - set(raw))
     errors: list[str] = []
     if missing:
@@ -254,13 +262,85 @@ def _parse_declaration(
         normalized_surfaces = [
             name for name in _ALLOWED_RESULT_SURFACES if name in surfaces
         ]
+    environment: dict[str, str] | None = None
+    raw_environment = raw.get("environment_binding")
+    if raw_environment is not None:
+        environment_fields = {
+            "binding_version",
+            "python_implementation",
+            "platform_machine",
+        }
+        if not isinstance(raw_environment, Mapping):
+            errors.append("platform_comparability.environment_binding must be an object")
+        else:
+            missing_environment = sorted(environment_fields - set(raw_environment))
+            unexpected_environment = sorted(set(raw_environment) - environment_fields)
+            if missing_environment:
+                errors.append(
+                    "platform_comparability.environment_binding missing fields: "
+                    + ", ".join(missing_environment)
+                )
+            if unexpected_environment:
+                errors.append(
+                    "platform_comparability.environment_binding has unexpected fields: "
+                    + ", ".join(unexpected_environment)
+                )
+            binding_version = raw_environment.get("binding_version")
+            python_implementation = raw_environment.get("python_implementation")
+            platform_machine = raw_environment.get("platform_machine")
+            if binding_version != PLATFORM_COMPARISON_ENVIRONMENT_BINDING_VERSION:
+                errors.append(
+                    "platform_comparability.environment_binding.binding_version "
+                    "is unsupported"
+                )
+            for name, value in (
+                ("python_implementation", python_implementation),
+                ("platform_machine", platform_machine),
+            ):
+                if not isinstance(value, str) or not value:
+                    errors.append(
+                        "platform_comparability.environment_binding."
+                        f"{name} must be a non-empty string"
+                    )
+            if not errors:
+                environment = {
+                    "binding_version": str(binding_version),
+                    "python_implementation": str(python_implementation),
+                    "machine_family": _machine_family(platform_machine),
+                }
+                runtime = receipt.get("source_state", {}).get("runtime", {})
+                runtime_implementation = runtime.get("python_implementation")
+                runtime_machine = runtime.get("platform_machine")
+                if (
+                    isinstance(runtime_implementation, str)
+                    and runtime_implementation
+                    and runtime_implementation != python_implementation
+                ):
+                    errors.append(
+                        "runtime python_implementation does not match its digest-bound "
+                        "comparison environment"
+                    )
+                if (
+                    isinstance(runtime_machine, str)
+                    and runtime_machine
+                    and runtime_machine != platform_machine
+                ):
+                    errors.append(
+                        "runtime platform_machine does not match its digest-bound "
+                        "comparison environment"
+                    )
     if errors:
-        return None, errors, False
-    return {
-        "mechanism_id": mechanism_id,
-        "compatible_platforms": normalized_platforms,
-        "result_surfaces": normalized_surfaces,
-    }, [], False
+        return None, None, errors, False
+    return (
+        {
+            "mechanism_id": mechanism_id,
+            "compatible_platforms": normalized_platforms,
+            "result_surfaces": normalized_surfaces,
+        },
+        environment,
+        [],
+        False,
+    )
 
 
 def _normalize_source_hash_paths(
@@ -299,17 +379,17 @@ def _comparison_binding(
     platform: str,
 ) -> dict[str, Any]:
     binding = copy.deepcopy(_rebuild_stable_payload_from_dict(receipt))
-    normalized_declaration, declaration_errors, _absent = _parse_declaration(receipt)
+    normalized_declaration, environment, declaration_errors, _absent = (
+        _parse_declaration(receipt)
+    )
     if normalized_declaration is None or declaration_errors:
         raise ValueError("comparison binding requires a valid platform declaration")
+    if environment is None:
+        raise ValueError("comparison environment is not digest-bound")
     binding["assessment_context"]["refutation_surface"][
         "platform_comparability"
     ] = normalized_declaration
-    runtime = receipt["source_state"]["runtime"]
-    binding["platform_comparison_environment"] = {
-        "python_implementation": runtime.get("python_implementation"),
-        "machine_family": _machine_family(runtime.get("platform_machine")),
-    }
+    binding["platform_comparison_environment"] = environment
     execution = binding["execution_stable"]
     execution.pop("platform_system", None)
     claims = binding["claims"]
@@ -466,10 +546,11 @@ def compare_platform_run_receipts(
         )
 
     declarations: list[dict[str, Any]] = []
+    environments: list[dict[str, str] | None] = []
     declaration_errors: list[str] = []
     declaration_errors_are_all_absent = True
     for path, receipt in loaded:
-        declaration, errors, absent = _parse_declaration(receipt)
+        declaration, environment, errors, absent = _parse_declaration(receipt)
         if errors:
             declaration_errors.extend(f"{_receipt_file(path)}: {error}" for error in errors)
             declaration_errors_are_all_absent = (
@@ -477,6 +558,7 @@ def compare_platform_run_receipts(
             )
         elif declaration is not None:
             declarations.append(declaration)
+            environments.append(environment)
     if declaration_errors:
         status = (
             PlatformComparisonStatus.NOT_ESTABLISHED
@@ -498,6 +580,18 @@ def compare_platform_run_receipts(
             "The supplied receipts do not share one platform-comparability declaration.",
             declaration=declaration,
             errors=["platform_comparability declarations differ across receipts"],
+        )
+
+    if any(environment is None for environment in environments):
+        return _result(
+            PlatformComparisonStatus.NOT_ESTABLISHED,
+            "At least one comparison environment is not digest-bound.",
+            declaration=declaration,
+            required_platforms=tuple(declaration["compatible_platforms"]),
+            errors=[
+                "legacy or manually constructed receipt lacks "
+                "platform_comparability.environment_binding"
+            ],
         )
 
     required_platforms = tuple(declaration["compatible_platforms"])

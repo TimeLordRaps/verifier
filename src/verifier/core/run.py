@@ -50,12 +50,14 @@ from typing import Any, Mapping, Optional
 
 from verifier.core.provenance import (
     ProvenanceRecord,
+    RuntimeEnvironment,
     capture_provenance,
     sha256_file,
 )
 from verifier.core.receipt import compute_canonical_digest
 from verifier.core.reproducibility import ReproducibilityLevel
 from verifier.core.run_support import (
+    PLATFORM_COMPARISON_ENVIRONMENT_BINDING_VERSION,
     RUN_RECEIPT_KIND,
     RUN_SCHEMA_VERSION,
     DeterminismDeclaration,
@@ -96,6 +98,7 @@ def _assessment_context(
     manifest: Mapping[str, Any],
     *,
     falsification_condition: str,
+    runtime: RuntimeEnvironment | None = None,
 ) -> dict[str, Any]:
     """Serialize bounded generic-run mechanism and refutation context."""
     raw_bounds = manifest.get("resource_bounds", {})
@@ -130,6 +133,17 @@ def _assessment_context(
             raise RunError(f"refutation_surface.{name} must be an array of strings")
     if not isinstance(surface["falsification_condition"], str):
         raise RunError("refutation_surface.falsification_condition must be a string")
+    platform_declaration = surface.get("platform_comparability")
+    if isinstance(platform_declaration, Mapping) and runtime is not None:
+        bound_declaration = dict(platform_declaration)
+        # Capture owns this record. A manifest-supplied value is overwritten rather
+        # than trusted, and the observed value then participates in the receipt digest.
+        bound_declaration["environment_binding"] = {
+            "binding_version": PLATFORM_COMPARISON_ENVIRONMENT_BINDING_VERSION,
+            "python_implementation": runtime.python_implementation,
+            "platform_machine": runtime.platform_machine,
+        }
+        surface["platform_comparability"] = bound_declaration
 
     here = Path(__file__).resolve()
     implementation_modules = tuple(
@@ -907,6 +921,7 @@ def capture_run(
             falsification_condition=str(
                 claim_block.get("falsification_condition", "")
             ),
+            runtime=source_state.runtime,
         ),
     )
     receipt.compute_and_set_digest()

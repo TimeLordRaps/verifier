@@ -15,18 +15,31 @@ from typing import Any, Callable
 
 import pytest
 
+from verifier.core import platform_comparison
 from verifier.core.platform_comparison import (
     PlatformComparisonStatus,
     compare_platform_run_receipts,
 )
 from verifier.core.receipt import compute_canonical_digest
 from verifier.core.run import capture_run
+from verifier.core.run_support import (
+    PLATFORM_COMPARISON_ENVIRONMENT_BINDING_VERSION,
+)
 from verifier.core.run_validation import _rebuild_stable_payload_from_dict
 from verifier.runtime.public_cli import main
 
 
 PLATFORMS = ("Darwin", "Linux", "Windows")
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_platform_comparison_implementation_digest_inventory_is_complete() -> None:
+    assert platform_comparison._IMPLEMENTATION_SOURCE_NAMES == (
+        "platform_comparison.py",
+        "receipt.py",
+        "run_support.py",
+        "run_validation.py",
+    )
 
 
 def _captured_receipt(project: Path) -> dict[str, Any]:
@@ -139,6 +152,16 @@ def test_capture_uses_platform_neutral_nested_source_paths(tmp_path: Path) -> No
     assert set(receipt["source_state"]["source_file_hashes"]) == {
         "data/input.txt",
         "src/compute.py",
+    }
+    environment = receipt["assessment_context"]["refutation_surface"][
+        "platform_comparability"
+    ]["environment_binding"]
+    assert environment == {
+        "binding_version": PLATFORM_COMPARISON_ENVIRONMENT_BINDING_VERSION,
+        "python_implementation": receipt["source_state"]["runtime"][
+            "python_implementation"
+        ],
+        "platform_machine": receipt["source_state"]["runtime"]["platform_machine"],
     }
 
 
@@ -324,6 +347,9 @@ def test_machine_family_drift_is_not_mislabeled_operating_system_conflict(
 
     def change_machine_family(receipt: dict[str, Any]) -> None:
         receipt["source_state"]["runtime"]["platform_machine"] = "arm64"
+        receipt["assessment_context"]["refutation_surface"][
+            "platform_comparability"
+        ]["environment_binding"]["platform_machine"] = "arm64"
 
     receipts = [
         _write_variant(tmp_path / "darwin", base, "Darwin"),
@@ -374,6 +400,77 @@ def test_canonical_digest_tampering_is_invalid(tmp_path: Path) -> None:
 
     assert result.status is PlatformComparisonStatus.INVALID
     assert any("canonical digest mismatch" in error for error in result.errors)
+
+
+def test_unbound_machine_edit_cannot_upgrade_comparison_to_pass(
+    tmp_path: Path,
+) -> None:
+    base = _captured_receipt(tmp_path / "project")
+
+    def bind_arm_machine(receipt: dict[str, Any]) -> None:
+        receipt["source_state"]["runtime"]["platform_machine"] = "arm64"
+        receipt["assessment_context"]["refutation_surface"][
+            "platform_comparability"
+        ]["environment_binding"]["platform_machine"] = "arm64"
+
+    receipts = [
+        _write_variant(tmp_path / "darwin", base, "Darwin"),
+        _write_variant(tmp_path / "linux", base, "Linux"),
+        _write_variant(
+            tmp_path / "windows",
+            base,
+            "Windows",
+            mutate=bind_arm_machine,
+        ),
+    ]
+    before = compare_platform_run_receipts(receipts)
+    windows_receipt = receipts[2] / "receipt.json"
+    payload = json.loads(windows_receipt.read_text(encoding="utf-8"))
+    original_digest = payload["canonical_digest"]
+    payload["source_state"]["runtime"]["platform_machine"] = "x86_64"
+    windows_receipt.write_text(json.dumps(payload), encoding="utf-8")
+
+    after = compare_platform_run_receipts(receipts)
+
+    assert before.status is PlatformComparisonStatus.NOT_ESTABLISHED
+    assert payload["canonical_digest"] == original_digest
+    assert after.status is PlatformComparisonStatus.INVALID
+    assert any("comparison environment" in error for error in after.errors)
+
+
+def test_unbound_python_implementation_edit_is_invalid(tmp_path: Path) -> None:
+    _base, receipts = _three_receipts(tmp_path)
+    receipt_path = receipts[1] / "receipt.json"
+    payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+    payload["source_state"]["runtime"]["python_implementation"] = "PyPy"
+    receipt_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    result = compare_platform_run_receipts(receipts)
+
+    assert result.status is PlatformComparisonStatus.INVALID
+    assert any("python_implementation" in error for error in result.errors)
+
+
+def test_legacy_unbound_comparison_receipts_are_not_established(
+    tmp_path: Path,
+) -> None:
+    _base, receipts = _three_receipts(tmp_path)
+    for directory in receipts:
+        receipt_path = directory / "receipt.json"
+        payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+        del payload["assessment_context"]["refutation_surface"][
+            "platform_comparability"
+        ]["environment_binding"]
+        payload["canonical_digest"] = compute_canonical_digest(
+            _rebuild_stable_payload_from_dict(payload)
+        )
+        receipt_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    result = compare_platform_run_receipts(receipts)
+
+    assert result.status is PlatformComparisonStatus.NOT_ESTABLISHED
+    assert result.exit_code == 2
+    assert any("lacks platform_comparability.environment_binding" in error for error in result.errors)
 
 
 @pytest.mark.parametrize(
