@@ -14,6 +14,7 @@ from pathlib import Path
 import sys
 from urllib.parse import unquote
 
+import pytest
 import yaml
 
 
@@ -741,6 +742,34 @@ def test_generated_reference_covers_commands_and_top_level_exports() -> None:
     )
     assert "VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM" in page
     assert "Monotone reproduction-fidelity states" in page
+
+
+@pytest.mark.parametrize(
+    ("docstring", "expected"),
+    (
+        ("An enumeration.", "Enumeration of the exported values."),
+        ("str(object='') -> str", "Enumeration of the exported values."),
+        ("Deliberate interaction modes.", "Deliberate interaction modes."),
+    ),
+    ids=("python310-default", "inherited-str-default", "explicit-docstring"),
+)
+def test_generated_enum_summary_is_interpreter_independent(
+    monkeypatch: pytest.MonkeyPatch, docstring: str, expected: str
+) -> None:
+    from verifier import InteractionMode
+
+    spec = importlib.util.spec_from_file_location(
+        "build_reference_enum", ROOT / "scripts/build_reference.py"
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    monkeypatch.setattr(InteractionMode, "__doc__", docstring)
+    entry = module._api_section().split('id="api-InteractionMode"', 1)[1].split(
+        "</article>", 1
+    )[0]
+    assert f'<p class="ref-help">{expected}</p>' in entry
+    assert "LIVE_MUTATING" in entry
 
 
 def test_generated_reference_coordinate_is_release_aware() -> None:

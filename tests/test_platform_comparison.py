@@ -30,6 +30,13 @@ from verifier.runtime.public_cli import main
 
 
 PLATFORMS = ("Darwin", "Linux", "Windows")
+MACHINE_FAMILY_PAIRS = (
+    ("x86_64", "arm64"),
+    ("AMD64", "aarch64"),
+    ("x64", "arm64"),
+    ("arm64", "x86_64"),
+    ("aarch64", "AMD64"),
+)
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -98,6 +105,14 @@ def _captured_receipt(project: Path) -> dict[str, Any]:
         },
     }
     return capture_run(manifest, manifest_dir=project).to_dict()
+
+
+def _bind_machine(receipt: dict[str, Any], machine: str) -> None:
+    # Synthetic comparison coordinates, not evidence of execution on this machine.
+    receipt["source_state"]["runtime"]["platform_machine"] = machine
+    receipt["assessment_context"]["refutation_surface"][
+        "platform_comparability"
+    ]["environment_binding"]["platform_machine"] = machine
 
 
 def _write_variant(
@@ -340,16 +355,14 @@ def test_non_platform_binding_drift_is_not_mislabeled_conflict(
     )
 
 
+@pytest.mark.parametrize(("base_machine", "different_machine"), MACHINE_FAMILY_PAIRS)
 def test_machine_family_drift_is_not_mislabeled_operating_system_conflict(
     tmp_path: Path,
+    base_machine: str,
+    different_machine: str,
 ) -> None:
     base = _captured_receipt(tmp_path / "project")
-
-    def change_machine_family(receipt: dict[str, Any]) -> None:
-        receipt["source_state"]["runtime"]["platform_machine"] = "arm64"
-        receipt["assessment_context"]["refutation_surface"][
-            "platform_comparability"
-        ]["environment_binding"]["platform_machine"] = "arm64"
+    _bind_machine(base, base_machine)
 
     receipts = [
         _write_variant(tmp_path / "darwin", base, "Darwin"),
@@ -358,13 +371,14 @@ def test_machine_family_drift_is_not_mislabeled_operating_system_conflict(
             tmp_path / "windows",
             base,
             "Windows",
-            mutate=change_machine_family,
+            mutate=lambda receipt: _bind_machine(receipt, different_machine),
         ),
     ]
 
     result = compare_platform_run_receipts(receipts)
 
     assert result.status is PlatformComparisonStatus.NOT_ESTABLISHED
+    assert {item["machine_family"] for item in result.observations} == {"x86_64", "arm64"}
     assert any(
         difference["path"] == "platform_comparison_environment.machine_family"
         for difference in result.differences
@@ -402,16 +416,14 @@ def test_canonical_digest_tampering_is_invalid(tmp_path: Path) -> None:
     assert any("canonical digest mismatch" in error for error in result.errors)
 
 
+@pytest.mark.parametrize(("base_machine", "different_machine"), MACHINE_FAMILY_PAIRS)
 def test_unbound_machine_edit_cannot_upgrade_comparison_to_pass(
     tmp_path: Path,
+    base_machine: str,
+    different_machine: str,
 ) -> None:
     base = _captured_receipt(tmp_path / "project")
-
-    def bind_arm_machine(receipt: dict[str, Any]) -> None:
-        receipt["source_state"]["runtime"]["platform_machine"] = "arm64"
-        receipt["assessment_context"]["refutation_surface"][
-            "platform_comparability"
-        ]["environment_binding"]["platform_machine"] = "arm64"
+    _bind_machine(base, base_machine)
 
     receipts = [
         _write_variant(tmp_path / "darwin", base, "Darwin"),
@@ -420,20 +432,24 @@ def test_unbound_machine_edit_cannot_upgrade_comparison_to_pass(
             tmp_path / "windows",
             base,
             "Windows",
-            mutate=bind_arm_machine,
+            mutate=lambda receipt: _bind_machine(receipt, different_machine),
         ),
     ]
     before = compare_platform_run_receipts(receipts)
     windows_receipt = receipts[2] / "receipt.json"
     payload = json.loads(windows_receipt.read_text(encoding="utf-8"))
     original_digest = payload["canonical_digest"]
-    payload["source_state"]["runtime"]["platform_machine"] = "x86_64"
+    payload["source_state"]["runtime"]["platform_machine"] = base_machine
     windows_receipt.write_text(json.dumps(payload), encoding="utf-8")
 
     after = compare_platform_run_receipts(receipts)
 
     assert before.status is PlatformComparisonStatus.NOT_ESTABLISHED
+    assert {item["machine_family"] for item in before.observations} == {"x86_64", "arm64"}
     assert payload["canonical_digest"] == original_digest
+    assert payload["assessment_context"]["refutation_surface"][
+        "platform_comparability"
+    ]["environment_binding"]["platform_machine"] == different_machine
     assert after.status is PlatformComparisonStatus.INVALID
     assert any("comparison environment" in error for error in after.errors)
 

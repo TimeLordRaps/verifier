@@ -305,11 +305,13 @@ def _api_section() -> str:
                     "<table><thead><tr><th>Method</th><th>Summary</th></tr></thead>"
                     f"<tbody>\n{rows}</tbody></table>"
                 )
-        # ``str, Enum`` can inherit a version-specific builtin ``str`` docstring when
-        # no class docstring is declared. Never publish that as VSTD documentation.
+        # Undocumented enums inherit either the default Enum summary or a
+        # version-specific builtin ``str`` docstring. Publish neither as VSTD prose.
         summary = _summary(value)
-        if kind == "enum" and (not summary or summary.startswith("str(")):
-            summary = "Enumeration of the exported result values."
+        if kind == "enum" and (
+            not summary or summary == "An enumeration." or summary.startswith("str(")
+        ):
+            summary = "Enumeration of the exported values."
         if not summary or summary.startswith(f"{name}("):
             # A dataclass with no docstring of its own repeats its signature; that is
             # not documentation, so say so instead of publishing the repetition.
