@@ -28,6 +28,7 @@ from verifier.core.geometry import (
 )
 
 from .catalog import (
+    AWARENESS_CLAIM_BOUNDARY,
     ComponentAvailability,
     ComponentLifecycle,
     InteractionMode,
@@ -45,11 +46,13 @@ STRICT_WIRE_LOADING_STATUS = "SUPPORTED"
 
 ANALYSIS_CLAIM_BOUNDARY = (
     "Derived only from the supplied VSTD-2 geometry. It does not establish that the "
-    "declared surface, coordinates, ontology, or evidence are complete."
+    "declared surface, coordinates, ontology, or evidence are complete. "
+    + AWARENESS_CLAIM_BOUNDARY
 )
 PLAN_CLAIM_BOUNDARY = (
     "Exact catalog matches are nonexecuting candidates. They do not establish "
-    "availability, validity, assurance, authority, or closure."
+    "availability, validity, assurance, authority, or closure. "
+    + AWARENESS_CLAIM_BOUNDARY
 )
 EXECUTION_PREREQUISITES = (
     "BOUND_PROPOSITION",

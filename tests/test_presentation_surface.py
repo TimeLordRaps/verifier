@@ -21,6 +21,27 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_artifact_awareness_contract_preserves_release_and_inference_boundaries() -> None:
+    document = (ROOT / "docs/ARTIFACT_AWARENESS.md").read_text(encoding="utf-8")
+    for term in (
+        "Artifact awareness", "Awareness relation", "Awareness boundary",
+        "Confidentiality of awareness", "Actual awareness", "Permitted awareness",
+        "Potentially inferable awareness",
+    ):
+        assert term in document
+    for boundary in (
+        "Permission does not establish knowledge",
+        "withholding direct access does not establish that something cannot be inferred",
+        "No automatic awareness inheritance",
+        "does not implement an awareness tracker",
+        "does not enforce confidentiality of awareness",
+        "v1.4.0",
+    ):
+        assert boundary in document
+    for guide in ("docs/ARCHITECTURE.md", "docs/CLAIMS_AND_LIMITS.md", "docs/COMPONENT_PACKAGES.md"):
+        assert "ARTIFACT_AWARENESS.md" in (ROOT / guide).read_text(encoding="utf-8")
+
+
 class _BuiltPageLinks(HTMLParser):
     def __init__(self) -> None:
         super().__init__()

@@ -104,6 +104,9 @@ def test_components_inspect_is_nonexecuting_and_content_free(
     report = json.loads(first.out)
     assert report == package.inspect()
     assert report["integrity_result"] == "PASS"
+    assert "Permission does not establish artifact awareness" in report["claim_boundary"]
+    assert "does not establish non-inferability" in report["claim_boundary"]
+    assert "does not establish confidentiality of awareness" in report["claim_boundary"]
     assert "stored implementation must never execute" not in first.out
     assert path.read_bytes() == before
     assert list(tmp_path.iterdir()) == [path]
@@ -120,6 +123,9 @@ def test_components_inspect_text_discloses_integrity_boundary(
     assert package.canonical_digest() in output.out
     assert "does not establish availability, correctness" in output.out
     assert "authorship, authorization" in output.out
+    assert "Permission does not establish artifact awareness" in output.out
+    assert "does not establish non-inferability" in output.out
+    assert "does not establish confidentiality of awareness" in output.out
     assert output.err == ""
 
 
@@ -217,6 +223,11 @@ def test_surface_plan_uses_stored_registry_and_binds_package_digest(
     assert report["plan"]["binding_scope"] == "STORED_PACKAGE"
     assert report["plan"]["plan_only"] is True
     assert report["plan"]["execution_performed"] is False
+    for section in ("catalog", "analysis", "plan"):
+        boundary = report[section]["claim_boundary"]
+        assert "Permission does not establish artifact awareness" in boundary
+        assert "does not establish non-inferability" in boundary
+        assert "does not establish confidentiality of awareness" in boundary
     candidates = [
         candidate for candidate in report["plan"]["candidates"]
         if candidate["component_id"] == "component:stored-cli-fixture"
@@ -263,6 +274,9 @@ def test_surface_package_text_discloses_source_boundary(
     assert package.canonical_digest() in output.out
     assert "Source boundary:" in output.out
     assert "authorship, authorization" in output.out
+    assert "Permission does not establish artifact awareness" in output.out
+    assert "does not establish non-inferability" in output.out
+    assert "does not establish confidentiality of awareness" in output.out
     assert output.err == ""
 
 

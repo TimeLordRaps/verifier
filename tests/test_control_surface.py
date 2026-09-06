@@ -367,6 +367,9 @@ def test_analysis_booleans_and_claim_boundaries_cannot_be_weakened() -> None:
         replace(plan, claim_boundary="Candidates establish assurance.")
     assert analysis.claim_boundary == ANALYSIS_CLAIM_BOUNDARY
     assert plan.claim_boundary == PLAN_CLAIM_BOUNDARY
+    for report in (analysis.to_dict(), plan.to_dict()):
+        assert "Permission does not establish artifact awareness" in report["claim_boundary"]
+        assert "does not establish non-inferability" in report["claim_boundary"]
 
 
 def test_validation_candidate_states_have_coherent_coordinates_and_blockers() -> None:

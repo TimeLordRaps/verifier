@@ -20,7 +20,12 @@ import re
 import stat
 from typing import Any, Mapping, Optional
 
-from .catalog import CATALOG_SCHEMA_VERSION, CatalogError, InteroperabilityComponentRegistry
+from .catalog import (
+    AWARENESS_CLAIM_BOUNDARY,
+    CATALOG_SCHEMA_VERSION,
+    CatalogError,
+    InteroperabilityComponentRegistry,
+)
 
 
 COMPONENT_PACKAGE_SCHEMA_VERSION = "VSTD-COMPONENT-PACKAGE-1"
@@ -31,7 +36,8 @@ PACKAGE_CLAIM_BOUNDARY = (
     "Package integrity binds retained bytes and declarations only. Publisher and "
     "license are unsigned declarations. Implementation correctness, dependency "
     "completeness, runtime availability, native-platform qualification, authorship, "
-    "and authorization are NOT_ESTABLISHED. Import and planning execute nothing."
+    "and authorization are NOT_ESTABLISHED. Import and planning execute nothing. "
+    + AWARENESS_CLAIM_BOUNDARY
 )
 
 

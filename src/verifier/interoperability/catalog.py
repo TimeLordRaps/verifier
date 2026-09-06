@@ -18,6 +18,11 @@ from typing import Any, Mapping, Optional
 
 CATALOG_SCHEMA_VERSION = "VSTD-INTEROPERABILITY-CATALOG-1.1"
 _LEGACY_CATALOG_SCHEMA_VERSION = "VSTD-INTEROPERABILITY-CATALOG-1.0"
+AWARENESS_CLAIM_BOUNDARY = (
+    "Permission does not establish artifact awareness; withholding direct access "
+    "does not establish non-inferability. This operation does not establish "
+    "confidentiality of awareness."
+)
 
 
 class CatalogError(ValueError):

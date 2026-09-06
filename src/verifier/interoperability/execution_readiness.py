@@ -21,6 +21,7 @@ from enum import Enum
 from typing import Any, Optional
 
 from .catalog import (
+    AWARENESS_CLAIM_BOUNDARY,
     ComponentAvailability,
     ComponentLifecycle,
     InteroperabilityComponentDescriptor,
@@ -47,7 +48,8 @@ EXECUTION_READINESS_CLAIM_BOUNDARY = (
     "complete and consistent with the exact analysis, plan, registry, and required "
     "stored package. It does not "
     "execute a component, validate native inputs or results, grant authorization, "
-    "establish safety or closure, or perform post-execution reassessment."
+    "establish safety or closure, or perform post-execution reassessment. "
+    + AWARENESS_CLAIM_BOUNDARY
 )
 
 

@@ -109,6 +109,11 @@ checks, not authentication of the caller or a grant of execution permission.
 
 ## Boundaries that survive storage
 
+See [artifact awareness and confidentiality of awareness](ARTIFACT_AWARENESS.md).
+Retaining bytes or hiding them from an inspection summary establishes neither what
+another artifact knows nor what it can infer. Package and dependency metadata may itself
+disclose confidential awareness relations; this format provides no disclosure control.
+
 - Retained bytes and digest consistency do not establish correctness, safe execution,
   authentic publisher identity, an independently valid license grant or native availability.
 - A package digest does not authenticate itself. Publisher and license fields are unsigned

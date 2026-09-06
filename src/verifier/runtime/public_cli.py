@@ -55,6 +55,7 @@ from verifier.runtime.experimental_workflow_cli import (
     handle_experiment_command,
 )
 from verifier.runtime.demo import SCENARIOS, demo_report, emit_specimens, run_demo
+from verifier.interoperability.catalog import AWARENESS_CLAIM_BOUNDARY
 from verifier.interoperability.control_surface import (
     analyze_verification_surface,
     plan_validation,
@@ -68,7 +69,8 @@ from verifier.interoperability.reference_catalog import (
 _STORED_PACKAGE_CLAIM_BOUNDARY = (
     "Stored package declarations and exact byte integrity only; no component is "
     "imported or executed. Packaging does not establish availability, correctness, "
-    "authorship, authorization, native qualification, or executable dependency closure."
+    "authorship, authorization, native qualification, or executable dependency closure. "
+    + AWARENESS_CLAIM_BOUNDARY
 )
 
 

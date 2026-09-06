@@ -14,6 +14,18 @@
 
 ## 1.3.0 - UNRELEASED
 
+### Artifact awareness semantics
+
+- Define artifact awareness, awareness relations, awareness boundaries and confidentiality
+  of awareness. Separate actual awareness, permitted awareness and potentially inferable
+  awareness, including indirect disclosure through composed artifacts.
+- Surface prohibited awareness inferences in existing inspection, analysis, planning and
+  readiness diagnostics. Permission does not establish knowledge; withholding direct access
+  does not establish non-inferability. This adds no awareness tracker or confidentiality
+  enforcement; those mechanisms remain planned for v1.4.0. Expanded diagnostic text changes
+  candidate report bytes and digests, so affected plans and authorization bindings must be
+  regenerated. Receipt identifiers and stored-package formats are unchanged.
+
 ### Stored verifier-like components
 
 - Add experimental `VSTD-COMPONENT-PACKAGE-1`: a bounded, self-contained JSON format

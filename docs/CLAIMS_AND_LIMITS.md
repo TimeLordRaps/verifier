@@ -51,6 +51,12 @@ attempting to discharge verification-surface holes with authorized component exe
 and bound evidence, followed by reanalysis. Detection and planning alone are not that
 process.
 
+The [artifact-awareness contract](ARTIFACT_AWARENESS.md) applies alongside these limits:
+permission does not establish knowledge, and withholding direct access does not establish
+non-inferability. Actual awareness, permitted awareness and potentially inferable awareness
+remain separate. Version 1.3.0 defines their meaning and diagnostic boundaries, not an
+awareness tracker or enforcement of confidentiality of awareness.
+
 Every claim below expands one of these boundaries into publishable wording and its
 required falsification surface.
 

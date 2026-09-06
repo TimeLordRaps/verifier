@@ -117,6 +117,9 @@ def test_inspection_is_bounded_to_integrity_not_authorship_or_qualification() ->
     assert result["dependency_completeness"] == "NOT_ESTABLISHED"
     assert "content_base64" not in result["artifacts"][0]
     assert "unsigned declarations" in result["claim_boundary"]
+    # Omission from this inspection view does not establish secrecy or non-inference.
+    assert "does not establish non-inferability" in result["claim_boundary"]
+    assert "does not establish confidentiality of awareness" in result["claim_boundary"]
 
 
 @pytest.mark.parametrize("field", ["publisher", "license", "description", "package_version"])

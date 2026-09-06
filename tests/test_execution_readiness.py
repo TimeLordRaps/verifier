@@ -237,6 +237,9 @@ def test_ready_is_deterministic_digest_bound_and_executes_nothing() -> None:
     payload = json.loads(first.canonical_json_bytes())
     assert payload["status"] == "READY"
     assert "does not execute" in payload["claim_boundary"]
+    assert "Permission does not establish artifact awareness" in payload["claim_boundary"]
+    assert "does not establish non-inferability" in payload["claim_boundary"]
+    assert "does not establish confidentiality of awareness" in payload["claim_boundary"]
 
 
 def _package(registry: InteroperabilityComponentRegistry, content: bytes) -> StoredComponentPackage:
@@ -313,6 +316,43 @@ def test_package_readiness_rejects_payload_substitution_and_authorization_reuse(
     missing = assess(first_plan, None)
     assert missing.status is ExecutionReadinessStatus.NOT_ESTABLISHED
     assert any("exact stored package" in item for item in missing.findings)
+
+
+def test_pre_awareness_plan_digest_cannot_authorize_changed_diagnostics() -> None:
+    analysis, registry, _, declaration, authorization, reassessment = _case()
+    package = _package(registry, b"never execute")
+    plan = plan_validation(analysis, registry, package=package)
+    current_bytes = plan.canonical_json_bytes()
+    prior_payload = json.loads(current_bytes)
+    # The exact diagnostic boundary before the awareness addition at 29073c4.
+    prior_payload["claim_boundary"] = (
+        "Exact catalog matches are nonexecuting candidates. They do not establish "
+        "availability, validity, assurance, authority, or closure."
+    )
+    prior_bytes = json.dumps(
+        prior_payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True,
+        allow_nan=False,
+    ).encode("utf-8")
+    assert prior_bytes != current_bytes
+    assert prior_payload["plan_id"] == plan.plan_id
+    assert prior_payload["package_digest"] == package.canonical_digest()
+
+    def assess(bound_bytes: bytes) -> ExecutionReadinessReport:
+        return assess_execution_readiness(
+            analysis, plan, registry, (declaration,),
+            replace(authorization, plan_digest=hashlib.sha256(bound_bytes).hexdigest()),
+            reassessment, package=package,
+        )
+
+    stale = assess(prior_bytes)
+    assert stale.status is ExecutionReadinessStatus.INVALID
+    assert any("authorization plan binding" in item for item in stale.findings)
+    rebound = assess(current_bytes)
+    assert rebound.status is ExecutionReadinessStatus.READY
+    assert rebound.findings == ()
+    for report in (stale, rebound):
+        assert report.execution_performed is False
+        assert report.authorization_granted_by_module is False
 
 
 def test_package_cannot_upgrade_registry_only_plan_or_accept_a_digest_string() -> None:
@@ -536,6 +576,10 @@ def test_denied_unknown_or_unsubstantiated_authority_never_becomes_ready(
 
     assert report.status is expected
     assert report.authorization_granted_by_module is False
+    assert report.execution_performed is False
+    boundary = report.to_dict()["claim_boundary"]
+    assert "Permission does not establish artifact awareness" in boundary
+    assert "does not establish non-inferability" in boundary
 
 
 def test_unresolved_or_unevidenced_prerequisite_is_not_ready() -> None:

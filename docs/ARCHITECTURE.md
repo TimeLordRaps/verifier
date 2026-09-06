@@ -148,6 +148,12 @@ critical-domain readiness, or VSTD conformance. The runnable
 [sorted-grocery-list example](../examples/interoperability_planning/) intentionally leaves
 three self-closure requirements unmatched and never calls its checker.
 
+The [artifact-awareness contract](ARTIFACT_AWARENESS.md) separates actual awareness,
+permitted awareness and potentially inferable awareness between artifacts. Confidentiality
+of awareness constrains exposure and propagation; authorization and catalog matching do
+not establish it. Version 1.3.0 names these boundaries in diagnostics but does not track
+awareness or enforce its confidentiality across artifact compositions.
+
 VSTD-2 is the semantic target for adjacent adapters, not the adapter implementation
 itself. Geometry profiles constrain reusable selections of VSTD-2 geometry; they are connected only
 by explicit shared coordinates, seams, mappings, and evidence-bearing transformations.
