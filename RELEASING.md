@@ -34,6 +34,7 @@ release-candidate Zenodo metadata.
 2. From a clean checkout of that commit, run:
 
    ```bash
+   python -m pip install ".[test]"
    python -u -m pytest -vv -s --durations=10 --timeout=60
    python -u -m compileall src
    ```
