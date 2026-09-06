@@ -7,6 +7,8 @@ The analyzer derives diagnostics only from geometry already represented by the
 caller.  It does not infer an expected profile, omitted ontology, or real-world
 completeness.  A catalog match is a candidate association, not a verification
 result and not authority to execute a component.
+Package-aware plans additionally bind revalidated retained package bytes;
+registry-only plans identify declarations, not implementation payloads.
 """
 
 from __future__ import annotations
@@ -32,6 +34,7 @@ from .catalog import (
     InteroperabilityComponentDescriptor,
     InteroperabilityComponentRegistry,
 )
+from .storage import ComponentPackageError, StoredComponentPackage
 
 
 ANALYSIS_SCHEMA_VERSION = "VSTD-SURFACE-ANALYSIS-1.0"
@@ -748,6 +751,7 @@ class ValidationPlan:
     scope: str = MODELED_SURFACE_SCOPE
     claim_boundary: str = PLAN_CLAIM_BOUNDARY
     schema_version: str = PLAN_SCHEMA_VERSION
+    package_digest: Optional[str] = None
     plan_only: bool = field(default=True, init=False)
     execution_performed: bool = field(default=False, init=False)
 
@@ -760,6 +764,12 @@ class ValidationPlan:
             "registry_digest",
         ):
             _nonempty(getattr(self, field_name), field_name)
+        if self.package_digest is not None:
+            _nonempty(self.package_digest, "package_digest")
+            if len(self.package_digest) != 64 or any(
+                character not in "0123456789abcdef" for character in self.package_digest
+            ):
+                raise SurfaceAnalysisError("package_digest must be 64 lowercase hexadecimal characters")
         if not isinstance(self.context, ControlSurfaceContext):
             raise SurfaceAnalysisError("context must be a ControlSurfaceContext")
         if self.scope != MODELED_SURFACE_SCOPE:
@@ -798,6 +808,10 @@ class ValidationPlan:
         )
 
     @property
+    def binding_scope(self) -> str:
+        return "REGISTRY_ONLY" if self.package_digest is None else "STORED_PACKAGE"
+
+    @property
     def unmatched_hole_ids(self) -> tuple[str, ...]:
         return tuple(
             item.hole_id
@@ -813,6 +827,8 @@ class ValidationPlan:
             "geometry_digest": self.geometry_digest,
             "registry_version": self.registry_version,
             "registry_digest": self.registry_digest,
+            "package_digest": self.package_digest,
+            "binding_scope": self.binding_scope,
             "scope": self.scope,
             "context": self.context.to_dict(),
             "candidates": [candidate.to_dict() for candidate in self.candidates],
@@ -916,15 +932,48 @@ def _unmatched(
     )
 
 
+def _declared_plan_id(
+    analysis: SurfaceAnalysis,
+    registry: InteroperabilityComponentRegistry,
+    candidates: tuple[ValidationCandidate, ...],
+    package_digest: Optional[str],
+) -> str:
+    """Recompute declared identity; a package digest is not byte revalidation."""
+
+    identity = {
+        "geometry_id": analysis.geometry_id,
+        "geometry_digest": analysis.geometry_digest,
+        "registry_version": registry.registry_version,
+        "registry_digest": registry.canonical_digest(),
+        "scope": analysis.scope,
+        "schema_id": analysis.context.schema_id,
+        "interaction_mode": analysis.context.interaction_mode.value,
+        "operating_regime": analysis.context.operating_regime,
+        "consequence_profiles": list(analysis.context.consequence_profiles),
+        "authority_requirements": list(analysis.context.authority_requirements),
+        "candidates": [
+            candidate.to_dict()
+            for candidate in sorted(candidates, key=lambda item: item.candidate_id)
+        ],
+    }
+    if package_digest is not None:
+        identity["package_digest"] = package_digest
+    return _stable_identifier("validation-plan", identity)
+
+
 def plan_validation(
     analysis: SurfaceAnalysis,
     registry: InteroperabilityComponentRegistry,
+    *,
+    package: Optional[StoredComponentPackage] = None,
 ) -> ValidationPlan:
     """Match modeled holes to exact capabilities without selecting or executing one.
 
     If a hole names relations and mechanisms, a candidate is emitted only for an
     exact pair matched by one descriptor. Separate partial matches cannot be
     combined into a candidate.
+    An optional package is revalidated and its canonical bytes bind the plan
+    identity. Without one, the plan remains explicitly registry-only.
     """
 
     if not isinstance(analysis, SurfaceAnalysis):
@@ -937,6 +986,15 @@ def plan_validation(
         raise SurfaceAnalysisError(
             "cannot plan validation for a structurally invalid verification geometry"
         )
+
+    package_digest = None
+    if package is not None:
+        if not isinstance(package, StoredComponentPackage):
+            raise SurfaceAnalysisError("package must be a StoredComponentPackage, not a supplied digest")
+        try:
+            package_digest = package.validated_binding_digest(registry)
+        except ComponentPackageError as exc:
+            raise SurfaceAnalysisError(f"invalid stored package binding: {exc}") from exc
 
     candidates: list[ValidationCandidate] = []
     for hole in analysis.holes:
@@ -1001,30 +1059,15 @@ def plan_validation(
             candidates.append(_unmatched(hole, analysis.context))
 
     registry_digest = registry.canonical_digest()
-    plan_identity = {
-        "geometry_id": analysis.geometry_id,
-        "geometry_digest": analysis.geometry_digest,
-        "registry_version": registry.registry_version,
-        "registry_digest": registry_digest,
-        "scope": analysis.scope,
-        "schema_id": analysis.context.schema_id,
-        "interaction_mode": analysis.context.interaction_mode.value,
-        "operating_regime": analysis.context.operating_regime,
-        "consequence_profiles": list(analysis.context.consequence_profiles),
-        "authority_requirements": list(analysis.context.authority_requirements),
-        "candidates": [
-            candidate.to_dict()
-            for candidate in sorted(candidates, key=lambda item: item.candidate_id)
-        ],
-    }
     return ValidationPlan(
-        plan_id=_stable_identifier("validation-plan", plan_identity),
+        plan_id=_declared_plan_id(analysis, registry, tuple(candidates), package_digest),
         geometry_id=analysis.geometry_id,
         geometry_digest=analysis.geometry_digest,
         registry_version=registry.registry_version,
         registry_digest=registry_digest,
         context=analysis.context,
         candidates=tuple(candidates),
+        package_digest=package_digest,
     )
 
 

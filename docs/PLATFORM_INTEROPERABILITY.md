@@ -76,6 +76,13 @@ component.
 
 ## Machine-checked reference-component contract intent
 
+The new [stored component format](COMPONENT_PACKAGES.md) is also exercised by the
+complete-suite jobs, including a fixed canonical-digest specimen, exact binary-byte
+round trips and package-selected planning. These are configured checks until a fresh
+hosted run executes them on each coordinate; portable storage does not qualify any
+retained native implementation. Storage is supporting infrastructure, not an extra
+independent verifier counted in the 17-component inventory below.
+
 The source-controlled
 [`platform-component-contracts.json`](platform-component-contracts.json) manifest
 enumerates exactly the current reference catalog and four separate execution
@@ -83,6 +90,23 @@ coordinates. `CONFIGURED_UNRUN` records configured intent only; it is not hosted
 execution, compatibility, or support evidence. `BEHAVIOR` means the mapped tests call
 the component on bounded positive or adversarial cases. It never means the tests cover
 every native input, dependency, filesystem, trust root, or external implementation.
+
+Intel macOS cryptographic coverage is an experimental source-build target.
+The pinned `cryptography==50.0.0` dependency follows the upstream
+[removal of Intel macOS support](https://cryptography.io/en/50.0.0/changelog/#v49-0-0).
+The Intel job explicitly builds `cryptography` and `cbor2` from source with the hosted
+runner's Rust and C compilers and Homebrew OpenSSL 3, following the upstream
+[source-build prerequisites](https://cryptography.io/en/50.0.0/installation/#building-cryptography-on-macos).
+It must pass installation and the complete suite before emitting a report. A successful
+run supplies only evidence for that exact build and runner; it does not restore upstream
+support or qualify other Intel macOS environments. Apple ARM64 is a separate coordinate.
+
+Raw environment and JUnit files are boundary-checked before artifact upload, including
+after a failing test command. Missing or prohibited evidence fails the job and is not
+uploaded. The gate does not redact or rewrite the evidence bytes.
+The explicit `scripts.pytest_public_evidence` plugin records skip source locations
+relative to the declared test root before serialization. It preserves outcomes, reasons,
+and line numbers; outside-root locations remain unchanged and subject to the upload gate.
 
 After the complete test command succeeds, CI emits a separate, platform-neutral
 `platform-component-contract.json` artifact. Its artifact name includes the workflow run
@@ -121,7 +145,7 @@ durable evidence does not strengthen what the mapped tests establish.
 | SCITT native-evidence consumer<br>`component:scitt-evidence-consumer` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_scitt_crypto_example.py`<br>`tests/test_scitt_interop.py` | `scitt`, `test` | Exercise semantic SCITT evidence mapping plus the local-key cryptographic example. Passing does not establish public transparency infrastructure or production trust roots. |
 | VSTD and SCITT adjacent-result composer<br>`component:scitt-result-composer` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_scitt_crypto_example.py`<br>`tests/test_scitt_interop.py` | `scitt`, `test` | Exercise bounded adjacent-result composition, mismatch preservation, and the local-key cryptographic example without strengthening either native result. |
 | VSTD-Graph assurance-log rechecker<br>`component:vstd-graph-assurance-rechecker` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_evidence_bound_assurance.py` | `test` | Exercise bounded assurance-log replay, dependency handling, and failure preservation. |
-| Evidence-bound VSTD-Graph level rechecker<br>`component:vstd-graph-level-rechecker` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_evidence_bound_assurance.py` | `test` | Exercise evidence-bound Graph-level record rechecking and unresolved-evidence behavior. |
+| Evidence-bound VSTD-Graph profile rechecker<br>`component:vstd-graph-level-rechecker` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_evidence_bound_assurance.py` | `test` | Exercise evidence-bound Graph-level record rechecking and unresolved-evidence behavior. |
 | VSTD-Graph receipt validator<br>`component:vstd-graph-receipt-validator` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_public_data.py` | `test` | Exercise bounded Graph receipt validation, malformed input rejection, and policy interactions. |
 | VSTD-1 satisfiability and grounding auditor<br>`component:vstd1-independent-auditor` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_core_receipt_integrity.py` | `test` | Exercise the bundled satisfiability and grounding audit while constructing adversarial receipt-integrity fixtures. |
 | Strict VSTD-2 geometry loader and semantic validator<br>`component:vstd2-geometry-loader` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_geometry_io.py` | `test` | Exercise valid geometry loading, canonical normalization, and adversarial structural and numeric rejection. |

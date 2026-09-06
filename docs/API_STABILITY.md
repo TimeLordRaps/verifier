@@ -101,9 +101,11 @@ AuthorizationDecision
 CandidateStatus
 CandidateExecutionDeclaration
 CatalogError
+COMPONENT_PACKAGE_SCHEMA_VERSION
 ComponentAvailability
 ComponentKind
 ComponentLifecycle
+ComponentPackageError
 ConflictWitnessKind
 ControlSurfaceContext
 ExecutionReadinessError
@@ -112,15 +114,19 @@ ExecutionReadinessStatus
 GeometryConflictReport
 GeometryConflictStatus
 GeometryConflictWitness
+ImplementationBinding
 InteractionMode
 InteroperabilityComponentDescriptor
 InteroperabilityComponentRegistry
 JudgmentObservation
 NativeInputBinding
+PackageArtifact
+PackageDependency
 PlannedEvidenceMapping
 PostExecutionReassessmentContract
 PrerequisiteResolution
 SharedPropositionIdentity
+StoredComponentPackage
 SurfaceAnalysis
 SurfaceAnalysisError
 SurfaceHole
@@ -131,8 +137,10 @@ ValidationPlan
 analyze_geometry_conflicts
 analyze_verification_surface
 assess_execution_readiness
+load_component_package
 plan_validation
 reference_component_registry
+save_component_package
 ```
 
 The redundant internal aliases `InteroperabilityCatalog` and
@@ -150,6 +158,16 @@ match is not a claim that the entry point accepts the planning document as nativ
 executing a component. The facade provides no component executor, evidence collector,
 post-execution reanalysis implementation, Boolean satisfiability geometry analyzer, or new
 closure result.
+
+The experimental stored-component format `VSTD-COMPONENT-PACKAGE-1` adds
+`PackageArtifact`, `ImplementationBinding`, `PackageDependency`, `StoredComponentPackage`,
+`load_component_package` and `save_component_package` through
+`verifier.interoperability.storage` and the interoperability facade. It retains exact
+artifact bytes and an embedded catalog for inspection and nonexecuting planning. Loading
+does not install, fetch or execute a component, authenticate publisher declarations,
+resolve dependencies or grant conformance. Unknown formats are rejected; an incompatible
+stored layout requires a distinct identifier and explicit migration. This experimental
+format is not a receipt wire identifier. See [stored components](COMPONENT_PACKAGES.md).
 
 Direct imports from `verifier.core`, `verifier.data`, `verifier.hardware`, other
 subpackages, or underscore-prefixed names are internal unless another published policy

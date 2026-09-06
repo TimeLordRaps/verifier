@@ -219,6 +219,7 @@ def test_action_dependency_cycles_fail_closed() -> None:
         "repo:../private/result.json",
         "repo:folder\\result.json",
     ],
+    ids=("windows-absolute", "home-absolute", "parent-escape", "backslash-separator"),
 )
 def test_nonportable_or_escaping_artifact_locators_are_rejected(locator: str) -> None:
     payload = _example_payload()

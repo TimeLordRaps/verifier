@@ -1,10 +1,13 @@
-"""Interoperability surface-analysis and experimental planning facade.
+"""Interoperability surface-analysis, experimental storage and planning facade.
 
 The analyzer's supported names are exported separately by the top-level
 :mod:`verifier` application programming interface. Catalog membership and
-validation planning remain experimental, describe nonexecuting candidates only,
-and establish neither a verifier result nor closure.
+validation planning and component storage remain experimental. Retaining bytes
+and describing nonexecuting candidates establish neither a verifier result nor
+closure.
 """
+
+from __future__ import annotations
 
 from .catalog import (
     CatalogError,
@@ -51,6 +54,16 @@ from .geometry_conflicts import (
     analyze_geometry_conflicts,
 )
 from .reference_catalog import reference_component_registry
+from .storage import (
+    COMPONENT_PACKAGE_SCHEMA_VERSION,
+    ComponentPackageError,
+    ImplementationBinding,
+    PackageArtifact,
+    PackageDependency,
+    StoredComponentPackage,
+    load_component_package,
+    save_component_package,
+)
 
 
 __all__ = [
@@ -59,9 +72,11 @@ __all__ = [
     "CandidateStatus",
     "CandidateExecutionDeclaration",
     "CatalogError",
+    "COMPONENT_PACKAGE_SCHEMA_VERSION",
     "ComponentAvailability",
     "ComponentKind",
     "ComponentLifecycle",
+    "ComponentPackageError",
     "ConflictWitnessKind",
     "ControlSurfaceContext",
     "ExecutionReadinessError",
@@ -70,15 +85,19 @@ __all__ = [
     "GeometryConflictReport",
     "GeometryConflictStatus",
     "GeometryConflictWitness",
+    "ImplementationBinding",
     "InteractionMode",
     "InteroperabilityComponentDescriptor",
     "InteroperabilityComponentRegistry",
     "JudgmentObservation",
     "NativeInputBinding",
+    "PackageArtifact",
+    "PackageDependency",
     "PlannedEvidenceMapping",
     "PostExecutionReassessmentContract",
     "PrerequisiteResolution",
     "SharedPropositionIdentity",
+    "StoredComponentPackage",
     "SurfaceAnalysis",
     "SurfaceAnalysisError",
     "SurfaceHole",
@@ -89,6 +108,8 @@ __all__ = [
     "analyze_geometry_conflicts",
     "analyze_verification_surface",
     "assess_execution_readiness",
+    "load_component_package",
     "plan_validation",
     "reference_component_registry",
+    "save_component_package",
 ]

@@ -23,14 +23,17 @@ from verifier.interoperability.control_surface import (
     CandidateStatus,
     ControlSurfaceContext,
     SurfaceAnalysis,
+    SurfaceAnalysisError,
     SurfaceHole,
     SurfaceHoleKind,
+    ValidationPlan,
     plan_validation,
 )
 from verifier.interoperability.execution_readiness import (
     AuthorizationDecision,
     CandidateExecutionDeclaration,
     ExecutionReadinessError,
+    ExecutionReadinessReport,
     ExecutionReadinessStatus,
     NativeInputBinding,
     PlannedEvidenceMapping,
@@ -39,6 +42,11 @@ from verifier.interoperability.execution_readiness import (
     RUNTIME_AVAILABILITY_PREREQUISITE,
     SuppliedAuthorizationDecision,
     assess_execution_readiness,
+)
+from verifier.interoperability.storage import (
+    ImplementationBinding,
+    PackageArtifact,
+    StoredComponentPackage,
 )
 
 
@@ -229,6 +237,183 @@ def test_ready_is_deterministic_digest_bound_and_executes_nothing() -> None:
     payload = json.loads(first.canonical_json_bytes())
     assert payload["status"] == "READY"
     assert "does not execute" in payload["claim_boundary"]
+
+
+def _package(registry: InteroperabilityComponentRegistry, content: bytes) -> StoredComponentPackage:
+    component = registry.components[0]
+    return StoredComponentPackage(
+        package_id="package:sentinel", package_version="1", publisher="specimen",
+        license="Apache-2.0", description="Nonexecuting package-binding specimen.",
+        registry=registry,
+        artifacts=(PackageArtifact("sentinel.py", "text/x-python", content),),
+        implementations=(ImplementationBinding(
+            component.component_id, component.implementation_ref, ("sentinel.py",),
+        ),),
+    )
+
+
+def test_equal_registries_with_different_package_bytes_have_different_plans() -> None:
+    analysis, registry, registry_plan, *_ = _case()
+    first = _package(registry, b"raise RuntimeError('first; must not execute')")
+    second = _package(registry, b"raise RuntimeError('second; must not execute')")
+
+    first_plan = plan_validation(analysis, registry, package=first)
+    second_plan = plan_validation(analysis, registry, package=second)
+
+    assert first.registry == second.registry
+    assert first_plan.candidates == second_plan.candidates == registry_plan.candidates
+    assert first_plan.package_digest == first.canonical_digest()
+    assert second_plan.package_digest == second.canonical_digest()
+    assert len({first_plan.plan_id, second_plan.plan_id, registry_plan.plan_id}) == 3
+    assert first_plan.canonical_json_bytes() != second_plan.canonical_json_bytes()
+    assert first_plan.to_dict()["binding_scope"] == "STORED_PACKAGE"
+    assert registry_plan.to_dict()["binding_scope"] == "REGISTRY_ONLY"
+    assert registry_plan.to_dict()["package_digest"] is None
+    assert first_plan.execution_performed is False
+
+
+def test_package_readiness_rejects_payload_substitution_and_authorization_reuse() -> None:
+    analysis, registry, _, declaration, authorization, reassessment = _case()
+    first = _package(registry, b"first bytes")
+    second = _package(registry, b"second bytes")
+    first_plan = plan_validation(analysis, registry, package=first)
+    second_plan = plan_validation(analysis, registry, package=second)
+    authorized_first = replace(
+        authorization, plan_digest=hashlib.sha256(first_plan.canonical_json_bytes()).hexdigest(),
+    )
+
+    def assess(
+        plan: ValidationPlan,
+        package: StoredComponentPackage | None,
+        decision: SuppliedAuthorizationDecision = authorized_first,
+    ) -> ExecutionReadinessReport:
+        return assess_execution_readiness(
+            analysis, plan, registry, (declaration,), decision, reassessment,
+            package=package,
+        )
+
+    ready = assess(first_plan, first)
+    assert ready.status is ExecutionReadinessStatus.READY
+    assert ready.package_digest == first.canonical_digest()
+    assert ready.to_dict()["binding_scope"] == "STORED_PACKAGE"
+    assert ready.execution_performed is False
+    assert ready.authorization_granted_by_module is False
+    assert ready.authorization.to_dict()["decision_source"] == "CALLER_SUPPLIED"
+    assert ready.canonical_json_bytes() == assess(first_plan, first).canonical_json_bytes()
+
+    substituted = assess(first_plan, second)
+    assert substituted.status is ExecutionReadinessStatus.INVALID
+    assert any("package binding" in item for item in substituted.findings)
+    reused = assess(second_plan, second)
+    assert reused.status is ExecutionReadinessStatus.INVALID
+    assert any("authorization plan binding" in item for item in reused.findings)
+    unbound = assess(first_plan, first, authorization)
+    assert unbound.status is ExecutionReadinessStatus.NOT_ESTABLISHED
+    assert any("authorization lacks" in item and "plan" in item for item in unbound.findings)
+    missing = assess(first_plan, None)
+    assert missing.status is ExecutionReadinessStatus.NOT_ESTABLISHED
+    assert any("exact stored package" in item for item in missing.findings)
+
+
+def test_package_cannot_upgrade_registry_only_plan_or_accept_a_digest_string() -> None:
+    analysis, registry, plan, declaration, authorization, reassessment = _case()
+    package = _package(registry, b"never execute")
+    report = assess_execution_readiness(
+        analysis, plan, registry, (declaration,), authorization, reassessment,
+        package=package,
+    )
+    assert report.status is ExecutionReadinessStatus.INVALID
+    assert any("package binding" in item for item in report.findings)
+    with pytest.raises(SurfaceAnalysisError, match="StoredComponentPackage"):
+        plan_validation(analysis, registry, package=package.canonical_digest())
+
+
+def test_planning_revalidates_package_and_exact_registry() -> None:
+    analysis, registry, _, declaration, authorization, reassessment = _case()
+    package = _package(registry, b"never execute")
+    plan = plan_validation(analysis, registry, package=package)
+    other_registry = replace(registry, registry_version="different-registry")
+    with pytest.raises(SurfaceAnalysisError, match="registry"):
+        plan_validation(analysis, other_registry, package=package)
+    # A Python caller can bypass frozen guards; package context must be checked
+    # again rather than trusting that construction once validated this object.
+    object.__setattr__(package.artifacts[0], "path", "../outside")
+    with pytest.raises(SurfaceAnalysisError, match="package"):
+        plan_validation(analysis, registry, package=package)
+    report = assess_execution_readiness(
+        analysis, plan, registry, (declaration,), authorization, reassessment,
+        package=package,
+    )
+    assert report.status is ExecutionReadinessStatus.INVALID
+    assert any("package binding cannot be recomposed" in item for item in report.findings)
+
+
+def test_package_plan_transport_and_empty_authority_remain_nonexecuting() -> None:
+    analysis, registry, _, declaration, _, reassessment = _case()
+    analysis = replace(analysis, context=replace(analysis.context, authority_requirements=()))
+    package = _package(registry, b"never execute")
+    transported = StoredComponentPackage.from_dict(json.loads(package.canonical_json_bytes()))
+    plan = plan_validation(analysis, registry, package=package)
+    assert plan.canonical_json_bytes() == plan_validation(
+        analysis, registry, package=transported,
+    ).canonical_json_bytes()
+    authorization = SuppliedAuthorizationDecision(AuthorizationDecision.NOT_REQUIRED, ())
+    report = assess_execution_readiness(
+        analysis, plan, registry, (declaration,), authorization, reassessment,
+        package=transported,
+    )
+    assert report.status is ExecutionReadinessStatus.READY
+    assert report.authorization_granted_by_module is False
+    assert report.execution_performed is False
+
+
+def test_missing_package_does_not_hide_substituted_plan_content() -> None:
+    analysis, registry, _, declaration, authorization, reassessment = _case()
+    plan = plan_validation(analysis, registry, package=_package(registry, b"never execute"))
+    plan = replace(plan, candidates=(replace(plan.candidates[0], mechanism_id="substituted"),))
+    report = assess_execution_readiness(
+        analysis, plan, registry, (declaration,), authorization, reassessment,
+    )
+    assert report.status is ExecutionReadinessStatus.INVALID
+    assert any("exact replanning" in item for item in report.findings)
+
+
+def test_missing_package_still_rejects_forged_plan_identity() -> None:
+    analysis, registry, _, declaration, authorization, reassessment = _case()
+    plan = plan_validation(analysis, registry, package=_package(registry, b"never execute"))
+    plan = replace(plan, plan_id="validation-plan:" + "0" * 64)
+    authorization = replace(
+        authorization, plan_digest=hashlib.sha256(plan.canonical_json_bytes()).hexdigest(),
+    )
+    report = assess_execution_readiness(
+        analysis, plan, registry, (declaration,), authorization, reassessment,
+    )
+    assert report.status is ExecutionReadinessStatus.INVALID
+    assert any("exact stored package" in item for item in report.findings)
+    assert any("exact replanning" in item for item in report.findings)
+
+
+@pytest.mark.parametrize("digest", ("+" + "1" * 63, "1_" + "1" * 62, "１" * 64),
+                         ids=("signed", "underscores", "non-ascii-digits"))
+@pytest.mark.parametrize("field", (
+    "native-input", "prerequisite", "authorization-evidence", "authorization-plan",
+    "report-package", "report-plan",
+))
+def test_readiness_digest_fields_require_ascii_lowercase_hex(field: str, digest: str) -> None:
+    case = _case()
+    with pytest.raises(ExecutionReadinessError, match="SHA-256"):
+        if field == "native-input":
+            replace(case[3].native_inputs[0], input_sha256=digest)
+        elif field == "prerequisite":
+            replace(case[3].prerequisite_resolutions[0], evidence_sha256=digest)
+        elif field == "authorization-evidence":
+            replace(case[4], decision_evidence_sha256=digest)
+        elif field == "authorization-plan":
+            replace(case[4], plan_digest=digest)
+        elif field == "report-package":
+            replace(_assess(case), package_digest=digest)
+        else:
+            replace(_assess(case), plan_digest=digest)
 
 
 def test_missing_native_input_or_evidence_mapping_is_not_established() -> None:

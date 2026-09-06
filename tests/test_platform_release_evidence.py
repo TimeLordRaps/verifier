@@ -1,7 +1,8 @@
 """Adversarial tests for release-bound platform evidence.
 
-Terminology: identifier (ID); Java unit test report format (JUnit);
-JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD);
+Terminology: Extensible Markup Language (XML); identifier (ID); Java unit test report format (JUnit);
+JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256);
+Unicode Transformation Format, 8-bit (UTF-8); Verifier Standard (VSTD);
 ZIP archive format (ZIP).
 """
 
@@ -158,6 +159,122 @@ def test_bundle_is_complete_deterministic_and_exactly_bound(tmp_path: Path) -> N
         check=False,
     )
     assert boundary.returncode == 0, boundary.stderr
+    assert "scanned 13 text members" in boundary.stdout
+
+
+@pytest.mark.parametrize("suffix", ("xml", "XML"))
+@pytest.mark.parametrize(
+    ("payload", "reason"),
+    (
+        (
+            ('<testsuite><testcase><skipped message="' + "C:" + "/Users/"
+             + 'synthetic/workspace" /></testcase></testsuite>').encode("utf-8"),
+            "local user or home path",
+        ),
+        (
+            ("<testsuite><system-out>" + "ghp_" + "x" * 24
+             + "</system-out></testsuite>").encode("utf-8"),
+            "GitHub token shape",
+        ),
+        (
+            b'<testsuite><testcase><skipped message="C&#58;&#92;Users&#92;'
+            b'synthetic&#92;workspace" /></testcase></testsuite>',
+            "local user or home path",
+        ),
+        (
+            ("<testsuite><system-out>ghp&#95;" + "x" * 24
+             + "</system-out></testsuite>").encode("utf-8"),
+            "GitHub token shape",
+        ),
+        (b"<testsuite>", "malformed XML member"),
+        (b'<!DOCTYPE testsuite [<!ENTITY sample "value">]><testsuite />',
+         "XML declarations are not supported"),
+        (b"<testsuite>\xff</testsuite>", "non-UTF-8 text member"),
+    ),
+    ids=("home-path", "secret-shaped", "encoded-path", "encoded-secret",
+         "malformed", "declaration", "non-utf8"),
+)
+def test_release_boundary_rejects_unsafe_raw_test_evidence(
+    tmp_path: Path, suffix: str, payload: bytes, reason: str
+) -> None:
+    artifact = tmp_path / "platform-evidence.zip"
+    member = f"coordinates/windows-x64/junit.{suffix}"
+    with zipfile.ZipFile(artifact, "w") as bundle:
+        bundle.writestr(member, payload)
+    original = artifact.read_bytes()
+
+    boundary = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "check_release_boundary.py"), str(artifact)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert boundary.returncode == 1, boundary.stdout
+    assert reason in boundary.stderr
+    assert member in boundary.stderr
+    assert "ghp_" + "x" * 24 not in boundary.stderr
+    assert "C:" + "/Users/" not in boundary.stderr
+    assert "C:" + chr(92) + "Users" + chr(92) not in boundary.stderr
+    assert artifact.read_bytes() == original
+
+
+def test_release_boundary_does_not_echo_an_unsafe_member_name(tmp_path: Path) -> None:
+    marker = "ghp_" + "x" * 24
+    artifact = tmp_path / "platform-evidence.zip"
+    with zipfile.ZipFile(artifact, "w") as bundle:
+        bundle.writestr(f"coordinates/{marker}/junit.xml", b"<testsuite />")
+    boundary = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "check_release_boundary.py"), str(artifact)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert boundary.returncode == 1
+    assert "GitHub token shape in <redacted archive member>" in boundary.stderr
+    assert marker not in boundary.stderr
+
+
+@pytest.mark.parametrize("archive", (True, False), ids=("archive", "standalone"))
+def test_release_boundary_accepts_safe_xml_character_references(
+    tmp_path: Path, archive: bool
+) -> None:
+    payload = (
+        b'<testsuite><testcase name="check&#95;one"><skipped '
+        b'message="safe&#10;diagnostic" /></testcase></testsuite>'
+    )
+    artifact = tmp_path / ("platform-evidence.zip" if archive else "junit.xml")
+    if archive:
+        with zipfile.ZipFile(artifact, "w") as bundle:
+            bundle.writestr("coordinates/windows-x64/junit.xml", payload)
+    else:
+        artifact.write_bytes(payload)
+    boundary = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "check_release_boundary.py"), str(artifact)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert boundary.returncode == 0, boundary.stderr
+    assert "scanned 1 text members" in boundary.stdout
+
+
+def test_raw_report_boundary_rejects_an_encoded_secret_before_upload(tmp_path: Path) -> None:
+    artifact = tmp_path / "platform-contracts.xml"
+    artifact.write_bytes(
+        ("<testsuite><system-out>ghp&#95;" + "x" * 24
+         + "</system-out></testsuite>").encode("utf-8")
+    )
+    original = artifact.read_bytes()
+    boundary = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "check_release_boundary.py"), str(artifact)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert boundary.returncode == 1
+    assert "GitHub token shape" in boundary.stderr
+    assert "ghp_" + "x" * 24 not in boundary.stderr
+    assert artifact.read_bytes() == original
 
 
 @pytest.mark.parametrize(

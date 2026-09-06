@@ -1,7 +1,7 @@
 # Release procedure
 
 > **Acronyms:** application programming interface (API); carriage return and line feed (CRLF);
-> continuous integration (CI); digital object identifier (DOI); identifier (ID);
+> continuous integration (CI); digital object identifier (DOI); Extensible Markup Language (XML); identifier (ID);
 > Java unit test report format (JUnit);
 > hash-based message authentication code (HMAC); line feed (LF); Secure Hash Algorithm 256-bit (SHA-256);
 > Software Bill of Materials (SBOM); Coordinated Universal Time (UTC); ZIP archive format (ZIP).
@@ -34,8 +34,8 @@ release-candidate Zenodo metadata.
 2. From a clean checkout of that commit, run:
 
    ```bash
-   python -m pytest -q
-   python -m compileall -q src
+   python -u -m pytest -vv -s --durations=10 --timeout=60
+   python -u -m compileall src
    ```
 
 3. Build a pre-tag candidate from the full commit SHA, not a working directory:
@@ -149,6 +149,11 @@ release-candidate Zenodo metadata.
    manifest binds the release, repository, commit, workflow run, member digests, and byte
    lengths. It then boundary-scans and attests that observational evidence bundle alongside
    the tested source ZIP, wheel, source distribution, SBOM, and external release manifest.
+   The scanner checks raw and decoded XML report text against the prohibited patterns,
+   rejects malformed XML and document declarations, and never echoes a matched secret.
+   Rejection leaves the digest-bound evidence bytes unchanged.
+   Repository checks apply the same boundary gate before uploading raw environment and
+   test artifacts, including when the test command fails.
    The platform bundle has `verification_effect = NONE`; its existence does not turn the
    mapped tests into universal platform support. The workflow creates a draft, attaches the
    complete set, and only then publishes it. A second job can

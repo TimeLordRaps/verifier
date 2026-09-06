@@ -327,7 +327,7 @@ def reference_component_registry() -> InteroperabilityComponentRegistry:
         ),
         _component(
             "component:vstd-graph-level-rechecker",
-            "Evidence-bound VSTD-Graph level rechecker",
+            "Evidence-bound VSTD-Graph profile rechecker",
             ComponentKind.VERIFIER,
             "verifier.data.graph_level:recheck_evidence_bound_graph_level_record",
             "vstd-graph",

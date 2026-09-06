@@ -127,6 +127,27 @@ def test_manifest_exactly_covers_reference_catalog_and_four_coordinates() -> Non
     assert "PASS" not in MANIFEST_PATH.read_text(encoding="utf-8")
 
 
+def test_raw_platform_evidence_is_boundary_checked_before_public_upload() -> None:
+    workflow = yaml.safe_load(WORKFLOW_PATH.read_text(encoding="utf-8"))
+    steps = workflow["jobs"]["platform-python-contracts"]["steps"]
+    boundary = next(
+        step for step in steps if step.get("id") == "platform-evidence-boundary"
+    )
+    upload = next(
+        step for step in steps
+        if step.get("with", {}).get("name", "").startswith("platform-python-contracts-")
+    )
+    assert boundary["if"] == "always()"
+    assert " ".join(boundary["run"].split()) == (
+        "python scripts/check_release_boundary.py "
+        "platform-environment.json platform-contracts.xml"
+    )
+    assert upload["if"] == (
+        "always() && steps.platform-evidence-boundary.outcome == 'success'"
+    )
+    assert steps.index(boundary) < steps.index(upload)
+
+
 def test_runtime_report_rendering_is_platform_neutral() -> None:
     rendered = report_builder.render_report_bytes(
         {"schema_version": report_builder.REPORT_SCHEMA_VERSION, "value": "line\nfeed"}
@@ -198,7 +219,9 @@ def test_manifest_tests_exist_and_are_in_the_four_coordinate_ci_command() -> Non
         for test_module in component["test_modules"]
     }
     assert mapped_tests
-    assert command.strip().startswith("python -m pytest -q")
+    assert command.strip().startswith(
+        "python -u -m pytest -vv -s --durations=10 --timeout=60"
+    )
     assert "tests/test_" not in command
     assert " ".join(command.split()) == report_builder.TEST_COMMAND
     assert 'testpaths = ["tests"]' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
@@ -217,8 +240,21 @@ def test_manifest_tests_exist_and_are_in_the_four_coordinate_ci_command() -> Non
     )
     assert install_step
 
+    source_step = next(
+        step
+        for step in job["steps"]
+        if step.get("name") == "Configure experimental Intel macOS source builds"
+    )
+    assert source_step["if"] == "matrix.coordinate == 'macos-x64'"
+    assert source_step["shell"] == "bash"
+    assert job["steps"].index(source_step) < job["steps"].index(install_step)
+    assert 'brew --prefix openssl@3' in source_step["run"]
+    assert 'OPENSSL_STATIC=1' in source_step["run"]
+    assert 'PIP_NO_BINARY=cryptography,cbor2' in source_step["run"]
+    assert '>> "$GITHUB_ENV"' in source_step["run"]
 
-def test_workflow_builds_report_only_after_tests_and_always_uploads_raw_evidence() -> None:
+
+def test_workflow_builds_report_after_tests_and_uploads_only_boundary_checked_evidence() -> None:
     workflow = yaml.safe_load(WORKFLOW_PATH.read_text(encoding="utf-8"))
     steps = workflow["jobs"]["platform-python-contracts"]["steps"]
     test_index = next(
@@ -249,7 +285,9 @@ def test_workflow_builds_report_only_after_tests_and_always_uploads_raw_evidence
     assert report_index > test_index
     assert steps[report_index].get("if", "success()") == "success()"
     assert "--coordinate ${{ matrix.coordinate }}" in steps[report_index]["run"]
-    assert raw_upload["if"] == "always()"
+    assert raw_upload["if"] == (
+        "always() && steps.platform-evidence-boundary.outcome == 'success'"
+    )
     assert "${{ github.run_id }}-${{ github.run_attempt }}" in raw_upload["with"][
         "name"
     ]

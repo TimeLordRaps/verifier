@@ -34,7 +34,7 @@
 
   <main id="top">
     <div class="wrap ref-hero">
-      <div class="eyebrow">Reference &middot; UNRELEASED SOURCE · base package version 1.2.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
+      <div class="eyebrow">Reference &middot; UNRELEASED SOURCE · base package version 1.3.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
       <h1>Inspect the whole pipeline.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
@@ -65,7 +65,8 @@
         <div class="ref-table"><table><thead><tr><th>Command</th><th>What it does</th><th>Implementation entry points</th></tr></thead><tbody>
 <tr><td><code>vstd demo</code></td><td>Runs the four adversarial specimens in-process and reports whether each defensive outcome matched its declared invariant.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:run_demo</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:demo_report</code></a></td></tr>
 <tr><td><code>vstd plan</code></td><td>Resolves a manifest's command and declared paths without executing anything.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:describe_run_plan</code></a></td></tr>
-<tr><td><code>vstd surface analyze</code></td><td>Strictly loads one VSTD-2 geometry and emits deterministic modeled-surface diagnostics; its optional experimental catalog plan remains nonexecuting.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry_io.py"><code>verifier.core.geometry_io:load_verification_geometry</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface:analyze_verification_surface</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/reference_catalog.py"><code>verifier.interoperability.reference_catalog:reference_component_registry</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface:plan_validation</code></a></td></tr>
+<tr><td><code>vstd components inspect</code></td><td>Loads a bounded stored component package and checks retained-byte bindings; does not extract, install, execute, or qualify its implementation.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/storage.py"><code>verifier.interoperability.storage:load_component_package</code></a></td></tr>
+<tr><td><code>vstd surface analyze</code></td><td>Strictly loads one VSTD-2 geometry and emits deterministic modeled-surface diagnostics; its optional experimental built-in or stored-package catalog plan remains nonexecuting.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry_io.py"><code>verifier.core.geometry_io:load_verification_geometry</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface:analyze_verification_surface</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/reference_catalog.py"><code>verifier.interoperability.reference_catalog:reference_component_registry</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/storage.py"><code>verifier.interoperability.storage:load_component_package</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface:plan_validation</code></a></td></tr>
 <tr><td><code>vstd run</code></td><td>Executes a trusted manifest without sandboxing, captures the observed execution, and writes a canonically digested receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:capture_run</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt:compute_canonical_digest</code></a></td></tr>
 <tr><td><code>vstd validate</code></td><td>Dispatches on the receipt's serialized `schema_version` identifier and runs its implemented checks. Generic-run validation enforces its required structure and stable digest; other receipt kinds enforce their separately documented structure and evidence rules.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_validation.py"><code>verifier.core.run_validation:validate_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:validate_data_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
 <tr><td><code>vstd inspect</code></td><td>Prints the claim coordinate, digest, and verdict surface of a stored receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_inspection.py"><code>verifier.core.run_inspection:inspect_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/receipt.py"><code>verifier.hardware.receipt:load_vstd3_receipt</code></a></td></tr>
@@ -126,6 +127,20 @@
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
 </tbody></table>
 </article>
+<article class="ref-item" id="cli-vstd-components">
+<h3><code>vstd components</code></h3>
+<p class="ref-help">Inspect stored component declarations and byte integrity without execution.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-components-inspect">
+<h3><code>vstd components inspect</code></h3>
+<p class="ref-help">Read one local component package without importing its code.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>package</code></td><td>positional</td><td>Stored component package path.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--expected-sha256</code></td><td>optional</td><td>Require this externally supplied canonical package SHA-256 digest.</td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="cli-vstd-surface">
 <h3><code>vstd surface</code></h3>
 <p class="ref-help">Analyze holes in one strictly loaded VSTD-2 modeled verification surface.</p>
@@ -137,7 +152,9 @@
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>geometry</code></td><td>positional</td><td>VSTD-2 geometry JSON path.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
-<tr><td><code>--plan</code></td><td>optional</td><td>Add an experimental first-party catalog match plan; no component is selected or executed.</td></tr>
+<tr><td><code>--plan</code></td><td>optional</td><td>Add an experimental catalog match plan (first-party by default); no component is selected or executed.</td></tr>
+<tr><td><code>--package</code></td><td>optional</td><td>With --plan, use the registry in this local stored component package.</td></tr>
+<tr><td><code>--expected-package-sha256</code></td><td>optional</td><td>With --plan --package, require this canonical package SHA-256 digest.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="cli-vstd-validate">

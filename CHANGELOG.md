@@ -12,7 +12,29 @@
 > Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
 > zero-identity/zero-knowledge (ZIZK).
 
-## Unreleased
+## 1.3.0 - UNRELEASED
+
+### Stored verifier-like components
+
+- Add experimental `VSTD-COMPONENT-PACKAGE-1`: a bounded, self-contained JSON format
+  retaining exact implementation artifact bytes, a strict catalog 1.1 registry,
+  literal entry-point bindings, dependency declarations, and unsigned descriptive
+  publisher/license metadata. Canonical package and artifact digests bind those bytes
+  and declarations; they do not establish native correctness, authentic authorship,
+  executable dependency completeness, or permission to execute.
+- Add nonexecuting save/load/inspection functions, `vstd components inspect`, and
+  `vstd surface analyze --plan --package` with optional expected package digests.
+  Unknown formats, duplicate keys, broken bindings, tampered content, nonportable
+  artifact names, and resource-bound violations fail closed. Loading never extracts,
+  installs, fetches, or invokes a stored implementation.
+- Bind package-aware plans and execution-readiness preflight to the exact revalidated
+  package bytes, not only its registry. Changed payloads invalidate the plan binding;
+  caller-supplied authorization declarations must bind the exact package-aware plan.
+  Missing package bytes remain `NOT_ESTABLISHED`. Registry-only planning stays explicit,
+  and these checks neither authenticate authority nor grant permission to execute.
+- Add a source-snapshot exporter for the 17 first-party catalog entries and portable
+  format specimens. Public hosting and native-runtime qualification remain separate
+  gates; this stored-format foundation is part of the v1.3.0 interoperability scope.
 
 ### Surface analysis and experimental interoperability planning
 

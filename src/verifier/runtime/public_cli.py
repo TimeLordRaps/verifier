@@ -1,10 +1,12 @@
 """Terminology: command-line interface (CLI); identifier (ID); JavaScript Object Notation (JSON);
-Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
+Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD);
+YAML Ain't Markup Language (YAML).
 
 Public, target-neutral CLI for the VSTD reference implementation.
 
 This entry point deliberately excludes repository-specific generators and verifiers.
-It operates only on declared generic-run manifests and stored VSTD-Graph receipts.
+It operates on declared manifests, stored receipts, verification geometries, and
+component packages. Package inspection and surface planning never execute components.
 """
 
 from __future__ import annotations
@@ -60,6 +62,13 @@ from verifier.interoperability.control_surface import (
 from verifier.interoperability.reference_catalog import (
     REFERENCE_CATALOG_CLAIM_BOUNDARY,
     reference_component_registry,
+)
+
+
+_STORED_PACKAGE_CLAIM_BOUNDARY = (
+    "Stored package declarations and exact byte integrity only; no component is "
+    "imported or executed. Packaging does not establish availability, correctness, "
+    "authorship, authorization, native qualification, or executable dependency closure."
 )
 
 
@@ -256,6 +265,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     compare_platforms_parser.add_argument("--json", action="store_true")
 
+    components_parser = subparsers.add_parser(
+        "components",
+        help="Inspect stored component declarations and byte integrity without execution.",
+    )
+    components_commands = components_parser.add_subparsers(
+        dest="components_command", required=True
+    )
+    components_inspect_parser = components_commands.add_parser(
+        "inspect", help="Read one local component package without importing its code."
+    )
+    components_inspect_parser.add_argument("package", help="Stored component package path.")
+    components_inspect_parser.add_argument("--json", action="store_true")
+    components_inspect_parser.add_argument(
+        "--expected-sha256",
+        metavar="HEX",
+        help="Require this externally supplied canonical package SHA-256 digest.",
+    )
+
     surface_parser = subparsers.add_parser(
         "surface",
         help="Analyze holes in one strictly loaded VSTD-2 modeled verification surface.",
@@ -273,9 +300,19 @@ def build_parser() -> argparse.ArgumentParser:
         "--plan",
         action="store_true",
         help=(
-            "Add an experimental first-party catalog match plan; no component is "
+            "Add an experimental catalog match plan (first-party by default); no component is "
             "selected or executed."
         ),
+    )
+    surface_analyze_parser.add_argument(
+        "--package",
+        metavar="PACKAGE",
+        help="With --plan, use the registry in this local stored component package.",
+    )
+    surface_analyze_parser.add_argument(
+        "--expected-package-sha256",
+        metavar="HEX",
+        help="With --plan --package, require this canonical package SHA-256 digest.",
     )
 
     for command, help_text in (
@@ -516,14 +553,40 @@ def _handle_data_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_components_command(args: argparse.Namespace) -> int:
+    from verifier.interoperability.storage import load_component_package
+
+    package = load_component_package(args.package, expected_digest=args.expected_sha256)
+    if args.json:
+        print(json.dumps(package.inspect(), indent=2, sort_keys=True))
+    else:
+        print("[PACKAGE INTEGRITY; NO EXECUTION]")
+        print(f"  Canonical digest: {package.canonical_digest()}")
+        print(f"  Components:       {len(package.registry.components)}")
+        print(f"  Boundary: {_STORED_PACKAGE_CLAIM_BOUNDARY}")
+        print(json.dumps(package.inspect(), indent=2, sort_keys=True))
+    return 0
+
+
 def _handle_surface_command(args: argparse.Namespace) -> int:
+    if (args.package is not None or args.expected_package_sha256 is not None) and not args.plan:
+        raise ValueError("package options require --plan")
+    if args.expected_package_sha256 is not None and args.package is None:
+        raise ValueError("--expected-package-sha256 requires --package")
     geometry = load_verification_geometry(Path(args.geometry).resolve())
     analysis = analyze_verification_surface(geometry)
     report: dict[str, Any] = analysis.to_dict()
     plan = None
     if args.plan:
-        registry = reference_component_registry()
-        plan = plan_validation(analysis, registry)
+        package = None
+        if args.package is not None:
+            from verifier.interoperability.storage import load_component_package
+
+            package = load_component_package(
+                args.package, expected_digest=args.expected_package_sha256
+            )
+        registry = package.registry if package is not None else reference_component_registry()
+        plan = plan_validation(analysis, registry, package=package)
         family_count = len(
             {
                 family
@@ -542,6 +605,12 @@ def _handle_surface_command(args: argparse.Namespace) -> int:
             },
             "plan": plan.to_dict(),
         }
+        if package is not None:
+            report["catalog"].update(
+                source="STORED_COMPONENT_PACKAGE",
+                package_digest=package.canonical_digest(),
+                claim_boundary=_STORED_PACKAGE_CLAIM_BOUNDARY,
+            )
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
@@ -560,6 +629,9 @@ def _handle_surface_command(args: argparse.Namespace) -> int:
         print("[EXPERIMENTAL PLAN; NO EXECUTION]")
         print(f"  Candidates: {matched}/{len(plan.candidates)} matched")
         print(f"  Registry:   {plan.registry_version} ({plan.registry_digest})")
+        if args.package is not None:
+            print(f"  Package:    {report['catalog']['package_digest']}")
+            print(f"  Source boundary: {_STORED_PACKAGE_CLAIM_BOUNDARY}")
         print(f"  Boundary:   {plan.claim_boundary}")
     return 0
 
@@ -722,6 +794,9 @@ def main(argv: list[str] | None = None) -> int:
                     )
                 print(f"  Boundary: {report['claim_boundary']}")
             return comparison.exit_code
+
+        if args.command == "components":
+            return _handle_components_command(args)
 
         if args.command == "surface":
             return _handle_surface_command(args)

@@ -14,6 +14,8 @@ study records, and roadmap-steering investigations.
   verification geometry with an explicit unresolved evidence horizon.
 - [Interoperability planning](interoperability_planning/README.md): modeled-hole
   detection and exact catalog candidates with zero component execution.
+- [Stored components](stored_components/README.md): retain a public source snapshot and
+  consume its catalog for nonexecuting planning.
 - [Non-critical compositions](interoperability_compositions/README.md): executable
   proof-producer/checker and adjacent-verifier examples with native results retained.
 - [Experimental workflow example](experimental_workflow/README.md): runnable use of an

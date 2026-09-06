@@ -30,7 +30,11 @@ DEFAULT_MANIFEST = ROOT / "docs" / "platform-component-contracts.json"
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "ci.yml"
 MANIFEST_SCHEMA_VERSION = "VSTD-PLATFORM-COMPONENT-CONTRACTS-1"
 REPORT_SCHEMA_VERSION = "VSTD-PLATFORM-COMPONENT-REPORT-1"
-TEST_COMMAND = "python -m pytest -q --junitxml=platform-contracts.xml"
+TEST_COMMAND = (
+    "python -u -m pytest -vv -s --durations=10 --timeout=60 "
+    "-p scripts.pytest_public_evidence "
+    "--junitxml=platform-contracts.xml"
+)
 COORDINATE_IDS = ("linux-x64", "windows-x64", "macos-x64", "macos-arm64")
 INTENT_STATUSES = frozenset(
     {"CONFIGURED_UNRUN", "NOT_CONFIGURED", "UNSUPPORTED"}

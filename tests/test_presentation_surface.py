@@ -239,9 +239,9 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     )
     assert coordinate == {
         "canonical_base_url": "https://timelordraps.github.io/verifier/",
-        "documentation_version": "1.2.0",
+        "documentation_version": "1.3.0",
         "normative_source": "standard/",
-        "release_state": "RELEASED",
+        "release_state": "UNRELEASED_CANDIDATE",
         "schema_version": 1,
         "source_ref": "test-commit",
     }
@@ -641,7 +641,7 @@ def test_portable_python_contracts_cover_x64_and_arm64_platforms() -> None:
     assert setup["with"]["python-version"] == "3.12.10"
     commands = "\n".join(str(step.get("run", "")) for step in contracts["steps"])
     assert 'pip install ".[test,seal,scitt]"' in commands
-    assert "python -m pytest -q" in commands
+    assert "python -u -m pytest -vv -s --durations=10 --timeout=60" in commands
     assert "tests/test_" not in commands
     assert "platform-environment.json" in commands
     assert "--junitxml=platform-contracts.xml" in commands
@@ -682,7 +682,10 @@ def test_portable_python_contracts_cover_x64_and_arm64_platforms() -> None:
         "platform-contracts.xml",
     }
     assert upload["with"]["if-no-files-found"] == "error"
-    assert upload["if"] == "always()"
+    assert upload["if"] == (
+        "always() && steps.platform-evidence-boundary.outcome == 'success'"
+    )
+    assert "-p scripts.pytest_public_evidence" in commands
     assert "platform-python-contracts" in jobs["conformance-gate"]["needs"]
     conformance_commands = "\n".join(
         str(step.get("run", "")) for step in jobs["conformance-gate"]["steps"]

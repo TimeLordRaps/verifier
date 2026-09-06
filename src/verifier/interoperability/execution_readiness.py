@@ -7,13 +7,16 @@ This module checks only whether caller-supplied execution declarations are inter
 complete and consistent with one surface analysis, validation plan, and component
 registry.  It never imports or invokes a component, reads native inputs or other
 external resources, grants authorization, or reassesses a verification geometry.
+Package-bound plans also require the exact retained package to be revalidated;
+an AUTHORIZED declaration must name that exact plan digest. Such a declaration
+remains caller-supplied, not independently established authority.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from enum import Enum
 from typing import Any, Optional
 
@@ -30,8 +33,10 @@ from .control_surface import (
     SurfaceAnalysis,
     ValidationCandidate,
     ValidationPlan,
+    _declared_plan_id,
     plan_validation,
 )
+from .storage import StoredComponentPackage
 
 
 EXECUTION_READINESS_SCHEMA_VERSION = "VSTD-EXECUTION-READINESS-EXPERIMENTAL-0.1"
@@ -39,7 +44,8 @@ REASSESSMENT_PROCEDURE = "ANALYZE_UPDATED_VSTD2_GEOMETRY"
 RUNTIME_AVAILABILITY_PREREQUISITE = "RUNTIME_AVAILABILITY"
 EXECUTION_READINESS_CLAIM_BOUNDARY = (
     "READY means only that caller-supplied preflight declarations are internally "
-    "complete and consistent with the exact analysis, plan, and registry. It does not "
+    "complete and consistent with the exact analysis, plan, registry, and required "
+    "stored package. It does not "
     "execute a component, validate native inputs or results, grant authorization, "
     "establish safety or closure, or perform post-execution reassessment."
 )
@@ -88,15 +94,7 @@ def _unique_strings(values: Any, label: str) -> tuple[str, ...]:
 
 def _sha256(value: Any, label: str) -> str:
     value = _nonempty(value, label)
-    if len(value) != 64:
-        raise ExecutionReadinessError(f"{label} must be a lowercase SHA-256 digest")
-    try:
-        int(value, 16)
-    except ValueError as exc:
-        raise ExecutionReadinessError(
-            f"{label} must be a lowercase SHA-256 digest"
-        ) from exc
-    if value != value.lower():
+    if len(value) != 64 or any(character not in "0123456789abcdef" for character in value):
         raise ExecutionReadinessError(f"{label} must be a lowercase SHA-256 digest")
     return value
 
@@ -302,6 +300,7 @@ class SuppliedAuthorizationDecision:
     authority_requirements: tuple[str, ...]
     decision_evidence_sha256: Optional[str] = None
     reason: str = ""
+    plan_digest: Optional[str] = None
 
     def __post_init__(self) -> None:
         try:
@@ -319,6 +318,8 @@ class SuppliedAuthorizationDecision:
                 "decision_evidence_sha256",
                 _sha256(self.decision_evidence_sha256, "decision_evidence_sha256"),
             )
+        if self.plan_digest is not None:
+            _sha256(self.plan_digest, "plan_digest")
         if not isinstance(self.reason, str) or self.reason != self.reason.strip():
             raise ExecutionReadinessError(
                 "reason must be a string without surrounding whitespace"
@@ -331,6 +332,7 @@ class SuppliedAuthorizationDecision:
             "decision_evidence_sha256": self.decision_evidence_sha256,
             "reason": self.reason,
             "decision_source": "CALLER_SUPPLIED",
+            "plan_digest": self.plan_digest,
         }
 
 
@@ -383,7 +385,11 @@ class PostExecutionReassessmentContract:
 
 @dataclass(frozen=True)
 class ExecutionReadinessReport:
-    """Deterministic result of a nonexecuting execution-readiness preflight."""
+    """Nonexecuting preflight result; package_digest names the plan's binding.
+
+    A carried package digest does not by itself establish successful revalidation;
+    missing or mismatched bytes are reported in status and findings.
+    """
 
     status: ExecutionReadinessStatus
     geometry_id: str
@@ -401,6 +407,7 @@ class ExecutionReadinessReport:
     execution_performed: bool = field(default=False, init=False)
     authorization_granted_by_module: bool = field(default=False, init=False)
     claim_boundary: str = EXECUTION_READINESS_CLAIM_BOUNDARY
+    package_digest: Optional[str] = None
 
     def __post_init__(self) -> None:
         try:
@@ -420,6 +427,8 @@ class ExecutionReadinessReport:
             object.__setattr__(
                 self, field_name, _sha256(getattr(self, field_name), field_name)
             )
+        if self.package_digest is not None:
+            _sha256(self.package_digest, "package_digest")
         if not isinstance(self.declarations, (tuple, list)) or not all(
             isinstance(item, CandidateExecutionDeclaration) for item in self.declarations
         ):
@@ -466,6 +475,8 @@ class ExecutionReadinessReport:
             "plan_digest": self.plan_digest,
             "registry_version": self.registry_version,
             "registry_digest": self.registry_digest,
+            "package_digest": self.package_digest,
+            "binding_scope": "REGISTRY_ONLY" if self.package_digest is None else "STORED_PACKAGE",
             "declarations": [item.to_dict() for item in self.declarations],
             "authorization": self.authorization.to_dict(),
             "reassessment": self.reassessment.to_dict(),
@@ -555,6 +566,8 @@ def assess_execution_readiness(
     declarations: tuple[CandidateExecutionDeclaration, ...],
     authorization: SuppliedAuthorizationDecision,
     reassessment: PostExecutionReassessmentContract,
+    *,
+    package: Optional[StoredComponentPackage] = None,
 ) -> ExecutionReadinessReport:
     """Check declared execution readiness without importing or invoking components."""
 
@@ -590,11 +603,25 @@ def assess_execution_readiness(
         _add(finding_sets, ExecutionReadinessStatus.INVALID, "plan context does not match the supplied analysis")
     if plan.registry_version != registry.registry_version or plan.registry_digest != registry.canonical_digest():
         _add(finding_sets, ExecutionReadinessStatus.INVALID, "plan registry binding does not match the supplied registry")
+    if plan.package_digest is not None and package is None:
+        _add(finding_sets, ExecutionReadinessStatus.NOT_ESTABLISHED, "package-bound plan requires the exact stored package for revalidation")
     try:
-        expected_plan = plan_validation(analysis, registry)
+        expected_plan = plan_validation(analysis, registry, package=package)
     except Exception as exc:
-        _add(finding_sets, ExecutionReadinessStatus.INVALID, f"analysis, plan, and registry cannot be recomposed: {type(exc).__name__}")
+        _add(finding_sets, ExecutionReadinessStatus.INVALID, f"analysis, plan, registry, and package binding cannot be recomposed: {type(exc).__name__}")
     else:
+        if package is None and plan.package_digest is not None:
+            # Check the identity implied by the declared digest without treating
+            # that declaration as validated package bytes. Missing stays unknown.
+            expected_plan = replace(
+                expected_plan,
+                package_digest=plan.package_digest,
+                plan_id=_declared_plan_id(
+                    analysis, registry, expected_plan.candidates, plan.package_digest,
+                ),
+            )
+        elif plan.package_digest != expected_plan.package_digest:
+            _add(finding_sets, ExecutionReadinessStatus.INVALID, "plan package binding does not match the supplied stored package")
         if plan.canonical_json_bytes() != expected_plan.canonical_json_bytes():
             _add(finding_sets, ExecutionReadinessStatus.INVALID, "plan content is inconsistent with exact replanning")
 
@@ -711,6 +738,8 @@ def assess_execution_readiness(
     )
     if set(authorization.authority_requirements) != required_authorities:
         _add(finding_sets, ExecutionReadinessStatus.INVALID, "authorization requirements do not match the selected plan coordinates")
+    if authorization.plan_digest is not None and authorization.plan_digest != _digest_bytes(plan.canonical_json_bytes()):
+        _add(finding_sets, ExecutionReadinessStatus.INVALID, "authorization plan binding does not match the exact supplied plan")
     if required_authorities and authorization.decision is AuthorizationDecision.NOT_REQUIRED:
         _add(finding_sets, ExecutionReadinessStatus.INVALID, "authorization cannot be NOT_REQUIRED when the plan declares authority requirements")
     elif not required_authorities and authorization.decision is not AuthorizationDecision.NOT_REQUIRED:
@@ -718,6 +747,8 @@ def assess_execution_readiness(
     elif authorization.decision is AuthorizationDecision.AUTHORIZED:
         if authorization.decision_evidence_sha256 is None:
             _add(finding_sets, ExecutionReadinessStatus.NOT_ESTABLISHED, "supplied authorization lacks a decision evidence digest")
+        if plan.package_digest is not None and authorization.plan_digest is None:
+            _add(finding_sets, ExecutionReadinessStatus.NOT_ESTABLISHED, "supplied authorization lacks the exact package-bound plan digest")
     elif authorization.decision is AuthorizationDecision.DENIED:
         _add(finding_sets, ExecutionReadinessStatus.BLOCKED, "supplied authorization decision is DENIED")
     elif authorization.decision is AuthorizationDecision.UNKNOWN:
@@ -757,6 +788,7 @@ def assess_execution_readiness(
         authorization=authorization,
         reassessment=reassessment,
         findings=findings,
+        package_digest=plan.package_digest,
     )
 
 

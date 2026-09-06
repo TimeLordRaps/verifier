@@ -141,6 +141,7 @@ def test_source_release_manifest_binds_head_and_exact_archive_bytes(tmp_path: Pa
             "https://github.com/TimeLordRaps/verifier",
         ),
     ],
+    ids=("https-git-suffix", "https-trailing-slash", "scp-style", "ssh-scheme"),
 )
 def test_repository_url_spellings_are_canonical(raw: str, expected: str) -> None:
     assert release_artifacts._canonical_repository_url(raw) == expected
@@ -404,7 +405,7 @@ def test_tag_release_requires_clear_time_from_the_exact_checkout(tmp_path: Path)
     assert "Require TIME CLEAR in the exact tagged checkout" in workflow
     assert "python scripts/check_time_status.py" in workflow
     assert workflow.index("python scripts/check_time_status.py") < workflow.index(
-        "python -m pytest -q"
+        "python -u -m pytest -vv -s --durations=10 --timeout=60"
     )
 
 

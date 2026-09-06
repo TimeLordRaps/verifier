@@ -27,6 +27,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       actions: read
       checks: read
@@ -94,8 +95,8 @@ jobs:
       - name: Re-run conformance on the tagged checkout
         run: |
           python -m pip install ".[test,release,seal,scitt]"
-          python -m pytest -q
-          python -m compileall -q src scripts
+          python -u -m pytest -vv -s --durations=10 --timeout=60
+          python -u -m compileall src scripts
 
       - name: Build exact source, reproducible wheel, and external manifest
         run: |

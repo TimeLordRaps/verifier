@@ -50,13 +50,21 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
         ),
     ),
     (
+        "vstd components inspect",
+        "Loads a bounded stored component package and checks retained-byte bindings; "
+        "does not extract, install, execute, or qualify its implementation.",
+        ("verifier.interoperability.storage:load_component_package",),
+    ),
+    (
         "vstd surface analyze",
         "Strictly loads one VSTD-2 geometry and emits deterministic modeled-surface "
-        "diagnostics; its optional experimental catalog plan remains nonexecuting.",
+        "diagnostics; its optional experimental built-in or stored-package catalog "
+        "plan remains nonexecuting.",
         (
             "verifier.core.geometry_io:load_verification_geometry",
             "verifier.interoperability.control_surface:analyze_verification_surface",
             "verifier.interoperability.reference_catalog:reference_component_registry",
+            "verifier.interoperability.storage:load_component_package",
             "verifier.interoperability.control_surface:plan_validation",
         ),
     ),
