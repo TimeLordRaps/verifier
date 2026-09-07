@@ -40,6 +40,35 @@ devices, links and Windows reparse files are rejected. These checks do not promi
 wall-clock bound on filesystem access or protection against privileged concurrent
 filesystem mutation; they are not an execution sandbox.
 
+## Certifier is a capability, not a kind alias
+
+A **certifier** issues a native certificate artifact binding an exact subject or claim
+to a declared assertion and certification basis under a named native contract. That
+contract must explain its checks, assumptions, failure states, and any issuer-authorization
+requirements. A prover constructs a derivation; it may also certify, but a certifier need
+not prove. A checker/verifier may check a certificate without issuing one. Mathematical
+certificates need not be signed; issuance, signature validity, authorized issuance, and
+the checked assertion are distinct propositions.
+
+The current closed `kind` vocabulary has no `CERTIFIER` member or filter. Use the existing
+kind that accurately describes the algorithm role; do not silently map certifier to
+`PROVER`. Catalog 1.1 and `VSTD-COMPONENT-PACKAGE-1` already retain the capability:
+
+| Existing descriptor fields | Explicit serialization meaning |
+|---|---|
+| `label`, `native_objects` | Preserve the word "certifier" and name the native certificate artifact. |
+| `native_inputs`, `accepted_schema_ids` | Describe exact subject/assertion/basis inputs; list serialized schemas only when accepted natively. |
+| `native_outputs`, `emitted_schema_ids`, `native_result_vocabulary` | Declare the emitted certificate contract and native outcomes, not a verified result. |
+| `supported_relations`, `mechanism_ids` | Name certificate issuance, for example `relation:certificate-issuance`, and the exact native mechanism. These lists declare a Cartesian product; split narrower pairings into separate descriptors. |
+| `planning_surface_schema_ids`, `interaction_modes` | Declare where the capability can be planned; the planning document is not thereby a native input. |
+| `execution_prerequisites`, `trust_roots`, `claim_boundary` | Retain qualification, authorization, evidence, and uncertainty requirements. |
+
+Matching uses the supplied exact relation/mechanism coordinates, planning schema, and
+interaction mode, not `kind`, labels, domain tags, or certificate-output names. Metadata
+does not execute issuance, authenticate an issuer, confer authority, validate a certificate,
+or establish its assertion. This mapping adds no native certifier or starter-catalog entry
+and changes no enum, catalog/package identifier, or receipt format.
+
 ## Canonical content identity
 
 Canonical package bytes use Unicode Transformation Format, 8-bit (UTF-8). Characters
@@ -106,6 +135,15 @@ checking a package-selected plan. Missing package bytes leave readiness
 `plan.canonical_json_bytes()`. Changing retained implementation bytes changes the
 plan and invalidates reuse of that declaration. These are declaration-consistency
 checks, not authentication of the caller or a grant of execution permission.
+
+Attached package dependencies become candidate prerequisites named
+`PACKAGE_DEPENDENCY:<package-digest>:<dependency-id>`. The digest binds the exact declared
+requirement; each attached dependency needs a matching supplied prerequisite resolution.
+Retaining dependency bytes does not discharge that requirement. These obligations are
+separate from descriptor `DEPENDENCY:<id>` declarations; unattached inventory dependencies
+do not burden the candidate. Readiness checks these declarations, not native availability.
+Changed requirements change package/plan identity and invalidate prior exact-plan
+authorization declarations. These checks neither install nor resolve dependencies.
 
 ## Boundaries that survive storage
 

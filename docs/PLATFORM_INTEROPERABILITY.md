@@ -17,29 +17,52 @@ system (OS).
 
 ## Evidence coordinates and freshness
 
-- **H1 — historical hosted run:** pull-request head
-  [`5c42c4c139553b5fa3f2463289c94112c4b76612`](https://github.com/TimeLordRaps/verifier/commit/5c42c4c139553b5fa3f2463289c94112c4b76612),
-  base `56ea9ab1de4ea34a0dc6beabc753444cd2d2c8fb`, and executed synthetic merge
-  checkout `582cfa3655d680ef55c773e3e327e166ce8fa379` in
-  [GitHub Actions run 33788300817](https://github.com/TimeLordRaps/verifier/actions/runs/33788300817).
-  The run was green for its configured jobs. Rows below that say hosted execution or
-  packaging refer to H1 unless they name another coordinate.
-- **Development delta after H1:** every changed implementation, test, workflow, or
-  documentation surface after the H1 pull-request head is outside H1's evidence. A new
-  job being configured, a local test passing, or a source change carrying its own tests
-  does not turn that delta into hosted platform evidence. Affected rows remain configured
-  or `UNKNOWN` until a later exact commit and workflow run supplies the named evidence.
+Three surfaces must stay separate: source-controlled **test intent**, an exact hosted
+**observation**, and the **candidate being evaluated now**. The generated component
+table below records intent. Its `CONFIGURED_UNRUN` labels do not assert that a component
+has never run; they cannot be promoted to support claims inside a source manifest.
 
-H1 remains historical evidence for unchanged surfaces; it is not evidence for a later
-development delta. A release candidate must replace these coordinates with its own
-commit and hosted run before any current support statement is promoted.
+For the current candidate, select its successful `repository-checks` run from
+[pull request #31](https://github.com/TimeLordRaps/verifier/pull/31) or the
+[workflow history](https://github.com/TimeLordRaps/verifier/actions/workflows/ci.yml).
+These are discovery links, not immutable evidence. Require the exact head, base,
+executed checkout, run identifier and attempt in the retained reports. Retargeting a
+request or retaining an earlier green check does not establish fresh integration.
+Publication additionally requires a successful push run on the exact final `main`
+commit, as specified in [the release procedure](../RELEASING.md).
 
-Continuous-integration configuration describes the checks that a run is
-expected to perform. A green hosted result is evidence only for the exact Git commit,
-workflow run, runner image, interpreter, inputs, and declared result surfaces in that
-run. The matrix does not treat configured-but-unrun jobs, package construction, static
-source inspection, or one component's result as execution evidence for another
-component.
+A changed implementation, catalog, test, workflow or dependency requires reassessment;
+the prior run remains an observation of its own coordinate. Native results do not
+inherit another component's tests, and recorded environment metadata is not hardware
+or runtime attestation.
+
+## Recorded candidate observation
+
+[Run 34077770237](https://github.com/TimeLordRaps/verifier/actions/runs/34077770237),
+attempt 1, completed successfully for head
+`b6b1a82b862219ffc3c44bb2f4b544444d921715`, base
+`499c0613c93232628abfdeb497d907549fd593fc`, and executed pull-request merge
+`884b3cfc9dd36ac0914a5482bece0c13abf33f64`. The executed and head trees both equal
+`5135df58006e602606e9a8f304ac43d4e83d186e`. This is a pre-retarget observation, not
+evidence for a later candidate or the final release commit.
+
+All four component reports were reconstructed byte-for-byte from their retained raw
+environment and JUnit documents with the repository builder. That is reproducibility
+of report construction, not a second native execution or an independently implemented
+checker. Each environment records CPython 3.12.10; all four record zero failures/errors.
+
+| Recorded coordinate | Passed test instances | Skipped test instances | Skipped collection placeholders |
+|---|---:|---:|---:|
+| Linux x86-64 / Ubuntu 24.04 | 1,114 | 1 | 1 |
+| Windows x86-64 / Windows Server 2025 | 1,109 | 6 | 1 |
+| Intel macOS / macOS 15 | 1,114 | 1 | 1 |
+| Apple ARM64 macOS / macOS 15 | 1,114 | 1 | 1 |
+
+Collection placeholders are not executed tests. Parameterized instances are not counts
+of independent mechanisms. The reports map 18 catalog entries through 13 test modules
+and 413 mapped instances; shared tests and wrappers do not become independent verifiers.
+The raw reports retain the exact skip reasons. Unavailable optional mechanisms and
+platform-specific filesystem cases do not earn passing coverage.
 
 ## Evidence classes
 
@@ -58,29 +81,30 @@ component.
 
 ## Evidence-surface summary
 
-| Component or evidence surface | Linux | Windows | macOS | What the evidence establishes | What it does not establish |
-|---|---|---|---|---|---|
-| Python reference implementation test suite | Hosted execution on Python 3.10 through 3.13 | Unknown; the full suite is not run there | Unknown; the full suite is not run there | The exact tested propositions pass on the hosted Linux runner for a successful run | Equivalent behavior on Windows or macOS, native-adapter support, or correctness beyond the tests |
-| Complete Python 3.12 contract suite and optional integrations | Not exercised by H1; the later workflow configuration targets Ubuntu 24.04 x86-64 | Not exercised by H1; the later workflow configuration targets Windows Server 2025 x86-64 | Not exercised by H1; the later workflow configuration targets macOS 15 Intel and ARM64 separately | A later successful exact run can exercise the complete collected Python suite, including the optional artifact-seal and cryptographic SCITT profiles, while its JUnit report preserves platform-specific skips | Native RISC Zero execution, hardware-vendor attestation, a proposition beyond the tests, or any platform claim before that later run succeeds |
-| Generic-run capture, strict validation, and output rerun | Hosted execution on Python 3.12.10 | Hosted execution on Python 3.12.10 | Hosted execution on Python 3.12.10 using an Intel runner; Python records the OS as `Darwin` | Each runner reports the expected OS and executes, validates, and reruns the dependency-free word-frequency specimen | Universal Python portability, other commands or dependencies, native execution attestation, Apple silicon behavior, or independent actors |
-| Bounded platform comparator | H1 executed the aggregate on hosted Linux over three uploaded receipts; any later implementation is a development delta until rerun | H1 supplied a hosted Windows receipt to the aggregate | H1 supplied a hosted macOS Intel receipt to the aggregate | `PASS` can establish equality only for one complete set of canonically intact receipts with matching bound non-platform coordinates and declared result projections | That H1 validates a later comparator, that the declaration proved compatibility, that receipt metadata attests native execution, or that all machines and versions agree |
-| Release artifact construction and byte reproducibility | Packaging-only build and verification | Packaging-only build and verification | Packaging-only build and verification | A successful aggregate rejects byte differences among the generated archive, wheel, source distribution, manifest, and software-bill-of-materials artifact sets | Runtime equivalence, semantic correctness, or execution of every packaged feature |
-| Installed-wheel command smoke | Hosted execution on Linux outside the source checkout | Unknown | Unknown | The Linux-installed wheel exposes selected commands and artifact operations outside the checkout | Installation or command behavior on Windows or macOS |
-| Core receipt, numbered-profile, Graph, and evidence-bound mechanisms | Hosted execution through the Linux test suite | Unknown | Unknown | The precise Linux tests exercise their documented reference paths | A platform-independent native result, external implementation, or cross-platform semantic equivalence |
-| Interoperability catalog, modeled-hole detection, and candidate planning | H1 hosted its then-current experimental catalog/planner tests; later additions require their own hosted run | Unknown | Unknown | Deterministic catalog matching and nonexecuting candidate planning over modeled geometry at the exact tested coordinate | Checker execution, completed validation, closure, safety, authority to act, or interoperability of a native component |
-| Experimental workflow and platform-event adapter | Hosted execution through the Linux test suite | Unknown | Unknown | The adapter preserves native platform results with `verification_effect = NONE` in its tested cases | That a platform event upgrades a VSTD result or that an external workflow implementation interoperates |
-| Supply Chain Integrity, Transparency, and Trust interoperability using Concise Binary Object Representation and CBOR Object Signing and Encryption | Hosted execution of the optional cryptographic example on Linux under local test keys and a local test log | Unknown | Unknown | Signature, registration, inclusion, adapter, and adjacent-result behavior for the exact local test construction | A public Transparency Service, production trust roots, payload correctness, VSTD conformance, or Windows/macOS support |
-| Artifact freeze, finite seal, and thaw | Hosted execution of the optional cryptographic suite on Linux | Unknown | Unknown | The tested exact-byte, signature, external-anchor, and thaw propositions under the Linux test environment | Privileged-write prevention, trusted time, network-filesystem behavior, or equivalent Windows/macOS behavior |
-| RISC Zero zero-knowledge virtual machine prover/verifier example | Documented local execution on Linux x86-64 under Windows Subsystem for Linux 2; CI performs static and recorded-artifact checks but does not rebuild or execute the native prover/verifier | Unsupported by the repository's native Windows path; the documented path is Linux under Windows Subsystem for Linux 2 | Unknown | The tracked source, locked dependencies, recorded proof bytes, expected image identifier, and documented Linux reproduction boundary are inspectable; the recorded local result is bounded to its stated coordinate | A fresh hosted native proof, native Windows or macOS support, independent reproduction, universal proof-system portability, witness truth, or a VSTD receipt mapping |
-| Other native prover, verifier, solver, hardware, scientific, or vendor adapters | Unknown unless a component-specific receipt and test says otherwise | Unknown unless a component-specific receipt and test says otherwise | Unknown unless a component-specific receipt and test says otherwise | Nothing is inherited merely because the Python framework can represent an adapter descriptor or result | Installation, execution, semantic preservation, trust-root validity, or cross-platform support |
+The observations in this table refer only to the recorded candidate above. For another
+head, apply the freshness rules and inspect its own run. A complete-suite pass covers
+collected, non-skipped cases, not every possible behavior of every exported function.
+
+| Surface | Recorded execution or packaging scope | Boundary |
+|---|---|---|
+| Python reference contracts | Python 3.10–3.13 on Linux; complete Python 3.12 suite on Linux, Windows, Intel macOS and Apple ARM64 macOS | Exact tests and optional profiles, with skips retained; no universal native-adapter qualification. |
+| Generic-run capture and platform comparison | Linux, Windows and Intel macOS run the same portable specimen; an aggregate compares their declared receipt results | Isolates the operating-system dimension only when non-platform bindings match; Apple ARM64 contract tests do not establish cross-architecture equivalence. |
+| Release artifact byte reproducibility | Builds on Linux, Windows and macOS; aggregate compares the artifact sets | Packaging reproducibility, not runtime equivalence. |
+| Installed-wheel smoke | Selected public commands exercised on Linux outside the source checkout | Not an installed-wheel claim for every platform or command. |
+| Core receipts, geometry, Graph, evidence replay, catalog, packages, planning and workflow | Their collected Python cases are included in the four-coordinate suite | Each native result retains its scope; planning and workflow metadata do not become execution or conformance. |
+| SCITT cryptographic example | Optional profile exercised on all four coordinates using local test keys and a local test log | Signature and inclusion checking do not establish public registration, payload truth, independent implementations or issuer authority. |
+| Artifact freeze, finite seal and thaw | Optional cryptographic profile exercised on all four coordinates | Filesystem-specific skips remain excluded; no privileged-write prevention, trusted time or general network-filesystem guarantee. |
+| RISC Zero native prover/verifier | Hosted checks inspect source and recorded artifacts, not a fresh native proof execution; the documented local path is Linux x86-64 under WSL2 | No native Windows path or established macOS support from this repository evidence; no external witness-truth or VSTD receipt-mapping claim. |
+| Other native prover, verifier, solver, hardware or vendor adapters | `UNKNOWN` without their own exact mechanism and execution evidence | No support is inherited from a descriptor, wrapper, package or unrelated Python test. |
 
 ## Machine-checked reference-component contract intent
 
 The new [stored component format](COMPONENT_PACKAGES.md) is also exercised by the
 complete-suite jobs, including a fixed canonical-digest specimen, exact binary-byte
-round trips and package-selected planning. These are configured checks until a fresh
-hosted run executes them on each coordinate; portable storage does not qualify any
-retained native implementation. Storage is supporting infrastructure, not an extra
+round trips and package-selected planning. The recorded observation establishes only
+those executed cases at its named coordinate; changed candidates require their own
+reports. Portable storage does not qualify a retained native implementation.
+Storage is supporting infrastructure, not an extra
 independent verifier counted in the 18-component inventory below.
 
 The source-controlled

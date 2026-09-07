@@ -91,6 +91,16 @@ and remains `NOT_ESTABLISHED`.
 
 ### Interoperability facade: supported analysis and experimental planning
 
+Supported/stable compatibility applies to the explicitly exported geometry loader,
+surface-analysis subset, and platform comparator described above. It does not extend
+to every name under `verifier.interoperability`:
+
+| Surface | Compatibility boundary |
+|---|---|
+| Geometry loading, modeled-surface analysis, platform comparison | Supported top-level exports; the version and deprecation rules below apply, without broader correctness claims. |
+| Component descriptors, kinds, catalog matching, stored packages, planning, execution-readiness preflight | Experimental; declarations and byte bindings do not supply execution, qualification, or authority. |
+| Graph topology | Experimental direct submodule only; separate from supported analysis and from a general geometry satisfiability checker. |
+
 `verifier.interoperability` contains both the supported analyzer names exported by
 `verifier.__all__` and an experimental planning surface. Its complete characterized names
 at the current unreleased source coordinate are:
@@ -168,6 +178,16 @@ does not install, fetch or execute a component, authenticate publisher declarati
 resolve dependencies or grant conformance. Unknown formats are rejected; an incompatible
 stored layout requires a distinct identifier and explicit migration. This experimental
 format is not a receipt wire identifier. See [stored components](COMPONENT_PACKAGES.md).
+
+**Certifier** names a certificate-issuance capability, orthogonal to the component's
+algorithm role: a prover may certify, but a certifier need not prove. The current closed
+`ComponentKind` vocabulary has no `CERTIFIER` member or kind filter. Preserve the word
+in descriptor labels/native-object descriptions and specify its exact issuance relation,
+mechanism, native inputs/outputs, and emitted certificate contract; see the
+[serialization mapping](COMPONENT_PACKAGES.md#certifier-is-a-capability-not-a-kind-alias).
+Matching does not inspect `kind` or infer capability from names or tags. This clarification
+changes neither catalog 1.1 nor package-1 identifiers, adds no native certifier, and does
+not authorize widening strict readers under their existing identifiers.
 
 Direct imports from `verifier.core`, `verifier.data`, `verifier.hardware`, other
 subpackages, or underscore-prefixed names are internal unless another published policy

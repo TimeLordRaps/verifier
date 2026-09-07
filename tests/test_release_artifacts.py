@@ -43,6 +43,173 @@ release_notes = importlib.util.module_from_spec(NOTES_SPEC)
 NOTES_SPEC.loader.exec_module(release_notes)
 
 
+def _git_object_fixture(root: Path, files: dict[str, bytes]) -> tuple[Path, str]:
+    """Build unreferenced synthetic objects, never a commit in project history."""
+
+    repo = root / "objects.git"
+
+    def git(*args: str, content: bytes | None = None) -> bytes:
+        result = subprocess.run(
+            ["git", *args], cwd=root, input=content, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, timeout=10, check=True,
+        )
+        return result.stdout
+
+    git("init", "--bare", str(repo))
+    entries = []
+    for name, content in sorted(files.items()):
+        oid = git("--git-dir", str(repo), "hash-object", "-w", "--stdin", content=content).strip()
+        entries.append(b"100644 blob " + oid + b"\t" + name.encode("utf-8") + b"\0")
+    tree = git("--git-dir", str(repo), "mktree", "-z", content=b"".join(entries)).strip()
+    commit = git("--git-dir", str(repo), "hash-object", "-t", "commit", "-w", "--stdin", content=(
+        b"tree " + tree + b"\n"
+        b"author Fixture <fixture> 1700000000 +0000\n"
+        b"committer Fixture <fixture> 1700000000 +0000\n\n"
+        b"Disposable unreferenced release-verification fixture.\n"
+    )).decode().strip()
+    git("--git-dir", str(repo), "config", "remote.origin.url", "https://github.com/example/fixture.git")
+    return repo, commit
+
+
+def test_manifest_verification_uses_one_bounded_raw_blob_batch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    repo, commit = _git_object_fixture(tmp_path, {"one.bin": b"\0\xff\n", "two.txt": b"two\r\n"})
+    _, manifest = release_artifacts.build_source(repo, commit, "test", tmp_path / "release")
+    original = release_artifacts._run
+    calls = []
+
+    def recording(root: Path, *args: str, **kwargs: object) -> bytes:
+        calls.append((args, kwargs))
+        return original(root, *args, **kwargs)
+
+    monkeypatch.setattr(release_artifacts, "_run", recording)
+    release_artifacts.verify_manifest(repo, manifest)
+    batches = [(args, kwargs) for args, kwargs in calls if args[:2] == ("git", "cat-file")]
+    assert len(batches) == 1
+    assert batches[0][0] == ("git", "cat-file", "--batch")
+    assert batches[0][1]["timeout"] == 30
+    assert not any(args[:2] == ("git", "show") for args, _ in calls)
+
+
+def test_raw_blob_batch_preserves_binary_and_null_delimited_filename_binding(tmp_path: Path) -> None:
+    files = {
+        "space name.bin": bytes(range(256)),
+        "tab\tname.txt": b"tab\tdata\n",
+        "line\nbreak.txt": b"line\n\0break\r\n",
+        "quote\"name.txt": b"same payload",
+        "back\\slash.txt": b"same payload",
+        "empty.txt": b"",
+    }
+    repo, commit = _git_object_fixture(tmp_path, files)
+    assert release_artifacts._git_blob_contents(repo, commit) == files
+
+
+def test_manifest_checks_exact_tree_paths_without_archive_builder_filename_assumptions(tmp_path: Path) -> None:
+    # ZIP reading does not extract these names. Git-for-Windows archive creation
+    # may reject names that remain valid raw tree entries; do not relax it here.
+    files = {"space name": b"\0\xff", "tab\tname": b"same", "line\nname": b"same", "empty": b""}
+    repo, commit = _git_object_fixture(tmp_path, files)
+    archive = tmp_path / "fixture.zip"
+    prefix = "fixture/"
+    with zipfile.ZipFile(archive, "w") as bundle:
+        for path, content in files.items():
+            bundle.writestr(prefix + path, content)
+    manifest = tmp_path / "fixture.manifest.json"
+    manifest.write_text(json.dumps({
+        "schema_version": release_artifacts.SCHEMA_VERSION, "release": "test",
+        "source": {"ref": commit, "commit": commit, "archive_prefix": prefix},
+        "artifacts": {archive.name: release_artifacts._file_record(archive)},
+        "files": release_artifacts._archive_inventory(archive, prefix),
+    }), encoding="utf-8")
+    release_artifacts.verify_manifest(repo, manifest)
+
+
+@pytest.mark.parametrize("attribute", ["export-subst", "export-ignore"])
+def test_archive_export_attributes_cannot_replace_raw_git_blob_oracle(tmp_path: Path, attribute: str) -> None:
+    files = {".gitattributes": f"subject.txt {attribute}\n".encode(), "subject.txt": b"$Format:%H$\n"}
+    repo, commit = _git_object_fixture(tmp_path, files)
+    assert release_artifacts._git_blob_contents(repo, commit) == files
+    _, manifest = release_artifacts.build_source(repo, commit, "test", tmp_path / "release")
+    expected = "archive bytes do not match Git blob" if attribute == "export-subst" else "file set does not match"
+    with pytest.raises(release_artifacts.ReleaseError, match=expected):
+        release_artifacts.verify_manifest(repo, manifest)
+
+
+@pytest.mark.parametrize("fault", [
+    "missing", "wrong-id", "reordered", "wrong-type", "long-size", "short-size",
+    "negative-size", "noncanonical-size", "truncated-header", "truncated-payload",
+    "missing-delimiter", "missing-response", "trailing-bytes",
+])
+def test_raw_blob_batch_rejects_malformed_or_misbound_responses(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fault: str,
+) -> None:
+    first, second = b"1" * 40, b"2" * 40
+    tree = b"100644 blob " + first + b"\tfirst\0" + b"100644 blob " + second + b"\tsecond\0"
+    first_record = first + b" blob 3\nA\0B\n"
+    second_record = second + b" blob 2\n\xff\n\n"
+    output = first_record + second_record
+    if fault == "missing":
+        output = first + b" missing\n" + second_record
+    elif fault == "wrong-id":
+        output = output.replace(first, b"3" * 40, 1)
+    elif fault == "reordered":
+        output = second_record + first_record
+    elif fault == "wrong-type":
+        output = output.replace(b" blob ", b" tree ", 1)
+    elif fault in {"long-size", "short-size", "negative-size", "noncanonical-size"}:
+        size = {"long-size": b"9999999999999999999999999", "short-size": b"2", "negative-size": b"-3", "noncanonical-size": b"03"}[fault]
+        output = output.replace(b" blob 3\n", b" blob " + size + b"\n", 1)
+    elif fault == "truncated-header":
+        output = first + b" blob 3"
+    elif fault == "truncated-payload":
+        output = first + b" blob 3\nA"
+    elif fault == "missing-delimiter":
+        output = first_record[:-1] + second_record
+    elif fault == "missing-response":
+        output = first_record
+    else:
+        output += b"undeclared output"
+
+    def fake_run(root: Path, *args: str, **kwargs: object) -> bytes:
+        if args[:2] == ("git", "ls-tree"):
+            assert "-z" in args
+            return tree
+        assert args == ("git", "cat-file", "--batch")
+        assert kwargs["input_data"] == first + b"\n" + second + b"\n"
+        return output
+
+    monkeypatch.setattr(release_artifacts, "_run", fake_run)
+    with pytest.raises(release_artifacts.ReleaseError, match="Git blob batch"):
+        release_artifacts._git_blob_contents(tmp_path, "fixture")
+
+
+@pytest.mark.parametrize("tree", [
+    b"100644 blob " + b"1" * 40 + b"\tunterminated",
+    b"100644 blob " + b"1" * 40 + b"\t\0",
+    b"160000 commit " + b"1" * 40 + b"\tsubmodule\0",
+    b"100644 blob invalid\tfile\0",
+    (b"100644 blob " + b"1" * 40 + b"\tduplicate\0") * 2,
+])
+def test_raw_blob_batch_rejects_ambiguous_tree_mapping(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, tree: bytes,
+) -> None:
+    def fake_run(root: Path, *args: str, **kwargs: object) -> bytes:
+        assert args[:2] == ("git", "ls-tree"), "malformed tree must not trigger a batch read"
+        return tree
+
+    monkeypatch.setattr(release_artifacts, "_run", fake_run)
+    with pytest.raises(release_artifacts.ReleaseError, match="Git tree"):
+        release_artifacts._git_blob_contents(tmp_path, "fixture")
+
+
+def test_raw_blob_batch_timeout_fails_closed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def timed_out(*args: object, **kwargs: object) -> None:
+        raise subprocess.TimeoutExpired(args[0], kwargs["timeout"])
+
+    monkeypatch.setattr(release_artifacts.subprocess, "run", timed_out)
+    with pytest.raises(release_artifacts.ReleaseError, match="timed out"):
+        release_artifacts._git_blob_contents(tmp_path, "fixture")
+
+
 def test_source_release_manifest_binds_head_and_exact_archive_bytes(tmp_path: Path) -> None:
     result = subprocess.run(
         [

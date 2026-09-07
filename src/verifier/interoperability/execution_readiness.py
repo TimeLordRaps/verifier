@@ -613,13 +613,29 @@ def assess_execution_readiness(
         _add(finding_sets, ExecutionReadinessStatus.INVALID, f"analysis, plan, registry, and package binding cannot be recomposed: {type(exc).__name__}")
     else:
         if package is None and plan.package_digest is not None:
-            # Check the identity implied by the declared digest without treating
-            # that declaration as validated package bytes. Missing stays unknown.
+            # Package-only obligations cannot be reconstructed without bytes.
+            # Carry only exact-prefix declarations while retaining every
+            # independently reconstructed registry prerequisite and coordinate.
+            # This checks declared identity, not whether those dependencies exist
+            # or are complete; missing package bytes always remain unknown.
+            declared = {item.candidate_id: item for item in plan.candidates}
+            prefix = f"PACKAGE_DEPENDENCY:{plan.package_digest}:"
+            carried_candidates = tuple(
+                replace(candidate, execution_prerequisites=tuple(sorted({
+                    *candidate.execution_prerequisites,
+                    *(
+                        item for item in declared[candidate.candidate_id].execution_prerequisites
+                        if item.startswith(prefix) and len(item) > len(prefix)
+                    ),
+                }))) if candidate.candidate_id in declared else candidate
+                for candidate in expected_plan.candidates
+            )
             expected_plan = replace(
                 expected_plan,
+                candidates=carried_candidates,
                 package_digest=plan.package_digest,
                 plan_id=_declared_plan_id(
-                    analysis, registry, expected_plan.candidates, plan.package_digest,
+                    analysis, registry, carried_candidates, plan.package_digest,
                 ),
             )
         elif plan.package_digest != expected_plan.package_digest:

@@ -60,14 +60,68 @@ class ReleaseError(RuntimeError):
     """Release construction or verification failed closed."""
 
 
-def _run(repo: Path, *args: str, env: dict[str, str] | None = None) -> bytes:
-    completed = subprocess.run(
-        list(args), cwd=repo, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+def _run(
+    repo: Path, *args: str, env: dict[str, str] | None = None,
+    input_data: bytes | None = None, timeout: float | None = None,
+) -> bytes:
+    try:
+        completed = subprocess.run(
+            list(args), cwd=repo, env=env, input=input_data, timeout=timeout,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise ReleaseError(f"command timed out ({' '.join(args)})") from exc
     if completed.returncode:
         detail = completed.stderr.decode("utf-8", errors="replace").strip()
         raise ReleaseError(f"command failed ({' '.join(args)}): {detail}")
     return completed.stdout
+
+
+def _git_blob_contents(repo: Path, commit: str) -> dict[str, bytes]:
+    """Read exact tree-bound raw blobs, without archive attributes or filters."""
+
+    tree = _run(repo, "git", "ls-tree", "-r", "-z", commit, timeout=30)
+    if tree and not tree.endswith(b"\0"):
+        raise ReleaseError("Git tree output lacks its null terminator")
+    objects: dict[str, bytes] = {}
+    for entry in tree.split(b"\0")[:-1]:
+        metadata, separator, raw_path = entry.partition(b"\t")
+        match = re.fullmatch(rb"[0-7]{6} blob ([0-9a-f]{40}|[0-9a-f]{64})", metadata)
+        try:
+            path = raw_path.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ReleaseError("Git tree path is not representable as archive text") from exc
+        if not separator or not path or match is None or path in objects:
+            raise ReleaseError("Git tree has a malformed, non-blob, or duplicate entry")
+        objects[path] = match.group(1)
+    if not objects:
+        return {}
+    output = _run(
+        repo, "git", "cat-file", "--batch",
+        input_data=b"\n".join(objects.values()) + b"\n", timeout=30,
+    )
+    contents: dict[str, bytes] = {}
+    offset = 0
+    for path, object_id in objects.items():
+        end = output.find(b"\n", offset)
+        header = output[offset:end].split(b" ") if end >= 0 else []
+        if (
+            len(header) != 3 or header[0] != object_id or header[1] != b"blob"
+            or re.fullmatch(rb"0|[1-9][0-9]*", header[2]) is None
+        ):
+            raise ReleaseError(f"Git blob batch has a missing or mismatched header: {path}")
+        try:
+            size = int(header[2])
+        except ValueError as exc:
+            raise ReleaseError(f"Git blob batch has an invalid byte size: {path}") from exc
+        offset = end + 1
+        if size > len(output) - offset - 1 or output[offset + size:offset + size + 1] != b"\n":
+            raise ReleaseError(f"Git blob batch has truncated bytes or a bad delimiter: {path}")
+        contents[path] = output[offset:offset + size]
+        offset += size + 1
+    if offset != len(output):
+        raise ReleaseError("Git blob batch has unexpected trailing bytes")
+    return contents
 
 
 def _sha256(data: bytes) -> str:
@@ -780,13 +834,13 @@ def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None =
     if inventory != manifest.get("files"):
         raise ReleaseError("source archive member inventory does not match the manifest")
 
-    tracked = _run(repo, "git", "ls-tree", "-r", "--name-only", commit).decode().splitlines()
+    tracked = _git_blob_contents(repo, commit)
     if sorted(tracked) != sorted(inventory):
         raise ReleaseError("source archive file set does not match the bound Git commit")
     with zipfile.ZipFile(archive) as bundle:
         for relative, expected in inventory.items():
             archive_bytes = bundle.read(prefix + relative)
-            git_bytes = _run(repo, "git", "show", f"{commit}:{relative}")
+            git_bytes = tracked[relative]
             if archive_bytes != git_bytes or _sha256(git_bytes) != expected["sha256"]:
                 raise ReleaseError(f"archive bytes do not match Git blob: {relative}")
 

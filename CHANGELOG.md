@@ -14,6 +14,27 @@
 
 ## 1.3.0 - UNRELEASED
 
+### Integration contract preparation
+
+- Carry each selected stored implementation's declared package dependencies into exact
+  package-qualified planning prerequisites. Readiness no longer omits those obligations;
+  retained dependency artifacts do not establish resolution or installation. Changed plans
+  require fresh authorization-declaration bindings. Missing package bytes remain
+  `NOT_ESTABLISHED`, and independently checkable plan substitutions remain `INVALID`.
+  Registry-only planning and stored-format identifiers are unchanged.
+- Define certifier as an explicit certificate-issuance capability, distinct from proving,
+  checking and issuer authority. Existing relation, mechanism and native-contract metadata
+  carry that capability without changing the closed component-kind enumeration or adding
+  an unevidenced native integration. Supported analysis/comparison and experimental
+  catalog, package, planning, readiness and topology interfaces remain distinct.
+- Separate platform test intent from exact recorded observations and current-candidate
+  evidence. Preserve platform skips, the pre-retarget observation coordinate, and the
+  requirement for fresh integration and final-main publication evidence.
+- Read release-verification Git blobs in one bounded raw-object batch, preserving exact
+  path, byte and digest comparisons while avoiding one process launch per file. Reject
+  malformed or misbound responses and retain rejection of archive export substitutions
+  or omissions; no generated archive replaces the raw Git-byte comparison authority.
+
 ### Explicit graph topology interpretations
 
 - Add experimental graph-bound topology contracts and `vstd data topology`: distinguish

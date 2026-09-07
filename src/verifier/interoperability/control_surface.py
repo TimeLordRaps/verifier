@@ -7,7 +7,8 @@ The analyzer derives diagnostics only from geometry already represented by the
 caller.  It does not infer an expected profile, omitted ontology, or real-world
 completeness.  A catalog match is a candidate association, not a verification
 result and not authority to execute a component.
-Package-aware plans additionally bind revalidated retained package bytes;
+Package-aware plans additionally bind revalidated retained package bytes and carry
+the selected implementation's declared dependencies as unresolved prerequisites;
 registry-only plans identify declarations, not implementation payloads.
 """
 
@@ -15,7 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from enum import Enum
 from typing import Any, Optional
 
@@ -976,7 +977,9 @@ def plan_validation(
     exact pair matched by one descriptor. Separate partial matches cannot be
     combined into a candidate.
     An optional package is revalidated and its canonical bytes bind the plan
-    identity. Without one, the plan remains explicitly registry-only.
+    identity. Each candidate carries its implementation's package-qualified
+    dependency prerequisites; retained dependency bytes never resolve them.
+    Without a package, the plan remains explicitly registry-only.
     """
 
     if not isinstance(analysis, SurfaceAnalysis):
@@ -1061,6 +1064,21 @@ def plan_validation(
         else:
             candidates.append(_unmatched(hole, analysis.context))
 
+    if package is not None:
+        dependencies = {
+            binding.component_id: tuple(
+                f"PACKAGE_DEPENDENCY:{package_digest}:{dependency_id}"
+                for dependency_id in binding.dependency_ids
+            )
+            for binding in package.implementations
+        }
+        candidates = [
+            replace(candidate, execution_prerequisites=tuple(sorted({
+                *candidate.execution_prerequisites,
+                *dependencies.get(candidate.component_id, ()),
+            })))
+            for candidate in candidates
+        ]
     registry_digest = registry.canonical_digest()
     return ValidationPlan(
         plan_id=_declared_plan_id(analysis, registry, tuple(candidates), package_digest),
