@@ -1,6 +1,8 @@
 # Threat model
 
-> **Acronyms:** Executable and Linkable Format (ELF); identifier (ID); JavaScript Object Notation (JSON);
+> **Acronyms:** American National Standards Institute (ANSI);
+> Common Vulnerabilities and Exposures (CVE); Executable and Linkable Format (ELF);
+> GitHub Security Advisory (GHSA); identifier (ID); JavaScript Object Notation (JSON);
 > reduced instruction set computer (RISC); Secure Hash Algorithm 256-bit (SHA-256);
 > scalable transparent argument of knowledge (STARK); zero-identity/zero-knowledge (ZIZK);
 > zero-knowledge virtual machine (zkVM).
@@ -89,6 +91,22 @@ Version pins and a committed lock file constrain dependencies but do not indepen
 audit every transitive crate, compiler binary, installer, or build host. Two clean builds
 under the same recorded Windows Subsystem for Linux 2 environment reproduced the image
 ID; a build on another trusted host and an independent implementation remain unavailable.
+
+The host pins `rand` 0.8.6, the first patched 0.8 release for
+[`GHSA-cq8v-f236-94qc`](https://github.com/advisories/GHSA-cq8v-f236-94qc).
+The locked RISC Zero 3.0.6 dependency graph also contains `tracing-subscriber` 0.2.25
+through `ark-relations`. That crate is affected by
+[`GHSA-xwfj-jgwm-7wp5` / `CVE-2025-58160`](https://github.com/advisories/GHSA-xwfj-jgwm-7wp5)
+only when its terminal-formatting path emits attacker-controlled ANSI escape sequences.
+Both committed lock files compile it without the formatting feature: its resolved package
+block depends only on `tracing-core`. The repository's host and guest sources do not
+initialize a formatting subscriber. The vulnerable terminal-output mechanism is therefore
+absent from this exact example even though the transitive package version remains present.
+
+This boundary expires if the dependency features, RISC Zero version, lock files, or Rust
+sources change. Enabling terminal formatting requires upgrading to a fixed dependency graph
+and regenerating or revalidating the recorded proof coordinate; a prior alert dismissal
+must not be carried forward by package name alone.
 
 ### Semantic overreach
 

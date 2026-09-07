@@ -398,7 +398,7 @@ def test_tag_release_requires_clear_time_from_the_exact_checkout(tmp_path: Path)
     assert "Require TIME CLEAR in the exact tagged checkout" in workflow
     assert "python scripts/check_time_status.py" in workflow
     assert workflow.index("python scripts/check_time_status.py") < workflow.index(
-        "python -m pytest -q"
+        "python -u -m pytest -vv -s --durations=10 --timeout=60"
     )
 
 

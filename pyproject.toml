@@ -50,7 +50,7 @@ scitt = [
   "cbor2==6.1.4",
   "cryptography==50.0.0",
 ]
-test = ["pytest>=8.0", "coverage==7.15.4", "pyyaml>=6.0", "jsonschema>=4.18"]
+test = ["pytest>=8.0", "pytest-timeout==2.4.0", "coverage==7.15.4", "pyyaml>=6.0", "jsonschema>=4.18"]
 release = ["build==1.5.0", "twine==7.0.0"]
 
 [project.scripts]

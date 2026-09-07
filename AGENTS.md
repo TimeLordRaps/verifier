@@ -213,8 +213,8 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 - `src/verifier/runtime/` — `public_cli.py` (every CLI entry point) and `demo.py`.
 - `src/verifier/specifications/` — byte-identical copies of normative spec files.
 - `receipts/schema/` — receipt JSON Schemas. `standard/schemas/` — strict non-receipt
-  mechanism schemas. `examples/` — runnable specimens.
-- `experiments/` — non-normative studies with profile manifests, explicit horizons,
+  mechanism schemas. `examples/` — supported runnable specimens.
+- `experiments/` — non-normative roadmap-steering studies with profile manifests, explicit horizons,
   and blockers.
 - `src/verifier/experimental_workflow/` — optional workflow/profile interchange; it
   records allocation but never grants a VSTD verdict from repository state.

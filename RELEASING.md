@@ -29,8 +29,9 @@ release-candidate Zenodo metadata.
 2. From a clean checkout of that commit, run:
 
    ```bash
-   python -m pytest -q
-   python -m compileall -q src
+   python -m pip install ".[test]"
+   python -u -m pytest -vv -s --durations=10 --timeout=60
+   python -u -m compileall src
    ```
 
 3. Build a pre-tag candidate from the full commit SHA, not a working directory:

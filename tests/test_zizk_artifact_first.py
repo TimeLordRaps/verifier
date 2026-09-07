@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 
 
@@ -23,9 +24,35 @@ def test_zero_knowledge_mechanism_is_optional_and_pinned() -> None:
 
     assert 'version = "=3.0.6"' in host_manifest
     assert 'features = ["disable-dev-mode"]' in host_manifest
+    assert 'rand = "=0.8.6"' in host_manifest
     assert 'version = "=3.0.6"' in guest_manifest
     assert 'version = "=3.0.6"' in methods_manifest
     assert "zizk" not in (ROOT / "pyproject.toml").read_text(encoding="utf-8").lower()
+
+
+def test_pinned_security_advisory_boundaries_are_current() -> None:
+    locks = (
+        MECHANISM / "Cargo.lock",
+        MECHANISM / "methods" / "guest" / "Cargo.lock",
+    )
+    workspace_lock = locks[0].read_text(encoding="utf-8")
+    assert 'name = "rand"\nversion = "0.8.5"' not in workspace_lock
+    assert 'name = "rand"\nversion = "0.8.6"' in workspace_lock
+
+    for path in locks:
+        text = path.read_text(encoding="utf-8")
+        match = re.search(
+            r'\[\[package\]\]\nname = "tracing-subscriber"\nversion = "0\.2\.25"'
+            r'.*?(?=\n\[\[package\]\]|\Z)',
+            text,
+            flags=re.DOTALL,
+        )
+        assert match is not None
+        assert 'dependencies = [\n "tracing-core",\n]' in match.group(0)
+
+    threat_model = (MECHANISM / "THREAT_MODEL.md").read_text(encoding="utf-8")
+    assert "vulnerable terminal-output mechanism is therefore" in threat_model
+    assert "absent from this exact example" in threat_model
 
 
 def test_zero_knowledge_claim_boundary_is_explicit() -> None:

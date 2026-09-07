@@ -516,7 +516,7 @@ def test_relocated_bundle_rerun_keeps_declared_output_scope(tmp_path, capsys):
     source = tmp_path / "source"
     source.mkdir()
     _write_tiny_project(source)
-    subprocess.run(["git", "init", "-q"], cwd=source, check=True)
+    subprocess.run(["git", "init"], cwd=source, check=True, timeout=30)
     subprocess.run(
         ["git", "config", "user.email", "test" + "@" + "example.invalid"],
         cwd=source,
@@ -524,7 +524,7 @@ def test_relocated_bundle_rerun_keeps_declared_output_scope(tmp_path, capsys):
     )
     subprocess.run(["git", "config", "user.name", "VSTD Test"], cwd=source, check=True)
     subprocess.run(["git", "add", "double.py", "input.txt"], cwd=source, check=True)
-    subprocess.run(["git", "commit", "-q", "-m", "fixture"], cwd=source, check=True)
+    subprocess.run(["git", "commit", "-m", "fixture"], cwd=source, check=True, timeout=30)
 
     manifest = _base_manifest()
     receipt = capture_run(manifest, manifest_dir=source)

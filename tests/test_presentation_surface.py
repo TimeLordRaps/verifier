@@ -116,6 +116,11 @@ def test_maturity_table_requires_each_major_surface_and_explicit_conformance() -
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert module.maturity_table_violations(readme) == []
+    assert "## The 90-second mental model" in readme
+    assert "Exact surface-by-surface matrix for reviewers and integrators" in readme
+    assert readme.index("## The 90-second mental model") < readme.index(
+        "## Current maturity"
+    )
 
     combined = readme.replace("| VSTD-Graph-3 |", "| VSTD-Graph-2 |", 1)
     errors = module.maturity_table_violations(combined)
