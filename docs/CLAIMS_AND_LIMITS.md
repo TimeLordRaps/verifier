@@ -57,6 +57,13 @@ non-inferability. Actual awareness, permitted awareness and potentially inferabl
 remain separate. Version 1.3.0 defines their meaning and diagnostic boundaries, not an
 awareness tracker or enforcement of confidentiality of awareness.
 
+[Graph-topology interpretation](GRAPH_TOPOLOGY.md) can retain paradox candidates,
+simultaneous constraint loops and explicit backward-time relations. Its bounded Boolean
+and temporal consistency results concern only the exact encoded interpretation, not
+physical causation, uniqueness, complete modeling, receipt validity or conformance.
+Structural cycles do not prove contradictions; circular references cannot manufacture
+mechanism-earned forward artifact support. Missing semantics remain `NOT_ESTABLISHED`.
+
 Every claim below expands one of these boundaries into publishable wording and its
 required falsification surface.
 

@@ -110,7 +110,7 @@ def test_reference_package_roundtrip_binds_all_roles_without_execution(monkeypat
         captured["src/" + module.__name__.replace(".", "/") + ".py"] = Path(module.__file__).read_bytes()
     monkeypatch.setattr(example, "_capture_snapshot", lambda *_: (captured, "a" * 40, True))
     package = example.build_package(tmp_path, "1.3.0-test")
-    assert len(package.registry.components) == len(package.implementations) == 17
+    assert len(package.registry.components) == len(package.implementations) == 18
     assert "dirty=true" in package.description
     assert "Dependency closure NOT_ESTABLISHED" in package.description
     assert {binding.component_id for binding in package.implementations} == {

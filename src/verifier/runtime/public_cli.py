@@ -359,6 +359,14 @@ def build_parser() -> argparse.ArgumentParser:
     export_parser = data_commands.add_parser("export")
     export_parser.add_argument("receipt")
 
+    topology_parser = data_commands.add_parser(
+        "topology", help="Analyze a bounded, explicitly interpreted graph; no conformance result."
+    )
+    topology_parser.add_argument("receipt")
+    topology_parser.add_argument("--contract", required=True)
+    topology_parser.add_argument("--max-assignments", type=int, default=4096)
+    topology_parser.add_argument("--json", action="store_true")
+
     artifact_parser = subparsers.add_parser(
         "artifact",
         help="Freeze exact artifact bytes, add or verify a seal, or thaw a descendant.",
@@ -510,6 +518,11 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
 
 
 def _handle_data_command(args: argparse.Namespace) -> int:
+    if args.data_command == "topology":
+        from verifier.runtime.graph_topology_cli import handle_graph_topology_command
+
+        return handle_graph_topology_command(args)
+
     receipt_path = Path(args.receipt).resolve()
     try:
         payload, graph = _load_hypergraph(receipt_path)

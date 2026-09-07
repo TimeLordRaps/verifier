@@ -439,7 +439,7 @@ verification-surface holes with bound execution evidence and then reassessing th
 geometry. This example only detects and plans: it cannot establish checker availability
 at execution time, a native result, ordinary or self-closure, safety, authority to act,
 critical-domain readiness, or VSTD conformance. Its registry version and digest are bound
-into the plan. `--plan` uses the first-party catalog's 17 exact entry points across 12
+into the plan. `--plan` uses the first-party catalog's 18 exact entry points across 12
 catalog grouping labels, but does not select or invoke them. Those labels
 organize first-party code; they are not 12 independent or native implementations and do
 not represent 12 demonstrated interoperability results. The experimental readiness
@@ -456,6 +456,12 @@ conflict witnesses; absent identity or an indeterminate judgment remains
 `NOT_ESTABLISHED`, and malformed input is `INVALID`. It does not perform Boolean
 satisfiability analysis, infer that similarly named claims are equivalent, or establish
 physical truth, safety, conformance, or authority.
+
+The separate [experimental graph-topology checker](docs/GRAPH_TOPOLOGY.md) binds explicit
+simultaneous Boolean equations and clock-relative backward-time relations to existing graph
+ports. It reports structural features and bounded consistency separately, retains paradox
+candidates without inferring their truth, and does not bypass cyclic-assurance admission.
+The [non-critical specimen](examples/graph_topology/) exports matching inspection documents.
 
 Operating-system evidence is tracked per component in the
 [platform interoperability matrix](docs/PLATFORM_INTEROPERABILITY.md); support for one

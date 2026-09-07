@@ -154,6 +154,13 @@ of awareness constrains exposure and propagation; authorization and catalog matc
 not establish it. Version 1.3.0 names these boundaries in diagnostics but does not track
 awareness or enforce its confidentiality across artifact compositions.
 
+The separate [experimental graph-topology interpretation](GRAPH_TOPOLOGY.md) binds
+existing graph artifacts, transformations and ports to explicit simultaneous Boolean
+equations or clock-relative temporal relations. Structural cycles, encoded consistency,
+and mechanism-earned support remain distinct. `vstd data topology` runs this bounded
+diagnostic; catalog discovery and planning do not. Existing cyclic-assurance admission
+guards and receipt representations remain unchanged.
+
 VSTD-2 is the semantic target for adjacent adapters, not the adapter implementation
 itself. Geometry profiles constrain reusable selections of VSTD-2 geometry; they are connected only
 by explicit shared coordinates, seams, mappings, and evidence-bearing transformations.

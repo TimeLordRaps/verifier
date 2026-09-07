@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from itertools import permutations
+
+import pytest
+
 from verifier.core.geometry import (
     Coordinate,
     CoordinateJudgment,
@@ -261,6 +265,75 @@ def test_declared_acyclic_dependency_cycle_is_conflicted_and_deterministic() -> 
     }
 
 
+@pytest.mark.parametrize("dependency_order", tuple(permutations(range(3))))
+def test_acyclic_branching_triangle_is_consistent_for_every_dependency_order(
+    dependency_order: tuple[int, ...],
+) -> None:
+    first = _geometry("first", (CoordinateStatus.VERIFIED,) * 3)
+    second = _geometry("second", (CoordinateStatus.VERIFIED,) * 3)
+    identities = _identities(
+        first, second, ("proposition:A", "proposition:B", "proposition:C")
+    )
+    dependencies = (
+        AcyclicPropositionDependency("dependency:AB", "proposition:A", "proposition:B"),
+        AcyclicPropositionDependency("dependency:AC", "proposition:A", "proposition:C"),
+        AcyclicPropositionDependency("dependency:BC", "proposition:B", "proposition:C"),
+    )
+
+    expected = analyze_geometry_conflicts((first, second), identities, dependencies)
+    report = analyze_geometry_conflicts(
+        (second, first),
+        reversed(identities),
+        tuple(dependencies[index] for index in dependency_order),
+    )
+
+    assert report.status is GeometryConflictStatus.CONSISTENT
+    assert report.witnesses == ()
+    assert report.errors == ()
+    assert report.canonical_json_bytes() == expected.canonical_json_bytes()
+
+
+def test_real_cycles_exclude_acyclic_neighbors_and_preserve_self_loops() -> None:
+    first = _geometry("first", (CoordinateStatus.VERIFIED,) * 5)
+    second = _geometry("second", (CoordinateStatus.VERIFIED,) * 5)
+    identities = _identities(
+        first,
+        second,
+        tuple(f"proposition:{label}" for label in "ABCDE"),
+    )
+    dependencies = tuple(
+        AcyclicPropositionDependency(
+            f"dependency:{source}{target}",
+            f"proposition:{source}",
+            f"proposition:{target}",
+        )
+        for source, target in (("A", "B"), ("A", "C"), ("B", "C"),
+                               ("C", "B"), ("C", "D"), ("E", "E"))
+    )
+
+    report = analyze_geometry_conflicts((first, second), identities, dependencies)
+    reordered = analyze_geometry_conflicts(
+        (second, first), reversed(identities), reversed(dependencies)
+    )
+
+    assert report.status is GeometryConflictStatus.CONFLICTED
+    assert report.canonical_json_bytes() == reordered.canonical_json_bytes()
+    assert len(report.witnesses) == 2
+    assert all(
+        witness.kind is ConflictWitnessKind.DEPENDENCY_CYCLE
+        for witness in report.witnesses
+    )
+    assert {
+        witness.proposition_ids: frozenset(
+            dependency.dependency_id for dependency in witness.dependencies
+        )
+        for witness in report.witnesses
+    } == {
+        ("proposition:B", "proposition:C"): frozenset(("dependency:BC", "dependency:CB")),
+        ("proposition:E",): frozenset(("dependency:EE",)),
+    }
+
+
 def test_unknown_geometry_digest_in_identity_is_invalid() -> None:
     first = _geometry("first", (CoordinateStatus.VERIFIED,))
     second = _geometry("second", (CoordinateStatus.VERIFIED,))
@@ -278,7 +351,10 @@ def test_unknown_geometry_digest_in_identity_is_invalid() -> None:
     assert any("unknown geometry digest" in item for item in report.errors)
 
 
-def test_deep_acyclic_dependency_chain_does_not_exceed_recursion_limit() -> None:
+@pytest.mark.parametrize("branching", (False, True), ids=("chain", "branching"))
+def test_deep_acyclic_dependency_chain_does_not_exceed_recursion_limit(
+    branching: bool,
+) -> None:
     proposition_count = 1_100
     geometry = _geometry(
         "deep-chain", (CoordinateStatus.VERIFIED,) * proposition_count
@@ -300,6 +376,15 @@ def test_deep_acyclic_dependency_chain_does_not_exceed_recursion_limit() -> None
         )
         for index in range(proposition_count - 1)
     )
+    if branching:
+        dependencies += tuple(
+            AcyclicPropositionDependency(
+                dependency_id=f"dependency:shortcut:{index:04d}",
+                prerequisite_proposition_id=f"proposition:{index:04d}",
+                dependent_proposition_id=f"proposition:{index + 2:04d}",
+            )
+            for index in range(proposition_count - 2)
+        )
 
     report = analyze_geometry_conflicts((geometry,), identities, dependencies)
 

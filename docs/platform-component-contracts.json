@@ -76,6 +76,21 @@
       }
     },
     {
+      "component_id": "component:graph-topology-analyzer",
+      "label": "Experimental exact-graph-bound topology analyzer",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_graph_topology.py", "tests/test_graph_topology_integration.py"],
+      "test_scope": "Exercise exact graph and port binding, structural cycles without inferred contradiction, bounded simultaneous classical Boolean equations, temporal-offset consistency per clock and unit, and public planning integration. Passing does not establish physical causality, runtime control, assurance, or external verifier qualification.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
       "component_id": "component:platform-run-comparator",
       "label": "Bounded operating-system result comparator",
       "dependency_profiles": ["test"],

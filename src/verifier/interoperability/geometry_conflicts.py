@@ -245,17 +245,20 @@ def _dependency_cycles(
     for root in sorted(adjacency):
         if root in visited:
             continue
-        visited.add(root)
         traversal: list[tuple[str, bool]] = [(root, False)]
         while traversal:
             node, expanded = traversal.pop()
             if expanded:
                 finishing_order.append(node)
                 continue
+            if node in visited:
+                continue
+            # Mark on expansion, not when queued: a pending sibling must still
+            # be traversable through this node to preserve depth-first finish order.
+            visited.add(node)
             traversal.append((node, True))
             for target in reversed(sorted(adjacency[node])):
                 if target not in visited:
-                    visited.add(target)
                     traversal.append((target, False))
 
     assigned: set[str] = set()

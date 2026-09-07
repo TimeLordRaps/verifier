@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from importlib import import_module
+from inspect import signature
 from pathlib import Path
 from typing import get_origin, get_type_hints
 
@@ -19,7 +20,8 @@ from verifier.core.geometry_io import GeometryLoadError
 from verifier.core.kernel import KernelOutcome, KernelResult
 from verifier.core.witness import WitnessCorroborationResult, WitnessResultStatus
 from verifier.data.assurance import AssuranceFlowError, AssuranceLedger
-from verifier.interoperability import InteractionMode
+from verifier.data.models import ProvenanceHypergraph
+from verifier.interoperability import ComponentKind, ComponentLifecycle, InteractionMode
 from verifier.interoperability.reference_catalog import (
     REFERENCE_CATALOG_VERSION,
     reference_component_registry,
@@ -44,7 +46,7 @@ def test_reference_catalog_has_twelve_explicit_families_and_real_entry_points() 
     }
 
     assert registry.registry_version == REFERENCE_CATALOG_VERSION
-    assert len(registry.components) == 17
+    assert len(registry.components) == 18
     assert len(families) == 12
     assert families == {
         "artifact-control",
@@ -186,6 +188,124 @@ def test_refutation_relation_is_an_exact_catalog_capability() -> None:
     assert [item.component_id for item in checker] == [
         "component:vstd4-refutation-checker"
     ]
+
+
+def test_graph_topology_metadata_declares_typed_experimental_bounded_analysis() -> None:
+    component = reference_component_registry().get("component:graph-topology-analyzer")
+
+    assert component.kind is ComponentKind.CONSTRAINT
+    assert component.lifecycle is ComponentLifecycle.EXPERIMENTAL
+    assert component.verifier_family_ids == ("vstd-graph",)
+    assert component.implementation_ref == (
+        "verifier.interoperability.graph_topology:analyze_graph_topology"
+    )
+    assert component.accepted_schema_ids == ()
+    assert component.planning_surface_schema_ids == ("VSTD-2",)
+    assert component.emitted_schema_ids == (
+        "VSTD-GRAPH-TOPOLOGY-REPORT-EXPERIMENTAL-0.1",
+    )
+    assert component.native_versions == ("VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1",)
+    assert component.native_inputs == (
+        "max_assignments bound",
+        "typed GraphTopologyContract",
+        "typed ProvenanceHypergraph",
+    )
+    assert component.native_outputs == ("GraphTopologyReport",)
+    assert component.native_result_vocabulary == (
+        "CONFLICTED", "CONSISTENT", "INVALID", "NOT_ESTABLISHED"
+    )
+    assert component.supported_relations == ("relation:graph-topology",)
+    assert component.mechanism_ids == ("mechanism:graph-topology-analysis",)
+    assert component.interaction_modes == (InteractionMode.STATIC,)
+    assert "separate facets" in component.failure_behavior
+    assert "no aggregate verdict" in component.failure_behavior
+    assert "12 variables" in component.failure_behavior
+    assert "128 equations" in component.failure_behavior
+    assert "4096 assignments" in component.failure_behavior
+    assert "loaded separately" in component.transformation_loss
+    assert "physical causality" in component.claim_boundary
+
+
+def test_graph_topology_metadata_matches_the_native_callable_contract() -> None:
+    topology = import_module("verifier.interoperability.graph_topology")
+    component = reference_component_registry().get("component:graph-topology-analyzer")
+    analyzer = _resolve(component.implementation_ref)
+
+    assert get_type_hints(analyzer) == {
+        "graph": ProvenanceHypergraph,
+        "contract": topology.GraphTopologyContract,
+        "max_assignments": int,
+        "return": topology.GraphTopologyReport,
+    }
+    assert signature(analyzer).parameters["max_assignments"].default == 4096
+    assert component.native_outputs == (topology.GraphTopologyReport.__name__,)
+    assert component.native_versions == (topology.GRAPH_TOPOLOGY_SCHEMA_VERSION,)
+    assert component.emitted_schema_ids == (
+        topology.GRAPH_TOPOLOGY_REPORT_SCHEMA_VERSION,
+    )
+    assert component.native_result_vocabulary == tuple(
+        sorted(status.value for status in topology.GraphTopologyStatus)
+    )
+    assert topology.SUPPORTED_CONSTRAINT_LOGIC == "classical-boolean-equations-v1"
+
+
+@pytest.mark.parametrize(
+    ("override", "expected_ids"),
+    (
+        ({}, ("component:graph-topology-analyzer",)),
+        ({"relation_id": "relation:Graph-topology"}, ()),
+        ({"mechanism_id": "mechanism:graph-topology"}, ()),
+        ({"mechanism_id": "mechanism:vstd4-grounded-certificate-check"}, ()),
+        ({"interaction_mode": InteractionMode.OFFLINE_REPLAY}, ()),
+        ({"schema_id": "VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1"}, ()),
+        ({"schema_id": "VSTD-DATA-0.1"}, ()),
+    ),
+    ids=("exact", "relation-case", "mechanism-near-miss", "other-constraint",
+         "mode", "stored-contract-not-planning-schema", "graph-not-planning-schema"),
+)
+def test_graph_topology_catalog_matching_is_exact(
+    override: dict[str, object], expected_ids: tuple[str, ...]
+) -> None:
+    query = {
+        "schema_id": "VSTD-2",
+        "interaction_mode": InteractionMode.STATIC,
+        "relation_id": "relation:graph-topology",
+        "mechanism_id": "mechanism:graph-topology-analysis",
+    }
+    query.update(override)
+
+    matches = reference_component_registry().match_exact(**query)
+
+    assert tuple(component.component_id for component in matches) == expected_ids
+
+
+def test_graph_topology_platform_manifest_records_only_configured_intent() -> None:
+    root = Path(__file__).resolve().parents[1]
+    manifest = json.loads(
+        (root / "docs" / "platform-component-contracts.json").read_text(encoding="utf-8")
+    )
+    records = {
+        component["component_id"]: component for component in manifest["components"]
+    }
+    record = records["component:graph-topology-analyzer"]
+    component = reference_component_registry().get(record["component_id"])
+
+    assert len(records) == 18
+    assert record["label"] == component.label
+    assert record["coverage_kind"] == "BEHAVIOR"
+    assert record["dependency_profiles"] == ["test"]
+    assert record["catalog_optional_dependencies"] == list(component.optional_dependencies) == []
+    assert record["test_modules"] == [
+        "tests/test_graph_topology.py", "tests/test_graph_topology_integration.py"
+    ]
+    assert record["coordinate_intent"] == {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN",
+    }
+    assert "physical causality" in record["test_scope"]
+    assert "external verifier qualification" in record["test_scope"]
 
 
 def test_schema_parsers_and_artifact_verifier_fail_closed_on_representative_inputs(

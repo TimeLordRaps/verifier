@@ -175,6 +175,14 @@ explicitly names them. They may change in a minor release. That freedom does not
 frozen receipt identifiers, schemas, packaged specification bytes, command compatibility,
 or historical refutation obligations.
 
+The separately documented experimental `verifier.interoperability.graph_topology`
+module provides `GraphTopologyContract`, `GraphTopologyReport`, `GraphTopologyStatus`,
+`GraphTopologyError`, `graph_topology_binding_digest` and `analyze_graph_topology`.
+These are not top-level or interoperability-facade exports. It checks explicitly encoded
+finite Boolean equations and temporal offsets over an exact graph-bound interpretation;
+it is not the general VSTD-2 geometry satisfiability analyzer excluded above. No new
+numbered-profile result or receipt identifier is introduced. See [graph topology](GRAPH_TOPOLOGY.md).
+
 ## Version and deprecation rules
 
 - Patch releases preserve supported signatures and behavior while correcting defects.

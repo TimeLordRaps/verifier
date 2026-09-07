@@ -14,6 +14,21 @@
 
 ## 1.3.0 - UNRELEASED
 
+### Explicit graph topology interpretations
+
+- Add experimental graph-bound topology contracts and `vstd data topology`: distinguish
+  simultaneous Boolean equations from explicitly declared backward-time relations.
+  Report self-reference, cyclic groups, forks, joins and disconnected components separately
+  from bounded equation and clock-offset consistency. Paradox candidates remain annotations;
+  unsupported semantics and exhausted bounds remain `NOT_ESTABLISHED`. No physical causation,
+  receipt conformance or mechanism-earned support follows from these diagnostics.
+- Register the typed checker for exact nonexecuting planning and configure its tests on all
+  four existing platform coordinates. New registry/package/plan digests require fresh bindings;
+  historical run evidence does not qualify this added component. Existing receipt formats and
+  cyclic-assurance admission guards are unchanged. See [topology interpretation](docs/GRAPH_TOPOLOGY.md).
+- Repair a dependency traversal that falsely reported a cycle in an acyclic branching graph;
+  preserve genuine cycles, self-reference and deep-graph handling.
+
 ### Artifact awareness semantics
 
 - Define artifact awareness, awareness relations, awareness boundaries and confidentiality
@@ -44,7 +59,7 @@
   caller-supplied authorization declarations must bind the exact package-aware plan.
   Missing package bytes remain `NOT_ESTABLISHED`. Registry-only planning stays explicit,
   and these checks neither authenticate authority nor grant permission to execute.
-- Add a source-snapshot exporter for the 17 first-party catalog entries and portable
+- Add a source-snapshot exporter for the 18 first-party catalog entries and portable
   format specimens. Public hosting and native-runtime qualification remain separate
   gates; this stored-format foundation is part of the v1.3.0 interoperability scope.
 
@@ -61,7 +76,7 @@
   VSTD-2 planning-surface coordinate from schemas actually accepted by each native entry
   point; strict 1.0 migration preserves planning matches without inventing native input
   compatibility.
-- Populate a first-party planning catalog with 17 exact implementation entry points across
+- Populate a first-party planning catalog with 18 exact implementation entry points across
   12 explicitly counted catalog grouping labels, and expose it through the nonexecuting
   `vstd surface analyze --plan` path. The denominator is not a count of independent or
   external native verifiers.

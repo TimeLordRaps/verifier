@@ -18,6 +18,8 @@ study records, and roadmap-steering investigations.
   consume its catalog for nonexecuting planning.
 - [Non-critical compositions](interoperability_compositions/README.md): executable
   proof-producer/checker and adjacent-verifier examples with native results retained.
+- [Graph topology](graph_topology/README.md): simultaneous Boolean equations and explicitly
+  declared backward-time relations, with separate bounded consistency results.
 - [Experimental workflow example](experimental_workflow/README.md): runnable use of an
   experimental integration; GitHub workflow success does not grant a VSTD verdict.
 

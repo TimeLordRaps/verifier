@@ -81,7 +81,7 @@ complete-suite jobs, including a fixed canonical-digest specimen, exact binary-b
 round trips and package-selected planning. These are configured checks until a fresh
 hosted run executes them on each coordinate; portable storage does not qualify any
 retained native implementation. Storage is supporting infrastructure, not an extra
-independent verifier counted in the 17-component inventory below.
+independent verifier counted in the 18-component inventory below.
 
 The source-controlled
 [`platform-component-contracts.json`](platform-component-contracts.json) manifest
@@ -140,6 +140,7 @@ durable evidence does not strengthen what the mapped tests establish.
 |---|---|---|---|---|---|---|---|---|
 | Artifact freeze and seal verifier<br>`component:artifact-bundle-verifier` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_artifact_control.py` | `seal`, `test` | Exercise exact-byte freeze, finite cryptographic seal, external-anchor, verification, and thaw behavior. Passing does not establish privileged-write prevention, trusted time, or untested filesystem semantics. |
 | VSTD-1 generic-run receipt validator<br>`component:generic-run-validator` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_public_cli.py` | `test` | Execute the bounded command fixture, validate and inspect its receipt, and rerun it through the public command-line interface. |
+| Experimental exact-graph-bound topology analyzer<br>`component:graph-topology-analyzer` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_graph_topology.py`<br>`tests/test_graph_topology_integration.py` | `test` | Exercise exact graph and port binding, structural cycles without inferred contradiction, bounded simultaneous classical Boolean equations, temporal-offset consistency per clock and unit, and public planning integration. Passing does not establish physical causality, runtime control, assurance, or external verifier qualification. |
 | Bounded operating-system result comparator<br>`component:platform-run-comparator` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_platform_comparison.py` | `test` | Exercise positive, conflicted, incomplete, malformed, and binding-drift platform-comparison cases over recorded receipts. |
 | Recorded provenance policy verifier<br>`component:provenance-policy-verifier` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_public_data.py` | `test` | Exercise provenance-policy acceptance and rejection over bounded data-receipt fixtures. |
 | SCITT native-evidence consumer<br>`component:scitt-evidence-consumer` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `CONFIGURED_UNRUN` | `BEHAVIOR` | `tests/test_scitt_crypto_example.py`<br>`tests/test_scitt_interop.py` | `scitt`, `test` | Exercise semantic SCITT evidence mapping plus the local-key cryptographic example. Passing does not establish public transparency infrastructure or production trust roots. |
