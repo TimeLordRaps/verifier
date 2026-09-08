@@ -45,8 +45,8 @@ symbolic links and Windows reparse points, including source parent directories. 
 not search other repositories, capture arbitrary working directories, extract archives,
 install dependencies or invoke an implementation entrypoint.
 
-All **17 first-party entrypoints across 12 grouping labels** bind to the retained package
-source snapshot. This is not seventeen independent native integrations. The snapshot
+All **19 first-party entrypoints across 12 grouping labels** bind to the retained package
+source snapshot. This is not a count of independent native integrations. The snapshot
 includes distinct proof-producer and proof-checker entries, bounded platform comparison,
 receipt and graph rechecking, artifact verification and experimental adjacent-result
 composition. A source snapshot is not a wheel, an installation archive or an execution

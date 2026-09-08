@@ -151,8 +151,10 @@ three self-closure requirements unmatched and never calls its checker.
 The [artifact-awareness contract](ARTIFACT_AWARENESS.md) separates actual awareness,
 permitted awareness and potentially inferable awareness between artifacts. Confidentiality
 of awareness constrains exposure and propagation; authorization and catalog matching do
-not establish it. Version 1.3.0 names these boundaries in diagnostics but does not track
-awareness or enforce its confidentiality across artifact compositions.
+not establish it. Version 1.3.0 adds an experimental exact-graph-bound analyzer for finite,
+observer-relative knowledge-hypergraph closure across composed interfaces. It does not
+track awareness continuously, establish open-world inference completeness, or enforce
+confidentiality at runtime.
 
 The separate [experimental graph-topology interpretation](GRAPH_TOPOLOGY.md) binds
 existing graph artifacts, transformations and ports to explicit simultaneous Boolean

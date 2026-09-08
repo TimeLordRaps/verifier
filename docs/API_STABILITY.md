@@ -100,6 +100,7 @@ to every name under `verifier.interoperability`:
 | Geometry loading, modeled-surface analysis, platform comparison | Supported top-level exports; the version and deprecation rules below apply, without broader correctness claims. |
 | Component descriptors, kinds, catalog matching, stored packages, planning, execution-readiness preflight | Experimental; declarations and byte bindings do not supply execution, qualification, or authority. |
 | Graph topology | Experimental direct submodule only; separate from supported analysis and from a general geometry satisfiability checker. |
+| Composed untraversability | Experimental direct submodule only; observer-relative bounded knowledge closure, not universal confidentiality or runtime enforcement. |
 
 `verifier.interoperability` contains both the supported analyzer names exported by
 `verifier.__all__` and an experimental planning surface. Its complete characterized names
@@ -202,6 +203,17 @@ These are not top-level or interoperability-facade exports. It checks explicitly
 finite Boolean equations and temporal offsets over an exact graph-bound interpretation;
 it is not the general VSTD-2 geometry satisfiability analyzer excluded above. No new
 numbered-profile result or receipt identifier is introduced. See [graph topology](GRAPH_TOPOLOGY.md).
+
+The experimental `verifier.interoperability.untraversable` module provides strict
+contracts and reports for composed, observer-relative finite knowledge closure. It remains
+outside the top-level and interoperability-facade exports. Native `MATCH`, `FAIL`,
+`UNKNOWN` and `CONFLICTED` results stay bounded to the exact graph, observer, awareness
+mode, observation interval, transcript, capabilities, declared inference rules, evidence
+and resource coordinate. No result grants authorization, conformance, actor attribution,
+runtime mediation or universal confidentiality. Its unreleased experimental contract
+requires exact interface source-artifact coverage and exact graph-transformation incidence
+for graph-backed knowledge rules; incompatible future layouts require a new experimental
+schema identifier.
 
 ## Version and deprecation rules
 

@@ -46,7 +46,7 @@ def test_reference_catalog_has_twelve_explicit_families_and_real_entry_points() 
     }
 
     assert registry.registry_version == REFERENCE_CATALOG_VERSION
-    assert len(registry.components) == 18
+    assert len(registry.components) == 19
     assert len(families) == 12
     assert families == {
         "artifact-control",
@@ -249,6 +249,80 @@ def test_graph_topology_metadata_matches_the_native_callable_contract() -> None:
     assert topology.SUPPORTED_CONSTRAINT_LOGIC == "classical-boolean-equations-v1"
 
 
+def test_untraversability_metadata_matches_the_native_callable_contract() -> None:
+    evidence = import_module("verifier.core.evidence")
+    untraversable = import_module("verifier.interoperability.untraversable")
+    component = reference_component_registry().get(
+        "component:composed-untraversability-analyzer"
+    )
+    analyzer = _resolve(component.implementation_ref)
+
+    assert component.kind is ComponentKind.CONSTRAINT
+    assert component.lifecycle is ComponentLifecycle.EXPERIMENTAL
+    assert component.verifier_family_ids == ("vstd-graph",)
+    assert component.accepted_schema_ids == ()
+    assert component.planning_surface_schema_ids == ("VSTD-2",)
+    assert component.native_inputs == (
+        "VerificationSession",
+        "typed ProvenanceHypergraph",
+        "typed UntraversableContract",
+    )
+    assert get_type_hints(analyzer) == {
+        "graph": ProvenanceHypergraph,
+        "contract": untraversable.UntraversableContract,
+        "session": evidence.VerificationSession,
+        "return": untraversable.UntraversabilityReport,
+    }
+    assert component.native_versions == (
+        untraversable.UNTRAVERSABLE_SCHEMA_VERSION,
+    )
+    assert component.emitted_schema_ids == (
+        untraversable.UNTRAVERSABLE_REPORT_SCHEMA_VERSION,
+    )
+    assert component.native_result_vocabulary == tuple(
+        sorted(status.value for status in untraversable.UntraversabilityStatus)
+    )
+    assert component.supported_relations == (
+        "relation:composed-untraversability",
+    )
+    assert component.mechanism_ids == (
+        "mechanism:composed-untraversability-analysis",
+    )
+    assert component.interaction_modes == (
+        InteractionMode.OFFLINE_REPLAY,
+        InteractionMode.STATIC,
+    )
+    assert "universal confidentiality" in component.claim_boundary
+    assert "exhausted bounds remain UNKNOWN" in component.failure_behavior
+
+
+@pytest.mark.parametrize(
+    ("override", "expected_ids"),
+    (
+        ({}, ("component:composed-untraversability-analyzer",)),
+        ({"relation_id": "relation:composed-Untraversability"}, ()),
+        ({"mechanism_id": "mechanism:composed-untraversability"}, ()),
+        ({"schema_id": "VSTD-UNTRAVERSABLE-EXPERIMENTAL-0.1"}, ()),
+        ({"interaction_mode": InteractionMode.SIMULATION}, ()),
+    ),
+    ids=("exact", "relation-case", "mechanism-near-miss", "native-schema", "mode"),
+)
+def test_untraversability_catalog_matching_is_exact(
+    override: dict[str, object], expected_ids: tuple[str, ...]
+) -> None:
+    query = {
+        "schema_id": "VSTD-2",
+        "interaction_mode": InteractionMode.STATIC,
+        "relation_id": "relation:composed-untraversability",
+        "mechanism_id": "mechanism:composed-untraversability-analysis",
+    }
+    query.update(override)
+
+    matches = reference_component_registry().match_exact(**query)
+
+    assert tuple(component.component_id for component in matches) == expected_ids
+
+
 @pytest.mark.parametrize(
     ("override", "expected_ids"),
     (
@@ -290,7 +364,7 @@ def test_graph_topology_platform_manifest_records_only_configured_intent() -> No
     record = records["component:graph-topology-analyzer"]
     component = reference_component_registry().get(record["component_id"])
 
-    assert len(records) == 18
+    assert len(records) == 19
     assert record["label"] == component.label
     assert record["coverage_kind"] == "BEHAVIOR"
     assert record["dependency_profiles"] == ["test"]

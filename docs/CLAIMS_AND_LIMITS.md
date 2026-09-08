@@ -54,8 +54,11 @@ process.
 The [artifact-awareness contract](ARTIFACT_AWARENESS.md) applies alongside these limits:
 permission does not establish knowledge, and withholding direct access does not establish
 non-inferability. Actual awareness, permitted awareness and potentially inferable awareness
-remain separate. Version 1.3.0 defines their meaning and diagnostic boundaries, not an
-awareness tracker or enforcement of confidentiality of awareness.
+remain separate. Version 1.3.0 includes an experimental finite composed-graph analyzer:
+`MATCH` means only that complete bounded closure of the declared evidence-backed model did
+not reach a protected fact at the exact observer, mode, interval, query, capability and
+resource coordinate. It is not an awareness tracker, open-world non-inferability proof, or
+enforcement of confidentiality of awareness.
 
 [Graph-topology interpretation](GRAPH_TOPOLOGY.md) can retain paradox candidates,
 simultaneous constraint loops and explicit backward-time relations. Its bounded Boolean

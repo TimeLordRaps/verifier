@@ -237,6 +237,12 @@ or evidence of adoption merely because it exists. Profile manifests and the gene
 [`experiments/INDEX.md`](experiments/INDEX.md) are the portable experiment register when
 intentional experiment artifacts are present.
 
+The 17-entry counts below belong to this dated snapshot, not the current release
+inventory. For the live seed inventory, see the
+[stored-components example](examples/stored_components/README.md#what-is-retained);
+for implemented mechanism maturity, see the
+[architecture ownership matrix](docs/ARCHITECTURE.md#governing-zizk-architecture-and-mechanism-ownership).
+
 | Track | Public artifact | Current boundary | Next gate |
 |---|---|---|---|
 | Interoperability catalog and surface planning | [`examples/interoperability_planning/`](examples/interoperability_planning/) | Strict VSTD-2 loading plus stable modeled-hole analysis and command-line diagnostics; first-party inventory of 17 exact entry points across 12 organizational implementation-family labels—not 12 independent/native implementations or interoperability results; experimental immutable descriptors, exact candidate matching, registry-bound nonexecuting plans, declaration-bound structural conflict witnesses, and execution-readiness preflight; no checker execution or new closure result. | Add Boolean satisfiability analysis only over explicit geometry constraints with a checkable unsatisfiable witness, execute separately authorized components, bind their results, perform post-execution reanalysis, and obtain independent interoperability specimens. |

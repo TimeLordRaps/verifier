@@ -21,6 +21,21 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_artifact_first_experiment_distinguishes_implemented_mechanisms_from_horizons() -> None:
+    document = (ROOT / "experiments/artifact_first_mechanisms/README.md").read_text(
+        encoding="utf-8"
+    )
+    assert "## Implemented bounded mechanisms" in document
+    assert "## Remaining experimental work" in document
+    implemented, remaining = document.split("## Remaining experimental work", 1)
+    for binding in ("VSTD-GRAPH-ASSURANCE-1", "recheck_assurance_log", "record_trust"):
+        assert binding in implemented
+    for horizon in ("domain-independent", "independent", "hidden-witness", "proof backends"):
+        assert horizon in remaining
+    assert "../../docs/ARCHITECTURE.md" in document
+    assert "Only the following unfinished mechanisms" not in document
+
+
 def test_artifact_awareness_contract_preserves_release_and_inference_boundaries() -> None:
     document = (ROOT / "docs/ARTIFACT_AWARENESS.md").read_text(encoding="utf-8")
     for term in (
@@ -33,9 +48,10 @@ def test_artifact_awareness_contract_preserves_release_and_inference_boundaries(
         "Permission does not establish knowledge",
         "withholding direct access does not establish that something cannot be inferred",
         "No automatic awareness inheritance",
-        "does not implement an awareness tracker",
-        "does not enforce confidentiality of awareness",
-        "v1.4.0",
+        "does not implement a general inference engine",
+        "Continuous awareness tracking",
+        "non-inferability",
+        "verifier.interoperability.untraversable",
     ):
         assert boundary in document
     for guide in ("docs/ARCHITECTURE.md", "docs/CLAIMS_AND_LIMITS.md", "docs/COMPONENT_PACKAGES.md"):

@@ -20,6 +20,20 @@ ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "examples" / "stored_components" / "build_reference_package.py"
 
 
+def test_reference_example_documents_current_catalog_inventory() -> None:
+    registry = reference_component_registry()
+    families = {
+        family
+        for component in registry.components
+        for family in component.verifier_family_ids
+    }
+    document = " ".join(EXAMPLE.with_name("README.md").read_text(encoding="utf-8").split())
+    assert (
+        f"{len(registry.components)} first-party entrypoints across "
+        f"{len(families)} grouping labels"
+    ) in document
+
+
 def _example():
     spec = importlib.util.spec_from_file_location("vstd_stored_component_example", EXAMPLE)
     assert spec is not None and spec.loader is not None
@@ -110,7 +124,7 @@ def test_reference_package_roundtrip_binds_all_roles_without_execution(monkeypat
         captured["src/" + module.__name__.replace(".", "/") + ".py"] = Path(module.__file__).read_bytes()
     monkeypatch.setattr(example, "_capture_snapshot", lambda *_: (captured, "a" * 40, True))
     package = example.build_package(tmp_path, "1.3.0-test")
-    assert len(package.registry.components) == len(package.implementations) == 18
+    assert len(package.registry.components) == len(package.implementations) == 19
     assert "dirty=true" in package.description
     assert "Dependency closure NOT_ESTABLISHED" in package.description
     assert {binding.component_id for binding in package.implementations} == {

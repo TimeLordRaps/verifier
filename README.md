@@ -439,7 +439,7 @@ verification-surface holes with bound execution evidence and then reassessing th
 geometry. This example only detects and plans: it cannot establish checker availability
 at execution time, a native result, ordinary or self-closure, safety, authority to act,
 critical-domain readiness, or VSTD conformance. Its registry version and digest are bound
-into the plan. `--plan` uses the first-party catalog's 18 exact entry points across 12
+into the plan. `--plan` uses the first-party catalog's 19 exact entry points across 12
 catalog grouping labels, but does not select or invoke them. Those labels
 organize first-party code; they are not 12 independent or native implementations and do
 not represent 12 demonstrated interoperability results. The experimental readiness

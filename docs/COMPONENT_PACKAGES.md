@@ -151,6 +151,9 @@ See [artifact awareness and confidentiality of awareness](ARTIFACT_AWARENESS.md)
 Retaining bytes or hiding them from an inspection summary establishes neither what
 another artifact knows nor what it can infer. Package and dependency metadata may itself
 disclose confidential awareness relations; this format provides no disclosure control.
+A package may retain the experimental composed-untraversability analyzer and its catalog
+metadata for exact planning. Package integrity, catalog membership and readiness still do
+not establish that the analyzer ran or that its bounded result was `MATCH`.
 
 - Retained bytes and digest consistency do not establish correctness, safe execution,
   authentic publisher identity, an independently valid license grant or native availability.

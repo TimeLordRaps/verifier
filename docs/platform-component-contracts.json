@@ -61,6 +61,21 @@
       }
     },
     {
+      "component_id": "component:composed-untraversability-analyzer",
+      "label": "Experimental composed-graph untraversability analyzer",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_untraversable.py"],
+      "test_scope": "Exercise observer-relative composed closure, conjunctive inference, exact witnesses, evidence and resource uncertainty, conflict preservation, separate awareness modes, and graph substitution refusal. Passing establishes neither universal non-inferability, runtime mediation, authorization, identity, nor intent.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
       "component_id": "component:generic-run-validator",
       "label": "VSTD-1 generic-run receipt validator",
       "dependency_profiles": ["test"],

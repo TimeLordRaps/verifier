@@ -1,8 +1,9 @@
 # Artifact awareness and confidentiality of awareness
 
-Verifier Standard (VSTD) v1.3.0 introduces these explicit interoperability terms and
-prohibited inferences. This is a semantic and diagnostic contract, not a new receipt
-format, awareness-tracking implementation, or confidentiality guarantee.
+Verifier Standard (VSTD) v1.3.0 introduces these explicit interoperability terms,
+prohibited inferences, and an experimental bounded composed-graph analyzer. This is not
+a new receipt format, an awareness tracker, runtime mediation, or a general
+confidentiality guarantee.
 
 > Permission does not establish knowledge, and withholding direct access does not establish that something cannot be inferred.
 
@@ -50,8 +51,9 @@ Indirect inference nevertheless matters. In a non-critical inventory example, on
 private artifact records a quantity, a public artifact records 3 items, and a combined
 report discloses a total of 10 items. Given the explicit relation that the total is the
 sum of those two quantities, subtraction reveals the private quantity: 7 items. Direct
-access to the private artifact was unnecessary. This is an explanatory counterexample,
-not an implemented confidentiality analysis.
+access to the private artifact was unnecessary. The experimental analyzer can represent
+this as a conjunctive knowledge hyperedge and return a concrete `FAIL` witness when every
+premise and inference rule is supported by evidence.
 
 Review metadata as well as payloads: artifact names, existence, dependency edges, receipts,
 logs, output combinations and timing can reveal facts. A hash, signature, seal, omitted
@@ -61,23 +63,69 @@ recipient, under which authority, and what inference and execution channels it c
 Do not put confidential facts or confidential awareness relations into a public manifest
 merely to describe a boundary that is supposed to protect them.
 
+Fact and interface identifiers are caller-selected coordinates, not inherently opaque
+tokens. Their spelling, presence and relationships can disclose protected information.
+Contracts, witnesses and reports therefore require confidentiality handling appropriate
+to the graph they describe; commitment-derived identifiers can reduce semantic leakage
+but do not make the surrounding relationship metadata secret.
+
 ## v1.3.0 release boundary
 
-The release defines this vocabulary and includes its limits in existing package-inspection,
-surface-analysis, planning and execution-readiness diagnostics. It does not implement an awareness tracker
-and does not enforce confidentiality of awareness. It neither computes general inference
-closure nor proves that hidden information cannot be derived. Existing `READY` and integrity
-`PASS` results keep their original narrow meanings; no awareness or confidentiality verdict
-is inferred from them. Unsupported or missing evidence remains unestablished.
+The release defines this vocabulary and adds
+`verifier.interoperability.untraversable`, an experimental analyzer for finite monotone
+knowledge-hypergraph closure over an exact supplied composed graph. The contract binds one
+observer, awareness mode, observation interval, query transcript and count, accessible
+interfaces, capabilities, committed fact identities, protected facts, evidence-checked
+inference rules, disclosure-channel coverage and resource bounds. It preserves `FAIL`,
+`UNKNOWN`, `CONFLICTED` and `MATCH` as native results. A `FAIL` carries an all-premise
+hyperpath witness; `MATCH` requires completed bounded closure and passing declared-model
+completeness evidence.
+
+Admission takes one strict snapshot of the supplied graph. Each interface binds exactly
+the graph artifacts that source its exposed facts. A knowledge hyperedge tied to a graph
+transformation must cover exactly that transformation's input and output artifact sets;
+repeated use of one artifact in multiple input ports or multiple output ports is outside
+the v1.3.0 supported subset. A self-transformation may still name the same artifact once
+on each side; the input and output directions remain distinct in the graph digest and
+witness.
+Purely epistemic rules may omit a transformation identifier, but their evidence burden
+remains explicit. Graph, observer, interface, rule and completeness evidence coordinates
+are bound independently so evidence from a neighboring graph or awareness mode cannot be
+silently replayed.
+
+Every supported seed and rule binds the complete participating fact records, including
+their commitments, disclosure channels and source artifacts. A concrete `FAIL` witness
+retains whether each seed came from observer-state evidence or an interface disclosure,
+the supporting evaluation digest, exact rule and transformation coordinates, and a
+topological step order. Bounded rule firing uses the declared
+`goal-distance-then-depth-then-hyperedge-id-v1` schedule so an immediately available
+protected-fact path is considered before a same-depth intermediate path. Exhausting that
+schedule still produces `UNKNOWN`, never `MATCH`.
+
+The evidence-item and evidence-byte ceilings count the unique content-addressed evidence
+bundle once. They do not bound repeated mechanism processing of those bytes; execution
+time, memory and repeated-work controls remain separate prerequisites. The traversal
+schedule is deterministic and goal-directed but is not a minimum-hyperpath solver, so a
+small firing budget may conservatively return `UNKNOWN` even when a different schedule
+could find a longer witness within that number of firings.
+
+The analyzer does not establish real-world model completeness, universal
+non-inferability, actual human knowledge, authorization, runtime mediation, actor identity,
+intent, guilt, or confidentiality outside that exact coordinate. The analyzer does not implement a general inference engine:
+only explicitly modeled and evidence-supported hyperedges fire.
+Existing `READY` and integrity `PASS` results keep their original narrow meanings and do
+not inherit an untraversability result. Unsupported semantics, missing mechanisms or
+evidence, incomplete channel coverage, and exhausted bounds remain `UNKNOWN`.
 
 Serialized structures, receipt identifiers and stored-package formats are unchanged.
 Expanded diagnostic text changes earlier release-candidate report bytes and their digests.
 Regenerate affected analyses, plans and readiness reports, and rebind declarations that
 name their digests; do not reuse an earlier authorization binding for a changed plan.
 
-Awareness tracking, inference-sensitive composition and runtime enforcement require
-separately specified mechanisms, evidence and native-platform qualification. That work is
-planned for v1.4.0 alongside the hub; it is not supplied by these v1.3.0 definitions.
+Continuous awareness tracking, open-world inference discovery, runtime enforcement and
+automatic downstream admission remain future work requiring separately specified
+mechanisms, evidence and native-platform qualification. They are not supplied by this
+bounded v1.3.0 analyzer.
 
 Descriptive names remain primary. Bell-LaPadula's
 [information-flow model](https://csrc.nist.gov/files/pubs/conference/1998/10/08/proceedings-of-the-21st-nissc-1998/final/docs/early-cs-papers/bell76.pdf)

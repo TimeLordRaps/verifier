@@ -20,7 +20,17 @@ import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[1]
-IGNORED_PARTS = {".git", ".pytest_cache", ".venv", "build", "dist", "__pycache__"}
+IGNORED_PARTS = {
+    ".benchmarks",
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "build",
+    "dist",
+    "__pycache__",
+}
 TEXT_SUFFIXES = {
     ".cff",
     ".css",

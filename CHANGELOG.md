@@ -34,6 +34,9 @@
   path, byte and digest comparisons while avoiding one process launch per file. Reject
   malformed or misbound responses and retain rejection of archive export substitutions
   or omissions; no generated archive replaces the raw Git-byte comparison authority.
+- Exclude local benchmark, type-checker and linter caches from the public presentation
+  scan. Generated tool state is neither a publication surface nor stable input to release
+  claim checks.
 
 ### Explicit graph topology interpretations
 
@@ -57,10 +60,24 @@
   awareness, including indirect disclosure through composed artifacts.
 - Surface prohibited awareness inferences in existing inspection, analysis, planning and
   readiness diagnostics. Permission does not establish knowledge; withholding direct access
-  does not establish non-inferability. This adds no awareness tracker or confidentiality
-  enforcement; those mechanisms remain planned for v1.4.0. Expanded diagnostic text changes
-  candidate report bytes and digests, so affected plans and authorization bindings must be
-  regenerated. Receipt identifiers and stored-package formats are unchanged.
+  does not establish non-inferability.
+- Add an experimental exact-graph-bound analyzer for finite observer-relative knowledge
+  closure across composed higher-order interfaces. Conjunctive hyperpaths preserve the
+  all-premise derivation; exact supported traversal is `FAIL`, incompatible relevant rule
+  evidence remains `CONFLICTED`, missing evidence or exhausted bounds remain `UNKNOWN`, and
+  `MATCH` requires complete bounded closure of the declared model. This is not an awareness
+  tracker, universal non-inferability proof, runtime enforcement, authorization or actor
+  attribution. Expanded diagnostics and the added catalog component require fresh package,
+  plan and platform evidence. Receipt identifiers and the stored-package format are unchanged.
+- Bind observer, interface, rule and completeness evidence to the exact graph digest;
+  require interface sources and graph-backed rule inputs/outputs to match the strict graph
+  snapshot exactly. Caller-selected identifiers and emitted relationship metadata can
+  themselves disclose information, so analyzer contracts and reports inherit the source
+  graph's confidentiality requirements.
+- Bind complete fact records at observer, interface and rule support points; retain typed
+  seed evidence and exact graph-backed steps in concrete witnesses. Use an explicit
+  goal-directed bounded traversal schedule, while preserving `UNKNOWN` whenever its
+  firing or depth limits prevent completed closure.
 
 ### Stored verifier-like components
 
@@ -80,7 +97,7 @@
   caller-supplied authorization declarations must bind the exact package-aware plan.
   Missing package bytes remain `NOT_ESTABLISHED`. Registry-only planning stays explicit,
   and these checks neither authenticate authority nor grant permission to execute.
-- Add a source-snapshot exporter for the 18 first-party catalog entries and portable
+- Add a source-snapshot exporter for the 19 first-party catalog entries and portable
   format specimens. Public hosting and native-runtime qualification remain separate
   gates; this stored-format foundation is part of the v1.3.0 interoperability scope.
 
@@ -97,7 +114,7 @@
   VSTD-2 planning-surface coordinate from schemas actually accepted by each native entry
   point; strict 1.0 migration preserves planning matches without inventing native input
   compatibility.
-- Populate a first-party planning catalog with 18 exact implementation entry points across
+- Populate a first-party planning catalog with 19 exact implementation entry points across
   12 explicitly counted catalog grouping labels, and expose it through the nonexecuting
   `vstd surface analyze --plan` path. The denominator is not a count of independent or
   external native verifiers.
