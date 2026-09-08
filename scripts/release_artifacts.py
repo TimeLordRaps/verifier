@@ -1,5 +1,6 @@
-"""Terminology: Secure Hash Algorithm 256-bit (SHA-256); Software Bill of Materials
-(SBOM); uniform resource locator (URL); Verifier Standard (VSTD); ZIP archive format (ZIP).
+"""Terminology: JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit
+(SHA-256); Software Bill of Materials (SBOM); Unicode Transformation Format, 8-bit
+(UTF-8); uniform resource locator (URL); Verifier Standard (VSTD); ZIP archive format (ZIP).
 
 Build and verify public release artifacts from an exact public Git ref.
 
