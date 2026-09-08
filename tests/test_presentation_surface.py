@@ -58,6 +58,12 @@ def test_artifact_awareness_contract_preserves_release_and_inference_boundaries(
         assert "ARTIFACT_AWARENESS.md" in (ROOT / guide).read_text(encoding="utf-8")
 
 
+def test_architecture_separates_bounded_untraversability_from_hidden_witness_proving() -> None:
+    document = (ROOT / "docs/ARCHITECTURE.md").read_text(encoding="utf-8")
+    assert "implemented bounded composed-graph untraversability analyzer" in document
+    assert "does not prove arbitrary hidden-witness predicates" in document
+
+
 class _BuiltPageLinks(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
