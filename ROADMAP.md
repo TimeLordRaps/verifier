@@ -201,16 +201,52 @@ shared interoperability vocabulary without redefining VSTD outcomes. Whether an 
 belongs in an optional module or a separately governed repository remains a future coupling
 and ownership decision.
 
+### Experimental catalog-to-plan integration
+
+The current unreleased implementation connects a domain-neutral component catalog to
+surface detection and planning without adding a receipt field or executing a component:
+
+```text
+typed VSTD-2 geometry
+  -> modeled-hole analysis
+  -> exact catalog candidates
+  -> nonexecuting validation plan
+  -> nonexecuting execution-readiness preflight
+```
+
+The plan binds the geometry digest plus registry version and digest. Domain tags support
+grouping and discovery but cannot create a capability match. Catalog schema 1.1 separates
+the VSTD-2 planning-surface schema from native accepted-input schemas; planning schema,
+interaction mode, relation, and mechanism coordinates must match exactly where applicable.
+That candidate match does not imply native input compatibility. **Validation**
+remains the future process of attempting to discharge holes with bound execution evidence
+and then reassessing the geometry. An experimental readiness preflight now checks exact
+native-input, planned evidence-output, prerequisite, caller-supplied authorization, and
+reassessment declarations without importing or invoking a component. A separate
+declaration-bound structural diagnostic preserves explicit cross-geometry judgment
+contradictions and cycles; it is not Boolean satisfiability analysis. Component execution,
+evidence acquisition, conflict adjudication, and post-execution reanalysis are later
+integration gates. No candidate association or readiness result establishes closure,
+safety, authority to act, or critical-domain readiness.
+
 ## Current experimental development tracks
 
-This dated register records substantive work as of **2026-08-29**. A committed experiment,
+This dated register records substantive work as of **2026-09-04**. A committed experiment,
 passing test, or generated index is not normative, released, reproduced by a distinct actor,
 or evidence of adoption merely because it exists. Profile manifests and the generated
 [`experiments/INDEX.md`](experiments/INDEX.md) are the portable experiment register when
 intentional experiment artifacts are present.
 
+The 17-entry counts below belong to this dated snapshot, not the current release
+inventory. For the live seed inventory, see the
+[stored-components example](examples/stored_components/README.md#what-is-retained);
+for implemented mechanism maturity, see the
+[architecture ownership matrix](docs/ARCHITECTURE.md#governing-zizk-architecture-and-mechanism-ownership).
+
 | Track | Public artifact | Current boundary | Next gate |
 |---|---|---|---|
+| Interoperability catalog and surface planning | [`examples/interoperability_planning/`](examples/interoperability_planning/) | Strict VSTD-2 loading plus stable modeled-hole analysis and command-line diagnostics; first-party inventory of 17 exact entry points across 12 organizational implementation-family labels—not 12 independent/native implementations or interoperability results; experimental immutable descriptors, exact candidate matching, registry-bound nonexecuting plans, declaration-bound structural conflict witnesses, and execution-readiness preflight; no checker execution or new closure result. | Add Boolean satisfiability analysis only over explicit geometry constraints with a checkable unsatisfiable witness, execute separately authorized components, bind their results, perform post-execution reanalysis, and obtain independent interoperability specimens. |
+| Stored interoperability components | [`examples/stored_components/`](examples/stored_components/) | Experimental v1.3.0 stored-format foundation: exact retained bytes, catalog and implementation bindings, dependency declarations, deterministic storage, strict inspection, and package-selected nonexecuting hole planning. The seed exporter captures 17 first-party entries, not 17 independent native integrations. | Hosted discovery and distribution; separately qualified native execution and dependency resolution. Storage integrity does not imply native correctness or authorization. |
 | SCITT interoperability | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) | Experimental adapter, rerunnable real-COSE specimen with ephemeral keys, and adversarial tests; no IETF review or external interoperability result. | Independent implementation and interoperability result. |
 | Artifact-first mechanism completion | [`standard/schemas/vstd-graph-assurance-1.schema.json`](standard/schemas/vstd-graph-assurance-1.schema.json) | Event serialization, evidence-bound TRUST/ROT/RUST dispatch, challenge projection, conflict resolution, structural concentration, explicit localization, and bounded diagnostic attribution are implemented and adversarially tested. The complete domain-independent transfer algebra, complete trichotomy derivation, cross-implementation replay, and specific optional proof backends remain open. | Supply and falsify real domain mechanisms without creating actor-tied trust or topology-derived assurance. |
 | Workflow and allocation | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Strict validator, verdict-neutral GitHub adapter, generated index, and allocation records; no optimality claim or independent consumer. | A second observable adapter and independent consumer. |

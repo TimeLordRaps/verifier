@@ -50,6 +50,13 @@ declared resource bounds, prior commitment, and the refutation surface. It is no
 VSTD-4 object and carries no VSTD-4 conformance field. The container and its selected
 fields participate in the canonical digest.
 
+When the refutation surface declares platform comparability, new captures add the
+capture-owned binding version `VSTD-PLATFORM-COMPARISON-ENVIRONMENT-1` plus the observed
+Python implementation and machine identity. This is an additive comparison binding, not
+a new receipt profile or numbered VSTD profile. Historical generic-run receipts retain
+their original canonical bytes and remain readable, but absence of the binding cannot
+establish a platform-comparison result.
+
 ### 1.1 Non-wire vocabulary
 
 `VSTD-2.md` section 7 defines prose lifecycle vocabulary. Only the

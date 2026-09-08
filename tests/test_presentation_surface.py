@@ -14,10 +14,54 @@ from pathlib import Path
 import sys
 from urllib.parse import unquote
 
+import pytest
 import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_artifact_first_experiment_distinguishes_implemented_mechanisms_from_horizons() -> None:
+    document = (ROOT / "experiments/artifact_first_mechanisms/README.md").read_text(
+        encoding="utf-8"
+    )
+    assert "## Implemented bounded mechanisms" in document
+    assert "## Remaining experimental work" in document
+    implemented, remaining = document.split("## Remaining experimental work", 1)
+    for binding in ("VSTD-GRAPH-ASSURANCE-1", "recheck_assurance_log", "record_trust"):
+        assert binding in implemented
+    for horizon in ("domain-independent", "independent", "hidden-witness", "proof backends"):
+        assert horizon in remaining
+    assert "../../docs/ARCHITECTURE.md" in document
+    assert "Only the following unfinished mechanisms" not in document
+
+
+def test_artifact_awareness_contract_preserves_release_and_inference_boundaries() -> None:
+    document = (ROOT / "docs/ARTIFACT_AWARENESS.md").read_text(encoding="utf-8")
+    for term in (
+        "Artifact awareness", "Awareness relation", "Awareness boundary",
+        "Confidentiality of awareness", "Actual awareness", "Permitted awareness",
+        "Potentially inferable awareness",
+    ):
+        assert term in document
+    for boundary in (
+        "Permission does not establish knowledge",
+        "withholding direct access does not establish that something cannot be inferred",
+        "No automatic awareness inheritance",
+        "does not implement a general inference engine",
+        "Continuous awareness tracking",
+        "non-inferability",
+        "verifier.interoperability.untraversable",
+    ):
+        assert boundary in document
+    for guide in ("docs/ARCHITECTURE.md", "docs/CLAIMS_AND_LIMITS.md", "docs/COMPONENT_PACKAGES.md"):
+        assert "ARTIFACT_AWARENESS.md" in (ROOT / guide).read_text(encoding="utf-8")
+
+
+def test_architecture_separates_bounded_untraversability_from_hidden_witness_proving() -> None:
+    document = (ROOT / "docs/ARCHITECTURE.md").read_text(encoding="utf-8")
+    assert "implemented bounded composed-graph untraversability analyzer" in document
+    assert "does not prove arbitrary hidden-witness predicates" in document
 
 
 class _BuiltPageLinks(HTMLParser):
@@ -239,9 +283,9 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     )
     assert coordinate == {
         "canonical_base_url": "https://timelordraps.github.io/verifier/",
-        "documentation_version": "1.2.0",
+        "documentation_version": "1.3.0",
         "normative_source": "standard/",
-        "release_state": "RELEASED",
+        "release_state": "UNRELEASED_CANDIDATE",
         "schema_version": 1,
         "source_ref": "test-commit",
     }
@@ -430,6 +474,18 @@ def test_architecture_map_names_every_published_schema() -> None:
         assert schema.name in architecture, schema.name
 
 
+def test_reader_guides_match_supported_strict_geometry_loading_boundary() -> None:
+    architecture = (ROOT / "docs" / "ARCHITECTURE.md").read_text(encoding="utf-8")
+    claims = (ROOT / "docs" / "CLAIMS_AND_LIMITS.md").read_text(encoding="utf-8")
+
+    for text in (architecture, claims):
+        assert "Strict VSTD-2 wire loading remains unsupported" not in text
+    assert "load_verification_geometry" in architecture
+    assert "vstd surface analyze" in architecture
+    assert "truth or completeness" in architecture
+    assert "Successful loading does not establish the truth or completeness" in claims
+
+
 def test_conformance_gate_requires_real_scitt_cose_integration() -> None:
     workflow = yaml.safe_load(
         (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
@@ -441,6 +497,34 @@ def test_conformance_gate_requires_real_scitt_cose_integration() -> None:
     assert "import cbor2, cryptography, scitt_cose" in steps
     assert "tests/test_scitt_crypto_example.py" in steps
     assert "scitt-crypto" in jobs["conformance-gate"]["needs"]
+
+
+def test_installed_wheel_smoke_exercises_supported_surface_analysis() -> None:
+    workflow = yaml.safe_load(
+        (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    )
+    commands = "\n".join(
+        str(step.get("run", ""))
+        for step in workflow["jobs"]["installed-wheel-smoke"]["steps"]
+    )
+
+    assert "vstd surface analyze" in commands
+    assert "verification_geometry_residual/geometry.json" in commands
+    assert "load_verification_geometry" in commands
+    assert "analyze_verification_surface" in commands
+
+
+def test_platform_release_evidence_remains_bounded_and_durable() -> None:
+    platform = (ROOT / "docs" / "PLATFORM_INTEROPERABILITY.md").read_text(
+        encoding="utf-8"
+    )
+    releasing = (ROOT / "RELEASING.md").read_text(encoding="utf-8")
+
+    assert "repository_checks_run_id" in releasing
+    assert "pull-request run or synthetic merge is not" in releasing
+    assert "verification_effect = NONE" in platform
+    assert "retained for 30 days" in platform
+    assert "attested, and attached to the immutable release" in platform
 
 
 def test_repository_checks_do_not_self_certify_conformance() -> None:
@@ -520,6 +604,139 @@ def test_branch_coverage_is_retained_without_a_global_threshold() -> None:
     assert "coverage" in jobs["conformance-gate"]["needs"]
 
 
+def test_cross_platform_comparability_uses_three_native_operating_systems() -> None:
+    workflow = yaml.safe_load(
+        (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    )
+    jobs = workflow["jobs"]
+    release_platforms = set(jobs["release-integrity"]["strategy"]["matrix"]["os"])
+    assert release_platforms == {
+        "ubuntu-latest",
+        "windows-latest",
+        "macos-latest",
+    }
+
+    observation = jobs["platform-comparability-observation"]
+    runner_platforms = {
+        (item["runner"], item["platform"])
+        for item in observation["strategy"]["matrix"]["include"]
+    }
+    assert runner_platforms == {
+        ("ubuntu-latest", "Linux"),
+        ("windows-latest", "Windows"),
+        ("macos-15-intel", "Darwin"),
+    }
+    observation_setup = next(
+        step
+        for step in observation["steps"]
+        if str(step.get("uses", "")).startswith("actions/setup-python@")
+    )
+    assert observation_setup["with"]["python-version"] == "3.12.10"
+    observation_commands = "\n".join(
+        str(step.get("run", "")) for step in observation["steps"]
+    )
+    assert "platform.system()" in observation_commands
+    assert "vstd validate" in observation_commands
+    assert "vstd reproduce" in observation_commands
+
+    aggregate = jobs["platform-comparability"]
+    aggregate_commands = "\n".join(
+        str(step.get("run", "")) for step in aggregate["steps"]
+    )
+    assert aggregate["needs"] == ["platform-comparability-observation"]
+    aggregate_setup = next(
+        step
+        for step in aggregate["steps"]
+        if str(step.get("uses", "")).startswith("actions/setup-python@")
+    )
+    assert aggregate_setup["with"]["python-version"] == "3.12.10"
+    assert "vstd compare-platforms" in aggregate_commands
+    assert "platform-comparison.json" in aggregate_commands
+    assert "platform-comparability-observation" in jobs["conformance-gate"]["needs"]
+    assert "platform-comparability" in jobs["conformance-gate"]["needs"]
+
+
+def test_portable_python_contracts_cover_x64_and_arm64_platforms() -> None:
+    workflow = yaml.safe_load(
+        (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    )
+    jobs = workflow["jobs"]
+    contracts = jobs["platform-python-contracts"]
+    coordinates = {
+        (
+            item["runner"],
+            item["expected_platform"],
+            item["expected_machine"],
+            item["expected_runner_arch"],
+        )
+        for item in contracts["strategy"]["matrix"]["include"]
+    }
+    assert coordinates == {
+        ("ubuntu-24.04", "Linux", "x86_64", "X64"),
+        ("windows-2025", "Windows", "AMD64", "X64"),
+        ("macos-15-intel", "Darwin", "x86_64", "X64"),
+        ("macos-15", "Darwin", "arm64", "ARM64"),
+    }
+    setup = next(
+        step
+        for step in contracts["steps"]
+        if str(step.get("uses", "")).startswith("actions/setup-python@")
+    )
+    assert setup["with"]["python-version"] == "3.12.10"
+    commands = "\n".join(str(step.get("run", "")) for step in contracts["steps"])
+    assert 'pip install ".[test,seal,scitt]"' in commands
+    assert "python -u -m pytest -vv -s --durations=10 --timeout=60" in commands
+    assert "tests/test_" not in commands
+    assert "platform-environment.json" in commands
+    assert "--junitxml=platform-contracts.xml" in commands
+    assert commands.index("write(json.dumps(observed") < commands.index("assert actual")
+    assert contracts["steps"].index(
+        next(
+            step
+            for step in contracts["steps"]
+            if "platform-environment.json" in str(step.get("run", ""))
+        )
+    ) < contracts["steps"].index(
+        next(
+            step
+            for step in contracts["steps"]
+            if 'pip install ".[test,seal,scitt]"' in str(step.get("run", ""))
+        )
+    )
+    for field in (
+        "executed_git_sha",
+        "git_ref",
+        "event_name",
+        "run_id",
+        "run_attempt",
+        "pull_request_head_sha",
+        "pull_request_base_sha",
+        "image_os",
+        "image_version",
+    ):
+        assert field in commands
+    assert "assert observed['image_os'] and observed['image_version']" in commands
+    upload = next(
+        step
+        for step in contracts["steps"]
+        if "upload-artifact@" in str(step.get("uses", ""))
+    )
+    assert set(upload["with"]["path"].splitlines()) == {
+        "platform-environment.json",
+        "platform-contracts.xml",
+    }
+    assert upload["with"]["if-no-files-found"] == "error"
+    assert upload["if"] == (
+        "always() && steps.platform-evidence-boundary.outcome == 'success'"
+    )
+    assert "-p scripts.pytest_public_evidence" in commands
+    assert "platform-python-contracts" in jobs["conformance-gate"]["needs"]
+    conformance_commands = "\n".join(
+        str(step.get("run", "")) for step in jobs["conformance-gate"]["steps"]
+    )
+    assert 'test "$PLATFORM_PYTHON_CONTRACTS" = success' in conformance_commands
+
+
 def test_pages_builder_refuses_to_merge_into_existing_content(tmp_path: Path) -> None:
     path = ROOT / "scripts/build_pages.py"
     spec = importlib.util.spec_from_file_location("build_pages_safety", path)
@@ -551,6 +768,7 @@ def test_generated_reference_covers_commands_and_top_level_exports() -> None:
 
     page = (ROOT / "docs/reference.html").read_text(encoding="utf-8")
     assert page == module.render()
+    assert "UNRELEASED SOURCE" in page
 
     import verifier
     from verifier.runtime.public_cli import build_parser
@@ -567,6 +785,51 @@ def test_generated_reference_covers_commands_and_top_level_exports() -> None:
     )
     assert "VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM" in page
     assert "Monotone reproduction-fidelity states" in page
+
+
+@pytest.mark.parametrize(
+    ("docstring", "expected"),
+    (
+        ("An enumeration.", "Enumeration of the exported values."),
+        ("str(object='') -> str", "Enumeration of the exported values."),
+        ("Deliberate interaction modes.", "Deliberate interaction modes."),
+    ),
+    ids=("python310-default", "inherited-str-default", "explicit-docstring"),
+)
+def test_generated_enum_summary_is_interpreter_independent(
+    monkeypatch: pytest.MonkeyPatch, docstring: str, expected: str
+) -> None:
+    from verifier import InteractionMode
+
+    spec = importlib.util.spec_from_file_location(
+        "build_reference_enum", ROOT / "scripts/build_reference.py"
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    monkeypatch.setattr(InteractionMode, "__doc__", docstring)
+    entry = module._api_section().split('id="api-InteractionMode"', 1)[1].split(
+        "</article>", 1
+    )[0]
+    assert f'<p class="ref-help">{expected}</p>' in entry
+    assert "LIVE_MUTATING" in entry
+
+
+def test_generated_reference_coordinate_is_release_aware() -> None:
+    path = ROOT / "scripts/build_reference.py"
+    spec = importlib.util.spec_from_file_location("build_reference_coordinate", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    assert module._source_coordinate(
+        "1.3.0",
+        "# Changelog\n\n## Unreleased\n\n## 1.3.0 - 2026-09-08\n",
+    ) == "RELEASED SOURCE · package version 1.3.0"
+    assert module._source_coordinate(
+        "1.2.0",
+        "# Changelog\n\n## Unreleased\n\n- next change\n\n## 1.2.0 - 2026-09-01\n",
+    ) == "UNRELEASED SOURCE · base package version 1.2.0"
 
 
 def test_generated_reference_detects_drift() -> None:

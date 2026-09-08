@@ -7,6 +7,9 @@ from enum import Enum
 
 RUN_SCHEMA_VERSION = "VSTD-1"
 RUN_RECEIPT_KIND = "generic_computational_run"
+PLATFORM_COMPARISON_ENVIRONMENT_BINDING_VERSION = (
+    "VSTD-PLATFORM-COMPARISON-ENVIRONMENT-1"
+)
 
 
 class RunError(RuntimeError):

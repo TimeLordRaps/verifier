@@ -55,6 +55,24 @@ The matching supported portable-record exports are
 Compatibility `vstd4_depth` and `graph_level`-style candidate results do not become
 conformance results merely because the evidence-bound APIs also exist.
 
+At the current unreleased source coordinate, `compare_platform_run_receipts`,
+`PlatformComparisonResult`, and `PlatformComparisonStatus` are supported additions for
+the next minor release's bounded operating-system comparison API.
+They operate on existing VSTD-1 generic-run receipts and return a diagnostic object, not
+a new receipt or conformance result. `PASS` requires complete declared platform coverage,
+canonical integrity, equal non-platform bindings, and equal declared result projections;
+`CONFLICTED`, `NOT_ESTABLISHED`, and `INVALID` remain distinct failure states.
+
+The next minor release also adds supported `GeometryLoadError`,
+`load_verification_geometry`, `ControlSurfaceContext`, `InteractionMode`, `SurfaceAnalysis`,
+`SurfaceAnalysisError`, `SurfaceHole`, `SurfaceHoleKind`, and
+`analyze_verification_surface` exports. The loader accepts a strict VSTD-2 JavaScript
+Object Notation (JSON) file or an already parsed mapping, rejects unknown structure and
+invalid geometry references, and returns only a valid typed `VerificationGeometry`.
+Analysis is deterministic and limited to the supplied modeled surface. It neither infers
+omitted obligations nor establishes real-world completeness, safety, authority,
+conformance, or a native checker result.
+
 `assess_witness_corroboration` accepts incomplete inputs so it can return a typed diagnostic
 result. The supported `build_vstd5_receipt` boundary is stricter: it either raises or returns
 an object satisfying the published receipt shape with all verdict-material evidence bytes.
@@ -71,11 +89,131 @@ historical overlap remains readable but cannot enter evidence-bound Graph establ
 assurance mechanisms. The compatibility candidate computation retains its historical scope
 and remains `NOT_ESTABLISHED`.
 
+### Interoperability facade: supported analysis and experimental planning
+
+Supported/stable compatibility applies to the explicitly exported geometry loader,
+surface-analysis subset, and platform comparator described above. It does not extend
+to every name under `verifier.interoperability`:
+
+| Surface | Compatibility boundary |
+|---|---|
+| Geometry loading, modeled-surface analysis, platform comparison | Supported top-level exports; the version and deprecation rules below apply, without broader correctness claims. |
+| Component descriptors, kinds, catalog matching, stored packages, planning, execution-readiness preflight | Experimental; declarations and byte bindings do not supply execution, qualification, or authority. |
+| Graph topology | Experimental direct submodule only; separate from supported analysis and from a general geometry satisfiability checker. |
+| Composed untraversability | Experimental direct submodule only; observer-relative bounded knowledge closure, not universal confidentiality or runtime enforcement. |
+
+`verifier.interoperability` contains both the supported analyzer names exported by
+`verifier.__all__` and an experimental planning surface. Its complete characterized names
+at the current unreleased source coordinate are:
+
+```text
+AcyclicPropositionDependency
+AuthorizationDecision
+CandidateStatus
+CandidateExecutionDeclaration
+CatalogError
+COMPONENT_PACKAGE_SCHEMA_VERSION
+ComponentAvailability
+ComponentKind
+ComponentLifecycle
+ComponentPackageError
+ConflictWitnessKind
+ControlSurfaceContext
+ExecutionReadinessError
+ExecutionReadinessReport
+ExecutionReadinessStatus
+GeometryConflictReport
+GeometryConflictStatus
+GeometryConflictWitness
+ImplementationBinding
+InteractionMode
+InteroperabilityComponentDescriptor
+InteroperabilityComponentRegistry
+JudgmentObservation
+NativeInputBinding
+PackageArtifact
+PackageDependency
+PlannedEvidenceMapping
+PostExecutionReassessmentContract
+PrerequisiteResolution
+SharedPropositionIdentity
+StoredComponentPackage
+SurfaceAnalysis
+SurfaceAnalysisError
+SurfaceHole
+SurfaceHoleKind
+SuppliedAuthorizationDecision
+ValidationCandidate
+ValidationPlan
+analyze_geometry_conflicts
+analyze_verification_surface
+assess_execution_readiness
+load_component_package
+plan_validation
+reference_component_registry
+save_component_package
+```
+
+The redundant internal aliases `InteroperabilityCatalog` and
+`generate_validation_plan` are intentionally not facade exports. Every name above except
+the supported analysis subset also exported by top-level `verifier` remains experimental
+and may change in a minor release. The planning names match exact declared capabilities
+and produce registry-bound, nonexecuting plans. The conflict names compare only explicitly
+identified propositions across exact geometries and emit structural witnesses; they do not
+perform Boolean satisfiability analysis. The readiness names check caller-supplied native
+input, planned evidence, prerequisite, authorization, and reassessment declarations but
+never import or invoke a component. Catalog schema 1.1 serializes
+`planning_surface_schema_ids` separately from native `accepted_schema_ids`; a planning
+match is not a claim that the entry point accepts the planning document as native input. The
+`vstd surface analyze --plan` command exposes that experimental plan without selecting or
+executing a component. The facade provides no component executor, evidence collector,
+post-execution reanalysis implementation, Boolean satisfiability geometry analyzer, or new
+closure result.
+
+The experimental stored-component format `VSTD-COMPONENT-PACKAGE-1` adds
+`PackageArtifact`, `ImplementationBinding`, `PackageDependency`, `StoredComponentPackage`,
+`load_component_package` and `save_component_package` through
+`verifier.interoperability.storage` and the interoperability facade. It retains exact
+artifact bytes and an embedded catalog for inspection and nonexecuting planning. Loading
+does not install, fetch or execute a component, authenticate publisher declarations,
+resolve dependencies or grant conformance. Unknown formats are rejected; an incompatible
+stored layout requires a distinct identifier and explicit migration. This experimental
+format is not a receipt wire identifier. See [stored components](COMPONENT_PACKAGES.md).
+
+**Certifier** names a certificate-issuance capability, orthogonal to the component's
+algorithm role: a prover may certify, but a certifier need not prove. The current closed
+`ComponentKind` vocabulary has no `CERTIFIER` member or kind filter. Preserve the word
+in descriptor labels/native-object descriptions and specify its exact issuance relation,
+mechanism, native inputs/outputs, and emitted certificate contract; see the
+[serialization mapping](COMPONENT_PACKAGES.md#certifier-is-a-capability-not-a-kind-alias).
+Matching does not inspect `kind` or infer capability from names or tags. This clarification
+changes neither catalog 1.1 nor package-1 identifiers, adds no native certifier, and does
+not authorize widening strict readers under their existing identifiers.
+
 Direct imports from `verifier.core`, `verifier.data`, `verifier.hardware`, other
 subpackages, or underscore-prefixed names are internal unless another published policy
 explicitly names them. They may change in a minor release. That freedom does not override
 frozen receipt identifiers, schemas, packaged specification bytes, command compatibility,
 or historical refutation obligations.
+
+The separately documented experimental `verifier.interoperability.graph_topology`
+module provides `GraphTopologyContract`, `GraphTopologyReport`, `GraphTopologyStatus`,
+`GraphTopologyError`, `graph_topology_binding_digest` and `analyze_graph_topology`.
+These are not top-level or interoperability-facade exports. It checks explicitly encoded
+finite Boolean equations and temporal offsets over an exact graph-bound interpretation;
+it is not the general VSTD-2 geometry satisfiability analyzer excluded above. No new
+numbered-profile result or receipt identifier is introduced. See [graph topology](GRAPH_TOPOLOGY.md).
+
+The experimental `verifier.interoperability.untraversable` module provides strict
+contracts and reports for composed, observer-relative finite knowledge closure. It remains
+outside the top-level and interoperability-facade exports. Native `MATCH`, `FAIL`,
+`UNKNOWN` and `CONFLICTED` results stay bounded to the exact graph, observer, awareness
+mode, observation interval, transcript, capabilities, declared inference rules, evidence
+and resource coordinate. No result grants authorization, conformance, actor attribution,
+runtime mediation or universal confidentiality. Its unreleased experimental contract
+requires exact interface source-artifact coverage and exact graph-transformation incidence
+for graph-backed knowledge rules; incompatible future layouts require a new experimental
+schema identifier.
 
 ## Version and deprecation rules
 

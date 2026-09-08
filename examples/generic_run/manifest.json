@@ -7,7 +7,8 @@
     "limitations": [
       "This is a deliberately small worked example chosen for zero external dependencies and exact output comparison, not a claim about any production model, dataset, or benchmark.",
       "The computation avoids floating point and hash-order-dependent output, but this generic capture path does not independently verify determinism or bind a complete execution environment.",
-      "No external evaluation evidence is claimed anywhere in this receipt — it is a purely local, self-contained computation."
+      "No external evaluation evidence is claimed anywhere in this receipt — it is a purely local, self-contained computation.",
+      "A passing cross-platform comparison covers only the supplied receipts and declared result surfaces; it does not prove universal portability or native execution attestation."
     ],
     "falsification_condition": "A `vstd validate` digest mismatch falsifies stable-content integrity. A `vstd reproduce --rerun` output mismatch falsifies byte-identical reproducibility for that rerun, not the recorded original execution by itself."
   },
@@ -39,5 +40,23 @@
     }
   ],
   "external_evaluation": null,
-  "provenance_roots": []
+  "provenance_roots": [],
+  "refutation_surface": {
+    "admissible_refutations": [
+      "A canonically intact receipt from a declared platform records a different declared result projection under the same non-platform binding.",
+      "A declared platform is missing or represented more than once.",
+      "The non-platform receipt bindings differ, so operating-system isolation is not established."
+    ],
+    "excluded_claims": [
+      "UNIVERSAL_CROSS_PLATFORM_COMPATIBILITY",
+      "NATIVE_EXECUTION_ATTESTATION",
+      "PHYSICAL_WORLD_COMPLETENESS"
+    ],
+    "falsification_condition": "After every declared platform supplies one canonically intact receipt with an identical non-platform binding, any difference in the declared result projection yields CONFLICTED.",
+    "platform_comparability": {
+      "mechanism_id": "VSTD-GENERIC-WORD-FREQUENCY-1",
+      "compatible_platforms": ["Linux", "Windows", "Darwin"],
+      "result_surfaces": ["execution", "declared_outputs", "evaluator_claims", "stdio"]
+    }
+  }
 }

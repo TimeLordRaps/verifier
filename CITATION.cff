@@ -1,11 +1,10 @@
 cff-version: 1.2.0
-message: "If you use the Verifier Standard (VSTD) or its reference implementation, cite this release."
+message: "If you use this unreleased Verifier Standard (VSTD) release candidate, cite the exact source commit. For published releases, use their tagged citation metadata."
 title: "Verifier Standard (VSTD): Bounded, Refutable Evidence for Computational Claims"
 type: software
 authors:
   - name: "TimeLordRaps"
-version: 1.2.0
-date-released: 2026-09-01
+version: 1.3.0
 license: Apache-2.0
 repository-code: "https://github.com/TimeLordRaps/verifier"
 keywords:

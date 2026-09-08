@@ -1,5 +1,6 @@
-"""Terminology: Secure Hash Algorithm 256-bit (SHA-256); Software Bill of Materials
-(SBOM); uniform resource locator (URL); Verifier Standard (VSTD); ZIP archive format (ZIP).
+"""Terminology: JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit
+(SHA-256); Software Bill of Materials (SBOM); Unicode Transformation Format, 8-bit
+(UTF-8); uniform resource locator (URL); Verifier Standard (VSTD); ZIP archive format (ZIP).
 
 Build and verify public release artifacts from an exact public Git ref.
 
@@ -60,14 +61,68 @@ class ReleaseError(RuntimeError):
     """Release construction or verification failed closed."""
 
 
-def _run(repo: Path, *args: str, env: dict[str, str] | None = None) -> bytes:
-    completed = subprocess.run(
-        list(args), cwd=repo, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+def _run(
+    repo: Path, *args: str, env: dict[str, str] | None = None,
+    input_data: bytes | None = None, timeout: float | None = None,
+) -> bytes:
+    try:
+        completed = subprocess.run(
+            list(args), cwd=repo, env=env, input=input_data, timeout=timeout,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise ReleaseError(f"command timed out ({' '.join(args)})") from exc
     if completed.returncode:
         detail = completed.stderr.decode("utf-8", errors="replace").strip()
         raise ReleaseError(f"command failed ({' '.join(args)}): {detail}")
     return completed.stdout
+
+
+def _git_blob_contents(repo: Path, commit: str) -> dict[str, bytes]:
+    """Read exact tree-bound raw blobs, without archive attributes or filters."""
+
+    tree = _run(repo, "git", "ls-tree", "-r", "-z", commit, timeout=30)
+    if tree and not tree.endswith(b"\0"):
+        raise ReleaseError("Git tree output lacks its null terminator")
+    objects: dict[str, bytes] = {}
+    for entry in tree.split(b"\0")[:-1]:
+        metadata, separator, raw_path = entry.partition(b"\t")
+        match = re.fullmatch(rb"[0-7]{6} blob ([0-9a-f]{40}|[0-9a-f]{64})", metadata)
+        try:
+            path = raw_path.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ReleaseError("Git tree path is not representable as archive text") from exc
+        if not separator or not path or match is None or path in objects:
+            raise ReleaseError("Git tree has a malformed, non-blob, or duplicate entry")
+        objects[path] = match.group(1)
+    if not objects:
+        return {}
+    output = _run(
+        repo, "git", "cat-file", "--batch",
+        input_data=b"\n".join(objects.values()) + b"\n", timeout=30,
+    )
+    contents: dict[str, bytes] = {}
+    offset = 0
+    for path, object_id in objects.items():
+        end = output.find(b"\n", offset)
+        header = output[offset:end].split(b" ") if end >= 0 else []
+        if (
+            len(header) != 3 or header[0] != object_id or header[1] != b"blob"
+            or re.fullmatch(rb"0|[1-9][0-9]*", header[2]) is None
+        ):
+            raise ReleaseError(f"Git blob batch has a missing or mismatched header: {path}")
+        try:
+            size = int(header[2])
+        except ValueError as exc:
+            raise ReleaseError(f"Git blob batch has an invalid byte size: {path}") from exc
+        offset = end + 1
+        if size > len(output) - offset - 1 or output[offset + size:offset + size + 1] != b"\n":
+            raise ReleaseError(f"Git blob batch has truncated bytes or a bad delimiter: {path}")
+        contents[path] = output[offset:offset + size]
+        offset += size + 1
+    if offset != len(output):
+        raise ReleaseError("Git blob batch has unexpected trailing bytes")
+    return contents
 
 
 def _sha256(data: bytes) -> str:
@@ -699,6 +754,111 @@ def compare_artifact_directories(first: Path, second: Path) -> int:
     return len(first_files)
 
 
+def _load_canonical_release_manifest(path: Path) -> dict[str, Any]:
+    """Load one deterministic manifest and reject alternate byte encodings."""
+
+    def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ReleaseError(f"release manifest contains duplicate key: {key}")
+            result[key] = value
+        return result
+
+    def reject_constant(value: str) -> None:
+        raise ReleaseError(f"release manifest contains non-finite value: {value}")
+
+    document = path.read_bytes()
+    try:
+        text = document.decode("utf-8")
+        manifest = json.loads(
+            text,
+            object_pairs_hook=reject_duplicate_keys,
+            parse_constant=reject_constant,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ReleaseError("release manifest is not strict UTF-8 JSON") from exc
+    if not isinstance(manifest, dict):
+        raise ReleaseError("release manifest must be a JSON object")
+    canonical = (
+        json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=True, allow_nan=False)
+        + "\n"
+    ).encode("utf-8")
+    if document != canonical:
+        raise ReleaseError("release manifest bytes are not canonical")
+    return manifest
+
+
+def compare_retagged_artifact_directories(candidate: Path, tagged: Path) -> int:
+    """Require byte-identical artifacts and only the intended manifest ref change."""
+
+    candidate = candidate.resolve()
+    tagged = tagged.resolve()
+    candidate_files = {
+        path.relative_to(candidate).as_posix(): path
+        for path in candidate.rglob("*")
+        if path.is_file()
+    }
+    tagged_files = {
+        path.relative_to(tagged).as_posix(): path
+        for path in tagged.rglob("*")
+        if path.is_file()
+    }
+    if set(candidate_files) != set(tagged_files):
+        raise ReleaseError("candidate and tagged artifact file sets differ")
+    manifests = sorted(
+        name for name in candidate_files if name.endswith(".manifest.json")
+    )
+    if len(manifests) != 1:
+        raise ReleaseError(
+            f"expected one release manifest in each directory, found {len(manifests)}"
+        )
+    manifest_name = manifests[0]
+    artifact_names = sorted(set(candidate_files) - {manifest_name})
+    if not artifact_names:
+        raise ReleaseError("candidate and tagged directories contain no release artifacts")
+    for name in artifact_names:
+        if _file_record(candidate_files[name]) != _file_record(tagged_files[name]):
+            raise ReleaseError(f"retagged artifact bytes differ for {name}")
+
+    candidate_manifest = _load_canonical_release_manifest(candidate_files[manifest_name])
+    tagged_manifest = _load_canonical_release_manifest(tagged_files[manifest_name])
+    candidate_source = candidate_manifest.get("source")
+    tagged_source = tagged_manifest.get("source")
+    if not isinstance(candidate_source, dict) or not isinstance(tagged_source, dict):
+        raise ReleaseError("release manifests must contain source objects")
+    commit = candidate_source.get("commit")
+    release = candidate_manifest.get("release")
+    if (
+        not isinstance(commit, str)
+        or re.fullmatch(r"[0-9a-f]{40}", commit) is None
+        or not isinstance(release, str)
+        or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", release) is None
+        or candidate_source.get("ref") != commit
+        or tagged_source.get("commit") != commit
+        or tagged_source.get("ref") != f"refs/tags/v{release}"
+    ):
+        raise ReleaseError("candidate and tagged manifests do not bind the expected refs")
+    if manifest_name != f"{ARCHIVE_STEM}-{release}.manifest.json":
+        raise ReleaseError("release manifest filename does not match the release")
+    for label, manifest, files in (
+        ("candidate", candidate_manifest, candidate_files),
+        ("tagged", tagged_manifest, tagged_files),
+    ):
+        artifacts = manifest.get("artifacts")
+        if not isinstance(artifacts, dict) or set(artifacts) != set(artifact_names):
+            raise ReleaseError(
+                f"{label} manifest artifacts do not exactly bind the directory"
+            )
+        for name in artifact_names:
+            if artifacts[name] != _file_record(files[name]):
+                raise ReleaseError(f"{label} manifest artifact binding differs for {name}")
+    tagged_source["ref"] = commit
+    if candidate_manifest != tagged_manifest:
+        raise ReleaseError("retagged manifest changed beyond source.ref")
+    return len(artifact_names)
+
+
 def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None = None) -> None:
     repo = repo.resolve()
     manifest_path = manifest_path.resolve()
@@ -780,13 +940,13 @@ def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None =
     if inventory != manifest.get("files"):
         raise ReleaseError("source archive member inventory does not match the manifest")
 
-    tracked = _run(repo, "git", "ls-tree", "-r", "--name-only", commit).decode().splitlines()
+    tracked = _git_blob_contents(repo, commit)
     if sorted(tracked) != sorted(inventory):
         raise ReleaseError("source archive file set does not match the bound Git commit")
     with zipfile.ZipFile(archive) as bundle:
         for relative, expected in inventory.items():
             archive_bytes = bundle.read(prefix + relative)
-            git_bytes = _run(repo, "git", "show", f"{commit}:{relative}")
+            git_bytes = tracked[relative]
             if archive_bytes != git_bytes or _sha256(git_bytes) != expected["sha256"]:
                 raise ReleaseError(f"archive bytes do not match Git blob: {relative}")
 
@@ -809,6 +969,9 @@ def _parser() -> argparse.ArgumentParser:
     compare = commands.add_parser("compare")
     compare.add_argument("first", type=Path)
     compare.add_argument("second", type=Path)
+    compare_retagged = commands.add_parser("compare-retagged")
+    compare_retagged.add_argument("candidate", type=Path)
+    compare_retagged.add_argument("tagged", type=Path)
     return parser
 
 
@@ -832,9 +995,15 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "verify":
             verify_manifest(args.repo, args.manifest, args.artifact_dir)
             print(f"[PASS] release manifest verified: {args.manifest}")
-        else:
+        elif args.command == "compare":
             count = compare_artifact_directories(args.first, args.second)
             print(f"[PASS] {count} release artifacts are byte-identical")
+        else:
+            count = compare_retagged_artifact_directories(args.candidate, args.tagged)
+            print(
+                f"[PASS] {count} retagged artifacts are byte-identical and only "
+                "manifest source.ref changed"
+            )
     except (OSError, ReleaseError, json.JSONDecodeError, zipfile.BadZipFile) as exc:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 1

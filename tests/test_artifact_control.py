@@ -106,7 +106,10 @@ def _symlink_or_skip(link: Path, target: Path, *, target_is_directory: bool = Fa
     try:
         link.symlink_to(target, target_is_directory=target_is_directory)
     except OSError as exc:
-        pytest.skip(f"symlink creation is unavailable: {exc}")
+        pytest.skip(
+            "symlink creation is unavailable "
+            f"(errno={exc.errno}, winerror={getattr(exc, 'winerror', None)})"
+        )
 
 
 def _fifo_or_skip(path: Path) -> None:
@@ -115,7 +118,55 @@ def _fifo_or_skip(path: Path) -> None:
     try:
         os.mkfifo(path)
     except OSError as exc:
-        pytest.skip(f"first-in, first-out special-object creation is unavailable: {exc}")
+        pytest.skip(
+            "first-in, first-out special-object creation is unavailable "
+            f"(errno={exc.errno}, winerror={getattr(exc, 'winerror', None)})"
+        )
+
+
+def _hardlink_or_skip(source: Path, link: Path) -> None:
+    try:
+        os.link(source, link)
+    except OSError as exc:
+        pytest.skip(
+            "hard-link creation is unavailable "
+            f"(errno={exc.errno}, winerror={getattr(exc, 'winerror', None)})"
+        )
+
+
+@pytest.mark.parametrize("operation", ("symlink", "fifo", "hardlink"))
+@pytest.mark.parametrize("winerror", (None, 1314), ids=("portable-error", "windows-error"))
+def test_unavailable_object_skips_omit_exception_text_and_paths(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, operation: str, winerror: int | None
+) -> None:
+    path = tmp_path / "private-source"
+    target = tmp_path / "private-target"
+    error = OSError(13, "private exception detail", str(path))
+    error.filename2 = str(target)
+    error.winerror = winerror
+
+    def unavailable(*args: object, **kwargs: object) -> None:
+        raise error
+
+    if operation == "symlink":
+        monkeypatch.setattr(Path, "symlink_to", unavailable)
+        reason = "symlink creation is unavailable"
+    elif operation == "fifo":
+        monkeypatch.setattr(os, "mkfifo", unavailable, raising=False)
+        reason = "first-in, first-out special-object creation is unavailable"
+    else:
+        monkeypatch.setattr(os, "link", unavailable)
+        reason = "hard-link creation is unavailable"
+
+    with pytest.raises(pytest.skip.Exception) as skipped:
+        if operation == "symlink":
+            _symlink_or_skip(path, target)
+        elif operation == "fifo":
+            _fifo_or_skip(path)
+        else:
+            _hardlink_or_skip(target, path)
+
+    assert str(skipped.value) == f"{reason} (errno=13, winerror={winerror})"
 
 
 def test_freeze_preserves_exact_file_bytes_without_claiming_a_seal(tmp_path: Path) -> None:
@@ -1665,10 +1716,7 @@ def test_symlink_descendant_cannot_match_recorded_or_verified_parent(
     target = tmp_path / "symlink-target.bin"
     target.write_bytes(descendant.read_bytes())
     descendant.unlink()
-    try:
-        descendant.symlink_to(target)
-    except OSError as exc:
-        pytest.skip(f"symlink creation is unavailable: {exc}")
+    _symlink_or_skip(descendant, target)
 
     sidecar_only = thawed_artifact_status(descendant, record_path)
     verified = thawed_artifact_status(
@@ -1769,11 +1817,8 @@ def test_hard_linked_internal_json_members_remain_regular_file_semantics(
     _writable(seal_path)
     freeze_path.replace(external_freeze)
     seal_path.replace(external_seal)
-    try:
-        os.link(external_freeze, freeze_path)
-        os.link(external_seal, seal_path)
-    except OSError as exc:
-        pytest.skip(f"hard-link creation is unavailable: {exc}")
+    _hardlink_or_skip(external_freeze, freeze_path)
+    _hardlink_or_skip(external_seal, seal_path)
     external_freeze.chmod(external_freeze.stat().st_mode & ~stat.S_IWUSR)
     external_seal.chmod(external_seal.stat().st_mode & ~stat.S_IWUSR)
 

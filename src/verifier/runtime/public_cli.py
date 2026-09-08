@@ -1,10 +1,12 @@
 """Terminology: command-line interface (CLI); identifier (ID); JavaScript Object Notation (JSON);
-Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
+Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD);
+YAML Ain't Markup Language (YAML).
 
 Public, target-neutral CLI for the VSTD reference implementation.
 
 This entry point deliberately excludes repository-specific generators and verifiers.
-It operates only on declared generic-run manifests and stored VSTD-Graph receipts.
+It operates on declared manifests, stored receipts, verification geometries, and
+component packages. Package inspection and surface planning never execute components.
 """
 
 from __future__ import annotations
@@ -26,6 +28,8 @@ from verifier.artifact_control import (
     verify_frozen_artifact,
 )
 from verifier.core.checker import independence_is_evidenced
+from verifier.core.geometry_io import load_verification_geometry
+from verifier.core.platform_comparison import compare_platform_run_receipts
 from verifier.core.run import (
     RunError,
     capture_run,
@@ -51,6 +55,23 @@ from verifier.runtime.experimental_workflow_cli import (
     handle_experiment_command,
 )
 from verifier.runtime.demo import SCENARIOS, demo_report, emit_specimens, run_demo
+from verifier.interoperability.catalog import AWARENESS_CLAIM_BOUNDARY
+from verifier.interoperability.control_surface import (
+    analyze_verification_surface,
+    plan_validation,
+)
+from verifier.interoperability.reference_catalog import (
+    REFERENCE_CATALOG_CLAIM_BOUNDARY,
+    reference_component_registry,
+)
+
+
+_STORED_PACKAGE_CLAIM_BOUNDARY = (
+    "Stored package declarations and exact byte integrity only; no component is "
+    "imported or executed. Packaging does not establish availability, correctness, "
+    "authorship, authorization, native qualification, or executable dependency closure. "
+    + AWARENESS_CLAIM_BOUNDARY
+)
 
 
 def _receipt_file(path_or_dir: Path) -> Path:
@@ -235,6 +256,67 @@ def build_parser() -> argparse.ArgumentParser:
     plan_parser.add_argument("manifest", help="JSON or YAML run manifest.")
     plan_parser.add_argument("--json", action="store_true")
 
+    compare_platforms_parser = subparsers.add_parser(
+        "compare-platforms",
+        help="Compare declared generic-run result surfaces across operating systems.",
+    )
+    compare_platforms_parser.add_argument(
+        "receipts",
+        nargs="+",
+        help="Receipt directories or receipt.json files, one per declared platform.",
+    )
+    compare_platforms_parser.add_argument("--json", action="store_true")
+
+    components_parser = subparsers.add_parser(
+        "components",
+        help="Inspect stored component declarations and byte integrity without execution.",
+    )
+    components_commands = components_parser.add_subparsers(
+        dest="components_command", required=True
+    )
+    components_inspect_parser = components_commands.add_parser(
+        "inspect", help="Read one local component package without importing its code."
+    )
+    components_inspect_parser.add_argument("package", help="Stored component package path.")
+    components_inspect_parser.add_argument("--json", action="store_true")
+    components_inspect_parser.add_argument(
+        "--expected-sha256",
+        metavar="HEX",
+        help="Require this externally supplied canonical package SHA-256 digest.",
+    )
+
+    surface_parser = subparsers.add_parser(
+        "surface",
+        help="Analyze holes in one strictly loaded VSTD-2 modeled verification surface.",
+    )
+    surface_commands = surface_parser.add_subparsers(
+        dest="surface_command", required=True
+    )
+    surface_analyze_parser = surface_commands.add_parser(
+        "analyze",
+        help="Emit deterministic modeled-surface diagnostics without executing a checker.",
+    )
+    surface_analyze_parser.add_argument("geometry", help="VSTD-2 geometry JSON path.")
+    surface_analyze_parser.add_argument("--json", action="store_true")
+    surface_analyze_parser.add_argument(
+        "--plan",
+        action="store_true",
+        help=(
+            "Add an experimental catalog match plan (first-party by default); no component is "
+            "selected or executed."
+        ),
+    )
+    surface_analyze_parser.add_argument(
+        "--package",
+        metavar="PACKAGE",
+        help="With --plan, use the registry in this local stored component package.",
+    )
+    surface_analyze_parser.add_argument(
+        "--expected-package-sha256",
+        metavar="HEX",
+        help="With --plan --package, require this canonical package SHA-256 digest.",
+    )
+
     for command, help_text in (
         ("validate", "Run implemented receipt checks; Graph candidate validation is not conformance."),
         ("inspect", "Inspect a generic-run or VSTD-Graph receipt; validate and report VSTD-3."),
@@ -276,6 +358,14 @@ def build_parser() -> argparse.ArgumentParser:
 
     export_parser = data_commands.add_parser("export")
     export_parser.add_argument("receipt")
+
+    topology_parser = data_commands.add_parser(
+        "topology", help="Analyze a bounded, explicitly interpreted graph; no conformance result."
+    )
+    topology_parser.add_argument("receipt")
+    topology_parser.add_argument("--contract", required=True)
+    topology_parser.add_argument("--max-assignments", type=int, default=4096)
+    topology_parser.add_argument("--json", action="store_true")
 
     artifact_parser = subparsers.add_parser(
         "artifact",
@@ -428,6 +518,11 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
 
 
 def _handle_data_command(args: argparse.Namespace) -> int:
+    if args.data_command == "topology":
+        from verifier.runtime.graph_topology_cli import handle_graph_topology_command
+
+        return handle_graph_topology_command(args)
+
     receipt_path = Path(args.receipt).resolve()
     try:
         payload, graph = _load_hypergraph(receipt_path)
@@ -470,6 +565,89 @@ def _handle_data_command(args: argparse.Namespace) -> int:
     else:
         selected = graph.blast_radius(artifact_id)
     print(json.dumps({"artifact_id": artifact_id, "direction": args.direction, "matches": selected}))
+    return 0
+
+
+def _handle_components_command(args: argparse.Namespace) -> int:
+    from verifier.interoperability.storage import load_component_package
+
+    package = load_component_package(args.package, expected_digest=args.expected_sha256)
+    if args.json:
+        print(json.dumps(package.inspect(), indent=2, sort_keys=True))
+    else:
+        print("[PACKAGE INTEGRITY; NO EXECUTION]")
+        print(f"  Canonical digest: {package.canonical_digest()}")
+        print(f"  Components:       {len(package.registry.components)}")
+        print(f"  Boundary: {_STORED_PACKAGE_CLAIM_BOUNDARY}")
+        print(json.dumps(package.inspect(), indent=2, sort_keys=True))
+    return 0
+
+
+def _handle_surface_command(args: argparse.Namespace) -> int:
+    if (args.package is not None or args.expected_package_sha256 is not None) and not args.plan:
+        raise ValueError("package options require --plan")
+    if args.expected_package_sha256 is not None and args.package is None:
+        raise ValueError("--expected-package-sha256 requires --package")
+    geometry = load_verification_geometry(Path(args.geometry).resolve())
+    analysis = analyze_verification_surface(geometry)
+    report: dict[str, Any] = analysis.to_dict()
+    plan = None
+    if args.plan:
+        package = None
+        if args.package is not None:
+            from verifier.interoperability.storage import load_component_package
+
+            package = load_component_package(
+                args.package, expected_digest=args.expected_package_sha256
+            )
+        registry = package.registry if package is not None else reference_component_registry()
+        plan = plan_validation(analysis, registry, package=package)
+        family_count = len(
+            {
+                family
+                for component in registry.components
+                for family in component.verifier_family_ids
+            }
+        )
+        report = {
+            "analysis": analysis.to_dict(),
+            "catalog": {
+                "registry_version": registry.registry_version,
+                "registry_digest": registry.canonical_digest(),
+                "component_count": len(registry.components),
+                "implementation_family_count": family_count,
+                "claim_boundary": REFERENCE_CATALOG_CLAIM_BOUNDARY,
+            },
+            "plan": plan.to_dict(),
+        }
+        if package is not None:
+            report["catalog"].update(
+                source="STORED_COMPONENT_PACKAGE",
+                package_digest=package.canonical_digest(),
+                claim_boundary=_STORED_PACKAGE_CLAIM_BOUNDARY,
+            )
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    print(f"[MODELED SURFACE] {analysis.geometry_id}")
+    print(f"  Ordinary closed: {str(analysis.ordinary_closed).lower()}")
+    print(f"  Self closed:     {str(analysis.self_closed).lower()}")
+    print(f"  Surface holes:  {len(analysis.holes)}")
+    for hole in analysis.holes:
+        print(
+            f"  - {hole.kind.value}: {hole.source_kind} {hole.source_id} "
+            f"({hole.native_status})"
+        )
+    print(f"  Boundary: {analysis.claim_boundary}")
+    if plan is not None:
+        matched = sum(candidate.component_id is not None for candidate in plan.candidates)
+        print("[EXPERIMENTAL PLAN; NO EXECUTION]")
+        print(f"  Candidates: {matched}/{len(plan.candidates)} matched")
+        print(f"  Registry:   {plan.registry_version} ({plan.registry_digest})")
+        if args.package is not None:
+            print(f"  Package:    {report['catalog']['package_digest']}")
+            print(f"  Source boundary: {_STORED_PACKAGE_CLAIM_BOUNDARY}")
+        print(f"  Boundary:   {plan.claim_boundary}")
     return 0
 
 
@@ -604,6 +782,39 @@ def main(argv: list[str] | None = None) -> int:
             print(f"          Receipt ID: {receipt.receipt_id}")
             print(f"          Canonical Digest: {receipt.canonical_digest}")
             return 0 if receipt.execution.outcome == "COMPLETED" else 1
+
+        if args.command == "compare-platforms":
+            comparison = compare_platform_run_receipts(args.receipts)
+            report = comparison.to_dict()
+            if args.json:
+                print(json.dumps(report, indent=2, sort_keys=True))
+            else:
+                print(f"[{comparison.status.value}] {comparison.reason}")
+                print(
+                    "  Required platforms: "
+                    + (", ".join(comparison.required_platforms) or "none")
+                )
+                print(
+                    "  Observed platforms: "
+                    + (", ".join(comparison.observed_platforms) or "none")
+                )
+                for error in comparison.errors:
+                    print(f"  Error: {error}")
+                for difference in comparison.differences:
+                    print(
+                        "  Difference: "
+                        f"{difference.get('reference_platform')} -> "
+                        f"{difference.get('observed_platform')} at "
+                        f"{difference.get('path')}"
+                    )
+                print(f"  Boundary: {report['claim_boundary']}")
+            return comparison.exit_code
+
+        if args.command == "components":
+            return _handle_components_command(args)
+
+        if args.command == "surface":
+            return _handle_surface_command(args)
 
         if args.command in {"validate", "inspect", "reproduce"}:
             return _handle_receipt_command(args)

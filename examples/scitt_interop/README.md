@@ -61,6 +61,15 @@ The optional extra is pinned in `pyproject.toml`:
 - `cbor2==6.1.4`
 - `cryptography==50.0.0`
 
+The example checks those exact installed distribution versions before any native
+construction or verification call. It also requires the imported `scitt_cose` module
+version and every invoked SCITT entry point to resolve to a file owned by the installed
+`scitt-cose` distribution. The verification result records the three entry points that
+actually check the statement and receipt plus the direct runtime dependency versions.
+That is a bounded runtime observation: it does not authenticate the package, identify the
+producer runtime, attest the environment, cover transitive native code, or demonstrate a
+second independent SCITT implementation.
+
 `scitt-cose` is a separately maintained implementation, not an IETF publication or
 endorsement. The normative wire references are [RFC 9943](https://datatracker.ietf.org/doc/html/rfc9943), [RFC 9942](https://datatracker.ietf.org/doc/html/rfc9942), RFC 9052/9053, and RFC 9162.
 
@@ -92,7 +101,7 @@ no authority outside this example.
 | `transparent_statement.cose` | Signed Statement with receipt attached at COSE header label 394. |
 | `issuer_public.pem` | Public key for offline statement-signature verification. |
 | `log_public.pem` | Public key for offline receipt verification. |
-| `verification_result.json` | Native VSTD candidate-check result, explicit VSTD conformance `NOT_ESTABLISHED`, native SCITT observation, scoped composition, and hashes. |
+| `verification_result.json` | Native VSTD candidate-check result, explicit VSTD conformance `NOT_ESTABLISHED`, native SCITT observation, scoped composition, exact installed verifier-runtime coordinates, direct dependency versions, and artifact hashes. The runtime coordinates are verifier observations and are deliberately absent from the producer-signed payload. |
 
 ## Adversarial coverage
 
@@ -105,6 +114,10 @@ no authority outside this example.
 - wrong issuer/subject and unaccepted policy coordinates;
 - malformed payloads and version mismatches;
 - corrupted COSE statement and receipt bytes;
+- unsupported, mismatched, or shadowed SCITT implementation coordinates and direct
+  dependency-version drift;
+- the invariant that verifier-runtime coordinates are not recast as producer-signed
+  claims;
 - the invariant that SCITT-only evidence returns
   `computational_verdict = NOT_EVALUATED`.
 - the invariant that a composed PASS requires a native VSTD checker result bound to

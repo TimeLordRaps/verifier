@@ -28,7 +28,7 @@ shape only; a passing validator establishes only its named implemented checks.
 | Coordinate | Normative source | Runtime owner | Published shape | Primary tests |
 |---|---|---|---|---|
 | VSTD-1 claim receipt | `standard/VSTD-1.md` | `verifier.core.receipt`, `verifier.core.checker` | `vstd1_receipt.json` | `test_independent_checker.py`, `test_vstd_schemas.py` |
-| VSTD-1 generic run | `standard/VSTD-1.md` | `verifier.core.run` capture/facade plus `run_planning`, `run_validation`, `run_inspection`, `run_reproduction`, and `run_impact` | `vstd1_generic_run_receipt.json` | `test_generic_run.py` |
+| VSTD-1 generic run | `standard/VSTD-1.md` | `verifier.core.run` capture/facade plus `run_planning`, `run_validation`, `run_inspection`, `run_reproduction`, `run_impact`, and the additive `platform_comparison` diagnostic | `vstd1_generic_run_receipt.json`; the comparison report is not a receipt | `test_generic_run.py`, `test_platform_comparison.py` |
 | VSTD-2 | `standard/VSTD-2.md` | `verifier.core.geometry` | `vstd2_receipt.json` | `test_verification_geometry.py` |
 | VSTD-3 | `standard/VSTD-3.md` | `verifier.hardware` | `vstd3_receipt.json`, `vstd3_accelerator_profile.json` | `test_vstd3_schema.py`, hardware tests |
 | VSTD-4 | `standard/VSTD-4.md` | certificate/kernel checks plus candidate and evidence-bound paths in `verifier.core.depth` / `verifier.core.evidence` | `vstd4_certificate.json`, `vstd4_receipt.json` | `test_gdc_certificate.py`, `test_vstd4_depth.py`, `test_evidence_bound_assurance.py` |
@@ -110,6 +110,59 @@ native computation
   -> later bounded verification loop
 ```
 
+### Experimental interoperability planning side path
+
+The current unreleased source also exposes a deliberately nonexecuting planning side
+path:
+
+```text
+strict VSTD-2 JSON document
+  -> strict wire loader and semantic validation
+  -> typed valid geometry
+  -> modeled-hole analysis
+  -> exact catalog candidates
+  -> nonexecuting validation plan
+```
+
+`load_verification_geometry` strictly accepts a VSTD-2 JSON file or parsed mapping,
+rejects unknown structure and invalid references, and returns only a semantically valid
+typed `VerificationGeometry`. `analyze_verification_surface` accepts that typed object,
+revalidates its structure, assesses its declared ordinary and self-closure state, and
+converts existing blockers into typed holes. The public `vstd surface analyze` command
+joins those two supported operations. Neither operation infers an omitted expected
+profile, ontology, coordinate, or real-world surface, and successful loading establishes
+only the declared VSTD-2 structure—not the truth or completeness of its contents.
+
+`plan_validation` connects those holes to immutable component descriptors through exact
+schema and interaction-mode coordinates plus the hole's relation and mechanism
+coordinates where present. Domain tags, consequence profiles, and operating-regime text
+remain organization and planning metadata; they cannot manufacture a match. A plan binds
+the geometry digest plus registry version and digest, retains execution prerequisites and
+blockers, and fixes `plan_only` to true and `execution_performed` to false.
+
+In this architecture, **validation** is the future process of attempting to discharge
+holes with authorized component execution and bound evidence, followed by a fresh surface
+analysis. Candidate matching alone does not establish component availability at execution
+time, checker correctness, a native result, ordinary or self-closure, safety, authority,
+critical-domain readiness, or VSTD conformance. The runnable
+[sorted-grocery-list example](../examples/interoperability_planning/) intentionally leaves
+three self-closure requirements unmatched and never calls its checker.
+
+The [artifact-awareness contract](ARTIFACT_AWARENESS.md) separates actual awareness,
+permitted awareness and potentially inferable awareness between artifacts. Confidentiality
+of awareness constrains exposure and propagation; authorization and catalog matching do
+not establish it. Version 1.3.0 adds an experimental exact-graph-bound analyzer for finite,
+observer-relative knowledge-hypergraph closure across composed interfaces. It does not
+track awareness continuously, establish open-world inference completeness, or enforce
+confidentiality at runtime.
+
+The separate [experimental graph-topology interpretation](GRAPH_TOPOLOGY.md) binds
+existing graph artifacts, transformations and ports to explicit simultaneous Boolean
+equations or clock-relative temporal relations. Structural cycles, encoded consistency,
+and mechanism-earned support remain distinct. `vstd data topology` runs this bounded
+diagnostic; catalog discovery and planning do not. Existing cyclic-assurance admission
+guards and receipt representations remain unchanged.
+
 VSTD-2 is the semantic target for adjacent adapters, not the adapter implementation
 itself. Geometry profiles constrain reusable selections of VSTD-2 geometry; they are connected only
 by explicit shared coordinates, seams, mappings, and evidence-bearing transformations.
@@ -175,7 +228,7 @@ Maturity attaches to mechanisms beneath that architecture:
 | TRUST transfer | Implemented edge-local proposition-dispatch reference mechanism | `record_trust` binds one exact transformation, its complete inputs and output, the historical Graph digest, and the prerequisite TRUST event for every derived input. Recursive current-admissibility checking excludes the route if any required event, artifact, or transformation degrades or conflicts, without deleting history. No universal scalar support algebra exists. |
 | ROT derivation and cross-surface propagation | Implemented bounded reference mechanisms | Strictly degrading status propositions and complete challenge-ledger projections produce additive current-state overlays; the deduplicated descendant impact set is discovery, and a descendant status change still needs its own mechanism |
 | RUST concentration, localization, and diagnostic attribution | Implemented bounded reference mechanisms | A passing descendant-deviation proposition produces deduplicated reverse reachability; concentration counts unique descendants; localization and BLAME require separate passing propositions. GUILT additionally composes exact responsibility, obligation-applicability, and obligation-violation components; an opaque obligation label cannot establish it. |
-| Complete `PASS`/`FAIL`/`UNKNOWN`/`CONFLICTED` hidden-witness derivation | Experimental and unimplemented | A caller-supplied state tag is not an earned verdict |
+| Complete native `PASS`/`FAIL`/`UNKNOWN`/`CONFLICTED` derivation for arbitrary hidden-witness predicates | Experimental and unimplemented | This is distinct from the implemented bounded composed-graph untraversability analyzer: that analyzer checks reachability of declared protected facts under one finite evidence-backed knowledge-hypergraph contract; it does not prove arbitrary hidden-witness predicates. A caller-supplied state tag is not an earned verdict. |
 | Specific optional proof backends | Backend-specific maturity; the RISC Zero example has one recorded native proof | Optional proof machinery cannot make the governing architecture optional or establish broader VSTD conformance |
 
 ## Serialized receipt dispatch
@@ -231,6 +284,20 @@ identifier as a generic container name.
 | resource bounds | Assurance input and Assessment bound | Records manifest declarations; the generic runtime does not establish their enforcement. |
 | prior commitment | Assurance input | Records a commitment string; receipt inclusion does not prove temporal priority. |
 | refutation surface | Attribution | Declares admissible refutations and exclusions; it is not the checked VSTD-4 `RefutationSurface`. |
+
+The open refutation surface may carry a `platform_comparability` declaration naming the
+compared subject mechanism, compatible operating systems, and result surfaces. The
+declaration remains data until `compare_platform_run_receipts` or
+`vstd compare-platforms` validates one
+canonically intact receipt per declared system, verifies equal non-platform bindings,
+and compares the declared result projections. Missing or duplicate platforms and binding
+drift remain `NOT_ESTABLISHED`; malformed or contradictory receipts are `INVALID`; only
+result disagreement after comparability is established is `CONFLICTED`. `PASS` establishes
+agreement only for the supplied recorded results. Python serializes macOS as `Darwin`.
+The comparator also binds normalized machine family so the current hosted Linux, Windows,
+and Intel macOS observation isolates the operating-system dimension more narrowly. It
+does not attest native execution, virtual-machine identity, semantic correctness,
+universal portability, or actor independence, and it does not create a new receipt schema.
 
 Closure coordinates identify assessment questions; they are not containers for generic
 verification context. The neutral container must not generate profile-numbered binding

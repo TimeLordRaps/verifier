@@ -118,11 +118,11 @@ def graph_collection_binding_digest(
 
 
 class GraphEncodingError(RuntimeError):
-    """The encoding, the solver and the direct computation do not all agree.
+    """The Graph cannot be safely encoded or its independent checks disagree.
 
-    Carries the certificate the encoding actually supports, so a reader can see
-    which of the three is lying instead of being handed whichever branch this
-    module happened to prefer.
+    For cross-check divergence, this carries the certificate the encoding actually
+    supports, so a reader can see which of the three is lying instead of being
+    handed whichever branch this module happened to prefer.
     """
 
     def __init__(
@@ -137,6 +137,17 @@ class GraphEncodingError(RuntimeError):
         self.certificate = certificate
         self.cnf_satisfiable = cnf_satisfiable
         self.direct_result = direct_result
+
+
+def _require_valid_graph_structure(graph: ProvenanceHypergraph) -> None:
+    """Refuse to encode a malformed Graph as a candidate or conformance result."""
+
+    errors = graph.validate_structure()
+    if errors:
+        raise GraphEncodingError(
+            "Graph profile computation requires a structurally valid provenance "
+            "graph: " + "; ".join(errors)
+        )
 
 
 # --------------------------------------------------------------------------
@@ -536,6 +547,8 @@ def graph_level(
     an obligation met at ``N`` is met at every ``N' <= N`` -- so descending
     means a collection meeting its supplied ratings costs one solve rather than five.
     """
+    _require_valid_graph_structure(graph)
+
     if not collection.members:
         raise GraphEncodingError(
             f"{collection.collection_id} has no members, so every obligation is "
@@ -613,6 +626,8 @@ def establish_graph_level(
             "artifact and transformation identifiers: "
             + ", ".join(identifier_overlap)
         )
+    _require_valid_graph_structure(graph)
+
     normalized_members = tuple(sorted(set(members)))
     closure = graph.ancestors(normalized_members)
     edges = {

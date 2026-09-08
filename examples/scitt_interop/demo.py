@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.metadata as importlib_metadata
+import inspect
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -63,11 +65,142 @@ ARTIFACT = HERE / "artifact.txt"
 ISSUER = "https://issuer.example/vstd-scitt-demo"
 LOCAL_LOG = "urn:example:vstd-scitt-local-test-log"
 POLICY = "urn:example:vstd-scitt-registration-policy:v1"
+EXPECTED_NATIVE_DISTRIBUTIONS = {
+    "cbor2": "6.1.4",
+    "cryptography": "50.0.0",
+    "scitt-cose": "0.2.2",
+}
+SCITT_VERIFICATION_ENTRYPOINTS = (
+    "parse_signed_statement",
+    "verify_receipt",
+    "extract_receipts",
+)
+
+
+def _canonical_distribution_name(value: str) -> str:
+    return value.lower().replace("_", "-").replace(".", "-")
+
+
+def _implementation_coordinates(
+    scitt_cose: Any,
+    cbor2: Any,
+    serialization: Any,
+    ed25519: Any,
+    entrypoints: dict[str, Any],
+) -> tuple[dict[str, Any], list[dict[str, str]]]:
+    """Observe and strictly qualify the external runtime used by this process."""
+
+    distributions: dict[str, importlib_metadata.Distribution] = {}
+    for name, expected_version in EXPECTED_NATIVE_DISTRIBUTIONS.items():
+        try:
+            distribution = importlib_metadata.distribution(name)
+        except importlib_metadata.PackageNotFoundError as exc:
+            raise RuntimeError(
+                f"required native distribution {name}=={expected_version} is not installed"
+            ) from exc
+        metadata_name = distribution.metadata.get("Name")
+        if (
+            not isinstance(metadata_name, str)
+            or _canonical_distribution_name(metadata_name)
+            != _canonical_distribution_name(name)
+        ):
+            raise RuntimeError(
+                f"native distribution metadata name mismatch for {name!r}: "
+                f"{metadata_name!r}"
+            )
+        if distribution.version != expected_version:
+            raise RuntimeError(
+                f"native distribution version mismatch for {name}: expected "
+                f"{expected_version}, observed {distribution.version}"
+            )
+        distributions[name] = distribution
+
+    module_version = getattr(scitt_cose, "__version__", None)
+    if module_version != EXPECTED_NATIVE_DISTRIBUTIONS["scitt-cose"]:
+        raise RuntimeError(
+            "scitt_cose module version does not match the required scitt-cose "
+            f"distribution version: {module_version!r}"
+        )
+    providers = importlib_metadata.packages_distributions().get("scitt_cose", [])
+    if [_canonical_distribution_name(item) for item in providers] != ["scitt-cose"]:
+        raise RuntimeError(
+            "scitt_cose import package is not mapped uniquely to the scitt-cose "
+            f"distribution: {providers!r}"
+        )
+
+    installed_files = {
+        name: {
+            Path(distribution.locate_file(item)).resolve()
+            for item in (distribution.files or ())
+        }
+        for name, distribution in distributions.items()
+    }
+    imported_modules = (
+        ("scitt_cose", scitt_cose, "scitt-cose"),
+        ("cbor2", cbor2, "cbor2"),
+        ("cryptography serialization", serialization, "cryptography"),
+        ("cryptography Ed25519", ed25519, "cryptography"),
+    )
+    for label, module, distribution_name in imported_modules:
+        source = getattr(module, "__file__", None)
+        if source is None or Path(source).resolve() not in installed_files[distribution_name]:
+            raise RuntimeError(
+                f"imported {label} module is not supplied by the installed "
+                f"{distribution_name} distribution"
+            )
+
+    distribution = distributions["scitt-cose"]
+    rendered_entrypoints: dict[str, str] = {}
+    for name, entrypoint in sorted(entrypoints.items()):
+        source = inspect.getsourcefile(entrypoint)
+        if source is None or Path(source).resolve() not in installed_files["scitt-cose"]:
+            raise RuntimeError(
+                f"SCITT entrypoint {name!r} is not supplied by the installed "
+                "scitt-cose distribution"
+            )
+        rendered_entrypoints[name] = (
+            f"{entrypoint.__module__}:{entrypoint.__qualname__}"
+        )
+
+    verifier_runtime = {
+        "coordinate_status": "MATCHED",
+        "distribution_name": "scitt-cose",
+        "distribution_version": distribution.version,
+        "import_package": "scitt_cose",
+        "module_version": module_version,
+        "verification_entrypoints": [
+            rendered_entrypoints[name]
+            for name in SCITT_VERIFICATION_ENTRYPOINTS
+        ],
+        "claim_boundary": (
+            "This result records that the current Python process imported the "
+            "scitt_cose package from the installed scitt-cose==0.2.2 distribution "
+            "and executed the named verification entrypoints. It does not "
+            "authenticate that distribution, establish producer provenance, attest "
+            "the runtime environment, prove independent reproduction or distinct "
+            "actors, cover the complete transitive cryptographic implementation, or "
+            "promote the VSTD SCITT adapters to native catalog components."
+        ),
+    }
+    dependencies = [
+        {
+            "distribution_name": "cbor2",
+            "distribution_version": distributions["cbor2"].version,
+            "role": "Concise Binary Object Representation codec",
+        },
+        {
+            "distribution_name": "cryptography",
+            "distribution_version": distributions["cryptography"].version,
+            "role": "Edwards-curve Digital Signature Algorithm primitives",
+        },
+    ]
+    return verifier_runtime, dependencies
 
 
 def _crypto():
     try:
         import cbor2
+        import scitt_cose
         from cryptography.hazmat.primitives import serialization
         from cryptography.hazmat.primitives.asymmetric import ed25519
         from scitt_cose import (
@@ -85,10 +218,7 @@ def _crypto():
             "Install the pinned optional dependencies with: "
             "python -m pip install -e '.[scitt]'"
         ) from exc
-    return {
-        "cbor2": cbor2,
-        "serialization": serialization,
-        "ed25519": ed25519,
+    entrypoints = {
         "attach_receipts": attach_receipts,
         "build_receipt": build_receipt,
         "build_signed_statement": build_signed_statement,
@@ -97,6 +227,17 @@ def _crypto():
         "parse_signed_statement": parse_signed_statement,
         "sign_sign1": sign_sign1,
         "verify_receipt": verify_receipt,
+    }
+    verifier_runtime, direct_runtime_dependencies = _implementation_coordinates(
+        scitt_cose, cbor2, serialization, ed25519, entrypoints
+    )
+    return {
+        "cbor2": cbor2,
+        "serialization": serialization,
+        "ed25519": ed25519,
+        **entrypoints,
+        "scitt_verifier_runtime": verifier_runtime,
+        "direct_runtime_dependencies": direct_runtime_dependencies,
     }
 
 
@@ -463,6 +604,8 @@ def verify(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
         "vstd_kernel": vstd_result.to_dict(),
         "vstd_observation": vstd_observation.to_dict(),
         "scitt_observation": observation.to_dict(),
+        "scitt_verifier_runtime": crypto["scitt_verifier_runtime"],
+        "direct_runtime_dependencies": crypto["direct_runtime_dependencies"],
         "scitt_as_vstd_evidence": scitt_as_vstd_evidence,
         "composition": composition.to_dict(),
         "artifact_sha256": _sha256(ARTIFACT.read_bytes()),

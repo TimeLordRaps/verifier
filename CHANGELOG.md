@@ -4,12 +4,185 @@
 > Amazon Web Services (AWS); Concise Binary Object Representation (CBOR); continuous integration (CI);
 > command-line interface (CLI); conjunctive normal form (CNF); CBOR Object Signing and Encryption (COSE);
 > grounded decision certificate (GDC); Hypertext Transfer Protocol Secure (HTTPS);
-> Internet Engineering Task Force (IETF); JavaScript Object Notation (JSON); nondeterministic polynomial time (NP);
+> Internet Engineering Task Force (IETF); Java unit test report format (JUnit);
+> JavaScript Object Notation (JSON); nondeterministic polynomial time (NP);
 > reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
 > Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
 > Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
 > Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
 > zero-identity/zero-knowledge (ZIZK).
+
+## 1.3.0 - UNRELEASED
+
+### Integration contract preparation
+
+- Carry each selected stored implementation's declared package dependencies into exact
+  package-qualified planning prerequisites. Readiness no longer omits those obligations;
+  retained dependency artifacts do not establish resolution or installation. Changed plans
+  require fresh authorization-declaration bindings. Missing package bytes remain
+  `NOT_ESTABLISHED`, and independently checkable plan substitutions remain `INVALID`.
+  Registry-only planning and stored-format identifiers are unchanged.
+- Define certifier as an explicit certificate-issuance capability, distinct from proving,
+  checking and issuer authority. Existing relation, mechanism and native-contract metadata
+  carry that capability without changing the closed component-kind enumeration or adding
+  an unevidenced native integration. Supported analysis/comparison and experimental
+  catalog, package, planning, readiness and topology interfaces remain distinct.
+- Separate platform test intent from exact recorded observations and current-candidate
+  evidence. Preserve platform skips, the pre-retarget observation coordinate, and the
+  requirement for fresh integration and final-main publication evidence.
+- Read release-verification Git blobs in one bounded raw-object batch, preserving exact
+  path, byte and digest comparisons while avoiding one process launch per file. Reject
+  malformed or misbound responses and retain rejection of archive export substitutions
+  or omissions; no generated archive replaces the raw Git-byte comparison authority.
+- Exclude local benchmark, type-checker and linter caches from the public presentation
+  scan. Generated tool state is neither a publication surface nor stable input to release
+  claim checks.
+
+### Explicit graph topology interpretations
+
+- Add experimental graph-bound topology contracts and `vstd data topology`: distinguish
+  simultaneous Boolean equations from explicitly declared backward-time relations.
+  Report self-reference, cyclic groups, forks, joins and disconnected components separately
+  from bounded equation and clock-offset consistency. Paradox candidates remain annotations;
+  unsupported semantics and exhausted bounds remain `NOT_ESTABLISHED`. No physical causation,
+  receipt conformance or mechanism-earned support follows from these diagnostics.
+- Register the typed checker for exact nonexecuting planning and configure its tests on all
+  four existing platform coordinates. New registry/package/plan digests require fresh bindings;
+  historical run evidence does not qualify this added component. Existing receipt formats and
+  cyclic-assurance admission guards are unchanged. See [topology interpretation](docs/GRAPH_TOPOLOGY.md).
+- Repair a dependency traversal that falsely reported a cycle in an acyclic branching graph;
+  preserve genuine cycles, self-reference and deep-graph handling.
+
+### Artifact awareness semantics
+
+- Define artifact awareness, awareness relations, awareness boundaries and confidentiality
+  of awareness. Separate actual awareness, permitted awareness and potentially inferable
+  awareness, including indirect disclosure through composed artifacts.
+- Surface prohibited awareness inferences in existing inspection, analysis, planning and
+  readiness diagnostics. Permission does not establish knowledge; withholding direct access
+  does not establish non-inferability.
+- Add an experimental exact-graph-bound analyzer for finite observer-relative knowledge
+  closure across composed higher-order interfaces. Conjunctive hyperpaths preserve the
+  all-premise derivation; exact supported traversal is `FAIL`, incompatible relevant rule
+  evidence remains `CONFLICTED`, missing evidence or exhausted bounds remain `UNKNOWN`, and
+  `MATCH` requires complete bounded closure of the declared model. This is not an awareness
+  tracker, universal non-inferability proof, runtime enforcement, authorization or actor
+  attribution. Expanded diagnostics and the added catalog component require fresh package,
+  plan and platform evidence. Receipt identifiers and the stored-package format are unchanged.
+- Bind observer, interface, rule and completeness evidence to the exact graph digest;
+  require interface sources and graph-backed rule inputs/outputs to match the strict graph
+  snapshot exactly. Caller-selected identifiers and emitted relationship metadata can
+  themselves disclose information, so analyzer contracts and reports inherit the source
+  graph's confidentiality requirements.
+- Bind complete fact records at observer, interface and rule support points; retain typed
+  seed evidence and exact graph-backed steps in concrete witnesses. Use an explicit
+  goal-directed bounded traversal schedule, while preserving `UNKNOWN` whenever its
+  firing or depth limits prevent completed closure.
+
+### Stored verifier-like components
+
+- Add experimental `VSTD-COMPONENT-PACKAGE-1`: a bounded, self-contained JSON format
+  retaining exact implementation artifact bytes, a strict catalog 1.1 registry,
+  literal entry-point bindings, dependency declarations, and unsigned descriptive
+  publisher/license metadata. Canonical package and artifact digests bind those bytes
+  and declarations; they do not establish native correctness, authentic authorship,
+  executable dependency completeness, or permission to execute.
+- Add nonexecuting save/load/inspection functions, `vstd components inspect`, and
+  `vstd surface analyze --plan --package` with optional expected package digests.
+  Unknown formats, duplicate keys, broken bindings, tampered content, nonportable
+  artifact names, and resource-bound violations fail closed. Loading never extracts,
+  installs, fetches, or invokes a stored implementation.
+- Bind package-aware plans and execution-readiness preflight to the exact revalidated
+  package bytes, not only its registry. Changed payloads invalidate the plan binding;
+  caller-supplied authorization declarations must bind the exact package-aware plan.
+  Missing package bytes remain `NOT_ESTABLISHED`. Registry-only planning stays explicit,
+  and these checks neither authenticate authority nor grant permission to execute.
+- Add a source-snapshot exporter for the 19 first-party catalog entries and portable
+  format specimens. Public hosting and native-runtime qualification remain separate
+  gates; this stored-format foundation is part of the v1.3.0 interoperability scope.
+
+### Surface analysis and experimental interoperability planning
+
+- Add a strict zero-dependency VSTD-2 geometry loader, stable top-level modeled-surface
+  analysis API, and deterministic nonexecuting `vstd surface analyze` command. The loader
+  rejects duplicate keys, non-finite numbers, unknown fields, invalid types, and broken
+  geometry references before analysis.
+- Add an explicitly experimental `verifier.interoperability` planning facade for
+  immutable, domain-neutral component descriptors and registries plus deterministic,
+  registry-digest-bound candidate plans. Keep the catalog and planner names outside the
+  supported top-level `verifier.__all__` boundary. Catalog schema 1.1 separates the
+  VSTD-2 planning-surface coordinate from schemas actually accepted by each native entry
+  point; strict 1.0 migration preserves planning matches without inventing native input
+  compatibility.
+- Populate a first-party planning catalog with 19 exact implementation entry points across
+  12 explicitly counted catalog grouping labels, and expose it through the nonexecuting
+  `vstd surface analyze --plan` path. The denominator is not a count of independent or
+  external native verifiers.
+- Add a runnable non-critical sorted-grocery-list example that produces two exact
+  candidates and leaves three self-closure holes unmatched without invoking its checker.
+  Planning is not validation execution: component execution, evidence collection,
+  post-execution reanalysis, safety, and critical-domain readiness remain unsupported or
+  unestablished. Modeled closure is bounded to the supplied geometry.
+- Add explicit `examples/` and `experiments/` directory maturity guidance and a
+  component-by-component platform-interoperability evidence matrix.
+- Add a non-critical executable proof-producing-solver to proof-checker composition with
+  exact formula, proof, implementation, registry, and component-entry bindings. The
+  checker rehydrates the canonical transition bytes and rejects modified proof or catalog
+  coordinates before checking. The serialized transition also binds the current producer
+  and checker implementation digest, and malformed canonical formula structures return a
+  deterministic rejection instead of escaping the typed result. Forged-proof,
+  wrong-formula, truncated-proof, transition-mutation, and bound-exhaustion tests remain
+  fail-closed. Together with the existing
+  SCITT example, this provides two bounded composition geometries without claiming actor
+  independence, external interoperability, or safety.
+- Qualify the cryptographic SCITT example against the exact installed `scitt-cose==0.2.2`,
+  `cbor2==6.1.4`, and `cryptography==50.0.0` distributions before native calls. Record the
+  statement/receipt verification entry points and direct dependency versions in the local
+  result while keeping them out of the producer-signed payload and native component
+  catalog. These coordinates observe one verifier runtime; they do not authenticate its
+  packages, identify the producer, or establish independent interoperability.
+- Add an experimental declaration-bound cross-geometry diagnostic with deterministic
+  witnesses for explicit `VERIFIED` versus `FALSIFIED` judgments and cycles in dependencies
+  declared acyclic. Missing shared identity and indeterminate judgments remain
+  `NOT_ESTABLISHED`; malformed bindings are `INVALID`. This is structural analysis, not
+  Boolean satisfiability analysis or evidence of physical truth, safety, or conformance.
+- Add an experimental nonexecuting execution-readiness preflight that binds an exact
+  analysis, plan, and registry to native-input digests, planned result-to-evidence mappings,
+  evidenced prerequisite resolutions, a caller-supplied authorization decision, and a
+  mandatory post-execution reassessment contract. `READY` establishes only internal
+  completeness of those declarations; it neither executes nor authorizes a component.
+
+### Cross-platform comparison
+
+- Add a supported bounded comparator and `vstd compare-platforms` command for VSTD-1
+  generic-run receipts. A declaration alone earns no result: `PASS` requires one
+  canonically intact receipt per declared operating system, matching non-platform
+  bindings, and matching declared result projections. Preserve comparable disagreement
+  as `CONFLICTED`, incomplete or non-comparable evidence as `NOT_ESTABLISHED`, and
+  malformed or contradictory evidence as `INVALID`.
+- Bind Python implementation and machine identity into newly captured comparison
+  declarations. Legacy receipts retain their historical canonical-digest semantics but
+  cannot establish comparison without this additive environment binding; a mismatch
+  between bound and reported environment data is `INVALID`.
+- Add native GitHub-hosted Linux, Windows, and Intel macOS observation jobs for the
+  portable generic example and require their aggregate diagnostic in the protected
+  repository-check gate. Make the example's declared JavaScript Object Notation outputs
+  use explicit line-feed bytes so Windows text translation cannot create a false portable
+  surface. Extend release-artifact byte comparison to macOS. These checks
+  do not establish universal portability, native-execution attestation within the
+  receipt, semantic correctness, or actor independence.
+- Add a separate complete Python contract matrix for Linux x86-64, Windows x86-64,
+  macOS Intel, and macOS ARM64, including the optional artifact-seal and cryptographic
+  SCITT profiles. Its diagnostic artifact binds the pull-request head and base, executed
+  checkout, runner image, operating system, machine, interpreter, run identifier, and
+  attempt before installation; its JUnit report preserves platform-specific skips and the
+  available raw evidence is retained after failure. Emit report bytes with explicit
+  platform-neutral line feeds, reject contradictory JUnit suite counts and non-exact
+  environment records, and bind the raw environment-document digest. The release workflow requires an exact successful push run
+  on the protected default branch, reconstructs all four reports from their raw environment
+  and JUnit evidence, and attaches an attested deterministic platform-evidence ZIP with its
+  own internal digest manifest. Configuring this matrix is not evidence that the unreleased
+  source has passed it.
 
 ## 1.2.0 - 2026-09-01
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Terminology: Unicode Transformation Format, 8-bit (UTF-8); Verifier Standard (VSTD).
+"""Terminology: Extensible Markup Language (XML);
+Unicode Transformation Format, 8-bit (UTF-8); Verifier Standard (VSTD).
 
-Fail closed when a release archive contains private or secret-shaped text."""
+Reject prohibited text patterns in release artifacts without echoing matches."""
 
 from __future__ import annotations
 
@@ -9,12 +10,14 @@ import argparse
 from pathlib import Path, PurePosixPath
 import sys
 import tarfile
+import xml.etree.ElementTree as ET
 import zipfile
 
 from check_presentation import PUBLIC_BOUNDARY_PATTERNS, TEXT_SUFFIXES
 
 
 METADATA_NAMES = {"METADATA", "PKG-INFO", "entry_points.txt", "top_level.txt"}
+RELEASE_TEXT_SUFFIXES = TEXT_SUFFIXES | {".xml"}
 
 
 def _should_scan(name: str) -> bool:
@@ -23,22 +26,40 @@ def _should_scan(name: str) -> bool:
         # This file is the canonical source of the forbidden-pattern definitions.
         # Scanning the definitions as if they were leaked values is self-matching.
         return False
-    return path.suffix.lower() in TEXT_SUFFIXES or path.name in METADATA_NAMES
+    return path.suffix.lower() in RELEASE_TEXT_SUFFIXES or path.name in METADATA_NAMES
 
 
 def _scan_text(artifact: Path, member: str, payload: bytes, errors: list[str]) -> None:
+    location = f"{artifact.name}:{member}"
+    if any(pattern.search(location) for _, pattern in PUBLIC_BOUNDARY_PATTERNS):
+        location = "<redacted archive member>"
     try:
         text = payload.decode("utf-8")
     except UnicodeDecodeError:
-        errors.append(f"non-UTF-8 text member: {artifact.name}:{member}")
+        errors.append(f"non-UTF-8 text member: {location}")
         return
-    subject = f"{member}\n{text}"
+    subjects = [member, text]
+    if PurePosixPath(member).suffix.lower() == ".xml":
+        # Reject document declarations before parsing, and check decoded values
+        # too: numeric character references must not hide prohibited content.
+        if "<!DOCTYPE" in text or "<!ENTITY" in text:
+            errors.append(f"XML declarations are not supported: {location}")
+            return
+        try:
+            root = ET.fromstring(text)
+        except ET.ParseError:
+            errors.append(f"malformed XML member: {location}")
+            return
+        subjects.append("".join(root.itertext()))
+        for element in root.iter():
+            subjects.append(element.tag)
+            subjects.extend(element.attrib.keys())
+            subjects.extend(element.attrib.values())
+    subject = "\n".join(subjects)
     for label, pattern in PUBLIC_BOUNDARY_PATTERNS:
-        match = pattern.search(subject)
-        if match:
-            errors.append(
-                f"{label} in {artifact.name}:{member}: {match.group(0)!r}"
-            )
+        if pattern.search(subject):
+            # Diagnostics may enter public build logs; never echo matched bytes.
+            errors.append(f"{label} in {location}")
 
 
 def _scan_zip(path: Path, errors: list[str]) -> int:
@@ -72,7 +93,7 @@ def check_artifact(path: Path, errors: list[str]) -> int:
         return _scan_zip(path, errors)
     if path.name.endswith(".tar.gz"):
         return _scan_tar(path, errors)
-    if path.name.endswith(".json"):
+    if path.suffix.lower() in {".json", ".xml"}:
         _scan_text(path, path.name, path.read_bytes(), errors)
         return 1
     raise ValueError(f"unsupported release artifact: {path}")

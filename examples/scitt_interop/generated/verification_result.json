@@ -10,6 +10,18 @@
     "vstd_conformance_status": "NOT_ESTABLISHED",
     "vstd_receipt_sha256": "f8117247e97f12834206f5b024085c54b5d899e6880659d8afcebfeee2ddece1"
   },
+  "direct_runtime_dependencies": [
+    {
+      "distribution_name": "cbor2",
+      "distribution_version": "6.1.4",
+      "role": "Concise Binary Object Representation codec"
+    },
+    {
+      "distribution_name": "cryptography",
+      "distribution_version": "50.0.0",
+      "role": "Edwards-curve Digital Signature Algorithm primitives"
+    }
+  ],
   "payload_sha256": "a0fc13840915e31f4d4787c7503f86f789be24e4a18fa76181991fa9aaecca63",
   "receipt_sha256": "700df05d3c99098f8dbabb0757bf24fbe46073aa3823e1f5612bb373f426cfea",
   "scitt_as_vstd_evidence": {
@@ -46,6 +58,19 @@
     "transparency_service": "urn:example:vstd-scitt-local-test-log",
     "vds": "RFC9162_SHA256",
     "verification_profile": "RFC9943+RFC9942/RFC9162_SHA256"
+  },
+  "scitt_verifier_runtime": {
+    "claim_boundary": "This result records that the current Python process imported the scitt_cose package from the installed scitt-cose==0.2.2 distribution and executed the named verification entrypoints. It does not authenticate that distribution, establish producer provenance, attest the runtime environment, prove independent reproduction or distinct actors, cover the complete transitive cryptographic implementation, or promote the VSTD SCITT adapters to native catalog components.",
+    "coordinate_status": "MATCHED",
+    "distribution_name": "scitt-cose",
+    "distribution_version": "0.2.2",
+    "import_package": "scitt_cose",
+    "module_version": "0.2.2",
+    "verification_entrypoints": [
+      "scitt_cose.statement:parse_signed_statement",
+      "scitt_cose.receipt:verify_receipt",
+      "scitt_cose.statement:extract_receipts"
+    ]
   },
   "statement_sha256": "3e6f2a928abc6162511d648305a91b7fa242803f4b607c4beb91a0d8ab8391b5",
   "transparent_statement_sha256": "c75ff44dcc7b9630a05ad5c0040bc4c5dbb89651d47f345a18fdb4ddcb1bca7b",

@@ -24,6 +24,7 @@ from verifier.core.certificate import (
     ResourceBounds,
     Verdict,
 )
+from verifier.core.evidence import EvidenceStore, VerificationSession
 from verifier.core.kernel import KernelOutcome, check, is_horn, reference_descriptor
 from verifier.data.graph_level import (
     GRAPH_MAX_LEVEL,
@@ -34,6 +35,7 @@ from verifier.data.graph_level import (
     ObligationKind,
     certify_graph_cnf,
     encode,
+    establish_graph_level,
     graph_level,
     obligations,
 )
@@ -206,10 +208,51 @@ def test_current_admissibility_changes_without_rewriting_historical_graph(curren
     assert historical.to_dict() == historical_bytes
 
 
-def test_an_artifact_missing_from_the_graph_is_unknown_not_absent():
+def test_a_dangling_port_is_invalid_structure_not_a_candidate_result():
     graph = _graph()
     del graph.artifacts["mid"]
-    assert _level(graph, _collection()).level == 0
+    with pytest.raises(GraphEncodingError, match="references missing artifact mid"):
+        _level(graph, _collection())
+
+
+@pytest.mark.parametrize(
+    ("malformation", "message"),
+    (
+        ("zero-input", "transformation t1 has no inputs"),
+        ("zero-output", "transformation t1 has no outputs"),
+        ("empty-role", "transformation t1 has an empty role for src"),
+        ("invalid-digest", "artifact src has an invalid content_digest"),
+    ),
+)
+@pytest.mark.parametrize("entrypoint", ("candidate", "evidence-bound"))
+def test_structurally_invalid_graphs_are_refused_before_graph_establishment(
+    malformation, message, entrypoint
+):
+    graph = _graph()
+    if malformation == "zero-input":
+        graph.transformations["t1"] = replace(graph.transformations["t1"], inputs=())
+    elif malformation == "zero-output":
+        graph.transformations["t1"] = replace(graph.transformations["t1"], outputs=())
+    elif malformation == "empty-role":
+        graph.transformations["t1"] = replace(
+            graph.transformations["t1"], inputs=(HyperedgePort("src", ""),)
+        )
+    else:
+        graph.artifacts["src"] = replace(graph.artifacts["src"], content_digest="invalid")
+
+    with pytest.raises(GraphEncodingError, match=message):
+        if entrypoint == "candidate":
+            _level(graph, _collection())
+        else:
+            establish_graph_level(
+                graph,
+                collection_id="collection:C",
+                members=("corpus",),
+                object_evidence={},
+                edge_evidence={},
+                session=VerificationSession(EvidenceStore()),
+                binding=_binding(),
+            )
 
 
 def test_cyclic_ancestry_cannot_receive_a_clean_candidate_level():

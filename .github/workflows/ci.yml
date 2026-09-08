@@ -27,7 +27,7 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -65,7 +65,7 @@ jobs:
 
   scitt-crypto:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -79,7 +79,7 @@ jobs:
 
   artifact-seal:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -97,7 +97,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -141,12 +141,183 @@ jobs:
         with:
           name: release-integrity-windows-latest
           path: dist/windows
-      - name: Require byte-identical Linux and Windows release artifacts
-        run: python scripts/release_artifacts.py compare dist/ubuntu dist/windows
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-integrity-macos-latest
+          path: dist/macos
+      - name: Require byte-identical Linux, Windows, and macOS release artifacts
+        run: |
+          python scripts/release_artifacts.py compare dist/ubuntu dist/windows
+          python scripts/release_artifacts.py compare dist/ubuntu dist/macos
+
+  platform-comparability-observation:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            platform: Linux
+          - runner: windows-latest
+            platform: Windows
+          - runner: macos-15-intel
+            platform: Darwin
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+      - run: python -m pip install .
+      - name: Require the runner's native operating-system view
+        env:
+          EXPECTED_PLATFORM: ${{ matrix.platform }}
+        run: python -c "import os, platform; observed = platform.system(); expected = os.environ['EXPECTED_PLATFORM']; assert observed == expected, (observed, expected)"
+      - name: Capture, validate, and rerun the portable example
+        run: |
+          vstd run examples/generic_run/manifest.json --output dist/platform-comparability/${{ matrix.platform }}
+          vstd validate dist/platform-comparability/${{ matrix.platform }}
+          vstd reproduce dist/platform-comparability/${{ matrix.platform }} --rerun
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: platform-comparability-${{ matrix.platform }}
+          path: dist/platform-comparability/${{ matrix.platform }}
+          if-no-files-found: error
+          retention-days: 14
+
+  platform-comparability:
+    needs: [platform-comparability-observation]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+      - run: python -m pip install .
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: platform-comparability-*
+          path: dist/platforms
+          merge-multiple: false
+      - name: Require comparable recorded results across all declared platforms
+        run: |
+          vstd compare-platforms \
+            dist/platforms/platform-comparability-Linux \
+            dist/platforms/platform-comparability-Windows \
+            dist/platforms/platform-comparability-Darwin \
+            --json > platform-comparison.json
+          python -c 'import json; from pathlib import Path; report=json.loads(Path("platform-comparison.json").read_text(encoding="utf-8")); assert report.get("status") == "PASS" and report.get("exit_code") == 0, report'
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: platform-comparison-${{ github.sha }}
+          path: platform-comparison.json
+          if-no-files-found: error
+          retention-days: 14
+
+  platform-python-contracts:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            coordinate: linux-x64
+            expected_platform: Linux
+            expected_machine: x86_64
+            expected_runner_arch: X64
+          - runner: windows-2025
+            coordinate: windows-x64
+            expected_platform: Windows
+            expected_machine: AMD64
+            expected_runner_arch: X64
+          - runner: macos-15-intel
+            coordinate: macos-x64
+            expected_platform: Darwin
+            expected_machine: x86_64
+            expected_runner_arch: X64
+          - runner: macos-15
+            coordinate: macos-arm64
+            expected_platform: Darwin
+            expected_machine: arm64
+            expected_runner_arch: ARM64
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+      - name: Record and require the declared interpreter coordinate
+        env:
+          EXPECTED_PLATFORM: ${{ matrix.expected_platform }}
+          EXPECTED_MACHINE: ${{ matrix.expected_machine }}
+          EXPECTED_RUNNER_ARCH: ${{ matrix.expected_runner_arch }}
+          OBSERVED_RUNNER_OS: ${{ runner.os }}
+          OBSERVED_RUNNER_ARCH: ${{ runner.arch }}
+          OBSERVED_GITHUB_SHA: ${{ github.sha }}
+          OBSERVED_GITHUB_REF: ${{ github.ref }}
+          OBSERVED_GITHUB_EVENT_NAME: ${{ github.event_name }}
+          OBSERVED_GITHUB_RUN_ID: ${{ github.run_id }}
+          OBSERVED_GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PULL_REQUEST_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PULL_REQUEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: >-
+          python -c "import json, os, platform, sys; observed={'platform_system':platform.system(),'platform_machine':platform.machine(),'python_implementation':platform.python_implementation(),'python_version':platform.python_version(),'runner_os':os.environ['OBSERVED_RUNNER_OS'],'runner_arch':os.environ['OBSERVED_RUNNER_ARCH'],'image_os':os.environ.get('ImageOS',''),'image_version':os.environ.get('ImageVersion',''),'executed_git_sha':os.environ['OBSERVED_GITHUB_SHA'],'git_ref':os.environ['OBSERVED_GITHUB_REF'],'event_name':os.environ['OBSERVED_GITHUB_EVENT_NAME'],'run_id':os.environ['OBSERVED_GITHUB_RUN_ID'],'run_attempt':os.environ['OBSERVED_GITHUB_RUN_ATTEMPT'],'pull_request_head_sha':os.environ.get('PULL_REQUEST_HEAD_SHA',''),'pull_request_base_sha':os.environ.get('PULL_REQUEST_BASE_SHA','')}; open('platform-environment.json','w',encoding='utf-8').write(json.dumps(observed,indent=2,sort_keys=True)+'\n'); expected=(os.environ['EXPECTED_PLATFORM'],os.environ['EXPECTED_MACHINE'],os.environ['EXPECTED_RUNNER_ARCH']); actual=(observed['platform_system'],observed['platform_machine'],observed['runner_arch']); assert actual == expected, (actual, expected); assert sys.version_info[:3] == (3,12,10), sys.version; assert observed['image_os'] and observed['image_version'], observed"
+      - name: Configure experimental Intel macOS source builds
+        if: matrix.coordinate == 'macos-x64'
+        shell: bash
+        run: |
+          OPENSSL_PREFIX="$(brew --prefix openssl@3)"
+          test -d "$OPENSSL_PREFIX/include/openssl"
+          rustc --version
+          clang --version
+          "$OPENSSL_PREFIX/bin/openssl" version
+          {
+            echo "OPENSSL_DIR=$OPENSSL_PREFIX"
+            echo "OPENSSL_STATIC=1"
+            echo "PIP_NO_BINARY=cryptography,cbor2"
+          } >> "$GITHUB_ENV"
+      - run: python -m pip install ".[test,seal,scitt]"
+      - name: Exercise the complete Python contract suite and optional integrations
+        run: >-
+          python -u -m pytest -vv -s --durations=10 --timeout=60
+          -p scripts.pytest_public_evidence
+          --junitxml=platform-contracts.xml
+      - name: Require a public boundary check before uploading raw evidence
+        id: platform-evidence-boundary
+        if: always()
+        run: >-
+          python scripts/check_release_boundary.py
+          platform-environment.json platform-contracts.xml
+      - name: Build bounded platform-component report
+        if: success()
+        run: >-
+          python scripts/build_platform_component_report.py
+          --coordinate ${{ matrix.coordinate }}
+          --environment platform-environment.json
+          --junit platform-contracts.xml
+          --manifest docs/platform-component-contracts.json
+          --output platform-component-contract.json
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always() && steps.platform-evidence-boundary.outcome == 'success'
+        with:
+          name: platform-python-contracts-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.coordinate }}
+          path: |
+            platform-environment.json
+            platform-contracts.xml
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: success()
+        with:
+          name: platform-component-contract-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.coordinate }}
+          path: platform-component-contract.json
+          if-no-files-found: error
+          retention-days: 30
 
   installed-wheel-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -163,7 +334,13 @@ jobs:
           /tmp/vstd-wheel/bin/vstd run "$GITHUB_WORKSPACE/examples/generic_run/manifest.json" --output /tmp/vstd-receipt
           /tmp/vstd-wheel/bin/vstd validate /tmp/vstd-receipt
           /tmp/vstd-wheel/bin/vstd reproduce /tmp/vstd-receipt --rerun
+          /tmp/vstd-wheel/bin/vstd surface analyze "$GITHUB_WORKSPACE/examples/verification_geometry_residual/geometry.json" --json >/dev/null
+          /tmp/vstd-wheel/bin/python -u "$GITHUB_WORKSPACE/examples/stored_components/build_reference_package.py" --source-root "$GITHUB_WORKSPACE" --output /tmp/vstd-components.json --package-version 1.3.0-candidate
+          /tmp/vstd-wheel/bin/vstd components inspect /tmp/vstd-components.json --json > /tmp/vstd-component-inspection.json
+          /tmp/vstd-wheel/bin/vstd surface analyze "$GITHUB_WORKSPACE/examples/verification_geometry_residual/geometry.json" --plan --package /tmp/vstd-components.json --json > /tmp/vstd-component-plan.json
+          /tmp/vstd-wheel/bin/python -u -c 'import json; from pathlib import Path; from verifier.interoperability.storage import load_component_package; package=load_component_package("/tmp/vstd-components.json"); inspection=json.loads(Path("/tmp/vstd-component-inspection.json").read_text()); report=json.loads(Path("/tmp/vstd-component-plan.json").read_text()); plan=report["plan"]; assert inspection == package.inspect(); assert plan["binding_scope"] == "STORED_PACKAGE"; assert plan["package_digest"] == package.canonical_digest(); assert plan["execution_performed"] is False; print("Installed stored-package inspection and exact package-bound nonexecuting planning passed")'
           /tmp/vstd-wheel/bin/verifier demo --scenario honest-unknown --json
+          /tmp/vstd-wheel/bin/python -c 'import verifier; names=("GeometryLoadError","load_verification_geometry","ControlSurfaceContext","InteractionMode","SurfaceAnalysis","SurfaceAnalysisError","SurfaceHole","SurfaceHoleKind","analyze_verification_surface"); assert all(hasattr(verifier, name) for name in names), names'
           /tmp/vstd-wheel/bin/python -c 'import json; from pathlib import Path; from verifier.core.checker import IndependentAuditor; receipt=json.loads(Path("/tmp/vstd-receipt/receipt.json").read_text()); hashes=(receipt["assessment_context"]["verifier"]["specification_hash"], IndependentAuditor.verifier_descriptor().specification_hash); assert all(value.startswith("sha256:") for value in hashes), hashes'
           printf 'installed-wheel-artifact\n' > /tmp/vstd-wheel-artifact.bin
           /tmp/vstd-wheel/bin/vstd artifact freeze /tmp/vstd-wheel-artifact.bin /tmp/vstd-wheel-artifact --json
@@ -206,7 +383,7 @@ jobs:
   # This identifier remains stable because main branch protection requires it.
   conformance-gate:
     if: always()
-    needs: [base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, release-integrity, release-reproducibility, installed-wheel-smoke, presentation, codeql]
+    needs: [base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, release-integrity, release-reproducibility, platform-comparability-observation, platform-comparability, platform-python-contracts, installed-wheel-smoke, presentation, codeql]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -219,6 +396,9 @@ jobs:
           ARTIFACT_SEAL: ${{ needs.artifact-seal.result }}
           RELEASE: ${{ needs.release-integrity.result }}
           REPRODUCIBLE: ${{ needs.release-reproducibility.result }}
+          PLATFORM_OBSERVATIONS: ${{ needs.platform-comparability-observation.result }}
+          PLATFORM_COMPARISON: ${{ needs.platform-comparability.result }}
+          PLATFORM_PYTHON_CONTRACTS: ${{ needs.platform-python-contracts.result }}
           WHEEL: ${{ needs.installed-wheel-smoke.result }}
           PRESENTATION: ${{ needs.presentation.result }}
           CODEQL: ${{ needs.codeql.result }}
@@ -230,6 +410,9 @@ jobs:
           test "$ARTIFACT_SEAL" = success
           test "$RELEASE" = success
           test "$REPRODUCIBLE" = success
+          test "$PLATFORM_OBSERVATIONS" = success
+          test "$PLATFORM_COMPARISON" = success
+          test "$PLATFORM_PYTHON_CONTRACTS" = success
           test "$WHEEL" = success
           test "$PRESENTATION" = success
           test "$CODEQL" = success

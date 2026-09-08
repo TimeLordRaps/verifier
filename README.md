@@ -147,7 +147,7 @@ Use this summary before opening the exact matrix:
 | Usable reference paths | Receipts, generic run capture and reproduction, Graph recording, grounded-certificate checks, evidence-bound assessment, and artifact freeze/seal/thaw mechanisms are implemented within their documented bounds. |
 | Mechanism-dependent paths | VSTD-4, VSTD-5, and Graph profiles above recorded lineage establish results only when their exact registered mechanisms rerun successfully over bound evidence. |
 | Compatibility candidates | Candidate depth/profile calculations remain `NOT_ESTABLISHED`; caller-supplied references or ratings cannot create conformance. |
-| Experimental integrations | The workflow and Supply Chain Integrity, Transparency, and Trust (SCITT) profiles remain non-normative and grant no VSTD verdict from platform state alone. |
+| Experimental integrations | The workflow and Supply Chain Integrity, Transparency, and Trust (SCITT) profiles plus interoperability catalog and planning path remain non-normative. Strict geometry loading and modeled-surface analysis are supported, but catalog matching and planning grant no VSTD verdict and execute no checker. |
 | Not claimed | Accreditation, consensus-standard status, external adoption, a second implementation, a real independent witness, or third-party security review. |
 
 <details>
@@ -160,6 +160,7 @@ external interoperability, certification, or a second implementation.
 |---|---|---|---|---|---|
 | VSTD-1 | Project specification with implemented reference subset | Claim receipts, checker reports, strict generic-run profile, inspection, and current-profile reads | Claim coordinates, stable digests, mechanism descriptors, and declared provenance; actor separation is not inferred | Implemented reference subset | External implementation and a validator binding distinct producer/checker actors and execution seams |
 | VSTD-2 | Additive experimental project specification | Typed verification geometry, residuals, closure checks, schema, and tests | Geometry and declared reconstruction evidence inside the receipt | Implemented vertical slice | Independent implementation and broader geometry interoperability |
+| Interoperability catalog and surface planning | Supported loading and analysis with experimental planning; not a receipt or numbered profile | Strict VSTD-2 geometry loader, stable modeled-hole analysis and command-line diagnostics, frozen component descriptors and registry, exact candidate matching, deterministic nonexecuting plans, structural cross-geometry conflict diagnostics, and execution-readiness preflight | Analysis binds the typed geometry digest; plans additionally bind registry version and digest; conflict witnesses bind explicit shared propositions and exact geometries; readiness binds native inputs, planned evidence mappings, prerequisites, caller-supplied authorization, and mandatory reassessment | Modeled diagnostics, plan-only candidate associations, declaration-bound structural conflicts, and preflight readiness only; no validation execution or new closure | Boolean satisfiability analysis over declared geometry constraints, authorized component execution, bound result evidence, post-execution reanalysis, and independent interoperability results |
 | VSTD-3 | Implemented project specification | Typed accelerator model, strict validator, emulator, offline adapters, continuity, fleet, and claim evaluation | Conditional on source-specific signatures, nonces, reference values, topology, events, and trust roots; host inventory remains weak evidence | Implemented reference surface | Vendor firmware integration, production trust roots, and complete-mediation evidence outside the emulator boundary |
 | VSTD-4 | Project specification with implemented reference paths | grounded decision certificate (GDC) parser/kernel, compatibility candidate depth, and evidence-bound establishment/recheck | Exact VSTD-1/2/3 and fourteen-rung propositions, content-addressed evidence bytes, mechanism implementation digests, trust roots, and bounds | Candidate path `NOT_ESTABLISHED`; evidence-bound path can establish conformance | Independent implementation, external interoperability, and deployment-specific rung mechanisms/evidence |
 | VSTD-5 | Project specification with implemented reference mechanism | Evidence-bound entry gate, seven separation dimensions, exact admitted-certificate binding, corroboration checks, duplicate refusal, disagreement preservation, receipt build/recheck | Witness coordinate, exact negative separation propositions, VSTD-4 commitment/certificate, checker, observations, mechanisms, trust roots, bounds, and embedded evidence | Mechanism can establish a bounded result; a positive observation with unresolved independence remains overall `UNKNOWN`; no repository claim of a real independent witness | Real independent witnesses, second implementation, external attack, and operational interoperability |
@@ -168,7 +169,7 @@ external interoperability, certification, or a second implementation.
 | VSTD-Graph-3 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Accountable Provenance Closure computation/recheck | Same complete closure binding, including VSTD-3 rating propositions | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Production VSTD-3 rating evidence across a real collection |
 | VSTD-Graph-4 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Refutable Transformation Closure computation/recheck | Same complete closure binding; an edge mechanism must actually check its refutability closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | External closure mechanisms and independent replay |
 | VSTD-Graph-5 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Corroborated Verification Network computation/recheck | Exact VSTD-5 object and transformation rating mechanisms across the complete closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Real independently corroborated collection, second implementation, and interoperability |
-| Generic run | VSTD-1 generic-computation profile | Plan, execute, capture, inspect, strict shape/digest validation, and declared-output rerun | Captures command, source state, outputs, environment, and manifest declarations; generic validation is not native claim verification or VSTD-4 conformance | Implemented VSTD-1 profile | Sandbox, generic external-evidence resolver, and actor/execution binder |
+| Generic run | VSTD-1 generic-computation profile | Plan, execute, capture, inspect, strict shape/digest validation, declared-output rerun, and bounded cross-platform result comparison | Captures command, source state, outputs, environment, and manifest declarations; platform comparison requires complete declared coverage and matching non-platform bindings; generic validation is not native claim verification or VSTD-4 conformance | Implemented VSTD-1 profile plus an additive diagnostic comparator | Sandbox, generic external-evidence resolver, native-execution attestation, and actor/execution binder |
 | Artifact freeze, seal, and thaw | Normative artifact-control mechanism; not a numbered VSTD or receipt profile | Exact regular-file byte preservation, dual-digest artifact identity, read-only guards, finite self-closing Ed25519 seals, external anchor checks, and copy-on-write thaw status | Binds artifact bytes, paths, media type, freeze manifest, carried key, signature, and optional expected artifact/key coordinates | Implemented mechanism version 1 | Durable external archive, privileged-write prevention, trusted time, encryption, semantic correctness, and realm/continuity verification |
 | Experimental workflow | Non-normative experimental profile 0.1 | Strict validator, verdict-neutral GitHub event projector, allocation records, and command-line interface (CLI) | Preserves native platform results and explicit horizons with `verification_effect = NONE` | No VSTD conformance claim | Independent consumer, additional platform adapter, and evidence for allocation optimality |
 | Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability | Experimental, non-normative application profile and crosswalk | Real local Concise Binary Object Representation (CBOR) plus CBOR Object Signing and Encryption (COSE) signatures/receipt, loss-declared adapter, and adjacent native-result composition | Binds the exact payload under emitted test keys and local policy; registration never establishes payload truth | VSTD-4 remains `NOT_ESTABLISHED` | Public Transparency Service, external implementation/interoperability result, and Internet Engineering Task Force (IETF) review |
@@ -336,8 +337,26 @@ Generic `validate` checks the strict profile shape and stable-payload digest. It
 not rehash external artifacts, resolve evidence references, rerun the command, or verify
 the recorded declaration as a native domain claim. `reproduce --rerun` separately
 executes the recorded command and compares declared output paths, digests, and execution
-outcome. Matching outputs do not establish actor independence, environment equivalence,
-semantic equivalence, or truth outside that scope.
+outcome.
+
+When a manifest's open refutation surface declares compatible platforms and explicit
+result surfaces, compare one receipt from each declared operating system:
+
+```bash
+vstd compare-platforms receipts/Linux receipts/Windows receipts/Darwin --json
+```
+
+Python reports macOS as `Darwin`. Newly captured platform-comparable receipts bind their
+Python implementation and machine identity into the canonical digest. Historical receipts
+without that additive binding remain valid records but cannot establish comparison. The
+comparator returns `PASS` only when every declared platform appears exactly once, canonical
+receipt integrity passes, non-platform claim, source, command, Python, machine-family, and
+mechanism bindings agree, and every declared result projection agrees. Comparable result
+disagreement is `CONFLICTED`; missing or non-comparable evidence is `NOT_ESTABLISHED`;
+malformed or internally contradictory evidence is `INVALID`. This is a comparison of supplied recorded results—not proof of
+universal portability, semantic correctness, native execution, or independent actors.
+Matching outputs alone do not establish environment equivalence or truth outside that
+scope.
 
 ### Use the Python application programming interface (API)
 
@@ -385,10 +404,87 @@ native object ──native verifier──> native result
                                            └──> VSTD claim boundary
 ```
 
+The interoperability path connects strict loading and stable modeled-hole detection to an
+experimental domain-neutral component catalog and planner:
+
+```text
+strict VSTD-2 JSON geometry
+  -> typed valid geometry
+  -> modeled-hole analysis
+  -> exact catalog candidates
+  -> nonexecuting validation plan
+  -> nonexecuting execution-readiness preflight
+```
+
+Analyze the checked-in non-critical formatter geometry without executing a checker:
+
+```bash
+vstd surface analyze examples/verification_geometry_residual/geometry.json --json
+vstd surface analyze examples/verification_geometry_residual/geometry.json --plan --json
+```
+
+The report is deterministic and bounded to the supplied geometry. A reported modeled
+closure state does not establish that the model includes every real-world obligation.
+
+Run its harmless sorted-grocery-list example:
+
+```bash
+python examples/interoperability_planning/demo.py
+```
+
+The example reports two exact candidates and three unmatched self-closure holes while
+keeping `plan_only = true`, `execution_performed = false`, and the checker invocation
+count at zero. Here, **validation** names the future process of attempting to discharge
+verification-surface holes with bound execution evidence and then reassessing the
+geometry. This example only detects and plans: it cannot establish checker availability
+at execution time, a native result, ordinary or self-closure, safety, authority to act,
+critical-domain readiness, or VSTD conformance. Its registry version and digest are bound
+into the plan. `--plan` uses the first-party catalog's 19 exact entry points across 12
+catalog grouping labels, but does not select or invoke them. Those labels
+organize first-party code; they are not 12 independent or native implementations and do
+not represent 12 demonstrated interoperability results. The experimental readiness
+preflight can reject missing or substituted native-input, evidence-output, prerequisite,
+authorization, and reassessment declarations, but it executes nothing and grants no
+authorization. Automatic execution and post-execution geometry reassessment remain
+unsupported. See the
+[example boundary and output](examples/interoperability_planning/).
+
+The experimental multi-geometry diagnostic compares only caller-declared shared
+propositions bound to exact geometry digests. It preserves explicit `VERIFIED` versus
+`FALSIFIED` disagreement and declared dependency cycles as reproducible structural
+conflict witnesses; absent identity or an indeterminate judgment remains
+`NOT_ESTABLISHED`, and malformed input is `INVALID`. It does not perform Boolean
+satisfiability analysis, infer that similarly named claims are equivalent, or establish
+physical truth, safety, conformance, or authority.
+
+The separate [experimental graph-topology checker](docs/GRAPH_TOPOLOGY.md) binds explicit
+simultaneous Boolean equations and clock-relative backward-time relations to existing graph
+ports. It reports structural features and bounded consistency separately, retains paradox
+candidates without inferring their truth, and does not bypass cyclic-assurance admission.
+The [non-critical specimen](examples/graph_topology/) exports matching inspection documents.
+
+Operating-system evidence is tracked per component in the
+[platform interoperability matrix](docs/PLATFORM_INTEROPERABILITY.md); support for one
+portable Python path does not transfer to a native prover, verifier, solver, or adapter.
+The linked machine-readable contract records configured test intent, not a hosted pass;
+exact-run artifacts must bind its digest and the current catalog digest before a platform
+claim can be evaluated.
+
+Two executable non-critical relationship geometries are documented under
+[interoperability compositions](examples/interoperability_compositions/): a bounded
+proof-producing Boolean solver whose exact refutation bytes feed a separate proof checker,
+and the existing adjacent VSTD plus Supply Chain Integrity, Transparency, and Trust
+(SCITT) composition. Both retain native results and negative paths; neither establishes
+actor independence, external interoperability, or safety.
+
 The experimental SCITT profile uses
 real Concise Binary Object Representation (CBOR) and COSE
 signatures and a local inclusion receipt. It demonstrates exact payload carriage and
-adjacent verification under test keys. SCITT registration proves neither payload
+adjacent verification under test keys. The example rejects drift from its three pinned
+runtime distributions and records the installed `scitt-cose` version and exact
+statement/receipt verification entry points, while explicitly leaving package
+authentication, producer provenance, and independent implementation unestablished.
+SCITT registration proves neither payload
 correctness nor VSTD conformance. See the [crosswalk](docs/standards/VSTD_SCITT_CROSSWALK.md),
 [semantic boundary](docs/standards/SCITT_SEMANTIC_BOUNDARY.md), and
 [runnable example](examples/scitt_interop/).
@@ -423,8 +519,11 @@ Additional entry points:
 
 A release contains a canonical artifact set: ZIP archive format (ZIP), wheel, source
 distribution, and external manifest bound to the exact public Git commit and file
-members. The continuous integration (CI) workflow builds on Windows and Linux and rejects
-cross-platform byte differences. GitHub
+members. At the current unreleased source coordinate, the continuous integration (CI)
+workflow builds the artifact set on Linux, Windows, and macOS and rejects cross-platform
+byte differences. It also captures and reruns the portable generic example on three
+GitHub-hosted operating-system virtual machines, then requires a bounded `PASS` over the
+three receipts. GitHub
 artifact attestations bind uploaded bytes to the workflow; they do not establish source
 correctness, tag identity, or adoption.
 

@@ -8,7 +8,7 @@ from importlib import import_module
 import warnings
 from typing import TYPE_CHECKING, Any
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 # This names the highest project-specification coordinate exposed by the package;
 # it is not a conformance claim. Keep the adjacent status when presenting it.
 __standard__ = "VSTD-5"
@@ -32,9 +32,48 @@ _LAZY_EXPORTS = {
     "VstdReceipt": ("verifier.core.receipt", "VstdReceipt"),
     "compute_canonical_digest": ("verifier.core.receipt", "compute_canonical_digest"),
     "ReproducibilityLevel": ("verifier.core.reproducibility", "ReproducibilityLevel"),
+    "PlatformComparisonResult": (
+        "verifier.core.platform_comparison",
+        "PlatformComparisonResult",
+    ),
+    "PlatformComparisonStatus": (
+        "verifier.core.platform_comparison",
+        "PlatformComparisonStatus",
+    ),
+    "compare_platform_run_receipts": (
+        "verifier.core.platform_comparison",
+        "compare_platform_run_receipts",
+    ),
     "capture_run": ("verifier.core.run", "capture_run"),
     "validate_run_receipt": ("verifier.core.run", "validate_run_receipt"),
     "VerificationGeometry": ("verifier.core.geometry", "VerificationGeometry"),
+    "GeometryLoadError": ("verifier.core.geometry_io", "GeometryLoadError"),
+    "load_verification_geometry": (
+        "verifier.core.geometry_io",
+        "load_verification_geometry",
+    ),
+    "ControlSurfaceContext": (
+        "verifier.interoperability.control_surface",
+        "ControlSurfaceContext",
+    ),
+    "InteractionMode": ("verifier.interoperability.catalog", "InteractionMode"),
+    "SurfaceAnalysis": (
+        "verifier.interoperability.control_surface",
+        "SurfaceAnalysis",
+    ),
+    "SurfaceAnalysisError": (
+        "verifier.interoperability.control_surface",
+        "SurfaceAnalysisError",
+    ),
+    "SurfaceHole": ("verifier.interoperability.control_surface", "SurfaceHole"),
+    "SurfaceHoleKind": (
+        "verifier.interoperability.control_surface",
+        "SurfaceHoleKind",
+    ),
+    "analyze_verification_surface": (
+        "verifier.interoperability.control_surface",
+        "analyze_verification_surface",
+    ),
     "DecisionCertificate": ("verifier.core.certificate", "DecisionCertificate"),
     "certificate_from_canonical_bytes": (
         "verifier.core.certificate",
@@ -132,6 +171,10 @@ if TYPE_CHECKING:
     )
     from verifier.core.checker import VerificationVerdict as VerificationVerdict
     from verifier.core.geometry import VerificationGeometry as VerificationGeometry
+    from verifier.core.geometry_io import (
+        GeometryLoadError as GeometryLoadError,
+        load_verification_geometry as load_verification_geometry,
+    )
     from verifier.core.certificate import (
         DecisionCertificate as DecisionCertificate,
         certificate_from_canonical_bytes as certificate_from_canonical_bytes,
@@ -175,5 +218,19 @@ if TYPE_CHECKING:
         VstdReceipt as VstdReceipt,
         compute_canonical_digest as compute_canonical_digest,
     )
+    from verifier.core.platform_comparison import (
+        PlatformComparisonResult as PlatformComparisonResult,
+        PlatformComparisonStatus as PlatformComparisonStatus,
+        compare_platform_run_receipts as compare_platform_run_receipts,
+    )
     from verifier.core.reproducibility import ReproducibilityLevel as ReproducibilityLevel
     from verifier.core.run import capture_run as capture_run, validate_run_receipt as validate_run_receipt
+    from verifier.interoperability.control_surface import (
+        ControlSurfaceContext as ControlSurfaceContext,
+        SurfaceAnalysis as SurfaceAnalysis,
+        SurfaceAnalysisError as SurfaceAnalysisError,
+        SurfaceHole as SurfaceHole,
+        SurfaceHoleKind as SurfaceHoleKind,
+        analyze_verification_surface as analyze_verification_surface,
+    )
+    from verifier.interoperability.catalog import InteractionMode as InteractionMode

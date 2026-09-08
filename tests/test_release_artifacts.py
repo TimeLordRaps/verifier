@@ -1,4 +1,4 @@
-"""Terminology: Verifier Standard (VSTD); ZIP archive format (ZIP).
+"""Terminology: identifier (ID); Verifier Standard (VSTD); ZIP archive format (ZIP).
 
 The public source archive must bind exact, publicly resolvable Git bytes."""
 
@@ -23,6 +23,7 @@ SCRIPT = REPO_ROOT / "scripts" / "release_artifacts.py"
 RELEASE_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "release.yml"
 TIME_GATE = REPO_ROOT / "scripts" / "check_time_status.py"
 RELEASE_METADATA_GATE = REPO_ROOT / "scripts" / "check_release_metadata.py"
+RELEASE_NOTES = REPO_ROOT / "scripts" / "extract_release_notes.py"
 
 SPEC = importlib.util.spec_from_file_location("vstd_release_artifacts", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
@@ -35,6 +36,178 @@ METADATA_SPEC = importlib.util.spec_from_file_location(
 assert METADATA_SPEC is not None and METADATA_SPEC.loader is not None
 release_metadata = importlib.util.module_from_spec(METADATA_SPEC)
 METADATA_SPEC.loader.exec_module(release_metadata)
+
+NOTES_SPEC = importlib.util.spec_from_file_location("vstd_release_notes", RELEASE_NOTES)
+assert NOTES_SPEC is not None and NOTES_SPEC.loader is not None
+release_notes = importlib.util.module_from_spec(NOTES_SPEC)
+NOTES_SPEC.loader.exec_module(release_notes)
+
+
+def _git_object_fixture(root: Path, files: dict[str, bytes]) -> tuple[Path, str]:
+    """Build unreferenced synthetic objects, never a commit in project history."""
+
+    repo = root / "objects.git"
+
+    def git(*args: str, content: bytes | None = None) -> bytes:
+        result = subprocess.run(
+            ["git", *args], cwd=root, input=content, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, timeout=10, check=True,
+        )
+        return result.stdout
+
+    git("init", "--bare", str(repo))
+    entries = []
+    for name, content in sorted(files.items()):
+        oid = git("--git-dir", str(repo), "hash-object", "-w", "--stdin", content=content).strip()
+        entries.append(b"100644 blob " + oid + b"\t" + name.encode("utf-8") + b"\0")
+    tree = git("--git-dir", str(repo), "mktree", "-z", content=b"".join(entries)).strip()
+    commit = git("--git-dir", str(repo), "hash-object", "-t", "commit", "-w", "--stdin", content=(
+        b"tree " + tree + b"\n"
+        b"author Fixture <fixture> 1700000000 +0000\n"
+        b"committer Fixture <fixture> 1700000000 +0000\n\n"
+        b"Disposable unreferenced release-verification fixture.\n"
+    )).decode().strip()
+    git("--git-dir", str(repo), "config", "remote.origin.url", "https://github.com/example/fixture.git")
+    return repo, commit
+
+
+def test_manifest_verification_uses_one_bounded_raw_blob_batch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    repo, commit = _git_object_fixture(tmp_path, {"one.bin": b"\0\xff\n", "two.txt": b"two\r\n"})
+    _, manifest = release_artifacts.build_source(repo, commit, "test", tmp_path / "release")
+    original = release_artifacts._run
+    calls = []
+
+    def recording(root: Path, *args: str, **kwargs: object) -> bytes:
+        calls.append((args, kwargs))
+        return original(root, *args, **kwargs)
+
+    monkeypatch.setattr(release_artifacts, "_run", recording)
+    release_artifacts.verify_manifest(repo, manifest)
+    batches = [(args, kwargs) for args, kwargs in calls if args[:2] == ("git", "cat-file")]
+    assert len(batches) == 1
+    assert batches[0][0] == ("git", "cat-file", "--batch")
+    assert batches[0][1]["timeout"] == 30
+    assert not any(args[:2] == ("git", "show") for args, _ in calls)
+
+
+def test_raw_blob_batch_preserves_binary_and_null_delimited_filename_binding(tmp_path: Path) -> None:
+    files = {
+        "space name.bin": bytes(range(256)),
+        "tab\tname.txt": b"tab\tdata\n",
+        "line\nbreak.txt": b"line\n\0break\r\n",
+        "quote\"name.txt": b"same payload",
+        "back\\slash.txt": b"same payload",
+        "empty.txt": b"",
+    }
+    repo, commit = _git_object_fixture(tmp_path, files)
+    assert release_artifacts._git_blob_contents(repo, commit) == files
+
+
+def test_manifest_checks_exact_tree_paths_without_archive_builder_filename_assumptions(tmp_path: Path) -> None:
+    # ZIP reading does not extract these names. Git-for-Windows archive creation
+    # may reject names that remain valid raw tree entries; do not relax it here.
+    files = {"space name": b"\0\xff", "tab\tname": b"same", "line\nname": b"same", "empty": b""}
+    repo, commit = _git_object_fixture(tmp_path, files)
+    archive = tmp_path / "fixture.zip"
+    prefix = "fixture/"
+    with zipfile.ZipFile(archive, "w") as bundle:
+        for path, content in files.items():
+            bundle.writestr(prefix + path, content)
+    manifest = tmp_path / "fixture.manifest.json"
+    manifest.write_text(json.dumps({
+        "schema_version": release_artifacts.SCHEMA_VERSION, "release": "test",
+        "source": {"ref": commit, "commit": commit, "archive_prefix": prefix},
+        "artifacts": {archive.name: release_artifacts._file_record(archive)},
+        "files": release_artifacts._archive_inventory(archive, prefix),
+    }), encoding="utf-8")
+    release_artifacts.verify_manifest(repo, manifest)
+
+
+@pytest.mark.parametrize("attribute", ["export-subst", "export-ignore"])
+def test_archive_export_attributes_cannot_replace_raw_git_blob_oracle(tmp_path: Path, attribute: str) -> None:
+    files = {".gitattributes": f"subject.txt {attribute}\n".encode(), "subject.txt": b"$Format:%H$\n"}
+    repo, commit = _git_object_fixture(tmp_path, files)
+    assert release_artifacts._git_blob_contents(repo, commit) == files
+    _, manifest = release_artifacts.build_source(repo, commit, "test", tmp_path / "release")
+    expected = "archive bytes do not match Git blob" if attribute == "export-subst" else "file set does not match"
+    with pytest.raises(release_artifacts.ReleaseError, match=expected):
+        release_artifacts.verify_manifest(repo, manifest)
+
+
+@pytest.mark.parametrize("fault", [
+    "missing", "wrong-id", "reordered", "wrong-type", "long-size", "short-size",
+    "negative-size", "noncanonical-size", "truncated-header", "truncated-payload",
+    "missing-delimiter", "missing-response", "trailing-bytes",
+])
+def test_raw_blob_batch_rejects_malformed_or_misbound_responses(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fault: str,
+) -> None:
+    first, second = b"1" * 40, b"2" * 40
+    tree = b"100644 blob " + first + b"\tfirst\0" + b"100644 blob " + second + b"\tsecond\0"
+    first_record = first + b" blob 3\nA\0B\n"
+    second_record = second + b" blob 2\n\xff\n\n"
+    output = first_record + second_record
+    if fault == "missing":
+        output = first + b" missing\n" + second_record
+    elif fault == "wrong-id":
+        output = output.replace(first, b"3" * 40, 1)
+    elif fault == "reordered":
+        output = second_record + first_record
+    elif fault == "wrong-type":
+        output = output.replace(b" blob ", b" tree ", 1)
+    elif fault in {"long-size", "short-size", "negative-size", "noncanonical-size"}:
+        size = {"long-size": b"9999999999999999999999999", "short-size": b"2", "negative-size": b"-3", "noncanonical-size": b"03"}[fault]
+        output = output.replace(b" blob 3\n", b" blob " + size + b"\n", 1)
+    elif fault == "truncated-header":
+        output = first + b" blob 3"
+    elif fault == "truncated-payload":
+        output = first + b" blob 3\nA"
+    elif fault == "missing-delimiter":
+        output = first_record[:-1] + second_record
+    elif fault == "missing-response":
+        output = first_record
+    else:
+        output += b"undeclared output"
+
+    def fake_run(root: Path, *args: str, **kwargs: object) -> bytes:
+        if args[:2] == ("git", "ls-tree"):
+            assert "-z" in args
+            return tree
+        assert args == ("git", "cat-file", "--batch")
+        assert kwargs["input_data"] == first + b"\n" + second + b"\n"
+        return output
+
+    monkeypatch.setattr(release_artifacts, "_run", fake_run)
+    with pytest.raises(release_artifacts.ReleaseError, match="Git blob batch"):
+        release_artifacts._git_blob_contents(tmp_path, "fixture")
+
+
+@pytest.mark.parametrize("tree", [
+    b"100644 blob " + b"1" * 40 + b"\tunterminated",
+    b"100644 blob " + b"1" * 40 + b"\t\0",
+    b"160000 commit " + b"1" * 40 + b"\tsubmodule\0",
+    b"100644 blob invalid\tfile\0",
+    (b"100644 blob " + b"1" * 40 + b"\tduplicate\0") * 2,
+])
+def test_raw_blob_batch_rejects_ambiguous_tree_mapping(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, tree: bytes,
+) -> None:
+    def fake_run(root: Path, *args: str, **kwargs: object) -> bytes:
+        assert args[:2] == ("git", "ls-tree"), "malformed tree must not trigger a batch read"
+        return tree
+
+    monkeypatch.setattr(release_artifacts, "_run", fake_run)
+    with pytest.raises(release_artifacts.ReleaseError, match="Git tree"):
+        release_artifacts._git_blob_contents(tmp_path, "fixture")
+
+
+def test_raw_blob_batch_timeout_fails_closed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def timed_out(*args: object, **kwargs: object) -> None:
+        raise subprocess.TimeoutExpired(args[0], kwargs["timeout"])
+
+    monkeypatch.setattr(release_artifacts.subprocess, "run", timed_out)
+    with pytest.raises(release_artifacts.ReleaseError, match="timed out"):
+        release_artifacts._git_blob_contents(tmp_path, "fixture")
 
 
 def test_source_release_manifest_binds_head_and_exact_archive_bytes(tmp_path: Path) -> None:
@@ -135,6 +308,7 @@ def test_source_release_manifest_binds_head_and_exact_archive_bytes(tmp_path: Pa
             "https://github.com/TimeLordRaps/verifier",
         ),
     ],
+    ids=("https-git-suffix", "https-trailing-slash", "scp-style", "ssh-scheme"),
 )
 def test_repository_url_spellings_are_canonical(raw: str, expected: str) -> None:
     assert release_artifacts._canonical_repository_url(raw) == expected
@@ -304,6 +478,152 @@ def test_artifact_directory_comparison_fails_closed(tmp_path: Path) -> None:
     (second / "artifact.bin").write_bytes(b"different")
     with pytest.raises(release_artifacts.ReleaseError, match="artifact bytes differ"):
         release_artifacts.compare_artifact_directories(first, second)
+
+
+def test_retagged_comparison_allows_only_the_expected_manifest_ref_change(
+    tmp_path: Path,
+) -> None:
+    candidate = tmp_path / "candidate"
+    tagged = tmp_path / "tagged"
+    candidate.mkdir()
+    tagged.mkdir()
+    for directory in (candidate, tagged):
+        (directory / "artifact.bin").write_bytes(b"same")
+    commit = "a" * 40
+    artifacts = {"artifact.bin": release_artifacts._file_record(candidate / "artifact.bin")}
+    candidate_manifest = {
+        "artifacts": artifacts,
+        "release": "1.3.0",
+        "source": {"commit": commit, "ref": commit},
+    }
+    tagged_manifest = {
+        "artifacts": artifacts,
+        "release": "1.3.0",
+        "source": {"commit": commit, "ref": "refs/tags/v1.3.0"},
+    }
+    for directory, manifest in (
+        (candidate, candidate_manifest),
+        (tagged, tagged_manifest),
+    ):
+        (directory / "verifier-standard-1.3.0.manifest.json").write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+
+    assert release_artifacts.compare_retagged_artifact_directories(candidate, tagged) == 1
+
+    tagged_manifest["scope"] = "substituted"
+    (tagged / "verifier-standard-1.3.0.manifest.json").write_text(
+        json.dumps(tagged_manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    with pytest.raises(release_artifacts.ReleaseError, match="beyond source.ref"):
+        release_artifacts.compare_retagged_artifact_directories(candidate, tagged)
+
+
+def test_retagged_comparison_refuses_an_empty_artifact_set(tmp_path: Path) -> None:
+    candidate = tmp_path / "candidate"
+    tagged = tmp_path / "tagged"
+    candidate.mkdir()
+    tagged.mkdir()
+    commit = "a" * 40
+    for directory, ref in (
+        (candidate, commit),
+        (tagged, "refs/tags/v1.3.0"),
+    ):
+        (directory / "verifier-standard-1.3.0.manifest.json").write_text(
+            json.dumps(
+                {"release": "1.3.0", "source": {"commit": commit, "ref": ref}},
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+    with pytest.raises(release_artifacts.ReleaseError, match="no release artifacts"):
+        release_artifacts.compare_retagged_artifact_directories(candidate, tagged)
+
+
+@pytest.mark.parametrize("drift", ("formatting", "duplicate-key"))
+def test_retagged_comparison_rejects_noncanonical_manifest_bytes(
+    tmp_path: Path, drift: str
+) -> None:
+    candidate = tmp_path / "candidate"
+    tagged = tmp_path / "tagged"
+    candidate.mkdir()
+    tagged.mkdir()
+    for directory in (candidate, tagged):
+        (directory / "artifact.bin").write_bytes(b"same")
+    commit = "a" * 40
+    candidate_manifest = {
+        "artifacts": {"artifact.bin": release_artifacts._file_record(candidate / "artifact.bin")},
+        "release": "1.3.0",
+        "source": {"commit": commit, "ref": commit},
+    }
+    tagged_manifest = {
+        "artifacts": {"artifact.bin": release_artifacts._file_record(tagged / "artifact.bin")},
+        "release": "1.3.0",
+        "source": {"commit": commit, "ref": "refs/tags/v1.3.0"},
+    }
+    name = "verifier-standard-1.3.0.manifest.json"
+    (candidate / name).write_text(
+        json.dumps(candidate_manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    tagged_text = json.dumps(tagged_manifest, indent=2, sort_keys=True) + "\n"
+    if drift == "formatting":
+        tagged_text = json.dumps(tagged_manifest)
+    else:
+        tagged_text = tagged_text.replace(
+            '  "release": "1.3.0",',
+            '  "release": "1.3.0",\n  "release": "1.3.0",',
+        )
+    (tagged / name).write_text(tagged_text, encoding="utf-8", newline="\n")
+
+    with pytest.raises(
+        release_artifacts.ReleaseError, match="canonical|duplicate key"
+    ):
+        release_artifacts.compare_retagged_artifact_directories(candidate, tagged)
+
+
+def test_retagged_comparison_refuses_unbound_directory_artifacts(tmp_path: Path) -> None:
+    candidate = tmp_path / "candidate"
+    tagged = tmp_path / "tagged"
+    candidate.mkdir()
+    tagged.mkdir()
+    for directory in (candidate, tagged):
+        (directory / "artifact.bin").write_bytes(b"same")
+        (directory / "unbound.bin").write_bytes(b"also-same")
+    commit = "a" * 40
+    artifacts = {"artifact.bin": release_artifacts._file_record(candidate / "artifact.bin")}
+    for directory, ref in (
+        (candidate, commit),
+        (tagged, "refs/tags/v1.3.0"),
+    ):
+        manifest = {
+            "artifacts": artifacts,
+            "release": "1.3.0",
+            "source": {"commit": commit, "ref": ref},
+        }
+        (directory / "verifier-standard-1.3.0.manifest.json").write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+
+    with pytest.raises(release_artifacts.ReleaseError, match="exactly bind"):
+        release_artifacts.compare_retagged_artifact_directories(candidate, tagged)
+
+
+def test_release_instructions_do_not_claim_the_workflow_creates_the_tag() -> None:
+    instructions = (REPO_ROOT / "RELEASING.md").read_text(encoding="utf-8")
+    assert 'git tag -a "v$VERSION" FULL_PUBLIC_COMMIT_SHA' in instructions
+    assert "workflow requires\n   that existing tag and never creates one" in instructions
+    assert "compare-retagged dist/candidate dist/tagged" in instructions
 
 
 def test_cyclonedx_sbom_is_deterministic_bound_and_non_self_referential(
@@ -487,16 +807,33 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
     required = (
         "workflow_dispatch:",
         "immutable_releases_preflight:",
+        "repository_checks_run_id:",
         "ref: ${{ env.RELEASE_TAG }}",
+        "actions: read",
         'test "$GITHUB_REF" = "refs/heads/$DEFAULT_BRANCH"',
         'git merge-base --is-ancestor "$SOURCE_COMMIT" "origin/$DEFAULT_BRANCH"',
         'test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"',
         'test "$VERSION" = "$PACKAGE_VERSION"',
-        'commits/$SOURCE_COMMIT/check-runs',
+        'actions/runs/$REPOSITORY_CHECKS_RUN_ID',
+        "'.name')\" = \"repository-checks\"",
+        "'.path')\" = \".github/workflows/ci.yml\"",
+        "'.event')\" = \"push\"",
+        "'.head_branch')\" = \"$DEFAULT_BRANCH\"",
+        "'.head_sha')\" = \"$SOURCE_COMMIT\"",
         'select(.name == "conformance-gate" and .conclusion == "success")',
         'test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"',
         'test "$IMMUTABLE_RELEASES_PREFLIGHT" = "true"',
         'python scripts/check_release_metadata.py --version "${RELEASE_TAG#v}"',
+        'python -m pip install ".[test,release,seal,scitt]"',
+        'vstd surface analyze "$GITHUB_WORKSPACE/examples/verification_geometry_residual/geometry.json"',
+        '"load_verification_geometry"',
+        '"analyze_verification_surface"',
+        "prepare_platform_release_evidence.py",
+        "platform-python-contracts-${{ steps.release-source.outputs.run_id }}",
+        "platform-component-contract-${{ steps.release-source.outputs.run_id }}",
+        "verifier-standard-$VERSION-platform-evidence.zip",
+        "The platform-evidence ZIP has its own internal manifest",
+        'python scripts/extract_release_notes.py --version "$VERSION"',
         'gh release create "$RELEASE_TAG"',
         'releases/tags/$RELEASE_TAG',
         "--jq '.immutable')\" = true",
@@ -504,9 +841,51 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
     for fragment in required:
         assert fragment in workflow
     assert "repos/$GITHUB_REPOSITORY/immutable-releases" not in workflow
+    assert "awk -v version" not in workflow
+    assert workflow.index("actions/runs/$REPOSITORY_CHECKS_RUN_ID") < workflow.index(
+        "prepare_platform_release_evidence.py"
+    )
+    assert workflow.index("prepare_platform_release_evidence.py") < workflow.index(
+        "check_release_boundary.py"
+    )
+    assert workflow.index("prepare_platform_release_evidence.py") < workflow.index(
+        "actions/attest@"
+    )
     assert workflow.index('test "$IMMUTABLE_RELEASES_PREFLIGHT" = "true"') < workflow.index(
         'gh release create "$RELEASE_TAG"'
     )
     assert workflow.index('gh release create "$RELEASE_TAG"') < workflow.index(
         "--jq '.immutable')\" = true"
     )
+
+
+def test_release_notes_select_exact_version_heading_without_regex_substitution() -> None:
+    changelog = """# Changelog
+
+## Unreleased
+
+## 1x3y0 - 2026-09-07
+
+- wrong section
+
+## 1.3.0 - 2026-09-08
+
+- exact section
+
+## 1.2.0 - 2026-09-01
+
+- old section
+"""
+
+    assert release_notes.extract_release_notes(changelog, "1.3.0") == (
+        "- exact section\n"
+    )
+    with pytest.raises(release_notes.ReleaseNotesError, match="invalid release version"):
+        release_notes.extract_release_notes(changelog, "1x3y0")
+
+
+def test_release_notes_reject_missing_or_empty_exact_section() -> None:
+    with pytest.raises(release_notes.ReleaseNotesError, match="found 0"):
+        release_notes.extract_release_notes("## 1.2.0 - 2026-09-01\n- old\n", "1.3.0")
+    with pytest.raises(release_notes.ReleaseNotesError, match="is empty"):
+        release_notes.extract_release_notes("## 1.3.0 - 2026-09-08\n", "1.3.0")
