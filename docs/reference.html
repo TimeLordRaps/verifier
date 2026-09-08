@@ -23,6 +23,7 @@
         <a href="index.html">Overview</a>
         <a href="guides.html">Guides</a>
         <a href="reference.html" aria-current="page">Reference</a>
+        <a href="https://timelordraps.github.io/verifier/components/">Components</a>
         <a href="https://github.com/TimeLordRaps/verifier#30-60-second-demonstration">Demo</a>
         <a href="standard/">Standard</a>
         <a href="experiments/">Experiments</a>
@@ -34,7 +35,7 @@
 
   <main id="top">
     <div class="wrap ref-hero">
-      <div class="eyebrow">Reference &middot; RELEASED SOURCE · package version 1.3.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
+      <div class="eyebrow">Reference &middot; UNRELEASED SOURCE · base package version 1.3.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
       <h1>Inspect the whole pipeline.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
@@ -66,6 +67,8 @@
 <tr><td><code>vstd demo</code></td><td>Runs the four adversarial specimens in-process and reports whether each defensive outcome matched its declared invariant.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:run_demo</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:demo_report</code></a></td></tr>
 <tr><td><code>vstd plan</code></td><td>Resolves a manifest's command and declared paths without executing anything.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:describe_run_plan</code></a></td></tr>
 <tr><td><code>vstd components inspect</code></td><td>Loads a bounded stored component package and checks retained-byte bindings; does not extract, install, execute, or qualify its implementation.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/storage.py"><code>verifier.interoperability.storage:load_component_package</code></a></td></tr>
+<tr><td><code>vstd components index inspect</code></td><td>Loads one bounded local component index and checks its canonical identity; does not fetch packages or establish publisher identity or qualification.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/component_index.py"><code>verifier.interoperability.component_index:load_component_index</code></a></td></tr>
+<tr><td><code>vstd components index search</code></td><td>Finds exact declared matches in one bounded local index without fetching, installing, executing, ranking, or selecting a latest version.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/component_index.py"><code>verifier.interoperability.component_index:load_component_index</code></a></td></tr>
 <tr><td><code>vstd surface analyze</code></td><td>Strictly loads one VSTD-2 geometry and emits deterministic modeled-surface diagnostics; its optional experimental built-in or stored-package catalog plan remains nonexecuting.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry_io.py"><code>verifier.core.geometry_io:load_verification_geometry</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface:analyze_verification_surface</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/reference_catalog.py"><code>verifier.interoperability.reference_catalog:reference_component_registry</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/storage.py"><code>verifier.interoperability.storage:load_component_package</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface:plan_validation</code></a></td></tr>
 <tr><td><code>vstd run</code></td><td>Executes a trusted manifest without sandboxing, captures the observed execution, and writes a canonically digested receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run.py"><code>verifier.core.run:capture_run</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt:compute_canonical_digest</code></a></td></tr>
 <tr><td><code>vstd validate</code></td><td>Dispatches on the receipt's serialized `schema_version` identifier and runs its implemented checks. Generic-run validation enforces its required structure and stable digest; other receipt kinds enforce their separately documented structure and evidence rules.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_validation.py"><code>verifier.core.run_validation:validate_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:validate_data_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
@@ -141,6 +144,33 @@
 <tr><td><code>--expected-sha256</code></td><td>optional</td><td>Require this externally supplied canonical package SHA-256 digest.</td></tr>
 </tbody></table>
 </article>
+<article class="ref-item" id="cli-vstd-components-index">
+<h3><code>vstd components index</code></h3>
+<p class="ref-help">Inspect or search one bounded local component index.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-components-index-inspect">
+<h3><code>vstd components index inspect</code></h3>
+<p class="ref-help">Check one local index without fetching or opening its packages.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>index</code></td><td>positional</td><td>Stored component index path.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--expected-sha256</code></td><td>optional</td><td>Require this externally supplied canonical index SHA-256 digest.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-components-index-search">
+<h3><code>vstd components index search</code></h3>
+<p class="ref-help">Find exact declared matches in one local index; no ranking.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>index</code></td><td>positional</td><td>Stored component index path.</td></tr>
+<tr><td><code>--schema-id</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--interaction-mode</code></td><td>required option</td><td>(one of: STATIC, OFFLINE_REPLAY, SIMULATION, LIVE_READ_ONLY, LIVE_MUTATING)</td></tr>
+<tr><td><code>--relation-id</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--mechanism-id</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--expected-sha256</code></td><td>optional</td><td>Require this externally supplied canonical index SHA-256 digest.</td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="cli-vstd-surface">
 <h3><code>vstd surface</code></h3>
 <p class="ref-help">Analyze holes in one strictly loaded VSTD-2 modeled verification surface.</p>
@@ -203,7 +233,7 @@
 <p class="ref-help">Subcommand group.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>artifact_id</code></td><td>positional</td><td></td></tr>
-<tr><td><code>--receipt</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--receipt</code></td><td>required option</td><td></td></tr>
 <tr><td><code>--direction</code></td><td>optional</td><td>(one of: ancestors, descendants, blast_radius) [default: ancestors]</td></tr>
 </tbody></table>
 </article>
@@ -226,7 +256,7 @@
 <p class="ref-help">Analyze a bounded, explicitly interpreted graph; no conformance result.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>receipt</code></td><td>positional</td><td></td></tr>
-<tr><td><code>--contract</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--contract</code></td><td>required option</td><td></td></tr>
 <tr><td><code>--max-assignments</code></td><td>optional</td><td>[default: 4096]</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
 </tbody></table>
@@ -253,7 +283,7 @@
 <p class="ref-help">Add a readable finite self-closing Ed25519 seal.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>bundle</code></td><td>positional</td><td></td></tr>
-<tr><td><code>--private-key</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--private-key</code></td><td>required option</td><td></td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
 </tbody></table>
 </article>
@@ -338,7 +368,7 @@
 <h3><code>vstd hardware discover</code></h3>
 <p class="ref-help">Run a vendor or generic adapter.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
-<tr><td><code>--adapter</code></td><td>optional</td><td>(one of: generic, nvidia, amd, intel)</td></tr>
+<tr><td><code>--adapter</code></td><td>required option</td><td>(one of: generic, nvidia, amd, intel)</td></tr>
 <tr><td><code>--fixture</code></td><td>optional</td><td></td></tr>
 <tr><td><code>--output</code></td><td>optional</td><td>Write the normalized adapter result JSON.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
@@ -348,12 +378,12 @@
 <h3><code>vstd hardware emulate</code></h3>
 <p class="ref-help">Run the deterministic virtual firmware contract probe.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
-<tr><td><code>--output</code></td><td>optional</td><td></td></tr>
-<tr><td><code>--created-at</code></td><td>optional</td><td>Final ISO-8601 receipt timestamp.</td></tr>
+<tr><td><code>--output</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--created-at</code></td><td>required option</td><td>Final ISO-8601 receipt timestamp.</td></tr>
 <tr><td><code>--device-id</code></td><td>optional</td><td>[default: vstd3-virtual-0]</td></tr>
 <tr><td><code>--firmware-version</code></td><td>optional</td><td>[default: 1.0.0]</td></tr>
 <tr><td><code>--key-id</code></td><td>optional</td><td>[default: vstd3-virtual-device-key]</td></tr>
-<tr><td><code>--key-hex</code></td><td>optional</td><td>Test-only emulator HMAC key in hex.</td></tr>
+<tr><td><code>--key-hex</code></td><td>required option</td><td>Test-only emulator HMAC key in hex.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
 </tbody></table>
 </article>
@@ -361,13 +391,13 @@
 <h3><code>vstd hardware attest</code></h3>
 <p class="ref-help">Run an explicitly virtual attestation probe; no commodity claim is made.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
-<tr><td><code>--virtual</code></td><td>optional</td><td></td></tr>
-<tr><td><code>--output</code></td><td>optional</td><td></td></tr>
-<tr><td><code>--created-at</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--virtual</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--output</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--created-at</code></td><td>required option</td><td></td></tr>
 <tr><td><code>--device-id</code></td><td>optional</td><td>[default: vstd3-virtual-0]</td></tr>
 <tr><td><code>--firmware-version</code></td><td>optional</td><td>[default: 1.0.0]</td></tr>
 <tr><td><code>--key-id</code></td><td>optional</td><td>[default: vstd3-virtual-device-key]</td></tr>
-<tr><td><code>--key-hex</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--key-hex</code></td><td>required option</td><td></td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
 </tbody></table>
 </article>

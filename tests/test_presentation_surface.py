@@ -285,7 +285,7 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
         "canonical_base_url": "https://timelordraps.github.io/verifier/",
         "documentation_version": "1.3.0",
         "normative_source": "standard/",
-        "release_state": "RELEASED",
+        "release_state": "UNRELEASED_SOURCE",
         "schema_version": 1,
         "source_ref": "test-commit",
     }
@@ -456,6 +456,12 @@ def test_guides_keep_repository_documentation_inside_the_site() -> None:
     assert 'href="project/ROADMAP.html"' in guides
     assert "github.com/TimeLordRaps/verifier/blob/main/docs/" not in guides
     assert "github.com/TimeLordRaps/verifier/blob/main/standard/" not in guides
+
+
+def test_pages_output_does_not_invalidate_exact_checkout_binding() -> None:
+    """The hosted build must not make its own exact-commit checkout appear dirty."""
+    ignored = (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+    assert "_site/" in ignored
 
 
 def test_pages_explains_artifact_first_state_without_actor_ratings() -> None:
@@ -768,10 +774,17 @@ def test_generated_reference_covers_commands_and_top_level_exports() -> None:
 
     page = (ROOT / "docs/reference.html").read_text(encoding="utf-8")
     assert page == module.render()
-    assert "RELEASED SOURCE · package version 1.3.0" in page
+    assert "<td><code>--schema-id</code></td><td>required option</td>" in page
+    assert "<td><code>--interaction-mode</code></td><td>required option</td>" in page
 
     import verifier
     from verifier.runtime.public_cli import build_parser
+
+    source_coordinate = module._source_coordinate(
+        verifier.__version__,
+        (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
+    )
+    assert source_coordinate in page
 
     for command in module._walk(build_parser()):
         anchor = 'id="cli-' + str(command["prog"]).replace(" ", "-") + '"'
@@ -830,6 +843,71 @@ def test_generated_reference_coordinate_is_release_aware() -> None:
         "1.2.0",
         "# Changelog\n\n## Unreleased\n\n- next change\n\n## 1.2.0 - 2026-09-01\n",
     ) == "UNRELEASED SOURCE · base package version 1.2.0"
+
+
+def test_pages_coordinate_distinguishes_released_base_from_descendant_source(
+    tmp_path: Path,
+) -> None:
+    path = ROOT / "scripts/build_pages.py"
+    spec = importlib.util.spec_from_file_location("build_pages_coordinate", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nversion = "1.3.0"\n', encoding="utf-8"
+    )
+    module.ROOT = tmp_path
+
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "# Changelog\n\n## Unreleased\n\n## 1.3.0 - 2026-09-08\n\n- released\n",
+        encoding="utf-8",
+    )
+    assert module._documentation_coordinate("released-ref")["release_state"] == "RELEASED"
+
+    changelog.write_text(
+        "# Changelog\n\n## Unreleased\n\n- next change\n\n"
+        "## 1.3.0 - 2026-09-08\n\n- released\n",
+        encoding="utf-8",
+    )
+    assert (
+        module._documentation_coordinate("descendant-ref")["release_state"]
+        == "UNRELEASED_SOURCE"
+    )
+
+    changelog.write_text(
+        "# Changelog\n\n## 1.4.0 - UNRELEASED\n\n- candidate\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nversion = "1.4.0"\n', encoding="utf-8"
+    )
+    assert (
+        module._documentation_coordinate("candidate-ref")["release_state"]
+        == "UNRELEASED_CANDIDATE"
+    )
+
+
+def test_post_release_clarification_does_not_rewrite_v130_release_notes() -> None:
+    path = ROOT / "scripts/extract_release_notes.py"
+    spec = importlib.util.spec_from_file_location("release_notes_presentation", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    unreleased, _released = changelog.split("## 1.3.0 - 2026-09-08", 1)
+    notes = module.extract_release_notes(changelog, "1.3.0")
+    assert "### Post-release clarification" in unreleased
+    assert "does not rewrite the tagged changelog or published release notes" in unreleased
+    assert "Post-release clarification" not in notes
+    normalized_notes = " ".join(notes.split())
+    for frozen_phrase in (
+        "current-candidate evidence",
+        "final-main publication evidence",
+        "unreleased source has passed it",
+    ):
+        assert frozen_phrase in normalized_notes
 
 
 def test_presentation_version_gate_rejects_published_candidate_language(

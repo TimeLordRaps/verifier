@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import shutil
 import sys
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,6 +43,29 @@ def _build_documentation(output: Path, *, source_ref: str) -> tuple[Path, ...]:
         sys.modules.pop(spec.name, None)
 
 
+def _build_component_index(output: Path, *, source_ref: str) -> tuple[Path, ...]:
+    path = ROOT / "scripts/build_component_index.py"
+    spec = importlib.util.spec_from_file_location("vstd_build_component_index", path)
+    if spec is None or spec.loader is None:
+        raise PagesBuildError("cannot load scripts/build_component_index.py")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    try:
+        spec.loader.exec_module(module)
+        component_source_ref = (
+            source_ref if re.fullmatch(r"[0-9a-fA-F]{40}", source_ref) else "WORKTREE"
+        )
+        return module.build(
+            output,
+            source_ref=component_source_ref,
+            base_url=CANONICAL_BASE_URL,
+        )
+    except Exception as exc:
+        raise PagesBuildError(f"component-index generation failed: {exc}") from exc
+    finally:
+        sys.modules.pop(spec.name, None)
+
+
 def _documentation_coordinate(source_ref: str) -> dict[str, str | int]:
     project = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     version_match = re.search(r'^version\s*=\s*"([^"]+)"\s*$', project, re.MULTILINE)
@@ -52,7 +76,17 @@ def _documentation_coordinate(source_ref: str) -> dict[str, str | int]:
     heading = re.search(rf"^## {re.escape(version)} - (.+)$", changelog, re.MULTILINE)
     if heading is None:
         raise PagesBuildError(f"changelog has no coordinate for version {version}")
-    release_state = "UNRELEASED_CANDIDATE" if heading.group(1) == "UNRELEASED" else "RELEASED"
+    unreleased = re.search(
+        r"^## Unreleased\s*(.*?)(?=^## |\Z)",
+        changelog,
+        re.MULTILINE | re.DOTALL,
+    )
+    if heading.group(1) == "UNRELEASED":
+        release_state = "UNRELEASED_CANDIDATE"
+    elif unreleased is not None and unreleased.group(1).strip():
+        release_state = "UNRELEASED_SOURCE"
+    else:
+        release_state = "RELEASED"
     return {
         "schema_version": 1,
         "documentation_version": version,
@@ -73,7 +107,14 @@ def build(output: Path, *, source_ref: str = "WORKTREE") -> tuple[Path, ...]:
     if output.exists():
         output.rmdir()
 
-    shutil.copytree(DOCS, output)
+    # Build the exact-coordinate index before creating any repository-local Pages
+    # output. Otherwise a caller-selected output directory can make a clean checkout
+    # appear dirty to the component snapshotter merely by being created.
+    with tempfile.TemporaryDirectory(prefix="vstd-pages-components-") as temporary:
+        staged_components = Path(temporary) / "components"
+        _build_component_index(staged_components, source_ref=source_ref)
+        shutil.copytree(DOCS, output)
+        shutil.copytree(staged_components, output / "components")
     schema_output = output / "schemas"
     schema_output.mkdir()
     copied: list[Path] = []

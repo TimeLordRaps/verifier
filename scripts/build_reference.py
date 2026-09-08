@@ -56,6 +56,18 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
         ("verifier.interoperability.storage:load_component_package",),
     ),
     (
+        "vstd components index inspect",
+        "Loads one bounded local component index and checks its canonical identity; "
+        "does not fetch packages or establish publisher identity or qualification.",
+        ("verifier.interoperability.component_index:load_component_index",),
+    ),
+    (
+        "vstd components index search",
+        "Finds exact declared matches in one bounded local index without fetching, "
+        "installing, executing, ranking, or selecting a latest version.",
+        ("verifier.interoperability.component_index:load_component_index",),
+    ),
+    (
         "vstd surface analyze",
         "Strictly loads one VSTD-2 geometry and emits deterministic modeled-surface "
         "diagnostics; its optional experimental built-in or stored-package catalog "
@@ -208,7 +220,13 @@ def _walk(parser: argparse.ArgumentParser, help_text: str = "") -> list[dict[str
         arguments.append(
             {
                 "name": str(name),
-                "kind": "optional" if action.option_strings else "positional",
+                "kind": (
+                    "required option"
+                    if action.option_strings and action.required
+                    else "optional"
+                    if action.option_strings
+                    else "positional"
+                ),
                 "choices": choices,
                 "default": "" if action.default in (None, False, [], "") else str(action.default),
                 "help": action.help or "",
@@ -405,6 +423,7 @@ def render() -> str:
         <a href="index.html">Overview</a>
         <a href="guides.html">Guides</a>
         <a href="reference.html" aria-current="page">Reference</a>
+        <a href="https://timelordraps.github.io/verifier/components/">Components</a>
         <a href="https://github.com/TimeLordRaps/verifier#30-60-second-demonstration">Demo</a>
         <a href="standard/">Standard</a>
         <a href="experiments/">Experiments</a>

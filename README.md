@@ -118,6 +118,7 @@ Choose the smallest useful starting point:
 | See defensive behavior immediately | Run [`vstd demo`](#30-60-second-demonstration) |
 | Capture and reproduce one command | [Generic computation](#capture-a-generic-computation) |
 | Preserve and seal exact artifact bytes | [Artifact control](#freeze-seal-verify-and-thaw-an-artifact) |
+| Browse exact stored component declarations | [Component hub](docs/COMPONENT_HUB.md) |
 | Understand the formal profile composition | [Normative Ladder](standard/LADDER.md) |
 | Integrate or independently review the code | [Architecture map](docs/ARCHITECTURE.md) |
 | Challenge an overclaim or ambiguous rule | [Issue forms](https://github.com/TimeLordRaps/verifier/issues/new/choose) |
