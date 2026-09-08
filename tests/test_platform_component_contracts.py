@@ -173,6 +173,11 @@ def test_manifest_declares_behavior_scope_and_optional_profiles() -> None:
     ]
     assert artifact["test_modules"] == ["tests/test_artifact_control.py"]
     assert "privileged-write prevention" in artifact["test_scope"]
+    untraversability = components["component:composed-untraversability-analyzer"]
+    assert untraversability["test_modules"] == [
+        "tests/test_untraversable.py",
+        "tests/test_untraversable_graph_binding.py",
+    ]
     assert {item["coverage_kind"] for item in components.values()} == {"BEHAVIOR"}
 
 

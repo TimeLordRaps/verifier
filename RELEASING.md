@@ -115,17 +115,20 @@ release-candidate Zenodo metadata.
      --ref "refs/tags/v$VERSION" --release "$VERSION" --output-dir dist/tagged
    ```
 
-   If tag signing is unavailable, an unsigned annotated tag is permitted only through
-   `.github/workflows/release.yml`. That workflow records the GitHub tag-object
-   verification result and reason in the release notes and MUST create GitHub/Sigstore
-   artifact attestations for the source ZIP, wheel, source distribution, SBOM, and
-   external manifest. An artifact attestation is not described as a tag signature.
+   If tag signing is unavailable, the maintainer MAY instead create an unsigned annotated
+   tag locally with `git tag -a "v$VERSION" FULL_PUBLIC_COMMIT_SHA`. The workflow requires
+   that existing tag and never creates one. Publication MUST still run through
+   `.github/workflows/release.yml`, which records the GitHub tag-object verification result
+   and reason in the release notes and creates GitHub/Sigstore artifact attestations for
+   the source ZIP, wheel, source distribution, SBOM, and external manifest. An artifact
+   attestation is not described as a tag signature.
 7. Run the verifier independently before upload:
 
    ```bash
    VERSION="$(PYTHONPATH=src python -c 'import verifier; print(verifier.__version__)')"
    python scripts/release_artifacts.py verify \
      "dist/tagged/verifier-standard-$VERSION.manifest.json"
+   python scripts/release_artifacts.py compare-retagged dist/candidate dist/tagged
    ```
 
    The manifest's source ref MUST resolve to its recorded public commit. The source ZIP

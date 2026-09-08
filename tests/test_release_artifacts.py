@@ -480,6 +480,152 @@ def test_artifact_directory_comparison_fails_closed(tmp_path: Path) -> None:
         release_artifacts.compare_artifact_directories(first, second)
 
 
+def test_retagged_comparison_allows_only_the_expected_manifest_ref_change(
+    tmp_path: Path,
+) -> None:
+    candidate = tmp_path / "candidate"
+    tagged = tmp_path / "tagged"
+    candidate.mkdir()
+    tagged.mkdir()
+    for directory in (candidate, tagged):
+        (directory / "artifact.bin").write_bytes(b"same")
+    commit = "a" * 40
+    artifacts = {"artifact.bin": release_artifacts._file_record(candidate / "artifact.bin")}
+    candidate_manifest = {
+        "artifacts": artifacts,
+        "release": "1.3.0",
+        "source": {"commit": commit, "ref": commit},
+    }
+    tagged_manifest = {
+        "artifacts": artifacts,
+        "release": "1.3.0",
+        "source": {"commit": commit, "ref": "refs/tags/v1.3.0"},
+    }
+    for directory, manifest in (
+        (candidate, candidate_manifest),
+        (tagged, tagged_manifest),
+    ):
+        (directory / "verifier-standard-1.3.0.manifest.json").write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+
+    assert release_artifacts.compare_retagged_artifact_directories(candidate, tagged) == 1
+
+    tagged_manifest["scope"] = "substituted"
+    (tagged / "verifier-standard-1.3.0.manifest.json").write_text(
+        json.dumps(tagged_manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    with pytest.raises(release_artifacts.ReleaseError, match="beyond source.ref"):
+        release_artifacts.compare_retagged_artifact_directories(candidate, tagged)
+
+
+def test_retagged_comparison_refuses_an_empty_artifact_set(tmp_path: Path) -> None:
+    candidate = tmp_path / "candidate"
+    tagged = tmp_path / "tagged"
+    candidate.mkdir()
+    tagged.mkdir()
+    commit = "a" * 40
+    for directory, ref in (
+        (candidate, commit),
+        (tagged, "refs/tags/v1.3.0"),
+    ):
+        (directory / "verifier-standard-1.3.0.manifest.json").write_text(
+            json.dumps(
+                {"release": "1.3.0", "source": {"commit": commit, "ref": ref}},
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+    with pytest.raises(release_artifacts.ReleaseError, match="no release artifacts"):
+        release_artifacts.compare_retagged_artifact_directories(candidate, tagged)
+
+
+@pytest.mark.parametrize("drift", ("formatting", "duplicate-key"))
+def test_retagged_comparison_rejects_noncanonical_manifest_bytes(
+    tmp_path: Path, drift: str
+) -> None:
+    candidate = tmp_path / "candidate"
+    tagged = tmp_path / "tagged"
+    candidate.mkdir()
+    tagged.mkdir()
+    for directory in (candidate, tagged):
+        (directory / "artifact.bin").write_bytes(b"same")
+    commit = "a" * 40
+    candidate_manifest = {
+        "artifacts": {"artifact.bin": release_artifacts._file_record(candidate / "artifact.bin")},
+        "release": "1.3.0",
+        "source": {"commit": commit, "ref": commit},
+    }
+    tagged_manifest = {
+        "artifacts": {"artifact.bin": release_artifacts._file_record(tagged / "artifact.bin")},
+        "release": "1.3.0",
+        "source": {"commit": commit, "ref": "refs/tags/v1.3.0"},
+    }
+    name = "verifier-standard-1.3.0.manifest.json"
+    (candidate / name).write_text(
+        json.dumps(candidate_manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    tagged_text = json.dumps(tagged_manifest, indent=2, sort_keys=True) + "\n"
+    if drift == "formatting":
+        tagged_text = json.dumps(tagged_manifest)
+    else:
+        tagged_text = tagged_text.replace(
+            '  "release": "1.3.0",',
+            '  "release": "1.3.0",\n  "release": "1.3.0",',
+        )
+    (tagged / name).write_text(tagged_text, encoding="utf-8", newline="\n")
+
+    with pytest.raises(
+        release_artifacts.ReleaseError, match="canonical|duplicate key"
+    ):
+        release_artifacts.compare_retagged_artifact_directories(candidate, tagged)
+
+
+def test_retagged_comparison_refuses_unbound_directory_artifacts(tmp_path: Path) -> None:
+    candidate = tmp_path / "candidate"
+    tagged = tmp_path / "tagged"
+    candidate.mkdir()
+    tagged.mkdir()
+    for directory in (candidate, tagged):
+        (directory / "artifact.bin").write_bytes(b"same")
+        (directory / "unbound.bin").write_bytes(b"also-same")
+    commit = "a" * 40
+    artifacts = {"artifact.bin": release_artifacts._file_record(candidate / "artifact.bin")}
+    for directory, ref in (
+        (candidate, commit),
+        (tagged, "refs/tags/v1.3.0"),
+    ):
+        manifest = {
+            "artifacts": artifacts,
+            "release": "1.3.0",
+            "source": {"commit": commit, "ref": ref},
+        }
+        (directory / "verifier-standard-1.3.0.manifest.json").write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+
+    with pytest.raises(release_artifacts.ReleaseError, match="exactly bind"):
+        release_artifacts.compare_retagged_artifact_directories(candidate, tagged)
+
+
+def test_release_instructions_do_not_claim_the_workflow_creates_the_tag() -> None:
+    instructions = (REPO_ROOT / "RELEASING.md").read_text(encoding="utf-8")
+    assert 'git tag -a "v$VERSION" FULL_PUBLIC_COMMIT_SHA' in instructions
+    assert "workflow requires\n   that existing tag and never creates one" in instructions
+    assert "compare-retagged dist/candidate dist/tagged" in instructions
+
+
 def test_cyclonedx_sbom_is_deterministic_bound_and_non_self_referential(
     tmp_path: Path,
 ) -> None:
