@@ -316,6 +316,35 @@ def check_versions(errors: list[str]) -> None:
             errors.append("CITATION.cff date-released must match the dated CHANGELOG heading")
         if zenodo_date != dated.group(1):
             errors.append(".zenodo.json publication_date must match the dated CHANGELOG heading")
+        if "release candidate" in citation_text.lower():
+            errors.append("released CITATION.cff must not describe a release candidate")
+        zenodo_description = str(zenodo.get("description", "")).lower()
+        if (
+            "release-candidate" in zenodo_description
+            or "after the release exists" in zenodo_description
+        ):
+            errors.append("released .zenodo.json must not describe an unpublished candidate")
+        release_date = dated.group(1)
+        released_coordinates = {
+            "README.md": (
+                f"Version {expected} is the current release,\npublished on {release_date}"
+            ),
+            "docs/index.html": (
+                f"<code>verifier-standard {expected}</code>, released {release_date}"
+            ),
+            "docs/guides.html": (
+                f"<code>verifier-standard {expected}</code>, released {release_date}"
+            ),
+        }
+        tag_url = f"https://github.com/TimeLordRaps/verifier/releases/tag/v{expected}"
+        for relative, coordinate in released_coordinates.items():
+            surface = (ROOT / relative).read_text(encoding="utf-8")
+            if coordinate not in surface:
+                errors.append(
+                    f"{relative} release coordinate must match {expected} on {release_date}"
+                )
+            if tag_url not in surface:
+                errors.append(f"{relative} release link must target tag v{expected}")
 
 
 def maturity_table_violations(readme: str) -> list[str]:
@@ -398,7 +427,7 @@ def check_claim_boundaries(errors: list[str]) -> None:
         "VSTD evaluates bounded validity propositions about computational processes",
         "RUST is the inverse-TRUST diagnostic mechanic",
         "cryptographic zero knowledge can enclose",
-        "Version 1.2.0 is the current release",
+        "Version 1.3.0 is the current release",
     )
     for phrase in required_readme:
         if phrase not in readme:

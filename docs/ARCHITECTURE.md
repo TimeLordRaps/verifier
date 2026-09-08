@@ -112,8 +112,7 @@ native computation
 
 ### Experimental interoperability planning side path
 
-The current unreleased source also exposes a deliberately nonexecuting planning side
-path:
+Version 1.3.0 also exposes a deliberately nonexecuting planning side path:
 
 ```text
 strict VSTD-2 JSON document

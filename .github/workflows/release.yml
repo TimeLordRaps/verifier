@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Existing signed release tag to publish (for example, vX.Y.Z)."
+        description: "Existing annotated release tag to publish (for example, vX.Y.Z)."
         required: true
         type: string
       repository_checks_run_id:
