@@ -335,7 +335,7 @@ jobs:
           /tmp/vstd-wheel/bin/vstd validate /tmp/vstd-receipt
           /tmp/vstd-wheel/bin/vstd reproduce /tmp/vstd-receipt --rerun
           /tmp/vstd-wheel/bin/vstd surface analyze "$GITHUB_WORKSPACE/examples/verification_geometry_residual/geometry.json" --json >/dev/null
-          /tmp/vstd-wheel/bin/python -u "$GITHUB_WORKSPACE/examples/stored_components/build_reference_package.py" --source-root "$GITHUB_WORKSPACE" --output /tmp/vstd-components.json --package-version 1.3.0-candidate
+          /tmp/vstd-wheel/bin/python -u "$GITHUB_WORKSPACE/examples/stored_components/build_reference_package.py" --source-root "$GITHUB_WORKSPACE" --output /tmp/vstd-components.json --package-version 1.3.0
           /tmp/vstd-wheel/bin/vstd components inspect /tmp/vstd-components.json --json > /tmp/vstd-component-inspection.json
           /tmp/vstd-wheel/bin/vstd surface analyze "$GITHUB_WORKSPACE/examples/verification_geometry_residual/geometry.json" --plan --package /tmp/vstd-components.json --json > /tmp/vstd-component-plan.json
           /tmp/vstd-wheel/bin/python -u -c 'import json; from pathlib import Path; from verifier.interoperability.storage import load_component_package; package=load_component_package("/tmp/vstd-components.json"); inspection=json.loads(Path("/tmp/vstd-component-inspection.json").read_text()); report=json.loads(Path("/tmp/vstd-component-plan.json").read_text()); plan=report["plan"]; assert inspection == package.inspect(); assert plan["binding_scope"] == "STORED_PACKAGE"; assert plan["package_digest"] == package.canonical_digest(); assert plan["execution_performed"] is False; print("Installed stored-package inspection and exact package-bound nonexecuting planning passed")'

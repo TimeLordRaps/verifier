@@ -15,7 +15,7 @@ dependencies are needed to export or inspect this snapshot.
 From a fully tracked checkout, choose a destination that does not already exist:
 
 ```bash
-python examples/stored_components/build_reference_package.py --output reference-components.json --package-version 1.3.0-candidate
+python examples/stored_components/build_reference_package.py --output reference-components.json --package-version 1.3.0
 vstd components inspect reference-components.json --json
 ```
 
@@ -25,7 +25,7 @@ source module, explicitly review and name it. For example, only while the storag
 itself is untracked:
 
 ```bash
-python examples/stored_components/build_reference_package.py --output reference-components.json --package-version 1.3.0-candidate --include-untracked src/verifier/interoperability/storage.py
+python examples/stored_components/build_reference_package.py --output reference-components.json --package-version 1.3.0 --include-untracked src/verifier/interoperability/storage.py
 ```
 
 The flag is repeatable and accepts only individually named untracked source files under

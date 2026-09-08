@@ -203,7 +203,7 @@ and ownership decision.
 
 ### Experimental catalog-to-plan integration
 
-The current unreleased implementation connects a domain-neutral component catalog to
+Version 1.3.0 connects a domain-neutral component catalog to
 surface detection and planning without adding a receipt field or executing a component:
 
 ```text

@@ -285,13 +285,13 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
         "canonical_base_url": "https://timelordraps.github.io/verifier/",
         "documentation_version": "1.3.0",
         "normative_source": "standard/",
-        "release_state": "UNRELEASED_CANDIDATE",
+        "release_state": "RELEASED",
         "schema_version": 1,
         "source_ref": "test-commit",
     }
     for page in (output / "index.html", output / "guides.html"):
         text = page.read_text(encoding="utf-8")
-        assert "released 2026-09-01" in text
+        assert "released 2026-09-08" in text
         assert "unreleased candidate" not in text.lower()
     sources = sorted(
         (
@@ -768,7 +768,7 @@ def test_generated_reference_covers_commands_and_top_level_exports() -> None:
 
     page = (ROOT / "docs/reference.html").read_text(encoding="utf-8")
     assert page == module.render()
-    assert "UNRELEASED SOURCE" in page
+    assert "RELEASED SOURCE · package version 1.3.0" in page
 
     import verifier
     from verifier.runtime.public_cli import build_parser
@@ -830,6 +830,77 @@ def test_generated_reference_coordinate_is_release_aware() -> None:
         "1.2.0",
         "# Changelog\n\n## Unreleased\n\n- next change\n\n## 1.2.0 - 2026-09-01\n",
     ) == "UNRELEASED SOURCE · base package version 1.2.0"
+
+
+def test_presentation_version_gate_rejects_published_candidate_language(
+    tmp_path: Path,
+) -> None:
+    path = ROOT / "scripts/check_presentation.py"
+    spec = importlib.util.spec_from_file_location("check_presentation_release", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    (tmp_path / "src/verifier").mkdir(parents=True)
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nversion = "1.3.0"\n', encoding="utf-8"
+    )
+    (tmp_path / "src/verifier/__init__.py").write_text(
+        '__version__ = "1.3.0"\n', encoding="utf-8"
+    )
+    (tmp_path / "CHANGELOG.md").write_text(
+        "# Changelog\n\n## Unreleased\n\n## 1.3.0 - 2026-09-08\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "CITATION.cff").write_text(
+        "cff-version: 1.2.0\n"
+        'message: "This release candidate is not published."\n'
+        "version: 1.3.0\n"
+        "date-released: 2026-09-08\n",
+        encoding="utf-8",
+    )
+    (tmp_path / ".zenodo.json").write_text(
+        json.dumps(
+            {
+                "version": "1.3.0",
+                "publication_date": "2026-09-08",
+                "description": "Release-candidate metadata to update after the release exists.",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "README.md").write_text(
+        "Version 1.3.0 is the current release,\n"
+        "published on 2026-09-08; use "
+        "https://github.com/TimeLordRaps/verifier/releases/tag/v1.3.0\n",
+        encoding="utf-8",
+    )
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    for name in ("index.html", "guides.html"):
+        (docs / name).write_text(
+            "<code>verifier-standard 1.3.0</code>, released 2026-09-08 "
+            "https://github.com/TimeLordRaps/verifier/releases/tag/v1.3.0\n",
+            encoding="utf-8",
+        )
+    module.ROOT = tmp_path
+
+    errors: list[str] = []
+    module.check_versions(errors)
+    assert "released CITATION.cff must not describe a release candidate" in errors
+    assert "released .zenodo.json must not describe an unpublished candidate" in errors
+
+    (docs / "guides.html").write_text(
+        "<code>verifier-standard 1.3.0</code>, released 2026-09-09 "
+        "https://github.com/TimeLordRaps/verifier/releases/tag/v1.3.0\n",
+        encoding="utf-8",
+    )
+    errors = []
+    module.check_versions(errors)
+    assert (
+        "docs/guides.html release coordinate must match 1.3.0 on 2026-09-08"
+        in errors
+    )
 
 
 def test_generated_reference_detects_drift() -> None:

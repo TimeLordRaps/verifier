@@ -147,7 +147,7 @@ Use this summary before opening the exact matrix:
 | Usable reference paths | Receipts, generic run capture and reproduction, Graph recording, grounded-certificate checks, evidence-bound assessment, and artifact freeze/seal/thaw mechanisms are implemented within their documented bounds. |
 | Mechanism-dependent paths | VSTD-4, VSTD-5, and Graph profiles above recorded lineage establish results only when their exact registered mechanisms rerun successfully over bound evidence. |
 | Compatibility candidates | Candidate depth/profile calculations remain `NOT_ESTABLISHED`; caller-supplied references or ratings cannot create conformance. |
-| Experimental integrations | The workflow and Supply Chain Integrity, Transparency, and Trust (SCITT) profiles plus interoperability catalog and planning path remain non-normative. Strict geometry loading and modeled-surface analysis are supported, but catalog matching and planning grant no VSTD verdict and execute no checker. |
+| Experimental integrations | The workflow and Supply Chain Integrity, Transparency, and Trust (SCITT) profiles plus interoperability catalog, planning, graph-topology, and composed-untraversability paths remain non-normative. Strict geometry loading, modeled-surface analysis, and bounded platform comparison are supported, but the experimental surfaces grant no VSTD verdict and do not enforce confidentiality. |
 | Not claimed | Accreditation, consensus-standard status, external adoption, a second implementation, a real independent witness, or third-party security review. |
 
 <details>
@@ -161,6 +161,7 @@ external interoperability, certification, or a second implementation.
 | VSTD-1 | Project specification with implemented reference subset | Claim receipts, checker reports, strict generic-run profile, inspection, and current-profile reads | Claim coordinates, stable digests, mechanism descriptors, and declared provenance; actor separation is not inferred | Implemented reference subset | External implementation and a validator binding distinct producer/checker actors and execution seams |
 | VSTD-2 | Additive experimental project specification | Typed verification geometry, residuals, closure checks, schema, and tests | Geometry and declared reconstruction evidence inside the receipt | Implemented vertical slice | Independent implementation and broader geometry interoperability |
 | Interoperability catalog and surface planning | Supported loading and analysis with experimental planning; not a receipt or numbered profile | Strict VSTD-2 geometry loader, stable modeled-hole analysis and command-line diagnostics, frozen component descriptors and registry, exact candidate matching, deterministic nonexecuting plans, structural cross-geometry conflict diagnostics, and execution-readiness preflight | Analysis binds the typed geometry digest; plans additionally bind registry version and digest; conflict witnesses bind explicit shared propositions and exact geometries; readiness binds native inputs, planned evidence mappings, prerequisites, caller-supplied authorization, and mandatory reassessment | Modeled diagnostics, plan-only candidate associations, declaration-bound structural conflicts, and preflight readiness only; no validation execution or new closure | Boolean satisfiability analysis over declared geometry constraints, authorized component execution, bound result evidence, post-execution reanalysis, and independent interoperability results |
+| Experimental graph topology and composed untraversability | Non-normative experimental direct-submodule interfaces; not receipts or numbered profiles | Exact-graph-bound topology interpretation and finite observer-relative knowledge-hypergraph analysis | Topology contracts bind graph structure, equations, temporal relations, and resource bounds; untraversability contracts additionally bind observer, interface, rule, completeness, evidence, and traversal coordinates | Bounded diagnostic results only; no physical-causation inference, universal non-inferability proof, runtime mediation, confidentiality enforcement, authorization, or conformance | Open-world inference completeness, independently qualified mechanisms, runtime observation and enforcement, and adversarial external interoperability evidence |
 | VSTD-3 | Implemented project specification | Typed accelerator model, strict validator, emulator, offline adapters, continuity, fleet, and claim evaluation | Conditional on source-specific signatures, nonces, reference values, topology, events, and trust roots; host inventory remains weak evidence | Implemented reference surface | Vendor firmware integration, production trust roots, and complete-mediation evidence outside the emulator boundary |
 | VSTD-4 | Project specification with implemented reference paths | grounded decision certificate (GDC) parser/kernel, compatibility candidate depth, and evidence-bound establishment/recheck | Exact VSTD-1/2/3 and fourteen-rung propositions, content-addressed evidence bytes, mechanism implementation digests, trust roots, and bounds | Candidate path `NOT_ESTABLISHED`; evidence-bound path can establish conformance | Independent implementation, external interoperability, and deployment-specific rung mechanisms/evidence |
 | VSTD-5 | Project specification with implemented reference mechanism | Evidence-bound entry gate, seven separation dimensions, exact admitted-certificate binding, corroboration checks, duplicate refusal, disagreement preservation, receipt build/recheck | Witness coordinate, exact negative separation propositions, VSTD-4 commitment/certificate, checker, observations, mechanisms, trust roots, bounds, and embedded evidence | Mechanism can establish a bounded result; a positive observation with unresolved independence remains overall `UNKNOWN`; no repository claim of a real independent witness | Real independent witnesses, second implementation, external attack, and operational interoperability |
@@ -269,7 +270,7 @@ The distribution name is `verifier-standard`. The published base package has no
 required third-party runtime dependencies.
 
 ```bash
-python -m pip install "verifier-standard==1.2.0"  # exact published release
+python -m pip install "verifier-standard==1.3.0"  # exact published release
 python -m pip install .                            # current source checkout
 python -m pip install ".[yaml]"          # YAML Ain't Markup Language (YAML) manifests
 python -m pip install ".[jsonschema]"    # JSON Schema validation
@@ -463,6 +464,15 @@ ports. It reports structural features and bounded consistency separately, retain
 candidates without inferring their truth, and does not bypass cyclic-assurance admission.
 The [non-critical specimen](examples/graph_topology/) exports matching inspection documents.
 
+The [experimental composed-untraversability interface](docs/ARTIFACT_AWARENESS.md) evaluates
+whether a declared protected fact is reachable by one finite observer through the complete
+set of interfaces and inference rules supplied in an exact VSTD Graph contract. A
+higher-order interface can expose enough structure to control a computation while still
+forbidding a declared path to lower-order protected knowledge, but that boundary is assessed
+over the composed Graph rather than inferred from any interface in isolation. A bounded
+result does not establish open-world non-inferability, continuous awareness tracking,
+runtime enforcement, authorization, actor attribution, or universal confidentiality.
+
 Operating-system evidence is tracked per component in the
 [platform interoperability matrix](docs/PLATFORM_INTEROPERABILITY.md); support for one
 portable Python path does not transfer to a native prover, verifier, solver, or adapter.
@@ -519,7 +529,7 @@ Additional entry points:
 
 A release contains a canonical artifact set: ZIP archive format (ZIP), wheel, source
 distribution, and external manifest bound to the exact public Git commit and file
-members. At the current unreleased source coordinate, the continuous integration (CI)
+members. At the version 1.3.0 source coordinate, the continuous integration (CI)
 workflow builds the artifact set on Linux, Windows, and macOS and rejects cross-platform
 byte differences. It also captures and reruns the portable generic example on three
 GitHub-hosted operating-system virtual machines, then requires a bounded `PASS` over the
@@ -532,8 +542,8 @@ gh attestation verify PATH_TO_DOWNLOADED_ASSET --repo TimeLordRaps/verifier
 ```
 
 Use [RELEASING.md](RELEASING.md) to verify the manifest, tag, artifact attestations,
-package name, and historical compatibility. Version 1.2.0 is the current release,
-published on 2026-09-01; use its [versioned release page](https://github.com/TimeLordRaps/verifier/releases/tag/v1.2.0)
+package name, and historical compatibility. Version 1.3.0 is the current release,
+published on 2026-09-08; use its [versioned release page](https://github.com/TimeLordRaps/verifier/releases/tag/v1.3.0)
 for published citation and artifact coordinates.
 
 ## Claims, security, and contribution

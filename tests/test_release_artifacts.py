@@ -806,6 +806,7 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
     workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
     required = (
         "workflow_dispatch:",
+        "Existing annotated release tag to publish",
         "immutable_releases_preflight:",
         "repository_checks_run_id:",
         "ref: ${{ env.RELEASE_TAG }}",

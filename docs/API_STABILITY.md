@@ -55,15 +55,15 @@ The matching supported portable-record exports are
 Compatibility `vstd4_depth` and `graph_level`-style candidate results do not become
 conformance results merely because the evidence-bound APIs also exist.
 
-At the current unreleased source coordinate, `compare_platform_run_receipts`,
-`PlatformComparisonResult`, and `PlatformComparisonStatus` are supported additions for
-the next minor release's bounded operating-system comparison API.
+In version 1.3.0, `compare_platform_run_receipts`, `PlatformComparisonResult`, and
+`PlatformComparisonStatus` are supported additions for the bounded operating-system
+comparison API.
 They operate on existing VSTD-1 generic-run receipts and return a diagnostic object, not
 a new receipt or conformance result. `PASS` requires complete declared platform coverage,
 canonical integrity, equal non-platform bindings, and equal declared result projections;
 `CONFLICTED`, `NOT_ESTABLISHED`, and `INVALID` remain distinct failure states.
 
-The next minor release also adds supported `GeometryLoadError`,
+Version 1.3.0 also adds supported `GeometryLoadError`,
 `load_verification_geometry`, `ControlSurfaceContext`, `InteractionMode`, `SurfaceAnalysis`,
 `SurfaceAnalysisError`, `SurfaceHole`, `SurfaceHoleKind`, and
 `analyze_verification_surface` exports. The loader accepts a strict VSTD-2 JavaScript
@@ -104,7 +104,7 @@ to every name under `verifier.interoperability`:
 
 `verifier.interoperability` contains both the supported analyzer names exported by
 `verifier.__all__` and an experimental planning surface. Its complete characterized names
-at the current unreleased source coordinate are:
+in version 1.3.0 are:
 
 ```text
 AcyclicPropositionDependency
@@ -210,7 +210,7 @@ outside the top-level and interoperability-facade exports. Native `MATCH`, `FAIL
 `UNKNOWN` and `CONFLICTED` results stay bounded to the exact graph, observer, awareness
 mode, observation interval, transcript, capabilities, declared inference rules, evidence
 and resource coordinate. No result grants authorization, conformance, actor attribution,
-runtime mediation or universal confidentiality. Its unreleased experimental contract
+runtime mediation or universal confidentiality. Its version 1.3.0 experimental contract
 requires exact interface source-artifact coverage and exact graph-transformation incidence
 for graph-backed knowledge rules; incompatible future layouts require a new experimental
 schema identifier.
