@@ -14,6 +14,15 @@
 
 ## Unreleased
 
+### Post-release clarification
+
+- Clarify that `current-candidate evidence`, `final-main publication evidence`, and
+  `unreleased source has passed it` in the immutable version 1.3.0 release notes describe
+  the pre-publication review coordinate. Version 1.3.0 was published from tag `v1.3.0` at
+  commit `adc0415ea653376ed3f4c146a84daac1f72913f6`; subsequent commits remain unreleased
+  descendant source even while package metadata still reads 1.3.0. This clarification
+  does not rewrite the tagged changelog or published release notes.
+
 ## 1.3.0 - 2026-09-08
 
 ### Integration contract preparation

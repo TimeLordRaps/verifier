@@ -6,7 +6,8 @@ Public, target-neutral CLI for the VSTD reference implementation.
 
 This entry point deliberately excludes repository-specific generators and verifiers.
 It operates on declared manifests, stored receipts, verification geometries, and
-component packages. Package inspection and surface planning never execute components.
+component packages and indexes. Package/index inspection, index search, and surface
+planning never fetch, install, import, or execute components.
 """
 
 from __future__ import annotations
@@ -55,7 +56,7 @@ from verifier.runtime.experimental_workflow_cli import (
     handle_experiment_command,
 )
 from verifier.runtime.demo import SCENARIOS, demo_report, emit_specimens, run_demo
-from verifier.interoperability.catalog import AWARENESS_CLAIM_BOUNDARY
+from verifier.interoperability.catalog import AWARENESS_CLAIM_BOUNDARY, InteractionMode
 from verifier.interoperability.control_surface import (
     analyze_verification_surface,
     plan_validation,
@@ -283,6 +284,40 @@ def build_parser() -> argparse.ArgumentParser:
         "--expected-sha256",
         metavar="HEX",
         help="Require this externally supplied canonical package SHA-256 digest.",
+    )
+    components_index_parser = components_commands.add_parser(
+        "index", help="Inspect or search one bounded local component index."
+    )
+    components_index_commands = components_index_parser.add_subparsers(
+        dest="components_index_command", required=True
+    )
+    components_index_inspect_parser = components_index_commands.add_parser(
+        "inspect", help="Check one local index without fetching or opening its packages."
+    )
+    components_index_inspect_parser.add_argument("index", help="Stored component index path.")
+    components_index_inspect_parser.add_argument("--json", action="store_true")
+    components_index_inspect_parser.add_argument(
+        "--expected-sha256",
+        metavar="HEX",
+        help="Require this externally supplied canonical index SHA-256 digest.",
+    )
+    components_index_search_parser = components_index_commands.add_parser(
+        "search", help="Find exact declared matches in one local index; no ranking."
+    )
+    components_index_search_parser.add_argument("index", help="Stored component index path.")
+    components_index_search_parser.add_argument("--schema-id", required=True)
+    components_index_search_parser.add_argument(
+        "--interaction-mode",
+        required=True,
+        choices=tuple(mode.value for mode in InteractionMode),
+    )
+    components_index_search_parser.add_argument("--relation-id")
+    components_index_search_parser.add_argument("--mechanism-id")
+    components_index_search_parser.add_argument("--json", action="store_true")
+    components_index_search_parser.add_argument(
+        "--expected-sha256",
+        metavar="HEX",
+        help="Require this externally supplied canonical index SHA-256 digest.",
     )
 
     surface_parser = subparsers.add_parser(
@@ -569,6 +604,45 @@ def _handle_data_command(args: argparse.Namespace) -> int:
 
 
 def _handle_components_command(args: argparse.Namespace) -> int:
+    if args.components_command == "index":
+        from verifier.interoperability.component_index import load_component_index
+
+        if (
+            args.components_index_command == "search"
+            and args.relation_id is None
+            and args.mechanism_id is None
+        ):
+            raise ValueError("index search requires --relation-id or --mechanism-id")
+        index = load_component_index(args.index, expected_digest=args.expected_sha256)
+        if args.components_index_command == "inspect":
+            report = index.inspect()
+            if args.json:
+                print(json.dumps(report, indent=2, sort_keys=True))
+            else:
+                print("[INDEX INTEGRITY; LOCAL ONLY; NO FETCH OR EXECUTION]")
+                print(f"  Canonical digest: {index.canonical_digest()}")
+                print(f"  Packages:         {len(index.packages)}")
+                print(f"  Boundary:         {report['claim_boundary']}")
+            return 0
+        report = index.search_exact(
+            schema_id=args.schema_id,
+            interaction_mode=InteractionMode(args.interaction_mode),
+            relation_id=args.relation_id,
+            mechanism_id=args.mechanism_id,
+        )
+        if args.json:
+            print(json.dumps(report, indent=2, sort_keys=True))
+        else:
+            print(f"[{report['result']}]")
+            print(f"  Matches:  {len(report['matches'])}")
+            for match in report["matches"]:
+                print(
+                    f"  {match['component']['component_id']} @ "
+                    f"sha256:{match['package_sha256']}"
+                )
+            print(f"  Boundary: {report['claim_boundary']}")
+        return 0
+
     from verifier.interoperability.storage import load_component_package
 
     package = load_component_package(args.package, expected_digest=args.expected_sha256)

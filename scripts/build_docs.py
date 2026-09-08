@@ -552,6 +552,7 @@ def _top_navigation(route: PurePosixPath, *, current: str) -> str:
         ("Overview", root + "index.html", "overview"),
         ("Guides", root + "guides.html", "guides"),
         ("Reference", root + "reference.html", "reference"),
+        ("Components", root + "components/", "components"),
         ("Demo", "https://github.com/TimeLordRaps/verifier#30-60-second-demonstration", "demo"),
         ("Standard", root + "standard/", "standard"),
         ("Experiments", root + "experiments/", "experiments"),

@@ -357,7 +357,12 @@ jobs:
         with:
           python-version: "3.12"
       - run: python scripts/check_presentation.py
-      - run: python scripts/build_pages.py --output _site --source-ref "$GITHUB_SHA"
+      - run: PYTHONPATH=src python scripts/build_pages.py --output _site --source-ref "$GITHUB_SHA"
+      - name: Check the generated local component index
+        run: |
+          INDEX_SHA256="$(cut -d ' ' -f 1 _site/components/index.sha256)"
+          PYTHONPATH=src python -m verifier.runtime.public_cli components index inspect \
+            _site/components/index.json --expected-sha256 "$INDEX_SHA256" --json >/dev/null
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: pages-preview-${{ github.sha }}

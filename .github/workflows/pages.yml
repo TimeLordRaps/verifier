@@ -23,8 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-      - name: Assemble site and canonical schema routes
-        run: python scripts/build_pages.py --output _site --source-ref "$GITHUB_SHA"
+      - name: Assemble site, schemas, and exact-checkout component index
+        run: PYTHONPATH=src python scripts/build_pages.py --output _site --source-ref "$GITHUB_SHA"
+      - name: Check the generated local component index
+        run: |
+          INDEX_SHA256="$(cut -d ' ' -f 1 _site/components/index.sha256)"
+          PYTHONPATH=src python -m verifier.runtime.public_cli components index inspect \
+            _site/components/index.json --expected-sha256 "$INDEX_SHA256" --json >/dev/null
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:
           path: _site
