@@ -21,6 +21,36 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@pytest.mark.parametrize("ending", (b"\n", b"\r\n", b"\r"), ids=("lf", "crlf", "cr"))
+def test_reference_drift_check_compares_exact_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, ending: bytes,
+) -> None:
+    spec = importlib.util.spec_from_file_location("reference_byte_check", ROOT / "scripts/build_reference.py")
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    output = tmp_path / "reference.html"
+    output.write_bytes(b"<p>reference</p>" + ending)
+    monkeypatch.setattr(module, "OUTPUT", output)
+    monkeypatch.setattr(module, "render", lambda: "<p>reference</p>\n")
+    assert module.main(["--check"]) == (0 if ending == b"\n" else 1)
+
+
+def test_reference_writer_retains_platform_neutral_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    spec = importlib.util.spec_from_file_location("reference_byte_writer", ROOT / "scripts/build_reference.py")
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    output = tmp_path / "reference.html"
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "OUTPUT", output)
+    monkeypatch.setattr(module, "render", lambda: "<p>reference</p>\n")
+    assert module.main([]) == 0
+    assert output.read_bytes() == b"<p>reference</p>\n"
+
+
 def test_artifact_first_experiment_distinguishes_implemented_mechanisms_from_horizons() -> None:
     document = (ROOT / "experiments/artifact_first_mechanisms/README.md").read_text(
         encoding="utf-8"
