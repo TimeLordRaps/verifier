@@ -69,6 +69,14 @@ class ComponentIndexBuildError(RuntimeError):
     """The static index cannot be bound to the requested source coordinate."""
 
 
+def _bind_checkout_source() -> None:
+    """Make imports resolve against this exact checkout, not an installed release."""
+
+    source = str(SOURCE)
+    sys.path[:] = [entry for entry in sys.path if entry != source]
+    sys.path.insert(0, source)
+
+
 def _project_version() -> str:
     project = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     match = re.search(r'^version\s*=\s*"([^"]+)"\s*$', project, re.MULTILINE)
@@ -141,8 +149,7 @@ def _base_url(value: str) -> str:
 
 def _reference_exporter() -> Any:
     path = ROOT / "examples/stored_components/build_reference_package.py"
-    if str(SOURCE) not in sys.path:
-        sys.path.insert(0, str(SOURCE))
+    _bind_checkout_source()
     spec = importlib.util.spec_from_file_location("vstd_reference_package_exporter", path)
     if spec is None or spec.loader is None:
         raise ComponentIndexBuildError("cannot load the first-party package exporter")
@@ -231,6 +238,7 @@ def build(
 ) -> tuple[Path, ...]:
     """Build the static surface into an absent directory and return its files."""
 
+    _bind_checkout_source()
     from verifier.interoperability.component_index import (
         IndexedComponentPackage,
         StoredComponentIndex,

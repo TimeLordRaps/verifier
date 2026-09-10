@@ -1,0 +1,392 @@
+name: pull-request-policy
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, edited, ready_for_review]
+  issue_comment:
+    types: [created, edited, deleted]
+  workflow_run:
+    workflows: [pull-request-policy-notification]
+    types: [requested, completed]
+
+permissions:
+  actions: read
+  contents: read
+  issues: read
+  pull-requests: read
+
+concurrency:
+  group: pull-request-policy-${{ github.event.workflow_run.head_sha || github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  notification:
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      kind: ${{ steps.resolve.outputs.kind }}
+      pull_request_number: ${{ steps.resolve.outputs.pull_request_number }}
+      head_sha: ${{ steps.resolve.outputs.head_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Resolve the wakeup using authenticated platform metadata, never notification artifacts
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTIFICATION_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$NOTIFICATION_RUN_ID" > "$RUNNER_TEMP/notification-run.json"
+          WORKFLOW_ID="$(jq -er '.workflow_id | select(type == "number" and . > 0)' "$RUNNER_TEMP/notification-run.json")"
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$WORKFLOW_ID" > "$RUNNER_TEMP/notification-workflow.json"
+          python scripts/check_policy_notification.py --run "$RUNNER_TEMP/notification-run.json" \
+            --workflow "$RUNNER_TEMP/notification-workflow.json" --repository "$GITHUB_REPOSITORY" \
+            --run-id "$NOTIFICATION_RUN_ID" --output "$RUNNER_TEMP/notification-target.json"
+          KIND="$(jq -er .kind "$RUNNER_TEMP/notification-target.json")"
+          HEAD_SHA="$(jq -er .head_sha "$RUNNER_TEMP/notification-target.json")"
+          if test "$KIND" = pull_request_review; then
+            PR_NUMBER="$(jq -er .pull_request_number "$RUNNER_TEMP/notification-target.json")"
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$RUNNER_TEMP/notification-pr.json"
+            python scripts/check_policy_notification.py --run "$RUNNER_TEMP/notification-run.json" \
+              --workflow "$RUNNER_TEMP/notification-workflow.json" --repository "$GITHUB_REPOSITORY" \
+              --run-id "$NOTIFICATION_RUN_ID" --current-pr "$RUNNER_TEMP/notification-pr.json" \
+              --output "$RUNNER_TEMP/notification-target.json"
+            echo "pull_request_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          else
+            test "$KIND" = merge_group
+            HEAD_REF="$(jq -er .head_ref "$RUNNER_TEMP/notification-target.json")"
+            gh api "repos/$GITHUB_REPOSITORY/git/ref/${HEAD_REF#refs/}" > "$RUNNER_TEMP/notification-ref.json"
+            gh api "repos/$GITHUB_REPOSITORY/commits/$HEAD_SHA" > "$RUNNER_TEMP/notification-commit.json"
+            python scripts/check_policy_notification.py --run "$RUNNER_TEMP/notification-run.json" \
+              --workflow "$RUNNER_TEMP/notification-workflow.json" --repository "$GITHUB_REPOSITORY" \
+              --run-id "$NOTIFICATION_RUN_ID" --merge-ref "$RUNNER_TEMP/notification-ref.json" \
+              --merge-commit "$RUNNER_TEMP/notification-commit.json" --output "$RUNNER_TEMP/merge-group-event.json"
+          fi
+          echo "kind=$KIND" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: steps.resolve.outputs.kind == 'merge_group'
+        with:
+          name: policy-merge-event-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/merge-group-event.json
+          if-no-files-found: error
+          retention-days: 1
+
+  evaluate-policy:
+    needs: notification
+    if: >-
+      always() &&
+      ((github.event_name == 'workflow_run' && needs.notification.result == 'success' && needs.notification.outputs.kind == 'pull_request_review') ||
+       github.event_name == 'pull_request_target' ||
+       (github.event_name == 'issue_comment' && github.event.issue.pull_request))
+    permissions:
+      actions: read
+      contents: read
+      issues: read
+      pull-requests: read
+      statuses: write
+    env:
+      PR_NUMBER: ${{ needs.notification.outputs.pull_request_number || github.event.pull_request.number || github.event.issue.number }}
+      NOTIFICATION_HEAD: ${{ needs.notification.outputs.head_sha }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # pull_request_target deliberately executes the policy from the protected
+      # default branch. Never check out or execute pull-request code in this job.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - name: Fetch the exact pull request, review, run, and integration evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" \
+            > "$RUNNER_TEMP/pull-request.json"
+          HEAD_SHA="$(jq -er .head.sha "$RUNNER_TEMP/pull-request.json")"
+          if test -n "$NOTIFICATION_HEAD"; then test "$HEAD_SHA" = "$NOTIFICATION_HEAD"; fi
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
+            -f state=pending \
+            -f context=pr-policy \
+            -f description="Exact-head promotion evidence is being evaluated" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          echo "PR_HEAD_SHA=$HEAD_SHA" >> "$GITHUB_ENV"
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews?per_page=100" \
+            > "$RUNNER_TEMP/reviews.json"
+          gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments?per_page=100" \
+            > "$RUNNER_TEMP/comments.json"
+          # The mechanism intentionally accepts at most 99 of each. A full
+          # 100-item response might have another page, so it fails closed.
+          test "$(jq 'length' "$RUNNER_TEMP/reviews.json")" -lt 100
+          test "$(jq 'length' "$RUNNER_TEMP/comments.json")" -lt 100
+          RUN_ID="$(python -c 'import json,re,sys; body=json.load(open(sys.argv[1], encoding="utf-8"))["body"]; match=re.search(r"^- Repository-check run:\s*([1-9][0-9]*)\s*$", body, re.MULTILINE); print(match.group(1) if match else "")' "$RUNNER_TEMP/pull-request.json")"
+          test -n "$RUN_ID"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" \
+            > "$RUNNER_TEMP/repository-run.json"
+          RUN_ATTEMPT="$(jq -er .run_attempt "$RUNNER_TEMP/repository-run.json")"
+          mkdir "$RUNNER_TEMP/ci-coordinate"
+          gh run download "$RUN_ID" \
+            --name "ci-coordinate-$RUN_ID-$RUN_ATTEMPT" \
+            --dir "$RUNNER_TEMP/ci-coordinate"
+          mkdir "$RUNNER_TEMP/test-evidence"
+          gh run download "$RUN_ID" --pattern "base-contracts-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence"
+          gh run download "$RUN_ID" --pattern "platform-python-contracts-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence"
+          gh run download "$RUN_ID" --pattern "coverage-tests-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence"
+          gh run download "$RUN_ID" --pattern "scitt-crypto-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence"
+          gh run download "$RUN_ID" --pattern "artifact-seal-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence"
+          python scripts/check_pr_policy.py \
+            --build-test-evidence-manifest "$RUNNER_TEMP/test-evidence" \
+            --run-id "$RUN_ID" --run-attempt "$RUN_ATTEMPT" \
+            --output "$RUNNER_TEMP/test-evidence-manifest.json"
+      - name: Require a complete record and trusted acceptance for the exact head
+        id: policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          python scripts/check_pr_policy.py \
+            --event "$RUNNER_TEMP/pull-request.json" \
+            --reviews "$RUNNER_TEMP/reviews.json" \
+            --comments "$RUNNER_TEMP/comments.json" \
+            --ci-coordinate "$RUNNER_TEMP/ci-coordinate/ci-coordinate.json" \
+            --repository-run "$RUNNER_TEMP/repository-run.json" \
+            --test-evidence-manifest "$RUNNER_TEMP/test-evidence-manifest.json" \
+            --output "$RUNNER_TEMP/pr-policy-receipt.json"
+          POLICY_EXIT="$?"
+          set -e
+          if test "$POLICY_EXIT" -ne 0; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$PR_HEAD_SHA" \
+              -f state=failure \
+              -f context=pr-policy \
+              -f description="Promotion coordinates, record, or acceptance are stale" \
+              -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            exit "$POLICY_EXIT"
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" \
+            > "$RUNNER_TEMP/current-pull-request.json"
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews?per_page=100" > "$RUNNER_TEMP/current-reviews.json"
+          gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments?per_page=100" > "$RUNNER_TEMP/current-comments.json"
+          test "$(jq 'length' "$RUNNER_TEMP/current-reviews.json")" -lt 100
+          test "$(jq 'length' "$RUNNER_TEMP/current-comments.json")" -lt 100
+          CURRENT_HEAD_SHA="$(jq -er .head.sha "$RUNNER_TEMP/current-pull-request.json")"
+          if ! python scripts/check_pr_policy.py \
+            --confirm-current "$RUNNER_TEMP/current-pull-request.json" \
+            --reviews "$RUNNER_TEMP/current-reviews.json" \
+            --comments "$RUNNER_TEMP/current-comments.json" \
+            --ci-coordinate "$RUNNER_TEMP/ci-coordinate/ci-coordinate.json" \
+            --repository-run "$RUNNER_TEMP/repository-run.json" \
+            --test-evidence-manifest "$RUNNER_TEMP/test-evidence-manifest.json" \
+            --receipt "$RUNNER_TEMP/pr-policy-receipt.json"; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$PR_HEAD_SHA" \
+              -f state=error \
+              -f context=pr-policy \
+              -f description="Pull-request head changed during policy evaluation" \
+              -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$CURRENT_HEAD_SHA" \
+              -f state=pending \
+              -f context=pr-policy \
+              -f description="Current pull-request state requires fresh promotion evidence" \
+              -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            exit 1
+          fi
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: success()
+        with:
+          name: pr-policy-${{ env.PR_HEAD_SHA }}
+          path: |
+            ${{ runner.temp }}/pr-policy-receipt.json
+            ${{ runner.temp }}/test-evidence-manifest.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish success only after retaining the exact receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" \
+            > "$RUNNER_TEMP/final-pull-request.json"
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews?per_page=100" > "$RUNNER_TEMP/final-reviews.json"
+          gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments?per_page=100" > "$RUNNER_TEMP/final-comments.json"
+          test "$(jq 'length' "$RUNNER_TEMP/final-reviews.json")" -lt 100
+          test "$(jq 'length' "$RUNNER_TEMP/final-comments.json")" -lt 100
+          python scripts/check_pr_policy.py \
+            --confirm-current "$RUNNER_TEMP/final-pull-request.json" \
+            --reviews "$RUNNER_TEMP/final-reviews.json" \
+            --comments "$RUNNER_TEMP/final-comments.json" \
+            --ci-coordinate "$RUNNER_TEMP/ci-coordinate/ci-coordinate.json" \
+            --repository-run "$RUNNER_TEMP/repository-run.json" \
+            --test-evidence-manifest "$RUNNER_TEMP/test-evidence-manifest.json" \
+            --receipt "$RUNNER_TEMP/pr-policy-receipt.json"
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$PR_HEAD_SHA" \
+            -f state=success \
+            -f context=pr-policy \
+            -f description="Exact promotion record and acceptance are current" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+      - name: Publish ordinary policy failure
+        if: failure() && env.PR_HEAD_SHA != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$PR_HEAD_SHA" \
+            -f state=failure -f context=pr-policy \
+            -f description="Policy evidence is incomplete, stale, or exceeds its bounds" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
+  evaluate-merge-group:
+    needs: notification
+    if: github.event_name == 'workflow_run' && needs.notification.outputs.kind == 'merge_group'
+    permissions:
+      actions: read
+      contents: read
+      issues: read
+      pull-requests: read
+      statuses: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      # Pull-request and merge-group code are evidence inputs, never executed here.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: policy-merge-event-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/trusted-notification
+      - name: Record pending status and bounded merge-queue membership
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          MERGE_EVENT="$RUNNER_TEMP/trusted-notification/merge-group-event.json"
+          echo "MERGE_EVENT=$MERGE_EVENT" >> "$GITHUB_ENV"
+          GROUP_HEAD="$(jq -er .merge_group.head_sha "$MERGE_EVENT")"
+          echo "GROUP_HEAD=$GROUP_HEAD" >> "$GITHUB_ENV"
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GROUP_HEAD" \
+            -f state=pending -f context=pr-policy \
+            -f description="Constituent exact-policy receipts are being evaluated" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          TERMINAL_PR="$(python -c 'import json,re,sys; event=json.load(open(sys.argv[1], encoding="utf-8")); ref=event["merge_group"]["head_ref"]; match=re.fullmatch(r"refs/heads/gh-readonly-queue/.+/pr-([1-9][0-9]*)-[0-9a-f]{40}", ref); print(match.group(1) if match else "")' "$MERGE_EVENT")"
+          test -n "$TERMINAL_PR"
+          echo "TERMINAL_PR=$TERMINAL_PR" >> "$GITHUB_ENV"
+          OWNER="${GITHUB_REPOSITORY%/*}"
+          NAME="${GITHUB_REPOSITORY#*/}"
+          gh api graphql \
+            -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){mergeQueue{entries(first:33){totalCount pageInfo{hasNextPage} nodes{position pullRequest{number}}}}}}}' \
+            -F owner="$OWNER" -F name="$NAME" -F number="$TERMINAL_PR" \
+            > "$RUNNER_TEMP/merge-queue.json"
+          python scripts/check_merge_group_policy.py \
+            --event "$MERGE_EVENT" --queue "$RUNNER_TEMP/merge-queue.json" \
+            --output "$RUNNER_TEMP/merge-group-manifest.json"
+      - name: Validate every bounded constituent against current exact evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir "$RUNNER_TEMP/pr-policy-receipts"
+          jq -er '.required_pull_requests[]' "$RUNNER_TEMP/merge-group-manifest.json" > "$RUNNER_TEMP/pull-request-numbers.txt"
+          while IFS= read -r PR_NUMBER; do
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$RUNNER_TEMP/pr-$PR_NUMBER.json"
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews?per_page=100" > "$RUNNER_TEMP/reviews-$PR_NUMBER.json"
+            gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments?per_page=100" > "$RUNNER_TEMP/comments-$PR_NUMBER.json"
+            test "$(jq 'length' "$RUNNER_TEMP/reviews-$PR_NUMBER.json")" -lt 100
+            test "$(jq 'length' "$RUNNER_TEMP/comments-$PR_NUMBER.json")" -lt 100
+            RUN_ID="$(python -c 'import json,re,sys; body=json.load(open(sys.argv[1], encoding="utf-8"))["body"]; match=re.search(r"^- Repository-check run:\s*([1-9][0-9]*)\s*$", body, re.MULTILINE); print(match.group(1) if match else "")' "$RUNNER_TEMP/pr-$PR_NUMBER.json")"
+            test -n "$RUN_ID"
+            gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" > "$RUNNER_TEMP/repository-run-$PR_NUMBER.json"
+            RUN_ATTEMPT="$(jq -er .run_attempt "$RUNNER_TEMP/repository-run-$PR_NUMBER.json")"
+            mkdir "$RUNNER_TEMP/ci-coordinate-$PR_NUMBER"
+            gh run download "$RUN_ID" --name "ci-coordinate-$RUN_ID-$RUN_ATTEMPT" --dir "$RUNNER_TEMP/ci-coordinate-$PR_NUMBER"
+            mkdir "$RUNNER_TEMP/test-evidence-$PR_NUMBER"
+            gh run download "$RUN_ID" --pattern "base-contracts-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence-$PR_NUMBER"
+            gh run download "$RUN_ID" --pattern "platform-python-contracts-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence-$PR_NUMBER"
+            gh run download "$RUN_ID" --pattern "coverage-tests-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence-$PR_NUMBER"
+            gh run download "$RUN_ID" --pattern "scitt-crypto-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence-$PR_NUMBER"
+            gh run download "$RUN_ID" --pattern "artifact-seal-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence-$PR_NUMBER"
+            python scripts/check_pr_policy.py \
+              --build-test-evidence-manifest "$RUNNER_TEMP/test-evidence-$PR_NUMBER" \
+              --run-id "$RUN_ID" --run-attempt "$RUN_ATTEMPT" \
+              --output "$RUNNER_TEMP/test-evidence-manifest-$PR_NUMBER.json"
+            python scripts/check_pr_policy.py \
+              --event "$RUNNER_TEMP/pr-$PR_NUMBER.json" \
+              --reviews "$RUNNER_TEMP/reviews-$PR_NUMBER.json" \
+              --comments "$RUNNER_TEMP/comments-$PR_NUMBER.json" \
+              --ci-coordinate "$RUNNER_TEMP/ci-coordinate-$PR_NUMBER/ci-coordinate.json" \
+              --repository-run "$RUNNER_TEMP/repository-run-$PR_NUMBER.json" \
+              --test-evidence-manifest "$RUNNER_TEMP/test-evidence-manifest-$PR_NUMBER.json" \
+              --output "$RUNNER_TEMP/pr-policy-receipts/$PR_NUMBER.json"
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$RUNNER_TEMP/current-pr-$PR_NUMBER.json"
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews?per_page=100" > "$RUNNER_TEMP/current-reviews-$PR_NUMBER.json"
+            gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments?per_page=100" > "$RUNNER_TEMP/current-comments-$PR_NUMBER.json"
+            python scripts/check_pr_policy.py \
+              --confirm-current "$RUNNER_TEMP/current-pr-$PR_NUMBER.json" \
+              --reviews "$RUNNER_TEMP/current-reviews-$PR_NUMBER.json" \
+              --comments "$RUNNER_TEMP/current-comments-$PR_NUMBER.json" \
+              --ci-coordinate "$RUNNER_TEMP/ci-coordinate-$PR_NUMBER/ci-coordinate.json" \
+              --repository-run "$RUNNER_TEMP/repository-run-$PR_NUMBER.json" \
+              --test-evidence-manifest "$RUNNER_TEMP/test-evidence-manifest-$PR_NUMBER.json" \
+              --receipt "$RUNNER_TEMP/pr-policy-receipts/$PR_NUMBER.json"
+          done < "$RUNNER_TEMP/pull-request-numbers.txt"
+      - name: Recompare merge queue and receipts immediately before retention
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          OWNER="${GITHUB_REPOSITORY%/*}"
+          NAME="${GITHUB_REPOSITORY#*/}"
+          gh api graphql \
+            -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){mergeQueue{entries(first:33){totalCount pageInfo{hasNextPage} nodes{position pullRequest{number}}}}}}}' \
+            -F owner="$OWNER" -F name="$NAME" -F number="$TERMINAL_PR" \
+            > "$RUNNER_TEMP/current-merge-queue.json"
+          python scripts/check_merge_group_policy.py --confirm-current \
+            --event "$MERGE_EVENT" --queue "$RUNNER_TEMP/current-merge-queue.json" \
+            --manifest "$RUNNER_TEMP/merge-group-manifest.json" \
+            --receipts-dir "$RUNNER_TEMP/pr-policy-receipts" \
+            --output "$RUNNER_TEMP/merge-group-receipt.json"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: merge-group-pr-policy-${{ env.GROUP_HEAD }}
+          path: |
+            ${{ runner.temp }}/merge-group-receipt.json
+            ${{ runner.temp }}/pr-policy-receipts/*.json
+            ${{ runner.temp }}/test-evidence-manifest-*.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish required merge-group success after retaining every receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          while IFS= read -r PR_NUMBER; do
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$RUNNER_TEMP/final-pr-$PR_NUMBER.json"
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/reviews?per_page=100" > "$RUNNER_TEMP/final-reviews-$PR_NUMBER.json"
+            gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments?per_page=100" > "$RUNNER_TEMP/final-comments-$PR_NUMBER.json"
+            python scripts/check_pr_policy.py \
+              --confirm-current "$RUNNER_TEMP/final-pr-$PR_NUMBER.json" \
+              --reviews "$RUNNER_TEMP/final-reviews-$PR_NUMBER.json" \
+              --comments "$RUNNER_TEMP/final-comments-$PR_NUMBER.json" \
+              --ci-coordinate "$RUNNER_TEMP/ci-coordinate-$PR_NUMBER/ci-coordinate.json" \
+              --repository-run "$RUNNER_TEMP/repository-run-$PR_NUMBER.json" \
+              --test-evidence-manifest "$RUNNER_TEMP/test-evidence-manifest-$PR_NUMBER.json" \
+              --receipt "$RUNNER_TEMP/pr-policy-receipts/$PR_NUMBER.json"
+          done < "$RUNNER_TEMP/pull-request-numbers.txt"
+          OWNER="${GITHUB_REPOSITORY%/*}"
+          NAME="${GITHUB_REPOSITORY#*/}"
+          gh api graphql \
+            -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){mergeQueue{entries(first:33){totalCount pageInfo{hasNextPage} nodes{position pullRequest{number}}}}}}}' \
+            -F owner="$OWNER" -F name="$NAME" -F number="$TERMINAL_PR" \
+            > "$RUNNER_TEMP/final-merge-queue.json"
+          python scripts/check_merge_group_policy.py --confirm-current \
+            --event "$MERGE_EVENT" --queue "$RUNNER_TEMP/final-merge-queue.json" \
+            --manifest "$RUNNER_TEMP/merge-group-manifest.json" \
+            --receipts-dir "$RUNNER_TEMP/pr-policy-receipts" \
+            --output "$RUNNER_TEMP/final-merge-group-receipt.json"
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GROUP_HEAD" \
+            -f state=success -f context=pr-policy \
+            -f description="Every bounded constituent has current exact policy evidence" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+      - name: Publish merge-group failure
+        if: failure() && env.GROUP_HEAD != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GROUP_HEAD" \
+            -f state=failure -f context=pr-policy \
+            -f description="Constituent policy evidence is incomplete, stale, or unbounded" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"

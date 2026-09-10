@@ -202,10 +202,13 @@ jobs:
       - name: Assemble a complete draft release
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_KIND: ${{ steps.release-source.outputs.release_kind }}
         run: |
           RELEASE_FLAGS=()
-          if test "${{ steps.release-source.outputs.release_kind }}" = "prerelease"; then
+          if test "$RELEASE_KIND" = "prerelease"; then
             RELEASE_FLAGS+=(--prerelease)
+          else
+            test "$RELEASE_KIND" = "stable"
           fi
           gh release create "$RELEASE_TAG" \
             dist/*.zip dist/*.whl dist/*.tar.gz dist/*.cdx.json dist/*.manifest.json \

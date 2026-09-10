@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -158,6 +159,32 @@ def test_static_component_surface_is_reproducible(
         for path in second.rglob("*") if path.is_file()
     }
     assert first_files == second_files
+
+
+def test_builder_cli_binds_the_exact_checkout_without_pythonpath(tmp_path: Path) -> None:
+    output = tmp_path / "components"
+    environment = os.environ.copy()
+    environment.pop("PYTHONPATH", None)
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts/build_component_index.py"),
+            "--output",
+            str(output),
+            "--source-ref",
+            "WORKTREE",
+        ],
+        cwd=tmp_path,
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "[COMPONENT INDEX OK]" in result.stdout
+    assert (output / "index.json").is_file()
 
 
 @pytest.mark.parametrize(

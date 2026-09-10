@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Classify one supported package version as stable or prerelease."""
+"""Classify a supported package version as a stable release or prerelease."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ SUPPORTED_RELEASE_VERSION = re.compile(
 
 
 def classify_release_version(version: str) -> str:
-    """Return ``stable`` or ``prerelease`` for one canonical supported version."""
+    """Return the GitHub release kind for one supported package version."""
 
     match = SUPPORTED_RELEASE_VERSION.fullmatch(version)
     if match is None:

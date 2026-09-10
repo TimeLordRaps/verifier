@@ -43,12 +43,12 @@ assert NOTES_SPEC is not None and NOTES_SPEC.loader is not None
 release_notes = importlib.util.module_from_spec(NOTES_SPEC)
 NOTES_SPEC.loader.exec_module(release_notes)
 
-VERSION_SPEC = importlib.util.spec_from_file_location(
+CLASSIFIER_SPEC = importlib.util.spec_from_file_location(
     "vstd_release_version_classifier", RELEASE_VERSION_CLASSIFIER
 )
-assert VERSION_SPEC is not None and VERSION_SPEC.loader is not None
-release_version_classifier = importlib.util.module_from_spec(VERSION_SPEC)
-VERSION_SPEC.loader.exec_module(release_version_classifier)
+assert CLASSIFIER_SPEC is not None and CLASSIFIER_SPEC.loader is not None
+release_version_classifier = importlib.util.module_from_spec(CLASSIFIER_SPEC)
+CLASSIFIER_SPEC.loader.exec_module(release_version_classifier)
 
 
 def _git_object_fixture(root: Path, files: dict[str, bytes]) -> tuple[Path, str]:
@@ -825,6 +825,7 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
         'test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"',
         'test "$VERSION" = "$PACKAGE_VERSION"',
         'RELEASE_KIND="$(python scripts/classify_release_version.py "$VERSION")"',
+        'echo "release_kind=$RELEASE_KIND"',
         'actions/runs/$REPOSITORY_CHECKS_RUN_ID',
         "'.name')\" = \"repository-checks\"",
         "'.path')\" = \".github/workflows/ci.yml\"",
@@ -852,6 +853,7 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
         'python scripts/extract_release_notes.py --version "$VERSION"',
         'gh release create "$RELEASE_TAG"',
         'RELEASE_FLAGS+=(--prerelease)',
+        '"${RELEASE_FLAGS[@]}"',
         'releases/tags/$RELEASE_TAG',
         "--jq '.immutable')\" = true",
     )
@@ -874,6 +876,34 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
     assert workflow.index('gh release create "$RELEASE_TAG"') < workflow.index(
         "--jq '.immutable')\" = true"
     )
+
+
+@pytest.mark.parametrize("version", ("1.4.0a1", "1.4.0b2", "1.4.0rc3"))
+def test_release_version_classifier_marks_prereleases(version: str) -> None:
+    assert release_version_classifier.classify_release_version(version) == "prerelease"
+
+
+@pytest.mark.parametrize("version", ("0.1.0", "1.4.0", "12.34.56"))
+def test_release_version_classifier_preserves_stable_releases(version: str) -> None:
+    assert release_version_classifier.classify_release_version(version) == "stable"
+
+
+@pytest.mark.parametrize(
+    "version",
+    (
+        "v1.4.0a1",
+        "1.4",
+        "1.4.0-alpha1",
+        "1.4.0dev1",
+        "1.4.0.post1",
+        "1.4.0+lab1",
+        "01.4.0",
+        "1.4.0a",
+    ),
+)
+def test_release_version_classifier_rejects_ambiguous_versions(version: str) -> None:
+    with pytest.raises(ValueError, match="unsupported release version"):
+        release_version_classifier.classify_release_version(version)
 
 
 def test_release_notes_select_exact_version_heading_without_regex_substitution() -> None:

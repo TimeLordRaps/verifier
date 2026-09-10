@@ -1373,30 +1373,62 @@ def test_failed_directory_post_check_cleans_only_created_entries(
     assert not os.path.lexists(Path(str(destination) + ".vstd-thaw.json"))
 
 
-def test_directory_thaw_rejects_a_link_injected_during_copy(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+@pytest.mark.parametrize("entry_kind", ("file", "symlink"))
+def test_directory_thaw_rejects_an_entry_injected_during_copy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, entry_kind: str
 ) -> None:
+    if entry_kind == "symlink":
+        probe = tmp_path / "symlink-capability-probe"
+        _symlink_or_skip(probe, tmp_path / "absent")
+        probe.unlink()
     source = tmp_path / "source"
     source.mkdir()
     (source / "value").write_bytes(b"value")
     bundle = tmp_path / "bundle"
     freeze_artifact(source, bundle)
     seal_artifact(bundle, _private_key(tmp_path / "injected-link.pem"))
+    parent_before = verify_frozen_artifact(bundle, require_seal=True)
+    assert parent_before.sealed
     destination = tmp_path / "descendant"
     original_copytree = artifact_control_module.shutil.copytree
+    original_copy2 = artifact_control_module.shutil.copy2
+    injected: list[Path] = []
+    write_bits = stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH
 
-    def inject_link(*args: object, **kwargs: object) -> Path:
-        copied = original_copytree(*args, **kwargs)
-        _symlink_or_skip(destination / "injected", tmp_path / "absent")
+    def copy_and_inject(source_path: str, target_path: str) -> str:
+        copied = original_copy2(source_path, target_path)
+        assert Path(target_path) == destination / "value"
+        assert not injected
+        # The destination is mutable during copying, before copytree restores
+        # the frozen directory mode. Do not chmod the parent or completed copy.
+        assert destination.stat().st_mode & stat.S_IWUSR
+        assert not (Path(target_path).stat().st_mode & write_bits)
+        if entry_kind == "symlink":
+            # Capability was probed above; an insertion failure is not a skip.
+            (destination / "injected").symlink_to(tmp_path / "absent")
+        else:
+            (destination / "injected").write_bytes(b"injected")
+        injected.append(destination / "injected")
         return copied
 
-    monkeypatch.setattr(artifact_control_module.shutil, "copytree", inject_link)
+    def copy_with_injection(*args: object, **kwargs: object) -> Path:
+        assert "copy_function" not in kwargs
+        copied = original_copytree(*args, copy_function=copy_and_inject, **kwargs)
+        assert injected == [destination / "injected"]
+        assert not (destination.stat().st_mode & write_bits)
+        assert not ((destination / "value").stat().st_mode & write_bits)
+        return copied
+
+    monkeypatch.setattr(artifact_control_module.shutil, "copytree", copy_with_injection)
 
     with pytest.raises(ArtifactControlError, match="did not match"):
         thaw_artifact(bundle, destination)
 
     assert not os.path.lexists(destination)
     assert not os.path.lexists(Path(str(destination) + ".vstd-thaw.json"))
+    assert (source / "value").read_bytes() == b"value"
+    assert (bundle / "payload" / "value").read_bytes() == b"value"
+    assert verify_frozen_artifact(bundle, require_seal=True) == parent_before
 
 
 def test_sealed_parent_and_context_bindings_are_explicit_and_deduplicated(

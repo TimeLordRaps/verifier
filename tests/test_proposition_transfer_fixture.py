@@ -73,4 +73,3 @@ def test_rule_document_is_installed_without_strengthening_authority_or_graph_cla
     assert "always NOT_ESTABLISHED" in text
     assert "existing generic DEPENDS_ON edges remain unsupported" in text
     assert "not the full" in text
-
