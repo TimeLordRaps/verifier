@@ -153,11 +153,23 @@ def test_base_url_is_normalized_without_losing_project_path() -> None:
         "https://timelordraps.github.io/verifier/?source=other",
         "https://timelordraps.github.io/verifier/%2e%2e/private/",
     ),
+    ids=("insecure-scheme", "foreign-host", "userinfo", "query", "parent-traversal"),
 )
 def test_base_url_rejects_unbounded_scheme_host_or_path(url: str) -> None:
     module = _module()
     with pytest.raises(module.PagesDeploymentError):
         module.normalize_base_url(url, allowed_host="timelordraps.github.io")
+
+
+def test_adversarial_url_case_ids_do_not_serialize_fixture_values() -> None:
+    mark = next(
+        mark for mark in test_base_url_rejects_unbounded_scheme_host_or_path.pytestmark
+        if mark.name == "parametrize"
+    )
+    observed_ids = mark.kwargs.get("ids")
+    assert observed_ids == (
+        "insecure-scheme", "foreign-host", "userinfo", "query", "parent-traversal",
+    )
 
 
 class _Response:
