@@ -164,12 +164,12 @@ proof of correctness.
 
 ```bash
 python -m pip install ".[test]"
-python -m pytest -q
-python -m coverage run --branch --source=src/verifier -m pytest -q
+python -u -m pytest -vv -s --durations=10 --timeout=60
+python -u -m coverage run --branch --source=src/verifier -m pytest -vv -s --durations=10 --timeout=60
 python -m coverage report --show-missing
 python scripts/check_presentation.py
 python scripts/build_reference.py --check
-python -m compileall -q src scripts
+python -u -m compileall src scripts
 PYTHONPATH=src python scripts/build_experiment_index.py --check
 ```
 
@@ -272,7 +272,7 @@ CRLF/LF equivalence as byte identity. This matters when working on Windows.
 
 ## 6. The presentation gate reads what you write
 
-`scripts/check_presentation.py` runs in CI and inside `python -m pytest -q` by way of
+`scripts/check_presentation.py` runs in CI and inside the streamed, bounded pytest suite by way of
 `tests/test_presentation_surface.py`. It scans every text file in the repository —
 **including this one** — and fails closed on:
 
@@ -287,7 +287,7 @@ CRLF/LF equivalence as byte identity. This matters when working on Windows.
 - a change to the overview asset dimensions or its accessibility role.
 - a stale generated CLI/API reference or experiment index.
 
-The protected repository-check aggregate (the `conformance-gate` job identifier) requires `base`,
+The protected repository-check aggregate (the `conformance-gate` job identifier) requires `coordinate`, `base`,
 `coverage`, `stdlib-smoke`, `scitt-crypto`, `artifact-seal`, `release-integrity`, `release-reproducibility`,
 `installed-wheel-smoke`, and `presentation` to all succeed. The dedicated SCITT/COSE job
 installs `.[test,scitt]`; the normal test matrix may skip that optional cryptographic
@@ -324,8 +324,63 @@ safety. Do not run release or tag workflows; [`RELEASING.md`](RELEASING.md) is a
 maintainer procedure.
 
 `.github/workflows/pages.yml` publishes the `scripts/build_pages.py` output to GitHub Pages
-on every push to `main`. Documentation and schema edits become public the moment they merge,
+only after the repository-check workflow succeeds for the exact `main` commit. Documentation
+and schema edits become public after that promotion gate,
 so treat `docs/` and `receipts/schema/` as published surfaces rather than drafts.
+
+### 9.1 Mandatory pull-request promotion and aftercare
+
+Every automated contributor MUST carry a pull request through this evidence sequence; an
+agent MUST NOT issue, fabricate, or instruct another tool to issue the human-acceptance
+marker on its own work:
+
+1. record the exact pull-request head and base, separately executed integration coordinate,
+   repository-check event and run, and canonical promotion-record digest;
+2. resolve every actionable finding or leave it explicitly blocking—silence, dismissal,
+   and a green aggregate are not dispositions;
+3. after every new commit, refresh the promotion record, all affected checks, every skip
+   or omitted-check reason, and the resulting claim limits;
+4. obtain a trusted participant's acceptance bound to the current head through an approving
+   review or a comment containing `VSTD-HUMAN-ACCEPTANCE: <full-head-commit-identifier>
+   <promotion-record-sha256>`; the record proves
+   an authenticated repository action, not comprehension, independence, or correctness;
+5. do not merge without separate explicit merge authority, and never treat approval or
+   passing checks as that authority;
+6. after merge, observe the resulting `main` commit's repository checks and applicable
+   deployed coordinates; report failures and partial promotion states instead of treating
+   the pull-request result as evidence about the rewritten or merged commit; and
+7. invoke release, tag, package publication, or branch deletion only under its separately
+   authorized procedure.
+
+The trusted pull-request policy workflow executes only protected default-branch code and
+must never check out or execute pull-request-controlled code. Any new commit invalidates the
+recorded head and acceptance. Repository automation cannot determine whether a person or an
+agent operated shared credentials, so policy ancestry and audit remain necessary alongside
+the mechanical gate.
+
+Review and merge-group event workflows may originate in candidate code. They therefore
+receive no repository permissions and serve only as notifications to the default-branch
+`workflow_run` consumer, which refetches platform identity and current evidence. Their
+conclusion and artifacts confer no authority. Missing notifications and unsupported queue
+reconstruction remain unestablished; branch protections and the hosted bootstrap drill
+remain mandatory. Checking out default-branch scripts alone does not protect a workflow
+definition loaded from a candidate commit.
+
+Bootstrap this gate without circular trust: merge the workflow itself only under the
+repository's pre-existing human and hosted-check requirements, then confirm that the
+protected default branch can evaluate a subsequent test pull request and merge-group event.
+After that bootstrap test passes, require both `conformance-gate` and `pr-policy` and configure
+the merge queue with the `ALLGREEN` grouping strategy. The trusted default-branch workflow
+emits `pr-policy` on each merge-group commit only after conservatively validating current
+exact receipts for its terminal and all earlier bounded queue entries. Unrecognized refs,
+more than 32 entries, incomplete queries, stale pull requests, and queue mutation fail closed.
+Both automatic and manual Pages paths require an already-successful
+repository-check run for the exact current default-branch commit.
+
+The live observation occurs after GitHub Pages has deployed. A failed live observation
+detects incomplete or stale promotion and supports bounded retry; it does not automatically
+roll back the deployment. Use the separately recorded prior deployment for an explicitly
+authorized rollback.
 
 ## 10. Safety
 
