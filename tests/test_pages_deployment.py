@@ -295,6 +295,25 @@ def test_local_site_validation_binds_exact_inventory_and_known_good_digest(tmp_p
     assert result["deployment_manifest_sha256"] == digest
 
 
+@pytest.mark.parametrize("mutation", ("omitted", "modified"))
+def test_retained_site_rejects_hidden_payload_loss(tmp_path: Path, mutation: str) -> None:
+    checker = _module()
+    builder = _build_module()
+    _minimal_site(checker, tmp_path)
+    hidden = tmp_path / ".nojekyll"
+    hidden.write_bytes(b"")
+    (tmp_path / checker.MANIFEST_PATH).unlink()
+    builder._write_deployment_manifest(tmp_path, source_ref=HEAD)
+    manifest_digest = hashlib.sha256((tmp_path / checker.MANIFEST_PATH).read_bytes()).hexdigest()
+    checker.validate_site_directory(tmp_path, expected_source_ref=HEAD, expected_manifest_sha256=manifest_digest)
+    if mutation == "omitted":
+        hidden.unlink()
+    else:
+        hidden.write_bytes(b"changed")
+    with pytest.raises(checker.PagesDeploymentError, match="local Pages (inventory|bytes) differ"):
+        checker.validate_site_directory(tmp_path, expected_source_ref=HEAD, expected_manifest_sha256=manifest_digest)
+
+
 def test_pages_builder_manifest_is_deterministic_and_checker_compatible(tmp_path: Path) -> None:
     checker = _module()
     builder = _build_module()

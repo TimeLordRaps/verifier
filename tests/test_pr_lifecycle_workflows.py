@@ -217,6 +217,26 @@ def test_cross_platform_skip_summary_uses_its_declared_bash_syntax() -> None:
     assert summaries[0].get("shell") == "bash"
 
 
+def test_pages_preview_retains_hidden_files_and_rechecks_downloaded_bytes() -> None:
+    workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8"))
+    steps = workflow["jobs"]["presentation"]["steps"]
+    artifact_name = "pages-preview-${{ github.sha }}"
+    upload = next(step for step in steps if step.get("with", {}).get("name") == artifact_name)
+    assert upload["uses"].startswith("actions/upload-artifact@")
+    assert upload["with"]["path"] == "_site"
+    assert upload["with"].get("include-hidden-files") is True
+    download = next(step for step in steps if step.get("uses", "").startswith("actions/download-artifact@"))
+    assert download["with"] == {"name": artifact_name, "path": "${{ runner.temp }}/vstd-pages-preview"}
+    validation = next(step for step in steps if "--validate-site" in step.get("run", ""))
+    assert steps.index(upload) < steps.index(download) < steps.index(validation)
+    assert "continue-on-error" not in validation
+    assert 'sha256sum _site/deployment-manifest.json' in validation["run"]
+    assert 'scripts/check_pages_deployment.py' in validation["run"]
+    assert '--validate-site "$RUNNER_TEMP/vstd-pages-preview"' in validation["run"]
+    assert '--expected-source-ref "$GITHUB_SHA"' in validation["run"]
+    assert '--expected-manifest-sha256 "$MANIFEST_SHA256"' in validation["run"]
+
+
 def test_pages_waits_for_successful_default_branch_checks_and_observes_live_bytes() -> None:
     path = ROOT / ".github/workflows/pages.yml"
     text = path.read_text(encoding="utf-8")
