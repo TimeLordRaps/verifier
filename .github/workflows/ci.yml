@@ -395,6 +395,7 @@ jobs:
           platform-environment.json platform-contracts.xml
       - name: Publish skipped tests and reasons in the run summary
         if: always() && steps.platform-evidence-boundary.outcome == 'success'
+        shell: bash
         run: >-
           python scripts/summarize_test_skips.py platform-contracts.xml
           --coordinate ${{ matrix.coordinate }}

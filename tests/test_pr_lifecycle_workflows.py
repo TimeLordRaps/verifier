@@ -201,6 +201,22 @@ def test_repository_checks_cover_merge_queue_and_publish_skip_reasons() -> None:
         assert f"name: {artifact_prefix}-${{{{ github.run_id }}}}-${{{{ github.run_attempt }}}}-" in text
 
 
+def test_cross_platform_skip_summary_uses_its_declared_bash_syntax() -> None:
+    workflow = yaml.safe_load(
+        (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    )
+    job = workflow["jobs"]["platform-python-contracts"]
+    summaries = [
+        step for step in job["steps"]
+        if "summarize_test_skips.py" in step.get("run", "")
+    ]
+    assert len(summaries) == 1
+    assert '--append-output "$GITHUB_STEP_SUMMARY"' in summaries[0]["run"]
+    # The Windows runner otherwise selects PowerShell, where this is not an
+    # environment-variable reference and the output path becomes empty.
+    assert summaries[0].get("shell") == "bash"
+
+
 def test_pages_waits_for_successful_default_branch_checks_and_observes_live_bytes() -> None:
     path = ROOT / ".github/workflows/pages.yml"
     text = path.read_text(encoding="utf-8")
