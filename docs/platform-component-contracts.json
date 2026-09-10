@@ -61,6 +61,171 @@
       }
     },
     {
+      "component_id": "component:artifact-network-authority-composition-assessor",
+      "label": "Experimental finite authority-composition assessor",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_authority_composition.py", "tests/test_authority_composition_catalog.py"],
+      "test_scope": "Exercise exact member/composite commit and authority-model binding, bounded reachable asynchronous-interleaving correspondence, distinct negative and unknown preservation, and inert package-to-index-to-planning/readiness integration. Passing does not establish source grounding, self-derivation, stronger completeness, runtime correspondence, general agency, TypeScript support, or a six-axis status upgrade.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-composition-declaration-decoder",
+      "label": "Experimental strict silo-composition declaration decoder",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_silo_composition_fixture.py", "tests/test_silo_composition_receipt.py"],
+      "test_scope": "Exercise exact VSTD-SILO-COMPOSITION-0.1 declaration decoding, including canonical member ordering, unique bounded commit digests, strict fields, and optional composite binding. Passing does not resolve commit bytes, check general graph edges, establish TypeScript support, or grant composition admissibility.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-composition-receipt-builder",
+      "label": "Experimental silo-composition assessment receipt builder",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_silo_composition_fixture.py", "tests/test_silo_composition_receipt.py"],
+      "test_scope": "Exercise construction of a declaration-, mechanism-, member-receipt-, optional-composite-, and assessment-bound VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1 record from current local stores. Passing does not provide an independently implemented checker, check general graph edges, establish TypeScript support, or prove artifact truth.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-composition-receipt-rechecker",
+      "label": "Experimental silo-composition assessment receipt rechecker",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_silo_composition_fixture.py", "tests/test_silo_composition_receipt.py"],
+      "test_scope": "Exercise strict receipt decoding and independent full recomputation against the exact declaration, mechanism bytes, resolved member silos, optional composite silo, nested receipts, typed assessment, and canonical bytes. Passing establishes agreement with the same Python reference mechanism only; it does not establish implementation independence, a general graph-edge checker, TypeScript support, or artifact truth.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-proposition-transfer-assessor",
+      "label": "Experimental finite-set proposition-transfer assessor",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_proposition_transfer.py", "tests/test_proposition_transfer_catalog.py", "tests/test_proposition_transfer_fixture.py"],
+      "test_scope": "Exercise exact declaration, commit, census, artifact and context binding, bounded finite-set predicates and transfer, profile mismatch, negative and unknown preservation, and package-to-index-to-planning/readiness integration. Passing does not establish runtime availability from a catalog match, preserved agency, general deduction, six-axis silo completeness, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-proposition-transfer-rechecker",
+      "label": "Experimental finite-set proposition-transfer receipt rechecker",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_proposition_transfer.py", "tests/test_proposition_transfer_catalog.py", "tests/test_proposition_transfer_fixture.py"],
+      "test_scope": "Exercise exact complete semantic receipt recomputation using the same Python reference mechanism, including reproduced negative and unknown fields, declaration/profile binding refusal, replay mismatch distinct from negation, and nonexecuting package-bound planning. Passing does not establish independent implementation, execution identity, preserved agency, general deduction, six-axis silo completeness, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-transfer-materializer",
+      "label": "Experimental artifact-network transfer materializer",
+      "dependency_profiles": ["seal", "test"],
+      "catalog_optional_dependencies": ["cryptography for Ed25519 signature verification"],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_artifact_network.py"],
+      "test_scope": "Exercise canonical signed-transfer parsing, exact object closure, publisher and key continuity, signature validation, assessment recomputation, native export materialization, cloning, rebuilding, and adversarial substitution and bound rejection. A successful hosted run establishes only those mechanisms at its exact recorded runner, interpreter, source, catalog, and manifest coordinates; it does not establish a deployed endpoint, publisher identity, artifact truth, external interoperability, or untested platform behavior.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-typed-formation-checker",
+      "label": "Experimental finite typed-formation certificate checker",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_formation_catalog.py", "tests/test_formation_resources.py", "tests/test_formation_storage.py", "tests/test_typed_formation.py"],
+      "test_scope": "Exercise independent finite constructor checking, exact subject and certificate binding, ordered path endpoints, retained quotation history, malformed records, unsupported profiles, bounds, inert package-to-planning integration, stored-silo coordinate binding and separate census-byte retention. Passing does not establish source self-derivation, completeness, agency preservation, TypeScript support or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-typed-formation-producer",
+      "label": "Experimental finite typed-formation certificate producer",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_formation_catalog.py", "tests/test_formation_resources.py", "tests/test_typed_formation.py"],
+      "test_scope": "Exercise bounded finite proof-step production and independent rechecking, exact compiled profile and packaged resources, failure and unsupported interpretation, and inert package-to-planning integration. Producing a certificate does not establish source self-derivation, completeness, agency preservation, TypeScript support or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-typed-formation-receipt-rechecker",
+      "label": "Experimental finite-formation receipt rechecker",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_formation_catalog.py", "tests/test_formation_receipt.py", "tests/test_formation_receipt_resources.py"],
+      "test_scope": "Exercise exact selection, actual observed census bytes including substitutions, complete canonical replay, preserved negative and unknown reports, hostile input bounds, packaged resources and nonexecuting package-bound planning/readiness. Passing does not establish source self-derivation, stronger completeness, grounding, agency preservation, independent execution or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-typed-formation-session-mechanism",
+      "label": "Experimental typed-formation native session adapter",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_formation_catalog.py", "tests/test_formation_mechanism.py", "tests/test_session_binding_snapshots.py", "tests/test_typed_formation.py"],
+      "test_scope": "Exercise exact native proposition, implementation, predicate, context, assumption roots, ordered byte references and execution bounds, caller and invocation mutation refusal, and nonexecuting package-bound readiness. Passing does not establish source self-derivation, completeness, agency preservation, TypeScript support or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
       "component_id": "component:composed-untraversability-analyzer",
       "label": "Experimental composed-graph untraversability analyzer",
       "dependency_profiles": ["test"],

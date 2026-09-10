@@ -1,0 +1,773 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-silo-formation-receipt-0.1.schema.json",
+  "title": "Experimental portable formation selection and receipt",
+  "description": "Verifier Standard (VSTD) structural JavaScript Object Notation (JSON) Schema only. Canonical bytes, sorted-set order, requested-digest uniqueness, byte budgets, actual evidence identity, selection/profile/report correspondence and fresh reproduction require the bounded mechanism. Schema admission establishes no self-derivation, completeness, grounding, authority axiom agency preservation or execution.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/selection"
+    },
+    {
+      "$ref": "#/$defs/receipt"
+    }
+  ],
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "minLength": 71,
+      "maxLength": 71,
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "index": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1023
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^(?!(?:[cC][oO][nN]|[pP][rR][nN]|[aA][uU][xX]|[nN][uU][lL]|[cC][oO][mM][1-9]|[lL][pP][tT][1-9])(?:\\.|/|$))[A-Za-z0-9_.-]*[A-Za-z0-9_-](?:/(?!(?:[cC][oO][nN]|[pP][rR][nN]|[aA][uU][xX]|[nN][uU][lL]|[cC][oO][mM][1-9]|[lL][pP][tT][1-9])(?:\\.|/|$))[A-Za-z0-9_.-]*[A-Za-z0-9_-])*(?![\\s\\S])"
+    },
+    "residuals": {
+      "const": [
+        "SOURCE_INTERPRETATION_NOT_ESTABLISHED",
+        "GROUND_DERIVATION_NOT_ESTABLISHED",
+        "SOURCE_TRACE_RELATION_NOT_ESTABLISHED",
+        "SOURCE_LAYER_BOUNDARY_NOT_ESTABLISHED",
+        "SELF_STATUS_NOT_ESTABLISHED",
+        "GLOBAL_CYCLE_NOT_ESTABLISHED",
+        "COMPLETENESS_NOT_ESTABLISHED",
+        "AGENCY_NOT_CHECKED"
+      ]
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "commit_digest",
+        "subject_path",
+        "certificate_path",
+        "profile_path",
+        "ground_path"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "VSTD-SILO-FORMATION-SELECTION-0.1"
+        },
+        "commit_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "subject_path": {
+          "$ref": "#/$defs/path"
+        },
+        "certificate_path": {
+          "$ref": "#/$defs/path"
+        },
+        "profile_path": {
+          "$ref": "#/$defs/path"
+        },
+        "ground_path": {
+          "$ref": "#/$defs/path"
+        }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "denotation_digest",
+        "source_digest",
+        "target_digest",
+        "path_steps",
+        "quote_rank",
+        "required_depth",
+        "formation_digest",
+        "dependency_nodes",
+        "quote_origins"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "FORM",
+            "PATH",
+            "CODE(FORM)",
+            "CODE(PATH)",
+            "CODE(CODE(FORM))",
+            "CODE(CODE(PATH))",
+            "CODE(CODE(CODE(FORM)))",
+            "CODE(CODE(CODE(PATH)))",
+            "CODE(CODE(CODE(CODE(FORM))))",
+            "CODE(CODE(CODE(CODE(PATH))))",
+            "CODE(CODE(CODE(CODE(CODE(FORM)))))",
+            "CODE(CODE(CODE(CODE(CODE(PATH)))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(FORM))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))",
+            "CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(CODE(PATH))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+          ]
+        },
+        "denotation_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "source_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "path_steps": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source_digest",
+              "target_digest"
+            ],
+            "properties": {
+              "source_digest": {
+                "$ref": "#/$defs/digest"
+              },
+              "target_digest": {
+                "$ref": "#/$defs/digest"
+              }
+            }
+          }
+        },
+        "quote_rank": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 64
+        },
+        "required_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "formation_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "dependency_nodes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1024,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/index"
+          }
+        },
+        "quote_origins": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 1024,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/index"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "PATH"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source_digest": {
+                "$ref": "#/$defs/digest"
+              },
+              "target_digest": {
+                "$ref": "#/$defs/digest"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "source_digest": {
+                "type": "null"
+              },
+              "target_digest": {
+                "type": "null"
+              },
+              "path_steps": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "formation_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "subject_digest",
+        "profile_digest",
+        "root",
+        "observation",
+        "reason_codes",
+        "residual_obligations"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "CHECKED",
+            "INVALID",
+            "UNKNOWN"
+          ]
+        },
+        "subject_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "profile_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "root": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/index"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/observation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 0,
+          "maxItems": 6,
+          "items": {
+            "enum": [
+              "FORMATION_RECORD_INVALID",
+              "FORMATION_CERTIFICATE_BINDING_INVALID",
+              "FORMATION_CERTIFICATE_STEP_INVALID",
+              "FORMATION_RULE_INVALID",
+              "FORMATION_PROFILE_UNSUPPORTED",
+              "FORMATION_LIMIT_EXCEEDED"
+            ]
+          }
+        },
+        "residual_obligations": {
+          "$ref": "#/$defs/residuals"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "subject_digest": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "root": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "root": {
+                "$ref": "#/$defs/index"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "CHECKED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "subject_digest": {
+                "$ref": "#/$defs/digest"
+              },
+              "root": {
+                "$ref": "#/$defs/index"
+              },
+              "observation": {
+                "$ref": "#/$defs/observation"
+              },
+              "reason_codes": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "observation": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "INVALID"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reason_codes": {
+                "type": "array",
+                "uniqueItems": true,
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "enum": [
+                    "FORMATION_RECORD_INVALID",
+                    "FORMATION_CERTIFICATE_BINDING_INVALID",
+                    "FORMATION_CERTIFICATE_STEP_INVALID",
+                    "FORMATION_RULE_INVALID"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "UNKNOWN"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reason_codes": {
+                "type": "array",
+                "uniqueItems": true,
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "enum": [
+                    "FORMATION_PROFILE_UNSUPPORTED",
+                    "FORMATION_LIMIT_EXCEEDED"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "coordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "object_digest"
+      ],
+      "properties": {
+        "path": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/path"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "object_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "coordinates": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "subject",
+            "certificate",
+            "profile",
+            "ground"
+          ],
+          "properties": {
+            "subject": {
+              "$ref": "#/$defs/coordinate"
+            },
+            "certificate": {
+              "$ref": "#/$defs/coordinate"
+            },
+            "profile": {
+              "$ref": "#/$defs/coordinate"
+            },
+            "ground": {
+              "$ref": "#/$defs/coordinate"
+            }
+          }
+        }
+      ]
+    },
+    "inspection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit_digest",
+        "profile_digest",
+        "coordinates",
+        "coordinate_binding",
+        "snapshot_retention",
+        "agency_declaration",
+        "formation_report",
+        "reason_codes",
+        "residual_obligations"
+      ],
+      "properties": {
+        "commit_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "profile_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "coordinates": {
+          "$ref": "#/$defs/coordinates"
+        },
+        "coordinate_binding": {
+          "enum": [
+            "BOUND",
+            "INVALID",
+            "UNKNOWN"
+          ]
+        },
+        "snapshot_retention": {
+          "enum": [
+            "COMPLETE",
+            "INCOMPLETE",
+            "INVALID",
+            "UNKNOWN"
+          ]
+        },
+        "agency_declaration": {
+          "enum": [
+            "MATCHED",
+            "INVALID",
+            "UNKNOWN"
+          ]
+        },
+        "formation_report": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/formation_report"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 0,
+          "maxItems": 25,
+          "items": {
+            "enum": [
+              "AGENCY_DECLARATION_DIGEST_MISMATCH",
+              "AGENCY_DECLARATION_UNSUPPORTED",
+              "CENSUS_OBJECT_MISSING",
+              "CERTIFICATE_COORDINATE_MISMATCH",
+              "COMMIT_INVALID",
+              "COMMIT_UNSUPPORTED_OR_LIMITED",
+              "EVIDENCE_ENTRY_LIMIT",
+              "EVIDENCE_MAPPING_INVALID",
+              "EVIDENCE_MAPPING_UNSUPPORTED",
+              "EVIDENCE_SNAPSHOT_UNAVAILABLE",
+              "FORMATION_PROFILE_UNSUPPORTED",
+              "FORMATION_RECORD_INVALID",
+              "FORMATION_RECORD_UNSUPPORTED_OR_LIMITED",
+              "OBJECT_BYTES_INVALID",
+              "OBJECT_DIGEST_MISMATCH",
+              "OBJECT_SIZE_MISMATCH",
+              "SELECTED_GROUND_NOT_DECLARED",
+              "SELECTED_OBJECT_UNAVAILABLE",
+              "SELECTED_PATH_INVALID",
+              "SELECTED_PATH_NOT_IN_CENSUS",
+              "SELECTED_ROLE_DECLARATION_INVALID",
+              "SNAPSHOT_BYTE_LIMIT",
+              "SUBJECT_AGENCY_CONTEXT_MISMATCH",
+              "SUBJECT_GROUND_CONTEXT_MISMATCH",
+              "SUBJECT_PROFILE_COORDINATE_MISMATCH"
+            ]
+          }
+        },
+        "residual_obligations": {
+          "$ref": "#/$defs/residuals"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "coordinates": {
+                "maxProperties": 0
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "commit_digest": {
+                "type": "null"
+              },
+              "formation_report": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "commit_digest": {
+                "$ref": "#/$defs/digest"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested_digest",
+        "observed_digest",
+        "size_bytes"
+      ],
+      "properties": {
+        "requested_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "observed_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4194304
+        }
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "selection",
+        "selection_digest",
+        "rule_profile_digest",
+        "observed_evidence",
+        "inspection"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "VSTD-SILO-FORMATION-RECEIPT-0.1"
+        },
+        "selection": {
+          "$ref": "#/$defs/selection"
+        },
+        "selection_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "rule_profile_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "observed_evidence": {
+          "type": "array",
+          "maxItems": 256,
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "inspection": {
+          "$ref": "#/$defs/inspection"
+        }
+      }
+    }
+  }
+}

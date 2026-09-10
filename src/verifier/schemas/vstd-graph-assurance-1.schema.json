@@ -1,0 +1,278 @@
+{
+  "$comment": "Terminology: Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD). TRUST, RUST, and ROT are formal semantic names, not acronyms.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json",
+  "title": "VSTD-Graph Assurance Event Log",
+  "description": "Strict shape for the additive, hash-chained reference event log. Schema validity establishes shape only. Mechanism outcomes must be replayed from the embedded evidence with the exact bound mechanism implementation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "historical_graph_digest", "historical_graph", "events", "conflict_resolutions", "current_view_digest"],
+  "properties": {
+    "schema_version": {"const": "VSTD-GRAPH-ASSURANCE-1"},
+    "historical_graph_digest": {"$ref": "#/$defs/digest"},
+    "historical_graph": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd_graph_receipt.json#/properties/hypergraph"},
+    "events": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/event"}
+    },
+    "conflict_resolutions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/resolution"}
+    },
+    "current_view_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "digestRef": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "outcome", "mechanism_id", "mechanism_digest", "evidence_refs", "trust_roots", "observed_evidence_bytes", "details", "observations"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "outcome": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "mechanism_id": {"type": "string", "minLength": 1},
+        "mechanism_digest": {"$ref": "#/$defs/digestRef"},
+        "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digestRef"}},
+        "trust_roots": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "observed_evidence_bytes": {"type": "integer", "minimum": 0},
+        "details": {"type": "string"},
+        "observations": {"type": "object"}
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "kind", "subject_id", "source_ids", "proposition", "binding", "recorded_at", "outcome", "mechanism_id", "mechanism_digest", "evidence_refs", "evidence_payloads", "trust_roots", "details", "previous_event_digest", "attributes", "event_digest"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 0},
+        "kind": {"enum": ["TRUST", "ROT", "RUST", "STATUS_PROJECTION", "CONFLICT_DECLARATION", "CONFLICT_RESOLUTION", "CAUSAL_LOCALIZATION", "RESPONSIBILITY_COMPONENT", "OBLIGATION_APPLICABILITY", "OBLIGATION_VIOLATION", "DIAGNOSTIC_ATTRIBUTION"]},
+        "subject_id": {"type": "string", "minLength": 1},
+        "source_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "proposition": {"type": "string", "minLength": 1},
+        "binding": {"$ref": "#/$defs/binding"},
+        "recorded_at": {"type": "string", "minLength": 1},
+        "outcome": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "mechanism_id": {"type": "string", "minLength": 1},
+        "mechanism_digest": {"$ref": "#/$defs/digestRef"},
+        "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digestRef"}},
+        "evidence_payloads": {
+          "type": "object",
+          "propertyNames": {"pattern": "^sha256:[0-9a-f]{64}$"},
+          "additionalProperties": {"type": "string", "contentEncoding": "base64"}
+        },
+        "trust_roots": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "details": {"type": "string"},
+        "previous_event_digest": {"type": "string", "pattern": "^(?:[0-9a-f]{64})?$"},
+        "attributes": {"type": "object"},
+        "event_digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "TRUST"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/trustAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "CONFLICT_DECLARATION"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/conflictAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "CONFLICT_RESOLUTION"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/resolutionAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "CAUSAL_LOCALIZATION"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/localizationAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "RESPONSIBILITY_COMPONENT"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/responsibilityAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "OBLIGATION_APPLICABILITY"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/applicabilityAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "OBLIGATION_VIOLATION"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/violationAttributes"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "DIAGNOSTIC_ATTRIBUTION"}}, "required": ["kind"]},
+          "then": {"properties": {"attributes": {"$ref": "#/$defs/diagnosticAttributes"}}}
+        }
+      ]
+    },
+    "trustAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "historical_graph_digest", "inputs", "output", "prerequisite_trust_event_digests", "transformation_id"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "historical_graph_digest": {"$ref": "#/$defs/digest"},
+        "inputs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "output": {"type": "string", "minLength": 1},
+        "prerequisite_trust_event_digests": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+        "transformation_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "conflictAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "conflict"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "conflict": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["conflict_id", "subject_id", "predicate", "competing_values", "evidence_refs"],
+          "properties": {
+            "conflict_id": {"type": "string", "minLength": 1},
+            "subject_id": {"type": "string", "minLength": 1},
+            "predicate": {"type": "string", "minLength": 1},
+            "competing_values": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}},
+            "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+          }
+        }
+      }
+    },
+    "resolutionAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "conflict_id", "selected_value", "resolution_id"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "conflict_id": {"type": "string", "minLength": 1},
+        "selected_value": {"type": "string"},
+        "resolution_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "localizationAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "rust_event_digest", "deviation_binding_digest"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "rust_event_digest": {"$ref": "#/$defs/digest"},
+        "deviation_binding_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "obligationCoordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligation_id", "content_digest", "scope", "assumptions", "exclusions"],
+      "properties": {
+        "obligation_id": {"type": "string"},
+        "content_digest": {"type": "string", "pattern": "^(?:sha256:[0-9a-f]{64})?$"},
+        "scope": {"type": "object", "minProperties": 1, "propertyNames": {"minLength": 1}, "additionalProperties": {"type": "string", "minLength": 1}},
+        "assumptions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "exclusions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      },
+      "anyOf": [
+        {"properties": {"obligation_id": {"type": "string", "minLength": 1}}},
+        {"properties": {"content_digest": {"$ref": "#/$defs/digestRef"}}}
+      ]
+    },
+    "responsibilityAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "ancestor_id", "descendant_id", "localization_event_digest", "rust_event_digest", "deviation_binding_digest"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "ancestor_id": {"type": "string", "minLength": 1},
+        "descendant_id": {"type": "string", "minLength": 1},
+        "localization_event_digest": {"$ref": "#/$defs/digest"},
+        "rust_event_digest": {"$ref": "#/$defs/digest"},
+        "deviation_binding_digest": {"$ref": "#/$defs/digest"},
+        "compound_group_digest": {"$ref": "#/$defs/digest"},
+        "compound_component_index": {"const": 0}
+      },
+      "dependentRequired": {"compound_group_digest": ["compound_component_index"], "compound_component_index": ["compound_group_digest"]}
+    },
+    "applicabilityAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "artifact_id", "obligation_coordinate"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "artifact_id": {"type": "string", "minLength": 1},
+        "obligation_coordinate": {"$ref": "#/$defs/obligationCoordinate"},
+        "compound_group_digest": {"$ref": "#/$defs/digest"},
+        "compound_component_index": {"const": 1}
+      },
+      "dependentRequired": {"compound_group_digest": ["compound_component_index"], "compound_component_index": ["compound_group_digest"]}
+    },
+    "violationAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "artifact_id", "descendant_id", "localization_event_digest", "rust_event_digest", "deviation_binding_digest", "obligation_coordinate", "applicability_binding_digest", "applicability_component_digest"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "artifact_id": {"type": "string", "minLength": 1},
+        "descendant_id": {"type": "string", "minLength": 1},
+        "localization_event_digest": {"$ref": "#/$defs/digest"},
+        "rust_event_digest": {"$ref": "#/$defs/digest"},
+        "deviation_binding_digest": {"$ref": "#/$defs/digest"},
+        "obligation_coordinate": {"$ref": "#/$defs/obligationCoordinate"},
+        "applicability_binding_digest": {"$ref": "#/$defs/digest"},
+        "applicability_component_digest": {"$ref": "#/$defs/digest"},
+        "compound_group_digest": {"$ref": "#/$defs/digest"},
+        "compound_component_index": {"const": 2}
+      },
+      "dependentRequired": {"compound_group_digest": ["compound_component_index"], "compound_component_index": ["compound_group_digest"]}
+    },
+    "diagnosticAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_digest", "diagnostic_kind", "localization_event_digest"],
+      "properties": {
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "diagnostic_kind": {"enum": ["BLAME", "GUILT"]},
+        "localization_event_digest": {"$ref": "#/$defs/digest"},
+        "obligation_coordinate": {"$ref": "#/$defs/obligationCoordinate"},
+        "responsibility_component_digest": {"$ref": "#/$defs/digest"},
+        "applicability_component_digest": {"$ref": "#/$defs/digest"},
+        "violation_component_digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [{
+        "if": {"properties": {"diagnostic_kind": {"const": "GUILT"}}, "required": ["diagnostic_kind"]},
+        "then": {"required": ["obligation_coordinate", "responsibility_component_digest", "applicability_component_digest", "violation_component_digest"]}
+      }]
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_id", "predicate", "expected", "mechanism_id", "mechanism_digest", "evidence_refs", "trust_roots", "bounds", "parameters"],
+      "properties": {
+        "subject_id": {"type": "string", "minLength": 1},
+        "predicate": {"type": "string", "minLength": 1},
+        "expected": {},
+        "mechanism_id": {"type": "string", "minLength": 1},
+        "mechanism_digest": {"$ref": "#/$defs/digestRef"},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/digestRef"}},
+        "trust_roots": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "bounds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["max_evidence_items", "max_evidence_bytes"],
+          "properties": {
+            "max_evidence_items": {"type": "integer", "minimum": 0},
+            "max_evidence_bytes": {"type": "integer", "minimum": 0}
+          }
+        },
+        "parameters": {"type": "object", "additionalProperties": {"type": "string"}}
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resolution_id", "conflict_id", "selected_value", "recorded_at", "evaluation"],
+      "properties": {
+        "resolution_id": {"type": "string", "minLength": 1},
+        "conflict_id": {"type": "string", "minLength": 1},
+        "selected_value": {"type": "string"},
+        "recorded_at": {"type": "string", "minLength": 1},
+        "evaluation": {"$ref": "#/$defs/evaluation"}
+      }
+    }
+  }
+}

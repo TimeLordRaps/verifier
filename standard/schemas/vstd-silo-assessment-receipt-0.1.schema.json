@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-silo-assessment-receipt-0.1.schema.json",
+  "title": "Verifier Standard (VSTD) experimental silo-assessment receipt",
+  "description": "Non-circular commit and mechanism binding; it does not strengthen the nested result.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "commit_digest", "mechanism_digest", "assessment"],
+  "properties": {
+    "schema_version": {"const": "VSTD-SILO-ASSESSMENT-RECEIPT-0.1"},
+    "commit_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "mechanism_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "assessment": {"$ref": "vstd-silo-assessment-0.1.schema.json"}
+  }
+}

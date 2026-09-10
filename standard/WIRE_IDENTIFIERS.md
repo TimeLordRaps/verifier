@@ -89,6 +89,69 @@ and its strict schema is
 [`vstd-graph-assurance-1.schema.json`](https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json).
 It is not an artifact-control object or a numbered-profile receipt.
 
+Experimental verification-artifact network records dispatch independently as:
+
+| Object | `schema_version` |
+|---|---|
+| Exact retained object declaration | `VSTD-OBJECT-0.1` |
+| Complete-snapshot publisher commit | `VSTD-SILO-COMMIT-0.1` |
+| Interpreted structural self-derivation mechanism | `VSTD-SELF-DERIVATION-MECHANISM-0.1` |
+| Finite authority-transition model | `VSTD-AUTHORITY-MODEL-0.1` |
+| Finite authority-composition declaration | `VSTD-FINITE-AUTHORITY-COMPOSITION-0.1` |
+| Finite authority-composition rule profile | `VSTD-FINITE-AUTHORITY-COMPOSITION-PROFILE-0.1` |
+| Finite authority-composition result | `VSTD-FINITE-AUTHORITY-COMPOSITION-RESULT-0.1` |
+| Signed selected head | `VSTD-SIGNED-HEAD-0.1` |
+| Key-derived publisher declaration | `VSTD-PUBLISHER-0.1` |
+| Dual-signed key continuity | `VSTD-KEY-CONTINUITY-0.1` |
+| Signed discovery directory | `VSTD-DIRECTORY-SNAPSHOT-0.1` |
+| Six-axis silo assessment | `VSTD-SILO-ASSESSMENT-0.1` |
+| Commit/mechanism-bound assessment receipt | `VSTD-SILO-ASSESSMENT-RECEIPT-0.1` |
+| Exact silo-composition declaration | `VSTD-SILO-COMPOSITION-0.1` |
+| Reference silo-composition mechanism | `VSTD-SILO-COMPOSITION-MECHANISM-0.1` |
+| Typed silo-composition assessment | `VSTD-SILO-COMPOSITION-ASSESSMENT-0.1` |
+| Declaration/mechanism/evidence-bound composition receipt | `VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1` |
+| Deterministic silo export manifest | `VSTD-SILO-EXPORT-0.1` |
+| Bounded single-snapshot transport envelope | `VSTD-SILO-TRANSFER-0.1` |
+| Host-neutral push request | `VSTD-PUSH-REQUEST-0.1` |
+| Exact proposition-transfer declaration | `VSTD-PROPOSITION-TRANSFER-0.1` |
+| Compiled mathematical transfer rule profile | `VSTD-PROPOSITION-TRANSFER-RULE-0.1` |
+| Rule-specific portable assessment | `VSTD-PROPOSITION-TRANSFER-ASSESSMENT-0.1` |
+| Recomputable semantic transfer receipt (not execution identity) | `VSTD-PROPOSITION-TRANSFER-RECEIPT-0.1` |
+| Inert canonical finite-set specimen | `VSTD-CANONICAL-FINITE-SET-0.1` |
+| Finite typed-formation subject | `VSTD-TYPED-FORMATION-0.1` |
+| Independently checked formation certificate | `VSTD-TYPED-FORMATION-CERTIFICATE-0.1` |
+| Inert compiled formation rule profile | `VSTD-TYPED-FORMATION-PROFILE-0.1` |
+| Exact commit and census-path formation selection | `VSTD-SILO-FORMATION-SELECTION-0.1` |
+| Observed-evidence-bound portable formation inspection receipt | `VSTD-SILO-FORMATION-RECEIPT-0.1` |
+
+These alpha identifiers are stored non-receipt mechanism objects. They do not
+claim numbered-profile conformance, publisher identity beyond key control,
+artifact correctness, semantic completeness, or authority merely because they
+are schema-valid or listed by a directory.
+
+The separate [typed formation](TYPED_FORMATION.md) contract checks finite
+constructor types, ordered paths and evidence-retaining quotation. Its CHECKED
+result never upgrades source self-status, completeness or authority axiom agency.
+
+The [formation receipt](FORMATION_RECEIPT.md) additionally binds exact selection
+and actually observed census bytes. Fresh reproduction can reproduce a negative
+or unknown report; it does not establish execution, complete source derivation,
+stronger completeness, grounding or authority axiom agency preservation.
+
+`VSTD-AUTHORITY-MODEL-0.1` binds a finite declared state and transition
+universe, the canonical actor-scope vocabulary, and additive local authority
+records. Only the registered interpreter may return `PRESERVED`, and only over
+the exact reachable declared graph. Static action metadata, an open model, or
+unmodeled runtime behavior remains `UNKNOWN`; reachable removal of a canonical
+ground action is `VIOLATED`.
+
+The separate [finite authority-composition](FINITE_AUTHORITY_COMPOSITION.md)
+contract checks an explicitly selected, bounded asynchronous-interleaving model
+product. Coordinate binding, transition correspondence, agency preservation and
+local-addition preservation remain distinct results. It does not establish
+runtime correspondence, source self-derivation, stronger completeness, general
+composed agency, or any change to the existing six-axis silo assessment.
+
 ## 3. Import package and distribution
 
 The distribution is `verifier-standard`, the import package is `verifier`, and

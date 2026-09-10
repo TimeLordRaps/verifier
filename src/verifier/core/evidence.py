@@ -17,10 +17,18 @@ prevents a different declared digest from substituting after the proposition was
 bound. Built-in mechanisms derive that digest from their exact module bytes. An
 external mechanism remains responsible for truthfully deriving its advertised
 implementation digest; the session cannot infer arbitrary plugin source identity.
+
+Evaluation owns a deep-copied proposition snapshot and gives mechanisms a second
+copy. Results bind the private snapshot, never a caller's later dictionary state.
+This preserves ordinary canonical values and their types, not an atomic capture
+of concurrently changing inputs or a sandbox for arbitrary Python copy hooks.
+Failure to obtain a digestible snapshot raises EvidenceBindingError before any
+mechanism runs; a mechanism changing its invocation copy yields UNKNOWN.
 """
 
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 import base64
@@ -278,6 +286,7 @@ class VerificationSession:
         self._mechanisms[mechanism.mechanism_id] = mechanism
 
     def evaluate(self, binding: BoundProposition) -> EvaluatedProposition:
+        binding, binding_digest = self._snapshot_binding(binding)
         mechanism = self._mechanisms.get(binding.mechanism_id)
         if mechanism is None:
             return self._unknown(binding, "bound mechanism is not registered", 0)
@@ -297,7 +306,12 @@ class VerificationSession:
             return self._unknown(binding, "evidence byte bound exceeded", observed_bytes)
 
         try:
-            decision = mechanism.evaluate(binding, payloads)
+            execution_binding, execution_digest = self._snapshot_binding(binding)
+            if execution_digest != binding_digest:
+                return self._unknown(binding, "execution snapshot differs from binding", observed_bytes)
+            decision = mechanism.evaluate(execution_binding, payloads)
+            if execution_binding.digest() != binding_digest:
+                return self._unknown(binding, "mechanism changed its binding snapshot", observed_bytes)
         except Exception as exc:  # A mechanism crash is uncertainty, not a pass.
             return self._unknown(
                 binding,
@@ -309,7 +323,7 @@ class VerificationSession:
                 binding, "mechanism returned an invalid decision object", observed_bytes
             )
         return EvaluatedProposition(
-            binding.digest(),
+            binding_digest,
             decision.outcome,
             binding.mechanism_id,
             _normalize_ref(binding.mechanism_digest),
@@ -331,7 +345,9 @@ class VerificationSession:
         ordinary evaluations are not relabeled as one compound invocation.
         """
 
-        items = tuple(bindings)
+        snapshots = tuple(self._snapshot_binding(item) for item in tuple(bindings))
+        items = tuple(item for item, _ in snapshots)
+        binding_digests = tuple(digest for _, digest in snapshots)
         if not items:
             raise EvidenceBindingError(
                 "compound evaluation requires at least one bound proposition"
@@ -415,7 +431,13 @@ class VerificationSession:
             observed_sizes.append(observed_bytes)
 
         try:
-            decisions = tuple(evaluator(items, tuple(evidence_sets)))
+            execution_snapshots = tuple(self._snapshot_binding(item) for item in items)
+            execution_items = tuple(item for item, _ in execution_snapshots)
+            if tuple(digest for _, digest in execution_snapshots) != binding_digests:
+                raise EvidenceBindingError("compound execution snapshots differ from bindings")
+            decisions = tuple(evaluator(execution_items, tuple(evidence_sets)))
+            if tuple(item.digest() for item in execution_items) != binding_digests:
+                raise EvidenceBindingError("compound mechanism changed a binding snapshot")
         except Exception as exc:
             return tuple(
                 self._unknown(
@@ -438,7 +460,7 @@ class VerificationSession:
             )
         return tuple(
             EvaluatedProposition(
-                item.digest(),
+                binding_digests[index],
                 decision.outcome,
                 item.mechanism_id,
                 _normalize_ref(item.mechanism_digest),
@@ -450,6 +472,14 @@ class VerificationSession:
             )
             for index, (item, decision) in enumerate(zip(items, decisions))
         )
+
+    @staticmethod
+    def _snapshot_binding(binding: BoundProposition) -> tuple[BoundProposition, str]:
+        try:
+            owned = deepcopy(binding)
+            return owned, owned.digest()
+        except Exception as exc:
+            raise EvidenceBindingError("cannot obtain a digestible binding snapshot") from exc
 
     @staticmethod
     def _unknown(

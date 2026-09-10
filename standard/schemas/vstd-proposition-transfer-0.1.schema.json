@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-proposition-transfer-0.1.schema.json",
+  "title": "Verifier Standard experimental proposition-transfer records",
+  "description": "Structural validation only for Verifier Standard (VSTD). Exact canonical bytes, Unicode Transformation Format, 8-bit (UTF-8) ordering/length, membership and context binding, premise truth, transfer preservation, bounds, and receipt recomputation require the registered mechanism. No execution identity or authority is established by this schema.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/declaration"
+    },
+    {
+      "$ref": "#/$defs/assessment"
+    },
+    {
+      "$ref": "#/$defs/receipt"
+    },
+    {
+      "$ref": "#/$defs/rule_profile"
+    },
+    {
+      "$ref": "#/$defs/finite_set"
+    }
+  ],
+  "$defs": {
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_scope",
+        "actor_scope",
+        "agency_digest",
+        "authority_model_digest",
+        "assumptions",
+        "exclusions"
+      ],
+      "properties": {
+        "semantic_scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Maximum 256 UTF-8 bytes; the mechanism also enforces normalization and byte limits."
+        },
+        "actor_scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Maximum 256 UTF-8 bytes; the mechanism also enforces normalization and byte limits."
+        },
+        "agency_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        },
+        "authority_model_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "minLength": 71,
+              "maxLength": 71
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assumptions": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Maximum 256 UTF-8 bytes; the mechanism also enforces normalization and byte limits."
+          },
+          "description": "Strict lexicographic UTF-8 byte order is checked by the decoder."
+        },
+        "exclusions": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Maximum 256 UTF-8 bytes; the mechanism also enforces normalization and byte limits."
+          },
+          "description": "Strict lexicographic UTF-8 byte order is checked by the decoder."
+        }
+      }
+    },
+    "proposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit_digest",
+        "artifact_digest",
+        "artifact_path",
+        "size_bytes",
+        "predicate_id",
+        "facet",
+        "parameters",
+        "context"
+      ],
+      "properties": {
+        "commit_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        },
+        "artifact_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        },
+        "artifact_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*$",
+          "description": "The existing network portable-path decoder additionally rejects traversal, reserved names, and aliases."
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4194304
+        },
+        "predicate_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Maximum 256 UTF-8 bytes; the mechanism also enforces normalization and byte limits."
+        },
+        "facet": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Maximum 256 UTF-8 bytes; the mechanism also enforces normalization and byte limits."
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Opaque until a supported predicate interprets its bounded canonical parameters."
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        }
+      }
+    },
+    "proposition_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "proposition_digest",
+        "evidence_binding",
+        "predicate_result"
+      ],
+      "properties": {
+        "proposition_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        },
+        "evidence_binding": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN",
+            "INVALID"
+          ]
+        },
+        "predicate_result": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN",
+            "INVALID"
+          ]
+        }
+      }
+    },
+    "declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "rule_id",
+        "rule_profile_digest",
+        "premises",
+        "conclusion",
+        "residual_obligations"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "VSTD-PROPOSITION-TRANSFER-0.1"
+        },
+        "rule_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Maximum 256 UTF-8 bytes; the mechanism also enforces normalization and byte limits."
+        },
+        "rule_profile_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        },
+        "premises": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/proposition"
+          }
+        },
+        "conclusion": {
+          "$ref": "#/$defs/proposition"
+        },
+        "residual_obligations": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Maximum 256 UTF-8 bytes; the mechanism also enforces normalization and byte limits."
+          },
+          "description": "Strict lexicographic UTF-8 byte order is checked by the decoder."
+        }
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "premises",
+        "conclusion",
+        "context_preservation",
+        "artifact_relation",
+        "upper_bound_preservation",
+        "residual_closure",
+        "conclusion_support",
+        "authority_admissibility",
+        "reason_codes"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "VSTD-PROPOSITION-TRANSFER-ASSESSMENT-0.1"
+        },
+        "premises": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/proposition_result"
+          }
+        },
+        "conclusion": {
+          "$ref": "#/$defs/proposition_result"
+        },
+        "context_preservation": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN",
+            "INVALID"
+          ]
+        },
+        "artifact_relation": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN",
+            "INVALID"
+          ]
+        },
+        "upper_bound_preservation": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN",
+            "INVALID"
+          ]
+        },
+        "residual_closure": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN",
+            "INVALID"
+          ]
+        },
+        "conclusion_support": {
+          "enum": [
+            "SUPPORTED",
+            "NOT_ESTABLISHED"
+          ]
+        },
+        "authority_admissibility": {
+          "const": "NOT_ESTABLISHED"
+        },
+        "reason_codes": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "EVIDENCE_BINDING_FAIL",
+              "EVIDENCE_BINDING_INVALID",
+              "EVIDENCE_BINDING_UNKNOWN",
+              "PREDICATE_FAIL",
+              "PREDICATE_INVALID",
+              "PREDICATE_UNKNOWN",
+              "CONTEXT_PRESERVATION_FAIL",
+              "CONTEXT_PRESERVATION_UNKNOWN",
+              "ARTIFACT_RELATION_FAIL",
+              "ARTIFACT_RELATION_INVALID",
+              "ARTIFACT_RELATION_UNKNOWN",
+              "UPPER_BOUND_PRESERVATION_FAIL",
+              "UPPER_BOUND_PRESERVATION_INVALID",
+              "UPPER_BOUND_PRESERVATION_UNKNOWN",
+              "RESIDUAL_OBLIGATIONS",
+              "UNSUPPORTED_RULE"
+            ]
+          }
+        }
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "declaration_digest",
+        "rule_profile_digest",
+        "assessment"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "VSTD-PROPOSITION-TRANSFER-RECEIPT-0.1"
+        },
+        "declaration_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        },
+        "rule_profile_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        },
+        "assessment": {
+          "$ref": "#/$defs/assessment"
+        }
+      }
+    },
+    "rule_profile": {
+      "const": {
+        "artifact_schema": "VSTD-CANONICAL-FINITE-SET-0.1",
+        "context_policy": "EXACT",
+        "facet": "items",
+        "max_evidence_bytes": 4194304,
+        "max_items": 256,
+        "max_json_depth": 32,
+        "max_json_nodes": 20000,
+        "max_objects": 34,
+        "max_premises": 16,
+        "max_record_bytes": 262144,
+        "max_string_bytes": 256,
+        "predicate_id": "canonical_finite_set_subset_v1",
+        "rule_id": "canonical_finite_set_union_v1",
+        "schema_version": "VSTD-PROPOSITION-TRANSFER-RULE-0.1"
+      }
+    },
+    "finite_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "items"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "VSTD-CANONICAL-FINITE-SET-0.1"
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Maximum 256 UTF-8 bytes; the mechanism also enforces normalization and byte limits."
+          },
+          "description": "Strict lexicographic UTF-8 byte order is checked by the decoder."
+        }
+      }
+    }
+  }
+}

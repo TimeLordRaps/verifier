@@ -8,6 +8,11 @@ from pathlib import Path
 import re
 import sys
 
+try:
+    from scripts.classify_release_version import classify_release_version
+except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
+    from classify_release_version import classify_release_version
+
 
 class ReleaseNotesError(ValueError):
     """Raised when an exact nonempty release section cannot be selected."""
@@ -16,7 +21,9 @@ class ReleaseNotesError(ValueError):
 def extract_release_notes(changelog: str, version: str) -> str:
     """Return the nonempty body under one exact semantic-version heading."""
 
-    if re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version) is None:
+    try:
+        classify_release_version(version)
+    except ValueError:
         raise ReleaseNotesError(f"invalid release version {version!r}")
     matches = re.findall(
         rf"^## {re.escape(version)} - \d{{4}}-\d{{2}}-\d{{2}}\s*$\n"

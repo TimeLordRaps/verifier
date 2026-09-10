@@ -349,10 +349,10 @@ def _normalize_source_hash_paths(
     if _platform_collision_key(platform) != "windows":
         return
     source_state = binding.get("source_state_stable")
+    if not isinstance(source_state, dict):
+        raise ValueError("source_state_stable must be an object")
     hashes = (
         source_state.get("source_file_hashes")
-        if isinstance(source_state, Mapping)
-        else None
     )
     if not isinstance(hashes, Mapping):
         raise ValueError("source_file_hashes must be an object")

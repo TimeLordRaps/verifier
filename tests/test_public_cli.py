@@ -154,8 +154,8 @@ def test_surface_plan_matches_reference_component_without_execution(
     assert main(["surface", "analyze", str(geometry), "--plan", "--json"]) == 0
     report = json.loads(capsys.readouterr().out)
 
-    assert report["catalog"]["component_count"] == 19
-    assert report["catalog"]["implementation_family_count"] == 12
+    assert report["catalog"]["component_count"] == 30
+    assert report["catalog"]["implementation_family_count"] == 13
     assert "does not execute" in report["catalog"]["claim_boundary"]
     assert report["plan"]["plan_only"] is True
     assert report["plan"]["execution_performed"] is False

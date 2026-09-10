@@ -144,6 +144,7 @@ jobs:
           python scripts/check_release_boundary.py dist/*.zip dist/*.whl dist/*.tar.gz dist/*.manifest.json dist/*.cdx.json
           python -m venv /tmp/vstd-release-wheel
           /tmp/vstd-release-wheel/bin/python -m pip install --no-deps dist/*.whl
+          /tmp/vstd-release-wheel/bin/python -m pip install cryptography==50.0.0
           cd /tmp
           /tmp/vstd-release-wheel/bin/vstd demo --json
           /tmp/vstd-release-wheel/bin/vstd plan "$GITHUB_WORKSPACE/examples/generic_run/manifest.json" --json
@@ -154,6 +155,14 @@ jobs:
           /tmp/vstd-release-wheel/bin/vstd hardware list --json >/dev/null
           /tmp/vstd-release-wheel/bin/python -c 'import verifier; names=("GeometryLoadError","load_verification_geometry","ControlSurfaceContext","InteractionMode","SurfaceAnalysis","SurfaceAnalysisError","SurfaceHole","SurfaceHoleKind","analyze_verification_surface"); assert all(hasattr(verifier, name) for name in names), names'
           /tmp/vstd-release-wheel/bin/python -c 'import json; from pathlib import Path; from verifier.core.checker import IndependentAuditor; receipt=json.loads(Path("/tmp/vstd-release-receipt/receipt.json").read_text()); hashes=(receipt["assessment_context"]["verifier"]["specification_hash"], IndependentAuditor.verifier_descriptor().specification_hash); assert all(value.startswith("sha256:") for value in hashes), hashes'
+          /tmp/vstd-release-wheel/bin/python -u "$GITHUB_WORKSPACE/examples/artifact-network/build_specimen.py" /tmp/vstd-release-network-silo > /tmp/vstd-release-network-build.json
+          COMMIT_PATH="$(/tmp/vstd-release-wheel/bin/python -c 'import json; print(json.load(open("/tmp/vstd-release-network-build.json", encoding="utf-8"))["commit_path"])')"
+          HEAD_PATH="$(/tmp/vstd-release-wheel/bin/python -c 'import json; print(json.load(open("/tmp/vstd-release-network-build.json", encoding="utf-8"))["head_path"])')"
+          /tmp/vstd-release-wheel/bin/vstd network inspect /tmp/vstd-release-network-silo "/tmp/vstd-release-network-silo/$COMMIT_PATH" --head "/tmp/vstd-release-network-silo/$HEAD_PATH" > /tmp/vstd-release-network-inspection.json
+          /tmp/vstd-release-wheel/bin/vstd network export /tmp/vstd-release-network-silo "/tmp/vstd-release-network-silo/$COMMIT_PATH" "/tmp/vstd-release-network-silo/$HEAD_PATH" /tmp/vstd-release-network-export > /tmp/vstd-release-network-export.json
+          /tmp/vstd-release-wheel/bin/vstd network rebuild /tmp/vstd-release-network-export /tmp/vstd-release-network-rebuild > /tmp/vstd-release-network-rebuild.json
+          /tmp/vstd-release-wheel/bin/vstd network push /tmp/vstd-release-network-export --endpoint https://hub.invalid/v1/pushes > /tmp/vstd-release-network-push.json
+          /tmp/vstd-release-wheel/bin/python -c 'import json; build=json.load(open("/tmp/vstd-release-network-build.json", encoding="utf-8")); inspection=json.load(open("/tmp/vstd-release-network-inspection.json", encoding="utf-8")); export=json.load(open("/tmp/vstd-release-network-export.json", encoding="utf-8")); rebuild=json.load(open("/tmp/vstd-release-network-rebuild.json", encoding="utf-8")); push=json.load(open("/tmp/vstd-release-network-push.json", encoding="utf-8")); assert build["assessment"]["reconstructibility"] == "COMPLETE"; assert inspection["head_signature"] == "VALID"; assert export["commit_digest"] == rebuild["commit_digest"] == build["commit_digest"]; assert push["transport_performed"] is False and push["commit_digest"] == build["commit_digest"]'
 
       - name: Attest every published artifact
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
