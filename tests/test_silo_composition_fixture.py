@@ -97,13 +97,17 @@ def _resolved(tmp_path: Path, fixture: dict[str, Any]) -> tuple[
     return declaration, members, composite
 
 
-def test_checked_in_fixture_is_fresh_and_canonical() -> None:
+def test_checked_in_fixture_is_canonical() -> None:
     checked_in = _load()
-    assert checked_in == build_fixture()
     assert checked_in["schema_version"] == "VSTD-SILO-COMPOSITION-WIRE-FIXTURE-0.1"
     assert [case["case_id"] for case in checked_in["negative_cases"]] == sorted(
         case["case_id"] for case in checked_in["negative_cases"]
     )
+
+
+def test_checked_in_fixture_matches_cryptographic_regeneration() -> None:
+    pytest.importorskip("cryptography", reason="fixture freshness regenerates Ed25519 keys and signatures")
+    assert _load() == build_fixture()
 
 
 def test_fixture_reconstructs_exact_bytes_and_recomputes_receipt(tmp_path: Path) -> None:

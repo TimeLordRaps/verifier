@@ -14,9 +14,6 @@ import json
 from pathlib import Path
 import tempfile
 
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-
 from verifier.interoperability.network import (
     AUTHORITY_AXIOM_AGENCY,
     AUTHORITY_AXIOM_AGENCY_VERSION,
@@ -51,6 +48,10 @@ TARGET = ROOT / "examples" / "artifact-network" / "canonical-wire-fixture.json"
 
 
 def build_fixture() -> dict[str, object]:
+    # Retained-fixture readers need no optional dependency; generation signs bytes.
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
     key = Ed25519PrivateKey.from_private_bytes(bytes(range(32)))
     with tempfile.TemporaryDirectory() as temporary:
         temporary_root = Path(temporary)

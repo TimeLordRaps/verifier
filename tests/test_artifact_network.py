@@ -832,7 +832,7 @@ def test_content_store_is_non_overwriting_and_detects_substitution(tmp_path: Pat
         store.read_object(record)
 
 
-def test_record_and_private_key_reads_are_bounded(tmp_path: Path) -> None:
+def test_record_and_private_key_reads_are_bounded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     store = ContentAddressedStore(tmp_path / "store")
     store.initialize()
     with pytest.raises(NetworkError, match="record"):
@@ -842,10 +842,28 @@ def test_record_and_private_key_reads_are_bounded(tmp_path: Path) -> None:
     record_path.write_bytes(b"x" * (MAX_RECORD_BYTES + 1))
     with pytest.raises(NetworkError, match="byte bound"):
         store.read_record("heads", digest)
+
+    # Isolate byte admission from optional key parsing; the real reader remains active.
+    parsed_inputs: list[bytes] = []
+
+    class ParsingTrap:
+        @staticmethod
+        def load_pem_private_key(payload: bytes, password: None) -> None:
+            assert password is None
+            parsed_inputs.append(payload)
+            raise AssertionError("key parser reached")
+
+    monkeypatch.setattr(network_module, "_crypto", lambda: (None, ParsingTrap, (object, object)))
     key_path = tmp_path / "oversized.pem"
     key_path.write_bytes(b"x" * (MAX_PRIVATE_KEY_BYTES + 1))
-    with pytest.raises(NetworkError, match="byte bound"):
+    with pytest.raises(NetworkError, match="^publisher private key exceeds its byte bound$"):
         publisher_from_private_key(key_path, "Oversized", "Rejected before parsing.")
+    assert parsed_inputs == []
+    exact_limit = b"x" * MAX_PRIVATE_KEY_BYTES
+    key_path.write_bytes(exact_limit)
+    with pytest.raises(AssertionError, match="^key parser reached$"):
+        publisher_from_private_key(key_path, "Exact limit", "Byte admission only; not a valid key.")
+    assert parsed_inputs == [exact_limit]
 
 
 def test_commit_identity_and_diff_are_path_and_digest_only(tmp_path: Path) -> None:
@@ -1535,6 +1553,7 @@ def test_cli_push_is_inert_without_transmit_and_authenticated_mode_is_fail_close
 
 
 def test_supported_newcomer_builder_materializes_exact_specimen(tmp_path: Path) -> None:
+    pytest.importorskip("cryptography", reason="signed newcomer materialization verifies an Ed25519 signature")
     builder_path = Path("examples/artifact-network/build_specimen.py")
     specification = importlib.util.spec_from_file_location(
         "artifact_network_newcomer_builder", builder_path
