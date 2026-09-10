@@ -597,7 +597,9 @@ def assess_execution_readiness(
         )
 
     declarations = tuple(declarations)
-    finding_sets = {status: set() for status in ExecutionReadinessStatus}
+    finding_sets: dict[ExecutionReadinessStatus, set[str]] = {
+        status: set() for status in ExecutionReadinessStatus
+    }
 
     if plan.geometry_id != analysis.geometry_id or plan.geometry_digest != analysis.geometry_digest:
         _add(finding_sets, ExecutionReadinessStatus.INVALID, "plan geometry binding does not match the supplied analysis")

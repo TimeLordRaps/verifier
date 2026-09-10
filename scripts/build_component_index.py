@@ -25,6 +25,44 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "src"
 DEFAULT_BASE_URL = "https://timelordraps.github.io/verifier/"
 FULL_COMMIT = re.compile(r"[0-9a-fA-F]{40}")
+REVIEWED_CANDIDATE_SOURCE_PATHS = (
+    "src/verifier/interoperability/authority_composition.py",
+    "src/verifier/interoperability/claim_garden.py",
+    "src/verifier/interoperability/formation_checker.py",
+    "src/verifier/interoperability/formation_mechanism.py",
+    "src/verifier/interoperability/formation_producer.py",
+    "src/verifier/interoperability/formation_receipt.py",
+    "src/verifier/interoperability/formation_storage.py",
+    "src/verifier/interoperability/formation_wire.py",
+    "src/verifier/interoperability/network.py",
+    "src/verifier/interoperability/proposition_transfer.py",
+    "src/verifier/profiles/proposition-transfer-rule-0.1.json",
+    "src/verifier/profiles/typed-formation-0.1.json",
+    "src/verifier/runtime/network_cli.py",
+    "src/verifier/schemas/__init__.py",
+    "src/verifier/schemas/artifact-control-1.schema.json",
+    "src/verifier/schemas/graph-topology.schema.json",
+    "src/verifier/schemas/vstd-artifact-network-0.1.schema.json",
+    "src/verifier/schemas/vstd-authority-model-0.1.schema.json",
+    "src/verifier/schemas/vstd-component-index-1.schema.json",
+    "src/verifier/schemas/vstd-component-package-1.schema.json",
+    "src/verifier/schemas/vstd-graph-assurance-1.schema.json",
+    "src/verifier/schemas/vstd-proposition-transfer-0.1.schema.json",
+    "src/verifier/schemas/vstd-push-request-0.1.schema.json",
+    "src/verifier/schemas/vstd-self-derivation-mechanism-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-assessment-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-assessment-receipt-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-composition-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-composition-assessment-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-composition-assessment-receipt-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-formation-receipt-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-transfer-0.1.schema.json",
+    "src/verifier/schemas/vstd-typed-formation-0.1.schema.json",
+    "src/verifier/specifications/FINITE_AUTHORITY_COMPOSITION.md",
+    "src/verifier/specifications/PROPOSITION_TRANSFER.md",
+    "src/verifier/specifications/FORMATION_RECEIPT.md",
+    "src/verifier/specifications/TYPED_FORMATION.md",
+)
 
 
 class ComponentIndexBuildError(RuntimeError):
@@ -62,6 +100,28 @@ def _worktree_dirty() -> bool:
     if result.returncode:
         raise ComponentIndexBuildError("component index requires readable Git status")
     return bool(result.stdout)
+
+
+def _reviewed_untracked_candidate_sources() -> tuple[str, ...]:
+    result = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(ROOT),
+            "ls-files",
+            "--others",
+            "--exclude-standard",
+            "-z",
+            "--",
+            *REVIEWED_CANDIDATE_SOURCE_PATHS,
+        ],
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode:
+        raise ComponentIndexBuildError("cannot inspect reviewed candidate source state")
+    return tuple(entry.decode("utf-8") for entry in result.stdout.split(b"\0") if entry)
 
 
 def _package_version(source_ref: str) -> str:
@@ -167,6 +227,7 @@ def build(
     *,
     source_ref: str,
     base_url: str = DEFAULT_BASE_URL,
+    include_untracked: Sequence[str] | None = None,
 ) -> tuple[Path, ...]:
     """Build the static surface into an absent directory and return its files."""
 
@@ -197,7 +258,19 @@ def build(
     public_base_url = _base_url(base_url)
 
     exporter = _reference_exporter()
-    package = exporter.build_package(ROOT, _package_version(source_ref))
+    reviewed_untracked = (
+        _reviewed_untracked_candidate_sources()
+        if source_ref == "WORKTREE" and include_untracked is None
+        else tuple(include_untracked or ())
+    )
+    if reviewed_untracked:
+        package = exporter.build_package(
+            ROOT,
+            _package_version(source_ref),
+            include_untracked=reviewed_untracked,
+        )
+    else:
+        package = exporter.build_package(ROOT, _package_version(source_ref))
     entry = IndexedComponentPackage.from_package(package)
     index = StoredComponentIndex(
         index_id="timelordraps/verifier-reference-components",

@@ -34,6 +34,11 @@ import zipfile
 from pathlib import Path
 from typing import Any, Mapping
 
+try:
+    from scripts.classify_release_version import classify_release_version
+except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
+    from classify_release_version import classify_release_version
+
 
 SCHEMA_VERSION = "VSTD-PUBLIC-RELEASE-1.1"
 CYCLONEDX_SPEC_VERSION = "1.6"
@@ -48,6 +53,28 @@ CONSOLE_SCRIPTS = {
     "verifier": "verifier.runtime.public_cli:main",
     "vstd": "verifier.runtime.public_cli:main",
 }
+PACKAGED_SCHEMA_NAMES = frozenset(
+    {
+        "artifact-control-1.schema.json",
+        "graph-topology.schema.json",
+        "vstd-artifact-network-0.1.schema.json",
+        "vstd-authority-model-0.1.schema.json",
+        "vstd-component-index-1.schema.json",
+        "vstd-component-package-1.schema.json",
+        "vstd-graph-assurance-1.schema.json",
+        "vstd-push-request-0.1.schema.json",
+        "vstd-proposition-transfer-0.1.schema.json",
+        "vstd-self-derivation-mechanism-0.1.schema.json",
+        "vstd-silo-assessment-0.1.schema.json",
+        "vstd-silo-assessment-receipt-0.1.schema.json",
+        "vstd-silo-composition-0.1.schema.json",
+        "vstd-silo-composition-assessment-0.1.schema.json",
+        "vstd-silo-composition-assessment-receipt-0.1.schema.json",
+        "vstd-silo-formation-receipt-0.1.schema.json",
+        "vstd-silo-transfer-0.1.schema.json",
+        "vstd-typed-formation-0.1.schema.json",
+    }
+)
 
 _GENERATED_WHEEL_TEXT_NAMES = {
     "METADATA",
@@ -488,6 +515,15 @@ def _verify_python_distributions(wheel: Path, sdist: Path, release: str) -> None
             raise ReleaseError(f"wheel lacks import package {IMPORT_PACKAGE}")
         if any(path.startswith("verifiable/") for path in names):
             raise ReleaseError("wheel reintroduces the retired import package")
+        wheel_schemas = {
+            Path(path).name
+            for path in names
+            if path.startswith(f"{IMPORT_PACKAGE}/schemas/") and path.endswith(".json")
+        }
+        if wheel_schemas != PACKAGED_SCHEMA_NAMES:
+            raise ReleaseError(
+                "wheel packaged schema inventory differs from the canonical release set"
+            )
 
     if _canonical_distribution_name(name) != expected_name or version != release:
         raise ReleaseError(
@@ -519,6 +555,16 @@ def _verify_python_distributions(wheel: Path, sdist: Path, release: str) -> None
             raise ReleaseError(f"sdist lacks import package {IMPORT_PACKAGE}")
         if any(path.startswith(f"{root}/src/verifiable/") for path in names):
             raise ReleaseError("sdist reintroduces the retired import package")
+        sdist_schema_prefix = f"{root}/src/{IMPORT_PACKAGE}/schemas/"
+        sdist_schemas = {
+            Path(path).name
+            for path in names
+            if path.startswith(sdist_schema_prefix) and path.endswith(".json")
+        }
+        if sdist_schemas != PACKAGED_SCHEMA_NAMES:
+            raise ReleaseError(
+                "sdist packaged schema inventory differs from the canonical release set"
+            )
 
     if (
         _canonical_distribution_name(sdist_name) != expected_name
@@ -833,12 +879,15 @@ def compare_retagged_artifact_directories(candidate: Path, tagged: Path) -> int:
         not isinstance(commit, str)
         or re.fullmatch(r"[0-9a-f]{40}", commit) is None
         or not isinstance(release, str)
-        or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", release) is None
         or candidate_source.get("ref") != commit
         or tagged_source.get("commit") != commit
         or tagged_source.get("ref") != f"refs/tags/v{release}"
     ):
         raise ReleaseError("candidate and tagged manifests do not bind the expected refs")
+    try:
+        classify_release_version(release)
+    except ValueError as exc:
+        raise ReleaseError("candidate manifest release is unsupported") from exc
     if manifest_name != f"{ARCHIVE_STEM}-{release}.manifest.json":
         raise ReleaseError("release manifest filename does not match the release")
     for label, manifest, files in (

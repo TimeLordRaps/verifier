@@ -22,6 +22,10 @@ from verifier.core.witness import WitnessCorroborationResult, WitnessResultStatu
 from verifier.data.assurance import AssuranceFlowError, AssuranceLedger
 from verifier.data.models import ProvenanceHypergraph
 from verifier.interoperability import ComponentKind, ComponentLifecycle, InteractionMode
+from verifier.interoperability.network import (
+    SiloComposition,
+    SiloCompositionAssessmentReceipt,
+)
 from verifier.interoperability.reference_catalog import (
     REFERENCE_CATALOG_VERSION,
     reference_component_registry,
@@ -37,7 +41,7 @@ def _resolve(reference: str) -> object:
     return value
 
 
-def test_reference_catalog_has_twelve_explicit_families_and_real_entry_points() -> None:
+def test_reference_catalog_has_thirteen_explicit_families_and_real_entry_points() -> None:
     registry = reference_component_registry()
     families = {
         family
@@ -46,10 +50,11 @@ def test_reference_catalog_has_twelve_explicit_families_and_real_entry_points() 
     }
 
     assert registry.registry_version == REFERENCE_CATALOG_VERSION
-    assert len(registry.components) == 19
-    assert len(families) == 12
+    assert len(registry.components) == 30
+    assert len(families) == 13
     assert families == {
         "artifact-control",
+        "artifact-network",
         "generic-run",
         "platform-comparison",
         "provenance-policy",
@@ -103,6 +108,37 @@ def test_only_native_parsers_declare_serialized_schema_acceptance() -> None:
             "VSTD-ARTIFACT-FREEZE-1",
             "VSTD-ARTIFACT-SEAL-1",
         ),
+        "component:artifact-network-transfer-materializer": (
+            "VSTD-SILO-TRANSFER-0.1",
+        ),
+        "component:artifact-network-authority-composition-assessor": (
+            "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
+        ),
+        "component:artifact-network-composition-declaration-decoder": (
+            "VSTD-SILO-COMPOSITION-0.1",
+        ),
+        "component:artifact-network-composition-receipt-rechecker": (
+            "VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1",
+        ),
+        "component:artifact-network-proposition-transfer-assessor": (
+            "VSTD-PROPOSITION-TRANSFER-0.1",
+        ),
+        "component:artifact-network-proposition-transfer-rechecker": (
+            "VSTD-PROPOSITION-TRANSFER-0.1",
+            "VSTD-PROPOSITION-TRANSFER-RECEIPT-0.1",
+        ),
+        "component:artifact-network-typed-formation-checker": (
+            "VSTD-TYPED-FORMATION-0.1",
+            "VSTD-TYPED-FORMATION-CERTIFICATE-0.1",
+        ),
+        "component:artifact-network-typed-formation-producer": (
+            "VSTD-TYPED-FORMATION-0.1",
+        ),
+        "component:artifact-network-typed-formation-receipt-rechecker": (
+            "VSTD-SILO-COMMIT-0.1",
+            "VSTD-SILO-FORMATION-RECEIPT-0.1",
+            "VSTD-SILO-FORMATION-SELECTION-0.1",
+        ),
         "component:generic-run-validator": ("VSTD-1",),
         "component:platform-run-comparator": ("VSTD-1",),
         "component:vstd-graph-assurance-rechecker": (
@@ -117,6 +153,19 @@ def test_only_native_parsers_declare_serialized_schema_acceptance() -> None:
 
 def test_reference_result_metadata_matches_native_return_contracts() -> None:
     registry = reference_component_registry()
+
+    declaration_decoder = registry.get(
+        "component:artifact-network-composition-declaration-decoder"
+    )
+    assert get_type_hints(_resolve(declaration_decoder.implementation_ref))["return"] is SiloComposition
+    receipt_builder = registry.get(
+        "component:artifact-network-composition-receipt-builder"
+    )
+    assert get_type_hints(_resolve(receipt_builder.implementation_ref))["return"] is SiloCompositionAssessmentReceipt
+    receipt_rechecker = registry.get(
+        "component:artifact-network-composition-receipt-rechecker"
+    )
+    assert get_type_hints(_resolve(receipt_rechecker.implementation_ref))["return"] is type(None)
 
     kernel = registry.get("component:vstd4-grounded-certificate-kernel")
     kernel_callable = _resolve(kernel.implementation_ref)
@@ -324,6 +373,50 @@ def test_untraversability_catalog_matching_is_exact(
 
 
 @pytest.mark.parametrize(
+    ("relation_id", "mechanism_id", "expected_id"),
+    (
+        (
+            "relation:decodes-silo-composition-declaration",
+            "mechanism:artifact-network-composition-declaration-decode",
+            "component:artifact-network-composition-declaration-decoder",
+        ),
+        (
+            "relation:constructs-silo-composition-assessment-receipt",
+            "mechanism:artifact-network-composition-receipt-construction",
+            "component:artifact-network-composition-receipt-builder",
+        ),
+        (
+            "relation:rechecks-silo-composition-assessment-receipt",
+            "mechanism:artifact-network-composition-receipt-independent-recheck",
+            "component:artifact-network-composition-receipt-rechecker",
+        ),
+    ),
+)
+def test_artifact_network_composition_planning_matches_only_exact_capabilities(
+    relation_id: str, mechanism_id: str, expected_id: str
+) -> None:
+    registry = reference_component_registry()
+    matches = registry.match_exact(
+        schema_id="VSTD-2",
+        interaction_mode=(
+            InteractionMode.STATIC
+            if expected_id.endswith("declaration-decoder")
+            else InteractionMode.OFFLINE_REPLAY
+        ),
+        relation_id=relation_id,
+        mechanism_id=mechanism_id,
+    )
+
+    assert tuple(component.component_id for component in matches) == (expected_id,)
+    assert registry.match_exact(
+        schema_id="VSTD-2",
+        interaction_mode=InteractionMode.OFFLINE_REPLAY,
+        relation_id=relation_id,
+        mechanism_id=mechanism_id + "-typescript",
+    ) == ()
+
+
+@pytest.mark.parametrize(
     ("override", "expected_ids"),
     (
         ({}, ("component:graph-topology-analyzer",)),
@@ -364,7 +457,7 @@ def test_graph_topology_platform_manifest_records_only_configured_intent() -> No
     record = records["component:graph-topology-analyzer"]
     component = reference_component_registry().get(record["component_id"])
 
-    assert len(records) == 19
+    assert len(records) == 30
     assert record["label"] == component.label
     assert record["coverage_kind"] == "BEHAVIOR"
     assert record["dependency_profiles"] == ["test"]

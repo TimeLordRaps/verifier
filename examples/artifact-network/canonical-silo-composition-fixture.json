@@ -1,0 +1,1528 @@
+{
+  "claim_boundary": "This fixture establishes deterministic encoding, retained-byte reconstruction, and independent recomputation for one finite reference composition only. It does not establish completeness of adversarial coverage, artifact truth, publisher identity, arbitrary graph-edge compatibility, cross-runtime parity until another runtime reproduces it, or deployed service behavior.",
+  "composite": {
+    "commit": {
+      "authority_axiom_agency": [
+        "CHALLENGE_WITH_COUNTEREVIDENCE",
+        "EXIT_COMPOSITION",
+        "EXPORT_ACCESSIBLE_SILO",
+        "FORK_DERIVATION",
+        "INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+        "PRESERVE_CONFLICT",
+        "PRESERVE_UNKNOWN",
+        "SELECT_TRUST_ROOTS",
+        "WITHDRAW_OWN_AUTHORIZATION"
+      ],
+      "authority_axiom_agency_digest": "sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c",
+      "authority_axiom_agency_version": "VSTD-AUTHORITY-AXIOM-AGENCY-0.1",
+      "authority_model_path": "authority/model.json",
+      "census": [
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "composition-adapter",
+            "declared_schema_id": "COMPOSITION-ADAPTER-1",
+            "media_type": "application/json",
+            "object_digest": "sha256:ee84c8060add9754608b10bb198c67a2f5cd5adc7f6803f252d5a0d7f514d82b",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 29
+          },
+          "path": "adapter.bin"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "authority-model",
+            "declared_schema_id": "VSTD-AUTHORITY-MODEL-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 1279
+          },
+          "path": "authority/model.json"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "composition-relation",
+            "declared_schema_id": "COMPOSITION-RELATION-1",
+            "media_type": "application/json",
+            "object_digest": "sha256:b4c7cbb94f5de4cfb4a882e12acc72f3e3daf1147cd31dee7f943e71a3b593ed",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 25
+          },
+          "path": "bridge.json"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:2dabec2d1f4b49fd81df41628697a7ac18571d3b995267bf8cf8775f59ae319f",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 212
+          },
+          "path": "evidence/derivation-reflexivity.json"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:642c07c5e2a37f31477bafe868984994cd020eff035b5ef0e5c0169c46b87259",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 210
+          },
+          "path": "evidence/deriver-cycle-closed.json"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:cbb2c546d2a49476ba5d73f5145765c9725dd89bfe40612d1807c99aba1cdbdc",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 201
+          },
+          "path": "evidence/ground-self.json"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:d6cc79135fa2048394c2517b7b96265eb2f29fba4098aa08f18ac25f6369ff75",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 208
+          },
+          "path": "evidence/reflexion-identity.json"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "ground",
+            "declared_schema_id": "GROUND-1",
+            "media_type": "text/plain",
+            "object_digest": "sha256:dbb3b50e59c7326b2ff7d6619430257b9188cf3c0b8d778f7275ffd3bf4998a2",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 6
+          },
+          "path": "ground.txt"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "derivation-mechanism",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-MECHANISM-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 596
+          },
+          "path": "mechanism.bin"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "member-commit",
+            "declared_schema_id": "VSTD-SILO-COMMIT-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:7b3d6440a67b3ebe4c2bbde1c37ef74a9987f3ee42a16eb60f750ea350a88b9b",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 10542
+          },
+          "path": "members/first.json"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "member-commit",
+            "declared_schema_id": "VSTD-SILO-COMMIT-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:2ca50256a673c9682ce09e9056c4965e144ea5229539c52579695d842490c586",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 10542
+          },
+          "path": "members/second.json"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "composition-policy",
+            "declared_schema_id": "COMPOSITION-POLICY-1",
+            "media_type": "application/json",
+            "object_digest": "sha256:dea3f79b1d93784cfa5a5359418cc9974a93b5bb55e2ca5724e30e863602913c",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 25
+          },
+          "path": "policy.json"
+        },
+        {
+          "necessity": "NECESSARY",
+          "object": {
+            "artifact_kind": "self-derivation-status",
+            "declared_schema_id": "STATUS-1",
+            "media_type": "text/plain",
+            "object_digest": "sha256:fd69229354282146e94b55ea9ff48cae653d310833967e9356b32d69b94e9e16",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 12
+          },
+          "path": "status.txt"
+        }
+      ],
+      "completeness_kind": "SILO_CENSUS",
+      "coverage_universe": [
+        "authority-action:CHALLENGE_WITH_COUNTEREVIDENCE",
+        "authority-action:EXIT_COMPOSITION",
+        "authority-action:EXPORT_ACCESSIBLE_SILO",
+        "authority-action:FORK_DERIVATION",
+        "authority-action:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+        "authority-action:PRESERVE_CONFLICT",
+        "authority-action:PRESERVE_UNKNOWN",
+        "authority-action:SELECT_TRUST_ROOTS",
+        "authority-action:WITHDRAW_OWN_AUTHORIZATION",
+        "authority-actor-scope-binding:VSTD-AUTHORITY-ACTOR-SCOPE-0.1:sha256:e4163a03e29a7aa83260711622402bd2f5756daf0466d83f55f47eadd1ea1101",
+        "authority-binding:VSTD-AUTHORITY-AXIOM-AGENCY-0.1:sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c",
+        "authority-initial-state:initial",
+        "authority-model-path:authority/model.json",
+        "authority-model:sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19",
+        "authority-state-ground-action:initial:CHALLENGE_WITH_COUNTEREVIDENCE",
+        "authority-state-ground-action:initial:EXIT_COMPOSITION",
+        "authority-state-ground-action:initial:EXPORT_ACCESSIBLE_SILO",
+        "authority-state-ground-action:initial:FORK_DERIVATION",
+        "authority-state-ground-action:initial:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+        "authority-state-ground-action:initial:PRESERVE_CONFLICT",
+        "authority-state-ground-action:initial:PRESERVE_UNKNOWN",
+        "authority-state-ground-action:initial:SELECT_TRUST_ROOTS",
+        "authority-state-ground-action:initial:WITHDRAW_OWN_AUTHORIZATION",
+        "authority-state-ground-action:steady:CHALLENGE_WITH_COUNTEREVIDENCE",
+        "authority-state-ground-action:steady:EXIT_COMPOSITION",
+        "authority-state-ground-action:steady:EXPORT_ACCESSIBLE_SILO",
+        "authority-state-ground-action:steady:FORK_DERIVATION",
+        "authority-state-ground-action:steady:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+        "authority-state-ground-action:steady:PRESERVE_CONFLICT",
+        "authority-state-ground-action:steady:PRESERVE_UNKNOWN",
+        "authority-state-ground-action:steady:SELECT_TRUST_ROOTS",
+        "authority-state-ground-action:steady:WITHDRAW_OWN_AUTHORIZATION",
+        "authority-state-universe:initial",
+        "authority-state-universe:steady",
+        "authority-state:sha256:707ebee5af9d4b2084a283489ff8861ee6cc31fe59fc58aa58c055658a3d8e2f",
+        "authority-state:sha256:f0d1916004d448ed63c3d96dbe513568f89e6206b33dedebe8a69a3023ca1da8",
+        "authority-transition-universe:settle",
+        "authority-transition:sha256:4e205d0dd40a8845d2de771d15dd443f6cb2701f26342c5fc8a3336bcd56e40b",
+        "completeness-kind:SILO_CENSUS",
+        "created-at:sha256:f27baf5a2a9f72dfdf38c2635e0cbc63a231289b7ec0f7aef2f07698a3b85fba",
+        "derivation:sha256:24eca0ff034c8f54e82a86b554f9a50ce1d34b2c63201b71cee69cffd6b89f07",
+        "derivation:sha256:577ae4fd1fb49fdb530d755637e7d95e4f80fa7ef0d1490f05b7a789774c299a",
+        "derivation:sha256:87b51f6c9c732fb19bffa1b75afa7c9ffaa5971295c342be4b71d8cc0726a4df",
+        "derivation:sha256:9d222c2a375185232ac6dec917eda8edcdc22de183b03a000eb97efc28e0d796",
+        "derivation:sha256:a238713768c3b57bb0f4fd0a7a85959876d14a1e5b389c38baa0a306eccb317d",
+        "derivation:sha256:a6f1a09a22da256d98cb2242591e358f188ab8fbda6d4fc5dcd0b8c5d4cc5926",
+        "derivation:sha256:bcb2fb2d65cd373909b8f3eb2f95040f4afa7d23402ff7f9d83fcdf8f7a25b09",
+        "derivation:sha256:c63eb9397474e53b544d4acea23b3e740f72a3dd0610a62b3726a58eaf5cadd3",
+        "derivation:sha256:cec29cebba9f0d8d28a40a20de5e57e22dcd5c20f15f7ff087aa70e77d034b6a",
+        "derivation:sha256:cf2c4eaae01cc3b42be7aa2dc8f7d202d4f32aded90f42181e0baf2b3a7b8573",
+        "derivation:sha256:d435503423b93a357ec06421bd3a73d0a33ef17a0820fbadac09798a9cc4a0a9",
+        "ground-path:ground.txt",
+        "ground-path:mechanism.bin",
+        "mechanism-dependency:sha256:36da77f759a493d4d400d84a1d151bb7cc41ea3b7c980d43209c7b2ab8c9526c",
+        "mechanism-dependency:sha256:51c70ac8b9fc64425f3d18cd27cc0490bcec1e14803437b0d215b080b4bdfa7e",
+        "mechanism-dependency:sha256:81d61b851afe0539e80da4c6261a11536b34d8c1d98e7e97e424a11555e2a919",
+        "mechanism-dependency:sha256:92f8accacbce879f829dfbeed15e7cde81c1fead05b7b46bc0d75017e2674497",
+        "mechanism-dependency:sha256:b200b86fea1be00bfe47688143f967c70a338250266934a27a629ea2f9e3538b",
+        "mechanism-dependency:sha256:ba989d3c4a67778f4a97186a0708a93896b35e28c6efa3de7b7c6fa48bad6d22",
+        "mechanism-dependency:sha256:c6e9c0394e34e19bf116c30a5f4224980383624a66836bb4024534e61fc9eef3",
+        "mechanism-dependency:sha256:c81d94eef20946482fb620c77c597df236e80499cbd506a441722bc1d608f278",
+        "mechanism-dependency:sha256:ca0c6eea3812726b47e94c4a175291ae038acb1c3475613ccf9d1769a331d3a4",
+        "mechanism-dependency:sha256:ef9d7b44e428db91c11d835fed2eff6df115abb0172c7176e1c7913c948bad09",
+        "mechanism-dependency:sha256:f1961a0baf309b75174748bcf24283f6d1692c9be5cb4c529741c52be007cca0",
+        "necessity:adapter.bin:NECESSARY",
+        "necessity:authority/model.json:NECESSARY",
+        "necessity:bridge.json:NECESSARY",
+        "necessity:evidence/derivation-reflexivity.json:NECESSARY",
+        "necessity:evidence/deriver-cycle-closed.json:NECESSARY",
+        "necessity:evidence/ground-self.json:NECESSARY",
+        "necessity:evidence/reflexion-identity.json:NECESSARY",
+        "necessity:ground.txt:NECESSARY",
+        "necessity:mechanism.bin:NECESSARY",
+        "necessity:members/first.json:NECESSARY",
+        "necessity:members/second.json:NECESSARY",
+        "necessity:policy.json:NECESSARY",
+        "necessity:status.txt:NECESSARY",
+        "object:adapter.bin",
+        "object:authority/model.json",
+        "object:bridge.json",
+        "object:evidence/derivation-reflexivity.json",
+        "object:evidence/deriver-cycle-closed.json",
+        "object:evidence/ground-self.json",
+        "object:evidence/reflexion-identity.json",
+        "object:ground.txt",
+        "object:mechanism.bin",
+        "object:members/first.json",
+        "object:members/second.json",
+        "object:policy.json",
+        "object:status.txt",
+        "premise-dependency:sha256:0913f45a6535ef23e6f6d7be8083175cc7722e93b2176d21bdcc3eea84b96230",
+        "premise-dependency:sha256:12b8cc55a5b8cf487fcdc2ad8b5bd8b43559200c0d44f8609c1c93ca5cbe5bf9",
+        "premise-dependency:sha256:285ff8a992ad0d2d1cae7ab3613e0072d8e7b52be05740bc89209b3a2fc42c89",
+        "premise-dependency:sha256:28e79f0612de8b140cbf68d9b19f3acc2f8dcdeba834c965c1615b9ee2bdb4ba",
+        "premise-dependency:sha256:2c7bcc1a578e79e918f733979c909645fcdbea7ab5431b2102c84b8d50c3f111",
+        "premise-dependency:sha256:351e5d1bb0dabd1670c0cc16cddffc91de095b0ad85529102ac250c8f60e2c27",
+        "premise-dependency:sha256:3cbbaad0d9951b2693a64fb1aa2a4b87c38ca3e8b5e6a1d181f6065614d21fc9",
+        "premise-dependency:sha256:4a8ddcb7c0dc96fb3cc07337f776118f33ce60a5525d2a4592687420683cb030",
+        "premise-dependency:sha256:50e4f174e4c5f942cb17a3d97451b51b47be2c0e21385232a34a4e4829d1cd05",
+        "premise-dependency:sha256:63b30380fc0c0c52a3f76e440c4679e64994a840b7ef36768e76dc8c63b62a6b",
+        "premise-dependency:sha256:7effb38e32ef47b525d0ee5904cdb9f2828eab04c636a3995166eaa83dd58fd5",
+        "premise-dependency:sha256:9c857fd14f12f6f8f00f404ef2d3a3f6d25a17b14aa5e0bd8bed50b3727b93a2",
+        "premise-dependency:sha256:9d4f62baa04e0a42d4131aba61b8aeaa0fa6175fec9a688dd16719b9fcb79d3e",
+        "premise-dependency:sha256:a251190ef78ede9a89a40495d96a359cd53949438a636586dc48d94b3caca817",
+        "premise-dependency:sha256:d31eb927099535332131e922625b3f8ec4c6ab6ff20d6a3d01c994452e52ed29",
+        "publisher:publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+        "relation:sha256:630ca8178619d8c12efabc55ed7df557b3a61372fbd5122a69cf8ba48c418311",
+        "self-derivation-record:sha256:624ed3f49058ee14aff72e5d4439cc353a0070239a110569a940381ac2c4bdb1"
+      ],
+      "created_at": "2026-09-08T00:00:00Z",
+      "derivations": [
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "adapter.bin"
+        },
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "authority/model.json"
+        },
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "bridge.json"
+        },
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "evidence/derivation-reflexivity.json"
+        },
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "evidence/deriver-cycle-closed.json"
+        },
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "evidence/ground-self.json"
+        },
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "evidence/reflexion-identity.json"
+        },
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "members/first.json"
+        },
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "members/second.json"
+        },
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "policy.json"
+        },
+        {
+          "mechanism_path": "mechanism.bin",
+          "premise_paths": [
+            "evidence/derivation-reflexivity.json",
+            "evidence/deriver-cycle-closed.json",
+            "evidence/ground-self.json",
+            "evidence/reflexion-identity.json",
+            "ground.txt"
+          ],
+          "relation_strength": "DERIVES",
+          "target_path": "status.txt"
+        }
+      ],
+      "exclusions": [],
+      "ground_paths": [
+        "ground.txt",
+        "mechanism.bin"
+      ],
+      "parents": [],
+      "publisher_id": "publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+      "relations": [
+        {
+          "mechanism_path": "adapter.bin",
+          "relation_type": "CHECKS",
+          "semantic_coordinate": "member-compatibility",
+          "source_path": "members/first.json",
+          "target_path": "members/second.json"
+        }
+      ],
+      "residual_obligations": [],
+      "schema_version": "VSTD-SILO-COMMIT-0.1",
+      "self_derivation_record": {
+        "derivation_reflexivity": true,
+        "derivation_reflexivity_evidence_path": "evidence/derivation-reflexivity.json",
+        "deriver_cycle_closed": true,
+        "deriver_cycle_closure_evidence_path": "evidence/deriver-cycle-closed.json",
+        "ground_paths": [
+          "ground.txt"
+        ],
+        "ground_self": true,
+        "ground_self_evidence_path": "evidence/ground-self.json",
+        "mechanism_path": "mechanism.bin",
+        "reflexion_identity": true,
+        "reflexion_identity_evidence_path": "evidence/reflexion-identity.json",
+        "relation_strength": "DERIVES",
+        "residual_obligations": [],
+        "retained_path": [
+          "ground.txt",
+          "mechanism.bin",
+          "evidence/ground-self.json",
+          "evidence/derivation-reflexivity.json",
+          "evidence/reflexion-identity.json",
+          "evidence/deriver-cycle-closed.json",
+          "status.txt"
+        ],
+        "subject_path": "status.txt"
+      }
+    },
+    "commit_canonical_json": "{\"authority_axiom_agency\":[\"CHALLENGE_WITH_COUNTEREVIDENCE\",\"EXIT_COMPOSITION\",\"EXPORT_ACCESSIBLE_SILO\",\"FORK_DERIVATION\",\"INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"PRESERVE_CONFLICT\",\"PRESERVE_UNKNOWN\",\"SELECT_TRUST_ROOTS\",\"WITHDRAW_OWN_AUTHORIZATION\"],\"authority_axiom_agency_digest\":\"sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c\",\"authority_axiom_agency_version\":\"VSTD-AUTHORITY-AXIOM-AGENCY-0.1\",\"authority_model_path\":\"authority/model.json\",\"census\":[{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"composition-adapter\",\"declared_schema_id\":\"COMPOSITION-ADAPTER-1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:ee84c8060add9754608b10bb198c67a2f5cd5adc7f6803f252d5a0d7f514d82b\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":29},\"path\":\"adapter.bin\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"authority-model\",\"declared_schema_id\":\"VSTD-AUTHORITY-MODEL-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":1279},\"path\":\"authority/model.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"composition-relation\",\"declared_schema_id\":\"COMPOSITION-RELATION-1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:b4c7cbb94f5de4cfb4a882e12acc72f3e3daf1147cd31dee7f943e71a3b593ed\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":25},\"path\":\"bridge.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:2dabec2d1f4b49fd81df41628697a7ac18571d3b995267bf8cf8775f59ae319f\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":212},\"path\":\"evidence/derivation-reflexivity.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:642c07c5e2a37f31477bafe868984994cd020eff035b5ef0e5c0169c46b87259\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":210},\"path\":\"evidence/deriver-cycle-closed.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:cbb2c546d2a49476ba5d73f5145765c9725dd89bfe40612d1807c99aba1cdbdc\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":201},\"path\":\"evidence/ground-self.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:d6cc79135fa2048394c2517b7b96265eb2f29fba4098aa08f18ac25f6369ff75\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":208},\"path\":\"evidence/reflexion-identity.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"ground\",\"declared_schema_id\":\"GROUND-1\",\"media_type\":\"text/plain\",\"object_digest\":\"sha256:dbb3b50e59c7326b2ff7d6619430257b9188cf3c0b8d778f7275ffd3bf4998a2\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":6},\"path\":\"ground.txt\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"derivation-mechanism\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-MECHANISM-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":596},\"path\":\"mechanism.bin\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"member-commit\",\"declared_schema_id\":\"VSTD-SILO-COMMIT-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:7b3d6440a67b3ebe4c2bbde1c37ef74a9987f3ee42a16eb60f750ea350a88b9b\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":10542},\"path\":\"members/first.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"member-commit\",\"declared_schema_id\":\"VSTD-SILO-COMMIT-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:2ca50256a673c9682ce09e9056c4965e144ea5229539c52579695d842490c586\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":10542},\"path\":\"members/second.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"composition-policy\",\"declared_schema_id\":\"COMPOSITION-POLICY-1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:dea3f79b1d93784cfa5a5359418cc9974a93b5bb55e2ca5724e30e863602913c\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":25},\"path\":\"policy.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-status\",\"declared_schema_id\":\"STATUS-1\",\"media_type\":\"text/plain\",\"object_digest\":\"sha256:fd69229354282146e94b55ea9ff48cae653d310833967e9356b32d69b94e9e16\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":12},\"path\":\"status.txt\"}],\"completeness_kind\":\"SILO_CENSUS\",\"coverage_universe\":[\"authority-action:CHALLENGE_WITH_COUNTEREVIDENCE\",\"authority-action:EXIT_COMPOSITION\",\"authority-action:EXPORT_ACCESSIBLE_SILO\",\"authority-action:FORK_DERIVATION\",\"authority-action:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"authority-action:PRESERVE_CONFLICT\",\"authority-action:PRESERVE_UNKNOWN\",\"authority-action:SELECT_TRUST_ROOTS\",\"authority-action:WITHDRAW_OWN_AUTHORIZATION\",\"authority-actor-scope-binding:VSTD-AUTHORITY-ACTOR-SCOPE-0.1:sha256:e4163a03e29a7aa83260711622402bd2f5756daf0466d83f55f47eadd1ea1101\",\"authority-binding:VSTD-AUTHORITY-AXIOM-AGENCY-0.1:sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c\",\"authority-initial-state:initial\",\"authority-model-path:authority/model.json\",\"authority-model:sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19\",\"authority-state-ground-action:initial:CHALLENGE_WITH_COUNTEREVIDENCE\",\"authority-state-ground-action:initial:EXIT_COMPOSITION\",\"authority-state-ground-action:initial:EXPORT_ACCESSIBLE_SILO\",\"authority-state-ground-action:initial:FORK_DERIVATION\",\"authority-state-ground-action:initial:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"authority-state-ground-action:initial:PRESERVE_CONFLICT\",\"authority-state-ground-action:initial:PRESERVE_UNKNOWN\",\"authority-state-ground-action:initial:SELECT_TRUST_ROOTS\",\"authority-state-ground-action:initial:WITHDRAW_OWN_AUTHORIZATION\",\"authority-state-ground-action:steady:CHALLENGE_WITH_COUNTEREVIDENCE\",\"authority-state-ground-action:steady:EXIT_COMPOSITION\",\"authority-state-ground-action:steady:EXPORT_ACCESSIBLE_SILO\",\"authority-state-ground-action:steady:FORK_DERIVATION\",\"authority-state-ground-action:steady:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"authority-state-ground-action:steady:PRESERVE_CONFLICT\",\"authority-state-ground-action:steady:PRESERVE_UNKNOWN\",\"authority-state-ground-action:steady:SELECT_TRUST_ROOTS\",\"authority-state-ground-action:steady:WITHDRAW_OWN_AUTHORIZATION\",\"authority-state-universe:initial\",\"authority-state-universe:steady\",\"authority-state:sha256:707ebee5af9d4b2084a283489ff8861ee6cc31fe59fc58aa58c055658a3d8e2f\",\"authority-state:sha256:f0d1916004d448ed63c3d96dbe513568f89e6206b33dedebe8a69a3023ca1da8\",\"authority-transition-universe:settle\",\"authority-transition:sha256:4e205d0dd40a8845d2de771d15dd443f6cb2701f26342c5fc8a3336bcd56e40b\",\"completeness-kind:SILO_CENSUS\",\"created-at:sha256:f27baf5a2a9f72dfdf38c2635e0cbc63a231289b7ec0f7aef2f07698a3b85fba\",\"derivation:sha256:24eca0ff034c8f54e82a86b554f9a50ce1d34b2c63201b71cee69cffd6b89f07\",\"derivation:sha256:577ae4fd1fb49fdb530d755637e7d95e4f80fa7ef0d1490f05b7a789774c299a\",\"derivation:sha256:87b51f6c9c732fb19bffa1b75afa7c9ffaa5971295c342be4b71d8cc0726a4df\",\"derivation:sha256:9d222c2a375185232ac6dec917eda8edcdc22de183b03a000eb97efc28e0d796\",\"derivation:sha256:a238713768c3b57bb0f4fd0a7a85959876d14a1e5b389c38baa0a306eccb317d\",\"derivation:sha256:a6f1a09a22da256d98cb2242591e358f188ab8fbda6d4fc5dcd0b8c5d4cc5926\",\"derivation:sha256:bcb2fb2d65cd373909b8f3eb2f95040f4afa7d23402ff7f9d83fcdf8f7a25b09\",\"derivation:sha256:c63eb9397474e53b544d4acea23b3e740f72a3dd0610a62b3726a58eaf5cadd3\",\"derivation:sha256:cec29cebba9f0d8d28a40a20de5e57e22dcd5c20f15f7ff087aa70e77d034b6a\",\"derivation:sha256:cf2c4eaae01cc3b42be7aa2dc8f7d202d4f32aded90f42181e0baf2b3a7b8573\",\"derivation:sha256:d435503423b93a357ec06421bd3a73d0a33ef17a0820fbadac09798a9cc4a0a9\",\"ground-path:ground.txt\",\"ground-path:mechanism.bin\",\"mechanism-dependency:sha256:36da77f759a493d4d400d84a1d151bb7cc41ea3b7c980d43209c7b2ab8c9526c\",\"mechanism-dependency:sha256:51c70ac8b9fc64425f3d18cd27cc0490bcec1e14803437b0d215b080b4bdfa7e\",\"mechanism-dependency:sha256:81d61b851afe0539e80da4c6261a11536b34d8c1d98e7e97e424a11555e2a919\",\"mechanism-dependency:sha256:92f8accacbce879f829dfbeed15e7cde81c1fead05b7b46bc0d75017e2674497\",\"mechanism-dependency:sha256:b200b86fea1be00bfe47688143f967c70a338250266934a27a629ea2f9e3538b\",\"mechanism-dependency:sha256:ba989d3c4a67778f4a97186a0708a93896b35e28c6efa3de7b7c6fa48bad6d22\",\"mechanism-dependency:sha256:c6e9c0394e34e19bf116c30a5f4224980383624a66836bb4024534e61fc9eef3\",\"mechanism-dependency:sha256:c81d94eef20946482fb620c77c597df236e80499cbd506a441722bc1d608f278\",\"mechanism-dependency:sha256:ca0c6eea3812726b47e94c4a175291ae038acb1c3475613ccf9d1769a331d3a4\",\"mechanism-dependency:sha256:ef9d7b44e428db91c11d835fed2eff6df115abb0172c7176e1c7913c948bad09\",\"mechanism-dependency:sha256:f1961a0baf309b75174748bcf24283f6d1692c9be5cb4c529741c52be007cca0\",\"necessity:adapter.bin:NECESSARY\",\"necessity:authority/model.json:NECESSARY\",\"necessity:bridge.json:NECESSARY\",\"necessity:evidence/derivation-reflexivity.json:NECESSARY\",\"necessity:evidence/deriver-cycle-closed.json:NECESSARY\",\"necessity:evidence/ground-self.json:NECESSARY\",\"necessity:evidence/reflexion-identity.json:NECESSARY\",\"necessity:ground.txt:NECESSARY\",\"necessity:mechanism.bin:NECESSARY\",\"necessity:members/first.json:NECESSARY\",\"necessity:members/second.json:NECESSARY\",\"necessity:policy.json:NECESSARY\",\"necessity:status.txt:NECESSARY\",\"object:adapter.bin\",\"object:authority/model.json\",\"object:bridge.json\",\"object:evidence/derivation-reflexivity.json\",\"object:evidence/deriver-cycle-closed.json\",\"object:evidence/ground-self.json\",\"object:evidence/reflexion-identity.json\",\"object:ground.txt\",\"object:mechanism.bin\",\"object:members/first.json\",\"object:members/second.json\",\"object:policy.json\",\"object:status.txt\",\"premise-dependency:sha256:0913f45a6535ef23e6f6d7be8083175cc7722e93b2176d21bdcc3eea84b96230\",\"premise-dependency:sha256:12b8cc55a5b8cf487fcdc2ad8b5bd8b43559200c0d44f8609c1c93ca5cbe5bf9\",\"premise-dependency:sha256:285ff8a992ad0d2d1cae7ab3613e0072d8e7b52be05740bc89209b3a2fc42c89\",\"premise-dependency:sha256:28e79f0612de8b140cbf68d9b19f3acc2f8dcdeba834c965c1615b9ee2bdb4ba\",\"premise-dependency:sha256:2c7bcc1a578e79e918f733979c909645fcdbea7ab5431b2102c84b8d50c3f111\",\"premise-dependency:sha256:351e5d1bb0dabd1670c0cc16cddffc91de095b0ad85529102ac250c8f60e2c27\",\"premise-dependency:sha256:3cbbaad0d9951b2693a64fb1aa2a4b87c38ca3e8b5e6a1d181f6065614d21fc9\",\"premise-dependency:sha256:4a8ddcb7c0dc96fb3cc07337f776118f33ce60a5525d2a4592687420683cb030\",\"premise-dependency:sha256:50e4f174e4c5f942cb17a3d97451b51b47be2c0e21385232a34a4e4829d1cd05\",\"premise-dependency:sha256:63b30380fc0c0c52a3f76e440c4679e64994a840b7ef36768e76dc8c63b62a6b\",\"premise-dependency:sha256:7effb38e32ef47b525d0ee5904cdb9f2828eab04c636a3995166eaa83dd58fd5\",\"premise-dependency:sha256:9c857fd14f12f6f8f00f404ef2d3a3f6d25a17b14aa5e0bd8bed50b3727b93a2\",\"premise-dependency:sha256:9d4f62baa04e0a42d4131aba61b8aeaa0fa6175fec9a688dd16719b9fcb79d3e\",\"premise-dependency:sha256:a251190ef78ede9a89a40495d96a359cd53949438a636586dc48d94b3caca817\",\"premise-dependency:sha256:d31eb927099535332131e922625b3f8ec4c6ab6ff20d6a3d01c994452e52ed29\",\"publisher:publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c\",\"relation:sha256:630ca8178619d8c12efabc55ed7df557b3a61372fbd5122a69cf8ba48c418311\",\"self-derivation-record:sha256:624ed3f49058ee14aff72e5d4439cc353a0070239a110569a940381ac2c4bdb1\"],\"created_at\":\"2026-09-08T00:00:00Z\",\"derivations\":[{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"adapter.bin\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"authority/model.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"bridge.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/derivation-reflexivity.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/deriver-cycle-closed.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/ground-self.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/reflexion-identity.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"members/first.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"members/second.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"policy.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"evidence/derivation-reflexivity.json\",\"evidence/deriver-cycle-closed.json\",\"evidence/ground-self.json\",\"evidence/reflexion-identity.json\",\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"status.txt\"}],\"exclusions\":[],\"ground_paths\":[\"ground.txt\",\"mechanism.bin\"],\"parents\":[],\"publisher_id\":\"publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c\",\"relations\":[{\"mechanism_path\":\"adapter.bin\",\"relation_type\":\"CHECKS\",\"semantic_coordinate\":\"member-compatibility\",\"source_path\":\"members/first.json\",\"target_path\":\"members/second.json\"}],\"residual_obligations\":[],\"schema_version\":\"VSTD-SILO-COMMIT-0.1\",\"self_derivation_record\":{\"derivation_reflexivity\":true,\"derivation_reflexivity_evidence_path\":\"evidence/derivation-reflexivity.json\",\"deriver_cycle_closed\":true,\"deriver_cycle_closure_evidence_path\":\"evidence/deriver-cycle-closed.json\",\"ground_paths\":[\"ground.txt\"],\"ground_self\":true,\"ground_self_evidence_path\":\"evidence/ground-self.json\",\"mechanism_path\":\"mechanism.bin\",\"reflexion_identity\":true,\"reflexion_identity_evidence_path\":\"evidence/reflexion-identity.json\",\"relation_strength\":\"DERIVES\",\"residual_obligations\":[],\"retained_path\":[\"ground.txt\",\"mechanism.bin\",\"evidence/ground-self.json\",\"evidence/derivation-reflexivity.json\",\"evidence/reflexion-identity.json\",\"evidence/deriver-cycle-closed.json\",\"status.txt\"],\"subject_path\":\"status.txt\"}}",
+    "commit_digest": "sha256:cbe98c1e376b021ca10f58a9c2c902dcfb148bb513b4583d38139fd940f59c5f",
+    "objects": [
+      {
+        "bytes_base64url": "eyJhdXRob3JpdHlfYXhpb21fYWdlbmN5IjpbIkNIQUxMRU5HRV9XSVRIX0NPVU5URVJFVklERU5DRSIsIkVYSVRfQ09NUE9TSVRJT04iLCJFWFBPUlRfQUNDRVNTSUJMRV9TSUxPIiwiRk9SS19ERVJJVkFUSU9OIiwiSU5ERVBFTkRFTlRMWV9JTlNQRUNUX0FDQ0VTU0lCTEVfQVJUSUZBQ1RTIiwiUFJFU0VSVkVfQ09ORkxJQ1QiLCJQUkVTRVJWRV9VTktOT1dOIiwiU0VMRUNUX1RSVVNUX1JPT1RTIiwiV0lUSERSQVdfT1dOX0FVVEhPUklaQVRJT04iXSwiYXV0aG9yaXR5X2F4aW9tX2FnZW5jeV9kaWdlc3QiOiJzaGEyNTY6NDFlM2EyN2M4MzIyODc0YmI1NjM0ODkwZDMzY2ZmMmE5MTcwZjI5MDZjODNkNDVkOWM3OTY4ODM2ZDdlNDgyYyIsImF1dGhvcml0eV9heGlvbV9hZ2VuY3lfdmVyc2lvbiI6IlZTVEQtQVVUSE9SSVRZLUFYSU9NLUFHRU5DWS0wLjEiLCJhdXRob3JpdHlfbW9kZWxfcGF0aCI6ImF1dGhvcml0eS9tb2RlbC5qc29uIiwiY2Vuc3VzIjpbeyJuZWNlc3NpdHkiOiJORUNFU1NBUlkiLCJvYmplY3QiOnsiYXJ0aWZhY3Rfa2luZCI6ImF1dGhvcml0eS1tb2RlbCIsImRlY2xhcmVkX3NjaGVtYV9pZCI6IlZTVEQtQVVUSE9SSVRZLU1PREVMLTAuMSIsIm1lZGlhX3R5cGUiOiJhcHBsaWNhdGlvbi9qc29uIiwib2JqZWN0X2RpZ2VzdCI6InNoYTI1NjplZjMyNzQ5NDkzMjZkNjU2NzNjNTJkMzM0MDA3ZTFjZjk2MGU3MWYzNjg4ZGU1M2JlOGNhNTM1NTcyNjA1ZDE5Iiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELU9CSkVDVC0wLjEiLCJzaXplX2J5dGVzIjoxMjc5fSwicGF0aCI6ImF1dGhvcml0eS9tb2RlbC5qc29uIn0seyJuZWNlc3NpdHkiOiJORUNFU1NBUlkiLCJvYmplY3QiOnsiYXJ0aWZhY3Rfa2luZCI6InNlbGYtZGVyaXZhdGlvbi1ldmlkZW5jZSIsImRlY2xhcmVkX3NjaGVtYV9pZCI6IlZTVEQtU0VMRi1ERVJJVkFUSU9OLUVWSURFTkNFLTAuMSIsIm1lZGlhX3R5cGUiOiJhcHBsaWNhdGlvbi9qc29uIiwib2JqZWN0X2RpZ2VzdCI6InNoYTI1NjoyZGFiZWMyZDFmNGI0OWZkODFkZjQxNjI4Njk3YTdhYzE4NTcxZDNiOTk1MjY3YmY4Y2Y4Nzc1ZjU5YWUzMTlmIiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELU9CSkVDVC0wLjEiLCJzaXplX2J5dGVzIjoyMTJ9LCJwYXRoIjoiZXZpZGVuY2UvZGVyaXZhdGlvbi1yZWZsZXhpdml0eS5qc29uIn0seyJuZWNlc3NpdHkiOiJORUNFU1NBUlkiLCJvYmplY3QiOnsiYXJ0aWZhY3Rfa2luZCI6InNlbGYtZGVyaXZhdGlvbi1ldmlkZW5jZSIsImRlY2xhcmVkX3NjaGVtYV9pZCI6IlZTVEQtU0VMRi1ERVJJVkFUSU9OLUVWSURFTkNFLTAuMSIsIm1lZGlhX3R5cGUiOiJhcHBsaWNhdGlvbi9qc29uIiwib2JqZWN0X2RpZ2VzdCI6InNoYTI1Njo2NDJjMDdjNWUyYTM3ZjMxNDc3YmFmZTg2ODk4NDk5NGNkMDIwZWZmMDM1YjVlZjBlNWMwMTY5YzQ2Yjg3MjU5Iiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELU9CSkVDVC0wLjEiLCJzaXplX2J5dGVzIjoyMTB9LCJwYXRoIjoiZXZpZGVuY2UvZGVyaXZlci1jeWNsZS1jbG9zZWQuanNvbiJ9LHsibmVjZXNzaXR5IjoiTkVDRVNTQVJZIiwib2JqZWN0Ijp7ImFydGlmYWN0X2tpbmQiOiJzZWxmLWRlcml2YXRpb24tZXZpZGVuY2UiLCJkZWNsYXJlZF9zY2hlbWFfaWQiOiJWU1RELVNFTEYtREVSSVZBVElPTi1FVklERU5DRS0wLjEiLCJtZWRpYV90eXBlIjoiYXBwbGljYXRpb24vanNvbiIsIm9iamVjdF9kaWdlc3QiOiJzaGEyNTY6Y2JiMmM1NDZkMmE0OTQ3NmJhNWQ3M2Y1MTQ1NzY1Yzk3MjVkZDg5YmZlNDA2MTJkMTgwN2M5OWFiYTFjZGJkYyIsInNjaGVtYV92ZXJzaW9uIjoiVlNURC1PQkpFQ1QtMC4xIiwic2l6ZV9ieXRlcyI6MjAxfSwicGF0aCI6ImV2aWRlbmNlL2dyb3VuZC1zZWxmLmpzb24ifSx7Im5lY2Vzc2l0eSI6Ik5FQ0VTU0FSWSIsIm9iamVjdCI6eyJhcnRpZmFjdF9raW5kIjoic2VsZi1kZXJpdmF0aW9uLWV2aWRlbmNlIiwiZGVjbGFyZWRfc2NoZW1hX2lkIjoiVlNURC1TRUxGLURFUklWQVRJT04tRVZJREVOQ0UtMC4xIiwibWVkaWFfdHlwZSI6ImFwcGxpY2F0aW9uL2pzb24iLCJvYmplY3RfZGlnZXN0Ijoic2hhMjU2OmQ2Y2M3OTEzNWZhMjA0ODM5NGMyNTE3YjdiOTYyNjVlYjJmMjlmYmE0MDk4YWEwOGYxOGFjMjVmNjM2OWZmNzUiLCJzY2hlbWFfdmVyc2lvbiI6IlZTVEQtT0JKRUNULTAuMSIsInNpemVfYnl0ZXMiOjIwOH0sInBhdGgiOiJldmlkZW5jZS9yZWZsZXhpb24taWRlbnRpdHkuanNvbiJ9LHsibmVjZXNzaXR5IjoiTkVDRVNTQVJZIiwib2JqZWN0Ijp7ImFydGlmYWN0X2tpbmQiOiJncm91bmQiLCJkZWNsYXJlZF9zY2hlbWFfaWQiOiJHUk9VTkQtMSIsIm1lZGlhX3R5cGUiOiJ0ZXh0L3BsYWluIiwib2JqZWN0X2RpZ2VzdCI6InNoYTI1NjpkYmIzYjUwZTU5YzczMjZiMmZmN2Q2NjE5NDMwMjU3YjkxODhjZjNjMGI4ZDc3OGY3Mjc1ZmZkM2JmNDk5OGEyIiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELU9CSkVDVC0wLjEiLCJzaXplX2J5dGVzIjo2fSwicGF0aCI6Imdyb3VuZC50eHQifSx7Im5lY2Vzc2l0eSI6Ik5FQ0VTU0FSWSIsIm9iamVjdCI6eyJhcnRpZmFjdF9raW5kIjoiZGVyaXZhdGlvbi1tZWNoYW5pc20iLCJkZWNsYXJlZF9zY2hlbWFfaWQiOiJWU1RELVNFTEYtREVSSVZBVElPTi1NRUNIQU5JU00tMC4xIiwibWVkaWFfdHlwZSI6ImFwcGxpY2F0aW9uL2pzb24iLCJvYmplY3RfZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJzY2hlbWFfdmVyc2lvbiI6IlZTVEQtT0JKRUNULTAuMSIsInNpemVfYnl0ZXMiOjU5Nn0sInBhdGgiOiJtZWNoYW5pc20uYmluIn0seyJuZWNlc3NpdHkiOiJORUNFU1NBUlkiLCJvYmplY3QiOnsiYXJ0aWZhY3Rfa2luZCI6InNlbGYtZGVyaXZhdGlvbi1zdGF0dXMiLCJkZWNsYXJlZF9zY2hlbWFfaWQiOiJTVEFUVVMtMSIsIm1lZGlhX3R5cGUiOiJ0ZXh0L3BsYWluIiwib2JqZWN0X2RpZ2VzdCI6InNoYTI1NjpmZDY5MjI5MzU0MjgyMTQ2ZTk0YjU1ZWE5ZmY0OGNhZTY1M2QzMTA4MzM5NjdlOTM1NmIzMmQ2OWI5NGU5ZTE2Iiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELU9CSkVDVC0wLjEiLCJzaXplX2J5dGVzIjoxMn0sInBhdGgiOiJzdGF0dXMudHh0In1dLCJjb21wbGV0ZW5lc3Nfa2luZCI6IlNJTE9fQ0VOU1VTIiwiY292ZXJhZ2VfdW5pdmVyc2UiOlsiYXV0aG9yaXR5LWFjdGlvbjpDSEFMTEVOR0VfV0lUSF9DT1VOVEVSRVZJREVOQ0UiLCJhdXRob3JpdHktYWN0aW9uOkVYSVRfQ09NUE9TSVRJT04iLCJhdXRob3JpdHktYWN0aW9uOkVYUE9SVF9BQ0NFU1NJQkxFX1NJTE8iLCJhdXRob3JpdHktYWN0aW9uOkZPUktfREVSSVZBVElPTiIsImF1dGhvcml0eS1hY3Rpb246SU5ERVBFTkRFTlRMWV9JTlNQRUNUX0FDQ0VTU0lCTEVfQVJUSUZBQ1RTIiwiYXV0aG9yaXR5LWFjdGlvbjpQUkVTRVJWRV9DT05GTElDVCIsImF1dGhvcml0eS1hY3Rpb246UFJFU0VSVkVfVU5LTk9XTiIsImF1dGhvcml0eS1hY3Rpb246U0VMRUNUX1RSVVNUX1JPT1RTIiwiYXV0aG9yaXR5LWFjdGlvbjpXSVRIRFJBV19PV05fQVVUSE9SSVpBVElPTiIsImF1dGhvcml0eS1hY3Rvci1zY29wZS1iaW5kaW5nOlZTVEQtQVVUSE9SSVRZLUFDVE9SLVNDT1BFLTAuMTpzaGEyNTY6ZTQxNjNhMDNlMjlhN2FhODMyNjA3MTE2MjI0MDJiZDJmNTc1NmRhZjA0NjZkODNmNTVmNDdlYWRkMWVhMTEwMSIsImF1dGhvcml0eS1iaW5kaW5nOlZTVEQtQVVUSE9SSVRZLUFYSU9NLUFHRU5DWS0wLjE6c2hhMjU2OjQxZTNhMjdjODMyMjg3NGJiNTYzNDg5MGQzM2NmZjJhOTE3MGYyOTA2YzgzZDQ1ZDljNzk2ODgzNmQ3ZTQ4MmMiLCJhdXRob3JpdHktaW5pdGlhbC1zdGF0ZTppbml0aWFsIiwiYXV0aG9yaXR5LW1vZGVsLXBhdGg6YXV0aG9yaXR5L21vZGVsLmpzb24iLCJhdXRob3JpdHktbW9kZWw6c2hhMjU2OmVmMzI3NDk0OTMyNmQ2NTY3M2M1MmQzMzQwMDdlMWNmOTYwZTcxZjM2ODhkZTUzYmU4Y2E1MzU1NzI2MDVkMTkiLCJhdXRob3JpdHktc3RhdGUtZ3JvdW5kLWFjdGlvbjppbml0aWFsOkNIQUxMRU5HRV9XSVRIX0NPVU5URVJFVklERU5DRSIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOmluaXRpYWw6RVhJVF9DT01QT1NJVElPTiIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOmluaXRpYWw6RVhQT1JUX0FDQ0VTU0lCTEVfU0lMTyIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOmluaXRpYWw6Rk9SS19ERVJJVkFUSU9OIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246aW5pdGlhbDpJTkRFUEVOREVOVExZX0lOU1BFQ1RfQUNDRVNTSUJMRV9BUlRJRkFDVFMiLCJhdXRob3JpdHktc3RhdGUtZ3JvdW5kLWFjdGlvbjppbml0aWFsOlBSRVNFUlZFX0NPTkZMSUNUIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246aW5pdGlhbDpQUkVTRVJWRV9VTktOT1dOIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246aW5pdGlhbDpTRUxFQ1RfVFJVU1RfUk9PVFMiLCJhdXRob3JpdHktc3RhdGUtZ3JvdW5kLWFjdGlvbjppbml0aWFsOldJVEhEUkFXX09XTl9BVVRIT1JJWkFUSU9OIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246c3RlYWR5OkNIQUxMRU5HRV9XSVRIX0NPVU5URVJFVklERU5DRSIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOnN0ZWFkeTpFWElUX0NPTVBPU0lUSU9OIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246c3RlYWR5OkVYUE9SVF9BQ0NFU1NJQkxFX1NJTE8iLCJhdXRob3JpdHktc3RhdGUtZ3JvdW5kLWFjdGlvbjpzdGVhZHk6Rk9SS19ERVJJVkFUSU9OIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246c3RlYWR5OklOREVQRU5ERU5UTFlfSU5TUEVDVF9BQ0NFU1NJQkxFX0FSVElGQUNUUyIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOnN0ZWFkeTpQUkVTRVJWRV9DT05GTElDVCIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOnN0ZWFkeTpQUkVTRVJWRV9VTktOT1dOIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246c3RlYWR5OlNFTEVDVF9UUlVTVF9ST09UUyIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOnN0ZWFkeTpXSVRIRFJBV19PV05fQVVUSE9SSVpBVElPTiIsImF1dGhvcml0eS1zdGF0ZS11bml2ZXJzZTppbml0aWFsIiwiYXV0aG9yaXR5LXN0YXRlLXVuaXZlcnNlOnN0ZWFkeSIsImF1dGhvcml0eS1zdGF0ZTpzaGEyNTY6NzA3ZWJlZTVhZjlkNGIyMDg0YTI4MzQ4OWZmODg2MWVlNmNjMzFmZTU5ZmM1OGFhNThjMDU1NjU4YTNkOGUyZiIsImF1dGhvcml0eS1zdGF0ZTpzaGEyNTY6ZjBkMTkxNjAwNGQ0NDhlZDYzYzNkOTZkYmU1MTM1NjhmODllNjIwNmIzM2RlZGViZThhNjlhMzAyM2NhMWRhOCIsImF1dGhvcml0eS10cmFuc2l0aW9uLXVuaXZlcnNlOnNldHRsZSIsImF1dGhvcml0eS10cmFuc2l0aW9uOnNoYTI1Njo0ZTIwNWQwZGQ0MGE4ODQ1ZDJkZTc3MWQxNWRkNDQzZjZjYjI3MDFmMjYzNDJjNWZjOGEzMzM2YmNkNTZlNDBiIiwiY29tcGxldGVuZXNzLWtpbmQ6U0lMT19DRU5TVVMiLCJjcmVhdGVkLWF0OnNoYTI1NjozY2Y1YzAwYTRhMGJkMTJjZmM3YWNlZTJjMTJlMjE2YTA1YzFlYjFmMGVlM2MwZjhhYmE0ODBlOTU3MmQ4ZjI4IiwiZGVyaXZhdGlvbjpzaGEyNTY6MjRlY2EwZmYwMzRjOGY1NGU4MmE4NmI1NTRmOWE1MGNlMWQzNGIyYzYzMjAxYjcxY2VlNjljZmZkNmI4OWYwNyIsImRlcml2YXRpb246c2hhMjU2OjU3N2FlNGZkMWZiNDlmZGI1MzBkNzU1NjM3ZTdkOTVlNGY4MGZhN2VmMGQxNDkwZjA1YjdhNzg5Nzc0YzI5OWEiLCJkZXJpdmF0aW9uOnNoYTI1Njo4N2I1MWY2YzljNzMyZmIxOWJmZmExYjc1YWZhN2M5ZmZhYTU5NzEyOTVjMzQyYmU0YjcxZDhjYzA3MjZhNGRmIiwiZGVyaXZhdGlvbjpzaGEyNTY6OWQyMjJjMmEzNzUxODUyMzJhYzZkZWM5MTdlZGE4ZWRjZGMyMmRlMTgzYjAzYTAwMGViOTdlZmMyOGUwZDc5NiIsImRlcml2YXRpb246c2hhMjU2OmEyMzg3MTM3NjhjM2I1N2JiMGY0ZmQwYTdhODU5NTk4NzZkMTRhMWU1YjM4OWMzOGJhYTBhMzA2ZWNjYjMxN2QiLCJkZXJpdmF0aW9uOnNoYTI1NjpkNDM1NTAzNDIzYjkzYTM1N2VjMDY0MjFiZDNhNzNkMGEzM2VmMTdhMDgyMGZiYWRhYzA5Nzk4YTljYzRhMGE5IiwiZ3JvdW5kLXBhdGg6Z3JvdW5kLnR4dCIsImdyb3VuZC1wYXRoOm1lY2hhbmlzbS5iaW4iLCJtZWNoYW5pc20tZGVwZW5kZW5jeTpzaGEyNTY6MzZkYTc3Zjc1OWE0OTNkNGQ0MDBkODRhMWQxNTFiYjdjYzQxZWEzYjdjOTgwZDQzMjA5YzdiMmFiOGM5NTI2YyIsIm1lY2hhbmlzbS1kZXBlbmRlbmN5OnNoYTI1Njo1MWM3MGFjOGI5ZmM2NDQyNWYzZDE4Y2QyN2NjMDQ5MGJjZWMxZTE0ODAzNDM3YjBkMjE1YjA4MGI0YmRmYTdlIiwibWVjaGFuaXNtLWRlcGVuZGVuY3k6c2hhMjU2OjkyZjhhY2NhY2JjZTg3OWY4MjlkZmJlZWQxNWU3Y2RlODFjMWZlYWQwNWI3YjQ2YmMwZDc1MDE3ZTI2NzQ0OTciLCJtZWNoYW5pc20tZGVwZW5kZW5jeTpzaGEyNTY6Y2EwYzZlZWEzODEyNzI2YjQ3ZTk0YzRhMTc1MjkxYWUwMzhhY2IxYzM0NzU2MTNjY2Y5ZDE3NjlhMzMxZDNhNCIsIm1lY2hhbmlzbS1kZXBlbmRlbmN5OnNoYTI1NjplZjlkN2I0NGU0MjhkYjkxYzExZDgzNWZlZDJlZmY2ZGYxMTVhYmIwMTcyYzcxNzZlMWM3OTEzYzk0OGJhZDA5IiwibWVjaGFuaXNtLWRlcGVuZGVuY3k6c2hhMjU2OmYxOTYxYTBiYWYzMDliNzUxNzQ3NDhiY2YyNDI4M2Y2ZDE2OTJjOWJlNWNiNGM1Mjk3NDFjNTJiZTAwN2NjYTAiLCJuZWNlc3NpdHk6YXV0aG9yaXR5L21vZGVsLmpzb246TkVDRVNTQVJZIiwibmVjZXNzaXR5OmV2aWRlbmNlL2Rlcml2YXRpb24tcmVmbGV4aXZpdHkuanNvbjpORUNFU1NBUlkiLCJuZWNlc3NpdHk6ZXZpZGVuY2UvZGVyaXZlci1jeWNsZS1jbG9zZWQuanNvbjpORUNFU1NBUlkiLCJuZWNlc3NpdHk6ZXZpZGVuY2UvZ3JvdW5kLXNlbGYuanNvbjpORUNFU1NBUlkiLCJuZWNlc3NpdHk6ZXZpZGVuY2UvcmVmbGV4aW9uLWlkZW50aXR5Lmpzb246TkVDRVNTQVJZIiwibmVjZXNzaXR5Omdyb3VuZC50eHQ6TkVDRVNTQVJZIiwibmVjZXNzaXR5Om1lY2hhbmlzbS5iaW46TkVDRVNTQVJZIiwibmVjZXNzaXR5OnN0YXR1cy50eHQ6TkVDRVNTQVJZIiwib2JqZWN0OmF1dGhvcml0eS9tb2RlbC5qc29uIiwib2JqZWN0OmV2aWRlbmNlL2Rlcml2YXRpb24tcmVmbGV4aXZpdHkuanNvbiIsIm9iamVjdDpldmlkZW5jZS9kZXJpdmVyLWN5Y2xlLWNsb3NlZC5qc29uIiwib2JqZWN0OmV2aWRlbmNlL2dyb3VuZC1zZWxmLmpzb24iLCJvYmplY3Q6ZXZpZGVuY2UvcmVmbGV4aW9uLWlkZW50aXR5Lmpzb24iLCJvYmplY3Q6Z3JvdW5kLnR4dCIsIm9iamVjdDptZWNoYW5pc20uYmluIiwib2JqZWN0OnN0YXR1cy50eHQiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjA5MTNmNDVhNjUzNWVmMjNlNmY2ZDdiZTgwODMxNzVjYzc3MjJlOTNiMjE3NmQyMWJkY2MzZWVhODRiOTYyMzAiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjI4NWZmOGE5OTJhZDBkMmQxY2FlN2FiMzYxM2UwMDcyZDhlN2I1MmJlMDU3NDBiYzg5MjA5YjNhMmZjNDJjODkiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjI4ZTc5ZjA2MTJkZThiMTQwY2JmNjhkOWIxOWYzYWNjMmY4ZGNkZWJhODM0Yzk2NWMxNjE1YjllZTJiZGI0YmEiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjJjN2JjYzFhNTc4ZTc5ZTkxOGY3MzM5NzljOTA5NjQ1ZmNkYmVhN2FiNTQzMWIyMTAyYzg0YjhkNTBjM2YxMTEiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjNjYmJhYWQwZDk5NTFiMjY5M2E2NGZiMWFhMmE0Yjg3YzM4Y2EzZThiNWU2YTFkMTgxZjYwNjU2MTRkMjFmYzkiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjRhOGRkY2I3YzBkYzk2ZmIzY2MwNzMzN2Y3NzYxMThmMzNjZTYwYTU1MjVkMmE0NTkyNjg3NDIwNjgzY2IwMzAiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjUwZTRmMTc0ZTRjNWY5NDJjYjE3YTNkOTc0NTFiNTFiNDdiZTJjMGUyMTM4NTIzMmEzNGE0ZTQ4MjlkMWNkMDUiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjdlZmZiMzhlMzJlZjQ3YjUyNWQwZWU1OTA0Y2RiOWYyODI4ZWFiMDRjNjM2YTM5OTUxNjZlYWE4M2RkNThmZDUiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjlkNGY2MmJhYTA0ZTBhNDJkNDEzMWFiYTYxYjhhZWFhMGZhNjE3NWZlYzlhNjg4ZGQxNjcxOWI5ZmNiNzlkM2UiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OmEyNTExOTBlZjc4ZWRlOWE4OWE0MDQ5NWQ5NmEzNTljZDUzOTQ5NDM4YTYzNjU4NmRjNDhkOTRiM2NhY2E4MTciLCJwdWJsaXNoZXI6cHVibGlzaGVyOnNoYTI1Njo1NjQ3NWFhNzU0NjM0NzRjMDI4NWRmNWRiZjJiY2FiNzNkYTY1MTM1ODgzOWU5Yjc3NDgxYjJlYWIxMDc3MDhjIiwic2VsZi1kZXJpdmF0aW9uLXJlY29yZDpzaGEyNTY6NjI0ZWQzZjQ5MDU4ZWUxNGFmZjcyZTVkNDQzOWNjMzUzYTAwNzAyMzlhMTEwNTY5YTk0MDM4MWFjMmM0YmRiMSJdLCJjcmVhdGVkX2F0IjoiMjAyNi0wOS0wOFQwMDowMDowMVoiLCJkZXJpdmF0aW9ucyI6W3sibWVjaGFuaXNtX3BhdGgiOiJtZWNoYW5pc20uYmluIiwicHJlbWlzZV9wYXRocyI6WyJncm91bmQudHh0Il0sInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInRhcmdldF9wYXRoIjoiYXV0aG9yaXR5L21vZGVsLmpzb24ifSx7Im1lY2hhbmlzbV9wYXRoIjoibWVjaGFuaXNtLmJpbiIsInByZW1pc2VfcGF0aHMiOlsiZ3JvdW5kLnR4dCJdLCJyZWxhdGlvbl9zdHJlbmd0aCI6IkRFUklWRVMiLCJ0YXJnZXRfcGF0aCI6ImV2aWRlbmNlL2Rlcml2YXRpb24tcmVmbGV4aXZpdHkuanNvbiJ9LHsibWVjaGFuaXNtX3BhdGgiOiJtZWNoYW5pc20uYmluIiwicHJlbWlzZV9wYXRocyI6WyJncm91bmQudHh0Il0sInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInRhcmdldF9wYXRoIjoiZXZpZGVuY2UvZGVyaXZlci1jeWNsZS1jbG9zZWQuanNvbiJ9LHsibWVjaGFuaXNtX3BhdGgiOiJtZWNoYW5pc20uYmluIiwicHJlbWlzZV9wYXRocyI6WyJncm91bmQudHh0Il0sInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInRhcmdldF9wYXRoIjoiZXZpZGVuY2UvZ3JvdW5kLXNlbGYuanNvbiJ9LHsibWVjaGFuaXNtX3BhdGgiOiJtZWNoYW5pc20uYmluIiwicHJlbWlzZV9wYXRocyI6WyJncm91bmQudHh0Il0sInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInRhcmdldF9wYXRoIjoiZXZpZGVuY2UvcmVmbGV4aW9uLWlkZW50aXR5Lmpzb24ifSx7Im1lY2hhbmlzbV9wYXRoIjoibWVjaGFuaXNtLmJpbiIsInByZW1pc2VfcGF0aHMiOlsiZXZpZGVuY2UvZGVyaXZhdGlvbi1yZWZsZXhpdml0eS5qc29uIiwiZXZpZGVuY2UvZGVyaXZlci1jeWNsZS1jbG9zZWQuanNvbiIsImV2aWRlbmNlL2dyb3VuZC1zZWxmLmpzb24iLCJldmlkZW5jZS9yZWZsZXhpb24taWRlbnRpdHkuanNvbiIsImdyb3VuZC50eHQiXSwicmVsYXRpb25fc3RyZW5ndGgiOiJERVJJVkVTIiwidGFyZ2V0X3BhdGgiOiJzdGF0dXMudHh0In1dLCJleGNsdXNpb25zIjpbXSwiZ3JvdW5kX3BhdGhzIjpbImdyb3VuZC50eHQiLCJtZWNoYW5pc20uYmluIl0sInBhcmVudHMiOltdLCJwdWJsaXNoZXJfaWQiOiJwdWJsaXNoZXI6c2hhMjU2OjU2NDc1YWE3NTQ2MzQ3NGMwMjg1ZGY1ZGJmMmJjYWI3M2RhNjUxMzU4ODM5ZTliNzc0ODFiMmVhYjEwNzcwOGMiLCJyZWxhdGlvbnMiOltdLCJyZXNpZHVhbF9vYmxpZ2F0aW9ucyI6W10sInNjaGVtYV92ZXJzaW9uIjoiVlNURC1TSUxPLUNPTU1JVC0wLjEiLCJzZWxmX2Rlcml2YXRpb25fcmVjb3JkIjp7ImRlcml2YXRpb25fcmVmbGV4aXZpdHkiOnRydWUsImRlcml2YXRpb25fcmVmbGV4aXZpdHlfZXZpZGVuY2VfcGF0aCI6ImV2aWRlbmNlL2Rlcml2YXRpb24tcmVmbGV4aXZpdHkuanNvbiIsImRlcml2ZXJfY3ljbGVfY2xvc2VkIjp0cnVlLCJkZXJpdmVyX2N5Y2xlX2Nsb3N1cmVfZXZpZGVuY2VfcGF0aCI6ImV2aWRlbmNlL2Rlcml2ZXItY3ljbGUtY2xvc2VkLmpzb24iLCJncm91bmRfcGF0aHMiOlsiZ3JvdW5kLnR4dCJdLCJncm91bmRfc2VsZiI6dHJ1ZSwiZ3JvdW5kX3NlbGZfZXZpZGVuY2VfcGF0aCI6ImV2aWRlbmNlL2dyb3VuZC1zZWxmLmpzb24iLCJtZWNoYW5pc21fcGF0aCI6Im1lY2hhbmlzbS5iaW4iLCJyZWZsZXhpb25faWRlbnRpdHkiOnRydWUsInJlZmxleGlvbl9pZGVudGl0eV9ldmlkZW5jZV9wYXRoIjoiZXZpZGVuY2UvcmVmbGV4aW9uLWlkZW50aXR5Lmpzb24iLCJyZWxhdGlvbl9zdHJlbmd0aCI6IkRFUklWRVMiLCJyZXNpZHVhbF9vYmxpZ2F0aW9ucyI6W10sInJldGFpbmVkX3BhdGgiOlsiZ3JvdW5kLnR4dCIsIm1lY2hhbmlzbS5iaW4iLCJldmlkZW5jZS9ncm91bmQtc2VsZi5qc29uIiwiZXZpZGVuY2UvZGVyaXZhdGlvbi1yZWZsZXhpdml0eS5qc29uIiwiZXZpZGVuY2UvcmVmbGV4aW9uLWlkZW50aXR5Lmpzb24iLCJldmlkZW5jZS9kZXJpdmVyLWN5Y2xlLWNsb3NlZC5qc29uIiwic3RhdHVzLnR4dCJdLCJzdWJqZWN0X3BhdGgiOiJzdGF0dXMudHh0In19",
+        "object": {
+          "artifact_kind": "member-commit",
+          "declared_schema_id": "VSTD-SILO-COMMIT-0.1",
+          "media_type": "application/json",
+          "object_digest": "sha256:2ca50256a673c9682ce09e9056c4965e144ea5229539c52579695d842490c586",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 10542
+        }
+      },
+      {
+        "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJkZXJpdmF0aW9uX3JlZmxleGl2aXR5Iiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELVNFTEYtREVSSVZBVElPTi1FVklERU5DRS0wLjEiLCJzdWJqZWN0X3BhdGgiOiJzdGF0dXMudHh0In0",
+        "object": {
+          "artifact_kind": "self-derivation-evidence",
+          "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+          "media_type": "application/json",
+          "object_digest": "sha256:2dabec2d1f4b49fd81df41628697a7ac18571d3b995267bf8cf8775f59ae319f",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 212
+        }
+      },
+      {
+        "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJkZXJpdmVyX2N5Y2xlX2Nsb3NlZCIsInNjaGVtYV92ZXJzaW9uIjoiVlNURC1TRUxGLURFUklWQVRJT04tRVZJREVOQ0UtMC4xIiwic3ViamVjdF9wYXRoIjoic3RhdHVzLnR4dCJ9",
+        "object": {
+          "artifact_kind": "self-derivation-evidence",
+          "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+          "media_type": "application/json",
+          "object_digest": "sha256:642c07c5e2a37f31477bafe868984994cd020eff035b5ef0e5c0169c46b87259",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 210
+        }
+      },
+      {
+        "bytes_base64url": "eyJhdXRob3JpdHlfYXhpb21fYWdlbmN5IjpbIkNIQUxMRU5HRV9XSVRIX0NPVU5URVJFVklERU5DRSIsIkVYSVRfQ09NUE9TSVRJT04iLCJFWFBPUlRfQUNDRVNTSUJMRV9TSUxPIiwiRk9SS19ERVJJVkFUSU9OIiwiSU5ERVBFTkRFTlRMWV9JTlNQRUNUX0FDQ0VTU0lCTEVfQVJUSUZBQ1RTIiwiUFJFU0VSVkVfQ09ORkxJQ1QiLCJQUkVTRVJWRV9VTktOT1dOIiwiU0VMRUNUX1RSVVNUX1JPT1RTIiwiV0lUSERSQVdfT1dOX0FVVEhPUklaQVRJT04iXSwiYXV0aG9yaXR5X2F4aW9tX2FnZW5jeV9kaWdlc3QiOiJzaGEyNTY6NDFlM2EyN2M4MzIyODc0YmI1NjM0ODkwZDMzY2ZmMmE5MTcwZjI5MDZjODNkNDVkOWM3OTY4ODM2ZDdlNDgyYyIsImF1dGhvcml0eV9heGlvbV9hZ2VuY3lfdmVyc2lvbiI6IlZTVEQtQVVUSE9SSVRZLUFYSU9NLUFHRU5DWS0wLjEiLCJhdXRob3JpdHlfbW9kZWxfcGF0aCI6ImF1dGhvcml0eS9tb2RlbC5qc29uIiwiY2Vuc3VzIjpbeyJuZWNlc3NpdHkiOiJORUNFU1NBUlkiLCJvYmplY3QiOnsiYXJ0aWZhY3Rfa2luZCI6ImF1dGhvcml0eS1tb2RlbCIsImRlY2xhcmVkX3NjaGVtYV9pZCI6IlZTVEQtQVVUSE9SSVRZLU1PREVMLTAuMSIsIm1lZGlhX3R5cGUiOiJhcHBsaWNhdGlvbi9qc29uIiwib2JqZWN0X2RpZ2VzdCI6InNoYTI1NjplZjMyNzQ5NDkzMjZkNjU2NzNjNTJkMzM0MDA3ZTFjZjk2MGU3MWYzNjg4ZGU1M2JlOGNhNTM1NTcyNjA1ZDE5Iiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELU9CSkVDVC0wLjEiLCJzaXplX2J5dGVzIjoxMjc5fSwicGF0aCI6ImF1dGhvcml0eS9tb2RlbC5qc29uIn0seyJuZWNlc3NpdHkiOiJORUNFU1NBUlkiLCJvYmplY3QiOnsiYXJ0aWZhY3Rfa2luZCI6InNlbGYtZGVyaXZhdGlvbi1ldmlkZW5jZSIsImRlY2xhcmVkX3NjaGVtYV9pZCI6IlZTVEQtU0VMRi1ERVJJVkFUSU9OLUVWSURFTkNFLTAuMSIsIm1lZGlhX3R5cGUiOiJhcHBsaWNhdGlvbi9qc29uIiwib2JqZWN0X2RpZ2VzdCI6InNoYTI1NjoyZGFiZWMyZDFmNGI0OWZkODFkZjQxNjI4Njk3YTdhYzE4NTcxZDNiOTk1MjY3YmY4Y2Y4Nzc1ZjU5YWUzMTlmIiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELU9CSkVDVC0wLjEiLCJzaXplX2J5dGVzIjoyMTJ9LCJwYXRoIjoiZXZpZGVuY2UvZGVyaXZhdGlvbi1yZWZsZXhpdml0eS5qc29uIn0seyJuZWNlc3NpdHkiOiJORUNFU1NBUlkiLCJvYmplY3QiOnsiYXJ0aWZhY3Rfa2luZCI6InNlbGYtZGVyaXZhdGlvbi1ldmlkZW5jZSIsImRlY2xhcmVkX3NjaGVtYV9pZCI6IlZTVEQtU0VMRi1ERVJJVkFUSU9OLUVWSURFTkNFLTAuMSIsIm1lZGlhX3R5cGUiOiJhcHBsaWNhdGlvbi9qc29uIiwib2JqZWN0X2RpZ2VzdCI6InNoYTI1Njo2NDJjMDdjNWUyYTM3ZjMxNDc3YmFmZTg2ODk4NDk5NGNkMDIwZWZmMDM1YjVlZjBlNWMwMTY5YzQ2Yjg3MjU5Iiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELU9CSkVDVC0wLjEiLCJzaXplX2J5dGVzIjoyMTB9LCJwYXRoIjoiZXZpZGVuY2UvZGVyaXZlci1jeWNsZS1jbG9zZWQuanNvbiJ9LHsibmVjZXNzaXR5IjoiTkVDRVNTQVJZIiwib2JqZWN0Ijp7ImFydGlmYWN0X2tpbmQiOiJzZWxmLWRlcml2YXRpb24tZXZpZGVuY2UiLCJkZWNsYXJlZF9zY2hlbWFfaWQiOiJWU1RELVNFTEYtREVSSVZBVElPTi1FVklERU5DRS0wLjEiLCJtZWRpYV90eXBlIjoiYXBwbGljYXRpb24vanNvbiIsIm9iamVjdF9kaWdlc3QiOiJzaGEyNTY6Y2JiMmM1NDZkMmE0OTQ3NmJhNWQ3M2Y1MTQ1NzY1Yzk3MjVkZDg5YmZlNDA2MTJkMTgwN2M5OWFiYTFjZGJkYyIsInNjaGVtYV92ZXJzaW9uIjoiVlNURC1PQkpFQ1QtMC4xIiwic2l6ZV9ieXRlcyI6MjAxfSwicGF0aCI6ImV2aWRlbmNlL2dyb3VuZC1zZWxmLmpzb24ifSx7Im5lY2Vzc2l0eSI6Ik5FQ0VTU0FSWSIsIm9iamVjdCI6eyJhcnRpZmFjdF9raW5kIjoic2VsZi1kZXJpdmF0aW9uLWV2aWRlbmNlIiwiZGVjbGFyZWRfc2NoZW1hX2lkIjoiVlNURC1TRUxGLURFUklWQVRJT04tRVZJREVOQ0UtMC4xIiwibWVkaWFfdHlwZSI6ImFwcGxpY2F0aW9uL2pzb24iLCJvYmplY3RfZGlnZXN0Ijoic2hhMjU2OmQ2Y2M3OTEzNWZhMjA0ODM5NGMyNTE3YjdiOTYyNjVlYjJmMjlmYmE0MDk4YWEwOGYxOGFjMjVmNjM2OWZmNzUiLCJzY2hlbWFfdmVyc2lvbiI6IlZTVEQtT0JKRUNULTAuMSIsInNpemVfYnl0ZXMiOjIwOH0sInBhdGgiOiJldmlkZW5jZS9yZWZsZXhpb24taWRlbnRpdHkuanNvbiJ9LHsibmVjZXNzaXR5IjoiTkVDRVNTQVJZIiwib2JqZWN0Ijp7ImFydGlmYWN0X2tpbmQiOiJncm91bmQiLCJkZWNsYXJlZF9zY2hlbWFfaWQiOiJHUk9VTkQtMSIsIm1lZGlhX3R5cGUiOiJ0ZXh0L3BsYWluIiwib2JqZWN0X2RpZ2VzdCI6InNoYTI1NjpkYmIzYjUwZTU5YzczMjZiMmZmN2Q2NjE5NDMwMjU3YjkxODhjZjNjMGI4ZDc3OGY3Mjc1ZmZkM2JmNDk5OGEyIiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELU9CSkVDVC0wLjEiLCJzaXplX2J5dGVzIjo2fSwicGF0aCI6Imdyb3VuZC50eHQifSx7Im5lY2Vzc2l0eSI6Ik5FQ0VTU0FSWSIsIm9iamVjdCI6eyJhcnRpZmFjdF9raW5kIjoiZGVyaXZhdGlvbi1tZWNoYW5pc20iLCJkZWNsYXJlZF9zY2hlbWFfaWQiOiJWU1RELVNFTEYtREVSSVZBVElPTi1NRUNIQU5JU00tMC4xIiwibWVkaWFfdHlwZSI6ImFwcGxpY2F0aW9uL2pzb24iLCJvYmplY3RfZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJzY2hlbWFfdmVyc2lvbiI6IlZTVEQtT0JKRUNULTAuMSIsInNpemVfYnl0ZXMiOjU5Nn0sInBhdGgiOiJtZWNoYW5pc20uYmluIn0seyJuZWNlc3NpdHkiOiJORUNFU1NBUlkiLCJvYmplY3QiOnsiYXJ0aWZhY3Rfa2luZCI6InNlbGYtZGVyaXZhdGlvbi1zdGF0dXMiLCJkZWNsYXJlZF9zY2hlbWFfaWQiOiJTVEFUVVMtMSIsIm1lZGlhX3R5cGUiOiJ0ZXh0L3BsYWluIiwib2JqZWN0X2RpZ2VzdCI6InNoYTI1NjpmZDY5MjI5MzU0MjgyMTQ2ZTk0YjU1ZWE5ZmY0OGNhZTY1M2QzMTA4MzM5NjdlOTM1NmIzMmQ2OWI5NGU5ZTE2Iiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELU9CSkVDVC0wLjEiLCJzaXplX2J5dGVzIjoxMn0sInBhdGgiOiJzdGF0dXMudHh0In1dLCJjb21wbGV0ZW5lc3Nfa2luZCI6IlNJTE9fQ0VOU1VTIiwiY292ZXJhZ2VfdW5pdmVyc2UiOlsiYXV0aG9yaXR5LWFjdGlvbjpDSEFMTEVOR0VfV0lUSF9DT1VOVEVSRVZJREVOQ0UiLCJhdXRob3JpdHktYWN0aW9uOkVYSVRfQ09NUE9TSVRJT04iLCJhdXRob3JpdHktYWN0aW9uOkVYUE9SVF9BQ0NFU1NJQkxFX1NJTE8iLCJhdXRob3JpdHktYWN0aW9uOkZPUktfREVSSVZBVElPTiIsImF1dGhvcml0eS1hY3Rpb246SU5ERVBFTkRFTlRMWV9JTlNQRUNUX0FDQ0VTU0lCTEVfQVJUSUZBQ1RTIiwiYXV0aG9yaXR5LWFjdGlvbjpQUkVTRVJWRV9DT05GTElDVCIsImF1dGhvcml0eS1hY3Rpb246UFJFU0VSVkVfVU5LTk9XTiIsImF1dGhvcml0eS1hY3Rpb246U0VMRUNUX1RSVVNUX1JPT1RTIiwiYXV0aG9yaXR5LWFjdGlvbjpXSVRIRFJBV19PV05fQVVUSE9SSVpBVElPTiIsImF1dGhvcml0eS1hY3Rvci1zY29wZS1iaW5kaW5nOlZTVEQtQVVUSE9SSVRZLUFDVE9SLVNDT1BFLTAuMTpzaGEyNTY6ZTQxNjNhMDNlMjlhN2FhODMyNjA3MTE2MjI0MDJiZDJmNTc1NmRhZjA0NjZkODNmNTVmNDdlYWRkMWVhMTEwMSIsImF1dGhvcml0eS1iaW5kaW5nOlZTVEQtQVVUSE9SSVRZLUFYSU9NLUFHRU5DWS0wLjE6c2hhMjU2OjQxZTNhMjdjODMyMjg3NGJiNTYzNDg5MGQzM2NmZjJhOTE3MGYyOTA2YzgzZDQ1ZDljNzk2ODgzNmQ3ZTQ4MmMiLCJhdXRob3JpdHktaW5pdGlhbC1zdGF0ZTppbml0aWFsIiwiYXV0aG9yaXR5LW1vZGVsLXBhdGg6YXV0aG9yaXR5L21vZGVsLmpzb24iLCJhdXRob3JpdHktbW9kZWw6c2hhMjU2OmVmMzI3NDk0OTMyNmQ2NTY3M2M1MmQzMzQwMDdlMWNmOTYwZTcxZjM2ODhkZTUzYmU4Y2E1MzU1NzI2MDVkMTkiLCJhdXRob3JpdHktc3RhdGUtZ3JvdW5kLWFjdGlvbjppbml0aWFsOkNIQUxMRU5HRV9XSVRIX0NPVU5URVJFVklERU5DRSIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOmluaXRpYWw6RVhJVF9DT01QT1NJVElPTiIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOmluaXRpYWw6RVhQT1JUX0FDQ0VTU0lCTEVfU0lMTyIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOmluaXRpYWw6Rk9SS19ERVJJVkFUSU9OIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246aW5pdGlhbDpJTkRFUEVOREVOVExZX0lOU1BFQ1RfQUNDRVNTSUJMRV9BUlRJRkFDVFMiLCJhdXRob3JpdHktc3RhdGUtZ3JvdW5kLWFjdGlvbjppbml0aWFsOlBSRVNFUlZFX0NPTkZMSUNUIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246aW5pdGlhbDpQUkVTRVJWRV9VTktOT1dOIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246aW5pdGlhbDpTRUxFQ1RfVFJVU1RfUk9PVFMiLCJhdXRob3JpdHktc3RhdGUtZ3JvdW5kLWFjdGlvbjppbml0aWFsOldJVEhEUkFXX09XTl9BVVRIT1JJWkFUSU9OIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246c3RlYWR5OkNIQUxMRU5HRV9XSVRIX0NPVU5URVJFVklERU5DRSIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOnN0ZWFkeTpFWElUX0NPTVBPU0lUSU9OIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246c3RlYWR5OkVYUE9SVF9BQ0NFU1NJQkxFX1NJTE8iLCJhdXRob3JpdHktc3RhdGUtZ3JvdW5kLWFjdGlvbjpzdGVhZHk6Rk9SS19ERVJJVkFUSU9OIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246c3RlYWR5OklOREVQRU5ERU5UTFlfSU5TUEVDVF9BQ0NFU1NJQkxFX0FSVElGQUNUUyIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOnN0ZWFkeTpQUkVTRVJWRV9DT05GTElDVCIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOnN0ZWFkeTpQUkVTRVJWRV9VTktOT1dOIiwiYXV0aG9yaXR5LXN0YXRlLWdyb3VuZC1hY3Rpb246c3RlYWR5OlNFTEVDVF9UUlVTVF9ST09UUyIsImF1dGhvcml0eS1zdGF0ZS1ncm91bmQtYWN0aW9uOnN0ZWFkeTpXSVRIRFJBV19PV05fQVVUSE9SSVpBVElPTiIsImF1dGhvcml0eS1zdGF0ZS11bml2ZXJzZTppbml0aWFsIiwiYXV0aG9yaXR5LXN0YXRlLXVuaXZlcnNlOnN0ZWFkeSIsImF1dGhvcml0eS1zdGF0ZTpzaGEyNTY6NzA3ZWJlZTVhZjlkNGIyMDg0YTI4MzQ4OWZmODg2MWVlNmNjMzFmZTU5ZmM1OGFhNThjMDU1NjU4YTNkOGUyZiIsImF1dGhvcml0eS1zdGF0ZTpzaGEyNTY6ZjBkMTkxNjAwNGQ0NDhlZDYzYzNkOTZkYmU1MTM1NjhmODllNjIwNmIzM2RlZGViZThhNjlhMzAyM2NhMWRhOCIsImF1dGhvcml0eS10cmFuc2l0aW9uLXVuaXZlcnNlOnNldHRsZSIsImF1dGhvcml0eS10cmFuc2l0aW9uOnNoYTI1Njo0ZTIwNWQwZGQ0MGE4ODQ1ZDJkZTc3MWQxNWRkNDQzZjZjYjI3MDFmMjYzNDJjNWZjOGEzMzM2YmNkNTZlNDBiIiwiY29tcGxldGVuZXNzLWtpbmQ6U0lMT19DRU5TVVMiLCJjcmVhdGVkLWF0OnNoYTI1NjpmMjdiYWY1YTJhOWY3MmRmZGYzOGMyNjM1ZTBjYmM2M2EyMzEyODliN2VjMGY3YWVmMmYwNzY5OGEzYjg1ZmJhIiwiZGVyaXZhdGlvbjpzaGEyNTY6MjRlY2EwZmYwMzRjOGY1NGU4MmE4NmI1NTRmOWE1MGNlMWQzNGIyYzYzMjAxYjcxY2VlNjljZmZkNmI4OWYwNyIsImRlcml2YXRpb246c2hhMjU2OjU3N2FlNGZkMWZiNDlmZGI1MzBkNzU1NjM3ZTdkOTVlNGY4MGZhN2VmMGQxNDkwZjA1YjdhNzg5Nzc0YzI5OWEiLCJkZXJpdmF0aW9uOnNoYTI1Njo4N2I1MWY2YzljNzMyZmIxOWJmZmExYjc1YWZhN2M5ZmZhYTU5NzEyOTVjMzQyYmU0YjcxZDhjYzA3MjZhNGRmIiwiZGVyaXZhdGlvbjpzaGEyNTY6OWQyMjJjMmEzNzUxODUyMzJhYzZkZWM5MTdlZGE4ZWRjZGMyMmRlMTgzYjAzYTAwMGViOTdlZmMyOGUwZDc5NiIsImRlcml2YXRpb246c2hhMjU2OmEyMzg3MTM3NjhjM2I1N2JiMGY0ZmQwYTdhODU5NTk4NzZkMTRhMWU1YjM4OWMzOGJhYTBhMzA2ZWNjYjMxN2QiLCJkZXJpdmF0aW9uOnNoYTI1NjpkNDM1NTAzNDIzYjkzYTM1N2VjMDY0MjFiZDNhNzNkMGEzM2VmMTdhMDgyMGZiYWRhYzA5Nzk4YTljYzRhMGE5IiwiZ3JvdW5kLXBhdGg6Z3JvdW5kLnR4dCIsImdyb3VuZC1wYXRoOm1lY2hhbmlzbS5iaW4iLCJtZWNoYW5pc20tZGVwZW5kZW5jeTpzaGEyNTY6MzZkYTc3Zjc1OWE0OTNkNGQ0MDBkODRhMWQxNTFiYjdjYzQxZWEzYjdjOTgwZDQzMjA5YzdiMmFiOGM5NTI2YyIsIm1lY2hhbmlzbS1kZXBlbmRlbmN5OnNoYTI1Njo1MWM3MGFjOGI5ZmM2NDQyNWYzZDE4Y2QyN2NjMDQ5MGJjZWMxZTE0ODAzNDM3YjBkMjE1YjA4MGI0YmRmYTdlIiwibWVjaGFuaXNtLWRlcGVuZGVuY3k6c2hhMjU2OjkyZjhhY2NhY2JjZTg3OWY4MjlkZmJlZWQxNWU3Y2RlODFjMWZlYWQwNWI3YjQ2YmMwZDc1MDE3ZTI2NzQ0OTciLCJtZWNoYW5pc20tZGVwZW5kZW5jeTpzaGEyNTY6Y2EwYzZlZWEzODEyNzI2YjQ3ZTk0YzRhMTc1MjkxYWUwMzhhY2IxYzM0NzU2MTNjY2Y5ZDE3NjlhMzMxZDNhNCIsIm1lY2hhbmlzbS1kZXBlbmRlbmN5OnNoYTI1NjplZjlkN2I0NGU0MjhkYjkxYzExZDgzNWZlZDJlZmY2ZGYxMTVhYmIwMTcyYzcxNzZlMWM3OTEzYzk0OGJhZDA5IiwibWVjaGFuaXNtLWRlcGVuZGVuY3k6c2hhMjU2OmYxOTYxYTBiYWYzMDliNzUxNzQ3NDhiY2YyNDI4M2Y2ZDE2OTJjOWJlNWNiNGM1Mjk3NDFjNTJiZTAwN2NjYTAiLCJuZWNlc3NpdHk6YXV0aG9yaXR5L21vZGVsLmpzb246TkVDRVNTQVJZIiwibmVjZXNzaXR5OmV2aWRlbmNlL2Rlcml2YXRpb24tcmVmbGV4aXZpdHkuanNvbjpORUNFU1NBUlkiLCJuZWNlc3NpdHk6ZXZpZGVuY2UvZGVyaXZlci1jeWNsZS1jbG9zZWQuanNvbjpORUNFU1NBUlkiLCJuZWNlc3NpdHk6ZXZpZGVuY2UvZ3JvdW5kLXNlbGYuanNvbjpORUNFU1NBUlkiLCJuZWNlc3NpdHk6ZXZpZGVuY2UvcmVmbGV4aW9uLWlkZW50aXR5Lmpzb246TkVDRVNTQVJZIiwibmVjZXNzaXR5Omdyb3VuZC50eHQ6TkVDRVNTQVJZIiwibmVjZXNzaXR5Om1lY2hhbmlzbS5iaW46TkVDRVNTQVJZIiwibmVjZXNzaXR5OnN0YXR1cy50eHQ6TkVDRVNTQVJZIiwib2JqZWN0OmF1dGhvcml0eS9tb2RlbC5qc29uIiwib2JqZWN0OmV2aWRlbmNlL2Rlcml2YXRpb24tcmVmbGV4aXZpdHkuanNvbiIsIm9iamVjdDpldmlkZW5jZS9kZXJpdmVyLWN5Y2xlLWNsb3NlZC5qc29uIiwib2JqZWN0OmV2aWRlbmNlL2dyb3VuZC1zZWxmLmpzb24iLCJvYmplY3Q6ZXZpZGVuY2UvcmVmbGV4aW9uLWlkZW50aXR5Lmpzb24iLCJvYmplY3Q6Z3JvdW5kLnR4dCIsIm9iamVjdDptZWNoYW5pc20uYmluIiwib2JqZWN0OnN0YXR1cy50eHQiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjA5MTNmNDVhNjUzNWVmMjNlNmY2ZDdiZTgwODMxNzVjYzc3MjJlOTNiMjE3NmQyMWJkY2MzZWVhODRiOTYyMzAiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjI4NWZmOGE5OTJhZDBkMmQxY2FlN2FiMzYxM2UwMDcyZDhlN2I1MmJlMDU3NDBiYzg5MjA5YjNhMmZjNDJjODkiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjI4ZTc5ZjA2MTJkZThiMTQwY2JmNjhkOWIxOWYzYWNjMmY4ZGNkZWJhODM0Yzk2NWMxNjE1YjllZTJiZGI0YmEiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjJjN2JjYzFhNTc4ZTc5ZTkxOGY3MzM5NzljOTA5NjQ1ZmNkYmVhN2FiNTQzMWIyMTAyYzg0YjhkNTBjM2YxMTEiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjNjYmJhYWQwZDk5NTFiMjY5M2E2NGZiMWFhMmE0Yjg3YzM4Y2EzZThiNWU2YTFkMTgxZjYwNjU2MTRkMjFmYzkiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjRhOGRkY2I3YzBkYzk2ZmIzY2MwNzMzN2Y3NzYxMThmMzNjZTYwYTU1MjVkMmE0NTkyNjg3NDIwNjgzY2IwMzAiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjUwZTRmMTc0ZTRjNWY5NDJjYjE3YTNkOTc0NTFiNTFiNDdiZTJjMGUyMTM4NTIzMmEzNGE0ZTQ4MjlkMWNkMDUiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjdlZmZiMzhlMzJlZjQ3YjUyNWQwZWU1OTA0Y2RiOWYyODI4ZWFiMDRjNjM2YTM5OTUxNjZlYWE4M2RkNThmZDUiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OjlkNGY2MmJhYTA0ZTBhNDJkNDEzMWFiYTYxYjhhZWFhMGZhNjE3NWZlYzlhNjg4ZGQxNjcxOWI5ZmNiNzlkM2UiLCJwcmVtaXNlLWRlcGVuZGVuY3k6c2hhMjU2OmEyNTExOTBlZjc4ZWRlOWE4OWE0MDQ5NWQ5NmEzNTljZDUzOTQ5NDM4YTYzNjU4NmRjNDhkOTRiM2NhY2E4MTciLCJwdWJsaXNoZXI6cHVibGlzaGVyOnNoYTI1Njo1NjQ3NWFhNzU0NjM0NzRjMDI4NWRmNWRiZjJiY2FiNzNkYTY1MTM1ODgzOWU5Yjc3NDgxYjJlYWIxMDc3MDhjIiwic2VsZi1kZXJpdmF0aW9uLXJlY29yZDpzaGEyNTY6NjI0ZWQzZjQ5MDU4ZWUxNGFmZjcyZTVkNDQzOWNjMzUzYTAwNzAyMzlhMTEwNTY5YTk0MDM4MWFjMmM0YmRiMSJdLCJjcmVhdGVkX2F0IjoiMjAyNi0wOS0wOFQwMDowMDowMFoiLCJkZXJpdmF0aW9ucyI6W3sibWVjaGFuaXNtX3BhdGgiOiJtZWNoYW5pc20uYmluIiwicHJlbWlzZV9wYXRocyI6WyJncm91bmQudHh0Il0sInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInRhcmdldF9wYXRoIjoiYXV0aG9yaXR5L21vZGVsLmpzb24ifSx7Im1lY2hhbmlzbV9wYXRoIjoibWVjaGFuaXNtLmJpbiIsInByZW1pc2VfcGF0aHMiOlsiZ3JvdW5kLnR4dCJdLCJyZWxhdGlvbl9zdHJlbmd0aCI6IkRFUklWRVMiLCJ0YXJnZXRfcGF0aCI6ImV2aWRlbmNlL2Rlcml2YXRpb24tcmVmbGV4aXZpdHkuanNvbiJ9LHsibWVjaGFuaXNtX3BhdGgiOiJtZWNoYW5pc20uYmluIiwicHJlbWlzZV9wYXRocyI6WyJncm91bmQudHh0Il0sInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInRhcmdldF9wYXRoIjoiZXZpZGVuY2UvZGVyaXZlci1jeWNsZS1jbG9zZWQuanNvbiJ9LHsibWVjaGFuaXNtX3BhdGgiOiJtZWNoYW5pc20uYmluIiwicHJlbWlzZV9wYXRocyI6WyJncm91bmQudHh0Il0sInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInRhcmdldF9wYXRoIjoiZXZpZGVuY2UvZ3JvdW5kLXNlbGYuanNvbiJ9LHsibWVjaGFuaXNtX3BhdGgiOiJtZWNoYW5pc20uYmluIiwicHJlbWlzZV9wYXRocyI6WyJncm91bmQudHh0Il0sInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInRhcmdldF9wYXRoIjoiZXZpZGVuY2UvcmVmbGV4aW9uLWlkZW50aXR5Lmpzb24ifSx7Im1lY2hhbmlzbV9wYXRoIjoibWVjaGFuaXNtLmJpbiIsInByZW1pc2VfcGF0aHMiOlsiZXZpZGVuY2UvZGVyaXZhdGlvbi1yZWZsZXhpdml0eS5qc29uIiwiZXZpZGVuY2UvZGVyaXZlci1jeWNsZS1jbG9zZWQuanNvbiIsImV2aWRlbmNlL2dyb3VuZC1zZWxmLmpzb24iLCJldmlkZW5jZS9yZWZsZXhpb24taWRlbnRpdHkuanNvbiIsImdyb3VuZC50eHQiXSwicmVsYXRpb25fc3RyZW5ndGgiOiJERVJJVkVTIiwidGFyZ2V0X3BhdGgiOiJzdGF0dXMudHh0In1dLCJleGNsdXNpb25zIjpbXSwiZ3JvdW5kX3BhdGhzIjpbImdyb3VuZC50eHQiLCJtZWNoYW5pc20uYmluIl0sInBhcmVudHMiOltdLCJwdWJsaXNoZXJfaWQiOiJwdWJsaXNoZXI6c2hhMjU2OjU2NDc1YWE3NTQ2MzQ3NGMwMjg1ZGY1ZGJmMmJjYWI3M2RhNjUxMzU4ODM5ZTliNzc0ODFiMmVhYjEwNzcwOGMiLCJyZWxhdGlvbnMiOltdLCJyZXNpZHVhbF9vYmxpZ2F0aW9ucyI6W10sInNjaGVtYV92ZXJzaW9uIjoiVlNURC1TSUxPLUNPTU1JVC0wLjEiLCJzZWxmX2Rlcml2YXRpb25fcmVjb3JkIjp7ImRlcml2YXRpb25fcmVmbGV4aXZpdHkiOnRydWUsImRlcml2YXRpb25fcmVmbGV4aXZpdHlfZXZpZGVuY2VfcGF0aCI6ImV2aWRlbmNlL2Rlcml2YXRpb24tcmVmbGV4aXZpdHkuanNvbiIsImRlcml2ZXJfY3ljbGVfY2xvc2VkIjp0cnVlLCJkZXJpdmVyX2N5Y2xlX2Nsb3N1cmVfZXZpZGVuY2VfcGF0aCI6ImV2aWRlbmNlL2Rlcml2ZXItY3ljbGUtY2xvc2VkLmpzb24iLCJncm91bmRfcGF0aHMiOlsiZ3JvdW5kLnR4dCJdLCJncm91bmRfc2VsZiI6dHJ1ZSwiZ3JvdW5kX3NlbGZfZXZpZGVuY2VfcGF0aCI6ImV2aWRlbmNlL2dyb3VuZC1zZWxmLmpzb24iLCJtZWNoYW5pc21fcGF0aCI6Im1lY2hhbmlzbS5iaW4iLCJyZWZsZXhpb25faWRlbnRpdHkiOnRydWUsInJlZmxleGlvbl9pZGVudGl0eV9ldmlkZW5jZV9wYXRoIjoiZXZpZGVuY2UvcmVmbGV4aW9uLWlkZW50aXR5Lmpzb24iLCJyZWxhdGlvbl9zdHJlbmd0aCI6IkRFUklWRVMiLCJyZXNpZHVhbF9vYmxpZ2F0aW9ucyI6W10sInJldGFpbmVkX3BhdGgiOlsiZ3JvdW5kLnR4dCIsIm1lY2hhbmlzbS5iaW4iLCJldmlkZW5jZS9ncm91bmQtc2VsZi5qc29uIiwiZXZpZGVuY2UvZGVyaXZhdGlvbi1yZWZsZXhpdml0eS5qc29uIiwiZXZpZGVuY2UvcmVmbGV4aW9uLWlkZW50aXR5Lmpzb24iLCJldmlkZW5jZS9kZXJpdmVyLWN5Y2xlLWNsb3NlZC5qc29uIiwic3RhdHVzLnR4dCJdLCJzdWJqZWN0X3BhdGgiOiJzdGF0dXMudHh0In19",
+        "object": {
+          "artifact_kind": "member-commit",
+          "declared_schema_id": "VSTD-SILO-COMMIT-0.1",
+          "media_type": "application/json",
+          "object_digest": "sha256:7b3d6440a67b3ebe4c2bbde1c37ef74a9987f3ee42a16eb60f750ea350a88b9b",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 10542
+        }
+      },
+      {
+        "bytes_base64url": "eyJjbGFpbV9ib3VuZGFyeSI6IlRoaXMgbWVjaGFuaXNtIGNoZWNrcyBhIHJldGFpbmVkIHN0cnVjdHVyYWwgc2VsZi1kZXJpdmF0aW9uIHdpdG5lc3MuIEl0IGRvZXMgbm90IHByb3ZlIHNlbWFudGljIHNlbGYtcmV0dXJuLCB0cnV0aCwgb3IgY29tcGxldGVuZXNzLiIsIm1lY2hhbmlzbV9pZCI6InZzdGQucmVmZXJlbmNlLnN0cnVjdHVyYWxfc2VsZl9kZXJpdmF0aW9uLjAuMSIsInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInJ1bGVzIjpbImdyb3VuZF9zZWxmX3JlcXVpcmVzX2RlY2xhcmVkX2dyb3VuZF9hbmRfcmV0YWluZWRfcGF0aF9vcmlnaW4iLCJkZXJpdmF0aW9uX3JlZmxleGl2aXR5X3JlcXVpcmVzX2dyb3VuZGVkX25lY2Vzc2FyeV9tZWNoYW5pc21fYW5kX2Rlcml2ZWRfZXZpZGVuY2UiLCJyZWZsZXhpb25faWRlbnRpdHlfcmVxdWlyZXNfZXhhY3Rfc3ViamVjdF9hbmRfdGVybWluYWxfZWRnZSIsImRlcml2ZXJfY3ljbGVfY2xvc3VyZV9yZXF1aXJlc19jb250aW51b3VzX3JldGFpbmVkX2dyYXBoX2FuZF9ub19yZXNpZHVhbHMiXSwic2NoZW1hX3ZlcnNpb24iOiJWU1RELVNFTEYtREVSSVZBVElPTi1NRUNIQU5JU00tMC4xIn0",
+        "object": {
+          "artifact_kind": "derivation-mechanism",
+          "declared_schema_id": "VSTD-SELF-DERIVATION-MECHANISM-0.1",
+          "media_type": "application/json",
+          "object_digest": "sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 596
+        }
+      },
+      {
+        "bytes_base64url": "Y2Fub25pY2FsIGJyaWRnZSByZWxhdGlvbg",
+        "object": {
+          "artifact_kind": "composition-relation",
+          "declared_schema_id": "COMPOSITION-RELATION-1",
+          "media_type": "application/json",
+          "object_digest": "sha256:b4c7cbb94f5de4cfb4a882e12acc72f3e3daf1147cd31dee7f943e71a3b593ed",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 25
+        }
+      },
+      {
+        "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJncm91bmRfc2VsZiIsInNjaGVtYV92ZXJzaW9uIjoiVlNURC1TRUxGLURFUklWQVRJT04tRVZJREVOQ0UtMC4xIiwic3ViamVjdF9wYXRoIjoic3RhdHVzLnR4dCJ9",
+        "object": {
+          "artifact_kind": "self-derivation-evidence",
+          "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+          "media_type": "application/json",
+          "object_digest": "sha256:cbb2c546d2a49476ba5d73f5145765c9725dd89bfe40612d1807c99aba1cdbdc",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 201
+        }
+      },
+      {
+        "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJyZWZsZXhpb25faWRlbnRpdHkiLCJzY2hlbWFfdmVyc2lvbiI6IlZTVEQtU0VMRi1ERVJJVkFUSU9OLUVWSURFTkNFLTAuMSIsInN1YmplY3RfcGF0aCI6InN0YXR1cy50eHQifQ",
+        "object": {
+          "artifact_kind": "self-derivation-evidence",
+          "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+          "media_type": "application/json",
+          "object_digest": "sha256:d6cc79135fa2048394c2517b7b96265eb2f29fba4098aa08f18ac25f6369ff75",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 208
+        }
+      },
+      {
+        "bytes_base64url": "Z3JvdW5k",
+        "object": {
+          "artifact_kind": "ground",
+          "declared_schema_id": "GROUND-1",
+          "media_type": "text/plain",
+          "object_digest": "sha256:dbb3b50e59c7326b2ff7d6619430257b9188cf3c0b8d778f7275ffd3bf4998a2",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 6
+        }
+      },
+      {
+        "bytes_base64url": "Y2Fub25pY2FsIGFkZGl0aXZlIHBvbGljeQ",
+        "object": {
+          "artifact_kind": "composition-policy",
+          "declared_schema_id": "COMPOSITION-POLICY-1",
+          "media_type": "application/json",
+          "object_digest": "sha256:dea3f79b1d93784cfa5a5359418cc9974a93b5bb55e2ca5724e30e863602913c",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 25
+        }
+      },
+      {
+        "bytes_base64url": "Y2Fub25pY2FsIGNvbXBvc2l0aW9uIGFkYXB0ZXI",
+        "object": {
+          "artifact_kind": "composition-adapter",
+          "declared_schema_id": "COMPOSITION-ADAPTER-1",
+          "media_type": "application/json",
+          "object_digest": "sha256:ee84c8060add9754608b10bb198c67a2f5cd5adc7f6803f252d5a0d7f514d82b",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 29
+        }
+      },
+      {
+        "bytes_base64url": "eyJhY3Rvcl9zY29wZV9kaWdlc3QiOiJzaGEyNTY6ZTQxNjNhMDNlMjlhN2FhODMyNjA3MTE2MjI0MDJiZDJmNTc1NmRhZjA0NjZkODNmNTVmNDdlYWRkMWVhMTEwMSIsImFjdG9yX3Njb3BlX3ZlcnNpb24iOiJWU1RELUFVVEhPUklUWS1BQ1RPUi1TQ09QRS0wLjEiLCJhdXRob3JpdHlfYXhpb21fYWdlbmN5X2RpZ2VzdCI6InNoYTI1Njo0MWUzYTI3YzgzMjI4NzRiYjU2MzQ4OTBkMzNjZmYyYTkxNzBmMjkwNmM4M2Q0NWQ5Yzc5Njg4MzZkN2U0ODJjIiwiYXV0aG9yaXR5X2F4aW9tX2FnZW5jeV92ZXJzaW9uIjoiVlNURC1BVVRIT1JJVFktQVhJT00tQUdFTkNZLTAuMSIsImNsb3N1cmVfc3RhdHVzIjoiQ0xPU0VEIiwiaW5pdGlhbF9zdGF0ZV9pZHMiOlsiaW5pdGlhbCJdLCJyZXNpZHVhbF9vYmxpZ2F0aW9ucyI6W10sInNjaGVtYV92ZXJzaW9uIjoiVlNURC1BVVRIT1JJVFktTU9ERUwtMC4xIiwic3RhdGVfdW5pdmVyc2UiOlsiaW5pdGlhbCIsInN0ZWFkeSJdLCJzdGF0ZXMiOlt7Imdyb3VuZF9hY3Rpb25zIjpbIkNIQUxMRU5HRV9XSVRIX0NPVU5URVJFVklERU5DRSIsIkVYSVRfQ09NUE9TSVRJT04iLCJFWFBPUlRfQUNDRVNTSUJMRV9TSUxPIiwiRk9SS19ERVJJVkFUSU9OIiwiSU5ERVBFTkRFTlRMWV9JTlNQRUNUX0FDQ0VTU0lCTEVfQVJUSUZBQ1RTIiwiUFJFU0VSVkVfQ09ORkxJQ1QiLCJQUkVTRVJWRV9VTktOT1dOIiwiU0VMRUNUX1RSVVNUX1JPT1RTIiwiV0lUSERSQVdfT1dOX0FVVEhPUklaQVRJT04iXSwibG9jYWxfYXV0aG9yaXR5X2FkZGl0aW9ucyI6W10sInN0YXRlX2lkIjoiaW5pdGlhbCJ9LHsiZ3JvdW5kX2FjdGlvbnMiOlsiQ0hBTExFTkdFX1dJVEhfQ09VTlRFUkVWSURFTkNFIiwiRVhJVF9DT01QT1NJVElPTiIsIkVYUE9SVF9BQ0NFU1NJQkxFX1NJTE8iLCJGT1JLX0RFUklWQVRJT04iLCJJTkRFUEVOREVOVExZX0lOU1BFQ1RfQUNDRVNTSUJMRV9BUlRJRkFDVFMiLCJQUkVTRVJWRV9DT05GTElDVCIsIlBSRVNFUlZFX1VOS05PV04iLCJTRUxFQ1RfVFJVU1RfUk9PVFMiLCJXSVRIRFJBV19PV05fQVVUSE9SSVpBVElPTiJdLCJsb2NhbF9hdXRob3JpdHlfYWRkaXRpb25zIjpbXSwic3RhdGVfaWQiOiJzdGVhZHkifV0sInRyYW5zaXRpb25fdW5pdmVyc2UiOlsic2V0dGxlIl0sInRyYW5zaXRpb25zIjpbeyJhY3Rpb24iOiJTRVRUTEUiLCJhY3Rvcl9zY29wZSI6IkFOWV9BQ1RPUiIsInNvdXJjZV9zdGF0ZV9pZCI6ImluaXRpYWwiLCJ0YXJnZXRfc3RhdGVfaWQiOiJzdGVhZHkiLCJ0cmFuc2l0aW9uX2lkIjoic2V0dGxlIn1dfQ",
+        "object": {
+          "artifact_kind": "authority-model",
+          "declared_schema_id": "VSTD-AUTHORITY-MODEL-0.1",
+          "media_type": "application/json",
+          "object_digest": "sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 1279
+        }
+      },
+      {
+        "bytes_base64url": "c2VsZi1kZXJpdmVk",
+        "object": {
+          "artifact_kind": "self-derivation-status",
+          "declared_schema_id": "STATUS-1",
+          "media_type": "text/plain",
+          "object_digest": "sha256:fd69229354282146e94b55ea9ff48cae653d310833967e9356b32d69b94e9e16",
+          "schema_version": "VSTD-OBJECT-0.1",
+          "size_bytes": 12
+        }
+      }
+    ]
+  },
+  "composition_assessment_receipt": {
+    "assessment": {
+      "authority_axiom_agency": "PRESERVED",
+      "claim_boundary": "Authority axiom agency is a ground-level floor evaluated over exact declared finite reachable states, never an intersection with local restrictions. Silo grounding establishes only the exact authority-model grounding prerequisites and remains independent from action preservation. Composition-preserved local additions remain separate from ground agency. Member completeness does not imply composition completeness: the composite is itself an independently assessed silo containing exact member commits, bridges, adapters, relations, policies, and residual obligations. Composition fails closed if any required boundary is absent; it does not infer actual runtime behavior, truth, or merge conflicting claims.",
+      "composite_silo": {
+        "authority_axiom_agency": "PRESERVED",
+        "claim_boundary": "Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.",
+        "completeness": "COMPLETE",
+        "completeness_kind": "SILO_CENSUS",
+        "derivation_closure": "CLOSED",
+        "reasons": [],
+        "reconstructibility": "COMPLETE",
+        "schema_version": "VSTD-SILO-ASSESSMENT-0.1",
+        "self_derivability": "ESTABLISHED",
+        "silo_grounding": "ESTABLISHED"
+      },
+      "composition_completeness": "COMPLETE",
+      "composition_member_binding": "COMPLETE",
+      "effective_authority_axiom_agency": [
+        "CHALLENGE_WITH_COUNTEREVIDENCE",
+        "EXIT_COMPOSITION",
+        "EXPORT_ACCESSIBLE_SILO",
+        "FORK_DERIVATION",
+        "INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+        "PRESERVE_CONFLICT",
+        "PRESERVE_UNKNOWN",
+        "SELECT_TRUST_ROOTS",
+        "WITHDRAW_OWN_AUTHORIZATION"
+      ],
+      "local_authority_addition_preservation": "COMPLETE",
+      "result": "ADMISSIBLE",
+      "schema_version": "VSTD-SILO-COMPOSITION-ASSESSMENT-0.1",
+      "silos": [
+        {
+          "authority_axiom_agency": "PRESERVED",
+          "claim_boundary": "Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.",
+          "completeness": "COMPLETE",
+          "completeness_kind": "SILO_CENSUS",
+          "derivation_closure": "CLOSED",
+          "reasons": [],
+          "reconstructibility": "COMPLETE",
+          "schema_version": "VSTD-SILO-ASSESSMENT-0.1",
+          "self_derivability": "ESTABLISHED",
+          "silo_grounding": "ESTABLISHED"
+        },
+        {
+          "authority_axiom_agency": "PRESERVED",
+          "claim_boundary": "Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.",
+          "completeness": "COMPLETE",
+          "completeness_kind": "SILO_CENSUS",
+          "derivation_closure": "CLOSED",
+          "reasons": [],
+          "reconstructibility": "COMPLETE",
+          "schema_version": "VSTD-SILO-ASSESSMENT-0.1",
+          "self_derivability": "ESTABLISHED",
+          "silo_grounding": "ESTABLISHED"
+        }
+      ]
+    },
+    "composite_assessment_receipt": {
+      "assessment": {
+        "authority_axiom_agency": "PRESERVED",
+        "claim_boundary": "Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.",
+        "completeness": "COMPLETE",
+        "completeness_kind": "SILO_CENSUS",
+        "derivation_closure": "CLOSED",
+        "reasons": [],
+        "reconstructibility": "COMPLETE",
+        "schema_version": "VSTD-SILO-ASSESSMENT-0.1",
+        "self_derivability": "ESTABLISHED",
+        "silo_grounding": "ESTABLISHED"
+      },
+      "commit_digest": "sha256:cbe98c1e376b021ca10f58a9c2c902dcfb148bb513b4583d38139fd940f59c5f",
+      "mechanism_digest": "sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e",
+      "schema_version": "VSTD-SILO-ASSESSMENT-RECEIPT-0.1"
+    },
+    "composition_mechanism_digest": "sha256:ee28855729867d11fcbb2fd96fd4da5f73f654e5cfadeff399f8debd59220d3c",
+    "declaration_digest": "sha256:c12f6d6281efd580b198b3fa139ab658cf36b2d5fd1f22c2d11af774dabed9c3",
+    "member_assessment_receipts": [
+      {
+        "assessment": {
+          "authority_axiom_agency": "PRESERVED",
+          "claim_boundary": "Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.",
+          "completeness": "COMPLETE",
+          "completeness_kind": "SILO_CENSUS",
+          "derivation_closure": "CLOSED",
+          "reasons": [],
+          "reconstructibility": "COMPLETE",
+          "schema_version": "VSTD-SILO-ASSESSMENT-0.1",
+          "self_derivability": "ESTABLISHED",
+          "silo_grounding": "ESTABLISHED"
+        },
+        "commit_digest": "sha256:2ca50256a673c9682ce09e9056c4965e144ea5229539c52579695d842490c586",
+        "mechanism_digest": "sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e",
+        "schema_version": "VSTD-SILO-ASSESSMENT-RECEIPT-0.1"
+      },
+      {
+        "assessment": {
+          "authority_axiom_agency": "PRESERVED",
+          "claim_boundary": "Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.",
+          "completeness": "COMPLETE",
+          "completeness_kind": "SILO_CENSUS",
+          "derivation_closure": "CLOSED",
+          "reasons": [],
+          "reconstructibility": "COMPLETE",
+          "schema_version": "VSTD-SILO-ASSESSMENT-0.1",
+          "self_derivability": "ESTABLISHED",
+          "silo_grounding": "ESTABLISHED"
+        },
+        "commit_digest": "sha256:7b3d6440a67b3ebe4c2bbde1c37ef74a9987f3ee42a16eb60f750ea350a88b9b",
+        "mechanism_digest": "sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e",
+        "schema_version": "VSTD-SILO-ASSESSMENT-RECEIPT-0.1"
+      }
+    ],
+    "schema_version": "VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1"
+  },
+  "composition_mechanism": {
+    "bytes_base64url": "eyJjbGFpbV9ib3VuZGFyeSI6IlRoaXMgbWVjaGFuaXNtIGNoZWNrcyBleGFjdCBkZWNsYXJlZCBzaWxvIGNvbXBvc2l0aW9uIHN0cnVjdHVyZSBhbmQgbmVzdGVkIGluZGVwZW5kZW50IGFzc2Vzc21lbnRzLiBJdCBkb2VzIG5vdCBlc3RhYmxpc2ggYXJ0aWZhY3QgdHJ1dGgsIGFjdHVhbCBydW50aW1lIGJlaGF2aW9yLCBvciBjb21wYXRpYmlsaXR5IGJleW9uZCB0aGUgcmV0YWluZWQgY29tcG9zaXRpb24gZXZpZGVuY2UuIiwibWVjaGFuaXNtX2lkIjoidnN0ZC5yZWZlcmVuY2Uuc2lsb19jb21wb3NpdGlvbi4wLjEiLCJydWxlcyI6WyJyZWNvbXB1dGVfZXZlcnlfbWVtYmVyX3NpbG9fYXNzZXNzbWVudCIsInJlcXVpcmVfZXhhY3RfZGVjbGFyZWRfbWVtYmVyX2NvbW1pdF9kaWdlc3RzIiwicmVjb21wdXRlX29wdGlvbmFsX2NvbXBvc2l0ZV9zaWxvX2Fzc2Vzc21lbnQiLCJyZXF1aXJlX2V4YWN0X2NvbXBvc2l0ZV9tZW1iZXJfYXJ0aWZhY3RzX2FuZF9jb21wb3NpdGlvbl9zdXJmYWNlcyIsInJlcXVpcmVfZXN0YWJsaXNoZWRfc2lsb19ncm91bmRpbmdfZm9yX2V2ZXJ5X21lbWJlcl9hbmRfY29tcG9zaXRlIiwicHJlc2VydmVfZ3JvdW5kX2F1dGhvcml0eV9hbmRfY29tcG9zaXRpb25fcHJlc2VydmVkX2xvY2FsX2FkZGl0aW9ucyIsImFkbWl0X29ubHlfd2hlbl9ldmVyeV9tZW1iZXJfYW5kX2NvbXBvc2l0ZV9heGlzX3Bhc3NlcyJdLCJzY2hlbWFfdmVyc2lvbiI6IlZTVEQtU0lMTy1DT01QT1NJVElPTi1NRUNIQU5JU00tMC4xIn0",
+    "canonical_json_utf8": "{\"claim_boundary\":\"This mechanism checks exact declared silo composition structure and nested independent assessments. It does not establish artifact truth, actual runtime behavior, or compatibility beyond the retained composition evidence.\",\"mechanism_id\":\"vstd.reference.silo_composition.0.1\",\"rules\":[\"recompute_every_member_silo_assessment\",\"require_exact_declared_member_commit_digests\",\"recompute_optional_composite_silo_assessment\",\"require_exact_composite_member_artifacts_and_composition_surfaces\",\"require_established_silo_grounding_for_every_member_and_composite\",\"preserve_ground_authority_and_composition_preserved_local_additions\",\"admit_only_when_every_member_and_composite_axis_passes\"],\"schema_version\":\"VSTD-SILO-COMPOSITION-MECHANISM-0.1\"}",
+    "digest": "sha256:ee28855729867d11fcbb2fd96fd4da5f73f654e5cfadeff399f8debd59220d3c"
+  },
+  "declaration": {
+    "composite_commit_digest": "sha256:cbe98c1e376b021ca10f58a9c2c902dcfb148bb513b4583d38139fd940f59c5f",
+    "member_commit_digests": [
+      "sha256:2ca50256a673c9682ce09e9056c4965e144ea5229539c52579695d842490c586",
+      "sha256:7b3d6440a67b3ebe4c2bbde1c37ef74a9987f3ee42a16eb60f750ea350a88b9b"
+    ],
+    "schema_version": "VSTD-SILO-COMPOSITION-0.1"
+  },
+  "encoding": {
+    "binary": "unpadded Request for Comments (RFC) 4648 base64url",
+    "digest": "sha256:<64 lowercase hexadecimal characters>",
+    "json": "Unicode Transformation Format, 8-bit (UTF-8); sorted keys; no whitespace; NFC strings; nonnegative integers <= 2^53-1; no floats"
+  },
+  "expected": {
+    "composition_assessment_canonical_json": "{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Authority axiom agency is a ground-level floor evaluated over exact declared finite reachable states, never an intersection with local restrictions. Silo grounding establishes only the exact authority-model grounding prerequisites and remains independent from action preservation. Composition-preserved local additions remain separate from ground agency. Member completeness does not imply composition completeness: the composite is itself an independently assessed silo containing exact member commits, bridges, adapters, relations, policies, and residual obligations. Composition fails closed if any required boundary is absent; it does not infer actual runtime behavior, truth, or merge conflicting claims.\",\"composite_silo\":{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.\",\"completeness\":\"COMPLETE\",\"completeness_kind\":\"SILO_CENSUS\",\"derivation_closure\":\"CLOSED\",\"reasons\":[],\"reconstructibility\":\"COMPLETE\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-0.1\",\"self_derivability\":\"ESTABLISHED\",\"silo_grounding\":\"ESTABLISHED\"},\"composition_completeness\":\"COMPLETE\",\"composition_member_binding\":\"COMPLETE\",\"effective_authority_axiom_agency\":[\"CHALLENGE_WITH_COUNTEREVIDENCE\",\"EXIT_COMPOSITION\",\"EXPORT_ACCESSIBLE_SILO\",\"FORK_DERIVATION\",\"INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"PRESERVE_CONFLICT\",\"PRESERVE_UNKNOWN\",\"SELECT_TRUST_ROOTS\",\"WITHDRAW_OWN_AUTHORIZATION\"],\"local_authority_addition_preservation\":\"COMPLETE\",\"result\":\"ADMISSIBLE\",\"schema_version\":\"VSTD-SILO-COMPOSITION-ASSESSMENT-0.1\",\"silos\":[{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.\",\"completeness\":\"COMPLETE\",\"completeness_kind\":\"SILO_CENSUS\",\"derivation_closure\":\"CLOSED\",\"reasons\":[],\"reconstructibility\":\"COMPLETE\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-0.1\",\"self_derivability\":\"ESTABLISHED\",\"silo_grounding\":\"ESTABLISHED\"},{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.\",\"completeness\":\"COMPLETE\",\"completeness_kind\":\"SILO_CENSUS\",\"derivation_closure\":\"CLOSED\",\"reasons\":[],\"reconstructibility\":\"COMPLETE\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-0.1\",\"self_derivability\":\"ESTABLISHED\",\"silo_grounding\":\"ESTABLISHED\"}]}",
+    "composition_assessment_digest": "sha256:8ef3bd16250a4ee2133f222bbd92df7ab2490e518987ccf0bce84a6a615af9e1",
+    "composition_assessment_receipt_canonical_json": "{\"assessment\":{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Authority axiom agency is a ground-level floor evaluated over exact declared finite reachable states, never an intersection with local restrictions. Silo grounding establishes only the exact authority-model grounding prerequisites and remains independent from action preservation. Composition-preserved local additions remain separate from ground agency. Member completeness does not imply composition completeness: the composite is itself an independently assessed silo containing exact member commits, bridges, adapters, relations, policies, and residual obligations. Composition fails closed if any required boundary is absent; it does not infer actual runtime behavior, truth, or merge conflicting claims.\",\"composite_silo\":{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.\",\"completeness\":\"COMPLETE\",\"completeness_kind\":\"SILO_CENSUS\",\"derivation_closure\":\"CLOSED\",\"reasons\":[],\"reconstructibility\":\"COMPLETE\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-0.1\",\"self_derivability\":\"ESTABLISHED\",\"silo_grounding\":\"ESTABLISHED\"},\"composition_completeness\":\"COMPLETE\",\"composition_member_binding\":\"COMPLETE\",\"effective_authority_axiom_agency\":[\"CHALLENGE_WITH_COUNTEREVIDENCE\",\"EXIT_COMPOSITION\",\"EXPORT_ACCESSIBLE_SILO\",\"FORK_DERIVATION\",\"INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"PRESERVE_CONFLICT\",\"PRESERVE_UNKNOWN\",\"SELECT_TRUST_ROOTS\",\"WITHDRAW_OWN_AUTHORIZATION\"],\"local_authority_addition_preservation\":\"COMPLETE\",\"result\":\"ADMISSIBLE\",\"schema_version\":\"VSTD-SILO-COMPOSITION-ASSESSMENT-0.1\",\"silos\":[{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.\",\"completeness\":\"COMPLETE\",\"completeness_kind\":\"SILO_CENSUS\",\"derivation_closure\":\"CLOSED\",\"reasons\":[],\"reconstructibility\":\"COMPLETE\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-0.1\",\"self_derivability\":\"ESTABLISHED\",\"silo_grounding\":\"ESTABLISHED\"},{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.\",\"completeness\":\"COMPLETE\",\"completeness_kind\":\"SILO_CENSUS\",\"derivation_closure\":\"CLOSED\",\"reasons\":[],\"reconstructibility\":\"COMPLETE\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-0.1\",\"self_derivability\":\"ESTABLISHED\",\"silo_grounding\":\"ESTABLISHED\"}]},\"composite_assessment_receipt\":{\"assessment\":{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.\",\"completeness\":\"COMPLETE\",\"completeness_kind\":\"SILO_CENSUS\",\"derivation_closure\":\"CLOSED\",\"reasons\":[],\"reconstructibility\":\"COMPLETE\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-0.1\",\"self_derivability\":\"ESTABLISHED\",\"silo_grounding\":\"ESTABLISHED\"},\"commit_digest\":\"sha256:cbe98c1e376b021ca10f58a9c2c902dcfb148bb513b4583d38139fd940f59c5f\",\"mechanism_digest\":\"sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-RECEIPT-0.1\"},\"composition_mechanism_digest\":\"sha256:ee28855729867d11fcbb2fd96fd4da5f73f654e5cfadeff399f8debd59220d3c\",\"declaration_digest\":\"sha256:c12f6d6281efd580b198b3fa139ab658cf36b2d5fd1f22c2d11af774dabed9c3\",\"member_assessment_receipts\":[{\"assessment\":{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.\",\"completeness\":\"COMPLETE\",\"completeness_kind\":\"SILO_CENSUS\",\"derivation_closure\":\"CLOSED\",\"reasons\":[],\"reconstructibility\":\"COMPLETE\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-0.1\",\"self_derivability\":\"ESTABLISHED\",\"silo_grounding\":\"ESTABLISHED\"},\"commit_digest\":\"sha256:2ca50256a673c9682ce09e9056c4965e144ea5229539c52579695d842490c586\",\"mechanism_digest\":\"sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-RECEIPT-0.1\"},{\"assessment\":{\"authority_axiom_agency\":\"PRESERVED\",\"claim_boundary\":\"Results cover exact bytes, declared formation paths, the explicit census denominator, authority-model grounding, and declared action permissions only. Silo grounding does not establish preservation of allowable actions. Allowability does not establish access, capability, awareness, or non-inferability. Results do not establish artifact correctness or real-world identity.\",\"completeness\":\"COMPLETE\",\"completeness_kind\":\"SILO_CENSUS\",\"derivation_closure\":\"CLOSED\",\"reasons\":[],\"reconstructibility\":\"COMPLETE\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-0.1\",\"self_derivability\":\"ESTABLISHED\",\"silo_grounding\":\"ESTABLISHED\"},\"commit_digest\":\"sha256:7b3d6440a67b3ebe4c2bbde1c37ef74a9987f3ee42a16eb60f750ea350a88b9b\",\"mechanism_digest\":\"sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e\",\"schema_version\":\"VSTD-SILO-ASSESSMENT-RECEIPT-0.1\"}],\"schema_version\":\"VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1\"}",
+    "composition_assessment_receipt_digest": "sha256:fe0827fcb1caf8aaf7135f315b6340745ca776515e32a87c21755c454837eb7c",
+    "composition_mechanism_digest": "sha256:ee28855729867d11fcbb2fd96fd4da5f73f654e5cfadeff399f8debd59220d3c",
+    "declaration_canonical_json": "{\"composite_commit_digest\":\"sha256:cbe98c1e376b021ca10f58a9c2c902dcfb148bb513b4583d38139fd940f59c5f\",\"member_commit_digests\":[\"sha256:2ca50256a673c9682ce09e9056c4965e144ea5229539c52579695d842490c586\",\"sha256:7b3d6440a67b3ebe4c2bbde1c37ef74a9987f3ee42a16eb60f750ea350a88b9b\"],\"schema_version\":\"VSTD-SILO-COMPOSITION-0.1\"}",
+    "declaration_digest": "sha256:c12f6d6281efd580b198b3fa139ab658cf36b2d5fd1f22c2d11af774dabed9c3",
+    "result": "ADMISSIBLE"
+  },
+  "members": [
+    {
+      "commit": {
+        "authority_axiom_agency": [
+          "CHALLENGE_WITH_COUNTEREVIDENCE",
+          "EXIT_COMPOSITION",
+          "EXPORT_ACCESSIBLE_SILO",
+          "FORK_DERIVATION",
+          "INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+          "PRESERVE_CONFLICT",
+          "PRESERVE_UNKNOWN",
+          "SELECT_TRUST_ROOTS",
+          "WITHDRAW_OWN_AUTHORIZATION"
+        ],
+        "authority_axiom_agency_digest": "sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c",
+        "authority_axiom_agency_version": "VSTD-AUTHORITY-AXIOM-AGENCY-0.1",
+        "authority_model_path": "authority/model.json",
+        "census": [
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "authority-model",
+              "declared_schema_id": "VSTD-AUTHORITY-MODEL-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 1279
+            },
+            "path": "authority/model.json"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "self-derivation-evidence",
+              "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:2dabec2d1f4b49fd81df41628697a7ac18571d3b995267bf8cf8775f59ae319f",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 212
+            },
+            "path": "evidence/derivation-reflexivity.json"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "self-derivation-evidence",
+              "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:642c07c5e2a37f31477bafe868984994cd020eff035b5ef0e5c0169c46b87259",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 210
+            },
+            "path": "evidence/deriver-cycle-closed.json"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "self-derivation-evidence",
+              "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:cbb2c546d2a49476ba5d73f5145765c9725dd89bfe40612d1807c99aba1cdbdc",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 201
+            },
+            "path": "evidence/ground-self.json"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "self-derivation-evidence",
+              "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:d6cc79135fa2048394c2517b7b96265eb2f29fba4098aa08f18ac25f6369ff75",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 208
+            },
+            "path": "evidence/reflexion-identity.json"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "ground",
+              "declared_schema_id": "GROUND-1",
+              "media_type": "text/plain",
+              "object_digest": "sha256:dbb3b50e59c7326b2ff7d6619430257b9188cf3c0b8d778f7275ffd3bf4998a2",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 6
+            },
+            "path": "ground.txt"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "derivation-mechanism",
+              "declared_schema_id": "VSTD-SELF-DERIVATION-MECHANISM-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 596
+            },
+            "path": "mechanism.bin"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "self-derivation-status",
+              "declared_schema_id": "STATUS-1",
+              "media_type": "text/plain",
+              "object_digest": "sha256:fd69229354282146e94b55ea9ff48cae653d310833967e9356b32d69b94e9e16",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 12
+            },
+            "path": "status.txt"
+          }
+        ],
+        "completeness_kind": "SILO_CENSUS",
+        "coverage_universe": [
+          "authority-action:CHALLENGE_WITH_COUNTEREVIDENCE",
+          "authority-action:EXIT_COMPOSITION",
+          "authority-action:EXPORT_ACCESSIBLE_SILO",
+          "authority-action:FORK_DERIVATION",
+          "authority-action:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+          "authority-action:PRESERVE_CONFLICT",
+          "authority-action:PRESERVE_UNKNOWN",
+          "authority-action:SELECT_TRUST_ROOTS",
+          "authority-action:WITHDRAW_OWN_AUTHORIZATION",
+          "authority-actor-scope-binding:VSTD-AUTHORITY-ACTOR-SCOPE-0.1:sha256:e4163a03e29a7aa83260711622402bd2f5756daf0466d83f55f47eadd1ea1101",
+          "authority-binding:VSTD-AUTHORITY-AXIOM-AGENCY-0.1:sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c",
+          "authority-initial-state:initial",
+          "authority-model-path:authority/model.json",
+          "authority-model:sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19",
+          "authority-state-ground-action:initial:CHALLENGE_WITH_COUNTEREVIDENCE",
+          "authority-state-ground-action:initial:EXIT_COMPOSITION",
+          "authority-state-ground-action:initial:EXPORT_ACCESSIBLE_SILO",
+          "authority-state-ground-action:initial:FORK_DERIVATION",
+          "authority-state-ground-action:initial:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+          "authority-state-ground-action:initial:PRESERVE_CONFLICT",
+          "authority-state-ground-action:initial:PRESERVE_UNKNOWN",
+          "authority-state-ground-action:initial:SELECT_TRUST_ROOTS",
+          "authority-state-ground-action:initial:WITHDRAW_OWN_AUTHORIZATION",
+          "authority-state-ground-action:steady:CHALLENGE_WITH_COUNTEREVIDENCE",
+          "authority-state-ground-action:steady:EXIT_COMPOSITION",
+          "authority-state-ground-action:steady:EXPORT_ACCESSIBLE_SILO",
+          "authority-state-ground-action:steady:FORK_DERIVATION",
+          "authority-state-ground-action:steady:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+          "authority-state-ground-action:steady:PRESERVE_CONFLICT",
+          "authority-state-ground-action:steady:PRESERVE_UNKNOWN",
+          "authority-state-ground-action:steady:SELECT_TRUST_ROOTS",
+          "authority-state-ground-action:steady:WITHDRAW_OWN_AUTHORIZATION",
+          "authority-state-universe:initial",
+          "authority-state-universe:steady",
+          "authority-state:sha256:707ebee5af9d4b2084a283489ff8861ee6cc31fe59fc58aa58c055658a3d8e2f",
+          "authority-state:sha256:f0d1916004d448ed63c3d96dbe513568f89e6206b33dedebe8a69a3023ca1da8",
+          "authority-transition-universe:settle",
+          "authority-transition:sha256:4e205d0dd40a8845d2de771d15dd443f6cb2701f26342c5fc8a3336bcd56e40b",
+          "completeness-kind:SILO_CENSUS",
+          "created-at:sha256:3cf5c00a4a0bd12cfc7acee2c12e216a05c1eb1f0ee3c0f8aba480e9572d8f28",
+          "derivation:sha256:24eca0ff034c8f54e82a86b554f9a50ce1d34b2c63201b71cee69cffd6b89f07",
+          "derivation:sha256:577ae4fd1fb49fdb530d755637e7d95e4f80fa7ef0d1490f05b7a789774c299a",
+          "derivation:sha256:87b51f6c9c732fb19bffa1b75afa7c9ffaa5971295c342be4b71d8cc0726a4df",
+          "derivation:sha256:9d222c2a375185232ac6dec917eda8edcdc22de183b03a000eb97efc28e0d796",
+          "derivation:sha256:a238713768c3b57bb0f4fd0a7a85959876d14a1e5b389c38baa0a306eccb317d",
+          "derivation:sha256:d435503423b93a357ec06421bd3a73d0a33ef17a0820fbadac09798a9cc4a0a9",
+          "ground-path:ground.txt",
+          "ground-path:mechanism.bin",
+          "mechanism-dependency:sha256:36da77f759a493d4d400d84a1d151bb7cc41ea3b7c980d43209c7b2ab8c9526c",
+          "mechanism-dependency:sha256:51c70ac8b9fc64425f3d18cd27cc0490bcec1e14803437b0d215b080b4bdfa7e",
+          "mechanism-dependency:sha256:92f8accacbce879f829dfbeed15e7cde81c1fead05b7b46bc0d75017e2674497",
+          "mechanism-dependency:sha256:ca0c6eea3812726b47e94c4a175291ae038acb1c3475613ccf9d1769a331d3a4",
+          "mechanism-dependency:sha256:ef9d7b44e428db91c11d835fed2eff6df115abb0172c7176e1c7913c948bad09",
+          "mechanism-dependency:sha256:f1961a0baf309b75174748bcf24283f6d1692c9be5cb4c529741c52be007cca0",
+          "necessity:authority/model.json:NECESSARY",
+          "necessity:evidence/derivation-reflexivity.json:NECESSARY",
+          "necessity:evidence/deriver-cycle-closed.json:NECESSARY",
+          "necessity:evidence/ground-self.json:NECESSARY",
+          "necessity:evidence/reflexion-identity.json:NECESSARY",
+          "necessity:ground.txt:NECESSARY",
+          "necessity:mechanism.bin:NECESSARY",
+          "necessity:status.txt:NECESSARY",
+          "object:authority/model.json",
+          "object:evidence/derivation-reflexivity.json",
+          "object:evidence/deriver-cycle-closed.json",
+          "object:evidence/ground-self.json",
+          "object:evidence/reflexion-identity.json",
+          "object:ground.txt",
+          "object:mechanism.bin",
+          "object:status.txt",
+          "premise-dependency:sha256:0913f45a6535ef23e6f6d7be8083175cc7722e93b2176d21bdcc3eea84b96230",
+          "premise-dependency:sha256:285ff8a992ad0d2d1cae7ab3613e0072d8e7b52be05740bc89209b3a2fc42c89",
+          "premise-dependency:sha256:28e79f0612de8b140cbf68d9b19f3acc2f8dcdeba834c965c1615b9ee2bdb4ba",
+          "premise-dependency:sha256:2c7bcc1a578e79e918f733979c909645fcdbea7ab5431b2102c84b8d50c3f111",
+          "premise-dependency:sha256:3cbbaad0d9951b2693a64fb1aa2a4b87c38ca3e8b5e6a1d181f6065614d21fc9",
+          "premise-dependency:sha256:4a8ddcb7c0dc96fb3cc07337f776118f33ce60a5525d2a4592687420683cb030",
+          "premise-dependency:sha256:50e4f174e4c5f942cb17a3d97451b51b47be2c0e21385232a34a4e4829d1cd05",
+          "premise-dependency:sha256:7effb38e32ef47b525d0ee5904cdb9f2828eab04c636a3995166eaa83dd58fd5",
+          "premise-dependency:sha256:9d4f62baa04e0a42d4131aba61b8aeaa0fa6175fec9a688dd16719b9fcb79d3e",
+          "premise-dependency:sha256:a251190ef78ede9a89a40495d96a359cd53949438a636586dc48d94b3caca817",
+          "publisher:publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+          "self-derivation-record:sha256:624ed3f49058ee14aff72e5d4439cc353a0070239a110569a940381ac2c4bdb1"
+        ],
+        "created_at": "2026-09-08T00:00:01Z",
+        "derivations": [
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "authority/model.json"
+          },
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "evidence/derivation-reflexivity.json"
+          },
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "evidence/deriver-cycle-closed.json"
+          },
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "evidence/ground-self.json"
+          },
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "evidence/reflexion-identity.json"
+          },
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "evidence/derivation-reflexivity.json",
+              "evidence/deriver-cycle-closed.json",
+              "evidence/ground-self.json",
+              "evidence/reflexion-identity.json",
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "status.txt"
+          }
+        ],
+        "exclusions": [],
+        "ground_paths": [
+          "ground.txt",
+          "mechanism.bin"
+        ],
+        "parents": [],
+        "publisher_id": "publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+        "relations": [],
+        "residual_obligations": [],
+        "schema_version": "VSTD-SILO-COMMIT-0.1",
+        "self_derivation_record": {
+          "derivation_reflexivity": true,
+          "derivation_reflexivity_evidence_path": "evidence/derivation-reflexivity.json",
+          "deriver_cycle_closed": true,
+          "deriver_cycle_closure_evidence_path": "evidence/deriver-cycle-closed.json",
+          "ground_paths": [
+            "ground.txt"
+          ],
+          "ground_self": true,
+          "ground_self_evidence_path": "evidence/ground-self.json",
+          "mechanism_path": "mechanism.bin",
+          "reflexion_identity": true,
+          "reflexion_identity_evidence_path": "evidence/reflexion-identity.json",
+          "relation_strength": "DERIVES",
+          "residual_obligations": [],
+          "retained_path": [
+            "ground.txt",
+            "mechanism.bin",
+            "evidence/ground-self.json",
+            "evidence/derivation-reflexivity.json",
+            "evidence/reflexion-identity.json",
+            "evidence/deriver-cycle-closed.json",
+            "status.txt"
+          ],
+          "subject_path": "status.txt"
+        }
+      },
+      "commit_canonical_json": "{\"authority_axiom_agency\":[\"CHALLENGE_WITH_COUNTEREVIDENCE\",\"EXIT_COMPOSITION\",\"EXPORT_ACCESSIBLE_SILO\",\"FORK_DERIVATION\",\"INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"PRESERVE_CONFLICT\",\"PRESERVE_UNKNOWN\",\"SELECT_TRUST_ROOTS\",\"WITHDRAW_OWN_AUTHORIZATION\"],\"authority_axiom_agency_digest\":\"sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c\",\"authority_axiom_agency_version\":\"VSTD-AUTHORITY-AXIOM-AGENCY-0.1\",\"authority_model_path\":\"authority/model.json\",\"census\":[{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"authority-model\",\"declared_schema_id\":\"VSTD-AUTHORITY-MODEL-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":1279},\"path\":\"authority/model.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:2dabec2d1f4b49fd81df41628697a7ac18571d3b995267bf8cf8775f59ae319f\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":212},\"path\":\"evidence/derivation-reflexivity.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:642c07c5e2a37f31477bafe868984994cd020eff035b5ef0e5c0169c46b87259\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":210},\"path\":\"evidence/deriver-cycle-closed.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:cbb2c546d2a49476ba5d73f5145765c9725dd89bfe40612d1807c99aba1cdbdc\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":201},\"path\":\"evidence/ground-self.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:d6cc79135fa2048394c2517b7b96265eb2f29fba4098aa08f18ac25f6369ff75\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":208},\"path\":\"evidence/reflexion-identity.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"ground\",\"declared_schema_id\":\"GROUND-1\",\"media_type\":\"text/plain\",\"object_digest\":\"sha256:dbb3b50e59c7326b2ff7d6619430257b9188cf3c0b8d778f7275ffd3bf4998a2\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":6},\"path\":\"ground.txt\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"derivation-mechanism\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-MECHANISM-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":596},\"path\":\"mechanism.bin\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-status\",\"declared_schema_id\":\"STATUS-1\",\"media_type\":\"text/plain\",\"object_digest\":\"sha256:fd69229354282146e94b55ea9ff48cae653d310833967e9356b32d69b94e9e16\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":12},\"path\":\"status.txt\"}],\"completeness_kind\":\"SILO_CENSUS\",\"coverage_universe\":[\"authority-action:CHALLENGE_WITH_COUNTEREVIDENCE\",\"authority-action:EXIT_COMPOSITION\",\"authority-action:EXPORT_ACCESSIBLE_SILO\",\"authority-action:FORK_DERIVATION\",\"authority-action:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"authority-action:PRESERVE_CONFLICT\",\"authority-action:PRESERVE_UNKNOWN\",\"authority-action:SELECT_TRUST_ROOTS\",\"authority-action:WITHDRAW_OWN_AUTHORIZATION\",\"authority-actor-scope-binding:VSTD-AUTHORITY-ACTOR-SCOPE-0.1:sha256:e4163a03e29a7aa83260711622402bd2f5756daf0466d83f55f47eadd1ea1101\",\"authority-binding:VSTD-AUTHORITY-AXIOM-AGENCY-0.1:sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c\",\"authority-initial-state:initial\",\"authority-model-path:authority/model.json\",\"authority-model:sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19\",\"authority-state-ground-action:initial:CHALLENGE_WITH_COUNTEREVIDENCE\",\"authority-state-ground-action:initial:EXIT_COMPOSITION\",\"authority-state-ground-action:initial:EXPORT_ACCESSIBLE_SILO\",\"authority-state-ground-action:initial:FORK_DERIVATION\",\"authority-state-ground-action:initial:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"authority-state-ground-action:initial:PRESERVE_CONFLICT\",\"authority-state-ground-action:initial:PRESERVE_UNKNOWN\",\"authority-state-ground-action:initial:SELECT_TRUST_ROOTS\",\"authority-state-ground-action:initial:WITHDRAW_OWN_AUTHORIZATION\",\"authority-state-ground-action:steady:CHALLENGE_WITH_COUNTEREVIDENCE\",\"authority-state-ground-action:steady:EXIT_COMPOSITION\",\"authority-state-ground-action:steady:EXPORT_ACCESSIBLE_SILO\",\"authority-state-ground-action:steady:FORK_DERIVATION\",\"authority-state-ground-action:steady:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"authority-state-ground-action:steady:PRESERVE_CONFLICT\",\"authority-state-ground-action:steady:PRESERVE_UNKNOWN\",\"authority-state-ground-action:steady:SELECT_TRUST_ROOTS\",\"authority-state-ground-action:steady:WITHDRAW_OWN_AUTHORIZATION\",\"authority-state-universe:initial\",\"authority-state-universe:steady\",\"authority-state:sha256:707ebee5af9d4b2084a283489ff8861ee6cc31fe59fc58aa58c055658a3d8e2f\",\"authority-state:sha256:f0d1916004d448ed63c3d96dbe513568f89e6206b33dedebe8a69a3023ca1da8\",\"authority-transition-universe:settle\",\"authority-transition:sha256:4e205d0dd40a8845d2de771d15dd443f6cb2701f26342c5fc8a3336bcd56e40b\",\"completeness-kind:SILO_CENSUS\",\"created-at:sha256:3cf5c00a4a0bd12cfc7acee2c12e216a05c1eb1f0ee3c0f8aba480e9572d8f28\",\"derivation:sha256:24eca0ff034c8f54e82a86b554f9a50ce1d34b2c63201b71cee69cffd6b89f07\",\"derivation:sha256:577ae4fd1fb49fdb530d755637e7d95e4f80fa7ef0d1490f05b7a789774c299a\",\"derivation:sha256:87b51f6c9c732fb19bffa1b75afa7c9ffaa5971295c342be4b71d8cc0726a4df\",\"derivation:sha256:9d222c2a375185232ac6dec917eda8edcdc22de183b03a000eb97efc28e0d796\",\"derivation:sha256:a238713768c3b57bb0f4fd0a7a85959876d14a1e5b389c38baa0a306eccb317d\",\"derivation:sha256:d435503423b93a357ec06421bd3a73d0a33ef17a0820fbadac09798a9cc4a0a9\",\"ground-path:ground.txt\",\"ground-path:mechanism.bin\",\"mechanism-dependency:sha256:36da77f759a493d4d400d84a1d151bb7cc41ea3b7c980d43209c7b2ab8c9526c\",\"mechanism-dependency:sha256:51c70ac8b9fc64425f3d18cd27cc0490bcec1e14803437b0d215b080b4bdfa7e\",\"mechanism-dependency:sha256:92f8accacbce879f829dfbeed15e7cde81c1fead05b7b46bc0d75017e2674497\",\"mechanism-dependency:sha256:ca0c6eea3812726b47e94c4a175291ae038acb1c3475613ccf9d1769a331d3a4\",\"mechanism-dependency:sha256:ef9d7b44e428db91c11d835fed2eff6df115abb0172c7176e1c7913c948bad09\",\"mechanism-dependency:sha256:f1961a0baf309b75174748bcf24283f6d1692c9be5cb4c529741c52be007cca0\",\"necessity:authority/model.json:NECESSARY\",\"necessity:evidence/derivation-reflexivity.json:NECESSARY\",\"necessity:evidence/deriver-cycle-closed.json:NECESSARY\",\"necessity:evidence/ground-self.json:NECESSARY\",\"necessity:evidence/reflexion-identity.json:NECESSARY\",\"necessity:ground.txt:NECESSARY\",\"necessity:mechanism.bin:NECESSARY\",\"necessity:status.txt:NECESSARY\",\"object:authority/model.json\",\"object:evidence/derivation-reflexivity.json\",\"object:evidence/deriver-cycle-closed.json\",\"object:evidence/ground-self.json\",\"object:evidence/reflexion-identity.json\",\"object:ground.txt\",\"object:mechanism.bin\",\"object:status.txt\",\"premise-dependency:sha256:0913f45a6535ef23e6f6d7be8083175cc7722e93b2176d21bdcc3eea84b96230\",\"premise-dependency:sha256:285ff8a992ad0d2d1cae7ab3613e0072d8e7b52be05740bc89209b3a2fc42c89\",\"premise-dependency:sha256:28e79f0612de8b140cbf68d9b19f3acc2f8dcdeba834c965c1615b9ee2bdb4ba\",\"premise-dependency:sha256:2c7bcc1a578e79e918f733979c909645fcdbea7ab5431b2102c84b8d50c3f111\",\"premise-dependency:sha256:3cbbaad0d9951b2693a64fb1aa2a4b87c38ca3e8b5e6a1d181f6065614d21fc9\",\"premise-dependency:sha256:4a8ddcb7c0dc96fb3cc07337f776118f33ce60a5525d2a4592687420683cb030\",\"premise-dependency:sha256:50e4f174e4c5f942cb17a3d97451b51b47be2c0e21385232a34a4e4829d1cd05\",\"premise-dependency:sha256:7effb38e32ef47b525d0ee5904cdb9f2828eab04c636a3995166eaa83dd58fd5\",\"premise-dependency:sha256:9d4f62baa04e0a42d4131aba61b8aeaa0fa6175fec9a688dd16719b9fcb79d3e\",\"premise-dependency:sha256:a251190ef78ede9a89a40495d96a359cd53949438a636586dc48d94b3caca817\",\"publisher:publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c\",\"self-derivation-record:sha256:624ed3f49058ee14aff72e5d4439cc353a0070239a110569a940381ac2c4bdb1\"],\"created_at\":\"2026-09-08T00:00:01Z\",\"derivations\":[{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"authority/model.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/derivation-reflexivity.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/deriver-cycle-closed.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/ground-self.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/reflexion-identity.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"evidence/derivation-reflexivity.json\",\"evidence/deriver-cycle-closed.json\",\"evidence/ground-self.json\",\"evidence/reflexion-identity.json\",\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"status.txt\"}],\"exclusions\":[],\"ground_paths\":[\"ground.txt\",\"mechanism.bin\"],\"parents\":[],\"publisher_id\":\"publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c\",\"relations\":[],\"residual_obligations\":[],\"schema_version\":\"VSTD-SILO-COMMIT-0.1\",\"self_derivation_record\":{\"derivation_reflexivity\":true,\"derivation_reflexivity_evidence_path\":\"evidence/derivation-reflexivity.json\",\"deriver_cycle_closed\":true,\"deriver_cycle_closure_evidence_path\":\"evidence/deriver-cycle-closed.json\",\"ground_paths\":[\"ground.txt\"],\"ground_self\":true,\"ground_self_evidence_path\":\"evidence/ground-self.json\",\"mechanism_path\":\"mechanism.bin\",\"reflexion_identity\":true,\"reflexion_identity_evidence_path\":\"evidence/reflexion-identity.json\",\"relation_strength\":\"DERIVES\",\"residual_obligations\":[],\"retained_path\":[\"ground.txt\",\"mechanism.bin\",\"evidence/ground-self.json\",\"evidence/derivation-reflexivity.json\",\"evidence/reflexion-identity.json\",\"evidence/deriver-cycle-closed.json\",\"status.txt\"],\"subject_path\":\"status.txt\"}}",
+      "commit_digest": "sha256:2ca50256a673c9682ce09e9056c4965e144ea5229539c52579695d842490c586",
+      "objects": [
+        {
+          "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJkZXJpdmF0aW9uX3JlZmxleGl2aXR5Iiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELVNFTEYtREVSSVZBVElPTi1FVklERU5DRS0wLjEiLCJzdWJqZWN0X3BhdGgiOiJzdGF0dXMudHh0In0",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:2dabec2d1f4b49fd81df41628697a7ac18571d3b995267bf8cf8775f59ae319f",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 212
+          }
+        },
+        {
+          "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJkZXJpdmVyX2N5Y2xlX2Nsb3NlZCIsInNjaGVtYV92ZXJzaW9uIjoiVlNURC1TRUxGLURFUklWQVRJT04tRVZJREVOQ0UtMC4xIiwic3ViamVjdF9wYXRoIjoic3RhdHVzLnR4dCJ9",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:642c07c5e2a37f31477bafe868984994cd020eff035b5ef0e5c0169c46b87259",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 210
+          }
+        },
+        {
+          "bytes_base64url": "eyJjbGFpbV9ib3VuZGFyeSI6IlRoaXMgbWVjaGFuaXNtIGNoZWNrcyBhIHJldGFpbmVkIHN0cnVjdHVyYWwgc2VsZi1kZXJpdmF0aW9uIHdpdG5lc3MuIEl0IGRvZXMgbm90IHByb3ZlIHNlbWFudGljIHNlbGYtcmV0dXJuLCB0cnV0aCwgb3IgY29tcGxldGVuZXNzLiIsIm1lY2hhbmlzbV9pZCI6InZzdGQucmVmZXJlbmNlLnN0cnVjdHVyYWxfc2VsZl9kZXJpdmF0aW9uLjAuMSIsInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInJ1bGVzIjpbImdyb3VuZF9zZWxmX3JlcXVpcmVzX2RlY2xhcmVkX2dyb3VuZF9hbmRfcmV0YWluZWRfcGF0aF9vcmlnaW4iLCJkZXJpdmF0aW9uX3JlZmxleGl2aXR5X3JlcXVpcmVzX2dyb3VuZGVkX25lY2Vzc2FyeV9tZWNoYW5pc21fYW5kX2Rlcml2ZWRfZXZpZGVuY2UiLCJyZWZsZXhpb25faWRlbnRpdHlfcmVxdWlyZXNfZXhhY3Rfc3ViamVjdF9hbmRfdGVybWluYWxfZWRnZSIsImRlcml2ZXJfY3ljbGVfY2xvc3VyZV9yZXF1aXJlc19jb250aW51b3VzX3JldGFpbmVkX2dyYXBoX2FuZF9ub19yZXNpZHVhbHMiXSwic2NoZW1hX3ZlcnNpb24iOiJWU1RELVNFTEYtREVSSVZBVElPTi1NRUNIQU5JU00tMC4xIn0",
+          "object": {
+            "artifact_kind": "derivation-mechanism",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-MECHANISM-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 596
+          }
+        },
+        {
+          "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJncm91bmRfc2VsZiIsInNjaGVtYV92ZXJzaW9uIjoiVlNURC1TRUxGLURFUklWQVRJT04tRVZJREVOQ0UtMC4xIiwic3ViamVjdF9wYXRoIjoic3RhdHVzLnR4dCJ9",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:cbb2c546d2a49476ba5d73f5145765c9725dd89bfe40612d1807c99aba1cdbdc",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 201
+          }
+        },
+        {
+          "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJyZWZsZXhpb25faWRlbnRpdHkiLCJzY2hlbWFfdmVyc2lvbiI6IlZTVEQtU0VMRi1ERVJJVkFUSU9OLUVWSURFTkNFLTAuMSIsInN1YmplY3RfcGF0aCI6InN0YXR1cy50eHQifQ",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:d6cc79135fa2048394c2517b7b96265eb2f29fba4098aa08f18ac25f6369ff75",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 208
+          }
+        },
+        {
+          "bytes_base64url": "Z3JvdW5k",
+          "object": {
+            "artifact_kind": "ground",
+            "declared_schema_id": "GROUND-1",
+            "media_type": "text/plain",
+            "object_digest": "sha256:dbb3b50e59c7326b2ff7d6619430257b9188cf3c0b8d778f7275ffd3bf4998a2",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 6
+          }
+        },
+        {
+          "bytes_base64url": "eyJhY3Rvcl9zY29wZV9kaWdlc3QiOiJzaGEyNTY6ZTQxNjNhMDNlMjlhN2FhODMyNjA3MTE2MjI0MDJiZDJmNTc1NmRhZjA0NjZkODNmNTVmNDdlYWRkMWVhMTEwMSIsImFjdG9yX3Njb3BlX3ZlcnNpb24iOiJWU1RELUFVVEhPUklUWS1BQ1RPUi1TQ09QRS0wLjEiLCJhdXRob3JpdHlfYXhpb21fYWdlbmN5X2RpZ2VzdCI6InNoYTI1Njo0MWUzYTI3YzgzMjI4NzRiYjU2MzQ4OTBkMzNjZmYyYTkxNzBmMjkwNmM4M2Q0NWQ5Yzc5Njg4MzZkN2U0ODJjIiwiYXV0aG9yaXR5X2F4aW9tX2FnZW5jeV92ZXJzaW9uIjoiVlNURC1BVVRIT1JJVFktQVhJT00tQUdFTkNZLTAuMSIsImNsb3N1cmVfc3RhdHVzIjoiQ0xPU0VEIiwiaW5pdGlhbF9zdGF0ZV9pZHMiOlsiaW5pdGlhbCJdLCJyZXNpZHVhbF9vYmxpZ2F0aW9ucyI6W10sInNjaGVtYV92ZXJzaW9uIjoiVlNURC1BVVRIT1JJVFktTU9ERUwtMC4xIiwic3RhdGVfdW5pdmVyc2UiOlsiaW5pdGlhbCIsInN0ZWFkeSJdLCJzdGF0ZXMiOlt7Imdyb3VuZF9hY3Rpb25zIjpbIkNIQUxMRU5HRV9XSVRIX0NPVU5URVJFVklERU5DRSIsIkVYSVRfQ09NUE9TSVRJT04iLCJFWFBPUlRfQUNDRVNTSUJMRV9TSUxPIiwiRk9SS19ERVJJVkFUSU9OIiwiSU5ERVBFTkRFTlRMWV9JTlNQRUNUX0FDQ0VTU0lCTEVfQVJUSUZBQ1RTIiwiUFJFU0VSVkVfQ09ORkxJQ1QiLCJQUkVTRVJWRV9VTktOT1dOIiwiU0VMRUNUX1RSVVNUX1JPT1RTIiwiV0lUSERSQVdfT1dOX0FVVEhPUklaQVRJT04iXSwibG9jYWxfYXV0aG9yaXR5X2FkZGl0aW9ucyI6W10sInN0YXRlX2lkIjoiaW5pdGlhbCJ9LHsiZ3JvdW5kX2FjdGlvbnMiOlsiQ0hBTExFTkdFX1dJVEhfQ09VTlRFUkVWSURFTkNFIiwiRVhJVF9DT01QT1NJVElPTiIsIkVYUE9SVF9BQ0NFU1NJQkxFX1NJTE8iLCJGT1JLX0RFUklWQVRJT04iLCJJTkRFUEVOREVOVExZX0lOU1BFQ1RfQUNDRVNTSUJMRV9BUlRJRkFDVFMiLCJQUkVTRVJWRV9DT05GTElDVCIsIlBSRVNFUlZFX1VOS05PV04iLCJTRUxFQ1RfVFJVU1RfUk9PVFMiLCJXSVRIRFJBV19PV05fQVVUSE9SSVpBVElPTiJdLCJsb2NhbF9hdXRob3JpdHlfYWRkaXRpb25zIjpbXSwic3RhdGVfaWQiOiJzdGVhZHkifV0sInRyYW5zaXRpb25fdW5pdmVyc2UiOlsic2V0dGxlIl0sInRyYW5zaXRpb25zIjpbeyJhY3Rpb24iOiJTRVRUTEUiLCJhY3Rvcl9zY29wZSI6IkFOWV9BQ1RPUiIsInNvdXJjZV9zdGF0ZV9pZCI6ImluaXRpYWwiLCJ0YXJnZXRfc3RhdGVfaWQiOiJzdGVhZHkiLCJ0cmFuc2l0aW9uX2lkIjoic2V0dGxlIn1dfQ",
+          "object": {
+            "artifact_kind": "authority-model",
+            "declared_schema_id": "VSTD-AUTHORITY-MODEL-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 1279
+          }
+        },
+        {
+          "bytes_base64url": "c2VsZi1kZXJpdmVk",
+          "object": {
+            "artifact_kind": "self-derivation-status",
+            "declared_schema_id": "STATUS-1",
+            "media_type": "text/plain",
+            "object_digest": "sha256:fd69229354282146e94b55ea9ff48cae653d310833967e9356b32d69b94e9e16",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 12
+          }
+        }
+      ]
+    },
+    {
+      "commit": {
+        "authority_axiom_agency": [
+          "CHALLENGE_WITH_COUNTEREVIDENCE",
+          "EXIT_COMPOSITION",
+          "EXPORT_ACCESSIBLE_SILO",
+          "FORK_DERIVATION",
+          "INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+          "PRESERVE_CONFLICT",
+          "PRESERVE_UNKNOWN",
+          "SELECT_TRUST_ROOTS",
+          "WITHDRAW_OWN_AUTHORIZATION"
+        ],
+        "authority_axiom_agency_digest": "sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c",
+        "authority_axiom_agency_version": "VSTD-AUTHORITY-AXIOM-AGENCY-0.1",
+        "authority_model_path": "authority/model.json",
+        "census": [
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "authority-model",
+              "declared_schema_id": "VSTD-AUTHORITY-MODEL-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 1279
+            },
+            "path": "authority/model.json"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "self-derivation-evidence",
+              "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:2dabec2d1f4b49fd81df41628697a7ac18571d3b995267bf8cf8775f59ae319f",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 212
+            },
+            "path": "evidence/derivation-reflexivity.json"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "self-derivation-evidence",
+              "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:642c07c5e2a37f31477bafe868984994cd020eff035b5ef0e5c0169c46b87259",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 210
+            },
+            "path": "evidence/deriver-cycle-closed.json"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "self-derivation-evidence",
+              "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:cbb2c546d2a49476ba5d73f5145765c9725dd89bfe40612d1807c99aba1cdbdc",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 201
+            },
+            "path": "evidence/ground-self.json"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "self-derivation-evidence",
+              "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:d6cc79135fa2048394c2517b7b96265eb2f29fba4098aa08f18ac25f6369ff75",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 208
+            },
+            "path": "evidence/reflexion-identity.json"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "ground",
+              "declared_schema_id": "GROUND-1",
+              "media_type": "text/plain",
+              "object_digest": "sha256:dbb3b50e59c7326b2ff7d6619430257b9188cf3c0b8d778f7275ffd3bf4998a2",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 6
+            },
+            "path": "ground.txt"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "derivation-mechanism",
+              "declared_schema_id": "VSTD-SELF-DERIVATION-MECHANISM-0.1",
+              "media_type": "application/json",
+              "object_digest": "sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 596
+            },
+            "path": "mechanism.bin"
+          },
+          {
+            "necessity": "NECESSARY",
+            "object": {
+              "artifact_kind": "self-derivation-status",
+              "declared_schema_id": "STATUS-1",
+              "media_type": "text/plain",
+              "object_digest": "sha256:fd69229354282146e94b55ea9ff48cae653d310833967e9356b32d69b94e9e16",
+              "schema_version": "VSTD-OBJECT-0.1",
+              "size_bytes": 12
+            },
+            "path": "status.txt"
+          }
+        ],
+        "completeness_kind": "SILO_CENSUS",
+        "coverage_universe": [
+          "authority-action:CHALLENGE_WITH_COUNTEREVIDENCE",
+          "authority-action:EXIT_COMPOSITION",
+          "authority-action:EXPORT_ACCESSIBLE_SILO",
+          "authority-action:FORK_DERIVATION",
+          "authority-action:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+          "authority-action:PRESERVE_CONFLICT",
+          "authority-action:PRESERVE_UNKNOWN",
+          "authority-action:SELECT_TRUST_ROOTS",
+          "authority-action:WITHDRAW_OWN_AUTHORIZATION",
+          "authority-actor-scope-binding:VSTD-AUTHORITY-ACTOR-SCOPE-0.1:sha256:e4163a03e29a7aa83260711622402bd2f5756daf0466d83f55f47eadd1ea1101",
+          "authority-binding:VSTD-AUTHORITY-AXIOM-AGENCY-0.1:sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c",
+          "authority-initial-state:initial",
+          "authority-model-path:authority/model.json",
+          "authority-model:sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19",
+          "authority-state-ground-action:initial:CHALLENGE_WITH_COUNTEREVIDENCE",
+          "authority-state-ground-action:initial:EXIT_COMPOSITION",
+          "authority-state-ground-action:initial:EXPORT_ACCESSIBLE_SILO",
+          "authority-state-ground-action:initial:FORK_DERIVATION",
+          "authority-state-ground-action:initial:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+          "authority-state-ground-action:initial:PRESERVE_CONFLICT",
+          "authority-state-ground-action:initial:PRESERVE_UNKNOWN",
+          "authority-state-ground-action:initial:SELECT_TRUST_ROOTS",
+          "authority-state-ground-action:initial:WITHDRAW_OWN_AUTHORIZATION",
+          "authority-state-ground-action:steady:CHALLENGE_WITH_COUNTEREVIDENCE",
+          "authority-state-ground-action:steady:EXIT_COMPOSITION",
+          "authority-state-ground-action:steady:EXPORT_ACCESSIBLE_SILO",
+          "authority-state-ground-action:steady:FORK_DERIVATION",
+          "authority-state-ground-action:steady:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS",
+          "authority-state-ground-action:steady:PRESERVE_CONFLICT",
+          "authority-state-ground-action:steady:PRESERVE_UNKNOWN",
+          "authority-state-ground-action:steady:SELECT_TRUST_ROOTS",
+          "authority-state-ground-action:steady:WITHDRAW_OWN_AUTHORIZATION",
+          "authority-state-universe:initial",
+          "authority-state-universe:steady",
+          "authority-state:sha256:707ebee5af9d4b2084a283489ff8861ee6cc31fe59fc58aa58c055658a3d8e2f",
+          "authority-state:sha256:f0d1916004d448ed63c3d96dbe513568f89e6206b33dedebe8a69a3023ca1da8",
+          "authority-transition-universe:settle",
+          "authority-transition:sha256:4e205d0dd40a8845d2de771d15dd443f6cb2701f26342c5fc8a3336bcd56e40b",
+          "completeness-kind:SILO_CENSUS",
+          "created-at:sha256:f27baf5a2a9f72dfdf38c2635e0cbc63a231289b7ec0f7aef2f07698a3b85fba",
+          "derivation:sha256:24eca0ff034c8f54e82a86b554f9a50ce1d34b2c63201b71cee69cffd6b89f07",
+          "derivation:sha256:577ae4fd1fb49fdb530d755637e7d95e4f80fa7ef0d1490f05b7a789774c299a",
+          "derivation:sha256:87b51f6c9c732fb19bffa1b75afa7c9ffaa5971295c342be4b71d8cc0726a4df",
+          "derivation:sha256:9d222c2a375185232ac6dec917eda8edcdc22de183b03a000eb97efc28e0d796",
+          "derivation:sha256:a238713768c3b57bb0f4fd0a7a85959876d14a1e5b389c38baa0a306eccb317d",
+          "derivation:sha256:d435503423b93a357ec06421bd3a73d0a33ef17a0820fbadac09798a9cc4a0a9",
+          "ground-path:ground.txt",
+          "ground-path:mechanism.bin",
+          "mechanism-dependency:sha256:36da77f759a493d4d400d84a1d151bb7cc41ea3b7c980d43209c7b2ab8c9526c",
+          "mechanism-dependency:sha256:51c70ac8b9fc64425f3d18cd27cc0490bcec1e14803437b0d215b080b4bdfa7e",
+          "mechanism-dependency:sha256:92f8accacbce879f829dfbeed15e7cde81c1fead05b7b46bc0d75017e2674497",
+          "mechanism-dependency:sha256:ca0c6eea3812726b47e94c4a175291ae038acb1c3475613ccf9d1769a331d3a4",
+          "mechanism-dependency:sha256:ef9d7b44e428db91c11d835fed2eff6df115abb0172c7176e1c7913c948bad09",
+          "mechanism-dependency:sha256:f1961a0baf309b75174748bcf24283f6d1692c9be5cb4c529741c52be007cca0",
+          "necessity:authority/model.json:NECESSARY",
+          "necessity:evidence/derivation-reflexivity.json:NECESSARY",
+          "necessity:evidence/deriver-cycle-closed.json:NECESSARY",
+          "necessity:evidence/ground-self.json:NECESSARY",
+          "necessity:evidence/reflexion-identity.json:NECESSARY",
+          "necessity:ground.txt:NECESSARY",
+          "necessity:mechanism.bin:NECESSARY",
+          "necessity:status.txt:NECESSARY",
+          "object:authority/model.json",
+          "object:evidence/derivation-reflexivity.json",
+          "object:evidence/deriver-cycle-closed.json",
+          "object:evidence/ground-self.json",
+          "object:evidence/reflexion-identity.json",
+          "object:ground.txt",
+          "object:mechanism.bin",
+          "object:status.txt",
+          "premise-dependency:sha256:0913f45a6535ef23e6f6d7be8083175cc7722e93b2176d21bdcc3eea84b96230",
+          "premise-dependency:sha256:285ff8a992ad0d2d1cae7ab3613e0072d8e7b52be05740bc89209b3a2fc42c89",
+          "premise-dependency:sha256:28e79f0612de8b140cbf68d9b19f3acc2f8dcdeba834c965c1615b9ee2bdb4ba",
+          "premise-dependency:sha256:2c7bcc1a578e79e918f733979c909645fcdbea7ab5431b2102c84b8d50c3f111",
+          "premise-dependency:sha256:3cbbaad0d9951b2693a64fb1aa2a4b87c38ca3e8b5e6a1d181f6065614d21fc9",
+          "premise-dependency:sha256:4a8ddcb7c0dc96fb3cc07337f776118f33ce60a5525d2a4592687420683cb030",
+          "premise-dependency:sha256:50e4f174e4c5f942cb17a3d97451b51b47be2c0e21385232a34a4e4829d1cd05",
+          "premise-dependency:sha256:7effb38e32ef47b525d0ee5904cdb9f2828eab04c636a3995166eaa83dd58fd5",
+          "premise-dependency:sha256:9d4f62baa04e0a42d4131aba61b8aeaa0fa6175fec9a688dd16719b9fcb79d3e",
+          "premise-dependency:sha256:a251190ef78ede9a89a40495d96a359cd53949438a636586dc48d94b3caca817",
+          "publisher:publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+          "self-derivation-record:sha256:624ed3f49058ee14aff72e5d4439cc353a0070239a110569a940381ac2c4bdb1"
+        ],
+        "created_at": "2026-09-08T00:00:00Z",
+        "derivations": [
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "authority/model.json"
+          },
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "evidence/derivation-reflexivity.json"
+          },
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "evidence/deriver-cycle-closed.json"
+          },
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "evidence/ground-self.json"
+          },
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "evidence/reflexion-identity.json"
+          },
+          {
+            "mechanism_path": "mechanism.bin",
+            "premise_paths": [
+              "evidence/derivation-reflexivity.json",
+              "evidence/deriver-cycle-closed.json",
+              "evidence/ground-self.json",
+              "evidence/reflexion-identity.json",
+              "ground.txt"
+            ],
+            "relation_strength": "DERIVES",
+            "target_path": "status.txt"
+          }
+        ],
+        "exclusions": [],
+        "ground_paths": [
+          "ground.txt",
+          "mechanism.bin"
+        ],
+        "parents": [],
+        "publisher_id": "publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c",
+        "relations": [],
+        "residual_obligations": [],
+        "schema_version": "VSTD-SILO-COMMIT-0.1",
+        "self_derivation_record": {
+          "derivation_reflexivity": true,
+          "derivation_reflexivity_evidence_path": "evidence/derivation-reflexivity.json",
+          "deriver_cycle_closed": true,
+          "deriver_cycle_closure_evidence_path": "evidence/deriver-cycle-closed.json",
+          "ground_paths": [
+            "ground.txt"
+          ],
+          "ground_self": true,
+          "ground_self_evidence_path": "evidence/ground-self.json",
+          "mechanism_path": "mechanism.bin",
+          "reflexion_identity": true,
+          "reflexion_identity_evidence_path": "evidence/reflexion-identity.json",
+          "relation_strength": "DERIVES",
+          "residual_obligations": [],
+          "retained_path": [
+            "ground.txt",
+            "mechanism.bin",
+            "evidence/ground-self.json",
+            "evidence/derivation-reflexivity.json",
+            "evidence/reflexion-identity.json",
+            "evidence/deriver-cycle-closed.json",
+            "status.txt"
+          ],
+          "subject_path": "status.txt"
+        }
+      },
+      "commit_canonical_json": "{\"authority_axiom_agency\":[\"CHALLENGE_WITH_COUNTEREVIDENCE\",\"EXIT_COMPOSITION\",\"EXPORT_ACCESSIBLE_SILO\",\"FORK_DERIVATION\",\"INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"PRESERVE_CONFLICT\",\"PRESERVE_UNKNOWN\",\"SELECT_TRUST_ROOTS\",\"WITHDRAW_OWN_AUTHORIZATION\"],\"authority_axiom_agency_digest\":\"sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c\",\"authority_axiom_agency_version\":\"VSTD-AUTHORITY-AXIOM-AGENCY-0.1\",\"authority_model_path\":\"authority/model.json\",\"census\":[{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"authority-model\",\"declared_schema_id\":\"VSTD-AUTHORITY-MODEL-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":1279},\"path\":\"authority/model.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:2dabec2d1f4b49fd81df41628697a7ac18571d3b995267bf8cf8775f59ae319f\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":212},\"path\":\"evidence/derivation-reflexivity.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:642c07c5e2a37f31477bafe868984994cd020eff035b5ef0e5c0169c46b87259\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":210},\"path\":\"evidence/deriver-cycle-closed.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:cbb2c546d2a49476ba5d73f5145765c9725dd89bfe40612d1807c99aba1cdbdc\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":201},\"path\":\"evidence/ground-self.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-evidence\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-EVIDENCE-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:d6cc79135fa2048394c2517b7b96265eb2f29fba4098aa08f18ac25f6369ff75\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":208},\"path\":\"evidence/reflexion-identity.json\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"ground\",\"declared_schema_id\":\"GROUND-1\",\"media_type\":\"text/plain\",\"object_digest\":\"sha256:dbb3b50e59c7326b2ff7d6619430257b9188cf3c0b8d778f7275ffd3bf4998a2\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":6},\"path\":\"ground.txt\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"derivation-mechanism\",\"declared_schema_id\":\"VSTD-SELF-DERIVATION-MECHANISM-0.1\",\"media_type\":\"application/json\",\"object_digest\":\"sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":596},\"path\":\"mechanism.bin\"},{\"necessity\":\"NECESSARY\",\"object\":{\"artifact_kind\":\"self-derivation-status\",\"declared_schema_id\":\"STATUS-1\",\"media_type\":\"text/plain\",\"object_digest\":\"sha256:fd69229354282146e94b55ea9ff48cae653d310833967e9356b32d69b94e9e16\",\"schema_version\":\"VSTD-OBJECT-0.1\",\"size_bytes\":12},\"path\":\"status.txt\"}],\"completeness_kind\":\"SILO_CENSUS\",\"coverage_universe\":[\"authority-action:CHALLENGE_WITH_COUNTEREVIDENCE\",\"authority-action:EXIT_COMPOSITION\",\"authority-action:EXPORT_ACCESSIBLE_SILO\",\"authority-action:FORK_DERIVATION\",\"authority-action:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"authority-action:PRESERVE_CONFLICT\",\"authority-action:PRESERVE_UNKNOWN\",\"authority-action:SELECT_TRUST_ROOTS\",\"authority-action:WITHDRAW_OWN_AUTHORIZATION\",\"authority-actor-scope-binding:VSTD-AUTHORITY-ACTOR-SCOPE-0.1:sha256:e4163a03e29a7aa83260711622402bd2f5756daf0466d83f55f47eadd1ea1101\",\"authority-binding:VSTD-AUTHORITY-AXIOM-AGENCY-0.1:sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c\",\"authority-initial-state:initial\",\"authority-model-path:authority/model.json\",\"authority-model:sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19\",\"authority-state-ground-action:initial:CHALLENGE_WITH_COUNTEREVIDENCE\",\"authority-state-ground-action:initial:EXIT_COMPOSITION\",\"authority-state-ground-action:initial:EXPORT_ACCESSIBLE_SILO\",\"authority-state-ground-action:initial:FORK_DERIVATION\",\"authority-state-ground-action:initial:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"authority-state-ground-action:initial:PRESERVE_CONFLICT\",\"authority-state-ground-action:initial:PRESERVE_UNKNOWN\",\"authority-state-ground-action:initial:SELECT_TRUST_ROOTS\",\"authority-state-ground-action:initial:WITHDRAW_OWN_AUTHORIZATION\",\"authority-state-ground-action:steady:CHALLENGE_WITH_COUNTEREVIDENCE\",\"authority-state-ground-action:steady:EXIT_COMPOSITION\",\"authority-state-ground-action:steady:EXPORT_ACCESSIBLE_SILO\",\"authority-state-ground-action:steady:FORK_DERIVATION\",\"authority-state-ground-action:steady:INDEPENDENTLY_INSPECT_ACCESSIBLE_ARTIFACTS\",\"authority-state-ground-action:steady:PRESERVE_CONFLICT\",\"authority-state-ground-action:steady:PRESERVE_UNKNOWN\",\"authority-state-ground-action:steady:SELECT_TRUST_ROOTS\",\"authority-state-ground-action:steady:WITHDRAW_OWN_AUTHORIZATION\",\"authority-state-universe:initial\",\"authority-state-universe:steady\",\"authority-state:sha256:707ebee5af9d4b2084a283489ff8861ee6cc31fe59fc58aa58c055658a3d8e2f\",\"authority-state:sha256:f0d1916004d448ed63c3d96dbe513568f89e6206b33dedebe8a69a3023ca1da8\",\"authority-transition-universe:settle\",\"authority-transition:sha256:4e205d0dd40a8845d2de771d15dd443f6cb2701f26342c5fc8a3336bcd56e40b\",\"completeness-kind:SILO_CENSUS\",\"created-at:sha256:f27baf5a2a9f72dfdf38c2635e0cbc63a231289b7ec0f7aef2f07698a3b85fba\",\"derivation:sha256:24eca0ff034c8f54e82a86b554f9a50ce1d34b2c63201b71cee69cffd6b89f07\",\"derivation:sha256:577ae4fd1fb49fdb530d755637e7d95e4f80fa7ef0d1490f05b7a789774c299a\",\"derivation:sha256:87b51f6c9c732fb19bffa1b75afa7c9ffaa5971295c342be4b71d8cc0726a4df\",\"derivation:sha256:9d222c2a375185232ac6dec917eda8edcdc22de183b03a000eb97efc28e0d796\",\"derivation:sha256:a238713768c3b57bb0f4fd0a7a85959876d14a1e5b389c38baa0a306eccb317d\",\"derivation:sha256:d435503423b93a357ec06421bd3a73d0a33ef17a0820fbadac09798a9cc4a0a9\",\"ground-path:ground.txt\",\"ground-path:mechanism.bin\",\"mechanism-dependency:sha256:36da77f759a493d4d400d84a1d151bb7cc41ea3b7c980d43209c7b2ab8c9526c\",\"mechanism-dependency:sha256:51c70ac8b9fc64425f3d18cd27cc0490bcec1e14803437b0d215b080b4bdfa7e\",\"mechanism-dependency:sha256:92f8accacbce879f829dfbeed15e7cde81c1fead05b7b46bc0d75017e2674497\",\"mechanism-dependency:sha256:ca0c6eea3812726b47e94c4a175291ae038acb1c3475613ccf9d1769a331d3a4\",\"mechanism-dependency:sha256:ef9d7b44e428db91c11d835fed2eff6df115abb0172c7176e1c7913c948bad09\",\"mechanism-dependency:sha256:f1961a0baf309b75174748bcf24283f6d1692c9be5cb4c529741c52be007cca0\",\"necessity:authority/model.json:NECESSARY\",\"necessity:evidence/derivation-reflexivity.json:NECESSARY\",\"necessity:evidence/deriver-cycle-closed.json:NECESSARY\",\"necessity:evidence/ground-self.json:NECESSARY\",\"necessity:evidence/reflexion-identity.json:NECESSARY\",\"necessity:ground.txt:NECESSARY\",\"necessity:mechanism.bin:NECESSARY\",\"necessity:status.txt:NECESSARY\",\"object:authority/model.json\",\"object:evidence/derivation-reflexivity.json\",\"object:evidence/deriver-cycle-closed.json\",\"object:evidence/ground-self.json\",\"object:evidence/reflexion-identity.json\",\"object:ground.txt\",\"object:mechanism.bin\",\"object:status.txt\",\"premise-dependency:sha256:0913f45a6535ef23e6f6d7be8083175cc7722e93b2176d21bdcc3eea84b96230\",\"premise-dependency:sha256:285ff8a992ad0d2d1cae7ab3613e0072d8e7b52be05740bc89209b3a2fc42c89\",\"premise-dependency:sha256:28e79f0612de8b140cbf68d9b19f3acc2f8dcdeba834c965c1615b9ee2bdb4ba\",\"premise-dependency:sha256:2c7bcc1a578e79e918f733979c909645fcdbea7ab5431b2102c84b8d50c3f111\",\"premise-dependency:sha256:3cbbaad0d9951b2693a64fb1aa2a4b87c38ca3e8b5e6a1d181f6065614d21fc9\",\"premise-dependency:sha256:4a8ddcb7c0dc96fb3cc07337f776118f33ce60a5525d2a4592687420683cb030\",\"premise-dependency:sha256:50e4f174e4c5f942cb17a3d97451b51b47be2c0e21385232a34a4e4829d1cd05\",\"premise-dependency:sha256:7effb38e32ef47b525d0ee5904cdb9f2828eab04c636a3995166eaa83dd58fd5\",\"premise-dependency:sha256:9d4f62baa04e0a42d4131aba61b8aeaa0fa6175fec9a688dd16719b9fcb79d3e\",\"premise-dependency:sha256:a251190ef78ede9a89a40495d96a359cd53949438a636586dc48d94b3caca817\",\"publisher:publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c\",\"self-derivation-record:sha256:624ed3f49058ee14aff72e5d4439cc353a0070239a110569a940381ac2c4bdb1\"],\"created_at\":\"2026-09-08T00:00:00Z\",\"derivations\":[{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"authority/model.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/derivation-reflexivity.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/deriver-cycle-closed.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/ground-self.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"evidence/reflexion-identity.json\"},{\"mechanism_path\":\"mechanism.bin\",\"premise_paths\":[\"evidence/derivation-reflexivity.json\",\"evidence/deriver-cycle-closed.json\",\"evidence/ground-self.json\",\"evidence/reflexion-identity.json\",\"ground.txt\"],\"relation_strength\":\"DERIVES\",\"target_path\":\"status.txt\"}],\"exclusions\":[],\"ground_paths\":[\"ground.txt\",\"mechanism.bin\"],\"parents\":[],\"publisher_id\":\"publisher:sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c\",\"relations\":[],\"residual_obligations\":[],\"schema_version\":\"VSTD-SILO-COMMIT-0.1\",\"self_derivation_record\":{\"derivation_reflexivity\":true,\"derivation_reflexivity_evidence_path\":\"evidence/derivation-reflexivity.json\",\"deriver_cycle_closed\":true,\"deriver_cycle_closure_evidence_path\":\"evidence/deriver-cycle-closed.json\",\"ground_paths\":[\"ground.txt\"],\"ground_self\":true,\"ground_self_evidence_path\":\"evidence/ground-self.json\",\"mechanism_path\":\"mechanism.bin\",\"reflexion_identity\":true,\"reflexion_identity_evidence_path\":\"evidence/reflexion-identity.json\",\"relation_strength\":\"DERIVES\",\"residual_obligations\":[],\"retained_path\":[\"ground.txt\",\"mechanism.bin\",\"evidence/ground-self.json\",\"evidence/derivation-reflexivity.json\",\"evidence/reflexion-identity.json\",\"evidence/deriver-cycle-closed.json\",\"status.txt\"],\"subject_path\":\"status.txt\"}}",
+      "commit_digest": "sha256:7b3d6440a67b3ebe4c2bbde1c37ef74a9987f3ee42a16eb60f750ea350a88b9b",
+      "objects": [
+        {
+          "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJkZXJpdmF0aW9uX3JlZmxleGl2aXR5Iiwic2NoZW1hX3ZlcnNpb24iOiJWU1RELVNFTEYtREVSSVZBVElPTi1FVklERU5DRS0wLjEiLCJzdWJqZWN0X3BhdGgiOiJzdGF0dXMudHh0In0",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:2dabec2d1f4b49fd81df41628697a7ac18571d3b995267bf8cf8775f59ae319f",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 212
+          }
+        },
+        {
+          "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJkZXJpdmVyX2N5Y2xlX2Nsb3NlZCIsInNjaGVtYV92ZXJzaW9uIjoiVlNURC1TRUxGLURFUklWQVRJT04tRVZJREVOQ0UtMC4xIiwic3ViamVjdF9wYXRoIjoic3RhdHVzLnR4dCJ9",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:642c07c5e2a37f31477bafe868984994cd020eff035b5ef0e5c0169c46b87259",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 210
+          }
+        },
+        {
+          "bytes_base64url": "eyJjbGFpbV9ib3VuZGFyeSI6IlRoaXMgbWVjaGFuaXNtIGNoZWNrcyBhIHJldGFpbmVkIHN0cnVjdHVyYWwgc2VsZi1kZXJpdmF0aW9uIHdpdG5lc3MuIEl0IGRvZXMgbm90IHByb3ZlIHNlbWFudGljIHNlbGYtcmV0dXJuLCB0cnV0aCwgb3IgY29tcGxldGVuZXNzLiIsIm1lY2hhbmlzbV9pZCI6InZzdGQucmVmZXJlbmNlLnN0cnVjdHVyYWxfc2VsZl9kZXJpdmF0aW9uLjAuMSIsInJlbGF0aW9uX3N0cmVuZ3RoIjoiREVSSVZFUyIsInJ1bGVzIjpbImdyb3VuZF9zZWxmX3JlcXVpcmVzX2RlY2xhcmVkX2dyb3VuZF9hbmRfcmV0YWluZWRfcGF0aF9vcmlnaW4iLCJkZXJpdmF0aW9uX3JlZmxleGl2aXR5X3JlcXVpcmVzX2dyb3VuZGVkX25lY2Vzc2FyeV9tZWNoYW5pc21fYW5kX2Rlcml2ZWRfZXZpZGVuY2UiLCJyZWZsZXhpb25faWRlbnRpdHlfcmVxdWlyZXNfZXhhY3Rfc3ViamVjdF9hbmRfdGVybWluYWxfZWRnZSIsImRlcml2ZXJfY3ljbGVfY2xvc3VyZV9yZXF1aXJlc19jb250aW51b3VzX3JldGFpbmVkX2dyYXBoX2FuZF9ub19yZXNpZHVhbHMiXSwic2NoZW1hX3ZlcnNpb24iOiJWU1RELVNFTEYtREVSSVZBVElPTi1NRUNIQU5JU00tMC4xIn0",
+          "object": {
+            "artifact_kind": "derivation-mechanism",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-MECHANISM-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:83895f65f402be9322847edf08641c59e1ec32ac2a366a2cab4bb8742954841e",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 596
+          }
+        },
+        {
+          "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJncm91bmRfc2VsZiIsInNjaGVtYV92ZXJzaW9uIjoiVlNURC1TRUxGLURFUklWQVRJT04tRVZJREVOQ0UtMC4xIiwic3ViamVjdF9wYXRoIjoic3RhdHVzLnR4dCJ9",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:cbb2c546d2a49476ba5d73f5145765c9725dd89bfe40612d1807c99aba1cdbdc",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 201
+          }
+        },
+        {
+          "bytes_base64url": "eyJtZWNoYW5pc21fZGlnZXN0Ijoic2hhMjU2OjgzODk1ZjY1ZjQwMmJlOTMyMjg0N2VkZjA4NjQxYzU5ZTFlYzMyYWMyYTM2NmEyY2FiNGJiODc0Mjk1NDg0MWUiLCJwcmVkaWNhdGUiOiJyZWZsZXhpb25faWRlbnRpdHkiLCJzY2hlbWFfdmVyc2lvbiI6IlZTVEQtU0VMRi1ERVJJVkFUSU9OLUVWSURFTkNFLTAuMSIsInN1YmplY3RfcGF0aCI6InN0YXR1cy50eHQifQ",
+          "object": {
+            "artifact_kind": "self-derivation-evidence",
+            "declared_schema_id": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:d6cc79135fa2048394c2517b7b96265eb2f29fba4098aa08f18ac25f6369ff75",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 208
+          }
+        },
+        {
+          "bytes_base64url": "Z3JvdW5k",
+          "object": {
+            "artifact_kind": "ground",
+            "declared_schema_id": "GROUND-1",
+            "media_type": "text/plain",
+            "object_digest": "sha256:dbb3b50e59c7326b2ff7d6619430257b9188cf3c0b8d778f7275ffd3bf4998a2",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 6
+          }
+        },
+        {
+          "bytes_base64url": "eyJhY3Rvcl9zY29wZV9kaWdlc3QiOiJzaGEyNTY6ZTQxNjNhMDNlMjlhN2FhODMyNjA3MTE2MjI0MDJiZDJmNTc1NmRhZjA0NjZkODNmNTVmNDdlYWRkMWVhMTEwMSIsImFjdG9yX3Njb3BlX3ZlcnNpb24iOiJWU1RELUFVVEhPUklUWS1BQ1RPUi1TQ09QRS0wLjEiLCJhdXRob3JpdHlfYXhpb21fYWdlbmN5X2RpZ2VzdCI6InNoYTI1Njo0MWUzYTI3YzgzMjI4NzRiYjU2MzQ4OTBkMzNjZmYyYTkxNzBmMjkwNmM4M2Q0NWQ5Yzc5Njg4MzZkN2U0ODJjIiwiYXV0aG9yaXR5X2F4aW9tX2FnZW5jeV92ZXJzaW9uIjoiVlNURC1BVVRIT1JJVFktQVhJT00tQUdFTkNZLTAuMSIsImNsb3N1cmVfc3RhdHVzIjoiQ0xPU0VEIiwiaW5pdGlhbF9zdGF0ZV9pZHMiOlsiaW5pdGlhbCJdLCJyZXNpZHVhbF9vYmxpZ2F0aW9ucyI6W10sInNjaGVtYV92ZXJzaW9uIjoiVlNURC1BVVRIT1JJVFktTU9ERUwtMC4xIiwic3RhdGVfdW5pdmVyc2UiOlsiaW5pdGlhbCIsInN0ZWFkeSJdLCJzdGF0ZXMiOlt7Imdyb3VuZF9hY3Rpb25zIjpbIkNIQUxMRU5HRV9XSVRIX0NPVU5URVJFVklERU5DRSIsIkVYSVRfQ09NUE9TSVRJT04iLCJFWFBPUlRfQUNDRVNTSUJMRV9TSUxPIiwiRk9SS19ERVJJVkFUSU9OIiwiSU5ERVBFTkRFTlRMWV9JTlNQRUNUX0FDQ0VTU0lCTEVfQVJUSUZBQ1RTIiwiUFJFU0VSVkVfQ09ORkxJQ1QiLCJQUkVTRVJWRV9VTktOT1dOIiwiU0VMRUNUX1RSVVNUX1JPT1RTIiwiV0lUSERSQVdfT1dOX0FVVEhPUklaQVRJT04iXSwibG9jYWxfYXV0aG9yaXR5X2FkZGl0aW9ucyI6W10sInN0YXRlX2lkIjoiaW5pdGlhbCJ9LHsiZ3JvdW5kX2FjdGlvbnMiOlsiQ0hBTExFTkdFX1dJVEhfQ09VTlRFUkVWSURFTkNFIiwiRVhJVF9DT01QT1NJVElPTiIsIkVYUE9SVF9BQ0NFU1NJQkxFX1NJTE8iLCJGT1JLX0RFUklWQVRJT04iLCJJTkRFUEVOREVOVExZX0lOU1BFQ1RfQUNDRVNTSUJMRV9BUlRJRkFDVFMiLCJQUkVTRVJWRV9DT05GTElDVCIsIlBSRVNFUlZFX1VOS05PV04iLCJTRUxFQ1RfVFJVU1RfUk9PVFMiLCJXSVRIRFJBV19PV05fQVVUSE9SSVpBVElPTiJdLCJsb2NhbF9hdXRob3JpdHlfYWRkaXRpb25zIjpbXSwic3RhdGVfaWQiOiJzdGVhZHkifV0sInRyYW5zaXRpb25fdW5pdmVyc2UiOlsic2V0dGxlIl0sInRyYW5zaXRpb25zIjpbeyJhY3Rpb24iOiJTRVRUTEUiLCJhY3Rvcl9zY29wZSI6IkFOWV9BQ1RPUiIsInNvdXJjZV9zdGF0ZV9pZCI6ImluaXRpYWwiLCJ0YXJnZXRfc3RhdGVfaWQiOiJzdGVhZHkiLCJ0cmFuc2l0aW9uX2lkIjoic2V0dGxlIn1dfQ",
+          "object": {
+            "artifact_kind": "authority-model",
+            "declared_schema_id": "VSTD-AUTHORITY-MODEL-0.1",
+            "media_type": "application/json",
+            "object_digest": "sha256:ef3274949326d65673c52d334007e1cf960e71f3688de53be8ca535572605d19",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 1279
+          }
+        },
+        {
+          "bytes_base64url": "c2VsZi1kZXJpdmVk",
+          "object": {
+            "artifact_kind": "self-derivation-status",
+            "declared_schema_id": "STATUS-1",
+            "media_type": "text/plain",
+            "object_digest": "sha256:fd69229354282146e94b55ea9ff48cae653d310833967e9356b32d69b94e9e16",
+            "schema_version": "VSTD-OBJECT-0.1",
+            "size_bytes": 12
+          }
+        }
+      ]
+    }
+  ],
+  "negative_cases": [
+    {
+      "case_id": "composite-receipt-substitution",
+      "expected_result": "REJECT",
+      "json_pointer": "/composite_assessment_receipt/commit_digest",
+      "replacement": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target": "RECEIPT"
+    },
+    {
+      "case_id": "declaration-substitution",
+      "expected_result": "REJECT",
+      "json_pointer": "/member_commit_digests/0",
+      "replacement": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target": "DECLARATION"
+    },
+    {
+      "case_id": "mechanism-substitution",
+      "expected_result": "REJECT",
+      "json_pointer": "/composition_mechanism_digest",
+      "replacement": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target": "RECEIPT"
+    },
+    {
+      "case_id": "member-receipt-substitution",
+      "expected_result": "REJECT",
+      "json_pointer": "/member_assessment_receipts/0/mechanism_digest",
+      "replacement": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "target": "RECEIPT"
+    },
+    {
+      "case_id": "result-substitution",
+      "expected_result": "REJECT",
+      "json_pointer": "/assessment/result",
+      "replacement": "NOT_ADMISSIBLE",
+      "target": "RECEIPT"
+    }
+  ],
+  "schema_version": "VSTD-SILO-COMPOSITION-WIRE-FIXTURE-0.1"
+}

@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/artifact-control-1.schema.json",
+  "title": "Verifier Standard (VSTD) artifact-control mechanism formats",
+  "description": "Strict shapes for freeze manifests, finite self-closing seal envelopes, and copy-on-write thaw lineage records. Shape-valid thaw metadata does not verify a parent or historical copy operation. These objects are mechanism formats, not VSTD receipts or numbered-profile conformance claims.",
+  "oneOf": [
+    {"$ref": "#/$defs/freeze"},
+    {"$ref": "#/$defs/seal"},
+    {"$ref": "#/$defs/thaw"}
+  ],
+  "$defs": {
+    "dualIdentifier": {
+      "type": "string",
+      "pattern": "^vstd-(artifact|content|freeze|seal|thaw)-1:sha256:[0-9a-f]{64}:sha3-256:[0-9a-f]{64}$"
+    },
+    "artifactIdentifier": {
+      "type": "string",
+      "pattern": "^vstd-artifact-1:sha256:[0-9a-f]{64}:sha3-256:[0-9a-f]{64}$"
+    },
+    "digests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "sha3-256"],
+      "properties": {
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "sha3-256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "fileEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "byte_size", "digests"],
+      "properties": {
+        "kind": {"const": "file"},
+        "path": {"type": "string", "minLength": 1},
+        "byte_size": {"type": "integer", "minimum": 0},
+        "digests": {"$ref": "#/$defs/digests"}
+      }
+    },
+    "directoryEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path"],
+      "properties": {
+        "kind": {"const": "directory"},
+        "path": {"type": "string", "minLength": 1, "not": {"const": "."}}
+      }
+    },
+    "freeze": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "artifact_id", "content_id", "artifact_kind", "media_type", "entries", "lineage", "bound_contexts", "mechanism", "freeze_id"],
+      "properties": {
+        "schema_version": {"const": "VSTD-ARTIFACT-FREEZE-1"},
+        "artifact_id": {"$ref": "#/$defs/artifactIdentifier"},
+        "content_id": {"$ref": "#/$defs/dualIdentifier"},
+        "artifact_kind": {"enum": ["file", "directory"]},
+        "media_type": {"type": "string", "minLength": 1},
+        "entries": {
+          "type": "array",
+          "items": {"oneOf": [{"$ref": "#/$defs/fileEntry"}, {"$ref": "#/$defs/directoryEntry"}]}
+        },
+        "lineage": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/artifactIdentifier"}},
+        "bound_contexts": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/artifactIdentifier"}},
+        "mechanism": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version", "canonicalization", "write_guard"],
+          "properties": {
+            "name": {"const": "vstd-reference-freezer"},
+            "version": {"const": "1"},
+            "canonicalization": {"const": "VSTD-ARTIFACT-CANONICAL-1"},
+            "write_guard": {"const": "PORTABLE_READ_ONLY_TREE"}
+          }
+        },
+        "freeze_id": {"$ref": "#/$defs/dualIdentifier"}
+      }
+    },
+    "sealPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "artifact_id", "content_id", "freeze_id", "freeze_manifest_digests", "key_id", "algorithm", "closure_rule"],
+      "properties": {
+        "schema_version": {"const": "VSTD-ARTIFACT-SEAL-CLOSURE-1"},
+        "artifact_id": {"$ref": "#/$defs/artifactIdentifier"},
+        "content_id": {"$ref": "#/$defs/dualIdentifier"},
+        "freeze_id": {"$ref": "#/$defs/dualIdentifier"},
+        "freeze_manifest_digests": {"$ref": "#/$defs/digests"},
+        "key_id": {"type": "string", "pattern": "^vstd-seal-key-1:sha256:[0-9a-f]{64}$"},
+        "algorithm": {"const": "Ed25519"},
+        "closure_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "seal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "seal_payload", "public_key_base64", "signature_base64", "seal_id"],
+      "properties": {
+        "schema_version": {"const": "VSTD-ARTIFACT-SEAL-1"},
+        "seal_payload": {"$ref": "#/$defs/sealPayload"},
+        "public_key_base64": {"type": "string", "contentEncoding": "base64"},
+        "signature_base64": {"type": "string", "contentEncoding": "base64"},
+        "seal_id": {"$ref": "#/$defs/dualIdentifier"}
+      }
+    },
+    "thaw": {
+      "type": "object",
+      "description": "Unkeyed lineage metadata whose self-derived thaw_id establishes field agreement only. Established clean or dirty status requires separate verification against the actual supplied sealed parent.",
+      "additionalProperties": false,
+      "required": ["schema_version", "parent_artifact_id", "parent_content_id", "parent_freeze_id", "parent_seal_ids", "artifact_kind", "media_type", "thaw_id"],
+      "properties": {
+        "schema_version": {"const": "VSTD-ARTIFACT-THAW-1"},
+        "parent_artifact_id": {"$ref": "#/$defs/artifactIdentifier"},
+        "parent_content_id": {"$ref": "#/$defs/dualIdentifier"},
+        "parent_freeze_id": {"$ref": "#/$defs/dualIdentifier"},
+        "parent_seal_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/dualIdentifier"}},
+        "artifact_kind": {"enum": ["file", "directory"]},
+        "media_type": {"type": "string", "minLength": 1},
+        "thaw_id": {"$ref": "#/$defs/dualIdentifier"}
+      }
+    }
+  }
+}

@@ -283,9 +283,9 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     )
     assert coordinate == {
         "canonical_base_url": "https://timelordraps.github.io/verifier/",
-        "documentation_version": "1.3.0",
+            "documentation_version": "1.4.0a1",
         "normative_source": "standard/",
-        "release_state": "UNRELEASED_SOURCE",
+            "release_state": "UNRELEASED_CANDIDATE",
         "schema_version": 1,
         "source_ref": "test-commit",
     }

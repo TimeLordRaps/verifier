@@ -23,6 +23,11 @@ import sys
 from typing import Any
 import zipfile
 
+try:
+    from scripts.classify_release_version import classify_release_version
+except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
+    from classify_release_version import classify_release_version
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT_BUILDER_PATH = Path(__file__).with_name("build_platform_component_report.py")
@@ -122,8 +127,16 @@ def prepare_release_evidence(
 ) -> dict[str, Any]:
     """Validate one exact four-coordinate run and write a deterministic ZIP bundle."""
 
-    if re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", release_tag) is None:
-        raise PlatformReleaseEvidenceError("release_tag must be an exact vX.Y.Z tag")
+    if not release_tag.startswith("v"):
+        raise PlatformReleaseEvidenceError(
+            "release_tag must be an exact supported v-prefixed release tag"
+        )
+    try:
+        classify_release_version(release_tag[1:])
+    except ValueError as exc:
+        raise PlatformReleaseEvidenceError(
+            "release_tag must be an exact supported v-prefixed release tag"
+        ) from exc
     if re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository) is None:
         raise PlatformReleaseEvidenceError("repository must be an exact owner/name coordinate")
     if re.fullmatch(r"[0-9a-f]{40,64}", source_commit) is None:

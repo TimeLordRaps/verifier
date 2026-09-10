@@ -20,6 +20,8 @@ study records, and roadmap-steering investigations.
   proof-producer/checker and adjacent-verifier examples with native results retained.
 - [Graph topology](graph_topology/README.md): simultaneous Boolean equations and explicitly
   declared backward-time relations, with separate bounded consistency results.
+- [Artifact-network specimen](artifact-network/README.md): deterministically materialize,
+  inspect, diff, clone, and compose an exact signed publisher silo without a service.
 - [Experimental workflow example](experimental_workflow/README.md): runnable use of an
   experimental integration; GitHub workflow success does not grant a VSTD verdict.
 

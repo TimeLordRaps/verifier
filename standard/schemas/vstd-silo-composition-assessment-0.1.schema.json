@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-silo-composition-assessment-0.1.schema.json",
+  "title": "Verifier Standard (VSTD) experimental silo composition assessment",
+  "description": "Typed output of the reference composition mechanism; the result is bounded by its member, composite, and claim-boundary fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "result", "composition_completeness", "composition_member_binding", "local_authority_addition_preservation", "authority_axiom_agency", "effective_authority_axiom_agency", "silos", "composite_silo", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "VSTD-SILO-COMPOSITION-ASSESSMENT-0.1"},
+    "result": {"enum": ["ADMISSIBLE", "NOT_ADMISSIBLE"]},
+    "composition_completeness": {"enum": ["COMPLETE", "INCOMPLETE", "UNKNOWN"]},
+    "composition_member_binding": {"enum": ["COMPLETE", "INCOMPLETE", "UNKNOWN"]},
+    "local_authority_addition_preservation": {"enum": ["COMPLETE", "INCOMPLETE", "UNKNOWN"]},
+    "authority_axiom_agency": {"enum": ["PRESERVED", "VIOLATED", "UNKNOWN"]},
+    "effective_authority_axiom_agency": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 128}
+    },
+    "silos": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {"$ref": "vstd-silo-assessment-0.1.schema.json"}
+    },
+    "composite_silo": {
+      "oneOf": [
+        {"$ref": "vstd-silo-assessment-0.1.schema.json"},
+        {"type": "null"}
+      ]
+    },
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 4096}
+  }
+}

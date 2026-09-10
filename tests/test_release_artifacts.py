@@ -24,6 +24,7 @@ RELEASE_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "release.yml"
 TIME_GATE = REPO_ROOT / "scripts" / "check_time_status.py"
 RELEASE_METADATA_GATE = REPO_ROOT / "scripts" / "check_release_metadata.py"
 RELEASE_NOTES = REPO_ROOT / "scripts" / "extract_release_notes.py"
+RELEASE_VERSION_CLASSIFIER = REPO_ROOT / "scripts" / "classify_release_version.py"
 
 SPEC = importlib.util.spec_from_file_location("vstd_release_artifacts", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
@@ -41,6 +42,13 @@ NOTES_SPEC = importlib.util.spec_from_file_location("vstd_release_notes", RELEAS
 assert NOTES_SPEC is not None and NOTES_SPEC.loader is not None
 release_notes = importlib.util.module_from_spec(NOTES_SPEC)
 NOTES_SPEC.loader.exec_module(release_notes)
+
+VERSION_SPEC = importlib.util.spec_from_file_location(
+    "vstd_release_version_classifier", RELEASE_VERSION_CLASSIFIER
+)
+assert VERSION_SPEC is not None and VERSION_SPEC.loader is not None
+release_version_classifier = importlib.util.module_from_spec(VERSION_SPEC)
+VERSION_SPEC.loader.exec_module(release_version_classifier)
 
 
 def _git_object_fixture(root: Path, files: dict[str, bytes]) -> tuple[Path, str]:
@@ -480,8 +488,9 @@ def test_artifact_directory_comparison_fails_closed(tmp_path: Path) -> None:
         release_artifacts.compare_artifact_directories(first, second)
 
 
+@pytest.mark.parametrize("release", ("1.3.0", "1.4.0a1"))
 def test_retagged_comparison_allows_only_the_expected_manifest_ref_change(
-    tmp_path: Path,
+    tmp_path: Path, release: str,
 ) -> None:
     candidate = tmp_path / "candidate"
     tagged = tmp_path / "tagged"
@@ -493,19 +502,19 @@ def test_retagged_comparison_allows_only_the_expected_manifest_ref_change(
     artifacts = {"artifact.bin": release_artifacts._file_record(candidate / "artifact.bin")}
     candidate_manifest = {
         "artifacts": artifacts,
-        "release": "1.3.0",
+        "release": release,
         "source": {"commit": commit, "ref": commit},
     }
     tagged_manifest = {
         "artifacts": artifacts,
-        "release": "1.3.0",
-        "source": {"commit": commit, "ref": "refs/tags/v1.3.0"},
+        "release": release,
+        "source": {"commit": commit, "ref": f"refs/tags/v{release}"},
     }
     for directory, manifest in (
         (candidate, candidate_manifest),
         (tagged, tagged_manifest),
     ):
-        (directory / "verifier-standard-1.3.0.manifest.json").write_text(
+        (directory / f"verifier-standard-{release}.manifest.json").write_text(
             json.dumps(manifest, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
             newline="\n",
@@ -514,7 +523,7 @@ def test_retagged_comparison_allows_only_the_expected_manifest_ref_change(
     assert release_artifacts.compare_retagged_artifact_directories(candidate, tagged) == 1
 
     tagged_manifest["scope"] = "substituted"
-    (tagged / "verifier-standard-1.3.0.manifest.json").write_text(
+    (tagged / f"verifier-standard-{release}.manifest.json").write_text(
         json.dumps(tagged_manifest, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
         newline="\n",
@@ -815,6 +824,7 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
         'git merge-base --is-ancestor "$SOURCE_COMMIT" "origin/$DEFAULT_BRANCH"',
         'test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"',
         'test "$VERSION" = "$PACKAGE_VERSION"',
+        'RELEASE_KIND="$(python scripts/classify_release_version.py "$VERSION")"',
         'actions/runs/$REPOSITORY_CHECKS_RUN_ID',
         "'.name')\" = \"repository-checks\"",
         "'.path')\" = \".github/workflows/ci.yml\"",
@@ -827,6 +837,11 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
         'python scripts/check_release_metadata.py --version "${RELEASE_TAG#v}"',
         'python -m pip install ".[test,release,seal,scitt]"',
         'vstd surface analyze "$GITHUB_WORKSPACE/examples/verification_geometry_residual/geometry.json"',
+        'examples/artifact-network/build_specimen.py',
+        'vstd network export',
+        'vstd network rebuild',
+        'vstd network push',
+        'push["transport_performed"] is False',
         '"load_verification_geometry"',
         '"analyze_verification_surface"',
         "prepare_platform_release_evidence.py",
@@ -836,6 +851,7 @@ def test_release_contract_binds_tag_owner_preflight_and_final_metadata() -> None
         "The platform-evidence ZIP has its own internal manifest",
         'python scripts/extract_release_notes.py --version "$VERSION"',
         'gh release create "$RELEASE_TAG"',
+        'RELEASE_FLAGS+=(--prerelease)',
         'releases/tags/$RELEASE_TAG',
         "--jq '.immutable')\" = true",
     )
@@ -883,6 +899,26 @@ def test_release_notes_select_exact_version_heading_without_regex_substitution()
     )
     with pytest.raises(release_notes.ReleaseNotesError, match="invalid release version"):
         release_notes.extract_release_notes(changelog, "1x3y0")
+
+
+@pytest.mark.parametrize("version", ("1.4.0", "1.4.0a1", "1.4.0b2", "1.4.0rc3"))
+def test_release_version_classifier_accepts_supported_coordinates(version: str) -> None:
+    expected = "stable" if version == "1.4.0" else "prerelease"
+    assert release_version_classifier.classify_release_version(version) == expected
+
+
+@pytest.mark.parametrize(
+    "version",
+    ("v1.4.0a1", "1.4", "1.4.0-alpha1", "01.4.0", "1.4.0post1", "1.4.0a"),
+)
+def test_release_version_classifier_rejects_noncanonical_coordinates(version: str) -> None:
+    with pytest.raises(ValueError, match="unsupported release version"):
+        release_version_classifier.classify_release_version(version)
+
+
+def test_release_notes_accept_exact_alpha_prerelease_heading() -> None:
+    changelog = "# Changelog\n\n## 1.4.0a1 - 2026-09-13\n\n- alpha\n"
+    assert release_notes.extract_release_notes(changelog, "1.4.0a1") == "- alpha\n"
 
 
 def test_release_notes_reject_missing_or_empty_exact_section() -> None:

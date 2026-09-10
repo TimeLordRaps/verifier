@@ -1005,6 +1005,7 @@ def plan_validation(
     candidates: list[ValidationCandidate] = []
     for hole in analysis.holes:
         matched: dict[tuple[str, Optional[str], Optional[str]], ValidationCandidate] = {}
+        key: tuple[str, Optional[str], Optional[str]]
         if hole.required_relations and hole.mechanism_ids:
             for relation_id in hole.required_relations:
                 for mechanism_id in hole.mechanism_ids:
@@ -1075,7 +1076,7 @@ def plan_validation(
         candidates = [
             replace(candidate, execution_prerequisites=tuple(sorted({
                 *candidate.execution_prerequisites,
-                *dependencies.get(candidate.component_id, ()),
+                *(() if candidate.component_id is None else dependencies.get(candidate.component_id, ())),
             })))
             for candidate in candidates
         ]

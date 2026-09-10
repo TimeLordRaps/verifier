@@ -1,0 +1,116 @@
+{
+  "$comment": "Terminology: JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD). This is an experimental non-receipt discovery schema. It does not establish package availability, publisher identity, license authenticity, implementation correctness, native-platform qualification, authorization, or ecosystem completeness. Loading and searching execute nothing.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-component-index-1.schema.json",
+  "title": "Experimental VSTD stored component index",
+  "description": "A deterministic catalog of content-addressed stored component packages. Runtime loading additionally checks bounds, canonical record order, portable digest-derived paths, unique package coordinates/digests/paths, exact catalog 1.1 registry form, and registry digests. Schema validity alone establishes none of those mechanisms or any execution, availability, qualification, authorization, identity, correctness, or ecosystem-completeness claim.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "index_id", "index_version", "description", "packages"],
+  "properties": {
+    "schema_version": {"const": "VSTD-COMPONENT-INDEX-1"},
+    "index_id": {"$ref": "#/$defs/nonemptyText"},
+    "index_version": {"$ref": "#/$defs/nonemptyText"},
+    "description": {"$ref": "#/$defs/nonemptyText"},
+    "packages": {
+      "type": "array", "minItems": 1, "maxItems": 4096,
+      "items": {"$ref": "#/$defs/package"}
+    }
+  },
+  "$defs": {
+    "nonemptyText": {
+      "type": "string", "minLength": 1, "maxLength": 4096,
+      "pattern": "^\\S(?:[\\s\\S]*\\S)?(?![\\s\\S])",
+      "not": {"pattern": "[\u0000-\u001f\u007f-\u009f\ud800-\udfff]"}
+    },
+    "optionalText": {"anyOf": [{"const": ""}, {"$ref": "#/$defs/nonemptyText"}]},
+    "digest": {
+      "type": "string", "minLength": 64, "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "stringList": {
+      "type": "array", "maxItems": 256, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonemptyText"}
+    },
+    "package": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "package_id", "package_version", "package_sha256", "package_size_bytes",
+        "package_path", "publisher", "license", "description", "registry",
+        "registry_sha256"
+      ],
+      "properties": {
+        "package_id": {"$ref": "#/$defs/nonemptyText"},
+        "package_version": {"$ref": "#/$defs/nonemptyText"},
+        "package_sha256": {"$ref": "#/$defs/digest"},
+        "package_size_bytes": {"type": "integer", "minimum": 1, "maximum": 33554432},
+        "package_path": {
+          "type": "string", "minLength": 85, "maxLength": 85,
+          "pattern": "^packages/sha256/[0-9a-f]{64}\\.json$"
+        },
+        "publisher": {"$ref": "#/$defs/nonemptyText", "description": "Unsigned declaration."},
+        "license": {"$ref": "#/$defs/nonemptyText", "description": "Unsigned declaration."},
+        "description": {"$ref": "#/$defs/nonemptyText"},
+        "registry": {"$ref": "#/$defs/registry"},
+        "registry_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "registry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "registry_version", "components"],
+      "properties": {
+        "schema_version": {"const": "VSTD-INTEROPERABILITY-CATALOG-1.1"},
+        "registry_version": {"$ref": "#/$defs/nonemptyText"},
+        "components": {
+          "type": "array", "minItems": 1, "maxItems": 256,
+          "items": {"$ref": "#/$defs/descriptor"}
+        }
+      }
+    },
+    "descriptor": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "component_id", "label", "kind", "lifecycle", "implementation_ref",
+        "accepted_schema_ids", "planning_surface_schema_ids", "verifier_family_ids",
+        "native_system", "native_objects", "native_versions", "native_inputs",
+        "native_outputs", "native_result_vocabulary", "emitted_schema_ids",
+        "supported_relations", "mechanism_ids", "interaction_modes", "domain_tags",
+        "optional_dependencies", "execution_prerequisites", "trust_roots",
+        "freshness_behavior", "transformation_loss", "failure_behavior",
+        "availability", "claim_boundary"
+      ],
+      "properties": {
+        "component_id": {"$ref": "#/$defs/nonemptyText"},
+        "label": {"$ref": "#/$defs/nonemptyText"},
+        "kind": {"enum": ["ADAPTER", "TRANSLATOR", "COMPARATOR", "SOLVER", "PROVER", "CHECKER", "VERIFIER", "CONSTRAINT", "COLLECTOR", "POLICY", "WORKFLOW"]},
+        "lifecycle": {"enum": ["IMPLEMENTED", "EXPERIMENTAL", "UNSUPPORTED", "ABSENT"]},
+        "implementation_ref": {"$ref": "#/$defs/nonemptyText"},
+        "accepted_schema_ids": {"$ref": "#/$defs/stringList"},
+        "planning_surface_schema_ids": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "verifier_family_ids": {"$ref": "#/$defs/stringList"},
+        "native_system": {"$ref": "#/$defs/optionalText"},
+        "native_objects": {"$ref": "#/$defs/stringList"},
+        "native_versions": {"$ref": "#/$defs/stringList"},
+        "native_inputs": {"$ref": "#/$defs/stringList"},
+        "native_outputs": {"$ref": "#/$defs/stringList"},
+        "native_result_vocabulary": {"$ref": "#/$defs/stringList"},
+        "emitted_schema_ids": {"$ref": "#/$defs/stringList"},
+        "supported_relations": {"$ref": "#/$defs/stringList"},
+        "mechanism_ids": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "interaction_modes": {
+          "type": "array", "minItems": 1, "maxItems": 256, "uniqueItems": true,
+          "items": {"enum": ["STATIC", "OFFLINE_REPLAY", "SIMULATION", "LIVE_READ_ONLY", "LIVE_MUTATING"]}
+        },
+        "domain_tags": {"$ref": "#/$defs/stringList"},
+        "optional_dependencies": {"$ref": "#/$defs/stringList"},
+        "execution_prerequisites": {"$ref": "#/$defs/stringList"},
+        "trust_roots": {"$ref": "#/$defs/stringList"},
+        "freshness_behavior": {"$ref": "#/$defs/optionalText"},
+        "transformation_loss": {"$ref": "#/$defs/optionalText"},
+        "failure_behavior": {"$ref": "#/$defs/optionalText"},
+        "availability": {"enum": ["AVAILABLE", "NOT_CHECKED", "UNAVAILABLE"]},
+        "claim_boundary": {"$ref": "#/$defs/optionalText"}
+      }
+    }
+  }
+}

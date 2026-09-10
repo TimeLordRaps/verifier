@@ -52,6 +52,13 @@ The matching supported portable-record exports are
 `build_vstd5_receipt`, `recheck_vstd5_receipt`,
 `build_evidence_bound_graph_level_record`,
 `recheck_evidence_bound_graph_level_record`, and `recheck_assurance_log`.
+Session evaluation snapshots ordinary canonical binding values before evidence
+resolution and invokes mechanisms with a second copy. Single and compound results
+bind only the private snapshot; a mechanism mutating its invocation copy yields
+UNKNOWN. Capture is not atomic against concurrent caller writes, and arbitrary
+Python copy hooks are not sandboxed. Failure to obtain a digestible snapshot raises
+`EvidenceBindingError` before execution rather than inventing a bound result.
+
 Compatibility `vstd4_depth` and `graph_level`-style candidate results do not become
 conformance results merely because the evidence-bound APIs also exist.
 
@@ -101,6 +108,8 @@ to every name under `verifier.interoperability`:
 | Component descriptors, kinds, catalog matching, stored packages, planning, execution-readiness preflight | Experimental; declarations and byte bindings do not supply execution, qualification, or authority. |
 | Graph topology | Experimental direct submodule only; separate from supported analysis and from a general geometry satisfiability checker. |
 | Composed untraversability | Experimental direct submodule only; observer-relative bounded knowledge closure, not universal confidentiality or runtime enforcement. |
+| Typed formation | Experimental direct `formation_*` submodules only; finite proof-step production, independent checking, evidence-bound session integration and retained-silo inspection. Catalog discovery is inert; census-byte retention is not silo completeness. No source self-status, completeness or agency upgrade. See [typed formation](../standard/TYPED_FORMATION.md). |
+| Finite authority composition | Experimental direct `authority_composition` submodule only; exact selected finite asynchronous-interleaving correspondence, with separate coordinate, transition and authority results. No runtime correspondence, source proof or six-axis status upgrade. See [finite authority composition](../standard/FINITE_AUTHORITY_COMPOSITION.md). |
 
 `verifier.interoperability` contains both the supported analyzer names exported by
 `verifier.__all__` and an experimental planning surface. Its complete characterized names
