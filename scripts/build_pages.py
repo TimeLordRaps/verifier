@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Terminology: uniform resource locator (URL).
+"""Terminology: Secure Hash Algorithm 256-bit (SHA-256); uniform resource locator (URL);
+Verifier Standard (VSTD).
 
 Assemble the exact GitHub Pages artifact without duplicating schema sources.
 """
@@ -7,6 +8,7 @@ Assemble the exact GitHub Pages artifact without duplicating schema sources.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -21,6 +23,24 @@ DOCS = ROOT / "docs"
 SCHEMA_SOURCES = (ROOT / "receipts/schema", ROOT / "standard/schemas")
 PUBLIC_SCHEMA_PREFIX = "https://timelordraps.github.io/verifier/schemas/"
 CANONICAL_BASE_URL = "https://timelordraps.github.io/verifier/"
+DEPLOYMENT_MANIFEST_PATH = "deployment-manifest.json"
+DEPLOYMENT_MANIFEST_SCHEMA = "VSTD-PAGES-DEPLOYMENT-MANIFEST-1"
+MAX_DEPLOYMENT_FILES = 4096
+MAX_DEPLOYMENT_FILE_BYTES = 8 * 1024 * 1024
+MAX_DEPLOYMENT_TOTAL_BYTES = 64 * 1024 * 1024
+MAX_DEPLOYMENT_PATH_BYTES = 512
+CRITICAL_DEPLOYMENT_PATHS = (
+    "components/deployment-coordinate.json",
+    "components/index.json",
+    "components/index.sha256",
+    "documentation-coordinate.json",
+    "index.html",
+)
+DEPLOYMENT_MANIFEST_CLAIM_BOUNDARY = (
+    "The manifest binds every regular deployed payload file other than the manifest itself "
+    "to this source commit by path, size, and SHA-256; it does not establish future "
+    "availability, absence of hosting-layer transformations, or semantic correctness."
+)
 
 
 class PagesBuildError(RuntimeError):
@@ -97,6 +117,62 @@ def _documentation_coordinate(source_ref: str) -> dict[str, str | int]:
     }
 
 
+def _write_deployment_manifest(output: Path, *, source_ref: str) -> Path:
+    """Write the deterministic manifest after every other Pages payload exists."""
+    entries: list[dict[str, str | int]] = []
+    total_bytes = 0
+    for path in sorted(output.rglob("*"), key=lambda candidate: candidate.as_posix()):
+        if path.is_symlink():
+            raise PagesBuildError("Pages output contains a symbolic link")
+        if not path.is_file():
+            continue
+        relative = path.relative_to(output).as_posix()
+        if relative == DEPLOYMENT_MANIFEST_PATH:
+            raise PagesBuildError("Pages manifest path already exists before finalization")
+        if (
+            len(relative.encode("utf-8")) > MAX_DEPLOYMENT_PATH_BYTES
+            or re.fullmatch(r"[A-Za-z0-9._/-]+", relative) is None
+            or any(part in {"", ".", ".."} for part in relative.split("/"))
+        ):
+            raise PagesBuildError(f"Pages output path is not canonical: {relative!r}")
+        payload = path.read_bytes()
+        if len(payload) > MAX_DEPLOYMENT_FILE_BYTES:
+            raise PagesBuildError(f"Pages output file exceeds byte limit: {relative}")
+        total_bytes += len(payload)
+        if total_bytes > MAX_DEPLOYMENT_TOTAL_BYTES:
+            raise PagesBuildError("Pages output exceeds the total byte limit")
+        entries.append(
+            {
+                "path": relative,
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                "size": len(payload),
+            }
+        )
+        if len(entries) > MAX_DEPLOYMENT_FILES:
+            raise PagesBuildError("Pages output exceeds the file-count limit")
+    paths = [entry["path"] for entry in entries]
+    if any(path not in paths for path in CRITICAL_DEPLOYMENT_PATHS):
+        raise PagesBuildError("Pages output omits a critical deployment path")
+    manifest = {
+        "claim_boundary": DEPLOYMENT_MANIFEST_CLAIM_BOUNDARY,
+        "critical_paths": list(CRITICAL_DEPLOYMENT_PATHS),
+        "file_count": len(entries),
+        "files": entries,
+        "manifest_path": DEPLOYMENT_MANIFEST_PATH,
+        "schema": DEPLOYMENT_MANIFEST_SCHEMA,
+        "source_ref": source_ref,
+        "total_bytes": total_bytes,
+    }
+    target = output / DEPLOYMENT_MANIFEST_PATH
+    target.write_text(
+        json.dumps(manifest, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+        + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return target
+
+
 def build(output: Path, *, source_ref: str = "WORKTREE") -> tuple[Path, ...]:
     """Build into a new or empty directory and return every copied schema path."""
     output = output.resolve()
@@ -145,6 +221,7 @@ def build(output: Path, *, source_ref: str = "WORKTREE") -> tuple[Path, ...]:
         newline="\n",
     )
     _build_documentation(output, source_ref=source_ref)
+    _write_deployment_manifest(output, source_ref=source_ref)
     return tuple(copied)
 
 
