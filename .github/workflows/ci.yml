@@ -19,6 +19,8 @@ jobs:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Fetch the pinned documentation release
+        run: git fetch --no-tags --depth=1 origin refs/tags/v1.3.0:refs/tags/v1.3.0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python-version }}
@@ -30,6 +32,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Fetch the pinned documentation release
+        run: git fetch --no-tags --depth=1 origin refs/tags/v1.3.0:refs/tags/v1.3.0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
@@ -244,6 +248,8 @@ jobs:
             expected_runner_arch: ARM64
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Fetch the pinned documentation release
+        run: git fetch --no-tags --depth=1 origin refs/tags/v1.3.0:refs/tags/v1.3.0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12.10"
@@ -353,6 +359,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Fetch the pinned documentation release
+        run: git fetch --no-tags --depth=1 origin refs/tags/v1.3.0:refs/tags/v1.3.0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
@@ -367,6 +375,14 @@ jobs:
         with:
           name: pages-preview-${{ github.sha }}
           path: _site
+          if-no-files-found: error
+          retention-days: 14
+      - name: Build the versioned documentation-domain preview
+        run: python -u scripts/build_docs_portal.py --output build/documentation-portal
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: documentation-portal-${{ github.sha }}
+          path: build/documentation-portal
           if-no-files-found: error
           retention-days: 14
 
