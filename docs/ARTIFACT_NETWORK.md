@@ -93,6 +93,17 @@ It does not alter existing six-axis verdicts, prove correspondence to runtime
 behavior, or discharge source grounding, self-derivation or stronger completeness.
 Catalog discovery and planning retain its exact source and rule coordinate;
 they do not execute the checker or authorize execution.
+The strict `network compose --require-finite-authority-composition` mode below
+combines both assessments for one selected composition. Its separate experimental
+catalog entry, `component:artifact-network-finite-composition-qualifier`, advertises
+`relation:qualifies-selected-finite-silo-composition` and
+`mechanism:artifact-network-finite-composition-qualification`; the raw checker
+retains its distinct relation and mechanism. Stored-package discovery and planning
+do not execute either checker. The qualifier consumes a local declaration path,
+member store/commit-path pairs, and a composite store/commit path, and returns an
+unversioned diagnostic, not a portable replay receipt. Without exact native input
+bindings, profile evidence, and output mappings, readiness remains `NOT_ESTABLISHED`.
+No canonical serialized call contract for the path-pair sequence is established.
 
 ## Authority axiom agency
 
@@ -182,6 +193,34 @@ The bounded download envelope is
 [`vstd-silo-transfer-0.1.schema.json`](../standard/schemas/vstd-silo-transfer-0.1.schema.json).
 
 ## CLI surface
+
+For composition qualification, use `vstd network compose` with repeated
+`--silo STORE COMMIT`, both `--composite-store` and `--composite-commit`, and
+`--require-finite-authority-composition DECLARATION`. The declaration is the
+original canonical finite-composition document, including caller-supplied state
+and transition bindings; the command does not infer those mappings. Its exact
+member and composite selections must match the supplied local silos. Reordering
+the command's member arguments does not reorder the declaration's state tuples.
+
+Strict mode recomputes the legacy composition assessment and the finite checker,
+retaining their separate results and residual obligations. Qualification requires
+legacy `ADMISSIBLE`, exact selection binding, finite `BOUND` coordinates,
+`MATCHED` transitions, and `PRESERVED` agency and local additions. Every other
+combination exits unsuccessfully; `UNKNOWN` is not qualification. This is a local
+bounded diagnostic, not a stored replay receipt, runtime correspondence, stronger
+completeness, source proof, publication approval, or general agency theorem.
+The strict report names its `qualification_scope`, records `selection_binding`,
+and retains `legacy_assessment` and `finite_assessment` separately; unavailable
+assessments remain `null`. Only `FINITE_COMPOSITION_QUALIFIED` exits zero.
+`NOT_QUALIFIED` exits one without rewriting native result states. The finite
+checker's retained `FULL_SILO_ASSESSMENT_NOT_PERFORMED` residual describes that
+nested checker, not the separately executed legacy assessment.
+
+Without that option, `network compose` remains the legacy diagnostic: exit zero
+means the command completed, including when its reported result is
+`NOT_ADMISSIBLE`. Its output and existing stored receipt semantics are unchanged;
+do not use that exit status or an individual `PRESERVED` field as the stronger
+composition-qualification gate.
 
 `vstd network` provides `init`, `object add`, `commit`, `inspect`, `diff`,
 `clone`, `compose`, `export`, `rebuild`, `register`, and `push`. Ed25519 operations require

@@ -46,6 +46,10 @@ The finite mechanisms below retain their declared bounds and `UNKNOWN` results.
   asynchronous-interleaving model product. Package retention, catalog discovery,
   detection, planning and readiness remain nonexecuting; no source proof,
   runtime correspondence, general agency or six-axis status upgrade is implied.
+- Add opt-in strict `network compose --require-finite-authority-composition`
+  qualification: require exact selected inputs, the legacy composition admission,
+  and the finite product checker together. Preserve both reports, all residual
+  obligations, and the unchanged no-flag diagnostic and stored receipt semantics.
 
 ### Post-release clarification
 

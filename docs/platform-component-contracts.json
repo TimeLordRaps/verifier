@@ -121,6 +121,21 @@
       }
     },
     {
+      "component_id": "component:artifact-network-finite-composition-qualifier",
+      "label": "Experimental selected finite silo-composition qualifier",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_composition_qualification.py", "tests/test_composition_qualification_catalog.py"],
+      "test_scope": "Exercise exact selected local declaration, member/composite commit and store bindings, separate legacy and finite recomputation, qualification intersection, negative and UNKNOWN preservation, and inert package-to-index-to-planning/readiness integration. Passing does not establish an atomic snapshot, portable replay receipt, source proof, runtime/model correspondence, general composed agency, automatic execution, TypeScript support, universal platform support, or a six-axis status upgrade.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
       "component_id": "component:artifact-network-proposition-transfer-assessor",
       "label": "Experimental finite-set proposition-transfer assessor",
       "dependency_profiles": ["test"],

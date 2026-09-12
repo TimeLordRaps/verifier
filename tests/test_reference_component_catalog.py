@@ -50,7 +50,7 @@ def test_reference_catalog_has_thirteen_explicit_families_and_real_entry_points(
     }
 
     assert registry.registry_version == REFERENCE_CATALOG_VERSION
-    assert len(registry.components) == 30
+    assert len(registry.components) == 31
     assert len(families) == 13
     assert families == {
         "artifact-control",
@@ -113,6 +113,10 @@ def test_only_native_parsers_declare_serialized_schema_acceptance() -> None:
         ),
         "component:artifact-network-authority-composition-assessor": (
             "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
+        ),
+        "component:artifact-network-finite-composition-qualifier": (
+            "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
+            "VSTD-SILO-COMMIT-0.1",
         ),
         "component:artifact-network-composition-declaration-decoder": (
             "VSTD-SILO-COMPOSITION-0.1",
@@ -457,7 +461,7 @@ def test_graph_topology_platform_manifest_records_only_configured_intent() -> No
     record = records["component:graph-topology-analyzer"]
     component = reference_component_registry().get(record["component_id"])
 
-    assert len(records) == 30
+    assert len(records) == 31
     assert record["label"] == component.label
     assert record["coverage_kind"] == "BEHAVIOR"
     assert record["dependency_profiles"] == ["test"]

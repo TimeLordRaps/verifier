@@ -45,14 +45,14 @@ symbolic links and Windows reparse points, including source parent directories. 
 not search other repositories, capture arbitrary working directories, extract archives,
 install dependencies or invoke an implementation entrypoint.
 
-All **30 first-party entrypoints across 13 grouping labels** bind to the retained package
+All **31 first-party entrypoints across 13 grouping labels** bind to the retained package
 source snapshot. This is not a count of independent native integrations. The snapshot
 includes distinct proof-producer and proof-checker entries, bounded platform comparison,
 receipt and graph rechecking, artifact verification, experimental signed-silo transfer
 materialization, experimental adjacent-result composition, and distinct experimental
 finite-set proposition-transfer assessment and receipt rechecking, and finite typed-formation
 production, independent checking and native session adaptation, plus bounded finite
-authority-composition assessment. A source snapshot is not a
+authority-composition assessment and selected finite composition qualification. A source snapshot is not a
 wheel, an installation archive or an execution environment. Python and optional native
 dependencies are declared but not bundled or resolved; complete executable dependency
 closure remains `NOT_ESTABLISHED`.

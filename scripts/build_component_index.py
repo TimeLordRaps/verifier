@@ -28,6 +28,7 @@ FULL_COMMIT = re.compile(r"[0-9a-fA-F]{40}")
 REVIEWED_CANDIDATE_SOURCE_PATHS = (
     "src/verifier/interoperability/authority_composition.py",
     "src/verifier/interoperability/claim_garden.py",
+    "src/verifier/interoperability/composition_qualification.py",
     "src/verifier/interoperability/formation_checker.py",
     "src/verifier/interoperability/formation_mechanism.py",
     "src/verifier/interoperability/formation_producer.py",

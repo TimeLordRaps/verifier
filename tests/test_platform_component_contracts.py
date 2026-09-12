@@ -165,6 +165,29 @@ def test_formation_contracts_are_explicit_unrun_intent_not_source_proofs() -> No
             assert boundary in record["test_scope"]
 
 
+def test_finite_composition_qualifier_is_explicit_unrun_intent() -> None:
+    components = {item["component_id"]: item for item in _manifest()["components"]}
+    record = components["component:artifact-network-finite-composition-qualifier"]
+
+    assert record["dependency_profiles"] == ["test"]
+    assert record["catalog_optional_dependencies"] == []
+    assert record["test_modules"] == [
+        "tests/test_composition_qualification.py",
+        "tests/test_composition_qualification_catalog.py",
+    ]
+    assert set(record["coordinate_intent"].values()) == {"CONFIGURED_UNRUN"}
+    for boundary in (
+        "atomic snapshot",
+        "portable replay receipt",
+        "source proof",
+        "runtime/model correspondence",
+        "general composed agency",
+        "automatic execution",
+        "six-axis status upgrade",
+    ):
+        assert boundary in record["test_scope"]
+
+
 def test_runtime_report_rendering_is_platform_neutral() -> None:
     rendered = report_builder.render_report_bytes(
         {"schema_version": report_builder.REPORT_SCHEMA_VERSION, "value": "line\nfeed"}

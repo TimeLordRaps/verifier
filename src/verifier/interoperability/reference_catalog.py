@@ -23,7 +23,7 @@ from verifier.interoperability.catalog import (
 )
 
 
-REFERENCE_CATALOG_VERSION = "VSTD-REFERENCE-COMPONENTS-1.3"
+REFERENCE_CATALOG_VERSION = "VSTD-REFERENCE-COMPONENTS-1.4"
 REFERENCE_CATALOG_CLAIM_BOUNDARY = (
     "Catalog membership records first-party implementation entry points for exact "
     "planning matches. It does not execute a component, prove runtime availability, "
@@ -485,6 +485,35 @@ def reference_component_registry() -> InteroperabilityComponentRegistry:
             transformation_loss="The compiled inert profile identifies the declared rule, not implementation or execution identity. The retained FINITE_AUTHORITY_COMPOSITION.md specification bounds the model translation; the evidence mapping has no standalone serialized schema.",
             failure_behavior="Malformed binding remains INVALID; missing evidence, unsupported profiles and exceeded bounds remain UNKNOWN; definite correspondence mismatches and reachable authority removals remain separate negative results.",
             claim_boundary="A planned match neither runs assessment nor establishes native input validity. Finite correspondence does not establish source grounding, self-derivation, stronger completeness, runtime behavior, general agency, or a six-axis silo-status upgrade.",
+        ),
+        _component(
+            "component:artifact-network-finite-composition-qualifier",
+            "Experimental selected finite silo-composition qualifier",
+            ComponentKind.CHECKER,
+            "verifier.interoperability.composition_qualification:qualify_silo_composition",
+            "artifact-network",
+            "Verifier Standard experimental verification-artifact network and finite authority composition",
+            ("exact selected local silo composition", "separate legacy and finite composition assessments"),
+            ("VSTD-SILO-COMPOSITION-MECHANISM-0.1", "VSTD-FINITE-AUTHORITY-COMPOSITION-PROFILE-0.1", "ASYNCHRONOUS_INTERLEAVING", _AUTHORITY_COMPOSITION_PROFILE_DIGEST),
+            (
+                "local path to VSTD-FINITE-AUTHORITY-COMPOSITION-0.1 canonical bytes",
+                "ordered local (ContentAddressedStore root, silo-commit path) member pairs",
+                "local composite ContentAddressedStore root",
+                "local composite silo-commit path",
+            ),
+            ("unversioned composition qualification report retaining legacy and finite assessments",),
+            ("FINITE_COMPOSITION_QUALIFIED", "NOT_QUALIFIED"),
+            ("mechanism:artifact-network-finite-composition-qualification",),
+            (InteractionMode.OFFLINE_REPLAY,),
+            lifecycle=ComponentLifecycle.EXPERIMENTAL,
+            accepted_schema_ids=("VSTD-FINITE-AUTHORITY-COMPOSITION-0.1", "VSTD-SILO-COMMIT-0.1"),
+            supported_relations=("relation:qualifies-selected-finite-silo-composition",),
+            domain_tags=("artifact", "authority", "composition", "experimental", "network"),
+            additional_prerequisites=(f"EXACT_RULE_PROFILE:{_AUTHORITY_COMPOSITION_PROFILE_DIGEST}", "EXACT_SELECTED_LOCAL_SILO_INPUTS"),
+            freshness_behavior="Each call reads the bounded local declaration and selected commit paths plus current content-addressed-store objects, then separately recomputes legacy admission and the finite asynchronous-interleaving assessment. Commit files are captured once per normalized path, but the full filesystem observation is not atomic.",
+            transformation_loss="The local path and sequence arguments have no standalone serialized call schema, and the qualification report has no standalone wire discriminator. Nested finite results retain their own schema; selected byte digests do not establish source, custody, runtime, or implementation identity.",
+            failure_behavior="Qualification requires exact selection binding, legacy ADMISSIBLE, finite BOUND coordinates, MATCHED transitions, and both PRESERVED results. Malformed input remains INVALID; missing, unsupported, or bounded observations remain UNKNOWN or NOT_QUALIFIED, with both nested assessments and residual obligations retained.",
+            claim_boundary="A planned match or READY preflight does not run qualification, validate native local inputs, grant authorization, or close a geometry hole. Qualification is not a portable replay receipt, atomic filesystem snapshot, source proof, runtime/model correspondence, general composed agency result, or six-axis silo-status upgrade.",
         ),
         _component(
             "component:artifact-network-composition-declaration-decoder",

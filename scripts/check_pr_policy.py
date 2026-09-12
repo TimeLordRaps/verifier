@@ -74,7 +74,7 @@ MAX_RECORDS = 99
 MAX_REPORT_BYTES = 16 * 1024 * 1024
 MAX_SKIP_REASON_CHARACTERS = 4096
 TEST_EVIDENCE_CLAIM_BOUNDARY = (
-    "Inventory of the eleven expected hosted pytest reports for this repository-check run; "
+    "Inventory of the twelve expected hosted pytest reports for this repository-check run; "
     "it records bounded skip observations from every pytest invocation in that workflow but "
     "does not establish that passing tests prove correctness or completeness."
 )
@@ -91,11 +91,13 @@ EXPECTED_REPORTS = (
     ("coverage", "python-3.12", "coverage-tests.xml"),
     ("scitt-crypto", "python-3.12", "scitt-crypto.xml"),
     ("artifact-seal", "python-3.12", "artifact-seal.xml"),
+    ("installed-composition", "python-3.12", "installed-composition-contracts.xml"),
 )
 REPORT_ARTIFACT_PREFIXES = {
     "artifact-seal": "artifact-seal",
     "base": "base-contracts",
     "coverage": "coverage-tests",
+    "installed-composition": "installed-composition-contracts",
     "platform": "platform-python-contracts",
     "scitt-crypto": "scitt-crypto",
 }
@@ -280,6 +282,8 @@ def build_test_evidence_manifest(root: Path, run_id: str, run_attempt: str) -> d
         except ET.ParseError as exc:
             raise PullRequestPolicyError(f"invalid JUnit XML in: {artifact.name}") from exc
         cases = list(xml_root.iter("testcase"))
+        if not cases:
+            raise PullRequestPolicyError(f"test report contains no test cases: {artifact.name}")
         skips: list[dict[str, str]] = []
         failures = 0
         errors = 0
@@ -375,6 +379,7 @@ def _validate_test_evidence_manifest(
             not isinstance(digest, str) or FULL_DIGEST.fullmatch(digest) is None
             or any(not isinstance(value, int) or isinstance(value, bool) or value < 0 for value in counts)
             or not isinstance(skips, list) or len(skips) != report.get("skipped")
+            or report.get("tests") == 0
             or report.get("skipped") > report.get("tests")
             or report.get("failures") != 0 or report.get("errors") != 0
         ):
