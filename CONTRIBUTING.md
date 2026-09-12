@@ -182,6 +182,10 @@ later coordinate remains visible and cannot be repaired by the earlier green che
 
 For the one-time policy bootstrap, land the protected-branch workflow under the existing
 review requirements and exercise it on a subsequent test pull request and merge-group event.
+Changes to the exact policy evidence schema or report inventory cannot self-qualify under
+an incompatible prior protected-default implementation. They require an explicit maintainer
+migration disposition and subsequent pull-request and merge-group observations before the
+new contract is represented as active; a prior-inventory digest does not satisfy it.
 After that bootstrap test passes, require both the merge-queue-capable `conformance-gate`
 and `pr-policy` contexts. Configure the merge queue with the `ALLGREEN` grouping strategy:
 the trusted default-branch workflow emits `pr-policy` on a merge-group commit only after
