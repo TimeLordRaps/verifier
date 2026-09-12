@@ -7,8 +7,9 @@
 > Secure Hash Algorithm 256-bit (SHA-256); Unicode Transformation Format, 8-bit (UTF-8);
 > Verifier Standard (VSTD).
 
-**Status:** experimental `1.4.0a1` candidate interface; not a numbered-profile
-conformance mechanism or a deployed interoperability claim.
+**Status:** experimental interface in the unreleased `1.4.0` package candidate;
+not a numbered-profile conformance mechanism or a deployed interoperability claim.
+The package version does not promote this interface to supported compatibility.
 
 The artifact network stores exact bytes in independently exportable publisher
 silos. A central directory may make silos discoverable, but is not their source
