@@ -71,6 +71,7 @@ def test_pull_request_policy_is_separate_trusted_exact_head_gate() -> None:
         "artifact-seal",
         "base-contracts",
         "coverage-tests",
+        "installed-composition-contracts",
         "platform-python-contracts",
         "scitt-crypto",
     ):
@@ -111,6 +112,7 @@ def test_pull_request_policy_is_separate_trusted_exact_head_gate() -> None:
         "artifact-seal",
         "base-contracts",
         "coverage-tests",
+        "installed-composition-contracts",
         "platform-python-contracts",
         "scitt-crypto",
     ):
@@ -177,6 +179,9 @@ def test_repository_checks_cover_merge_queue_and_publish_skip_reasons() -> None:
         "artifact-seal": ("artifact-seal.xml", "artifact-seal"),
         "base": ("base-contracts.xml", "base-contracts"),
         "coverage": ("coverage-tests.xml", "coverage-tests"),
+        "installed-wheel-smoke": (
+            "installed-composition-contracts.xml", "installed-composition-contracts",
+        ),
         "platform-python-contracts": (
             "platform-contracts.xml",
             "platform-python-contracts",

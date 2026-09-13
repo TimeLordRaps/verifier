@@ -6,6 +6,7 @@ Characterization tests for the shipped first-party planning catalog.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from importlib import import_module
 from inspect import signature
@@ -41,7 +42,7 @@ def _resolve(reference: str) -> object:
     return value
 
 
-def test_reference_catalog_has_thirteen_explicit_families_and_real_entry_points() -> None:
+def test_reference_catalog_has_nineteen_explicit_families_and_real_entry_points() -> None:
     registry = reference_component_registry()
     families = {
         family
@@ -50,11 +51,17 @@ def test_reference_catalog_has_thirteen_explicit_families_and_real_entry_points(
     }
 
     assert registry.registry_version == REFERENCE_CATALOG_VERSION
-    assert len(registry.components) == 30
-    assert len(families) == 13
+    assert len(registry.components) == 43
+    assert len(families) == 19
     assert families == {
         "artifact-control",
         "artifact-network",
+        "vstd-bounded-completeness",
+        "vstd-deriver-self-status",
+        "vstd-global-cycle",
+        "vstd-relation-boundary",
+        "vstd-runtime-authority",
+        "vstd-source-grounding",
         "generic-run",
         "platform-comparison",
         "provenance-policy",
@@ -68,6 +75,168 @@ def test_reference_catalog_has_thirteen_explicit_families_and_real_entry_points(
         "vstd-scitt-composition",
     }
     assert all(_resolve(component.implementation_ref) is not None for component in registry.components)
+
+
+@pytest.mark.parametrize(
+    ("component_id", "implementation_ref", "family_id", "kind", "mode", "relation_id", "mechanism_id"),
+    (
+        (
+            "component:artifact-network-source-grounding-assessor",
+            "verifier.interoperability.source_grounding:qualify_source_grounding",
+            "vstd-source-grounding",
+            ComponentKind.CHECKER,
+            InteractionMode.OFFLINE_REPLAY,
+            "relation:assesses-source-grounding",
+            "mechanism:source-grounding-assessment",
+        ),
+        (
+            "component:artifact-network-source-grounding-receipt-rechecker",
+            "verifier.interoperability.source_grounding:recheck_source_grounding_receipt",
+            "vstd-source-grounding",
+            ComponentKind.CHECKER,
+            InteractionMode.OFFLINE_REPLAY,
+            "relation:rechecks-source-grounding-receipt",
+            "mechanism:source-grounding-receipt-recheck",
+        ),
+        (
+            "component:artifact-network-relation-boundary-assessor",
+            "verifier.interoperability.relation_boundary:qualify_relation_boundary",
+            "vstd-relation-boundary",
+            ComponentKind.CHECKER,
+            InteractionMode.OFFLINE_REPLAY,
+            "relation:assesses-relation-boundary",
+            "mechanism:relation-boundary-assessment",
+        ),
+        (
+            "component:artifact-network-relation-boundary-receipt-rechecker",
+            "verifier.interoperability.relation_boundary:recheck_relation_boundary_receipt",
+            "vstd-relation-boundary",
+            ComponentKind.CHECKER,
+            InteractionMode.OFFLINE_REPLAY,
+            "relation:rechecks-relation-boundary-receipt",
+            "mechanism:relation-boundary-receipt-recheck",
+        ),
+        (
+            "component:artifact-network-deriver-session-recorder",
+            "verifier.interoperability.deriver_self_status:record_deriver_session",
+            "vstd-deriver-self-status",
+            ComponentKind.COLLECTOR,
+            InteractionMode.LIVE_MUTATING,
+            "relation:records-deriver-session",
+            "mechanism:bounded-deriver-session-recording",
+        ),
+        (
+            "component:artifact-network-deriver-self-status-rechecker",
+            "verifier.interoperability.deriver_self_status:recheck_deriver_self_status",
+            "vstd-deriver-self-status",
+            ComponentKind.CHECKER,
+            InteractionMode.LIVE_MUTATING,
+            "relation:rechecks-deriver-session-receipt",
+            "mechanism:deriver-self-status-recheck",
+        ),
+        (
+            "component:artifact-network-global-cycle-assessor",
+            "verifier.interoperability.global_cycle_assessment:assess_global_cycles",
+            "vstd-global-cycle",
+            ComponentKind.CHECKER,
+            InteractionMode.OFFLINE_REPLAY,
+            "relation:assesses-global-cycles",
+            "mechanism:grounded-global-cycle-assessment",
+        ),
+        (
+            "component:artifact-network-global-cycle-receipt-rechecker",
+            "verifier.interoperability.global_cycle_assessment:recheck_global_cycle_receipt",
+            "vstd-global-cycle",
+            ComponentKind.CHECKER,
+            InteractionMode.OFFLINE_REPLAY,
+            "relation:rechecks-global-cycle-receipt",
+            "mechanism:global-cycle-receipt-recheck",
+        ),
+        (
+            "component:artifact-network-bounded-completeness-assessor",
+            "verifier.interoperability.bounded_completeness:assess_bounded_completeness",
+            "vstd-bounded-completeness",
+            ComponentKind.CHECKER,
+            InteractionMode.OFFLINE_REPLAY,
+            "relation:assesses-bounded-completeness",
+            "mechanism:bounded-completeness-assessment",
+        ),
+        (
+            "component:artifact-network-bounded-completeness-receipt-rechecker",
+            "verifier.interoperability.bounded_completeness:recheck_bounded_completeness_receipt",
+            "vstd-bounded-completeness",
+            ComponentKind.CHECKER,
+            InteractionMode.OFFLINE_REPLAY,
+            "relation:rechecks-bounded-completeness-receipt",
+            "mechanism:bounded-completeness-receipt-recheck",
+        ),
+        (
+            "component:artifact-network-runtime-authority-correspondence-assessor",
+            "verifier.interoperability.runtime_authority_correspondence:build_runtime_authority_correspondence_receipt",
+            "vstd-runtime-authority",
+            ComponentKind.CHECKER,
+            InteractionMode.LIVE_MUTATING,
+            "relation:assesses-runtime-authority-correspondence",
+            "mechanism:runtime-authority-correspondence-assessment",
+        ),
+        (
+            "component:artifact-network-runtime-authority-correspondence-receipt-rechecker",
+            "verifier.interoperability.runtime_authority_correspondence:recheck_runtime_authority_correspondence_receipt",
+            "vstd-runtime-authority",
+            ComponentKind.CHECKER,
+            InteractionMode.LIVE_MUTATING,
+            "relation:rechecks-runtime-authority-correspondence-receipt",
+            "mechanism:runtime-authority-correspondence-receipt-recheck",
+        ),
+    ),
+)
+def test_mechanism_obligation_descriptors_are_role_accurate_and_exactly_matchable(
+    component_id: str,
+    implementation_ref: str,
+    family_id: str,
+    kind: ComponentKind,
+    mode: InteractionMode,
+    relation_id: str,
+    mechanism_id: str,
+) -> None:
+    registry = reference_component_registry()
+    component = registry.get(component_id)
+
+    assert component.implementation_ref == implementation_ref
+    assert component.verifier_family_ids == (family_id,)
+    assert component.kind is kind
+    assert component.lifecycle is ComponentLifecycle.EXPERIMENTAL
+    assert component.interaction_modes == (mode,)
+    assert component.supported_relations == (relation_id,)
+    assert component.mechanism_ids == (mechanism_id,)
+    assert registry.match_exact(
+        schema_id="VSTD-2",
+        interaction_mode=mode,
+        relation_id=relation_id,
+        mechanism_id=mechanism_id,
+    ) == (component,)
+
+
+def test_mechanism_obligation_profile_digests_match_current_native_profiles() -> None:
+    source = import_module("verifier.interoperability.source_grounding")
+    relation = import_module("verifier.interoperability.relation_boundary")
+    deriver = import_module("verifier.interoperability.deriver_self_status")
+    completeness = import_module("verifier.interoperability.bounded_completeness")
+    runtime = import_module("verifier.interoperability.runtime_authority_correspondence")
+    registry = reference_component_registry()
+    expected = {
+        "vstd-source-grounding": source.source_grounding_mechanism_profile_digest(),
+        "vstd-relation-boundary": relation.relation_boundary_mechanism_profile_digest(),
+        "vstd-deriver-self-status": "sha256:"
+        + hashlib.sha256(deriver.checker_profile_bytes()).hexdigest(),
+        "vstd-bounded-completeness": completeness.mechanism_profile_digest(),
+        "vstd-runtime-authority": runtime.runtime_authority_profile_digest(),
+    }
+
+    for component in registry.components:
+        family_id = component.verifier_family_ids[0]
+        if family_id in expected:
+            assert expected[family_id] in component.native_versions
 
 
 def test_planning_surfaces_are_separate_from_native_input_schemas() -> None:
@@ -114,11 +283,37 @@ def test_only_native_parsers_declare_serialized_schema_acceptance() -> None:
         "component:artifact-network-authority-composition-assessor": (
             "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
         ),
+        "component:artifact-network-bounded-completeness-assessor": (
+            "VSTD-BOUNDED-COMPLETENESS-0.1",
+            "VSTD-BOUNDED-COMPLETENESS-DENOMINATOR-0.1",
+            "VSTD-BOUNDED-COMPLETENESS-OBSERVATIONS-0.1",
+            "VSTD-SOURCE-GROUNDING-0.1",
+            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+        ),
+        "component:artifact-network-bounded-completeness-receipt-rechecker": (
+            "VSTD-BOUNDED-COMPLETENESS-0.1",
+            "VSTD-BOUNDED-COMPLETENESS-DENOMINATOR-0.1",
+            "VSTD-BOUNDED-COMPLETENESS-OBSERVATIONS-0.1",
+            "VSTD-BOUNDED-COMPLETENESS-RECEIPT-0.1",
+            "VSTD-SOURCE-GROUNDING-0.1",
+            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+        ),
+        "component:artifact-network-finite-composition-qualifier": (
+            "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
+            "VSTD-SILO-COMMIT-0.1",
+        ),
         "component:artifact-network-composition-declaration-decoder": (
             "VSTD-SILO-COMPOSITION-0.1",
         ),
         "component:artifact-network-composition-receipt-rechecker": (
             "VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1",
+        ),
+        "component:artifact-network-deriver-self-status-rechecker": (
+            "VSTD-DERIVER-SELF-STATUS-0.1",
+            "VSTD-DERIVER-SELF-STATUS-RECEIPT-0.1",
+        ),
+        "component:artifact-network-deriver-session-recorder": (
+            "VSTD-DERIVER-SELF-STATUS-0.1",
         ),
         "component:artifact-network-proposition-transfer-assessor": (
             "VSTD-PROPOSITION-TRANSFER-0.1",
@@ -126,6 +321,49 @@ def test_only_native_parsers_declare_serialized_schema_acceptance() -> None:
         "component:artifact-network-proposition-transfer-rechecker": (
             "VSTD-PROPOSITION-TRANSFER-0.1",
             "VSTD-PROPOSITION-TRANSFER-RECEIPT-0.1",
+        ),
+        "component:artifact-network-global-cycle-assessor": (
+            "VSTD-CYCLE-RELATION-SEMANTICS-0.1",
+            "VSTD-GLOBAL-CYCLE-ASSESSMENT-0.1",
+            "VSTD-RELATION-BOUNDARY-RECEIPT-0.1",
+            "VSTD-SOURCE-GROUNDING-0.1",
+            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+        ),
+        "component:artifact-network-global-cycle-receipt-rechecker": (
+            "VSTD-CYCLE-RELATION-SEMANTICS-0.1",
+            "VSTD-GLOBAL-CYCLE-ASSESSMENT-0.1",
+            "VSTD-GLOBAL-CYCLE-ASSESSMENT-RECEIPT-0.1",
+            "VSTD-RELATION-BOUNDARY-RECEIPT-0.1",
+            "VSTD-SOURCE-GROUNDING-0.1",
+            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+        ),
+        "component:artifact-network-relation-boundary-assessor": (
+            "VSTD-RELATION-BOUNDARY-0.1",
+            "VSTD-RELATION-BOUNDARY-EVIDENCE-0.1",
+        ),
+        "component:artifact-network-relation-boundary-receipt-rechecker": (
+            "VSTD-RELATION-BOUNDARY-0.1",
+            "VSTD-RELATION-BOUNDARY-EVIDENCE-0.1",
+            "VSTD-RELATION-BOUNDARY-RECEIPT-0.1",
+        ),
+        "component:artifact-network-runtime-authority-correspondence-assessor": (
+            "VSTD-AUTHORITY-MODEL-0.1",
+            "VSTD-DERIVER-SELF-STATUS-0.1",
+            "VSTD-DERIVER-SELF-STATUS-RECEIPT-0.1",
+            "VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-0.1",
+            "VSTD-RUNTIME-AUTHORITY-TRACE-0.1",
+        ),
+        "component:artifact-network-runtime-authority-correspondence-receipt-rechecker": (
+            "VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-RECEIPT-0.1",
+        ),
+        "component:artifact-network-source-grounding-assessor": (
+            "VSTD-SOURCE-GROUNDING-0.1",
+            "VSTD-SOURCE-GROUNDING-CERTIFICATE-0.1",
+        ),
+        "component:artifact-network-source-grounding-receipt-rechecker": (
+            "VSTD-SOURCE-GROUNDING-0.1",
+            "VSTD-SOURCE-GROUNDING-CERTIFICATE-0.1",
+            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
         ),
         "component:artifact-network-typed-formation-checker": (
             "VSTD-TYPED-FORMATION-0.1",
@@ -457,7 +695,7 @@ def test_graph_topology_platform_manifest_records_only_configured_intent() -> No
     record = records["component:graph-topology-analyzer"]
     component = reference_component_registry().get(record["component_id"])
 
-    assert len(records) == 30
+    assert len(records) == 43
     assert record["label"] == component.label
     assert record["coverage_kind"] == "BEHAVIOR"
     assert record["dependency_profiles"] == ["test"]

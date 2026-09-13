@@ -546,17 +546,137 @@ def test_open_necessary_path_prevents_exact_silo_census_from_claiming_complete(t
     assert result.completeness == "INCOMPLETE"
 
 
-def test_dispensable_ground_cannot_establish_self_derivability(tmp_path: Path) -> None:
+@pytest.mark.parametrize("reorder_self_record", [False, True])
+@pytest.mark.parametrize("declare_dispensable_ground", [False, True])
+def test_dispensable_ground_cannot_seed_necessary_derivation(
+    reorder_self_record: bool, declare_dispensable_ground: bool, tmp_path: Path,
+) -> None:
     store, commit = _complete_silo(tmp_path)
     census = tuple(
         replace(entry, necessity="DISPENSABLE") if entry.path == "ground.txt" else entry
         for entry in commit.census
     )
-    candidate = replace(commit, census=census)
+    record = commit.self_derivation_record
+    if reorder_self_record:
+        record = replace(
+            record, ground_paths=("mechanism.bin",),
+            retained_path=("mechanism.bin", "ground.txt", *record.retained_path[2:]),
+        )
+    candidate = replace(
+        commit, census=census, self_derivation_record=record,
+        ground_paths=commit.ground_paths if declare_dispensable_ground else ("mechanism.bin",),
+    )
     candidate = replace(candidate, coverage_universe=_boundary(candidate, store, census=census))
     result = assess_silo(candidate, store)
     assert result.reconstructibility == "COMPLETE"
+    assert result.derivation_closure == "OPEN"
     assert result.self_derivability == "NOT_ESTABLISHED"
+    assert result.completeness == "INCOMPLETE"
+    assert result.silo_grounding == "NOT_ESTABLISHED"
+    assert result.authority_axiom_agency == "UNKNOWN"
+
+
+def test_unused_dispensable_ground_does_not_invalidate_admitted_derivations(tmp_path: Path) -> None:
+    store, commit = _complete_silo(tmp_path)
+    spare = store.add_object(b"unused declaration", "text/plain", "ground", "GROUND-1")
+    candidate = replace(
+        commit, census=(*commit.census, CensusEntry("spare.txt", spare, "DISPENSABLE")),
+        ground_paths=(*commit.ground_paths, "spare.txt"),
+    )
+    candidate = replace(candidate, coverage_universe=_boundary(candidate, store))
+    assert assess_silo(candidate, store) == assess_silo(commit, store)
+
+
+@pytest.mark.parametrize("declare_dispensable_ground", [False, True])
+def test_dispensable_artifact_can_be_derived_from_necessary_ground(
+    declare_dispensable_ground: bool, tmp_path: Path,
+) -> None:
+    store, commit = _complete_silo(tmp_path)
+    candidate = replace(
+        commit,
+        census=tuple(
+            replace(entry, necessity="DISPENSABLE") if entry.path == "ground.txt" else entry
+            for entry in commit.census
+        ),
+        ground_paths=commit.ground_paths if declare_dispensable_ground else ("mechanism.bin",),
+        derivations=(*commit.derivations, DerivationEdge("ground.txt", ("mechanism.bin",), "mechanism.bin")),
+        self_derivation_record=replace(
+            commit.self_derivation_record, ground_paths=("mechanism.bin",),
+            retained_path=("mechanism.bin", "ground.txt", *commit.self_derivation_record.retained_path[2:]),
+        ),
+    )
+    candidate = replace(candidate, coverage_universe=_boundary(candidate, store))
+    assert assess_silo(candidate, store) == assess_silo(commit, store)
+
+
+@pytest.mark.parametrize("premise_before_target", [False, True])
+def test_dispensable_ground_in_retained_path_requires_prior_derivation_premises(
+    premise_before_target: bool, tmp_path: Path,
+) -> None:
+    store, commit = _complete_silo(tmp_path)
+    basis = store.add_object(b"necessary basis", "text/plain", "ground", "GROUND-1")
+    intermediate_paths = ("basis.txt", "ground.txt") if premise_before_target else ("ground.txt", "basis.txt")
+    candidate = replace(
+        commit,
+        census=(
+            *(replace(entry, necessity="DISPENSABLE") if entry.path == "ground.txt" else entry for entry in commit.census),
+            CensusEntry("basis.txt", basis, "NECESSARY"),
+        ),
+        ground_paths=(*commit.ground_paths, "basis.txt"),
+        derivations=(*commit.derivations, DerivationEdge("ground.txt", ("basis.txt",), "mechanism.bin")),
+        self_derivation_record=replace(
+            commit.self_derivation_record, ground_paths=("mechanism.bin",),
+            retained_path=("mechanism.bin", *intermediate_paths, *commit.self_derivation_record.retained_path[2:]),
+        ),
+    )
+    candidate = replace(candidate, coverage_universe=_boundary(candidate, store))
+    result = assess_silo(candidate, store)
+    assert result.reconstructibility == "COMPLETE"
+    assert result.derivation_closure == "CLOSED"
+    assert result.completeness == "COMPLETE"
+    assert result.silo_grounding == "ESTABLISHED"
+    assert result.authority_axiom_agency == "PRESERVED"
+    assert result.self_derivability == ("ESTABLISHED" if premise_before_target else "NOT_ESTABLISHED")
+
+
+@pytest.mark.parametrize("authority_grounded", [False, True])
+@pytest.mark.parametrize("kind", ["SILO_CENSUS", "DERIVATIONAL_COVERAGE", "SEMANTIC_COVERAGE", "LOGICAL_DECIDABILITY"])
+def test_authority_withdrawal_depends_on_model_grounding_not_unrelated_dispensable_gap(
+    authority_grounded: bool, kind: str, tmp_path: Path,
+) -> None:
+    store, commit = _complete_silo(tmp_path, kind=kind)
+    model = network_module._load_authority_model(commit, store)
+    assert model is not None
+    reduced = tuple(action for action in AUTHORITY_AXIOM_AGENCY if action != "EXIT_COMPOSITION")
+    hostile = replace(model, states=(model.states[0], replace(model.states[1], ground_actions=reduced)))
+    candidate = _replace_authority_model(store, commit, hostile)
+    optional = store.add_object(b"dispensable declaration", "text/plain", "ground", "GROUND-1")
+    unrelated = store.add_object(b"unrelated required result", "application/json", "result", "RESULT-1")
+    candidate = replace(
+        candidate,
+        census=(
+            *candidate.census,
+            CensusEntry("optional.txt", optional, "DISPENSABLE"),
+            CensusEntry("unrelated.json", unrelated, "NECESSARY"),
+        ),
+        ground_paths=(*candidate.ground_paths, "optional.txt"),
+        derivations=(
+            *(
+                replace(edge, premise_paths=("optional.txt",))
+                if edge.target_path == candidate.authority_model_path and not authority_grounded else edge
+                for edge in candidate.derivations
+            ),
+            DerivationEdge("unrelated.json", ("optional.txt",), "mechanism.bin"),
+        ),
+    )
+    candidate = replace(candidate, coverage_universe=_boundary(candidate, store))
+    result = assess_silo(candidate, store)
+    assert result.reconstructibility == "COMPLETE"
+    assert result.derivation_closure == "OPEN"
+    assert result.self_derivability == "NOT_ESTABLISHED"
+    assert result.completeness == ("INCOMPLETE" if kind == "SILO_CENSUS" else "UNKNOWN")
+    assert result.silo_grounding == ("ESTABLISHED" if authority_grounded else "NOT_ESTABLISHED")
+    assert result.authority_axiom_agency == ("VIOLATED" if authority_grounded else "UNKNOWN")
 
 
 def test_boolean_assertions_without_bound_evidence_do_not_establish_self_derivability(tmp_path: Path) -> None:

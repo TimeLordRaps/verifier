@@ -15,7 +15,7 @@ dependencies are needed to export or inspect this snapshot.
 From a fully tracked checkout, choose a destination that does not already exist:
 
 ```bash
-python examples/stored_components/build_reference_package.py --output reference-components.json --package-version 1.3.0
+python examples/stored_components/build_reference_package.py --output reference-components.json --package-version 1.4.0
 vstd components inspect reference-components.json --json
 ```
 
@@ -25,7 +25,7 @@ source module, explicitly review and name it. For example, only while the storag
 itself is untracked:
 
 ```bash
-python examples/stored_components/build_reference_package.py --output reference-components.json --package-version 1.3.0 --include-untracked src/verifier/interoperability/storage.py
+python examples/stored_components/build_reference_package.py --output reference-components.json --package-version 1.4.0 --include-untracked src/verifier/interoperability/storage.py
 ```
 
 The flag is repeatable and accepts only individually named untracked source files under
@@ -45,14 +45,14 @@ symbolic links and Windows reparse points, including source parent directories. 
 not search other repositories, capture arbitrary working directories, extract archives,
 install dependencies or invoke an implementation entrypoint.
 
-All **30 first-party entrypoints across 13 grouping labels** bind to the retained package
+All **43 first-party entrypoints across 19 grouping labels** bind to the retained package
 source snapshot. This is not a count of independent native integrations. The snapshot
 includes distinct proof-producer and proof-checker entries, bounded platform comparison,
 receipt and graph rechecking, artifact verification, experimental signed-silo transfer
 materialization, experimental adjacent-result composition, and distinct experimental
 finite-set proposition-transfer assessment and receipt rechecking, and finite typed-formation
 production, independent checking and native session adaptation, plus bounded finite
-authority-composition assessment. A source snapshot is not a
+authority-composition assessment and selected finite composition qualification. A source snapshot is not a
 wheel, an installation archive or an execution environment. Python and optional native
 dependencies are declared but not bundled or resolved; complete executable dependency
 closure remains `NOT_ESTABLISHED`.
@@ -120,3 +120,19 @@ incomplete and unknown fields remain unchanged by reproduction. Its stored
 implementation retains the [portable receipt contract](../../standard/FORMATION_RECEIPT.md)
 and structural schema. Catalog matching and readiness do not perform this replay
 or establish the roles of supplied input bytes.
+
+The six experimental mechanism families add paired planning roles for source grounding,
+relation-boundary assessment, actual deriver self-status, global-cycle assessment,
+source-grounded bounded completeness, and runtime-authority correspondence. The paired
+roles distinguish initial assessment or bounded session recording from exact receipt
+rechecking; the 12 entries are not 12 independent implementations. Each descriptor binds
+its exact module entrypoint while retaining `VSTD-2` only as the modeled planning surface.
+The native declaration and receipt formats remain direct-submodule experimental contracts,
+not new stable wire identifiers.
+
+Package loading, exact index detection, candidate planning, and declaration-only readiness
+do not import through or invoke those entrypoints. A matched candidate remains
+`NOT_ESTABLISHED` when native inputs, output and evidence mappings, runtime prerequisites,
+or externally supplied authorization are absent. Neither the catalog nor readiness grants
+authorization, closes ordinary or self-closure geometry, establishes source truth, or turns
+a bounded denominator into a complete account of the real world.

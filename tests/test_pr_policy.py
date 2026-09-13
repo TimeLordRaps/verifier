@@ -427,6 +427,32 @@ def test_manifest_builder_rejects_missing_expected_artifact(tmp_path: Path) -> N
         _module().build_test_evidence_manifest(tmp_path, RUN_ID, "2")
 
 
+def test_manifest_builder_rejects_empty_installed_composition_report(tmp_path: Path) -> None:
+    _write_expected_reports(tmp_path)
+    report = (
+        tmp_path / f"installed-composition-contracts-{RUN_ID}-2-python-3.12"
+        / "installed-composition-contracts.xml"
+    )
+    report.parent.mkdir(parents=True, exist_ok=True)
+    report.write_text("<testsuite tests=\"2\" />", encoding="utf-8")
+    with pytest.raises(_module().PullRequestPolicyError, match="contains no test cases"):
+        _module().build_test_evidence_manifest(tmp_path, RUN_ID, "2")
+
+
+def test_manifest_validator_rejects_empty_installed_composition_report() -> None:
+    manifest = _manifest()
+    report = next(
+        report for report in manifest["reports"]
+        if report["kind"] == "installed-composition"
+    )
+    manifest["total_tests"] -= report["tests"]
+    report["tests"] = 0
+    with pytest.raises(_module().PullRequestPolicyError, match="report values are invalid"):
+        _module()._validate_test_evidence_manifest(
+            manifest, run_id=RUN_ID, run_attempt="2"
+        )
+
+
 @pytest.mark.parametrize("missing_index", range(len(_module().EXPECTED_REPORTS)))
 def test_manifest_builder_rejects_each_missing_report(
     tmp_path: Path, missing_index: int
@@ -531,6 +557,7 @@ def test_expected_reports_match_repository_check_matrix_exactly() -> None:
             ("coverage", "python-3.12", "coverage-tests.xml"),
             ("scitt-crypto", "python-3.12", "scitt-crypto.xml"),
             ("artifact-seal", "python-3.12", "artifact-seal.xml"),
+            ("installed-composition", "python-3.12", "installed-composition-contracts.xml"),
         ]
     )
     assert _module().EXPECTED_REPORTS == tuple(expected)
@@ -542,9 +569,31 @@ def test_manifest_builder_produces_valid_canonical_artifact(tmp_path: Path) -> N
     body = _body(manifest=manifest, disposition="NONE")
     result = _validate(body, manifest=manifest)
     assert result["test_evidence_manifest_sha256"] == _module()._canonical_json_sha256(manifest)
-    assert result["test_evidence_total_tests"] == 11
+    assert result["test_evidence_total_tests"] == 12
     assert result["test_evidence_total_skipped"] == 0
     assert result["test_evidence_skip_observation_omission_count"] == 0
+
+
+def test_installed_composition_report_is_retained_and_downloaded_for_both_policy_paths() -> None:
+    workflow = yaml.safe_load(
+        (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    )
+    steps = workflow["jobs"]["installed-wheel-smoke"]["steps"]
+    upload = next(
+        step for step in steps
+        if step.get("with", {}).get("path") == "installed-composition-contracts.xml"
+    )
+    assert upload["with"]["name"] == (
+        "installed-composition-contracts-${{ github.run_id }}-${{ github.run_attempt }}-python-3.12"
+    )
+    assert upload["with"]["if-no-files-found"] == "error"
+    assert "success" in upload["if"]
+    policy = yaml.safe_load(
+        (ROOT / ".github/workflows/pr-policy.yml").read_text(encoding="utf-8")
+    )
+    for job in ("evaluate-policy", "evaluate-merge-group"):
+        commands = "\n".join(step.get("run", "") for step in policy["jobs"][job]["steps"])
+        assert '--pattern "installed-composition-contracts-$RUN_ID-$RUN_ATTEMPT-*"' in commands
 
 
 def test_trusted_workflow_never_checks_out_pull_request_code() -> None:

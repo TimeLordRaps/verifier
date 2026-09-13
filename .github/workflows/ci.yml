@@ -438,6 +438,8 @@ jobs:
       - run: python -m venv /tmp/vstd-wheel
       - run: /tmp/vstd-wheel/bin/python -m pip install --no-deps dist/*.whl
       - run: /tmp/vstd-wheel/bin/python -m pip install cryptography==50.0.0
+      - name: Install source-side test runner without changing the installed-wheel environment
+        run: python -m pip install 'pytest>=8.0' pytest-timeout==2.4.0
       - name: Exercise the installed wheel outside the source checkout
         run: |
           cd /tmp
@@ -474,6 +476,35 @@ jobs:
           /tmp/vstd-wheel/bin/vstd network rebuild /tmp/vstd-network-export /tmp/vstd-network-rebuild > /tmp/vstd-network-rebuild.json
           /tmp/vstd-wheel/bin/vstd network push /tmp/vstd-network-export --endpoint https://hub.invalid/v1/pushes > /tmp/vstd-network-push.json
           /tmp/vstd-wheel/bin/python -c 'import json; build=json.load(open("/tmp/vstd-network-build.json", encoding="utf-8")); inspection=json.load(open("/tmp/vstd-network-inspection.json", encoding="utf-8")); difference=json.load(open("/tmp/vstd-network-diff.json", encoding="utf-8")); clone=json.load(open("/tmp/vstd-network-clone.json", encoding="utf-8")); composition=json.load(open("/tmp/vstd-network-composition.json", encoding="utf-8")); export=json.load(open("/tmp/vstd-network-export.json", encoding="utf-8")); rebuild=json.load(open("/tmp/vstd-network-rebuild.json", encoding="utf-8")); push=json.load(open("/tmp/vstd-network-push.json", encoding="utf-8")); assert build["assessment"]["reconstructibility"] == "COMPLETE"; assert inspection["head_signature"] == "VALID"; assert not difference["added"] and not difference["removed"] and not difference["changed"]; assert clone["commit_digest"] == build["commit_digest"]; assert composition["result"] == "NOT_ADMISSIBLE" and composition["composition_completeness"] == "UNKNOWN"; assert export["commit_digest"] == rebuild["commit_digest"] == build["commit_digest"]; assert push["transport_performed"] is False and push["commit_digest"] == build["commit_digest"]; print("Installed artifact-network specimen, inspect, diff, clone, compose, export, rebuild, and bounded push-request paths passed")'
+
+      - name: Require installed strict finite composition outside the source checkout
+        env:
+          VSTD_INSTALLED_PYTHON: /tmp/vstd-wheel/bin/python
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: |
+          WHEELS=(dist/*.whl)
+          test "${#WHEELS[@]}" = 1
+          export VSTD_INSTALLED_WHEEL="${WHEELS[0]}"
+          python -u -m pytest tests/installed_composition_workflow.py \
+            -p pytest_timeout -p scripts.pytest_public_evidence \
+            -vv -s --durations=10 --timeout=60 \
+            --junitxml=installed-composition-contracts.xml
+      - name: Require a public boundary check for installed composition evidence
+        id: installed-composition-evidence-boundary
+        if: always()
+        run: python scripts/check_release_boundary.py installed-composition-contracts.xml
+      - name: Publish installed composition skips and reasons in the run summary
+        if: always() && steps.installed-composition-evidence-boundary.outcome == 'success'
+        run: >-
+          python scripts/summarize_test_skips.py installed-composition-contracts.xml
+          --coordinate installed-wheel --append-output "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always() && steps.installed-composition-evidence-boundary.outcome == 'success'
+        with:
+          name: installed-composition-contracts-${{ github.run_id }}-${{ github.run_attempt }}-python-3.12
+          path: installed-composition-contracts.xml
+          if-no-files-found: error
+          retention-days: 30
 
   presentation:
     runs-on: ubuntu-latest

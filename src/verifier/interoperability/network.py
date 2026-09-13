@@ -10,6 +10,9 @@ It checks byte identity, declared derivation closure, an explicit completeness
 census, and authority axiom agency as separate propositions.  None of those
 checks establishes artifact correctness, real-world publisher identity, or
 permission to execute retained bytes.
+
+Only necessary declared ground seeds derivation closure and retained formation
+paths; dispensable artifacts may participate when derived from admitted ground.
 """
 
 from __future__ import annotations
@@ -1704,7 +1707,8 @@ def assess_silo(commit: SiloCommit, store: ContentAddressedStore) -> SiloAssessm
 
     known = {entry.path for entry in commit.census}
     necessary = {entry.path for entry in commit.census if entry.necessity == "NECESSARY"}
-    derived = set(commit.ground_paths)
+    admitted_ground = set(commit.ground_paths) & necessary
+    derived = set(admitted_ground)
     edges = list(commit.derivations)
     progress = True
     while progress:
@@ -1779,7 +1783,7 @@ def assess_silo(commit: SiloCommit, store: ContentAddressedStore) -> SiloAssessm
     path_reachable: set[str] = set()
     retained_path_continuous = True
     for path in self_record.retained_path:
-        if path in commit.ground_paths:
+        if path in admitted_ground:
             path_reachable.add(path)
             continue
         candidates = [edge for edge in commit.derivations if edge.target_path == path]
@@ -1821,10 +1825,9 @@ def assess_silo(commit: SiloCommit, store: ContentAddressedStore) -> SiloAssessm
     interpreted_predicates = {
         "ground_self": (
             bool(self_record.ground_paths)
-            and set(self_record.ground_paths) <= set(commit.ground_paths)
-            and set(self_record.ground_paths) <= necessary
+            and set(self_record.ground_paths) <= admitted_ground
         ),
-        "derivation_reflexivity": self_record.mechanism_path in necessary and self_record.mechanism_path in commit.ground_paths,
+        "derivation_reflexivity": self_record.mechanism_path in admitted_ground,
         "reflexion_identity": (
             self_record.subject_path in necessary
             and census_by_path[self_record.subject_path].object_record.artifact_kind == "self-derivation-status"

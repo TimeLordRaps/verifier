@@ -22,6 +22,20 @@ MANIFEST_PATH = ROOT / "docs" / "platform-component-contracts.json"
 REPORT_BUILDER_PATH = ROOT / "scripts" / "build_platform_component_report.py"
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "ci.yml"
 MATRIX_PATH = ROOT / "docs" / "PLATFORM_INTEROPERABILITY.md"
+MECHANISM_COMPONENTS = {
+    "component:artifact-network-bounded-completeness-assessor": "tests/test_bounded_completeness.py",
+    "component:artifact-network-bounded-completeness-receipt-rechecker": "tests/test_bounded_completeness.py",
+    "component:artifact-network-deriver-self-status-rechecker": "tests/test_deriver_self_status.py",
+    "component:artifact-network-deriver-session-recorder": "tests/test_deriver_self_status.py",
+    "component:artifact-network-global-cycle-assessor": "tests/test_global_cycle_assessment.py",
+    "component:artifact-network-global-cycle-receipt-rechecker": "tests/test_global_cycle_assessment.py",
+    "component:artifact-network-relation-boundary-assessor": "tests/test_relation_boundary.py",
+    "component:artifact-network-relation-boundary-receipt-rechecker": "tests/test_relation_boundary.py",
+    "component:artifact-network-runtime-authority-correspondence-assessor": "tests/test_runtime_authority_correspondence.py",
+    "component:artifact-network-runtime-authority-correspondence-receipt-rechecker": "tests/test_runtime_authority_correspondence.py",
+    "component:artifact-network-source-grounding-assessor": "tests/test_source_grounding.py",
+    "component:artifact-network-source-grounding-receipt-rechecker": "tests/test_source_grounding.py",
+}
 
 SPEC = importlib.util.spec_from_file_location(
     "build_platform_component_report_test", REPORT_BUILDER_PATH
@@ -114,6 +128,14 @@ def test_manifest_exactly_covers_reference_catalog_and_four_coordinates() -> Non
     assert [item["component_id"] for item in manifest["components"]] == [
         item.component_id for item in registry.components
     ]
+    assert len(manifest["components"]) == len(registry.components) == 43
+    assert len(
+        {
+            family
+            for component in registry.components
+            for family in component.verifier_family_ids
+        }
+    ) == 19
     assert all(
         set(item["coordinate_intent"])
         == {coordinate["coordinate_id"] for coordinate in manifest["coordinates"]}
@@ -125,6 +147,30 @@ def test_manifest_exactly_covers_reference_catalog_and_four_coordinates() -> Non
         for state in item["coordinate_intent"].values()
     } == {"CONFIGURED_UNRUN"}
     assert "PASS" not in MANIFEST_PATH.read_text(encoding="utf-8")
+
+
+def test_six_mechanism_pairs_are_explicit_unrun_intent_with_fail_closed_scope() -> None:
+    components = {item["component_id"]: item for item in _manifest()["components"]}
+
+    assert set(MECHANISM_COMPONENTS) <= set(components)
+    for component_id, mechanism_test in MECHANISM_COMPONENTS.items():
+        record = components[component_id]
+        assert record["dependency_profiles"] == ["test"]
+        assert record["catalog_optional_dependencies"] == []
+        assert record["coverage_kind"] == "BEHAVIOR"
+        assert set(record["test_modules"]) == {
+            mechanism_test,
+            "tests/test_mechanism_catalog.py",
+        }
+        assert set(record["coordinate_intent"].values()) == {"CONFIGURED_UNRUN"}
+        for boundary in (
+            "authorization",
+            "execution",
+            "verification geometry",
+            "TypeScript support",
+            "universal platform support",
+        ):
+            assert boundary in record["test_scope"]
 
 
 def test_raw_platform_evidence_is_boundary_checked_before_public_upload() -> None:
@@ -163,6 +209,29 @@ def test_formation_contracts_are_explicit_unrun_intent_not_source_proofs() -> No
         for boundary in ("source self-derivation", "completeness", "agency preservation",
                          "TypeScript support", "universal platform support"):
             assert boundary in record["test_scope"]
+
+
+def test_finite_composition_qualifier_is_explicit_unrun_intent() -> None:
+    components = {item["component_id"]: item for item in _manifest()["components"]}
+    record = components["component:artifact-network-finite-composition-qualifier"]
+
+    assert record["dependency_profiles"] == ["test"]
+    assert record["catalog_optional_dependencies"] == []
+    assert record["test_modules"] == [
+        "tests/test_composition_qualification.py",
+        "tests/test_composition_qualification_catalog.py",
+    ]
+    assert set(record["coordinate_intent"].values()) == {"CONFIGURED_UNRUN"}
+    for boundary in (
+        "atomic snapshot",
+        "portable replay receipt",
+        "source proof",
+        "runtime/model correspondence",
+        "general composed agency",
+        "automatic execution",
+        "six-axis status upgrade",
+    ):
+        assert boundary in record["test_scope"]
 
 
 def test_runtime_report_rendering_is_platform_neutral() -> None:

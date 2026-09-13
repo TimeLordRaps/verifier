@@ -76,6 +76,46 @@
       }
     },
     {
+      "component_id": "component:artifact-network-bounded-completeness-assessor",
+      "label": "Experimental source-grounded bounded-completeness assessor",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_bounded_completeness.py",
+        "tests/test_mechanism_catalog.py"
+      ],
+      "test_scope": "Exercise exact finite denominator, observation, source-grounding, member-receipt and evidence-budget binding plus inert package-to-index-to-planning/readiness integration. Passing does not establish an exhaustive real-world denominator, source truth, authorization, automatic execution, closed verification geometry, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-bounded-completeness-receipt-rechecker",
+      "label": "Experimental bounded-completeness receipt rechecker",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_bounded_completeness.py",
+        "tests/test_mechanism_catalog.py"
+      ],
+      "test_scope": "Exercise exact canonical bounded-completeness receipt replay with negative, incomplete, invalid and unknown states preserved, plus inert package-bound detection, planning and readiness. Passing establishes neither an independently implemented checker nor source truth, authorization, automatic execution, closed verification geometry, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
       "component_id": "component:artifact-network-composition-declaration-decoder",
       "label": "Experimental strict silo-composition declaration decoder",
       "dependency_profiles": ["test"],
@@ -121,6 +161,101 @@
       }
     },
     {
+      "component_id": "component:artifact-network-deriver-self-status-rechecker",
+      "label": "Experimental actual deriver self-status rechecker",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_deriver_self_status.py",
+        "tests/test_mechanism_catalog.py"
+      ],
+      "test_scope": "Exercise exact executable, runtime coordinate, invocation, input and transcript re-execution binding plus inert package-to-index-to-planning/readiness integration. Passing does not establish platform sandboxing, independent implementation, actor independence, authorization, automatic execution, closed verification geometry, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-deriver-session-recorder",
+      "label": "Experimental bounded deriver session recorder",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_deriver_self_status.py",
+        "tests/test_mechanism_catalog.py"
+      ],
+      "test_scope": "Exercise bounded subprocess invocation and exact executable, runtime coordinate, input and transcript capture plus inert package-to-index-to-planning/readiness integration. Recording is live execution only when explicitly invoked; discovery and readiness do not invoke it. Passing does not establish sandboxing, independent verification, authorization, closed verification geometry, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-finite-composition-qualifier",
+      "label": "Experimental selected finite silo-composition qualifier",
+      "dependency_profiles": ["test"],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": ["tests/test_composition_qualification.py", "tests/test_composition_qualification_catalog.py"],
+      "test_scope": "Exercise exact selected local declaration, member/composite commit and store bindings, separate legacy and finite recomputation, qualification intersection, negative and UNKNOWN preservation, and inert package-to-index-to-planning/readiness integration. Passing does not establish an atomic snapshot, portable replay receipt, source proof, runtime/model correspondence, general composed agency, automatic execution, TypeScript support, universal platform support, or a six-axis status upgrade.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-global-cycle-assessor",
+      "label": "Experimental grounded global-cycle assessor",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_global_cycle_assessment.py",
+        "tests/test_mechanism_catalog.py"
+      ],
+      "test_scope": "Exercise relation-receipt and semantic-source grounding, ordinary support-cycle, directionless simultaneous-constraint, and explicit backward-time facets under finite work bounds, plus inert package-bound integration. Passing does not infer physical causation or correctness, grant authorization, provide automatic execution, close verification geometry, establish TypeScript support, or establish universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-global-cycle-receipt-rechecker",
+      "label": "Experimental global-cycle receipt rechecker",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_global_cycle_assessment.py",
+        "tests/test_mechanism_catalog.py"
+      ],
+      "test_scope": "Exercise exact global-cycle receipt reproduction against retained relation and grounded semantic evidence, including substitution and finite-work refusal, plus inert package-bound integration. Passing establishes neither an independent checker nor physical causation, correctness, authorization, automatic execution, closed verification geometry, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
       "component_id": "component:artifact-network-proposition-transfer-assessor",
       "label": "Experimental finite-set proposition-transfer assessor",
       "dependency_profiles": ["test"],
@@ -143,6 +278,126 @@
       "coverage_kind": "BEHAVIOR",
       "test_modules": ["tests/test_proposition_transfer.py", "tests/test_proposition_transfer_catalog.py", "tests/test_proposition_transfer_fixture.py"],
       "test_scope": "Exercise exact complete semantic receipt recomputation using the same Python reference mechanism, including reproduced negative and unknown fields, declaration/profile binding refusal, replay mismatch distinct from negation, and nonexecuting package-bound planning. Passing does not establish independent implementation, execution identity, preserved agency, general deduction, six-axis silo completeness, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-relation-boundary-assessor",
+      "label": "Experimental relation-boundary assessor",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_mechanism_catalog.py",
+        "tests/test_relation_boundary.py"
+      ],
+      "test_scope": "Exercise exact source, target, translation mechanism, topology, facet preservation and loss-map binding with source-grounded evidence, plus inert package-to-index-to-planning/readiness integration. Passing does not establish source truth, authorization, automatic execution, closed verification geometry, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-relation-boundary-receipt-rechecker",
+      "label": "Experimental relation-boundary receipt rechecker",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_mechanism_catalog.py",
+        "tests/test_relation_boundary.py"
+      ],
+      "test_scope": "Exercise exact relation-boundary receipt reproduction against retained source, target, relation and grounding evidence while preserving information loss and unresolved states, plus inert package-bound integration. Passing establishes neither an independent checker nor source truth, authorization, automatic execution, closed verification geometry, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-runtime-authority-correspondence-assessor",
+      "label": "Experimental runtime-authority correspondence assessor",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_mechanism_catalog.py",
+        "tests/test_runtime_authority_correspondence.py"
+      ],
+      "test_scope": "Exercise exact authority model, runtime coordinate, retained trace, transition denominator, actual deriver-session output and finite reconstruction binding, plus inert package-bound integration. Passing does not establish general agency, complete transition coverage beyond the declared denominator, runtime mediation, authorization, automatic execution, closed verification geometry, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-runtime-authority-correspondence-receipt-rechecker",
+      "label": "Experimental runtime-authority correspondence receipt rechecker",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_mechanism_catalog.py",
+        "tests/test_runtime_authority_correspondence.py"
+      ],
+      "test_scope": "Exercise exact runtime-authority receipt reconstruction from retained declaration, model, trace and deriver-session evidence while rejecting forged result fields, plus inert package-bound integration. Passing establishes neither an independent implementation nor general agency, runtime mediation, authorization, automatic execution, closed verification geometry, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-source-grounding-assessor",
+      "label": "Experimental source-grounding assessor",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_mechanism_catalog.py",
+        "tests/test_source_grounding.py"
+      ],
+      "test_scope": "Exercise exact source bytes, semantic frame, interpretation, proposition, certificate and checker-coordinate binding plus inert package-to-index-to-planning/readiness integration. Passing establishes only the supported finite predicate over retained bytes; it does not establish source truth, authorization, automatic execution, closed verification geometry, TypeScript support, or universal platform support.",
+      "coordinate_intent": {
+        "linux-x64": "CONFIGURED_UNRUN",
+        "windows-x64": "CONFIGURED_UNRUN",
+        "macos-x64": "CONFIGURED_UNRUN",
+        "macos-arm64": "CONFIGURED_UNRUN"
+      }
+    },
+    {
+      "component_id": "component:artifact-network-source-grounding-receipt-rechecker",
+      "label": "Experimental source-grounding receipt rechecker",
+      "dependency_profiles": [
+        "test"
+      ],
+      "catalog_optional_dependencies": [],
+      "coverage_kind": "BEHAVIOR",
+      "test_modules": [
+        "tests/test_mechanism_catalog.py",
+        "tests/test_source_grounding.py"
+      ],
+      "test_scope": "Exercise exact source-grounding receipt reproduction from the declaration and retained source and certificate evidence while preserving unsupported and failed predicates, plus inert package-bound integration. Passing establishes neither an independent checker nor source truth, authorization, automatic execution, closed verification geometry, TypeScript support, or universal platform support.",
       "coordinate_intent": {
         "linux-x64": "CONFIGURED_UNRUN",
         "windows-x64": "CONFIGURED_UNRUN",

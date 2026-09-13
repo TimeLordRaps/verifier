@@ -150,12 +150,16 @@ Each promotion field and the Promotion record and Human review gates sections mu
 exactly once. The tests field is a structured summary of the digest-bound machine manifest:
 its `total-skipped` count and ordered `skip-observation-omissions` list must match that
 manifest exactly. The repository-check workflow emits and retains bounded JUnit XML for all
-eleven pytest coordinates: four base Python versions, four operating-system/architecture
+twelve pytest coordinates: four base Python versions, four operating-system/architecture
 platform coordinates, branch coverage, artifact seal, and Supply Chain Integrity,
-Transparency, and Trust cryptographic tests. A newly added pytest invocation must be added
+Transparency, and Trust cryptographic tests, plus installed-wheel strict composition.
+The installed workflow generates inputs from source-side fixtures but consumes them through
+the isolated installed package outside the checkout; it is not deployment evidence.
+A newly added pytest invocation must be added
 to this exact inventory before promotion can pass. Free-form `DISCLOSED` prose is not
-evidence and is rejected; `NONE` is permitted only when all eleven reports are present and
-record zero skips.
+evidence and is rejected; `NONE` is permitted only when all twelve reports contain actual
+test cases and record zero skips. An empty report is rejected even if its summary claims
+that tests ran.
 
 After completing the bound promotion fields and human-gate dispositions, export the current
 pull-request document and run `python scripts/check_pr_policy.py --print-record-sha256 PATH`.
@@ -178,6 +182,10 @@ later coordinate remains visible and cannot be repaired by the earlier green che
 
 For the one-time policy bootstrap, land the protected-branch workflow under the existing
 review requirements and exercise it on a subsequent test pull request and merge-group event.
+Changes to the exact policy evidence schema or report inventory cannot self-qualify under
+an incompatible prior protected-default implementation. They require an explicit maintainer
+migration disposition and subsequent pull-request and merge-group observations before the
+new contract is represented as active; a prior-inventory digest does not satisfy it.
 After that bootstrap test passes, require both the merge-queue-capable `conformance-gate`
 and `pr-policy` contexts. Configure the merge queue with the `ALLGREEN` grouping strategy:
 the trusted default-branch workflow emits `pr-policy` on a merge-group commit only after

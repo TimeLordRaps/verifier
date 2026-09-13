@@ -136,6 +136,7 @@ jobs:
           gh run download "$RUN_ID" --pattern "coverage-tests-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence"
           gh run download "$RUN_ID" --pattern "scitt-crypto-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence"
           gh run download "$RUN_ID" --pattern "artifact-seal-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence"
+          gh run download "$RUN_ID" --pattern "installed-composition-contracts-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence"
           python scripts/check_pr_policy.py \
             --build-test-evidence-manifest "$RUNNER_TEMP/test-evidence" \
             --run-id "$RUN_ID" --run-attempt "$RUN_ATTEMPT" \
@@ -301,6 +302,7 @@ jobs:
             gh run download "$RUN_ID" --pattern "coverage-tests-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence-$PR_NUMBER"
             gh run download "$RUN_ID" --pattern "scitt-crypto-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence-$PR_NUMBER"
             gh run download "$RUN_ID" --pattern "artifact-seal-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence-$PR_NUMBER"
+            gh run download "$RUN_ID" --pattern "installed-composition-contracts-$RUN_ID-$RUN_ATTEMPT-*" --dir "$RUNNER_TEMP/test-evidence-$PR_NUMBER"
             python scripts/check_pr_policy.py \
               --build-test-evidence-manifest "$RUNNER_TEMP/test-evidence-$PR_NUMBER" \
               --run-id "$RUN_ID" --run-attempt "$RUN_ATTEMPT" \

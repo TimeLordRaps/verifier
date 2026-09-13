@@ -176,6 +176,10 @@ def add_network_parsers(subparsers: argparse._SubParsersAction[argparse.Argument
     compose.add_argument("--silo", action="append", nargs=2, required=True, metavar=("STORE", "COMMIT"))
     compose.add_argument("--composite-store")
     compose.add_argument("--composite-commit")
+    compose.add_argument(
+        "--require-finite-authority-composition", metavar="DECLARATION_PATH",
+        help="Require legacy admission and exact finite-product authority correspondence; nonzero unless qualified.",
+    )
 
     export = commands.add_parser("export", help="Export a reconstructible silo to an absent directory.")
     export.add_argument("store")
@@ -325,6 +329,16 @@ def handle_network_command(args: argparse.Namespace) -> int:
     if command == "compose":
         if bool(args.composite_store) != bool(args.composite_commit):
             raise NetworkError("composition requires both --composite-store and --composite-commit, or neither")
+        if args.require_finite_authority_composition is not None:
+            if not args.composite_store or not args.composite_commit:
+                raise NetworkError("strict finite composition requires --composite-store and --composite-commit")
+            from verifier.interoperability.composition_qualification import qualify_silo_composition
+            report = qualify_silo_composition(
+                args.require_finite_authority_composition, args.silo,
+                args.composite_store, args.composite_commit,
+            )
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0 if report["qualification"] == "FINITE_COMPOSITION_QUALIFIED" else 1
         commits = []
         stores = []
         for store_text, commit_text in args.silo:

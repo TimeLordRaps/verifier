@@ -28,6 +28,19 @@ receipt, an execution attestation, a general agency theorem, or a new supported
 top-level export. Existing individually passing action floors do not establish
 this stronger, explicitly finite transition-correspondence proposition.
 
+The command-line interface (CLI) exposes a combined local gate through
+`vstd network compose --require-finite-authority-composition DECLARATION`, together
+with the selected member silos and both composite arguments. It requires the
+declaration's exact selection to match those inputs and separately recomputes the
+existing full composition assessment. Qualification requires that assessment's
+`ADMISSIBLE` result plus this checker's `BOUND`, `MATCHED`, and both `PRESERVED`
+results. Neither result replaces the other. The original canonical declaration
+and commit bytes must satisfy the finite bounds; supplied mappings are never
+inferred. The combined diagnostic is not a new stored receipt or supported
+top-level export. All residual obligations below remain attached to the finite
+checker. No-flag composition behavior remains the legacy diagnostic, not this
+stronger gate. See the [CLI contract](https://github.com/TimeLordRaps/verifier/blob/main/docs/ARTIFACT_NETWORK.md#cli-surface).
+
 ## Declaration and rule profile
 
 The declaration has exactly these fields:

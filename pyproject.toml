@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verifier-standard"
-version = "1.4.0a1"
+version = "1.4.0"
 description = "Verification-domain language and reference implementation for bounded computational claims."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -74,4 +74,3 @@ verifier = ["artifact_control/*.json", "hardware/*.json", "profiles/*.json", "sc
 pythonpath = ["src"]
 testpaths = ["tests"]
 norecursedirs = ["artifacts_tmp", "build", "dist", ".git", ".venv"]
-asyncio_default_fixture_loop_scope = "function"

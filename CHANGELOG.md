@@ -14,9 +14,15 @@
 
 ## Unreleased
 
-## 1.4.0a1 - UNRELEASED
+## 1.4.0 - UNRELEASED
 
-### Experimental 1.4.0 alpha foundation
+### Experimental artifact-network interoperability
+
+The package version does not promote experimental interfaces to supported compatibility
+or change the project's alpha maturity. Source grounding, an actual deriver's self-status,
+source relation and boundary correctness, global-cycle validity, stronger completeness,
+runtime correspondence, and general composed authority axiom agency remain open obligations.
+The finite mechanisms below retain their declared bounds and `UNKNOWN` results.
 
 - Add content-addressed publisher silos, signed heads, key continuity, signed
   directories, deterministic export/rebuild, and a host-neutral push request.
@@ -40,6 +46,10 @@
   asynchronous-interleaving model product. Package retention, catalog discovery,
   detection, planning and readiness remain nonexecuting; no source proof,
   runtime correspondence, general agency or six-axis status upgrade is implied.
+- Add opt-in strict `network compose --require-finite-authority-composition`
+  qualification: require exact selected inputs, the legacy composition admission,
+  and the finite product checker together. Preserve both reports, all residual
+  obligations, and the unchanged no-flag diagnostic and stored receipt semantics.
 
 ### Post-release clarification
 
