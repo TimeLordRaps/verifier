@@ -62,6 +62,7 @@ jobs:
           VERSION="${RELEASE_TAG#v}"
           PACKAGE_VERSION="$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
           test "$VERSION" = "$PACKAGE_VERSION"
+          RELEASE_KIND="$(python scripts/classify_release_version.py "$VERSION")"
           RUN_API="repos/$GITHUB_REPOSITORY/actions/runs/$REPOSITORY_CHECKS_RUN_ID"
           test "$(gh api "$RUN_API" --jq '.name')" = "repository-checks"
           test "$(gh api "$RUN_API" --jq '.path')" = ".github/workflows/ci.yml"
@@ -80,6 +81,7 @@ jobs:
             echo "source_commit=$SOURCE_COMMIT"
             echo "run_id=$REPOSITORY_CHECKS_RUN_ID"
             echo "run_attempt=$RUN_ATTEMPT"
+            echo "release_kind=$RELEASE_KIND"
           } >> "$GITHUB_OUTPUT"
 
       - name: Require owner-admin immutable-release preflight
@@ -191,12 +193,20 @@ jobs:
       - name: Assemble a complete draft release
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_KIND: ${{ steps.release-source.outputs.release_kind }}
         run: |
+          RELEASE_FLAGS=()
+          if test "$RELEASE_KIND" = "prerelease"; then
+            RELEASE_FLAGS+=(--prerelease)
+          else
+            test "$RELEASE_KIND" = "stable"
+          fi
           gh release create "$RELEASE_TAG" \
             dist/*.zip dist/*.whl dist/*.tar.gz dist/*.cdx.json dist/*.manifest.json \
             --repo "$GITHUB_REPOSITORY" \
             --verify-tag \
             --draft \
+            "${RELEASE_FLAGS[@]}" \
             --title "VSTD $RELEASE_TAG" \
             --notes-file release-notes.md
 

@@ -1,38 +1,262 @@
 name: pages
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: [repository-checks]
+    types: [completed]
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+    inputs:
+      operation:
+        description: Deploy current main or redeploy a retained known-good deployment
+        required: true
+        default: deploy-current
+        type: choice
+        options: [deploy-current, redeploy-known-good]
+      known_good_source_ref:
+        description: Exact prior source commit; required only for redeploy-known-good
+        required: false
+        type: string
+      known_good_receipt_run_id:
+        description: Pages workflow run retaining the known-good promotion receipt
+        required: false
+        type: string
+      rollback_confirmation:
+        description: Type REDEPLOY_KNOWN_GOOD; this guard does not itself grant authorization
+        required: false
+        type: string
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  prepare:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == github.event.repository.default_branch)
+    permissions:
+      actions: read
+      contents: read
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      known_good_manifest_sha256: ${{ steps.coordinate.outputs.known_good_manifest_sha256 }}
+      repository_checks_run_id: ${{ steps.coordinate.outputs.repository_checks_run_id }}
+      source_sha: ${{ steps.coordinate.outputs.source_sha }}
+    env:
+      OPERATION: ${{ inputs.operation || 'deploy-current' }}
+      SOURCE_SHA: ${{ inputs.operation == 'redeploy-known-good' && inputs.known_good_source_ref || github.event.workflow_run.head_sha || github.sha }}
+      REPOSITORY_CHECKS_RUN_ID: ${{ github.event.workflow_run.id || '' }}
+      KNOWN_GOOD_RECEIPT_RUN_ID: ${{ inputs.known_good_receipt_run_id || '' }}
+      ROLLBACK_CONFIRMATION: ${{ inputs.rollback_confirmation || '' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-      - name: Assemble site, schemas, and exact-checkout component index
-        run: PYTHONPATH=src python scripts/build_pages.py --output _site --source-ref "$GITHUB_SHA"
-      - name: Check the generated local component index
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Retain the current protected-branch deployment checker
+        run: |
+          mkdir "$RUNNER_TEMP/pages-policy"
+          cp scripts/check_pages_deployment.py "$RUNNER_TEMP/pages-policy/check_pages_deployment.py"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pages-policy-${{ github.run_id }}
+          path: ${{ runner.temp }}/pages-policy/check_pages_deployment.py
+          if-no-files-found: error
+          retention-days: 1
+      - name: Require current main qualified by the exact repository-check workflow or an exact retained known-good receipt
+        id: coordinate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          MANIFEST_SHA256=""
+          if test "$OPERATION" = "redeploy-known-good"; then
+            test "$ROLLBACK_CONFIRMATION" = "REDEPLOY_KNOWN_GOOD"
+            test -n "$KNOWN_GOOD_RECEIPT_RUN_ID"
+            mkdir "$RUNNER_TEMP/known-good-receipt"
+            gh run download "$KNOWN_GOOD_RECEIPT_RUN_ID" \
+              --name "pages-promotion-$SOURCE_SHA" \
+              --dir "$RUNNER_TEMP/known-good-receipt"
+            gh api "repos/$GITHUB_REPOSITORY/actions/runs/$KNOWN_GOOD_RECEIPT_RUN_ID" \
+              > "$RUNNER_TEMP/known-good-deployment-run.json"
+            python "$RUNNER_TEMP/pages-policy/check_pages_deployment.py" \
+              --validate-rollback-receipt "$RUNNER_TEMP/known-good-receipt/pages-promotion-receipt.json" \
+              --expected-source-ref "$SOURCE_SHA" \
+              --deployment-workflow-run-id "$KNOWN_GOOD_RECEIPT_RUN_ID" \
+              --deployment-run "$RUNNER_TEMP/known-good-deployment-run.json" \
+              > "$RUNNER_TEMP/known-good-coordinate.json"
+            CHECKS_RUN_ID="$(jq -er .repository_checks_run_id "$RUNNER_TEMP/known-good-coordinate.json")"
+            MANIFEST_SHA256="$(jq -er .deployment_manifest_sha256 "$RUNNER_TEMP/known-good-coordinate.json")"
+          else
+            test "$OPERATION" = "deploy-current"
+            DEFAULT_BRANCH="$(gh api "repos/$GITHUB_REPOSITORY" --jq .default_branch)"
+            DEFAULT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$DEFAULT_BRANCH" --jq .sha)"
+            test "$SOURCE_SHA" = "$DEFAULT_SHA"
+            CHECKS_RUN_ID="$REPOSITORY_CHECKS_RUN_ID"
+            if test -z "$CHECKS_RUN_ID"; then
+              CHECKS_RUN_ID="$(gh api \
+                "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$SOURCE_SHA&event=push&status=success&per_page=1" \
+                --jq '.workflow_runs[0].id // empty')"
+            fi
+            test -n "$CHECKS_RUN_ID"
+            gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CHECKS_RUN_ID" \
+              > "$RUNNER_TEMP/repository-checks-run.json"
+            python "$RUNNER_TEMP/pages-policy/check_pages_deployment.py" \
+              --validate-source \
+              --expected-source-ref "$SOURCE_SHA" \
+              --current-main-ref "$DEFAULT_SHA" \
+              --repository-run "$RUNNER_TEMP/repository-checks-run.json"
+          fi
+          echo "known_good_manifest_sha256=$MANIFEST_SHA256" >> "$GITHUB_OUTPUT"
+          echo "repository_checks_run_id=$CHECKS_RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: prepare
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ needs.prepare.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Assemble the candidate site from the exact source
+        run: PYTHONPATH=src python scripts/build_pages.py --output _site --source-ref "$SOURCE_SHA"
+      - name: Check the candidate component index using its exact source
         run: |
           INDEX_SHA256="$(cut -d ' ' -f 1 _site/components/index.sha256)"
           PYTHONPATH=src python -m verifier.runtime.public_cli components index inspect \
             _site/components/index.json --expected-sha256 "$INDEX_SHA256" --json >/dev/null
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pages-candidate-${{ github.run_id }}
+          path: _site
+          if-no-files-found: error
+          retention-days: 1
+
+  validate:
+    needs: [prepare, build]
+    permissions:
+      actions: read
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      manifest_sha256: ${{ steps.inventory.outputs.manifest_sha256 }}
+    env:
+      OPERATION: ${{ inputs.operation || 'deploy-current' }}
+      SOURCE_SHA: ${{ needs.prepare.outputs.source_sha }}
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: pages-policy-${{ github.run_id }}
+          path: ${{ runner.temp }}/pages-policy
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: pages-candidate-${{ github.run_id }}
+          path: _site
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - name: Require exact bounded local deployment inventory
+        id: inventory
+        run: |
+          if test "$OPERATION" = "redeploy-known-good"; then
+            python "$RUNNER_TEMP/pages-policy/check_pages_deployment.py" \
+              --validate-site _site \
+              --expected-source-ref "$SOURCE_SHA" \
+              --expected-manifest-sha256 "${{ needs.prepare.outputs.known_good_manifest_sha256 }}" \
+              > "$RUNNER_TEMP/site-coordinate.json"
+          else
+            python "$RUNNER_TEMP/pages-policy/check_pages_deployment.py" \
+              --validate-site _site \
+              --expected-source-ref "$SOURCE_SHA" \
+              > "$RUNNER_TEMP/site-coordinate.json"
+          fi
+          MANIFEST_SHA256="$(jq -er .deployment_manifest_sha256 "$RUNNER_TEMP/site-coordinate.json")"
+          echo "manifest_sha256=$MANIFEST_SHA256" >> "$GITHUB_OUTPUT"
+      - name: Reconfirm current main immediately before packaging
+        if: env.OPERATION == 'deploy-current'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DEFAULT_BRANCH="$(gh api "repos/$GITHUB_REPOSITORY" --jq .default_branch)"
+          DEFAULT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$DEFAULT_BRANCH" --jq .sha)"
+          test "$SOURCE_SHA" = "$DEFAULT_SHA"
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:
           path: _site
-      - name: Deploy
+
+  deploy:
+    needs: [prepare, validate]
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      OPERATION: ${{ inputs.operation || 'deploy-current' }}
+      SOURCE_SHA: ${{ needs.prepare.outputs.source_sha }}
+    steps:
+      - name: Reconfirm current main immediately before deployment
+        if: env.OPERATION == 'deploy-current'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DEFAULT_BRANCH="$(gh api "repos/$GITHUB_REPOSITORY" --jq .default_branch)"
+          DEFAULT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$DEFAULT_BRANCH" --jq .sha)"
+          test "$SOURCE_SHA" = "$DEFAULT_SHA"
+      - name: Deploy the already validated immutable artifact
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+
+  observe:
+    needs: [prepare, validate, deploy]
+    permissions:
+      actions: read
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      OPERATION: ${{ inputs.operation || 'deploy-current' }}
+      SOURCE_SHA: ${{ needs.prepare.outputs.source_sha }}
+      PAGES_HOST: timelordraps.github.io
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: pages-policy-${{ github.run_id }}
+          path: ${{ runner.temp }}/pages-policy
+      - name: Reconfirm current main after deployment
+        if: env.OPERATION == 'deploy-current'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DEFAULT_BRANCH="$(gh api "repos/$GITHUB_REPOSITORY" --jq .default_branch)"
+          DEFAULT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$DEFAULT_BRANCH" --jq .sha)"
+          test "$SOURCE_SHA" = "$DEFAULT_SHA"
+      - name: Require the live deployment to expose the promoted commit and bytes
+        run: |
+          python "$RUNNER_TEMP/pages-policy/check_pages_deployment.py" \
+            --base-url "${{ needs.deploy.outputs.page_url }}" \
+            --expected-source-ref "$SOURCE_SHA" \
+            --expected-manifest-sha256 "${{ needs.validate.outputs.manifest_sha256 }}" \
+            --allowed-host "$PAGES_HOST" \
+            --workflow-run-id "${{ needs.prepare.outputs.repository_checks_run_id }}" \
+            --deployment-workflow-run-id "$GITHUB_RUN_ID" \
+            --output pages-promotion-receipt.json
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pages-promotion-${{ needs.prepare.outputs.source_sha }}
+          path: pages-promotion-receipt.json
+          if-no-files-found: error
+          retention-days: 30

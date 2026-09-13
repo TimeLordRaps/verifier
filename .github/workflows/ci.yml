@@ -5,11 +5,36 @@ on:
     branches: [main]
     tags: ["v*"]
   pull_request:
+  merge_group:
+
+concurrency:
+  group: repository-checks-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
 
 jobs:
+  coordinate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Record source, integration, run, and attempt coordinates
+        env:
+          PULL_REQUEST_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PULL_REQUEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          MERGE_GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
+        run: python scripts/record_ci_coordinate.py --output ci-coordinate.json
+      - name: Require a public boundary check for the coordinate receipt
+        run: python scripts/check_release_boundary.py ci-coordinate.json
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ci-coordinate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ci-coordinate.json
+          if-no-files-found: error
+          retention-days: 30
+
   base:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -23,7 +48,28 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install ".[test]"
-      - run: python -u -m pytest -vv -s --durations=10 --timeout=60
+      - name: Run the streamed bounded suite and retain skip evidence
+        run: >-
+          python -u -m pytest -vv -s --durations=10 --timeout=60
+          -p scripts.pytest_public_evidence
+          --junitxml=base-contracts.xml
+      - name: Require a public boundary check for the test evidence
+        id: base-evidence-boundary
+        if: always()
+        run: python scripts/check_release_boundary.py base-contracts.xml
+      - name: Publish skipped tests and reasons in the run summary
+        if: always() && steps.base-evidence-boundary.outcome == 'success'
+        run: >-
+          python scripts/summarize_test_skips.py base-contracts.xml
+          --coordinate python-${{ matrix.python-version }}
+          --append-output "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always() && steps.base-evidence-boundary.outcome == 'success'
+        with:
+          name: base-contracts-${{ github.run_id }}-${{ github.run_attempt }}-python-${{ matrix.python-version }}
+          path: base-contracts.xml
+          if-no-files-found: error
+          retention-days: 30
 
   coverage:
     runs-on: ubuntu-latest
@@ -34,13 +80,37 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install ".[test]"
-      - name: Record bounded branch-coverage evidence
+      - name: Run the streamed bounded suite under branch coverage and retain skip evidence
+        run: >-
+          python -u -m coverage run --branch --source=src/verifier -m pytest
+          -vv -s --durations=10 --timeout=60
+          -p scripts.pytest_public_evidence
+          --junitxml=coverage-tests.xml
+      - name: Require a public boundary check for the coverage test evidence
+        id: coverage-evidence-boundary
+        if: always()
+        run: python scripts/check_release_boundary.py coverage-tests.xml
+      - name: Publish skipped coverage tests and reasons in the run summary
+        if: always() && steps.coverage-evidence-boundary.outcome == 'success'
+        run: >-
+          python scripts/summarize_test_skips.py coverage-tests.xml
+          --coordinate python-3.12
+          --append-output "$GITHUB_STEP_SUMMARY"
+      - name: Record bounded branch-coverage measurements
+        if: success()
         run: |
-          python -u -m coverage run --branch --source=src/verifier -m pytest -vv -s --durations=10 --timeout=60
           python -u -m coverage report --show-missing --skip-covered | tee -a "$GITHUB_STEP_SUMMARY"
           python -u -m coverage json --pretty-print -o coverage.json
           python -u -m coverage xml -o coverage.xml
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always() && steps.coverage-evidence-boundary.outcome == 'success'
+        with:
+          name: coverage-tests-${{ github.run_id }}-${{ github.run_attempt }}-python-3.12
+          path: coverage-tests.xml
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: success()
         with:
           name: branch-coverage-python-3.12
           path: |
@@ -75,7 +145,24 @@ jobs:
       - name: Require the real SCITT/COSE statement and receipt path
         run: |
           python -c "import cbor2, cryptography, scitt_cose"
-          python -u -m pytest -vv -s --durations=10 --timeout=60 tests/test_scitt_crypto_example.py
+          python -u -m pytest -vv -s --durations=10 --timeout=60 -p scripts.pytest_public_evidence --junitxml=scitt-crypto.xml tests/test_scitt_crypto_example.py
+      - name: Require a public boundary check for the SCITT cryptographic test evidence
+        id: scitt-crypto-evidence-boundary
+        if: always()
+        run: python scripts/check_release_boundary.py scitt-crypto.xml
+      - name: Publish skipped SCITT cryptographic tests and reasons in the run summary
+        if: always() && steps.scitt-crypto-evidence-boundary.outcome == 'success'
+        run: >-
+          python scripts/summarize_test_skips.py scitt-crypto.xml
+          --coordinate python-3.12
+          --append-output "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always() && steps.scitt-crypto-evidence-boundary.outcome == 'success'
+        with:
+          name: scitt-crypto-${{ github.run_id }}-${{ github.run_attempt }}-python-3.12
+          path: scitt-crypto.xml
+          if-no-files-found: error
+          retention-days: 30
 
   artifact-seal:
     runs-on: ubuntu-latest
@@ -89,7 +176,24 @@ jobs:
       - name: Require exact-byte freeze and finite self-closing seal behavior
         run: |
           python -c "import cryptography"
-          python -u -m pytest -vv -s --durations=10 --timeout=60 tests/test_artifact_control.py
+          python -u -m pytest -vv -s --durations=10 --timeout=60 -p scripts.pytest_public_evidence --junitxml=artifact-seal.xml tests/test_artifact_control.py
+      - name: Require a public boundary check for the artifact-seal test evidence
+        id: artifact-seal-evidence-boundary
+        if: always()
+        run: python scripts/check_release_boundary.py artifact-seal.xml
+      - name: Publish skipped artifact-seal tests and reasons in the run summary
+        if: always() && steps.artifact-seal-evidence-boundary.outcome == 'success'
+        run: >-
+          python scripts/summarize_test_skips.py artifact-seal.xml
+          --coordinate python-3.12
+          --append-output "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always() && steps.artifact-seal-evidence-boundary.outcome == 'success'
+        with:
+          name: artifact-seal-${{ github.run_id }}-${{ github.run_attempt }}-python-3.12
+          path: artifact-seal.xml
+          if-no-files-found: error
+          retention-days: 30
 
   release-integrity:
     runs-on: ${{ matrix.os }}
@@ -289,6 +393,13 @@ jobs:
         run: >-
           python scripts/check_release_boundary.py
           platform-environment.json platform-contracts.xml
+      - name: Publish skipped tests and reasons in the run summary
+        if: always() && steps.platform-evidence-boundary.outcome == 'success'
+        shell: bash
+        run: >-
+          python scripts/summarize_test_skips.py platform-contracts.xml
+          --coordinate ${{ matrix.coordinate }}
+          --append-output "$GITHUB_STEP_SUMMARY"
       - name: Build bounded platform-component report
         if: success()
         run: >-
@@ -367,8 +478,20 @@ jobs:
         with:
           name: pages-preview-${{ github.sha }}
           path: _site
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: pages-preview-${{ github.sha }}
+          path: ${{ runner.temp }}/vstd-pages-preview
+      - name: Validate retained Pages preview bytes
+        run: |
+          MANIFEST_SHA256="$(sha256sum _site/deployment-manifest.json | cut -d ' ' -f 1)"
+          python scripts/check_pages_deployment.py \
+            --validate-site "$RUNNER_TEMP/vstd-pages-preview" \
+            --expected-source-ref "$GITHUB_SHA" \
+            --expected-manifest-sha256 "$MANIFEST_SHA256"
 
   codeql:
     name: CodeQL (Python)
@@ -388,12 +511,13 @@ jobs:
   # This identifier remains stable because main branch protection requires it.
   conformance-gate:
     if: always()
-    needs: [base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, release-integrity, release-reproducibility, platform-comparability-observation, platform-comparability, platform-python-contracts, installed-wheel-smoke, presentation, codeql]
+    needs: [coordinate, base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, release-integrity, release-reproducibility, platform-comparability-observation, platform-comparability, platform-python-contracts, installed-wheel-smoke, presentation, codeql]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Require every declared support and artifact check
         env:
+          COORDINATE: ${{ needs.coordinate.result }}
           BASE: ${{ needs.base.result }}
           COVERAGE: ${{ needs.coverage.result }}
           STDLIB: ${{ needs.stdlib-smoke.result }}
@@ -408,6 +532,7 @@ jobs:
           PRESENTATION: ${{ needs.presentation.result }}
           CODEQL: ${{ needs.codeql.result }}
         run: |
+          test "$COORDINATE" = success
           test "$BASE" = success
           test "$COVERAGE" = success
           test "$STDLIB" = success

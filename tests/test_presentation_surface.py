@@ -593,17 +593,22 @@ def test_branch_coverage_is_retained_without_a_global_threshold() -> None:
     jobs = workflow["jobs"]
     coverage = jobs["coverage"]
     commands = "\n".join(str(step.get("run", "")) for step in coverage["steps"])
-    uploads = [
-        step for step in coverage["steps"] if "upload-artifact@" in step.get("uses", "")
-    ]
+    uploads = {
+        step["with"]["name"]: step
+        for step in coverage["steps"]
+        if "upload-artifact@" in step.get("uses", "")
+    }
 
     assert "coverage run --branch --source=src/verifier" in commands
     assert "coverage report --show-missing" in commands
     assert "coverage json --pretty-print -o coverage.json" in commands
     assert "coverage xml -o coverage.xml" in commands
     assert "--fail-under" not in commands
-    assert uploads[0]["with"]["name"] == "branch-coverage-python-3.12"
-    assert set(uploads[0]["with"]["path"].splitlines()) == {
+    skip_evidence_name = (
+        "coverage-tests-${{ github.run_id }}-${{ github.run_attempt }}-python-3.12"
+    )
+    assert uploads[skip_evidence_name]["with"]["path"] == "coverage-tests.xml"
+    assert set(uploads["branch-coverage-python-3.12"]["with"]["path"].splitlines()) == {
         "coverage.json",
         "coverage.xml",
     }
