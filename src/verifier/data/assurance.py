@@ -21,7 +21,7 @@ import json
 import re
 from dataclasses import dataclass, field, replace
 from enum import Enum
-from typing import Any, Iterable, Mapping, Optional
+from typing import Any, Iterable, Mapping, Optional, Sequence
 
 from verifier.core.certificate import canonical_bytes, canonical_digest
 from verifier.core.evidence import (
@@ -147,7 +147,7 @@ class ChallengeProjectionMechanism:
     mechanism_digest = implementation_file_digest(__file__)
 
     def evaluate(
-        self, binding: BoundProposition, evidence: tuple[bytes, ...]
+        self, binding: BoundProposition, evidence: Sequence[bytes]
     ) -> MechanismDecision:
         if binding.predicate != "vstd.graph.current_status":
             return MechanismDecision(

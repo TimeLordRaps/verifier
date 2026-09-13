@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-push-request-0.1.schema.json",
+  "title": "Verifier Standard (VSTD) host-neutral push request",
+  "description": "A client request description; schema validity does not establish transmission, authentication, acceptance, or publication.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "endpoint", "publisher_digest", "commit_digest", "head_digest", "expected_head_digest", "transport_performed", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "VSTD-PUSH-REQUEST-0.1"},
+    "endpoint": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "publisher_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "commit_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "head_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "expected_head_digest": {"oneOf": [{"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, {"type": "null"}]},
+    "transport_performed": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 4096}
+  }
+}

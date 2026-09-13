@@ -21,6 +21,36 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@pytest.mark.parametrize("ending", (b"\n", b"\r\n", b"\r"), ids=("lf", "crlf", "cr"))
+def test_reference_drift_check_compares_exact_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, ending: bytes,
+) -> None:
+    spec = importlib.util.spec_from_file_location("reference_byte_check", ROOT / "scripts/build_reference.py")
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    output = tmp_path / "reference.html"
+    output.write_bytes(b"<p>reference</p>" + ending)
+    monkeypatch.setattr(module, "OUTPUT", output)
+    monkeypatch.setattr(module, "render", lambda: "<p>reference</p>\n")
+    assert module.main(["--check"]) == (0 if ending == b"\n" else 1)
+
+
+def test_reference_writer_retains_platform_neutral_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    spec = importlib.util.spec_from_file_location("reference_byte_writer", ROOT / "scripts/build_reference.py")
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    output = tmp_path / "reference.html"
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "OUTPUT", output)
+    monkeypatch.setattr(module, "render", lambda: "<p>reference</p>\n")
+    assert module.main([]) == 0
+    assert output.read_bytes() == b"<p>reference</p>\n"
+
+
 def test_artifact_first_experiment_distinguishes_implemented_mechanisms_from_horizons() -> None:
     document = (ROOT / "experiments/artifact_first_mechanisms/README.md").read_text(
         encoding="utf-8"
@@ -149,6 +179,85 @@ def test_public_boundary_catches_private_coordinates_without_naming_them() -> No
     assert "synthetic private locator" in module.public_boundary_violations(private_locator)
     assert "local model artifact filename" in module.public_boundary_violations(local_artifact)
     assert "private deployment field" in module.public_boundary_violations(deployment_field)
+
+
+def test_absent_model_suffix_never_enters_the_greedy_filename_search(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    spec = importlib.util.spec_from_file_location(
+        "check_presentation_short_circuit", ROOT / "scripts/check_presentation.py"
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    class UnexpectedSearch:
+        def search(self, text: str) -> None:
+            pytest.fail("absent suffix entered the greedy filename search")
+
+    monkeypatch.setattr(
+        module, "PUBLIC_BOUNDARY_PATTERNS",
+        (("local model artifact filename", UnexpectedSearch()),),
+    )
+    text = "a-" * 100_000
+    assert module.public_boundary_violations(text) == []
+    sample = tmp_path / "sample.json"
+    sample.write_text(text, encoding="utf-8")
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "_public_files", lambda: [sample])
+    errors: list[str] = []
+    module.check_public_paths(errors)
+    assert errors == []
+
+
+def test_boundary_prefilter_preserves_original_matches_and_offsets() -> None:
+    spec = importlib.util.spec_from_file_location(
+        "check_presentation_match_equivalence", ROOT / "scripts/check_presentation.py"
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    suffix = "." + "gguf"
+    prefixes = ("", "model", "-model", "é", "λ", "_", ".", "/", "\\", "line\nmodel", "a-" * 32)
+    endings = ("", suffix, suffix.upper(), suffix + ".next", suffix + "x", suffix + "é", suffix + "_", suffix + "\u0301", suffix + "\n")
+    texts = [prefix + ending for prefix in prefixes for ending in endings]
+    texts.extend((
+        "first line\nmodel" + suffix.upper(),
+        "a-" * 32 + suffix + " and second" + suffix,
+        "account" + "@" + "example.invalid",
+        "model" + "_path",
+        "E:" + "\\" + "synthetic" + "\\" + "record.json",
+    ))
+    for text in texts:
+        expected_labels = []
+        for label, pattern in module.PUBLIC_BOUNDARY_PATTERNS:
+            original = pattern.search(text)
+            actual = module._public_boundary_match(label, pattern, text)
+            assert (actual.span() if actual else None) == (original.span() if original else None)
+            if original:
+                expected_labels.append(label)
+        assert module.public_boundary_violations(text) == expected_labels
+
+
+def test_prefilter_preserves_file_line_reporting_and_fixture_inclusion(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    spec = importlib.util.spec_from_file_location(
+        "check_presentation_file_prefilter", ROOT / "scripts/check_presentation.py"
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    public_files = set(module._public_files())
+    assert ROOT / "tests/fixtures/formation-interoperability-corpus.json" in public_files
+    assert ROOT / "tests/fixtures/formation-receipt-corpus.json" in public_files
+    sample = tmp_path / "sample.txt"
+    sample.write_text("ordinary first line\nmodel" + "." + "GGUF\n", encoding="utf-8")
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "_public_files", lambda: [sample])
+    errors: list[str] = []
+    module.check_public_paths(errors)
+    assert errors == ["local model artifact filename leaked into sample.txt:2"]
 
 
 def test_maturity_table_requires_each_major_surface_and_explicit_conformance() -> None:
@@ -283,9 +392,9 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     )
     assert coordinate == {
         "canonical_base_url": "https://timelordraps.github.io/verifier/",
-        "documentation_version": "1.3.0",
+            "documentation_version": "1.4.0a1",
         "normative_source": "standard/",
-        "release_state": "UNRELEASED_SOURCE",
+            "release_state": "UNRELEASED_CANDIDATE",
         "schema_version": 1,
         "source_ref": "test-commit",
     }

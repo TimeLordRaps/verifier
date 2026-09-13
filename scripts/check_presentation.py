@@ -59,6 +59,7 @@ LOCAL_WINDOWS_PATH = re.compile(
 DRIVE_QUALIFIED_PATH = re.compile(
     r"(?i)(?<![A-Za-z0-9_%])(?:[A-Za-z]:(?:\\\\|[\\/])[A-Za-z0-9._-]{2,})"
 )
+LOCAL_MODEL_ARTIFACT_SUFFIX = re.compile(r"(?i)\.gguf\b")
 PUBLIC_BOUNDARY_PATTERNS = (
     ("local user or home path", LOCAL_WINDOWS_PATH),
     ("drive-qualified local path", DRIVE_QUALIFIED_PATH),
@@ -488,8 +489,22 @@ def check_claim_boundaries(errors: list[str]) -> None:
         errors.append("obsolete adopter-migration path has reappeared")
 
 
+def _public_boundary_match(
+    label: str, pattern: re.Pattern[str], text: str,
+) -> re.Match[str] | None:
+    # Every filename match requires this exact suffix and word boundary. Avoid
+    # retrying its greedy prefix across long encoded records when none exists;
+    # possible matches still use the unchanged expression and original offsets.
+    if label == "local model artifact filename" and LOCAL_MODEL_ARTIFACT_SUFFIX.search(text) is None:
+        return None
+    return pattern.search(text)
+
+
 def public_boundary_violations(text: str) -> list[str]:
-    return [label for label, pattern in PUBLIC_BOUNDARY_PATTERNS if pattern.search(text)]
+    return [
+        label for label, pattern in PUBLIC_BOUNDARY_PATTERNS
+        if _public_boundary_match(label, pattern, text)
+    ]
 
 
 def lineage_causality_violations(text: str) -> list[str]:
@@ -505,7 +520,7 @@ def check_public_paths(errors: list[str]) -> None:
             continue
         text = path.read_text(encoding="utf-8")
         for label, pattern in PUBLIC_BOUNDARY_PATTERNS:
-            match = pattern.search(text)
+            match = _public_boundary_match(label, pattern, text)
             if match:
                 line = text.count("\n", 0, match.start()) + 1
                 errors.append(

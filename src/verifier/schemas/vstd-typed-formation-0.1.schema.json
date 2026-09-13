@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-typed-formation-0.1.schema.json",
+  "title": "Verifier Standard experimental typed-formation subject and certificate",
+  "$comment": "An integer identifier (ID) selects a node; the ID tag constructs an identity path.",
+  "description": "Structural schema only for Verifier Standard (VSTD). Canonical bytes, backward references, exact context and proof bindings, formation types, endpoints, resource budgets and observation preservation require the mechanism. This schema establishes no source-ground derivation, self-status, completeness or authority axiom agency.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/subject"
+    },
+    {
+      "$ref": "#/$defs/certificate"
+    }
+  ],
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "minLength": 71,
+      "maxLength": 71
+    },
+    "index": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1023
+    },
+    "node": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tag",
+            "payload_digest"
+          ],
+          "properties": {
+            "tag": {
+              "const": "ATOM"
+            },
+            "payload_digest": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tag",
+            "argument"
+          ],
+          "properties": {
+            "tag": {
+              "const": "APPLY"
+            },
+            "argument": {
+              "$ref": "#/$defs/index"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tag",
+            "at"
+          ],
+          "properties": {
+            "tag": {
+              "const": "ID"
+            },
+            "at": {
+              "$ref": "#/$defs/index"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tag",
+            "source",
+            "target"
+          ],
+          "properties": {
+            "tag": {
+              "const": "APPLY_STEP"
+            },
+            "source": {
+              "$ref": "#/$defs/index"
+            },
+            "target": {
+              "$ref": "#/$defs/index"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tag",
+            "left",
+            "right"
+          ],
+          "properties": {
+            "tag": {
+              "const": "COMPOSE"
+            },
+            "left": {
+              "$ref": "#/$defs/index"
+            },
+            "right": {
+              "$ref": "#/$defs/index"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tag",
+            "value"
+          ],
+          "properties": {
+            "tag": {
+              "const": "QUOTE"
+            },
+            "value": {
+              "$ref": "#/$defs/index"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tag",
+            "code"
+          ],
+          "properties": {
+            "tag": {
+              "const": "READ"
+            },
+            "code": {
+              "$ref": "#/$defs/index"
+            }
+          }
+        }
+      ]
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "profile_digest",
+        "context",
+        "nodes",
+        "root"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "VSTD-TYPED-FORMATION-0.1"
+        },
+        "profile_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ground_artifact_digest",
+            "authority_axiom_agency_digest"
+          ],
+          "properties": {
+            "ground_artifact_digest": {
+              "$ref": "#/$defs/digest"
+            },
+            "authority_axiom_agency_digest": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        },
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1024,
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        },
+        "root": {
+          "$ref": "#/$defs/index"
+        }
+      }
+    },
+    "certificate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "subject_digest",
+        "profile_digest",
+        "steps",
+        "root"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "VSTD-TYPED-FORMATION-CERTIFICATE-0.1"
+        },
+        "subject_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "profile_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1024,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "node",
+              "rule",
+              "premises"
+            ],
+            "properties": {
+              "node": {
+                "$ref": "#/$defs/index"
+              },
+              "rule": {
+                "enum": [
+                  "ATOM",
+                  "APPLY",
+                  "ID",
+                  "APPLY_STEP",
+                  "COMPOSE",
+                  "QUOTE",
+                  "READ"
+                ]
+              },
+              "premises": {
+                "type": "array",
+                "maxItems": 2,
+                "items": {
+                  "$ref": "#/$defs/index"
+                }
+              }
+            }
+          }
+        },
+        "root": {
+          "$ref": "#/$defs/index"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-silo-assessment-0.1.schema.json",
+  "title": "Verifier Standard (VSTD) experimental silo assessment",
+  "description": "Independent bounded result axes; no axis establishes artifact correctness or real-world publisher identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "reconstructibility", "derivation_closure", "self_derivability", "completeness", "completeness_kind", "silo_grounding", "authority_axiom_agency", "reasons", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "VSTD-SILO-ASSESSMENT-0.1"},
+    "reconstructibility": {"enum": ["COMPLETE", "INCOMPLETE", "INVALID"]},
+    "derivation_closure": {"enum": ["CLOSED", "OPEN", "CONFLICTED", "UNKNOWN"]},
+    "self_derivability": {"enum": ["ESTABLISHED", "NOT_ESTABLISHED", "INVALID"]},
+    "completeness": {"enum": ["COMPLETE", "INCOMPLETE", "UNKNOWN"]},
+    "completeness_kind": {"enum": ["SILO_CENSUS", "DERIVATIONAL_COVERAGE", "SEMANTIC_COVERAGE", "LOGICAL_DECIDABILITY"]},
+    "silo_grounding": {"enum": ["ESTABLISHED", "NOT_ESTABLISHED", "UNKNOWN"]},
+    "authority_axiom_agency": {"enum": ["PRESERVED", "VIOLATED", "UNKNOWN"]},
+    "reasons": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 4096}},
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 4096}
+  }
+}

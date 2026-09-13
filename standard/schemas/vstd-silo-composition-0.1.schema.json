@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-silo-composition-0.1.schema.json",
+  "title": "Verifier Standard (VSTD) experimental silo composition declaration",
+  "description": "Exact member commit coordinates and an optional composite commit coordinate; declaration alone is not composition evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "member_commit_digests", "composite_commit_digest"],
+  "properties": {
+    "schema_version": {"const": "VSTD-SILO-COMPOSITION-0.1"},
+    "member_commit_digests": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+    },
+    "composite_commit_digest": {
+      "oneOf": [
+        {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        {"type": "null"}
+      ]
+    }
+  }
+}

@@ -109,11 +109,13 @@ def _evidence_tree(root: Path) -> Path:
     return evidence_root
 
 
-def _prepare(evidence_root: Path, output: Path) -> dict:
+def _prepare(
+    evidence_root: Path, output: Path, *, release_tag: str = "v1.3.0"
+) -> dict:
     return release_evidence.prepare_release_evidence(
         evidence_root=evidence_root,
         output=output,
-        release_tag="v1.3.0",
+        release_tag=release_tag,
         repository="TimeLordRaps/verifier",
         source_commit=SOURCE_COMMIT,
         run_id=RUN_ID,
@@ -458,3 +460,13 @@ def test_bundle_rejects_malformed_release_coordinates(
 
     with pytest.raises(release_evidence.PlatformReleaseEvidenceError):
         release_evidence.prepare_release_evidence(**arguments)
+
+
+def test_bundle_accepts_exact_alpha_prerelease_coordinate(tmp_path: Path) -> None:
+    evidence_root = _evidence_tree(tmp_path)
+    manifest = _prepare(
+        evidence_root,
+        tmp_path / "alpha.zip",
+        release_tag="v1.4.0a1",
+    )
+    assert manifest["release_tag"] == "v1.4.0a1"

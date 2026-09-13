@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-self-derivation-mechanism-0.1.schema.json",
+  "title": "Verifier Standard (VSTD) structural self-derivation mechanism",
+  "description": "Exact alpha declarative rules interpreted by the reference assessor; conformance does not prove semantic self-return, truth, or completeness.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "mechanism_id", "relation_strength", "rules", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "VSTD-SELF-DERIVATION-MECHANISM-0.1"},
+    "mechanism_id": {"const": "vstd.reference.structural_self_derivation.0.1"},
+    "relation_strength": {"const": "DERIVES"},
+    "rules": {
+      "const": [
+        "ground_self_requires_declared_ground_and_retained_path_origin",
+        "derivation_reflexivity_requires_grounded_necessary_mechanism_and_derived_evidence",
+        "reflexion_identity_requires_exact_subject_and_terminal_edge",
+        "deriver_cycle_closure_requires_continuous_retained_graph_and_no_residuals"
+      ]
+    },
+    "claim_boundary": {"const": "This mechanism checks a retained structural self-derivation witness. It does not prove semantic self-return, truth, or completeness."}
+  }
+}

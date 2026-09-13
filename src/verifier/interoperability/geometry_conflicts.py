@@ -233,7 +233,7 @@ def _dependency_cycles(
         )
         adjacency.setdefault(dependency.dependent_proposition_id, set())
 
-    reverse_adjacency = {node: set() for node in adjacency}
+    reverse_adjacency: dict[str, set[str]] = {node: set() for node in adjacency}
     for source, targets in adjacency.items():
         for target in targets:
             reverse_adjacency[target].add(source)
@@ -268,14 +268,14 @@ def _dependency_cycles(
             continue
         assigned.add(root)
         component: list[str] = []
-        traversal = [root]
-        while traversal:
-            node = traversal.pop()
+        reverse_traversal: list[str] = [root]
+        while reverse_traversal:
+            node = reverse_traversal.pop()
             component.append(node)
             for source in reversed(sorted(reverse_adjacency[node])):
                 if source not in assigned:
                     assigned.add(source)
-                    traversal.append(source)
+                    reverse_traversal.append(source)
         ordered = tuple(sorted(component))
         if len(ordered) > 1 or (
             len(ordered) == 1 and ordered[0] in adjacency[ordered[0]]
@@ -365,20 +365,20 @@ def analyze_geometry_conflicts(
     binding_by_coordinate: dict[tuple[str, str], SharedPropositionIdentity] = {}
     proposition_bindings: dict[str, list[SharedPropositionIdentity]] = {}
     for identity in identity_items:
-        geometry = digest_to_geometry.get(identity.geometry_digest)
-        if geometry is None:
+        bound_geometry = digest_to_geometry.get(identity.geometry_digest)
+        if bound_geometry is None:
             errors.append(
                 f"identity {identity.proposition_id!r} references an unknown geometry digest"
             )
             continue
-        coordinate_ids = {item.coordinate_id for item in geometry.coordinates}
+        coordinate_ids = {item.coordinate_id for item in bound_geometry.coordinates}
         if identity.coordinate_id not in coordinate_ids:
             errors.append(
                 f"identity {identity.proposition_id!r} references unknown coordinate "
                 f"{identity.coordinate_id!r}"
             )
             continue
-        if identity.coordinate_id not in geometry.surface.coordinate_ids:
+        if identity.coordinate_id not in bound_geometry.surface.coordinate_ids:
             errors.append(
                 f"identity {identity.proposition_id!r} references coordinate "
                 f"{identity.coordinate_id!r} outside the declared surface"

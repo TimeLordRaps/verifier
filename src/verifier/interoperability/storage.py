@@ -286,8 +286,11 @@ class StoredComponentPackage:
                 raise ComponentPackageError("implementation_ref differs from the catalog descriptor")
             if not set(binding.dependency_ids) <= dependency_ids:
                 raise ComponentPackageError("implementation references an undeclared dependency")
-        for binding in (*self.implementations, *self.dependencies):
+        for binding in self.implementations:
             if not set(binding.artifact_paths) <= path_set:
+                raise ComponentPackageError("binding references an absent artifact")
+        for dependency in self.dependencies:
+            if not set(dependency.artifact_paths) <= path_set:
                 raise ComponentPackageError("binding references an absent artifact")
         if len(self.canonical_json_bytes()) > MAX_PACKAGE_BYTES:
             raise ComponentPackageError("encoded package exceeds the storage bound")

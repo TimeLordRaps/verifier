@@ -35,7 +35,7 @@
 
   <main id="top">
     <div class="wrap ref-hero">
-      <div class="eyebrow">Reference &middot; UNRELEASED SOURCE · base package version 1.3.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
+      <div class="eyebrow">Reference &middot; UNRELEASED SOURCE · base package version 1.4.0a1 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
       <h1>Inspect the whole pipeline.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
@@ -480,6 +480,123 @@
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>kind</code></td><td>positional</td><td>(one of: DEVICE_IDENTITY, FIRMWARE_INTEGRITY, EXECUTION_OBSERVED, EXECUTION_ATTESTATION, EXECUTION_ACCOUNTING, ACCOUNTING_CONTINUITY, COMPLETE_MEDIATION, FLEET_COMPLETENESS, PHYSICAL_WORLD_COMPLETENESS)</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td>Emit stable machine-readable JSON.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network">
+<h3><code>vstd network</code></h3>
+<p class="ref-help">Manage experimental complete publisher silos; retained artifacts never execute.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-network-init">
+<h3><code>vstd network init</code></h3>
+<p class="ref-help">Initialize a key-derived publisher silo.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>store</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--private-key</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--display-name</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--description</code></td><td>optional</td><td>[default: Experimental VSTD publisher silo.]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network-object">
+<h3><code>vstd network object</code></h3>
+<p class="ref-help">Manage exact content-addressed objects.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-network-object-add">
+<h3><code>vstd network object add</code></h3>
+<p class="ref-help">Retain exact local bytes without interpreting them.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>store</code></td><td>positional</td><td></td></tr>
+<tr><td><code>source</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--media-type</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--artifact-kind</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--declared-schema-id</code></td><td>optional</td><td>[default: NOT_DECLARED]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network-commit">
+<h3><code>vstd network commit</code></h3>
+<p class="ref-help">Store and sign one complete-snapshot commit manifest.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>store</code></td><td>positional</td><td></td></tr>
+<tr><td><code>manifest</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--private-key</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--issued-at</code></td><td>required option</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network-inspect">
+<h3><code>vstd network inspect</code></h3>
+<p class="ref-help">Assess one complete silo without executing artifacts.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>store</code></td><td>positional</td><td></td></tr>
+<tr><td><code>commit</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--head</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network-diff">
+<h3><code>vstd network diff</code></h3>
+<p class="ref-help">Compare exact paths and digests; no semantic contradiction is inferred.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>left</code></td><td>positional</td><td></td></tr>
+<tr><td><code>right</code></td><td>positional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network-clone">
+<h3><code>vstd network clone</code></h3>
+<p class="ref-help">Clone a native local export, bounded local transfer file, or bounded Hypertext Transfer Protocol Secure (HTTPS) transfer endpoint.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>source</code></td><td>positional</td><td></td></tr>
+<tr><td><code>destination</code></td><td>positional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network-compose">
+<h3><code>vstd network compose</code></h3>
+<p class="ref-help">Assess completeness and authority agency across silos.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--silo</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--composite-store</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--composite-commit</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network-export">
+<h3><code>vstd network export</code></h3>
+<p class="ref-help">Export a reconstructible silo to an absent directory.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>store</code></td><td>positional</td><td></td></tr>
+<tr><td><code>commit</code></td><td>positional</td><td></td></tr>
+<tr><td><code>head</code></td><td>positional</td><td></td></tr>
+<tr><td><code>destination</code></td><td>positional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network-rebuild">
+<h3><code>vstd network rebuild</code></h3>
+<p class="ref-help">Rebuild exact exported bytes at a new local root.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>export_root</code></td><td>positional</td><td></td></tr>
+<tr><td><code>destination</code></td><td>positional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network-register">
+<h3><code>vstd network register</code></h3>
+<p class="ref-help">Enroll an exported publisher with Claim Garden and write its credential to an absent local file.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>export_root</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--endpoint</code></td><td>required option</td><td>Credential-free Claim Garden HTTPS origin.</td></tr>
+<tr><td><code>--private-key</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--issued-at</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--credential-output</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--publisher-endpoint</code></td><td>optional</td><td>Optional public silo endpoint to declare; repeat for multiple endpoints.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-network-push">
+<h3><code>vstd network push</code></h3>
+<p class="ref-help">Emit an inert request by default; --transmit explicitly submits a candidate for human review.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>export_root</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--endpoint</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--expected-head</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--genesis</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--credential-file</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--transmit</code></td><td>optional</td><td>Perform authenticated Claim Garden submission; requires --credential-file and exactly one lineage selector.</td></tr>
 </tbody></table>
 </article></div>
       </div>

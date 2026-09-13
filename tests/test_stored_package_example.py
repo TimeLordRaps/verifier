@@ -124,7 +124,7 @@ def test_reference_package_roundtrip_binds_all_roles_without_execution(monkeypat
         captured["src/" + module.__name__.replace(".", "/") + ".py"] = Path(module.__file__).read_bytes()
     monkeypatch.setattr(example, "_capture_snapshot", lambda *_: (captured, "a" * 40, True))
     package = example.build_package(tmp_path, "1.3.0-test")
-    assert len(package.registry.components) == len(package.implementations) == 19
+    assert len(package.registry.components) == len(package.implementations) == 30
     assert "dirty=true" in package.description
     assert "Dependency closure NOT_ESTABLISHED" in package.description
     assert {binding.component_id for binding in package.implementations} == {
@@ -155,3 +155,10 @@ def test_installed_wheel_gate_exercises_package_bound_planning() -> None:
     assert "--plan --package /tmp/vstd-components.json" in steps
     assert 'plan["binding_scope"] == "STORED_PACKAGE"' in steps
     assert 'plan["package_digest"] == package.canonical_digest()' in steps
+    assert "examples/artifact-network/build_specimen.py" in steps
+    assert "/tmp/vstd-wheel/bin/vstd network inspect" in steps
+    assert "/tmp/vstd-wheel/bin/vstd network diff" in steps
+    assert "/tmp/vstd-wheel/bin/vstd network clone" in steps
+    assert "/tmp/vstd-wheel/bin/vstd network compose" in steps
+    assert 'composition["composition_completeness"] == "UNKNOWN"' in steps
+    assert "os.path.commonpath((package, checkout)) != checkout" in steps

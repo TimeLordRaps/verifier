@@ -148,6 +148,23 @@ def test_raw_platform_evidence_is_boundary_checked_before_public_upload() -> Non
     assert steps.index(boundary) < steps.index(upload)
 
 
+def test_formation_contracts_are_explicit_unrun_intent_not_source_proofs() -> None:
+    components = {item["component_id"]: item for item in _manifest()["components"]}
+    for role in ("producer", "checker", "session-mechanism"):
+        record = components[f"component:artifact-network-typed-formation-{role}"]
+        assert record["dependency_profiles"] == ["test"]
+        assert record["catalog_optional_dependencies"] == []
+        assert "tests/test_formation_catalog.py" in record["test_modules"]
+        assert "tests/test_typed_formation.py" in record["test_modules"]
+        if role == "session-mechanism":
+            assert "tests/test_formation_mechanism.py" in record["test_modules"]
+            assert "tests/test_session_binding_snapshots.py" in record["test_modules"]
+        assert set(record["coordinate_intent"].values()) == {"CONFIGURED_UNRUN"}
+        for boundary in ("source self-derivation", "completeness", "agency preservation",
+                         "TypeScript support", "universal platform support"):
+            assert boundary in record["test_scope"]
+
+
 def test_runtime_report_rendering_is_platform_neutral() -> None:
     rendered = report_builder.render_report_bytes(
         {"schema_version": report_builder.REPORT_SCHEMA_VERSION, "value": "line\nfeed"}
@@ -173,6 +190,34 @@ def test_manifest_declares_behavior_scope_and_optional_profiles() -> None:
     ]
     assert artifact["test_modules"] == ["tests/test_artifact_control.py"]
     assert "privileged-write prevention" in artifact["test_scope"]
+    artifact_network = components["component:artifact-network-transfer-materializer"]
+    assert artifact_network["dependency_profiles"] == ["seal", "test"]
+    assert artifact_network["test_modules"] == ["tests/test_artifact_network.py"]
+    assert "does not establish a deployed endpoint" in artifact_network["test_scope"]
+    declaration = components["component:artifact-network-composition-declaration-decoder"]
+    builder = components["component:artifact-network-composition-receipt-builder"]
+    rechecker = components["component:artifact-network-composition-receipt-rechecker"]
+    assert declaration["dependency_profiles"] == builder["dependency_profiles"] == rechecker["dependency_profiles"] == ["test"]
+    assert declaration["test_modules"] == builder["test_modules"] == rechecker["test_modules"] == [
+        "tests/test_silo_composition_fixture.py",
+        "tests/test_silo_composition_receipt.py",
+    ]
+    assert "does not resolve commit bytes" in declaration["test_scope"]
+    assert "does not provide an independently implemented checker" in builder["test_scope"]
+    assert "same Python reference mechanism only" in rechecker["test_scope"]
+    assert all("TypeScript support" in item["test_scope"] for item in (declaration, builder, rechecker))
+    for role in ("assessor", "rechecker"):
+        transfer = components[f"component:artifact-network-proposition-transfer-{role}"]
+        assert transfer["dependency_profiles"] == ["test"]
+        assert transfer["catalog_optional_dependencies"] == []
+        assert transfer["test_modules"] == [
+            "tests/test_proposition_transfer.py",
+            "tests/test_proposition_transfer_catalog.py",
+            "tests/test_proposition_transfer_fixture.py",
+        ]
+        assert "six-axis silo completeness" in transfer["test_scope"]
+        assert "TypeScript support" in transfer["test_scope"]
+        assert set(transfer["coordinate_intent"].values()) == {"CONFIGURED_UNRUN"}
     untraversability = components["component:composed-untraversability-analyzer"]
     assert untraversability["test_modules"] == [
         "tests/test_untraversable.py",
@@ -320,6 +365,10 @@ def test_documented_component_table_is_exactly_rendered_from_manifest() -> None:
     assert rendered == report_builder.render_component_table(manifest)
     assert "macOS Intel x86-64" in rendered
     assert "macOS Apple ARM64" in rendered
+    assert (
+        f"independent verifier counted in the {len(manifest['components'])}-component inventory below."
+        in document
+    )
 
 
 def test_runtime_report_is_deterministic_and_binds_catalog_manifest_and_run(

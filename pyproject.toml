@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verifier-standard"
-version = "1.3.0"
+version = "1.4.0a1"
 description = "Verification-domain language and reference implementation for bounded computational claims."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -68,7 +68,7 @@ verifier = "verifier.runtime.public_cli:main"
 verifiable = "verifier.runtime.public_cli:main"
 
 [tool.setuptools.package-data]
-verifier = ["artifact_control/*.json", "hardware/*.json", "specifications/*.md"]
+verifier = ["artifact_control/*.json", "hardware/*.json", "profiles/*.json", "schemas/*.json", "specifications/*.md"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

@@ -113,7 +113,7 @@ def test_static_component_surface_is_exact_host_neutral_and_nonexecuting(
         output / "deployment-coordinate.json",
         output / entry.package_path,
     }
-    assert index.index_version == f"1.3.0+git.{head[:12]}"
+    assert index.index_version == f"{module._project_version()}+git.{head[:12]}"
     assert entry.package_version == index.index_version
     assert entry.package_path == f"packages/sha256/{entry.package_sha256}.json"
     assert entry.package_size_bytes == len((output / entry.package_path).read_bytes())
@@ -230,3 +230,73 @@ def test_builder_main_reports_bounded_refusal_without_traceback(
     assert output.out == ""
     assert "Component index build refused:" in output.err
     assert "Traceback" not in output.err
+
+
+def test_worktree_index_retains_reviewed_proposition_transfer_sources(tmp_path: Path) -> None:
+    module = _builder()
+    required = {
+        "src/verifier/interoperability/proposition_transfer.py",
+        "src/verifier/profiles/proposition-transfer-rule-0.1.json",
+        "src/verifier/schemas/vstd-proposition-transfer-0.1.schema.json",
+        "src/verifier/specifications/PROPOSITION_TRANSFER.md",
+    }
+    output = tmp_path / "components"
+
+    module.build(output, source_ref="WORKTREE")
+
+    index = load_component_index(output / "index.json")
+    entry = index.packages[0]
+    package = load_component_package(output / entry.package_path, expected_digest=entry.package_sha256)
+    artifacts = {item.path: item.content for item in package.artifacts}
+    assert required <= artifacts.keys()
+    assert all(artifacts[name] == (ROOT / name).read_bytes() for name in required)
+    assert required <= set(module.REVIEWED_CANDIDATE_SOURCE_PATHS)
+    coordinate = json.loads((output / "deployment-coordinate.json").read_text(encoding="utf-8"))
+    assert coordinate["source_ref"] == "WORKTREE"
+
+
+def test_default_worktree_inventory_does_not_admit_an_unreviewed_source(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _builder()
+    exporter = module._reference_exporter()
+    actual_git = exporter._git
+    unreviewed = "src/verifier/unreviewed_source.py"
+
+    def git(root: Path, *arguments: str) -> bytes:
+        result = actual_git(root, *arguments)
+        if arguments == ("ls-files", "--others", "--exclude-standard", "-z"):
+            return result + unreviewed.encode("utf-8") + b"\0"
+        return result
+
+    monkeypatch.setattr(exporter, "_git", git)
+    monkeypatch.setattr(module, "_reference_exporter", lambda: exporter)
+    output = tmp_path / "withheld"
+    with pytest.raises(ValueError, match="untracked public source files require explicit"):
+        module.build(output, source_ref="WORKTREE")
+    assert not output.exists()
+    assert unreviewed not in module.REVIEWED_CANDIDATE_SOURCE_PATHS
+
+
+def test_explicit_worktree_inventory_cannot_silently_omit_reviewed_source(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _builder()
+    exporter = module._reference_exporter()
+    actual_git = exporter._git
+    required = "src/verifier/interoperability/proposition_transfer.py"
+
+    def git(root: Path, *arguments: str) -> bytes:
+        result = actual_git(root, *arguments)
+        if arguments == ("ls-files", "--others", "--exclude-standard", "-z"):
+            names = [value for value in result.split(b"\0") if value]
+            return b"\0".join(sorted(set(names) | {required.encode("utf-8")})) + b"\0"
+        return result
+
+    monkeypatch.setattr(exporter, "_git", git)
+    monkeypatch.setattr(module, "_reference_exporter", lambda: exporter)
+    selected = tuple(value for value in module._reviewed_untracked_candidate_sources() if value != required)
+    output = tmp_path / "omitted"
+    with pytest.raises(ValueError, match="untracked public source files require explicit"):
+        module.build(output, source_ref="WORKTREE", include_untracked=selected)
+    assert not output.exists()

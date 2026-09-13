@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-silo-transfer-0.1.schema.json",
+  "title": "Experimental Verifier Standard (VSTD) bounded silo transfer",
+  "description": "A single selected snapshot transport envelope. Schema validity and download success do not establish artifact correctness, publisher identity, or trust.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "portable_manifest", "publisher", "key_continuity", "signed_head", "commit", "assessment_receipt", "objects"],
+  "properties": {
+    "schema_version": {"const": "VSTD-SILO-TRANSFER-0.1"},
+    "portable_manifest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "publisher_digest", "commit_digest", "head_digest", "assessment_receipt_digest"],
+      "properties": {
+        "schema_version": {"const": "VSTD-SILO-EXPORT-0.1"},
+        "publisher_digest": {"$ref": "vstd-artifact-network-0.1.schema.json#/$defs/digest"},
+        "commit_digest": {"$ref": "vstd-artifact-network-0.1.schema.json#/$defs/digest"},
+        "head_digest": {"$ref": "vstd-artifact-network-0.1.schema.json#/$defs/digest"},
+        "assessment_receipt_digest": {"$ref": "vstd-artifact-network-0.1.schema.json#/$defs/digest"}
+      }
+    },
+    "publisher": {"$ref": "vstd-artifact-network-0.1.schema.json#/$defs/publisher"},
+    "key_continuity": {"type": "array", "maxItems": 256, "items": {"$ref": "vstd-artifact-network-0.1.schema.json#/$defs/keyContinuity"}},
+    "signed_head": {"$ref": "vstd-artifact-network-0.1.schema.json#/$defs/head"},
+    "commit": {"$ref": "vstd-artifact-network-0.1.schema.json#/$defs/commit"},
+    "assessment_receipt": {"$ref": "vstd-artifact-network-0.1.schema.json#/$defs/assessmentReceipt"},
+    "objects": {
+      "type": "array", "maxItems": 256,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["digest", "bytes_base64url"],
+        "properties": {
+          "digest": {"$ref": "vstd-artifact-network-0.1.schema.json#/$defs/digest"},
+          "bytes_base64url": {"type": "string", "maxLength": 5592406, "pattern": "^[A-Za-z0-9_-]*$"}
+        }
+      }
+    }
+  }
+}
