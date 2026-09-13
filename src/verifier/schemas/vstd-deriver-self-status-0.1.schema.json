@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-deriver-self-status-0.1.schema.json",
+  "title": "Verifier Standard experimental actual-deriver self-status records",
+  "description": "Structural validation only for Verifier Standard (VSTD). Canonical JavaScript Object Notation (JSON) bytes, Secure Hash Algorithm 256-bit (SHA-256) executable identity, runtime availability, process invocation, transcript reproduction, public-environment suitability, and self-status require the direct-module mechanism.",
+  "oneOf": [
+    { "$ref": "#/$defs/declaration" },
+    { "$ref": "#/$defs/receipt" },
+    { "$ref": "#/$defs/profile" }
+  ],
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "minLength": 71, "maxLength": 71 },
+    "text": { "type": "string", "minLength": 1, "maxLength": 4096 },
+    "base64url": { "type": "string", "pattern": "^[A-Za-z0-9_-]*$", "description": "The mechanism additionally requires canonical unpadded base64url and enforces decoded byte bounds." },
+    "runtime_coordinate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["executable_digest", "executable_size_bytes", "machine", "os_name", "release", "runner_id", "system"],
+      "properties": {
+        "runner_id": { "$ref": "#/$defs/text" },
+        "system": { "$ref": "#/$defs/text" },
+        "release": { "$ref": "#/$defs/text" },
+        "machine": { "$ref": "#/$defs/text" },
+        "os_name": { "$ref": "#/$defs/text" },
+        "executable_digest": { "$ref": "#/$defs/digest" },
+        "executable_size_bytes": { "type": "integer", "minimum": 1, "maximum": 67108864 }
+      }
+    },
+    "environment_entry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "value"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[A-Z_][A-Z0-9_]*$" },
+        "value": { "type": "string", "maxLength": 4096, "description": "Must be public non-secret text; byte and null-character rules require mechanism validation." }
+      }
+    },
+    "declaration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["arguments", "deriver_id", "expected_exit_code", "expected_stderr_digest", "expected_stdout_digest", "max_output_bytes", "public_environment", "runtime_coordinate", "schema_version", "stdin_base64url", "stdin_digest", "subject_digest", "timeout_ms"],
+      "properties": {
+        "schema_version": { "const": "VSTD-DERIVER-SELF-STATUS-0.1" },
+        "deriver_id": { "$ref": "#/$defs/text" },
+        "subject_digest": { "$ref": "#/$defs/digest" },
+        "runtime_coordinate": { "$ref": "#/$defs/runtime_coordinate" },
+        "arguments": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/text" } },
+        "public_environment": { "type": "array", "maxItems": 32, "items": { "$ref": "#/$defs/environment_entry" } },
+        "stdin_base64url": { "$ref": "#/$defs/base64url" },
+        "stdin_digest": { "$ref": "#/$defs/digest" },
+        "expected_stdout_digest": { "$ref": "#/$defs/digest" },
+        "expected_stderr_digest": { "$ref": "#/$defs/digest" },
+        "expected_exit_code": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "timeout_ms": { "type": "integer", "minimum": 1, "maximum": 60000 },
+        "max_output_bytes": { "type": "integer", "minimum": 1, "maximum": 1048576 }
+      }
+    },
+    "receipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["checker_profile_digest", "declaration_digest", "elapsed_ms", "exit_code", "invocation_state", "max_output_bytes", "reason_codes", "runtime_coordinate", "schema_version", "stderr_base64url", "stderr_digest", "stdout_base64url", "stdout_digest", "termination_signal", "timeout_ms"],
+      "properties": {
+        "schema_version": { "const": "VSTD-DERIVER-SELF-STATUS-RECEIPT-0.1" },
+        "checker_profile_digest": { "$ref": "#/$defs/digest" },
+        "declaration_digest": { "$ref": "#/$defs/digest" },
+        "runtime_coordinate": { "$ref": "#/$defs/runtime_coordinate" },
+        "invocation_state": { "enum": ["COMPLETED", "NOT_RUN", "TIMED_OUT", "OUTPUT_LIMIT_EXCEEDED", "START_FAILED", "CAPTURE_FAILED"] },
+        "stdout_base64url": { "$ref": "#/$defs/base64url" },
+        "stdout_digest": { "$ref": "#/$defs/digest" },
+        "stderr_base64url": { "$ref": "#/$defs/base64url" },
+        "stderr_digest": { "$ref": "#/$defs/digest" },
+        "exit_code": { "type": ["integer", "null"], "minimum": 0, "maximum": 2147483647 },
+        "termination_signal": { "type": ["integer", "null"], "minimum": 1, "maximum": 255 },
+        "elapsed_ms": { "type": "integer", "minimum": 0, "maximum": 65000 },
+        "timeout_ms": { "type": "integer", "minimum": 1, "maximum": 60000 },
+        "max_output_bytes": { "type": "integer", "minimum": 1, "maximum": 1048576 },
+        "reason_codes": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 128 } }
+      }
+    },
+    "profile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_boundary", "rules", "schema_version"],
+      "properties": {
+        "schema_version": { "const": "VSTD-DERIVER-SELF-STATUS-CHECKER-0.1" },
+        "claim_boundary": { "type": "string", "minLength": 1 },
+        "rules": {
+          "const": [
+            "require_exact_declaration_and_receipt_binding",
+            "require_supported_exact_runtime_and_executable_bytes",
+            "require_completed_bounded_recorded_invocation",
+            "rerun_exact_invocation_in_a_new_fresh_empty_directory",
+            "require_exact_transcript_reproduction",
+            "compare_reproduced_transcript_with_declared_output"
+          ]
+        }
+      }
+    }
+  }
+}

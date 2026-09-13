@@ -58,7 +58,13 @@ try:
     for name in (
         "verifier", "verifier.interoperability.composition_qualification",
         "verifier.interoperability.authority_composition", "verifier.interoperability.network",
+        "verifier.interoperability.bounded_completeness",
+        "verifier.interoperability.deriver_self_status",
+        "verifier.interoperability.global_cycle_assessment",
+        "verifier.interoperability.relation_boundary",
         "verifier.interoperability.reference_catalog",
+        "verifier.interoperability.runtime_authority_correspondence",
+        "verifier.interoperability.source_grounding",
         "verifier.runtime.network_cli", "verifier.runtime.public_cli",
     ):
         module = importlib.import_module(name)
@@ -92,13 +98,52 @@ assert qualifier.mechanism_ids == ("mechanism:artifact-network-finite-compositio
 assert raw.implementation_ref == "verifier.interoperability.authority_composition:assess_authority_composition"
 assert raw.supported_relations == ("relation:assesses-finite-authority-composition",)
 assert raw.mechanism_ids == ("mechanism:finite-authority-composition-assessment",)
+mechanism_entries = {
+    "component:artifact-network-bounded-completeness-assessor":
+        "verifier.interoperability.bounded_completeness:assess_bounded_completeness",
+    "component:artifact-network-bounded-completeness-receipt-rechecker":
+        "verifier.interoperability.bounded_completeness:recheck_bounded_completeness_receipt",
+    "component:artifact-network-deriver-self-status-rechecker":
+        "verifier.interoperability.deriver_self_status:recheck_deriver_self_status",
+    "component:artifact-network-deriver-session-recorder":
+        "verifier.interoperability.deriver_self_status:record_deriver_session",
+    "component:artifact-network-global-cycle-assessor":
+        "verifier.interoperability.global_cycle_assessment:assess_global_cycles",
+    "component:artifact-network-global-cycle-receipt-rechecker":
+        "verifier.interoperability.global_cycle_assessment:recheck_global_cycle_receipt",
+    "component:artifact-network-relation-boundary-assessor":
+        "verifier.interoperability.relation_boundary:qualify_relation_boundary",
+    "component:artifact-network-relation-boundary-receipt-rechecker":
+        "verifier.interoperability.relation_boundary:recheck_relation_boundary_receipt",
+    "component:artifact-network-runtime-authority-correspondence-assessor":
+        "verifier.interoperability.runtime_authority_correspondence:build_runtime_authority_correspondence_receipt",
+    "component:artifact-network-runtime-authority-correspondence-receipt-rechecker":
+        "verifier.interoperability.runtime_authority_correspondence:recheck_runtime_authority_correspondence_receipt",
+    "component:artifact-network-source-grounding-assessor":
+        "verifier.interoperability.source_grounding:qualify_source_grounding",
+    "component:artifact-network-source-grounding-receipt-rechecker":
+        "verifier.interoperability.source_grounding:recheck_source_grounding_receipt",
+}
+resolved_mechanism_entries = {}
+for component_id, expected_ref in mechanism_entries.items():
+    component = registry.get(component_id)
+    assert component.implementation_ref == expected_ref
+    module_name, attribute = component.implementation_ref.split(":")
+    resolved = getattr(importlib.import_module(module_name), attribute)
+    assert callable(resolved)
+    resolved_mechanism_entries[component_id] = component.implementation_ref
+assert len(registry.components) == 43
+assert len({family for component in registry.components for family in component.verifier_family_ids}) == 19
 registry_binding = {"qualifier_implementation": qualifier.implementation_ref,
                     "qualifier_relation": qualifier.supported_relations[0], "qualifier_mechanism": qualifier.mechanism_ids[0],
                     "raw_implementation": raw.implementation_ref,
-                    "raw_relation": raw.supported_relations[0], "raw_mechanism": raw.mechanism_ids[0]}
+                    "raw_relation": raw.supported_relations[0], "raw_mechanism": raw.mechanism_ids[0],
+                    "mechanism_entries": resolved_mechanism_entries}
 print(json.dumps({"scope": "INSTALLED_MODULE_BYTE_IDENTITY", "version": distribution.version,
                   "isolated": True, "outside_checkout": True, "modules": modules,
                   "registry_binding": registry_binding,
+                  "registry_component_count": len(registry.components),
+                  "registry_family_count": len({family for component in registry.components for family in component.verifier_family_ids}),
                   "wheel_sha256": hashlib.sha256(wheel_path.read_bytes()).hexdigest() if wheel_path else None}, sort_keys=True))
 '''
 
@@ -148,6 +193,10 @@ def test_installed_strict_composition(
         assert not outside.is_relative_to(_CHECKOUT), "fixture directory must be outside checkout"
         origin = _origin(installed_interpreter, outside)
         assert origin["version"] == SOURCE_VERSION
+        assert origin["registry_component_count"] == 43
+        assert origin["registry_family_count"] == 19
+        assert len(origin["registry_binding"]["mechanism_entries"]) == 12
+        assert len(origin["modules"]) == 13
         case = "exact-product" if omit is None else "omitted-transition"
         record_testsuite_property(f"{case}.installed_module_origin", json.dumps(origin, sort_keys=True))
         # Generation uses source fixture helpers; consumer invocations never import these helpers.
