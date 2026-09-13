@@ -74,4 +74,3 @@ verifier = ["artifact_control/*.json", "hardware/*.json", "profiles/*.json", "sc
 pythonpath = ["src"]
 testpaths = ["tests"]
 norecursedirs = ["artifacts_tmp", "build", "dist", ".git", ".venv"]
-asyncio_default_fixture_loop_scope = "function"
