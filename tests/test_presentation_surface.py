@@ -392,15 +392,15 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     )
     assert coordinate == {
         "canonical_base_url": "https://timelordraps.github.io/verifier/",
-            "documentation_version": "1.4.0",
+        "documentation_version": "1.4.0",
         "normative_source": "standard/",
-            "release_state": "UNRELEASED_CANDIDATE",
+        "release_state": "RELEASED",
         "schema_version": 1,
         "source_ref": "test-commit",
     }
     for page in (output / "index.html", output / "guides.html"):
         text = page.read_text(encoding="utf-8")
-        assert "released 2026-09-08" in text
+        assert "released 2026-09-13" in text
         assert "unreleased candidate" not in text.lower()
     sources = sorted(
         (

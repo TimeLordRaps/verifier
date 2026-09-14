@@ -428,7 +428,7 @@ def check_claim_boundaries(errors: list[str]) -> None:
         "VSTD evaluates bounded validity propositions about computational processes",
         "RUST is the inverse-TRUST diagnostic mechanic",
         "cryptographic zero knowledge can enclose",
-        "Version 1.3.0 is the current release",
+        "Version 1.4.0 is the current release",
     )
     for phrase in required_readme:
         if phrase not in readme:
