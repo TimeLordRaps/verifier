@@ -5,6 +5,10 @@ Unicode Transformation Format, 8-bit (UTF-8); uniform resource locator (URL);
 Verifier Standard (VSTD).
 
 Check a bounded GitHub Pages artifact and live deployment against an exact source commit.
+
+Validated coordinates are written to standard output as JSON, because the workflow
+redirects that stream into a file a later step parses. Failure diagnostics go to standard
+error so a failing run explains itself in the log instead of inside that file.
 """
 
 from __future__ import annotations
@@ -14,6 +18,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import sys
 import time
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -440,7 +445,7 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(result, sort_keys=True))
             return 0
     except (OSError, UnicodeError, json.JSONDecodeError, PagesDeploymentError) as exc:
-        print(f"[PAGES VALIDATION FAIL] {exc}")
+        print(f"[PAGES VALIDATION FAIL] {exc}", file=sys.stderr)
         return 1
     if (
         args.base_url is None or args.allowed_host is None or args.output is None
@@ -452,7 +457,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.workflow_run_id is None or args.deployment_workflow_run_id is None:
         parser.error("live observation requires repository-check and deployment workflow run IDs")
     if not 1 <= args.attempts <= 12 or not 0 <= args.interval_seconds <= 30:
-        print("[PAGES DEPLOYMENT FAIL] retry bounds are invalid")
+        print("[PAGES DEPLOYMENT FAIL] retry bounds are invalid", file=sys.stderr)
         return 1
     last_error = "no observation attempted"
     for attempt in range(1, args.attempts + 1):
@@ -475,7 +480,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[PAGES DEPLOYMENT] not current yet: {last_error}", flush=True)
             if attempt < args.attempts:
                 time.sleep(args.interval_seconds)
-    print(f"[PAGES DEPLOYMENT FAIL] {last_error}")
+    print(f"[PAGES DEPLOYMENT FAIL] {last_error}", file=sys.stderr)
     return 1
 
 

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -312,6 +313,34 @@ def test_retained_site_rejects_hidden_payload_loss(tmp_path: Path, mutation: str
         hidden.write_bytes(b"changed")
     with pytest.raises(checker.PagesDeploymentError, match="local Pages (inventory|bytes) differ"):
         checker.validate_site_directory(tmp_path, expected_source_ref=HEAD, expected_manifest_sha256=manifest_digest)
+
+
+def test_site_validation_failure_is_diagnosed_on_standard_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The workflow redirects this command's standard output into a coordinate file, so a
+    failure written there is invisible in the log and corrupts the file the next step parses."""
+    module = _module()
+    payloads = _minimal_site(module, tmp_path)
+    digest = hashlib.sha256(payloads[module.MANIFEST_PATH]).hexdigest()
+    argv = [
+        "--validate-site", str(tmp_path),
+        "--expected-source-ref", HEAD,
+        "--expected-manifest-sha256", digest,
+    ]
+
+    assert module.main(argv) == 0
+    captured = capsys.readouterr()
+    assert json.loads(captured.out)["deployment_manifest_sha256"] == digest
+    assert captured.err == ""
+
+    (tmp_path / "index.html").write_bytes(b"<html>drifted</html>")
+
+    assert module.main(argv) == 1
+    captured = capsys.readouterr()
+    assert "[PAGES VALIDATION FAIL]" in captured.err
+    assert "[PAGES VALIDATION FAIL]" not in captured.out
+    assert captured.out == ""
 
 
 def test_pages_builder_manifest_is_deterministic_and_checker_compatible(tmp_path: Path) -> None:
