@@ -7,7 +7,7 @@
 > Secure Hash Algorithm 256-bit (SHA-256); Unicode Transformation Format, 8-bit (UTF-8);
 > Verifier Standard (VSTD).
 
-**Status:** experimental interface in the unreleased `1.4.0` package candidate;
+**Status:** experimental interface in version `1.4.0`;
 not a numbered-profile conformance mechanism or a deployed interoperability claim.
 The package version does not promote this interface to supported compatibility.
 

@@ -14,7 +14,7 @@
 
 ## Unreleased
 
-## 1.4.0 - UNRELEASED
+## 1.4.0 - 2026-09-13
 
 ### Experimental artifact-network interoperability
 
