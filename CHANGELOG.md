@@ -14,6 +14,43 @@
 
 ## Unreleased
 
+## 1.4.0 - 2026-09-13
+
+### Experimental artifact-network interoperability
+
+The package version does not promote experimental interfaces to supported compatibility
+or change the project's alpha maturity. Source grounding, an actual deriver's self-status,
+source relation and boundary correctness, global-cycle validity, stronger completeness,
+runtime correspondence, and general composed authority axiom agency remain open obligations.
+The finite mechanisms below retain their declared bounds and `UNKNOWN` results.
+
+- Add content-addressed publisher silos, signed heads, key continuity, signed
+  directories, deterministic export/rebuild, and a host-neutral push request.
+  Reconstructibility, derivation closure, self-derivation, explicit-kind
+  completeness, silo grounding, and authority axiom agency remain independent
+  result axes.
+  Self-derivation uses a fixed interpreted structural mechanism; census
+  completeness requires an exact typed denominator across every declared
+  category. Authority axiom agency requires exact alpha identity, while local
+  extensions and unsupported bindings remain `UNKNOWN`.
+  Silo grounding separately checks that the exact authority coordinate and its
+  closed finite model are necessary and ground-reachable; it does not imply
+  that reachable states preserve the agency floor. Compositions require their
+  own full census and six-axis assessment; schema
+  validity, discoverability, and signatures do not establish artifact
+  correctness, real-world identity, authority, or deployed interoperability.
+- Add experimental finite typed-formation production, independent checking,
+  retained-silo inspection and portable receipt replay, with source-level
+  obligations explicitly separate from finite syntax and byte retention.
+- Add a separate bounded authority-composition checker for an exact selected
+  asynchronous-interleaving model product. Package retention, catalog discovery,
+  detection, planning and readiness remain nonexecuting; no source proof,
+  runtime correspondence, general agency or six-axis status upgrade is implied.
+- Add opt-in strict `network compose --require-finite-authority-composition`
+  qualification: require exact selected inputs, the legacy composition admission,
+  and the finite product checker together. Preserve both reports, all residual
+  obligations, and the unchanged no-flag diagnostic and stored receipt semantics.
+
 ### Post-release clarification
 
 - Clarify that `current-candidate evidence`, `final-main publication evidence`, and

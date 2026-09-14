@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/graph-topology.schema.json",
+  "title": "Verifier Standard (VSTD) experimental graph topology interpretation contract",
+  "description": "Shape only: graph and exact port binding, resource bounds and interpreted consistency require the runtime checker. No receipt conformance or physical causality follows from this document.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "graph_digest", "bindings", "constraint_logic", "equations", "temporal_relations", "paradox_candidates"],
+  "properties": {
+    "schema_version": {"const": "VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1"},
+    "graph_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "bindings": {"type": "array", "items": {"$ref": "#/$defs/binding"}},
+    "constraint_logic": {"$ref": "#/$defs/identifier"},
+    "equations": {"type": "array", "items": {"$ref": "#/$defs/equation"}},
+    "temporal_relations": {"type": "array", "items": {"$ref": "#/$defs/timeRelation"}},
+    "paradox_candidates": {"type": "array", "items": {"$ref": "#/$defs/paradox"}}
+  },
+  "$defs": {
+    "identifier": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^\\S(?:[\\s\\S]*\\S)?$"},
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["variable_id", "artifact_id", "transformation_id", "port_direction", "role"],
+      "properties": {
+        "variable_id": {"$ref": "#/$defs/identifier"},
+        "artifact_id": {"$ref": "#/$defs/identifier"},
+        "transformation_id": {"$ref": "#/$defs/identifier"},
+        "port_direction": {"enum": ["input", "output"]},
+        "role": {"$ref": "#/$defs/identifier"}
+      }
+    },
+    "equation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "target", "operator", "arguments"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "target": {"$ref": "#/$defs/identifier"},
+        "operator": {"enum": ["true", "false", "identity", "not", "and", "or", "xor"]},
+        "arguments": {"type": "array", "maxItems": 2, "items": {"$ref": "#/$defs/identifier"}}
+      },
+      "allOf": [
+        {"if": {"properties": {"operator": {"enum": ["true", "false"]}}}, "then": {"properties": {"arguments": {"maxItems": 0}}}},
+        {"if": {"properties": {"operator": {"enum": ["identity", "not"]}}}, "then": {"properties": {"arguments": {"minItems": 1, "maxItems": 1}}}},
+        {"if": {"properties": {"operator": {"enum": ["and", "or", "xor"]}}}, "then": {"properties": {"arguments": {"minItems": 2, "maxItems": 2}}}}
+      ]
+    },
+    "timeRelation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "source", "target", "clock_id", "unit", "offset", "meaning"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "source": {"$ref": "#/$defs/identifier"},
+        "target": {"$ref": "#/$defs/identifier"},
+        "clock_id": {"$ref": "#/$defs/identifier"},
+        "unit": {"enum": ["tick", "nanosecond"]},
+        "offset": {"type": "integer"},
+        "meaning": {"enum": ["backward_time", "forward_time", "same_time"]}
+      },
+      "allOf": [
+        {"if": {"properties": {"meaning": {"const": "backward_time"}}}, "then": {"properties": {"offset": {"maximum": -1}}}},
+        {"if": {"properties": {"meaning": {"const": "forward_time"}}}, "then": {"properties": {"offset": {"minimum": 1}}}},
+        {"if": {"properties": {"meaning": {"const": "same_time"}}}, "then": {"properties": {"offset": {"const": 0}}}}
+      ]
+    },
+    "paradox": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "variables", "description"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "variables": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+        "description": {"type": "string", "minLength": 1, "maxLength": 4096}
+      }
+    }
+  }
+}

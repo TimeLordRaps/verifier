@@ -22,6 +22,20 @@ MANIFEST_PATH = ROOT / "docs" / "platform-component-contracts.json"
 REPORT_BUILDER_PATH = ROOT / "scripts" / "build_platform_component_report.py"
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "ci.yml"
 MATRIX_PATH = ROOT / "docs" / "PLATFORM_INTEROPERABILITY.md"
+MECHANISM_COMPONENTS = {
+    "component:artifact-network-bounded-completeness-assessor": "tests/test_bounded_completeness.py",
+    "component:artifact-network-bounded-completeness-receipt-rechecker": "tests/test_bounded_completeness.py",
+    "component:artifact-network-deriver-self-status-rechecker": "tests/test_deriver_self_status.py",
+    "component:artifact-network-deriver-session-recorder": "tests/test_deriver_self_status.py",
+    "component:artifact-network-global-cycle-assessor": "tests/test_global_cycle_assessment.py",
+    "component:artifact-network-global-cycle-receipt-rechecker": "tests/test_global_cycle_assessment.py",
+    "component:artifact-network-relation-boundary-assessor": "tests/test_relation_boundary.py",
+    "component:artifact-network-relation-boundary-receipt-rechecker": "tests/test_relation_boundary.py",
+    "component:artifact-network-runtime-authority-correspondence-assessor": "tests/test_runtime_authority_correspondence.py",
+    "component:artifact-network-runtime-authority-correspondence-receipt-rechecker": "tests/test_runtime_authority_correspondence.py",
+    "component:artifact-network-source-grounding-assessor": "tests/test_source_grounding.py",
+    "component:artifact-network-source-grounding-receipt-rechecker": "tests/test_source_grounding.py",
+}
 
 SPEC = importlib.util.spec_from_file_location(
     "build_platform_component_report_test", REPORT_BUILDER_PATH
@@ -114,6 +128,14 @@ def test_manifest_exactly_covers_reference_catalog_and_four_coordinates() -> Non
     assert [item["component_id"] for item in manifest["components"]] == [
         item.component_id for item in registry.components
     ]
+    assert len(manifest["components"]) == len(registry.components) == 43
+    assert len(
+        {
+            family
+            for component in registry.components
+            for family in component.verifier_family_ids
+        }
+    ) == 19
     assert all(
         set(item["coordinate_intent"])
         == {coordinate["coordinate_id"] for coordinate in manifest["coordinates"]}
@@ -125,6 +147,30 @@ def test_manifest_exactly_covers_reference_catalog_and_four_coordinates() -> Non
         for state in item["coordinate_intent"].values()
     } == {"CONFIGURED_UNRUN"}
     assert "PASS" not in MANIFEST_PATH.read_text(encoding="utf-8")
+
+
+def test_six_mechanism_pairs_are_explicit_unrun_intent_with_fail_closed_scope() -> None:
+    components = {item["component_id"]: item for item in _manifest()["components"]}
+
+    assert set(MECHANISM_COMPONENTS) <= set(components)
+    for component_id, mechanism_test in MECHANISM_COMPONENTS.items():
+        record = components[component_id]
+        assert record["dependency_profiles"] == ["test"]
+        assert record["catalog_optional_dependencies"] == []
+        assert record["coverage_kind"] == "BEHAVIOR"
+        assert set(record["test_modules"]) == {
+            mechanism_test,
+            "tests/test_mechanism_catalog.py",
+        }
+        assert set(record["coordinate_intent"].values()) == {"CONFIGURED_UNRUN"}
+        for boundary in (
+            "authorization",
+            "execution",
+            "verification geometry",
+            "TypeScript support",
+            "universal platform support",
+        ):
+            assert boundary in record["test_scope"]
 
 
 def test_raw_platform_evidence_is_boundary_checked_before_public_upload() -> None:
@@ -146,6 +192,46 @@ def test_raw_platform_evidence_is_boundary_checked_before_public_upload() -> Non
         "always() && steps.platform-evidence-boundary.outcome == 'success'"
     )
     assert steps.index(boundary) < steps.index(upload)
+
+
+def test_formation_contracts_are_explicit_unrun_intent_not_source_proofs() -> None:
+    components = {item["component_id"]: item for item in _manifest()["components"]}
+    for role in ("producer", "checker", "session-mechanism"):
+        record = components[f"component:artifact-network-typed-formation-{role}"]
+        assert record["dependency_profiles"] == ["test"]
+        assert record["catalog_optional_dependencies"] == []
+        assert "tests/test_formation_catalog.py" in record["test_modules"]
+        assert "tests/test_typed_formation.py" in record["test_modules"]
+        if role == "session-mechanism":
+            assert "tests/test_formation_mechanism.py" in record["test_modules"]
+            assert "tests/test_session_binding_snapshots.py" in record["test_modules"]
+        assert set(record["coordinate_intent"].values()) == {"CONFIGURED_UNRUN"}
+        for boundary in ("source self-derivation", "completeness", "agency preservation",
+                         "TypeScript support", "universal platform support"):
+            assert boundary in record["test_scope"]
+
+
+def test_finite_composition_qualifier_is_explicit_unrun_intent() -> None:
+    components = {item["component_id"]: item for item in _manifest()["components"]}
+    record = components["component:artifact-network-finite-composition-qualifier"]
+
+    assert record["dependency_profiles"] == ["test"]
+    assert record["catalog_optional_dependencies"] == []
+    assert record["test_modules"] == [
+        "tests/test_composition_qualification.py",
+        "tests/test_composition_qualification_catalog.py",
+    ]
+    assert set(record["coordinate_intent"].values()) == {"CONFIGURED_UNRUN"}
+    for boundary in (
+        "atomic snapshot",
+        "portable replay receipt",
+        "source proof",
+        "runtime/model correspondence",
+        "general composed agency",
+        "automatic execution",
+        "six-axis status upgrade",
+    ):
+        assert boundary in record["test_scope"]
 
 
 def test_runtime_report_rendering_is_platform_neutral() -> None:
@@ -173,6 +259,34 @@ def test_manifest_declares_behavior_scope_and_optional_profiles() -> None:
     ]
     assert artifact["test_modules"] == ["tests/test_artifact_control.py"]
     assert "privileged-write prevention" in artifact["test_scope"]
+    artifact_network = components["component:artifact-network-transfer-materializer"]
+    assert artifact_network["dependency_profiles"] == ["seal", "test"]
+    assert artifact_network["test_modules"] == ["tests/test_artifact_network.py"]
+    assert "does not establish a deployed endpoint" in artifact_network["test_scope"]
+    declaration = components["component:artifact-network-composition-declaration-decoder"]
+    builder = components["component:artifact-network-composition-receipt-builder"]
+    rechecker = components["component:artifact-network-composition-receipt-rechecker"]
+    assert declaration["dependency_profiles"] == builder["dependency_profiles"] == rechecker["dependency_profiles"] == ["test"]
+    assert declaration["test_modules"] == builder["test_modules"] == rechecker["test_modules"] == [
+        "tests/test_silo_composition_fixture.py",
+        "tests/test_silo_composition_receipt.py",
+    ]
+    assert "does not resolve commit bytes" in declaration["test_scope"]
+    assert "does not provide an independently implemented checker" in builder["test_scope"]
+    assert "same Python reference mechanism only" in rechecker["test_scope"]
+    assert all("TypeScript support" in item["test_scope"] for item in (declaration, builder, rechecker))
+    for role in ("assessor", "rechecker"):
+        transfer = components[f"component:artifact-network-proposition-transfer-{role}"]
+        assert transfer["dependency_profiles"] == ["test"]
+        assert transfer["catalog_optional_dependencies"] == []
+        assert transfer["test_modules"] == [
+            "tests/test_proposition_transfer.py",
+            "tests/test_proposition_transfer_catalog.py",
+            "tests/test_proposition_transfer_fixture.py",
+        ]
+        assert "six-axis silo completeness" in transfer["test_scope"]
+        assert "TypeScript support" in transfer["test_scope"]
+        assert set(transfer["coordinate_intent"].values()) == {"CONFIGURED_UNRUN"}
     untraversability = components["component:composed-untraversability-analyzer"]
     assert untraversability["test_modules"] == [
         "tests/test_untraversable.py",
@@ -320,6 +434,10 @@ def test_documented_component_table_is_exactly_rendered_from_manifest() -> None:
     assert rendered == report_builder.render_component_table(manifest)
     assert "macOS Intel x86-64" in rendered
     assert "macOS Apple ARM64" in rendered
+    assert (
+        f"independent verifier counted in the {len(manifest['components'])}-component inventory below."
+        in document
+    )
 
 
 def test_runtime_report_is_deterministic_and_binds_catalog_manifest_and_run(

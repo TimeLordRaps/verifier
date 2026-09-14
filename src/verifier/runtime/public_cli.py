@@ -55,6 +55,7 @@ from verifier.runtime.experimental_workflow_cli import (
     add_experiment_parsers,
     handle_experiment_command,
 )
+from verifier.runtime.network_cli import add_network_parsers, handle_network_command
 from verifier.runtime.demo import SCENARIOS, demo_report, emit_specimens, run_demo
 from verifier.interoperability.catalog import AWARENESS_CLAIM_BOUNDARY, InteractionMode
 from verifier.interoperability.control_surface import (
@@ -471,6 +472,7 @@ def build_parser() -> argparse.ArgumentParser:
     status_parser.add_argument("--json", action="store_true")
     add_experiment_parsers(subparsers)
     add_vstd3_parsers(subparsers)
+    add_network_parsers(subparsers)
     return parser
 
 
@@ -908,6 +910,8 @@ def main(argv: list[str] | None = None) -> int:
             return _handle_artifact_command(args)
         if args.command == "experiment":
             return handle_experiment_command(args)
+        if args.command == "network":
+            return handle_network_command(args)
         if args.command in {"hardware", "continuity", "fleet", "evidence", "claims"}:
             return handle_vstd3_command(args)
     except (OSError, RunError, ValueError, KeyError) as exc:

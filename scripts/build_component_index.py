@@ -25,10 +25,79 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "src"
 DEFAULT_BASE_URL = "https://timelordraps.github.io/verifier/"
 FULL_COMMIT = re.compile(r"[0-9a-fA-F]{40}")
+REVIEWED_CANDIDATE_SOURCE_PATHS = (
+    "src/verifier/interoperability/authority_composition.py",
+    "src/verifier/interoperability/bounded_completeness.py",
+    "src/verifier/interoperability/claim_garden.py",
+    "src/verifier/interoperability/composition_qualification.py",
+    "src/verifier/interoperability/deriver_self_status.py",
+    "src/verifier/interoperability/formation_checker.py",
+    "src/verifier/interoperability/formation_mechanism.py",
+    "src/verifier/interoperability/formation_producer.py",
+    "src/verifier/interoperability/formation_receipt.py",
+    "src/verifier/interoperability/formation_storage.py",
+    "src/verifier/interoperability/formation_wire.py",
+    "src/verifier/interoperability/global_cycle_assessment.py",
+    "src/verifier/interoperability/network.py",
+    "src/verifier/interoperability/proposition_transfer.py",
+    "src/verifier/interoperability/relation_boundary.py",
+    "src/verifier/interoperability/runtime_authority_correspondence.py",
+    "src/verifier/interoperability/source_grounding.py",
+    "src/verifier/profiles/bounded-completeness-mechanism-0.1.json",
+    "src/verifier/profiles/deriver-self-status-checker-0.1.json",
+    "src/verifier/profiles/proposition-transfer-rule-0.1.json",
+    "src/verifier/profiles/relation-boundary-mechanism-0.1.json",
+    "src/verifier/profiles/runtime-authority-correspondence-profile-0.1.json",
+    "src/verifier/profiles/source-grounding-mechanism-0.1.json",
+    "src/verifier/profiles/typed-formation-0.1.json",
+    "src/verifier/runtime/network_cli.py",
+    "src/verifier/schemas/__init__.py",
+    "src/verifier/schemas/artifact-control-1.schema.json",
+    "src/verifier/schemas/graph-topology.schema.json",
+    "src/verifier/schemas/vstd-artifact-network-0.1.schema.json",
+    "src/verifier/schemas/vstd-authority-model-0.1.schema.json",
+    "src/verifier/schemas/vstd-bounded-completeness-0.1.schema.json",
+    "src/verifier/schemas/vstd-component-index-1.schema.json",
+    "src/verifier/schemas/vstd-component-package-1.schema.json",
+    "src/verifier/schemas/vstd-deriver-self-status-0.1.schema.json",
+    "src/verifier/schemas/vstd-global-cycle-assessment-0.1.schema.json",
+    "src/verifier/schemas/vstd-graph-assurance-1.schema.json",
+    "src/verifier/schemas/vstd-proposition-transfer-0.1.schema.json",
+    "src/verifier/schemas/vstd-push-request-0.1.schema.json",
+    "src/verifier/schemas/vstd-relation-boundary-0.1.schema.json",
+    "src/verifier/schemas/vstd-self-derivation-mechanism-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-assessment-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-assessment-receipt-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-composition-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-composition-assessment-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-composition-assessment-receipt-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-formation-receipt-0.1.schema.json",
+    "src/verifier/schemas/vstd-silo-transfer-0.1.schema.json",
+    "src/verifier/schemas/vstd-source-grounding-0.1.schema.json",
+    "src/verifier/schemas/vstd-typed-formation-0.1.schema.json",
+    "src/verifier/specifications/BOUNDED_COMPLETENESS.md",
+    "src/verifier/specifications/DERIVER_SELF_STATUS.md",
+    "src/verifier/specifications/FINITE_AUTHORITY_COMPOSITION.md",
+    "src/verifier/specifications/FORMATION_RECEIPT.md",
+    "src/verifier/specifications/GLOBAL_CYCLE_ASSESSMENT.md",
+    "src/verifier/specifications/PROPOSITION_TRANSFER.md",
+    "src/verifier/specifications/RELATION_BOUNDARY.md",
+    "src/verifier/specifications/RUNTIME_AUTHORITY_CORRESPONDENCE.md",
+    "src/verifier/specifications/SOURCE_GROUNDING.md",
+    "src/verifier/specifications/TYPED_FORMATION.md",
+)
 
 
 class ComponentIndexBuildError(RuntimeError):
     """The static index cannot be bound to the requested source coordinate."""
+
+
+def _bind_checkout_source() -> None:
+    """Make imports resolve against this exact checkout, not an installed release."""
+
+    source = str(SOURCE)
+    sys.path[:] = [entry for entry in sys.path if entry != source]
+    sys.path.insert(0, source)
 
 
 def _project_version() -> str:
@@ -64,6 +133,28 @@ def _worktree_dirty() -> bool:
     return bool(result.stdout)
 
 
+def _reviewed_untracked_candidate_sources() -> tuple[str, ...]:
+    result = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(ROOT),
+            "ls-files",
+            "--others",
+            "--exclude-standard",
+            "-z",
+            "--",
+            *REVIEWED_CANDIDATE_SOURCE_PATHS,
+        ],
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode:
+        raise ComponentIndexBuildError("cannot inspect reviewed candidate source state")
+    return tuple(entry.decode("utf-8") for entry in result.stdout.split(b"\0") if entry)
+
+
 def _package_version(source_ref: str) -> str:
     base = _project_version()
     if FULL_COMMIT.fullmatch(source_ref):
@@ -81,8 +172,7 @@ def _base_url(value: str) -> str:
 
 def _reference_exporter() -> Any:
     path = ROOT / "examples/stored_components/build_reference_package.py"
-    if str(SOURCE) not in sys.path:
-        sys.path.insert(0, str(SOURCE))
+    _bind_checkout_source()
     spec = importlib.util.spec_from_file_location("vstd_reference_package_exporter", path)
     if spec is None or spec.loader is None:
         raise ComponentIndexBuildError("cannot load the first-party package exporter")
@@ -167,9 +257,11 @@ def build(
     *,
     source_ref: str,
     base_url: str = DEFAULT_BASE_URL,
+    include_untracked: Sequence[str] | None = None,
 ) -> tuple[Path, ...]:
     """Build the static surface into an absent directory and return its files."""
 
+    _bind_checkout_source()
     from verifier.interoperability.component_index import (
         IndexedComponentPackage,
         StoredComponentIndex,
@@ -197,7 +289,19 @@ def build(
     public_base_url = _base_url(base_url)
 
     exporter = _reference_exporter()
-    package = exporter.build_package(ROOT, _package_version(source_ref))
+    reviewed_untracked = (
+        _reviewed_untracked_candidate_sources()
+        if source_ref == "WORKTREE" and include_untracked is None
+        else tuple(include_untracked or ())
+    )
+    if reviewed_untracked:
+        package = exporter.build_package(
+            ROOT,
+            _package_version(source_ref),
+            include_untracked=reviewed_untracked,
+        )
+    else:
+        package = exporter.build_package(ROOT, _package_version(source_ref))
     entry = IndexedComponentPackage.from_package(package)
     index = StoredComponentIndex(
         index_id="timelordraps/verifier-reference-components",

@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-artifact-network-0.1.schema.json",
+  "title": "Experimental Verifier Standard (VSTD) verification-artifact network records",
+  "description": "Strict structural interchange. Schema validity does not establish artifact correctness, publisher identity, completeness, or authority.",
+  "oneOf": [
+    {"$ref": "#/$defs/object"},
+    {"$ref": "#/$defs/commit"},
+    {"$ref": "#/$defs/head"},
+    {"$ref": "#/$defs/publisher"},
+    {"$ref": "#/$defs/keyContinuity"},
+    {"$ref": "#/$defs/directory"},
+    {"$ref": "#/$defs/authorityModel"},
+    {"$ref": "#/$defs/assessment"},
+    {"$ref": "#/$defs/assessmentReceipt"}
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "publisherId": {"type": "string", "pattern": "^publisher:sha256:[0-9a-f]{64}$"},
+    "path": {"type": "string", "minLength": 1, "maxLength": 240, "pattern": "^[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*$"},
+    "object": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "object_digest", "size_bytes", "media_type", "artifact_kind", "declared_schema_id"],
+      "properties": {
+        "schema_version": {"const": "VSTD-OBJECT-0.1"}, "object_digest": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 0, "maximum": 4194304},
+        "media_type": {"type": "string", "minLength": 1, "maxLength": 256},
+        "artifact_kind": {"type": "string", "minLength": 1, "maxLength": 128},
+        "declared_schema_id": {"type": "string", "minLength": 1, "maxLength": 256}
+      }
+    },
+    "censusEntry": {
+      "type": "object", "additionalProperties": false, "required": ["path", "object", "necessity"],
+      "properties": {"path": {"$ref": "#/$defs/path"}, "object": {"$ref": "#/$defs/object"}, "necessity": {"enum": ["NECESSARY", "DISPENSABLE"]}}
+    },
+    "derivation": {
+      "type": "object", "additionalProperties": false, "required": ["target_path", "premise_paths", "mechanism_path", "relation_strength"],
+      "properties": {"target_path": {"$ref": "#/$defs/path"}, "premise_paths": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"$ref": "#/$defs/path"}}, "mechanism_path": {"$ref": "#/$defs/path"}, "relation_strength": {"const": "DERIVES"}}
+    },
+    "relation": {
+      "type": "object", "additionalProperties": false, "required": ["relation_type", "source_path", "target_path", "mechanism_path", "semantic_coordinate"],
+      "properties": {"relation_type": {"enum": ["EVIDENCES", "CHECKS", "REFUTES", "CHALLENGES", "SUPERSEDES", "REVOKES"]}, "source_path": {"$ref": "#/$defs/path"}, "target_path": {"$ref": "#/$defs/path"}, "mechanism_path": {"oneOf": [{"$ref": "#/$defs/path"}, {"type": "null"}]}, "semantic_coordinate": {"oneOf": [{"type": "string", "minLength": 1, "maxLength": 512}, {"type": "null"}]}}
+    },
+    "localAuthorityAddition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["actor_scope", "action", "propagation"],
+      "properties": {
+        "actor_scope": {"const": "ANY_ACTOR"},
+        "action": {"type": "string", "minLength": 1, "maxLength": 128},
+        "propagation": {"enum": ["LOCAL_ONLY", "COMPOSITION_PRESERVED"]}
+      }
+    },
+    "authorityState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state_id", "ground_actions", "local_authority_additions"],
+      "properties": {
+        "state_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "ground_actions": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}},
+        "local_authority_additions": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"$ref": "#/$defs/localAuthorityAddition"}}
+      }
+    },
+    "authorityTransition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["transition_id", "source_state_id", "target_state_id", "actor_scope", "action"],
+      "properties": {
+        "transition_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "source_state_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "target_state_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "actor_scope": {"const": "ANY_ACTOR"},
+        "action": {"type": "string", "minLength": 1, "maxLength": 128}
+      }
+    },
+    "authorityModel": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "authority_axiom_agency_version", "authority_axiom_agency_digest", "actor_scope_version", "actor_scope_digest", "initial_state_ids", "state_universe", "transition_universe", "states", "transitions", "closure_status", "residual_obligations"],
+      "properties": {
+        "schema_version": {"const": "VSTD-AUTHORITY-MODEL-0.1"},
+        "authority_axiom_agency_version": {"const": "VSTD-AUTHORITY-AXIOM-AGENCY-0.1"},
+        "authority_axiom_agency_digest": {"$ref": "#/$defs/digest"},
+        "actor_scope_version": {"const": "VSTD-AUTHORITY-ACTOR-SCOPE-0.1"},
+        "actor_scope_digest": {"$ref": "#/$defs/digest"},
+        "initial_state_ids": {"type": "array", "minItems": 1, "maxItems": 256, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}},
+        "state_universe": {"type": "array", "minItems": 1, "maxItems": 256, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}},
+        "transition_universe": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}},
+        "states": {"type": "array", "minItems": 1, "maxItems": 256, "items": {"$ref": "#/$defs/authorityState"}},
+        "transitions": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/authorityTransition"}},
+        "closure_status": {"enum": ["CLOSED", "OPEN"]},
+        "residual_obligations": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 4096}}
+      }
+    },
+    "selfDerivation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["subject_path", "ground_paths", "mechanism_path", "retained_path", "relation_strength", "ground_self", "derivation_reflexivity", "reflexion_identity", "deriver_cycle_closed", "ground_self_evidence_path", "derivation_reflexivity_evidence_path", "reflexion_identity_evidence_path", "deriver_cycle_closure_evidence_path", "residual_obligations"],
+      "properties": {
+        "subject_path": {"$ref": "#/$defs/path"}, "ground_paths": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/path"}},
+        "mechanism_path": {"$ref": "#/$defs/path"}, "retained_path": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path"}},
+        "relation_strength": {"type": "string", "minLength": 1, "maxLength": 128},
+        "ground_self": {"type": "boolean"}, "derivation_reflexivity": {"type": "boolean"}, "reflexion_identity": {"type": "boolean"}, "deriver_cycle_closed": {"type": "boolean"},
+        "ground_self_evidence_path": {"$ref": "#/$defs/path"}, "derivation_reflexivity_evidence_path": {"$ref": "#/$defs/path"}, "reflexion_identity_evidence_path": {"$ref": "#/$defs/path"}, "deriver_cycle_closure_evidence_path": {"$ref": "#/$defs/path"},
+        "residual_obligations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 4096}}
+      }
+    },
+    "commit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "publisher_id", "parents", "census", "ground_paths", "derivations", "relations", "residual_obligations", "exclusions", "completeness_kind", "coverage_universe", "authority_axiom_agency", "authority_axiom_agency_version", "authority_axiom_agency_digest", "authority_model_path", "self_derivation_record", "created_at"],
+      "properties": {
+        "schema_version": {"const": "VSTD-SILO-COMMIT-0.1"}, "publisher_id": {"$ref": "#/$defs/publisherId"},
+        "parents": {"type": "array", "maxItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+        "census": {"type": "array", "minItems": 1, "maxItems": 256, "items": {"$ref": "#/$defs/censusEntry"}},
+        "ground_paths": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/path"}},
+        "derivations": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/derivation"}},
+        "relations": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/relation"}},
+        "residual_obligations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 4096}},
+        "exclusions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 4096}},
+        "completeness_kind": {"enum": ["SILO_CENSUS", "DERIVATIONAL_COVERAGE", "SEMANTIC_COVERAGE", "LOGICAL_DECIDABILITY"]},
+        "coverage_universe": {"type": "array", "minItems": 1, "maxItems": 4096, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 512}},
+        "authority_axiom_agency": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 128}},
+        "authority_axiom_agency_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "authority_axiom_agency_digest": {"$ref": "#/$defs/digest"},
+        "authority_model_path": {"oneOf": [{"$ref": "#/$defs/path"}, {"type": "null"}]},
+        "self_derivation_record": {"$ref": "#/$defs/selfDerivation"},
+        "created_at": {"type": "string", "minLength": 1, "maxLength": 64}
+      }
+    },
+    "head": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "publisher_id", "sequence", "commit_digest", "previous_head_digest", "key_id", "issued_at", "public_key_base64url", "signature_base64url"],
+      "properties": {
+        "schema_version": {"const": "VSTD-SIGNED-HEAD-0.1"}, "publisher_id": {"$ref": "#/$defs/publisherId"},
+        "sequence": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}, "commit_digest": {"$ref": "#/$defs/digest"},
+        "previous_head_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]}, "key_id": {"$ref": "#/$defs/digest"},
+        "issued_at": {"type": "string", "minLength": 1, "maxLength": 64}, "public_key_base64url": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}, "signature_base64url": {"type": "string", "pattern": "^[A-Za-z0-9_-]{86}$"}
+      }
+    },
+    "publisher": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "publisher_id", "genesis_public_key_base64url", "active_key_ids", "key_continuity_digests", "display_name", "description"],
+      "properties": {"schema_version": {"const": "VSTD-PUBLISHER-0.1"}, "publisher_id": {"$ref": "#/$defs/publisherId"}, "genesis_public_key_base64url": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}, "active_key_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}, "key_continuity_digests": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}, "display_name": {"type": "string", "minLength": 1, "maxLength": 256}, "description": {"type": "string", "minLength": 1, "maxLength": 4096}}
+    },
+    "keyContinuity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "publisher_id", "previous_key_base64url", "new_key_base64url", "sequence", "previous_record_digest", "old_signature_base64url", "new_signature_base64url"],
+      "properties": {"schema_version": {"const": "VSTD-KEY-CONTINUITY-0.1"}, "publisher_id": {"$ref": "#/$defs/publisherId"}, "previous_key_base64url": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}, "new_key_base64url": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}, "sequence": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}, "previous_record_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]}, "old_signature_base64url": {"type": "string", "pattern": "^[A-Za-z0-9_-]{86}$"}, "new_signature_base64url": {"type": "string", "pattern": "^[A-Za-z0-9_-]{86}$"}}
+    },
+    "directoryEntry": {
+      "type": "object", "additionalProperties": false, "required": ["publisher_id", "head_digest", "endpoint", "visibility"],
+      "properties": {"publisher_id": {"$ref": "#/$defs/publisherId"}, "head_digest": {"$ref": "#/$defs/digest"}, "endpoint": {"type": "string", "minLength": 1, "maxLength": 4096}, "visibility": {"enum": ["LISTED", "DELISTED", "QUARANTINED", "UNKNOWN"]}}
+    },
+    "directory": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "directory_publisher_id", "sequence", "previous_snapshot_digest", "entries", "issued_at", "public_key_base64url", "signature_base64url"],
+      "properties": {"schema_version": {"const": "VSTD-DIRECTORY-SNAPSHOT-0.1"}, "directory_publisher_id": {"$ref": "#/$defs/publisherId"}, "sequence": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}, "previous_snapshot_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]}, "entries": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/directoryEntry"}}, "issued_at": {"type": "string", "minLength": 1, "maxLength": 64}, "public_key_base64url": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}, "signature_base64url": {"type": "string", "pattern": "^[A-Za-z0-9_-]{86}$"}}
+    },
+    "assessment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "reconstructibility", "derivation_closure", "self_derivability", "completeness", "completeness_kind", "silo_grounding", "authority_axiom_agency", "reasons", "claim_boundary"],
+      "properties": {
+        "schema_version": {"const": "VSTD-SILO-ASSESSMENT-0.1"},
+        "reconstructibility": {"enum": ["COMPLETE", "INCOMPLETE"]},
+        "derivation_closure": {"enum": ["CLOSED", "OPEN"]},
+        "self_derivability": {"enum": ["ESTABLISHED", "NOT_ESTABLISHED"]},
+        "completeness": {"enum": ["COMPLETE", "INCOMPLETE", "UNKNOWN"]},
+        "completeness_kind": {"enum": ["SILO_CENSUS", "DERIVATIONAL_COVERAGE", "SEMANTIC_COVERAGE", "LOGICAL_DECIDABILITY"]},
+        "silo_grounding": {"enum": ["ESTABLISHED", "NOT_ESTABLISHED", "UNKNOWN"]},
+        "authority_axiom_agency": {"enum": ["PRESERVED", "VIOLATED", "UNKNOWN"]},
+        "reasons": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 4096}},
+        "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 4096}
+      }
+    },
+    "assessmentReceipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "commit_digest", "mechanism_digest", "assessment"],
+      "properties": {
+        "schema_version": {"const": "VSTD-SILO-ASSESSMENT-RECEIPT-0.1"},
+        "commit_digest": {"$ref": "#/$defs/digest"},
+        "mechanism_digest": {"$ref": "#/$defs/digest"},
+        "assessment": {"$ref": "#/$defs/assessment"}
+      }
+    }
+  }
+}

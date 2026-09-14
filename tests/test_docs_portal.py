@@ -79,8 +79,10 @@ def test_release_and_repository_commands_remain_distinct(site: Path) -> None:
     released = (site / PORTAL.RELEASE_PATH / "reference.html").read_text(encoding="utf-8")
     assert 'id="cli-vstd-components-index"' in current
     assert 'id="cli-vstd-components-index"' not in released
-    assert "UNRELEASED SOURCE" in current
-    assert "RELEASED SOURCE" in released and "UNRELEASED SOURCE" not in released
+    repository_version = importlib.import_module("verifier").__version__
+    assert f"package version {repository_version}" in current
+    assert f"package version {PORTAL.RELEASE}" in released
+    assert "UNRELEASED SOURCE" not in released
     coordinate = json.loads((site / "portal-coordinate.json").read_text(encoding="utf-8"))
     assert coordinate["release_version"] == "1.3.0"
     assert coordinate["release_commit"] in released

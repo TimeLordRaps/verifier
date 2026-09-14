@@ -64,8 +64,6 @@ from .storage import (
     load_component_package,
     save_component_package,
 )
-
-
 __all__ = [
     "AcyclicPropositionDependency",
     "AuthorizationDecision",

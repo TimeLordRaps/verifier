@@ -522,9 +522,9 @@ def main(argv: list[str] | None = None) -> int:
         help="Fail instead of writing when the committed page is out of date.",
     )
     args = parser.parse_args(argv)
-    rendered = render()
+    rendered = render().encode("utf-8")
     if args.check:
-        current = OUTPUT.read_text(encoding="utf-8") if OUTPUT.exists() else ""
+        current = OUTPUT.read_bytes() if OUTPUT.exists() else b""
         if current != rendered:
             print(
                 "[REFERENCE DRIFT] docs/reference.html is stale; "
@@ -534,7 +534,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         print("[REFERENCE OK] docs/reference.html matches the implementation")
         return 0
-    OUTPUT.write_text(rendered, encoding="utf-8")
+    OUTPUT.write_bytes(rendered)
     print(f"[REFERENCE OK] wrote {OUTPUT.relative_to(ROOT).as_posix()}")
     return 0
 

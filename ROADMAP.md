@@ -77,7 +77,7 @@ This direction composes established work on
 [bounded optimality](https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume2/russell95a.pdf),
 [active testing](https://proceedings.mlr.press/v139/kossen21a.html),
 [cost-sensitive testing trees](https://proceedings.mlr.press/v32/cicalese14.html),
-[proof-carrying code](https://people.eecs.berkeley.edu/~necula/papers.html), and
+[proof-carrying code](https://doi.org/10.1145/263699.263712), and
 [certifying algorithms](https://www.sciencedirect.com/science/article/pii/S1574013710000560).
 The roadmap does not claim those foundations as VSTD inventions. The research question
 is whether VSTD can provide interoperable claim boundaries and portable result semantics

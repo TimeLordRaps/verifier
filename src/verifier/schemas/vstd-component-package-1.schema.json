@@ -1,0 +1,169 @@
+{
+  "$comment": "Terminology: JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD). This is an experimental non-receipt mechanism schema, not a numbered-profile receipt or a verification verdict.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-component-package-1.schema.json",
+  "title": "Experimental VSTD stored component package",
+  "description": "Shape checks for retained component bytes and untrusted declarations. Runtime loading additionally checks artifact hashes, base64 canonical padding and pad bits, decoded-size correspondence, total byte bounds, registry digest and canonical registry sorting, the exact implementation binding set, matching implementation references, dependency and artifact references, and portable path collisions. Schema validity alone establishes none of those mechanisms, publisher identity, license authenticity, implementation correctness, dependency completeness, runtime availability, native-platform qualification, or authorization to execute. Loading and planning execute nothing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "package_id", "package_version", "publisher", "license",
+    "description", "registry", "registry_sha256", "artifacts", "implementations", "dependencies"
+  ],
+  "properties": {
+    "schema_version": {"const": "VSTD-COMPONENT-PACKAGE-1"},
+    "package_id": {"$ref": "#/$defs/packageText"},
+    "package_version": {"$ref": "#/$defs/packageText"},
+    "publisher": {"$ref": "#/$defs/packageText", "description": "Unsigned publisher declaration."},
+    "license": {"$ref": "#/$defs/packageText", "description": "Unsigned license declaration."},
+    "description": {"$ref": "#/$defs/packageText"},
+    "registry": {"$ref": "#/$defs/registry"},
+    "registry_sha256": {"$ref": "#/$defs/digest", "description": "Runtime recomputes this digest over the canonical registry bytes."},
+    "artifacts": {
+      "type": "array", "minItems": 1, "maxItems": 256,
+      "items": {"$ref": "#/$defs/artifact"}
+    },
+    "implementations": {
+      "type": "array", "minItems": 1, "maxItems": 256,
+      "items": {"$ref": "#/$defs/implementation"}
+    },
+    "dependencies": {
+      "type": "array", "maxItems": 256,
+      "items": {"$ref": "#/$defs/dependency"}
+    }
+  },
+  "$defs": {
+    "nonemptyText": {
+      "type": "string", "minLength": 1, "maxLength": 4096,
+      "pattern": "^\\S(?:[\\s\\S]*\\S)?(?![\\s\\S])",
+      "not": {"pattern": "[\u0000-\u001f\u007f-\u009f\ud800-\udfff]"}
+    },
+    "packageText": {
+      "$ref": "#/$defs/nonemptyText"
+    },
+    "optionalText": {
+      "anyOf": [{"const": ""}, {"$ref": "#/$defs/nonemptyText"}]
+    },
+    "digest": {
+      "type": "string", "minLength": 64, "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "portablePath": {
+      "$ref": "#/$defs/packageText",
+      "type": "string", "minLength": 1, "maxLength": 240,
+      "pattern": "^[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*$",
+      "allOf": [
+        {"not": {"pattern": "\\.(?:/|$)"}},
+        {"not": {"pattern": "(?:^|/)(?:[Cc][Oo][Nn]|[Pp][Rr][Nn]|[Aa][Uu][Xx]|[Nn][Uu][Ll]|[Cc][Oo][Mm][1-9]|[Ll][Pp][Tt][1-9])(?:\\.|/|$)"}}
+      ],
+      "description": "Portable relative file name; cross-artifact case collisions and file/directory conflicts require runtime inventory validation. No extraction is implied."
+    },
+    "stringList": {
+      "type": "array", "maxItems": 256, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonemptyText"}
+    },
+    "pathList": {
+      "type": "array", "maxItems": 256, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/portablePath"}
+    },
+    "referenceList": {
+      "type": "array", "maxItems": 256, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/packageText"}
+    },
+    "artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "media_type", "size_bytes", "sha256", "content_base64"],
+      "properties": {
+        "path": {"$ref": "#/$defs/portablePath"},
+        "media_type": {"$ref": "#/$defs/packageText"},
+        "size_bytes": {"type": "integer", "minimum": 0, "maximum": 16777216},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "content_base64": {
+          "type": "string", "maxLength": 22369624,
+          "contentEncoding": "base64",
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?(?![\\s\\S])",
+          "description": "Retained bytes. Runtime checks canonical pad bits, decoded size and SHA-256; contentEncoding is descriptive and does not establish those checks."
+        }
+      }
+    },
+    "implementation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["component_id", "implementation_ref", "artifact_paths", "dependency_ids"],
+      "properties": {
+        "component_id": {"$ref": "#/$defs/packageText"},
+        "implementation_ref": {"$ref": "#/$defs/packageText"},
+        "artifact_paths": {"$ref": "#/$defs/pathList", "minItems": 1},
+        "dependency_ids": {"$ref": "#/$defs/referenceList"}
+      }
+    },
+    "dependency": {
+      "type": "object", "additionalProperties": false,
+      "required": ["dependency_id", "requirement", "artifact_paths"],
+      "properties": {
+        "dependency_id": {"$ref": "#/$defs/packageText"},
+        "requirement": {"$ref": "#/$defs/packageText"},
+        "artifact_paths": {"$ref": "#/$defs/pathList"}
+      }
+    },
+    "registry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "registry_version", "components"],
+      "properties": {
+        "schema_version": {"const": "VSTD-INTEROPERABILITY-CATALOG-1.1"},
+        "registry_version": {"$ref": "#/$defs/nonemptyText"},
+        "components": {
+          "type": "array", "minItems": 1, "maxItems": 256,
+          "items": {"$ref": "#/$defs/descriptor"}
+        }
+      }
+    },
+    "descriptor": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "component_id", "label", "kind", "lifecycle", "implementation_ref",
+        "accepted_schema_ids", "planning_surface_schema_ids", "verifier_family_ids",
+        "native_system", "native_objects", "native_versions", "native_inputs",
+        "native_outputs", "native_result_vocabulary", "emitted_schema_ids",
+        "supported_relations", "mechanism_ids", "interaction_modes", "domain_tags",
+        "optional_dependencies", "execution_prerequisites", "trust_roots",
+        "freshness_behavior", "transformation_loss", "failure_behavior",
+        "availability", "claim_boundary"
+      ],
+      "properties": {
+        "component_id": {"$ref": "#/$defs/nonemptyText"},
+        "label": {"$ref": "#/$defs/nonemptyText"},
+        "kind": {"enum": ["ADAPTER", "TRANSLATOR", "COMPARATOR", "SOLVER", "PROVER", "CHECKER", "VERIFIER", "CONSTRAINT", "COLLECTOR", "POLICY", "WORKFLOW"]},
+        "lifecycle": {"enum": ["IMPLEMENTED", "EXPERIMENTAL", "UNSUPPORTED", "ABSENT"]},
+        "implementation_ref": {"$ref": "#/$defs/nonemptyText"},
+        "accepted_schema_ids": {"$ref": "#/$defs/stringList"},
+        "planning_surface_schema_ids": {
+          "$ref": "#/$defs/stringList", "minItems": 1,
+          "description": "Exact planning-surface schemas; these are distinct from the native accepted input schemas."
+        },
+        "verifier_family_ids": {"$ref": "#/$defs/stringList"},
+        "native_system": {"$ref": "#/$defs/optionalText"},
+        "native_objects": {"$ref": "#/$defs/stringList"},
+        "native_versions": {"$ref": "#/$defs/stringList"},
+        "native_inputs": {"$ref": "#/$defs/stringList"},
+        "native_outputs": {"$ref": "#/$defs/stringList"},
+        "native_result_vocabulary": {"$ref": "#/$defs/stringList"},
+        "emitted_schema_ids": {"$ref": "#/$defs/stringList"},
+        "supported_relations": {"$ref": "#/$defs/stringList"},
+        "mechanism_ids": {"$ref": "#/$defs/stringList", "minItems": 1},
+        "interaction_modes": {
+          "type": "array", "minItems": 1, "maxItems": 256, "uniqueItems": true,
+          "items": {"enum": ["STATIC", "OFFLINE_REPLAY", "SIMULATION", "LIVE_READ_ONLY", "LIVE_MUTATING"]}
+        },
+        "domain_tags": {"$ref": "#/$defs/stringList"},
+        "optional_dependencies": {"$ref": "#/$defs/stringList"},
+        "execution_prerequisites": {"$ref": "#/$defs/stringList"},
+        "trust_roots": {"$ref": "#/$defs/stringList"},
+        "freshness_behavior": {"$ref": "#/$defs/optionalText"},
+        "transformation_loss": {"$ref": "#/$defs/optionalText"},
+        "failure_behavior": {"$ref": "#/$defs/optionalText"},
+        "availability": {"enum": ["AVAILABLE", "NOT_CHECKED", "UNAVAILABLE"]},
+        "claim_boundary": {"$ref": "#/$defs/optionalText"}
+      }
+    }
+  }
+}
