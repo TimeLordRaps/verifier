@@ -14,7 +14,6 @@ import argparse
 import hashlib
 import html
 from html.parser import HTMLParser
-import io
 import json
 import os
 from pathlib import Path
@@ -24,15 +23,14 @@ import subprocess
 import sys
 import tempfile
 from urllib.parse import urlsplit
-import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = "https://verifier-standard.com/"
 OLD_SITE = "https://timelordraps.github.io/verifier/"
 REPOSITORY = "https://github.com/TimeLordRaps/verifier"
-RELEASE = "1.3.0"
+RELEASE = "1.4.0"
 RELEASE_TAG = "v" + RELEASE
-RELEASE_COMMIT = "adc0415ea653376ed3f4c146a84daac1f72913f6"
+RELEASE_COMMIT = "93cccdd89923092bdac51a84fa0a9855a7ef5f34"
 RELEASE_PATH = "releases/" + RELEASE + "/"
 ASSETS = ROOT / "scripts" / "portal"
 
@@ -72,22 +70,33 @@ def assemble(source: Path, output: Path, source_ref: str) -> None:
 
 
 def export_release(destination: Path) -> str:
+    """Check out the pinned release as a detached linked worktree.
+
+    The release edition builds a commit-addressed component index, and
+    `scripts/build_component_index.py` binds that index to an exact clean Git
+    checkout: it reads `HEAD` and refuses a dirty tree. An extracted archive
+    carries the right bytes but no Git identity, so it cannot satisfy that
+    requirement without fabricating provenance. A detached worktree at the
+    pinned commit satisfies it from the real object store instead.
+    """
+
     commit = run(["git", "rev-parse", RELEASE_TAG + "^{commit}"])
     if commit != RELEASE_COMMIT:
         raise ValueError("release tag does not match its pinned documentation commit")
-    archive = subprocess.run(["git", "archive", "--format=zip", commit], cwd=ROOT,
-                             capture_output=True, check=True, timeout=30).stdout
-    destination.mkdir()
-    with zipfile.ZipFile(io.BytesIO(archive)) as source:
-        for member in source.infolist():
-            target = (destination / member.filename).resolve()
-            if not target.is_relative_to(destination.resolve()):
-                raise ValueError("release archive contains a path outside its root")
-        source.extractall(destination)
+    run(["git", "worktree", "add", "--detach", str(destination), commit])
     project = (destination / "pyproject.toml").read_text(encoding="utf-8")
     if not re.search(r'^version\s*=\s*"' + re.escape(RELEASE) + r'"\s*$', project, re.M):
         raise ValueError("release tag and declared package version disagree")
     return commit
+
+
+def discard_release(destination: Path) -> None:
+    """Remove the release worktree and its registration, ignoring absence."""
+
+    subprocess.run(["git", "worktree", "remove", "--force", str(destination)],
+                   cwd=ROOT, capture_output=True, text=True, timeout=60)
+    subprocess.run(["git", "worktree", "prune"], cwd=ROOT,
+                   capture_output=True, text=True, timeout=60)
 
 
 def prepare_content(page: str) -> tuple[str, str, list[tuple[str, str]]]:
@@ -136,7 +145,11 @@ def navigation(prefix: str, output: Path) -> list[tuple[str, list[tuple[str, str
     return [
         ("Start here", [("Introduction", prefix + "index.html"),
                          ("Install Verifier", "docs/INSTALLATION.html"),
-                         ("Your first receipt", "docs/FIRST_RECEIPT.html")]),
+                         ("Your first receipt", "docs/FIRST_RECEIPT.html"),
+                         ("Typical use cases", route("docs/USE_CASES.html"))]),
+        ("Tutorials", [("Seal an artifact", route("docs/tutorials/SEAL_AN_ARTIFACT.html")),
+                       ("Publish a silo", route("docs/tutorials/PUBLISH_A_SILO.html")),
+                       ("Python API guide", route("docs/PYTHON_API_GUIDE.html"))]),
         ("Understand the model", [("Concepts & precedents", route("docs/CONCEPTS_AND_PRECEDENTS.html")),
                                   ("Claims & limits", route("docs/CLAIMS_AND_LIMITS.html")),
                                   ("Numbered profiles", route("standard/index.html")),
@@ -249,8 +262,11 @@ def build(output: Path, *, base_url: str = SITE) -> dict[str, object]:
     with tempfile.TemporaryDirectory(prefix="verifier-docs-portal-") as temporary:
         release_source = Path(temporary) / "release-source"
         release_commit = export_release(release_source)
-        assemble(ROOT, output, source_ref)
-        assemble(release_source, output / RELEASE_PATH, release_commit)
+        try:
+            assemble(ROOT, output, source_ref)
+            assemble(release_source, output / RELEASE_PATH, release_commit)
+        finally:
+            discard_release(release_source)
     for name in ("portal.css", "portal.js", "portal-mark.svg"):
         shutil.copyfile(ASSETS / name, output / "assets" / name)
     for prefix in ("", RELEASE_PATH):
