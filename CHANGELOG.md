@@ -14,6 +14,33 @@
 
 ## Unreleased
 
+## 1.4.1 - UNRELEASED
+
+### Documentation
+
+The package's executable surface, schemas, wire identifiers, and declared results are
+unchanged by this release. Every claim about maturity, boundaries, and unresolved
+obligations stands exactly as it did at 1.4.0.
+
+- Add `docs/USE_CASES.md`, which states ten situations with the mechanism that
+  addresses each one, a runnable path, and what the mechanism leaves
+  unestablished, followed by a table of situations the project does not address.
+- Add `docs/tutorials/SEAL_AN_ARTIFACT.md`, which carries a freeze, seal, thaw,
+  and status sequence through to its adversarial branches, including the
+  `THAWED_DIRTY` verdict and an expected-identifier mismatch.
+- Add `docs/tutorials/PUBLISH_A_SILO.md`, which publishes an experimental
+  artifact-network silo, exports and rebuilds it byte for byte, and shows the
+  canonical member ordering a wire record must already satisfy.
+- Add `docs/PYTHON_API_GUIDE.md`, which organizes the supported exports by task
+  and separates the four ways a bound proposition returns something other than
+  `PASS`.
+- Correct the release the installation, first-receipt, walkthrough, hosting, and
+  continuous-integration instructions pin, so a reader installs and fetches the
+  released version rather than its predecessor.
+- Advance the pinned documentation mirror to the 1.4.0 release commit and bind
+  the new guides, whose routes exist only in the repository edition, to the
+  edition that actually contains them.
+
 ## 1.4.0 - 2026-09-13
 
 ### Experimental artifact-network interoperability

@@ -271,7 +271,7 @@ The distribution name is `verifier-standard`. The published base package has no
 required third-party runtime dependencies.
 
 ```bash
-python -m pip install "verifier-standard==1.3.0"  # exact published release
+python -m pip install "verifier-standard==1.4.0"  # exact published release
 python -m pip install .                            # current source checkout
 python -m pip install ".[yaml]"          # YAML Ain't Markup Language (YAML) manifests
 python -m pip install ".[jsonschema]"    # JSON Schema validation
@@ -520,6 +520,10 @@ Additional entry points:
 | Goal | Document |
 |---|---|
 | Install and exercise the first-run path | [Quickstart](docs/QUICKSTART.md) |
+| Decide whether VSTD fits a situation | [Typical use cases](docs/USE_CASES.md) |
+| Seal a directory and detect a change to it | [Seal an artifact](docs/tutorials/SEAL_AN_ARTIFACT.md) |
+| Publish a rebuildable snapshot of a body of work | [Publish a silo](docs/tutorials/PUBLISH_A_SILO.md) |
+| Use the supported Python exports by task | [Python API guide](docs/PYTHON_API_GUIDE.md) |
 | Understand terminology and precedents | [Concepts and precedents](docs/CONCEPTS_AND_PRECEDENTS.md) |
 | Inspect abbreviated terms | [Acronyms](docs/ACRONYMS.md) |
 | Review experimental profiles | [Experiment index](experiments/INDEX.md) |
@@ -530,7 +534,7 @@ Additional entry points:
 
 A release contains a canonical artifact set: ZIP archive format (ZIP), wheel, source
 distribution, and external manifest bound to the exact public Git commit and file
-members. At the version 1.3.0 source coordinate, the continuous integration (CI)
+members. At the version 1.4.0 source coordinate, the continuous integration (CI)
 workflow builds the artifact set on Linux, Windows, and macOS and rejects cross-platform
 byte differences. It also captures and reruns the portable generic example on three
 GitHub-hosted operating-system virtual machines, then requires a bounded `PASS` over the
