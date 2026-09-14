@@ -296,22 +296,56 @@ def test_local_site_validation_binds_exact_inventory_and_known_good_digest(tmp_p
 
 
 @pytest.mark.parametrize("mutation", ("omitted", "modified"))
-def test_retained_site_rejects_hidden_payload_loss(tmp_path: Path, mutation: str) -> None:
+def test_retained_site_rejects_payload_loss(tmp_path: Path, mutation: str) -> None:
     checker = _module()
     builder = _build_module()
     _minimal_site(checker, tmp_path)
-    hidden = tmp_path / ".nojekyll"
-    hidden.write_bytes(b"")
+    retained = tmp_path / "assets" / "orientation.js"
+    retained.parent.mkdir(parents=True, exist_ok=True)
+    retained.write_bytes(b"export const orientation = 1;")
     (tmp_path / checker.MANIFEST_PATH).unlink()
     builder._write_deployment_manifest(tmp_path, source_ref=HEAD)
     manifest_digest = hashlib.sha256((tmp_path / checker.MANIFEST_PATH).read_bytes()).hexdigest()
     checker.validate_site_directory(tmp_path, expected_source_ref=HEAD, expected_manifest_sha256=manifest_digest)
     if mutation == "omitted":
-        hidden.unlink()
+        retained.unlink()
     else:
-        hidden.write_bytes(b"changed")
+        retained.write_bytes(b"changed")
     with pytest.raises(checker.PagesDeploymentError, match="local Pages (inventory|bytes) differ"):
         checker.validate_site_directory(tmp_path, expected_source_ref=HEAD, expected_manifest_sha256=manifest_digest)
+
+
+@pytest.mark.parametrize("relative", (".nojekyll", "assets/.hidden"))
+def test_dot_prefixed_paths_are_rejected_because_deployment_strips_them(
+    tmp_path: Path, relative: str
+) -> None:
+    """`actions/upload-pages-artifact` packages the site with a non-anchored
+    ``--exclude=".[^/]*"``, which drops every dot-prefixed path component at any depth.
+    A manifest that lists one therefore promises bytes the deployment cannot serve, and
+    the live observation would fetch a 404 for it."""
+    checker = _module()
+    builder = _build_module()
+    _minimal_site(checker, tmp_path)
+    hidden = tmp_path / relative
+    hidden.parent.mkdir(parents=True, exist_ok=True)
+    hidden.write_bytes(b"")
+    (tmp_path / checker.MANIFEST_PATH).unlink()
+    with pytest.raises(builder.PagesBuildError, match="is not deployable"):
+        builder._write_deployment_manifest(tmp_path, source_ref=HEAD)
+    with pytest.raises(checker.PagesDeploymentError, match="is not deployable"):
+        checker._validate_path(relative)
+
+
+def test_documentation_source_carries_no_dot_prefixed_path() -> None:
+    """`build_pages.py` copies `docs/` into the site wholesale, so a dot-prefixed path
+    there would fail the build rather than reach the deployment."""
+    offenders = sorted(
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "docs").rglob("*")
+        if path.is_file()
+        and any(part.startswith(".") for part in path.relative_to(ROOT / "docs").parts)
+    )
+    assert offenders == []
 
 
 def test_pages_builder_manifest_is_deterministic_and_checker_compatible(tmp_path: Path) -> None:
