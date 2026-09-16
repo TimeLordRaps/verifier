@@ -43,7 +43,7 @@ Firmware Accountability Contract.
 - [NVIDIA Attestation Core Library](https://docs.nvidia.com/attestation/corelib/latest/introduction.html)
   — verifier library boundary.
 - [NVIDIA MIG guide](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/latest/getting-started-with-mig.html)
-  and [NVML MIG APIs](https://docs.nvidia.com/deploy/nvml-api/group__nvmlMultiInstanceGPU.html)
+  and [NVML MIG APIs](https://docs.nvidia.com/deploy/nvml-api/)
   — host-visible partition and logical identity discovery.
 
 ## AMD

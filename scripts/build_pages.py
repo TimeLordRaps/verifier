@@ -135,6 +135,8 @@ def _write_deployment_manifest(output: Path, *, source_ref: str) -> Path:
             or any(part in {"", ".", ".."} for part in relative.split("/"))
         ):
             raise PagesBuildError(f"Pages output path is not canonical: {relative!r}")
+        if any(part.startswith(".") for part in relative.split("/")):
+            raise PagesBuildError(f"Pages output path is not deployable: {relative!r}")
         payload = path.read_bytes()
         if len(payload) > MAX_DEPLOYMENT_FILE_BYTES:
             raise PagesBuildError(f"Pages output file exceeds byte limit: {relative}")

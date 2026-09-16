@@ -86,6 +86,11 @@ def _validate_path(path: Any) -> str:
         or re.fullmatch(r"[A-Za-z0-9._/-]+", path) is None
     ):
         raise PagesDeploymentError(f"deployment path is not canonical: {path!r}")
+    # The Pages packaging action excludes every dot-prefixed path component, so such a
+    # path can never be served and a manifest that lists one is unverifiable by
+    # construction.
+    if any(part.startswith(".") for part in path.split("/")):
+        raise PagesDeploymentError(f"deployment path is not deployable: {path!r}")
     return path
 
 
