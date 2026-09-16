@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -74,17 +75,17 @@ def test_assembled_links_assets_and_anchors_resolve(site: Path) -> None:
     assert not errors, "\n".join(errors)
 
 
-def test_release_and_repository_commands_remain_distinct(site: Path) -> None:
+def test_release_and_repository_editions_remain_distinct(site: Path) -> None:
     current = (site / "reference.html").read_text(encoding="utf-8")
     released = (site / PORTAL.RELEASE_PATH / "reference.html").read_text(encoding="utf-8")
-    assert 'id="cli-vstd-components-index"' in current
-    assert 'id="cli-vstd-components-index"' not in released
+    released_commands = set(re.findall(r'id="(cli-[a-z0-9-]+)"', released))
+    assert released_commands and released_commands <= set(re.findall(r'id="(cli-[a-z0-9-]+)"', current))
     repository_version = importlib.import_module("verifier").__version__
     assert f"package version {repository_version}" in current
     assert f"package version {PORTAL.RELEASE}" in released
     assert "UNRELEASED SOURCE" not in released
     coordinate = json.loads((site / "portal-coordinate.json").read_text(encoding="utf-8"))
-    assert coordinate["release_version"] == "1.3.0"
+    assert coordinate["release_version"] == "1.4.0"
     assert coordinate["release_commit"] in released
     assert PORTAL.REPOSITORY + "/blob/main/" not in released
     for prefix in ("", PORTAL.RELEASE_PATH):
@@ -103,6 +104,42 @@ def test_search_results_bind_to_real_sections_and_correct_edition(site: Path) ->
         assert entry["edition"] == ("release" if route.startswith(PORTAL.RELEASE_PATH) else "repository")
     assert any(item["title"] == "compute_canonical_digest function" for item in entries)
     assert any("Your first receipt" in item["title"] for item in entries)
+
+
+def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path) -> None:
+    """Bind the onboarding guides to real routes and to the correct edition.
+
+    The pinned release predates these pages, so the release edition must send a
+    reader back to the repository edition rather than advertise a route its own
+    commit never contained.
+    """
+
+    guides = (
+        "docs/USE_CASES.html",
+        "docs/PYTHON_API_GUIDE.html",
+        "docs/tutorials/SEAL_AN_ARTIFACT.html",
+        "docs/tutorials/PUBLISH_A_SILO.html",
+    )
+    for route in guides:
+        assert (site / route).is_file()
+        assert not (site / PORTAL.RELEASE_PATH / route).exists()
+
+    groups = dict(PORTAL.navigation("", site))
+    assert [target for _, target in groups["Tutorials"]] == [
+        "docs/tutorials/SEAL_AN_ARTIFACT.html",
+        "docs/tutorials/PUBLISH_A_SILO.html",
+        "docs/PYTHON_API_GUIDE.html",
+    ]
+    assert ("Typical use cases", "docs/USE_CASES.html") in groups["Start here"]
+
+    released = dict(PORTAL.navigation(PORTAL.RELEASE_PATH, site))
+    for _, target in released["Tutorials"] + [released["Start here"][-1]]:
+        assert not target.startswith(PORTAL.RELEASE_PATH)
+
+    entries = json.loads((site / "search-index.json").read_text(encoding="utf-8"))
+    titles = {item["title"] for item in entries if item["edition"] == "repository"}
+    assert "Seal an artifact and detect a change" in titles
+    assert "Publish a verification-artifact silo" in titles
 
 
 def test_schema_bytes_and_existing_identifier_origin_are_preserved(site: Path) -> None:

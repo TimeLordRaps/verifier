@@ -81,12 +81,12 @@ universal compatibility claim.
 ## Build the documentation portal
 
 The portal adds navigation, local search, and reader tools to the existing source
-renderer. It also builds a separate released reference from tag `v1.3.0`.
+renderer. It also builds a separate released reference from tag `v1.4.0`.
 The build requires that tag locally, Python, and Git; it needs no frontend package
 manager or third-party search account.
 
 ```bash
-git fetch origin tag v1.3.0
+git fetch origin tag v1.4.0
 python scripts/build_docs_portal.py --output build/documentation-portal
 python -m http.server 8933 --bind 127.0.0.1 --directory build/documentation-portal
 ```

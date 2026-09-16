@@ -9,7 +9,7 @@ and the [released package installation](INSTALLATION.md).
 Use the example from the same release as the installed package:
 
 ```bash
-git clone --branch v1.3.0 --depth 1 https://github.com/TimeLordRaps/verifier.git verifier-example
+git clone --branch v1.4.0 --depth 1 https://github.com/TimeLordRaps/verifier.git verifier-example
 cd verifier-example
 ```
 
