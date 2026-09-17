@@ -547,8 +547,8 @@ gh attestation verify PATH_TO_DOWNLOADED_ASSET --repo TimeLordRaps/verifier
 ```
 
 Use [RELEASING.md](RELEASING.md) to verify the manifest, tag, artifact attestations,
-package name, and historical compatibility. Version 1.4.0 is the current release,
-published on 2026-09-13; use its [versioned release page](https://github.com/TimeLordRaps/verifier/releases/tag/v1.4.0)
+package name, and historical compatibility. Version 1.4.2 is the current release,
+published on 2026-09-17; use its [versioned release page](https://github.com/TimeLordRaps/verifier/releases/tag/v1.4.2)
 for published citation and artifact coordinates.
 
 ## Claims, security, and contribution

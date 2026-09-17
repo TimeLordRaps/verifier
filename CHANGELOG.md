@@ -14,7 +14,7 @@
 
 ## Unreleased
 
-## 1.4.2 - UNRELEASED
+## 1.4.2 - 2026-09-17
 
 ### Diagnostics and Verification Modernization
 
@@ -22,7 +22,7 @@
 - Diagnose Pages promotion guard failures by printing the observed mismatch to standard error before exiting.
 - Terminology and wire modernization: reinforce that VSTD-1 and VSTD-2 operate on ladder-level profile identifiers (`VSTD-1`, `VSTD-2`) rather than pre-ladder legacy aliases.
 
-## 1.4.1 - UNRELEASED
+## 1.4.1 - 2026-09-15
 
 ### Documentation
 
