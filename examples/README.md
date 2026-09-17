@@ -8,6 +8,10 @@ study records, and roadmap-steering investigations.
 ## Start here
 
 - [Quickstart](../docs/QUICKSTART.md): installation and the basic usage path.
+- [Typical use cases](../docs/USE_CASES.md): which mechanism addresses which
+  situation, and what each one leaves unestablished.
+- [Generic run](generic_run/manifest.json): the manifest the
+  [first-receipt guide](../docs/FIRST_RECEIPT.md) plans, runs, validates, and refutes.
 - [Flagship adversarial demo](flagship_demo/README.md): expected rejection and honest
   uncertainty, not just a successful result.
 - [Reconstruction residual](verification_geometry_residual/README.md): a bounded
@@ -22,6 +26,14 @@ study records, and roadmap-steering investigations.
   declared backward-time relations, with separate bounded consistency results.
 - [Artifact-network specimen](artifact-network/README.md): deterministically materialize,
   inspect, diff, clone, and compose an exact signed publisher silo without a service.
+  The [silo tutorial](../docs/tutorials/PUBLISH_A_SILO.md) builds one from nothing.
+- [Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability](scitt_interop/README.md):
+  external cryptographic evidence carried with declared boundaries rather than absorbed.
+- [Artifact-first reference surfaces](zizk_artifact_first/README.md): governing
+  zero-identity/zero-knowledge (ZIZK) boundaries and a recorded reduced instruction set
+  computer (RISC) Zero proof.
+- [Logits constraint kernel](logits_constraint_kernel/README.md): a bounded native
+  mechanism whose optional dependency is declared rather than assumed.
 - [Experimental workflow example](experimental_workflow/README.md): runnable use of an
   experimental integration; GitHub workflow success does not grant a VSTD verdict.
 
