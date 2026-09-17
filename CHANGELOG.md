@@ -14,6 +14,14 @@
 
 ## Unreleased
 
+## 1.4.2 - UNRELEASED
+
+### Diagnostics and Verification Modernization
+
+- Route `scripts/check_pages_deployment.py` failure diagnostics to standard error so a failing run explains itself in the log instead of inside the redirected coordinate file.
+- Diagnose Pages promotion guard failures by printing the observed mismatch to standard error before exiting.
+- Terminology and wire modernization: reinforce that VSTD-1 and VSTD-2 operate on ladder-level profile identifiers (`VSTD-1`, `VSTD-2`) rather than pre-ladder legacy aliases.
+
 ## 1.4.1 - UNRELEASED
 
 ### Documentation
