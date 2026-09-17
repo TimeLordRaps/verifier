@@ -1,10 +1,10 @@
 cff-version: 1.2.0
-message: "Verifier Standard (VSTD) version 1.4.1 is an unreleased release candidate; cite version 1.4.0 until this candidate is published."
+message: "Verifier Standard (VSTD) version 1.4.2 is an unreleased release candidate; cite version 1.4.0 until this candidate is published."
 title: "Verifier Standard (VSTD): Bounded, Refutable Evidence for Computational Claims"
 type: software
 authors:
   - name: "TimeLordRaps"
-version: 1.4.1
+version: 1.4.2
 license: Apache-2.0
 repository-code: "https://github.com/TimeLordRaps/verifier"
 keywords:

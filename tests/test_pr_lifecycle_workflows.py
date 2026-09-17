@@ -297,6 +297,39 @@ def test_pages_waits_for_successful_default_branch_checks_and_observes_live_byte
     assert '"$RUNNER_TEMP/pages-policy/check_pages_deployment.py"' in all_commands
 
 
+def test_pages_promotion_guards_report_what_they_observed() -> None:
+    """Every guard here runs under `bash -e`, and a bare `test` prints nothing when it fails,
+    so the job's whole log becomes the runner's exit-code line. Pages run 34791052054 aborted
+    on one of these, before the checker it gates was ever invoked, and said nothing."""
+
+    workflow = yaml.safe_load(
+        (ROOT / ".github/workflows/pages.yml").read_text(encoding="utf-8")
+    )
+    expressions = []
+    for job in workflow["jobs"].values():
+        for step in job["steps"]:
+            lines = str(step.get("run", "")).splitlines()
+            for index, line in enumerate(lines):
+                guard = line.strip()
+                if not guard.startswith("test "):
+                    continue
+                diagnostic, abort = (part.strip() for part in lines[index + 1 : index + 3])
+                assert guard.endswith(" || {"), guard
+                assert diagnostic.startswith('echo "[PAGES PROMOTION FAIL] '), guard
+                assert diagnostic.endswith(">&2"), guard
+                assert abort == "exit 1", guard
+                expressions.append(guard[: -len(" || {")])
+
+    assert sorted(set(expressions)) == [
+        'test "$OPERATION" = "deploy-current"',
+        'test "$ROLLBACK_CONFIRMATION" = "REDEPLOY_KNOWN_GOOD"',
+        'test "$SOURCE_SHA" = "$DEFAULT_SHA"',
+        'test -n "$CHECKS_RUN_ID"',
+        'test -n "$KNOWN_GOOD_RECEIPT_RUN_ID"',
+    ]
+    assert len(expressions) == 8
+
+
 def test_pages_deployment_credentials_never_execute_checked_out_code() -> None:
     workflow = yaml.safe_load(
         (ROOT / ".github/workflows/pages.yml").read_text(encoding="utf-8")

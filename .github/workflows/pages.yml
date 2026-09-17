@@ -73,8 +73,14 @@ jobs:
         run: |
           MANIFEST_SHA256=""
           if test "$OPERATION" = "redeploy-known-good"; then
-            test "$ROLLBACK_CONFIRMATION" = "REDEPLOY_KNOWN_GOOD"
-            test -n "$KNOWN_GOOD_RECEIPT_RUN_ID"
+            test "$ROLLBACK_CONFIRMATION" = "REDEPLOY_KNOWN_GOOD" || {
+              echo "[PAGES PROMOTION FAIL] redeploy-known-good requires rollback_confirmation REDEPLOY_KNOWN_GOOD; observed '$ROLLBACK_CONFIRMATION'" >&2
+              exit 1
+            }
+            test -n "$KNOWN_GOOD_RECEIPT_RUN_ID" || {
+              echo "[PAGES PROMOTION FAIL] redeploy-known-good requires known_good_receipt_run_id; observed an empty value" >&2
+              exit 1
+            }
             mkdir "$RUNNER_TEMP/known-good-receipt"
             gh run download "$KNOWN_GOOD_RECEIPT_RUN_ID" \
               --name "pages-promotion-$SOURCE_SHA" \
@@ -90,17 +96,26 @@ jobs:
             CHECKS_RUN_ID="$(jq -er .repository_checks_run_id "$RUNNER_TEMP/known-good-coordinate.json")"
             MANIFEST_SHA256="$(jq -er .deployment_manifest_sha256 "$RUNNER_TEMP/known-good-coordinate.json")"
           else
-            test "$OPERATION" = "deploy-current"
+            test "$OPERATION" = "deploy-current" || {
+              echo "[PAGES PROMOTION FAIL] operation must be deploy-current or redeploy-known-good; observed '$OPERATION'" >&2
+              exit 1
+            }
             DEFAULT_BRANCH="$(gh api "repos/$GITHUB_REPOSITORY" --jq .default_branch)"
             DEFAULT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$DEFAULT_BRANCH" --jq .sha)"
-            test "$SOURCE_SHA" = "$DEFAULT_SHA"
+            test "$SOURCE_SHA" = "$DEFAULT_SHA" || {
+              echo "[PAGES PROMOTION FAIL] the promoted source must be the current $DEFAULT_BRANCH head; expected $DEFAULT_SHA, observed $SOURCE_SHA" >&2
+              exit 1
+            }
             CHECKS_RUN_ID="$REPOSITORY_CHECKS_RUN_ID"
             if test -z "$CHECKS_RUN_ID"; then
               CHECKS_RUN_ID="$(gh api \
                 "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$SOURCE_SHA&event=push&status=success&per_page=1" \
                 --jq '.workflow_runs[0].id // empty')"
             fi
-            test -n "$CHECKS_RUN_ID"
+            test -n "$CHECKS_RUN_ID" || {
+              echo "[PAGES PROMOTION FAIL] no successful ci.yml push run was found for $SOURCE_SHA; promotion requires one" >&2
+              exit 1
+            }
             gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CHECKS_RUN_ID" \
               > "$RUNNER_TEMP/repository-checks-run.json"
             python "$RUNNER_TEMP/pages-policy/check_pages_deployment.py" \
@@ -186,7 +201,10 @@ jobs:
         run: |
           DEFAULT_BRANCH="$(gh api "repos/$GITHUB_REPOSITORY" --jq .default_branch)"
           DEFAULT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$DEFAULT_BRANCH" --jq .sha)"
-          test "$SOURCE_SHA" = "$DEFAULT_SHA"
+          test "$SOURCE_SHA" = "$DEFAULT_SHA" || {
+            echo "[PAGES PROMOTION FAIL] the promoted source must still be the current $DEFAULT_BRANCH head; expected $DEFAULT_SHA, observed $SOURCE_SHA" >&2
+            exit 1
+          }
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:
           path: _site
@@ -215,7 +233,10 @@ jobs:
         run: |
           DEFAULT_BRANCH="$(gh api "repos/$GITHUB_REPOSITORY" --jq .default_branch)"
           DEFAULT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$DEFAULT_BRANCH" --jq .sha)"
-          test "$SOURCE_SHA" = "$DEFAULT_SHA"
+          test "$SOURCE_SHA" = "$DEFAULT_SHA" || {
+            echo "[PAGES PROMOTION FAIL] the promoted source must still be the current $DEFAULT_BRANCH head; expected $DEFAULT_SHA, observed $SOURCE_SHA" >&2
+            exit 1
+          }
       - name: Deploy the already validated immutable artifact
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
@@ -243,7 +264,10 @@ jobs:
         run: |
           DEFAULT_BRANCH="$(gh api "repos/$GITHUB_REPOSITORY" --jq .default_branch)"
           DEFAULT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$DEFAULT_BRANCH" --jq .sha)"
-          test "$SOURCE_SHA" = "$DEFAULT_SHA"
+          test "$SOURCE_SHA" = "$DEFAULT_SHA" || {
+            echo "[PAGES PROMOTION FAIL] the promoted source must still be the current $DEFAULT_BRANCH head; expected $DEFAULT_SHA, observed $SOURCE_SHA" >&2
+            exit 1
+          }
       - name: Require the live deployment to expose the promoted commit and bytes
         run: |
           python "$RUNNER_TEMP/pages-policy/check_pages_deployment.py" \
