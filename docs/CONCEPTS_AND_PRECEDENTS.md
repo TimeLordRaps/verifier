@@ -2,7 +2,8 @@
 
 > **Acronyms:** conjunctive normal form (CNF); Certificate Transparency (CT);
 > deletion resolution asymmetric tautology (DRAT); Internet Engineering Task Force (IETF);
-> JavaScript Object Notation (JSON); National Institute of Standards and Technology (NIST); proof-carrying code (PCC);
+> JavaScript Object Notation (JSON); linear resolution asymmetric tautology (LRAT);
+> National Institute of Standards and Technology (NIST); proof-carrying code (PCC);
 > Principles of Programming Languages (POPL); World Wide Web Consortium provenance vocabulary (PROV);
 > PROV data model (PROV-DM); Protect the Software (PS); Request for Comments (RFC); reverse unit propagation (RUP);
 > Boolean satisfiability problem (SAT); Supply-chain Levels for Software Artifacts (SLSA);
@@ -87,7 +88,14 @@ VSTD document controls VSTD conformance and the difference must remain explicit.
 | Checkable SAT refutations | Wetzler, Heule, and Hunt, [*DRAT-trim: Efficient Checking and Trimming Using Expressive Clausal Proofs*](https://www.cs.cmu.edu/~mheule/publications/drat-trim.pdf) (2014) | Demonstrates checking unsatisfiability proofs outside the solver rather than trusting its answer. VSTD's implemented certificate is a narrower declared RUP path, not arbitrary DRAT. |
 | Explicit indeterminate solver results | [SMT-LIB Standard 2.7](https://smt-lib.org/papers/smt-lib-reference-v2.7-r2025-04-09.pdf) | The standard response grammar includes `sat`, `unsat`, and `unknown`. VSTD's richer status vocabulary is independently defined, but the refusal to fabricate a Boolean answer has established solver precedent. |
 | Append-only evidence and independently detectable equivocation | IETF, [RFC 9162: Certificate Transparency Version 2.0](https://www.rfc-editor.org/rfc/rfc9162.html) | Merkle inclusion and consistency proofs support auditing an append-only log, while the RFC also names split-view limitations. VSTD's additive history is analogous but not a CT log. |
-| Freshness, rollback, freeze, and key-compromise boundaries | [The Update Framework specification](https://theupdateframework.github.io/specification/latest/) | Separates current-version metadata, expiration, delegated roles, and compromise recovery from artifact bytes. VSTD does not implement TUF, but shares the requirement that old authentic data is not automatically current data. |
+## LRAT and DRAT
+
+Competition clausal proof formats—such as deletion resolution asymmetric tautology (DRAT) and
+linear resolution asymmetric tautology (LRAT)—answer whether a propositional formula is
+unsatisfiable. In the [primary reference map](#primary-reference-map), VSTD cites
+Wetzler, Heule, and Hunt (2014) for checkable clausal refutations. VSTD's grounded
+decision certificates build on this precedent by coupling clausal refutations directly
+to semantic claim groundings, ensuring a valid proof cannot certify an ungrounded formula.
 
 ## How to cite these precedents
 

@@ -12,7 +12,7 @@
 
 </div>
 
-> **Acronyms used below:** identifier (ID); reduced instruction set computer (RISC).
+> **Acronyms used below:** application programming interface (API); artificial intelligence (AI); Boolean satisfiability problem (SAT); central processing unit (CPU); command-line interface (CLI); conjunctive normal form (CNF); deletion resolution asymmetric tautology (DRAT); directed acyclic graph (DAG); grounded decision certificate (GDC); identifier (ID); intermediate representation (IR); JavaScript Object Notation (JSON); linear resolution asymmetric tautology (LRAT); machine learning (ML); nondeterministic polynomial time (NP); operating system (OS); reduced instruction set computer (RISC); satisfiability modulo theories (SMT); Secure Hash Algorithm 256-bit (SHA-256); unsatisfiable (UNSAT); Verifier Standard (VSTD).
 
 VSTD is a verification-domain language and Python reference implementation for turning a
 bare computational result into an inspectable package: **the exact claim, artifact,
@@ -45,6 +45,22 @@ or external adoption is claimed. See [current maturity](#current-maturity) and
 
 ## 30–60 second demonstration
 
+### Option 1: Instant Python inspection (from PyPI)
+
+```bash
+python -m pip install "verifier-standard==1.5.0"
+```
+
+```python
+import verifier
+
+print(verifier.__version__)        # '1.5.0'
+print(verifier.__standard__)       # 'VSTD-5'
+print(verifier.__standard_status__)# 'PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM'
+```
+
+### Option 2: The defensive CLI demonstration
+
 ```bash
 git clone https://github.com/TimeLordRaps/verifier.git
 cd verifier
@@ -62,6 +78,12 @@ VSTD flagship adversarial demo
 [DEMO OK] Inflated verification-cost claim             → REJECTED
 [DEMO OK] Revoked ancestor behind valid descendants    → GRAPH-CANDIDATE-0
 ```
+
+**What are these four scenarios showing in practice?**
+1. **Wrong artifact (`REJECTED`)**: An attacker or buggy script presents a valid mathematical proof, but binds it to the wrong data file. VSTD catches the cryptographic digest mismatch immediately.
+2. **Exhausted bounds (`UNKNOWN`)**: A complex calculation exceeds its allotted compute time or memory limits without finishing. Instead of guessing or falsely claiming success, VSTD cleanly preserves `UNKNOWN`.
+3. **Inflated cost (`REJECTED`)**: An actor claims a verification step required \$1,000,000 of compute when it actually took minimal work. The proof-carrying receipt refuses the ungrounded cost claim.
+4. **Revoked ancestor (`GRAPH-CANDIDATE-0`)**: A data pipeline produces seemingly valid outputs, but an upstream input or library version was later revoked. VSTD detects the corrupted lineage and alerts you.
 
 `[DEMO OK]` means the expected defensive outcome occurred; it is not a VSTD `PASS`.
 The scenarios establish bounded behavior of this reference implementation over the
@@ -91,6 +113,87 @@ The native verifier still performs the domain work. VSTD records the exact bound
 that work so another person or program can inspect, replay, challenge, or reject it without
 silently receiving a stronger claim.
 
+### The core intuition: itemized receipt vs. green checkmark
+
+When you buy groceries, you do not just want the cashier saying "Payment approved" with no paper. You want an itemized receipt showing:
+- Which items were scanned?
+- What was the price of each item?
+- What timestamp, register, and store processed it?
+- If there is an error, exactly which line item can be disputed?
+
+In software and artificial intelligence (AI), systems usually just give you a green checkmark or an exit code 0. But a green checkmark does not tell you:
+- What exact file or dataset was checked?
+- What tool did the checking, and under what memory or time limits?
+- Did a test timeout and pass by accident?
+- Can anyone else rerun it on another machine and get the exact same bytes?
+
+VSTD is the cryptographic "itemized receipt" for computational claims. It pairs:
+1. **The exact claim** (the precise proposition being made, without inflating its scope).
+2. **The cryptographic coordinates** (Secure Hash Algorithm 256-bit (SHA-256) digests of exact inputs and outputs).
+3. **The named mechanism** (the exact tool, solver, or rule used to check the claim).
+4. **The refutation conditions** (the exact recipe an adversary or third party can use to prove the claim wrong).
+5. **The honest verdict** (`PASS`, `FAIL`, or `UNKNOWN` if compute ran out or evidence was missing).
+
+### Seven domain lenses: how VSTD fits your field
+
+<details>
+<summary><strong>1. For undergraduates, high schoolers, and self-taught coders</strong></summary>
+
+Think of VSTD as a tamper-proof digital lab notebook. When you write a chemistry or physics lab report, you do not simply assert "the reaction succeeded." You record the initial mass, temperature, chemical purity, and measurement uncertainty. If your scale was uncalibrated or the thermometer went out of range, honest science requires recording "inconclusive" (`UNKNOWN`), not "success." Anyone grading your work can re-execute your code with `vstd reproduce` and mathematically prove the output files match the recorded fingerprints.
+
+**Tutorial & example:** [Your first receipt](docs/FIRST_RECEIPT.md) and runnable specimen [`examples/generic_run/`](examples/generic_run/manifest.json).
+</details>
+
+<details>
+<summary><strong>2. For Boolean satisfiability (SAT) and satisfiability modulo theories (SMT) solver experts</strong></summary>
+
+Modern SAT and SMT solvers output `SAT` or unsatisfiable (`UNSAT`). But in high-assurance formal verification, you never blindly trust the solver alone—you require an independently checkable proof witness, such as a deletion resolution asymmetric tautology (DRAT) or linear resolution asymmetric tautology (LRAT) certificate. VSTD standardizes how those proof certificates, conjunctive normal form (CNF) formula digests, variable bounds, and independent checker runs are packaged into an immutable JavaScript Object Notation (JSON) receipt that any external verifier can validate or dispute without repeating the nondeterministic polynomial time (NP) search.
+
+**Tutorial & example:** [Clausal proof precedents](docs/CONCEPTS_AND_PRECEDENTS.md#lrat-and-drat) and executable certificate test [`tests/test_gdc_certificate.py`](tests/test_gdc_certificate.py).
+</details>
+
+<details>
+<summary><strong>3. For compiler and systems engineers</strong></summary>
+
+When building optimizing compilers, linkers, or reproducible build systems, a transformation pass claims that an intermediate representation (IR) rewrite preserves program semantics. VSTD turns that claim into a verifiable contract: it binds the input IR digest, output IR digest, translation-validation tool, target central processing unit (CPU) architecture, and operating system (OS) environment constraints. If an optimization cannot be proven semantics-preserving within resource limits, it fails closed or preserves `UNKNOWN`, preventing silent miscompilations from being promoted.
+
+**Tutorial & example:** [Seal an artifact and detect a change](docs/tutorials/SEAL_AN_ARTIFACT.md) and [Publish a silo package](docs/tutorials/PUBLISH_A_SILO.md).
+</details>
+
+<details>
+<summary><strong>4. For AI safety researchers and transfinite mathematicians</strong></summary>
+
+When analyzing self-referential systems, ordinal bounds, non-well-founded belief graphs, or transfinite induction, claims operate at high levels of abstraction where subtle circular reasoning or silent domain upgrades can invalidate safety bounds. VSTD enforces strict stratified profiles (Profiles 1–5): a higher-profile result never supplies or repairs missing lower-profile evidence, self-attestation is never promoted to independent verification, and ungrounded induction steps fail closed.
+
+**Tutorial & example:** [Normative ladder](standard/LADDER.md) and runnable adversarial suite [`examples/flagship_demo/`](examples/flagship_demo/README.md).
+</details>
+
+<details>
+<summary><strong>5. For intellidynamics and AI benchmarkers</strong></summary>
+
+Automated agent evaluations and language model leaderboards are vulnerable to prompt leaking, test-set contamination, hallucinated citations, and stochastic scoring variance. VSTD transforms benchmark scores from unverifiable claims ("Model X scored 92%") into refutable evidence graphs: exact prompt digests, determinism bounds, random seed coordinates, frozen tool execution traces, and adversarial replay recipes that allow any third party to independently reproduce or falsify the evaluation claim.
+
+**Tutorial & example:** [Publishing a checkable benchmark number](docs/USE_CASES.md#1-publishing-a-benchmark-number-somebody-else-can-check) and [`examples/generic_run/`](examples/generic_run/manifest.json).
+</details>
+
+<details>
+<summary><strong>6. For deep mathematics and theorem provers (Lean 4, Metamath, and formal kernels)</strong></summary>
+
+In formal mathematical ecosystems—such as `hypermath` (algebraic kernel, Lean 4 bridge), `ordinatics` (ordinal arithmetic, Veblen hierarchies), `grounded-hyperset-theory` (Aczel's Anti-Foundation Axiom (AFA), accessible pointed graphs (APGs)), and `grounded-hypercalculi` (stratified semantic reflection)—mathematical claims span multiple formal representations. VSTD provides the meta-verification envelope: it explicitly enumerates axioms (refusing ungrounded axioms or `sorry` escapes), binds the exact prover kernel binary digest, and composes heterogeneous formal proofs into a single refutation graph.
+
+**Tutorial & example:** [Grounded decision certificates](docs/PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc) and [Normative VSTD-4 specification](standard/VSTD-4.md).
+</details>
+
+<details>
+<summary><strong>7. For nanochemistry, molecular robotics, and mechanosynthesis (containment and anti-replication gates)</strong></summary>
+
+In molecular dynamics, chemical reaction networks, and autonomous nanoscale robotics, molecular self-assembly poses an acute existential containment challenge: preventing runaway autocatalytic self-replication. A molecular simulation or automated design agent may claim a nanomechanical system terminates cleanly, but without bounded verification, unmodeled parasitic pathways or catalytic loops can trigger unbounded assembly. VSTD acts as a computational containment seal and automated synthesis gate: it cryptographically binds atomic coordinates, force-field potential parameters, stoichiometric mass-action matrices, and temperature/solvent bounds into an immutable receipt. A claim of "bounded non-self-replicating assembly" is paired with a refutation condition (exhibiting any viable catalytic reaction trajectory that exceeds critical branching thresholds). Robotic synthesis hardware can then enforce receipt verification before initiating chemical printing.
+
+**Tutorial & example:** [Artifact control and sealed containment](docs/tutorials/SEAL_AN_ARTIFACT.md) and [Publishing checkable computational receipts](docs/USE_CASES.md#1-publishing-a-benchmark-number-somebody-else-can-check).
+</details>
+
+### The two independent axes
+
 VSTD has two independent axes:
 
 - **Object profiles** describe what is established about one computational claim.
@@ -115,6 +218,7 @@ Choose the smallest useful starting point:
 
 | Goal | Start here |
 |---|---|
+| Start from scratch with a beginner walkthrough | [Newcomer guide](docs/NEWCOMER_GUIDE.md) |
 | See defensive behavior immediately | Run [`vstd demo`](#30-60-second-demonstration) |
 | Capture and reproduce one command | [Generic computation](#capture-a-generic-computation) |
 | Preserve and seal exact artifact bytes | [Artifact control](#freeze-seal-verify-and-thaw-an-artifact) |
@@ -202,7 +306,7 @@ design rule is:
 
 ## Architecture
 
-<img src="docs/assets/vstd-overview.svg" alt="Verifier Standard object and Graph numbered profiles, each requiring separate evidence for its closure coordinate" width="920">
+<img src="https://raw.githubusercontent.com/TimeLordRaps/verifier/main/docs/assets/vstd-overview.svg" alt="Verifier Standard object and Graph numbered profiles, each requiring separate evidence for its closure coordinate" width="920">
 
 The five profile numbers are cumulative verification questions, not software versions,
 interchangeable layers, or assurance scores. The object axis evaluates one claim; the
@@ -271,7 +375,7 @@ The distribution name is `verifier-standard`. The published base package has no
 required third-party runtime dependencies.
 
 ```bash
-python -m pip install "verifier-standard==1.4.0"  # exact published release
+python -m pip install "verifier-standard==1.5.0"  # exact published release
 python -m pip install .                            # current source checkout
 python -m pip install ".[yaml]"          # YAML Ain't Markup Language (YAML) manifests
 python -m pip install ".[jsonschema]"    # JSON Schema validation
@@ -534,7 +638,7 @@ Additional entry points:
 
 A release contains a canonical artifact set: ZIP archive format (ZIP), wheel, source
 distribution, and external manifest bound to the exact public Git commit and file
-members. At the version 1.4.0 source coordinate, the continuous integration (CI)
+members. At the version 1.5.0 source coordinate, the continuous integration (CI)
 workflow builds the artifact set on Linux, Windows, and macOS and rejects cross-platform
 byte differences. It also captures and reruns the portable generic example on three
 GitHub-hosted operating-system virtual machines, then requires a bounded `PASS` over the

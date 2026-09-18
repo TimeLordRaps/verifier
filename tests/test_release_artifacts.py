@@ -765,6 +765,8 @@ def _write_final_release_metadata(root: Path) -> None:
         "candidate_citation",
         "candidate_zenodo",
         "mismatched_zenodo_date",
+        "mismatched_readme_pip",
+        "mismatched_readme_coordinate",
         "package_version",
     ),
 )
@@ -798,6 +800,18 @@ def test_release_metadata_gate_rejects_unfinalized_or_inconsistent_state(
     elif fault == "mismatched_zenodo_date":
         path = tmp_path / ".zenodo.json"
         path.write_text(path.read_text().replace("2026-08-26", "2026-08-25"))
+    elif fault == "mismatched_readme_pip":
+        (tmp_path / "README.md").write_text(
+            'python -m pip install "verifier-standard==1.1.0"\n'
+            "At the version 1.2.0 source coordinate\n",
+            encoding="utf-8",
+        )
+    elif fault == "mismatched_readme_coordinate":
+        (tmp_path / "README.md").write_text(
+            'python -m pip install "verifier-standard==1.2.0"\n'
+            "At the version 1.1.0 source coordinate\n",
+            encoding="utf-8",
+        )
     else:
         path = tmp_path / "pyproject.toml"
         path.write_text(path.read_text().replace("1.2.0", "1.1.3"))

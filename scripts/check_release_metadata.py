@@ -77,6 +77,16 @@ def require_finalized(root: Path, version: str) -> None:
     if "release-candidate" in description or "after the release exists" in description:
         raise ValueError("Zenodo metadata still describes an unpublished candidate")
 
+    readme_path = root / "README.md"
+    if readme_path.is_file():
+        readme = readme_path.read_text(encoding="utf-8")
+        pip_cmd = f'python -m pip install "verifier-standard=={version}"'
+        if pip_cmd not in readme:
+            raise ValueError(f"README.md does not pin {pip_cmd!r}")
+        source_coord = f"At the version {version} source coordinate"
+        if source_coord not in readme:
+            raise ValueError(f"README.md does not declare {source_coord!r}")
+
     if (root / "docs").is_dir():
         from check_public_estate_sync import check_mandatory_documentation_coverage
 

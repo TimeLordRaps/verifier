@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Terminology: continuous integration (CI); GNU Privacy Guard (GPG); operating system (OS);
-pull request (PR); Verifier Standard (VSTD).
+pull request (PR); uniform resource locator (URL); Verifier Standard (VSTD).
 
 Preflight flight check: prevent all preventable CI failures locally before git push."""
 
@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -130,6 +131,93 @@ def check_presentation_gate() -> bool:
     return True
 
 
+def check_readme_version() -> bool:
+    """Verify that README.md install commands and release coordinates match pyproject.toml."""
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    project_section = pyproject.split("[project]", 1)
+    project_text = "" if len(project_section) != 2 else project_section[1].split("\n[", 1)[0]
+    m = re.search(r'^version\s*=\s*"([^"]+)"$', project_text, re.MULTILINE)
+    if not m:
+        print("[README VERSION] FAIL: Unable to parse version from pyproject.toml.")
+        return False
+    expected = m.group(1)
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    errors: list[str] = []
+    pip_cmd = f'python -m pip install "verifier-standard=={expected}"'
+    if pip_cmd not in readme:
+        errors.append(f"README.md missing pinned install command: {pip_cmd!r}")
+
+    source_coord = f"At the version {expected} source coordinate"
+    if source_coord not in readme:
+        errors.append(f"README.md missing source coordinate statement: {source_coord!r}")
+
+    release_stmt = f"Version {expected} is the current release"
+    if release_stmt not in readme:
+        errors.append(f"README.md missing current release statement: {release_stmt!r}")
+
+    tag_url = f"https://github.com/TimeLordRaps/verifier/releases/tag/v{expected}"
+    if tag_url not in readme:
+        errors.append(f"README.md missing release tag URL: {tag_url!r}")
+
+    if errors:
+        print(f"[README VERSION] FAIL: Version synchronization failure in README.md (expected {expected}):")
+        for err in errors:
+            print(f"  - {err}")
+        return False
+
+    print(f"[README VERSION] PASS: README.md versions synchronized with pyproject.toml ({expected}).")
+    return True
+
+
+def check_docs_versions() -> bool:
+    """Verify that all documentation files with pinned install/release/clone commands match pyproject.toml."""
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    project_section = pyproject.split("[project]", 1)
+    project_text = "" if len(project_section) != 2 else project_section[1].split("\n[", 1)[0]
+    m = re.search(r'^version\s*=\s*"([^"]+)"$', project_text, re.MULTILINE)
+    if not m:
+        print("[DOCS VERSIONS] FAIL: Unable to parse version from pyproject.toml.")
+        return False
+    expected = m.group(1)
+
+    pip_pat = re.compile(r'verifier-standard(?:\[[a-zA-Z0-9,._-]+\])?==([0-9a-zA-Z.-]+)')
+    git_pat = re.compile(r'(?:--branch\s+v|checkout\s+v|origin\s+tag\s+v|tag\s+`v)([0-9a-zA-Z.-]+)')
+    ver_pat = re.compile(r"verifier\.__version__\)?\s*(?:\n\s*)?#\s*'([^']+)'")
+
+    errors: list[str] = []
+    docs_dir = ROOT / "docs"
+    if docs_dir.is_dir():
+        for doc_path in sorted(docs_dir.rglob("*.md")):
+            rel_path = doc_path.relative_to(ROOT).as_posix()
+            text = doc_path.read_text(encoding="utf-8")
+            for line_no, line in enumerate(text.splitlines(), 1):
+                for match in pip_pat.finditer(line):
+                    if match.group(1) != expected:
+                        errors.append(
+                            f"{rel_path}:{line_no}: pinned pip install specifies {match.group(1)!r}, expected {expected!r}"
+                        )
+                for match in git_pat.finditer(line):
+                    if match.group(1) != expected:
+                        errors.append(
+                            f"{rel_path}:{line_no}: git command specifies tag/branch v{match.group(1)}, expected v{expected}"
+                        )
+            for match in ver_pat.finditer(text):
+                if match.group(1) != expected:
+                    errors.append(
+                        f"{rel_path}: verifier.__version__ output comment specifies {match.group(1)!r}, expected {expected!r}"
+                    )
+
+    if errors:
+        print(f"[DOCS VERSIONS] FAIL: Documentation version synchronization failure (expected {expected}):")
+        for err in errors:
+            print(f"  - {err}")
+        return False
+
+    print(f"[DOCS VERSIONS] PASS: Documentation estate version references synchronized with pyproject.toml ({expected}).")
+    return True
+
+
 def check_schema_inventory() -> bool:
     """Run packaging and schema inventory assertions."""
     cmd = [
@@ -236,6 +324,10 @@ def handle_pre_push(args: list[str]) -> int:
         if not check_git_signatures(r):
             success = False
 
+    if not check_readme_version():
+        success = False
+    if not check_docs_versions():
+        success = False
     if not check_stdlib_smoke():
         success = False
     if not check_presentation_gate():
@@ -269,6 +361,12 @@ def main() -> int:
 
     if args.signatures_only:
         return 0 if success else 1
+
+    if not check_readme_version():
+        success = False
+
+    if not check_docs_versions():
+        success = False
 
     if not check_stdlib_smoke():
         success = False

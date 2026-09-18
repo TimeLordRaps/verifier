@@ -1062,6 +1062,8 @@ def test_presentation_version_gate_rejects_published_candidate_language(
         encoding="utf-8",
     )
     (tmp_path / "README.md").write_text(
+        'python -m pip install "verifier-standard==1.3.0"\n'
+        "At the version 1.3.0 source coordinate\n"
         "Version 1.3.0 is the current release,\n"
         "published on 2026-09-08; use "
         "https://github.com/TimeLordRaps/verifier/releases/tag/v1.3.0\n",
@@ -1093,6 +1095,19 @@ def test_presentation_version_gate_rejects_published_candidate_language(
         "docs/guides.html release coordinate must match 1.3.0 on 2026-09-08"
         in errors
     )
+
+    (tmp_path / "README.md").write_text(
+        'python -m pip install "verifier-standard==1.2.0"\n'
+        "At the version 1.2.0 source coordinate\n"
+        "Version 1.3.0 is the current release,\n"
+        "published on 2026-09-08; use "
+        "https://github.com/TimeLordRaps/verifier/releases/tag/v1.3.0\n",
+        encoding="utf-8",
+    )
+    errors = []
+    module.check_versions(errors)
+    assert 'README.md install command must pin \'python -m pip install "verifier-standard==1.3.0"\'' in errors
+    assert "README.md source coordinate must declare 'At the version 1.3.0 source coordinate'" in errors
 
 
 def test_generated_reference_detects_drift() -> None:

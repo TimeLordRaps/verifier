@@ -19,7 +19,7 @@ Retained artifacts are never executed by any command here.
 ## Set up
 
 ```bash
-python -m pip install "verifier-standard[seal]==1.4.0"
+python -m pip install "verifier-standard[seal]==1.5.0"
 openssl genpkey -algorithm Ed25519 -out publisher-private.pem
 ```
 
