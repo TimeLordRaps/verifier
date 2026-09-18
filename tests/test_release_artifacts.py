@@ -956,3 +956,30 @@ def test_release_notes_reject_missing_or_empty_exact_section() -> None:
         release_notes.extract_release_notes("## 1.2.0 - 2026-09-01\n- old\n", "1.3.0")
     with pytest.raises(release_notes.ReleaseNotesError, match="is empty"):
         release_notes.extract_release_notes("## 1.3.0 - 2026-09-08\n", "1.3.0")
+
+
+def test_declared_release_schema_set_matches_the_packaged_and_normative_trees() -> None:
+    """Bind the declared release inventory to the files that are actually shipped.
+
+    ``tests/test_packaged_specifications.py`` already binds ``standard/schemas``
+    to ``src/verifier/schemas`` byte for byte. Packaging selects those files by
+    glob, while ``PACKAGED_SCHEMA_NAMES`` names them by hand, so a new schema
+    reaches the wheel without reaching the declaration and release-integrity
+    fails on every platform at once with nothing local to reproduce it. Binding
+    the third surface here moves that failure to one named assertion.
+    """
+    normative = {path.name for path in (REPO_ROOT / "standard" / "schemas").glob("*.json")}
+    packaged = {path.name for path in (REPO_ROOT / "src" / "verifier" / "schemas").glob("*.json")}
+    assert normative == packaged
+    assert set(release_artifacts.PACKAGED_SCHEMA_NAMES) == packaged
+
+
+def test_schema_inventory_error_names_the_divergence() -> None:
+    declared = set(release_artifacts.PACKAGED_SCHEMA_NAMES)
+    sample = sorted(declared)[0]
+    message = release_artifacts._schema_inventory_error(
+        "wheel", (declared - {sample}) | {"vstd-undeclared-9.schema.json"}
+    )
+    assert "present but undeclared: vstd-undeclared-9.schema.json" in message
+    assert f"declared but absent: {sample}" in message
+    assert "PACKAGED_SCHEMA_NAMES" in message
