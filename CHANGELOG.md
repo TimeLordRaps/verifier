@@ -14,7 +14,7 @@
 
 ## Unreleased
 
-## 1.5.0 - UNRELEASED
+## 1.5.0 - 2026-09-18
 
 ### Zero-Identity / Zero-Knowledge (ZIZK) Actor Identity Architecture
 
