@@ -1,6 +1,7 @@
 # Verifier Standard (VSTD)-3 accelerator vendor integration kit
 
 > **Acronyms:** graphics processing unit (GPU); identifier (ID); multi-instance GPU (MIG);
+> Peripheral Component Interconnect Express (PCIe);
 > single-root input/output virtualization (SR-IOV).
 
 > Reader aid: [concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).

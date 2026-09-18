@@ -103,7 +103,7 @@ Think of VSTD as a **tamper-proof digital lab notebook**. When submitting a clas
 If you have ever handed in homework, you might wonder: *How can a teacher or automated grading bot actually know my code really produced this graph without reading every single line or trusting my word?*
 
 Here is the exact three-step mechanic:
-1. **Digital Fingerprints (SHA-256 Hashes)**: VSTD computes cryptographic fingerprints of your code (`script.py`) and inputs (`data.csv`). If anyone edits a single character or changes one number in the CSV, the fingerprint changes completely into a different, unpredictable hex string.
+1. **Digital Fingerprints (SHA-256 Hashes)**: VSTD computes cryptographic fingerprints of your code (`script.py`) and inputs (`data.csv`). If anyone edits a single character or changes one number in the comma-separated values (CSV), the fingerprint changes completely into a different, unpredictable hex string.
 2. **The Receipt Binding**: When you run `vstd run manifest.json --output my_receipt`, VSTD executes your script, records the exact command, exit code, and runtime platform details (e.g. Python version and OS architecture, without recording private host environment variables or credentials), and takes fingerprints of the output files (e.g. `plot.png` has digest `e3b0c442...`).
 3. **The Grader's Single Command (`vstd reproduce`)**: The grader downloads your receipt and runs:
    ```bash
@@ -156,7 +156,7 @@ When working in advanced mathematical foundations, interactive theorem provers (
 - **Tutorial & Runnable Specimen**: Review [Python API Guide: Grounded Decision Certificates](PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc) and the [Normative VSTD-4 Grounded Certificate Specification](../standard/VSTD-4.md).
 
 ### G. For Nanochemistry, Molecular Robotics & Mechanosynthesis (Self-Assembly Containment and Anti-Replication Gates)
-In molecular dynamics simulations, chemical reaction networks (CRNs), and autonomous molecular robotics (such as DNA origami walkers or mechanosynthetic tooltips), molecular self-assembly poses an urgent containment challenge: preventing runaway autocatalytic self-replication.
+In molecular dynamics simulations, chemical reaction networks (CRNs), and autonomous molecular robotics (such as deoxyribonucleic acid (DNA) origami walkers or mechanosynthetic tooltips), molecular self-assembly poses an urgent containment challenge: preventing runaway autocatalytic self-replication.
 
 A molecular design tool or simulation might assert: *"This molecular machine only constructs the target crystal structure."* But in reality:
 - Did the simulation explore parasitic reaction pathways where the machine synthesizes copies of its own catalytic core?

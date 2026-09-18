@@ -1,4 +1,6 @@
-"""Adversarial tests for bounded merge-group policy aggregation."""
+"""Terminology: pull request (PR).
+
+Adversarial tests for bounded merge-group policy aggregation."""
 
 from __future__ import annotations
 

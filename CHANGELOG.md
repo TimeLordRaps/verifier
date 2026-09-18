@@ -1,16 +1,17 @@
 # Changelog
 
-> **Acronyms:** artificial intelligence (AI); Advanced Micro Devices (AMD); application programming interface (API);
-> Amazon Web Services (AWS); Concise Binary Object Representation (CBOR); continuous integration (CI);
-> command-line interface (CLI); conjunctive normal form (CNF); CBOR Object Signing and Encryption (COSE);
+> **Acronyms:** 64-bit Arm instruction-set architecture (ARM64); artificial intelligence (AI);
+> Advanced Micro Devices (AMD); application programming interface (API); Amazon Web Services (AWS);
+> Concise Binary Object Representation (CBOR); continuous integration (CI); command-line interface (CLI);
+> conjunctive normal form (CNF); CBOR Object Signing and Encryption (COSE);
 > grounded decision certificate (GDC); Hypertext Transfer Protocol Secure (HTTPS);
 > Internet Engineering Task Force (IETF); Java unit test report format (JUnit);
 > JavaScript Object Notation (JSON); nondeterministic polynomial time (NP);
-> reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
-> Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
-> Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
-> Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
-> zero-identity/zero-knowledge (ZIZK).
+> Python Package Index (PyPI); reduced instruction set computer (RISC);
+> Boolean satisfiability problem (SAT); Secure Hash Algorithm 256-bit (SHA-256);
+> Secure Hash Algorithm 3 256-bit (SHA3-256); Supply Chain Integrity, Transparency, and Trust (SCITT);
+> Secure Shell (SSH); Coordinated Universal Time (UTC); Verifier Standard (VSTD);
+> ZIP archive format (ZIP); zero-identity/zero-knowledge (ZIZK).
 
 ## Unreleased
 

@@ -1,9 +1,9 @@
 # Release procedure
 
 > **Acronyms:** application programming interface (API); carriage return and line feed (CRLF);
-> continuous integration (CI); digital object identifier (DOI); Extensible Markup Language (XML); identifier (ID);
-> Java unit test report format (JUnit);
-> hash-based message authentication code (HMAC); line feed (LF); Secure Hash Algorithm 256-bit (SHA-256);
+> continuous integration (CI); digital object identifier (DOI); Extensible Markup Language (XML);
+> hash-based message authentication code (HMAC); identifier (ID); Java unit test report format (JUnit);
+> line feed (LF); Python Package Index (PyPI); Secure Hash Algorithm 256-bit (SHA-256);
 > Software Bill of Materials (SBOM); Coordinated Universal Time (UTC); ZIP archive format (ZIP).
 
 Public releases are built only from a commit already present in the public repository.

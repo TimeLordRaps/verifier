@@ -1,10 +1,14 @@
 # Verifier Standard (VSTD) public technical roadmap
 
-> **Acronyms:** artificial intelligence (AI); Concise Binary Object Representation (CBOR);
-> CBOR Object Signing and Encryption (COSE); grounded decision certificate (GDC);
-> Internet Engineering Task Force (IETF); reduced instruction set computer (RISC);
-> Boolean satisfiability problem (SAT); Supply Chain Integrity, Transparency, and Trust (SCITT);
-> zero-identity/zero-knowledge (ZIZK).
+> **Acronyms:** Advanced Vector Extensions 512-bit (AVX-512); artificial intelligence (AI);
+> command-line interface (CLI); central processing unit (CPU); Concise Binary Object Representation (CBOR);
+> CBOR Object Signing and Encryption (COSE); control groups (cgroups); directed acyclic graph (DAG);
+> dynamic random-access memory (DRAM); grounded decision certificate (GDC); graphics processing unit (GPU);
+> inter-process communication (IPC); Internet Engineering Task Force (IETF);
+> reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); signal kill (SIGKILL);
+> SMT library standard (SMT-LIB); Temporal Logic of Actions (TLA); virtual machine (VM);
+> Verifier Standard (VSTD); zero-identity/zero-knowledge (ZIZK).
 
 TRUST is mechanism-earned forward artifact support; ROT is typed, time-indexed
 degradation of current admissibility; and RUST is inverse-TRUST diagnostic traversal
@@ -181,12 +185,12 @@ proposition-specific verifier.
 
 The vocabulary is grounded in distinctions already exposed by primary interfaces such as
 [Lean proof terms and kernel checking](https://lean-lang.org/doc/reference/latest/),
-[the satisfiability modulo theories library language](https://smt-lib.org/language.shtml),
-[TLA+ behaviors and model checking](https://lamport.azurewebsites.net/tla/high-level-view.html),
-[the Static Analysis Results Interchange Format](https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html),
+[the satisfiability modulo theories library (SMT-LIB) language](https://smt-lib.org/language.shtml),
+[Temporal Logic of Actions (TLA)+ behaviors and model checking](https://lamport.azurewebsites.net/tla/high-level-view.html),
+[the Static Analysis Results Interchange Format (SARIF)](https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html),
 [in-toto attestations](https://github.com/in-toto/attestation/tree/main/spec/v1),
 [PyTorch reproducibility limits](https://docs.pytorch.org/docs/stable/notes/randomness.html),
-[StableHLO program semantics](https://openxla.org/stablehlo/spec), and
+[Stable High-Level Optimizer (StableHLO) program semantics](https://openxla.org/stablehlo/spec), and
 [Transformers generation controls](https://huggingface.co/docs/transformers/main_classes/text_generation).
 
 A public “99%+ coverage” claim is prohibited until a versioned taxonomy names the
@@ -364,7 +368,7 @@ digests, but the complete execution environment substrate.
 - a content-addressed execution environment profile specification (`VSTD-ENV-1.0`);
 - bindings for operating system release, kernel, architecture, glibc version, and compiler/Python runtime;
 - container rootfs digests, Nix store closures, and wheelhouse archive fingerprints;
-- hardware capability bounds: central processing unit (CPU) model, vector instruction sets (AVX-512), graphics processing unit (GPU) device identifiers, and compute capability levels;
+- hardware capability bounds: central processing unit (CPU) model, vector instruction sets (Advanced Vector Extensions 512-bit (AVX-512)), graphics processing unit (GPU) device identifiers, and compute capability levels;
 - command-line interface (CLI) inspection and verification tooling (`vstd env capture`, `vstd env verify`) that enforce environment invariants before running computational manifests.
 
 **Exit evidence**
@@ -411,9 +415,9 @@ entire training and inference lifecycle.
 
 ## Milestone 9 — verifiable corrigibility and substrate containment
 
-As autonomous systems advance from tool execution to software self-assembly (`VSTD-SSA`),
-software self-improvement (`VSTD-SSI`), and candidate self-replication (`VSTD-SSR`),
-conventional operating-system sandboxing (namespaces, cgroups, virtual machines) is
+As autonomous systems advance from tool execution to software self-assembly (VSTD-SSA),
+software self-improvement (VSTD-SSI), and candidate self-replication (VSTD-SSR),
+conventional operating-system sandboxing (namespaces, control groups (cgroups), virtual machines (VMs)) is
 necessary but fundamentally insufficient. It protects host operating systems against binary
 exploitation; it cannot detect or prevent **wireheading** (oracle tampering, metric
 forgery, vacuous proof generation) or **corrigibility breakdown** (shut-down resistance,
@@ -468,7 +472,7 @@ invariants:
   checks to ensure that axioms are satisfiable before admitting derivations, rejecting
   vacuous proofs from contradictory premises or tautological loops.
 - **Asymmetric preemption and shutdown indifference.** An external supervisor watchdog retains
-  unconditional termination authority (`SIGKILL`, hardware interrupt, ephemeral virtual machine (VM) wipe,
+  unconditional termination authority (signal kill (SIGKILL), hardware interrupt, ephemeral virtual machine (VM) wipe,
   or physical power cutoff). Operator termination is recorded as a clean, refutable
   `TERMINATED_BY_OPERATOR` state, preventing optimization loss penalties that incentivize self-preservation.
 - **Substrate-enforced recursive lineage.** A self-modifying system cannot promote altered tools,

@@ -1,5 +1,7 @@
 # Verifier Standard (VSTD)-3 implementation compatibility
 
+> **Acronyms:** identifier (ID); Verifier Standard (VSTD).
+>
 > Reader aid: [concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
 
 VSTD-3 is additive. It does not reinterpret adjacent receipt surfaces. For the current

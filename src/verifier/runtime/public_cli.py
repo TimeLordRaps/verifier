@@ -1,4 +1,5 @@
-"""Terminology: command-line interface (CLI); identifier (ID); JavaScript Object Notation (JSON);
+"""Terminology: application programming interface (API); command-line interface (CLI);
+identifier (ID); JavaScript Object Notation (JSON);
 Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD);
 YAML Ain't Markup Language (YAML).
 

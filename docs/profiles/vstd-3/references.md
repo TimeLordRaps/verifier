@@ -4,10 +4,11 @@
 > command-line interface (CLI); Device Identifier Composition Engine (DICE); DMTF standards organization (DMTF);
 > design of experiments (DOE); Engineering Change Notice (ECN); graphics processing unit (GPU);
 > integrated development environment (IDE); Internet Engineering Task Force (IETF); multi-instance GPU (MIG);
-> NVIDIA Management Library (NVML); Peripheral Component Interconnect (PCI); PCI Special Interest Group (PCI-SIG);
+> NVIDIA Management Library (NVML); Peripheral Component Interconnect (PCI);
+> Peripheral Component Interconnect Express (PCIe); PCI Special Interest Group (PCI-SIG);
 > Remote Attestation Procedures (RATS); Request for Comments (RFC); Reference Integrity Manifest (RIM);
-> software development kit (SDK); system management interface (SMI); Security Protocol and Data Model (SPDM);
-> Trusted Device Interface Security Protocol (TDISP).
+> software development kit (SDK); system management interface (SMI); system on a chip (SoC);
+> Security Protocol and Data Model (SPDM); Trusted Device Interface Security Protocol (TDISP).
 
 > Reader aid: [cross-profile concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
 
@@ -27,11 +28,11 @@ Firmware Accountability Contract.
 - [IETF RFC 9711: Entity Attestation Token](https://datatracker.ietf.org/doc/html/rfc9711)
   — interoperable attestation claims, nonce/freshness, and composite-device concepts.
 - [CHIPS Alliance Caliptra](https://github.com/chipsalliance/caliptra) — open root of
-  trust, measured boot, identity, and attestation project for datacenter SoCs.
+  trust, measured boot, identity, and attestation project for datacenter systems on a chip (SoCs).
 - [PCI-SIG PCI Express Base resources](https://pcisig.com/specification-overview/pci-express-base)
   — public listings for Component Measurement and Authentication, IDE, DOE, and TDISP.
 - [PCI-SIG IDE public ECN page](https://pcisig.com/PCI%20Express/ECN/Base/IntegrityandDataEncryption)
-  — public description of confidentiality, integrity, and replay protection for PCIe
+  — public description of confidentiality, integrity, and replay protection for Peripheral Component Interconnect Express (PCIe)
   transaction traffic.
 
 ## NVIDIA

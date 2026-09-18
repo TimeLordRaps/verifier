@@ -1,8 +1,9 @@
 """Terminology: Concise Binary Object Representation (CBOR);
 CBOR Object Signing and Encryption (COSE); CBOR Web Token (CWT);
-grounded decision certificate (GDC); Request for Comments (RFC);
-Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Hash Algorithm 256-bit (SHA-256);
-verifiable data structure (VDS); Verifier Standard (VSTD).
+grounded decision certificate (GDC); Privacy-Enhanced Mail (PEM);
+Request for Comments (RFC); Supply Chain Integrity, Transparency, and Trust (SCITT);
+Secure Hash Algorithm 256-bit (SHA-256); verifiable data structure (VDS);
+Verifier Standard (VSTD).
 
 Cryptographic VSTD/SCITT interoperability specimen with a deterministic application
 payload and ephemeral-key COSE artifacts.

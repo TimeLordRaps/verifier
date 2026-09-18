@@ -12,7 +12,20 @@
 
 </div>
 
-> **Acronyms used below:** application programming interface (API); artificial intelligence (AI); Boolean satisfiability problem (SAT); central processing unit (CPU); command-line interface (CLI); conjunctive normal form (CNF); deletion resolution asymmetric tautology (DRAT); directed acyclic graph (DAG); grounded decision certificate (GDC); identifier (ID); intermediate representation (IR); JavaScript Object Notation (JSON); linear resolution asymmetric tautology (LRAT); machine learning (ML); nondeterministic polynomial time (NP); operating system (OS); reduced instruction set computer (RISC); satisfiability modulo theories (SMT); Secure Hash Algorithm 256-bit (SHA-256); unsatisfiable (UNSAT); Verifier Standard (VSTD).
+> **Acronyms used below:** accessible pointed graph (APG); Anti-Foundation Axiom (AFA);
+> application programming interface (API); artificial intelligence (AI);
+> Boolean satisfiability problem (SAT); central processing unit (CPU); command-line interface (CLI);
+> Concise Binary Object Representation (CBOR); continuous integration (CI); conjunctive normal form (CNF);
+> CBOR Object Signing and Encryption (COSE); deletion resolution asymmetric tautology (DRAT);
+> directed acyclic graph (DAG); grounded decision certificate (GDC); identifier (ID);
+> intermediate representation (IR); Internet Engineering Task Force (IETF);
+> JavaScript Object Notation (JSON); linear resolution asymmetric tautology (LRAT);
+> machine learning (ML); nondeterministic polynomial time (NP); operating system (OS);
+> Python Package Index (PyPI); reduced instruction set computer (RISC);
+> satisfiability modulo theories (SMT); Secure Hash Algorithm 256-bit (SHA-256);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); unsatisfiable (UNSAT);
+> Verifier Standard (VSTD); YAML Ain't Markup Language (YAML); ZIP archive format (ZIP);
+> zero-identity/zero-knowledge (ZIZK).
 
 VSTD is a verification-domain language and Python reference implementation for turning a
 bare computational result into an inspectable package: **the exact claim, artifact,

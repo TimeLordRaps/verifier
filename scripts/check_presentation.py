@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Terminology: artificial intelligence (AI); application programming interface (API);
 Amazon Web Services (AWS); Concise Binary Object Representation (CBOR); CBOR Object Signing and
-Encryption (COSE); command-line interface (CLI); Supply Chain Integrity, Transparency, and
+Encryption (COSE); command-line interface (CLI); Python Package Index (PyPI);
+Supply Chain Integrity, Transparency, and
 Trust (SCITT); reduced instruction set computer (RISC); Verifier Standard (VSTD).
 
 Fail closed when public presentation surfaces drift from executable truth."""

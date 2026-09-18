@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""Terminology: continuous integration (CI); identifier (ID);
-JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256);
+"""Terminology: continuous integration (CI);
+Extensible Markup Language (XML); identifier (ID);
+Java unit test report format (JUnit); JavaScript Object Notation (JSON);
+pull request (PR); Secure Hash Algorithm 256-bit (SHA-256);
 uniform resource locator (URL); Verifier Standard (VSTD).
 
 Validate the exact-head pull-request promotion record.
