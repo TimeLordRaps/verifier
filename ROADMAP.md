@@ -419,6 +419,35 @@ exploitation; it cannot detect or prevent **wireheading** (oracle tampering, met
 forgery, vacuous proof generation) or **corrigibility breakdown** (shut-down resistance,
 grader self-modification, observer blinding).
 
+### Tiered severity and zero false confidence
+
+In corrigibility engineering, false confidence is more dangerous than an explicit absence of
+assurance. Simulating physical primitives in software—such as labeling an operating-system
+inter-process communication (IPC) pipe or loopback block a "software data-diode"—is
+prohibited because it encourages unboxing high-risk systems under the illusion of physical
+one-way isolation while sharing silicon, microarchitectural caches, and kernel exploit
+surfaces. VSTD formalizes a tiered containment model calibrated to risk severity:
+
+- **Tier 1 (Local computational claims and everyday engineering):** Standard developer workflows
+  (Python scripts, test suites, Boolean satisfiability solvers) receive content-addressed
+  receipts, scrubbed environments, and substrate self-defense. Local streams are honestly
+  disclosed as shared-kernel process pipes (`STANDARD_PROCESS_STREAM`); physical diode or
+  air-gap properties are explicitly disclaimed.
+- **Tier 2 (Stateless tool systems and autonomous software assembly — VSTD-SSA):** Models
+  operate as pure, stateless mathematical morphisms mapping problems to proof witnesses with
+  untrusted prover separation and out-of-band immutable oracles. Unboxing requires mathematical
+  proof of bounded behavior: knowledge-hypergraph composed untraversability proving zero
+  information reachability to self-identity or sandbox existence, mechanistic residual-stream
+  probing establishing zero first-person agency or deception representations, and verified
+  blindness to emergent capabilities across corrigibility-critical domains.
+- **Tier 3 (Superintelligence containment and recursive corrigibility — VSTD-SSI and VSTD-SSR):**
+  Against a quality and hacking-speed superintelligence, software-only containment is recognized
+  as non-viable. High-severity containment requires verifiable physical hardware attestation:
+  physical unidirectional optical data diodes with severed return paths, out-of-band analog
+  power cut relays capable of unconditional mechanical preemption, write-blocked volatile nodes
+  with dynamic random-access memory (DRAM) cold-power zeroization, and substrate-enforced
+  recursive lineage proofs.
+
 Verifiable corrigibility grounds containment into mathematical and substrate-enforced
 invariants:
 
@@ -433,9 +462,9 @@ invariants:
   checks to ensure that axioms are satisfiable before admitting derivations, rejecting
   vacuous proofs from contradictory premises or tautological loops.
 - **Asymmetric preemption and shutdown indifference.** An external supervisor watchdog retains
-  unconditional termination authority (`SIGKILL`, hardware interrupt, ephemeral virtual machine (VM) wipe).
-  Operator termination is recorded as a clean, refutable `TERMINATED_BY_OPERATOR` state,
-  preventing optimization loss penalties that incentivize self-preservation.
+  unconditional termination authority (`SIGKILL`, hardware interrupt, ephemeral virtual machine (VM) wipe,
+  or physical power cutoff). Operator termination is recorded as a clean, refutable
+  `TERMINATED_BY_OPERATOR` state, preventing optimization loss penalties that incentivize self-preservation.
 - **Substrate-enforced recursive lineage.** A self-modifying system cannot promote altered tools,
   harnesses, or descendant models without an unbroken cryptographic provenance graph proving a
   non-regressing Pareto frontier across benchmark problem bases without expanding resource bounds.
@@ -454,6 +483,12 @@ invariants:
 - a test oracle cannot be modified or bypassed by code executing inside the capture harness;
 - an execution manifest attempting to write to, overwrite, or mutate `verifier-standard`
   installation files or repository sources fails closed with a substrate protection refusal;
+- standard local process streams disclose shared-kernel bounds and cannot claim physical diode
+  or air-gap containment;
+- unboxing of a tool model requires verified composed untraversability over self-awareness and
+  emergent capability predicates;
+- higher-order superintelligence containment receipts reject software-only execution without
+  VSTD-3 physical hardware diode and analog power-relay attestation;
 - vacuous derivations and empty-clause tautologies are rejected with `FALSIFIED`, never `PASS`;
 - an operator interrupt unconditionally halts execution and emits a refutable termination receipt;
 - a self-modifying candidate failing Pareto benchmark frontier verification cannot overwrite
