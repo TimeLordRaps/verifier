@@ -19,6 +19,30 @@ def test_stdlib_smoke_conforms() -> None:
     assert preflight.check_stdlib_smoke() is True
 
 
+def test_readme_version_conforms() -> None:
+    assert preflight.check_readme_version() is True
+
+
+def test_readme_version_detects_mismatch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    (tmp_path / "pyproject.toml").write_text('[project]\nversion = "2.0.0"\n', encoding="utf-8")
+    (tmp_path / "README.md").write_text('python -m pip install "verifier-standard==1.0.0"\n', encoding="utf-8")
+    monkeypatch.setattr(preflight, "ROOT", tmp_path)
+    assert preflight.check_readme_version() is False
+
+
+def test_docs_versions_conforms() -> None:
+    assert preflight.check_docs_versions() is True
+
+
+def test_docs_versions_detects_mismatch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    (tmp_path / "pyproject.toml").write_text('[project]\nversion = "2.0.0"\n', encoding="utf-8")
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "TEST.md").write_text('python -m pip install "verifier-standard==1.0.0"\n', encoding="utf-8")
+    monkeypatch.setattr(preflight, "ROOT", tmp_path)
+    assert preflight.check_docs_versions() is False
+
+
 def test_presentation_gate_conforms() -> None:
     assert preflight.check_presentation_gate() is True
 

@@ -16,7 +16,7 @@ need the optional `seal` extra.
 ```python
 import verifier
 
-verifier.__version__           # '1.4.0'
+verifier.__version__           # '1.5.0'
 verifier.__standard__          # 'VSTD-5'
 verifier.__standard_status__   # 'PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM'
 ```
@@ -308,6 +308,25 @@ rebuilt.to_dict() == payload   # True for an untampered log
 Editing a recorded detail in the payload makes the replay disagree rather than adopting the
 edit.
 
+## Grounded decision certificates (GDC)
+
+The `VSTD-4` refutability profile introduces Grounded Decision Certificates (`VSTD4-GDC-1`).
+While external proof formats verify formula unsatisfiability without claim semantics, a
+Grounded Decision Certificate explicitly binds each variable to an artifact-backed fact
+and each clause to an encoding rule.
+
+`DecisionCertificate` holds canonical certificate blocks (`header`, `grounding`,
+`decision`, and optional `hints`) for the bounded kernel, while
+`certificate_from_canonical_bytes` decodes only the canonical JSON representation used in
+commitment digests — not a lenient parse:
+
+```python
+from verifier import DecisionCertificate, certificate_from_canonical_bytes
+
+cert = certificate_from_canonical_bytes(canonical_certificate_bytes)
+isinstance(cert, DecisionCertificate)  # True
+```
+
 ## The complete export map
 
 | Group | Exports |
@@ -323,10 +342,6 @@ edit.
 | Graph profiles | `ProvenanceHypergraph`, `establish_graph_level`, `graph_collection_binding_digest`, `build_evidence_bound_graph_level_record`, `recheck_evidence_bound_graph_level_record` |
 | Assurance | `AssuranceLedger`, `ObligationCoordinate`, `recheck_assurance_log` |
 | Certificates | `DecisionCertificate`, `certificate_from_canonical_bytes` |
-
-`DecisionCertificate` holds canonical GDC blocks for the bounded checker, and
-`certificate_from_canonical_bytes` decodes only the canonical JSON representation used in
-commitment digests — not a lenient parse.
 
 The experimental artifact-network surface is reached through
 `verifier.interoperability.network` rather than the top-level package, because its `0.1`

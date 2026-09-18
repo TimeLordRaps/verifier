@@ -116,6 +116,48 @@ def check_mandatory_documentation_coverage(root: Path, target_version: str) -> l
                     f"CHANGELOG.md for {target_version} explicitly defers documentation"
                 )
 
+    # 5. Check documentation estate version references
+    errors.extend(check_documentation_version_references(root, target_version))
+
+    return errors
+
+
+def check_documentation_version_references(root: Path, target_version: str) -> list[str]:
+    """Verify that all documentation files with pinned install/release/clone commands match target_version."""
+    errors: list[str] = []
+    pip_pat = re.compile(r'verifier-standard(?:\[[a-zA-Z0-9,._-]+\])?==([0-9a-zA-Z.-]+)')
+    git_pat = re.compile(r'(?:--branch\s+v|checkout\s+v|origin\s+tag\s+v|tag\s+`v)([0-9a-zA-Z.-]+)')
+    ver_pat = re.compile(r"verifier\.__version__\)?\s*(?:\n\s*)?#\s*'([^']+)'")
+
+    docs_dir = root / "docs"
+    if not docs_dir.is_dir():
+        return errors
+
+    for doc_path in sorted(docs_dir.rglob("*.md")):
+        rel_path = doc_path.relative_to(root).as_posix()
+        text = doc_path.read_text(encoding="utf-8")
+
+        for line_no, line in enumerate(text.splitlines(), 1):
+            for m in pip_pat.finditer(line):
+                observed = m.group(1)
+                if observed != target_version:
+                    errors.append(
+                        f"{rel_path}:{line_no}: pinned pip install specifies {observed!r}, expected {target_version!r}"
+                    )
+            for m in git_pat.finditer(line):
+                observed = m.group(1)
+                if observed != target_version:
+                    errors.append(
+                        f"{rel_path}:{line_no}: git command specifies tag/branch v{observed}, expected v{target_version}"
+                    )
+
+        for m in ver_pat.finditer(text):
+            observed = m.group(1)
+            if observed != target_version:
+                errors.append(
+                    f"{rel_path}: verifier.__version__ output comment specifies {observed!r}, expected {target_version!r}"
+                )
+
     return errors
 
 

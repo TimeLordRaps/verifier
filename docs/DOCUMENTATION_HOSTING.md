@@ -8,7 +8,7 @@ the existence of this guide does not establish that either site is deployed.
 
 Build from the public repository using the
 [repository walkthrough](REPOSITORY_WALKTHROUGH.md). The portal generator records
-both the current source coordinate and the commit behind release tag `v1.4.0`.
+both the current source coordinate and the commit behind release tag `v1.5.0`.
 Release documentation is built from that tag in a separate process. Equivalence
 between the tag and the published distribution remains a release-process
 dependency; the portal build does not silently claim to establish it.

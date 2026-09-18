@@ -346,6 +346,13 @@ def check_versions(errors: list[str]) -> None:
                 )
             if tag_url not in surface:
                 errors.append(f"{relative} release link must target tag v{expected}")
+        readme_surface = (ROOT / "README.md").read_text(encoding="utf-8")
+        pip_expected = f'python -m pip install "verifier-standard=={expected}"'
+        if pip_expected not in readme_surface:
+            errors.append(f"README.md install command must pin {pip_expected!r}")
+        coord_expected = f"At the version {expected} source coordinate"
+        if coord_expected not in readme_surface:
+            errors.append(f"README.md source coordinate must declare {coord_expected!r}")
 
 
 def maturity_table_violations(readme: str) -> list[str]:
