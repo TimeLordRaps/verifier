@@ -439,6 +439,11 @@ invariants:
 - **Substrate-enforced recursive lineage.** A self-modifying system cannot promote altered tools,
   harnesses, or descendant models without an unbroken cryptographic provenance graph proving a
   non-regressing Pareto frontier across benchmark problem bases without expanding resource bounds.
+- **Substrate self-defense and metamorphic invariance.** An agent running within a VSTD
+  harness is categorically prohibited from operating on, mutating, or targeting the
+  `verifier-standard` package, its repository sources, its specifications, or its checking kernel.
+  The harness fails closed before execution if declared outputs or commands target protected
+  substrate paths, and rejects receipt capture if any substrate file is modified during runtime.
 - **Bounded meta-representation horizons.** The open research frontier for recursive
   self-improvement requires hypermathematical, fractal meta-representation boundaries so that
   recursive reflection cannot escape finite verification bounds before sovereign replication
@@ -447,6 +452,8 @@ invariants:
 **Exit evidence**
 
 - a test oracle cannot be modified or bypassed by code executing inside the capture harness;
+- an execution manifest attempting to write to, overwrite, or mutate `verifier-standard`
+  installation files or repository sources fails closed with a substrate protection refusal;
 - vacuous derivations and empty-clause tautologies are rejected with `FALSIFIED`, never `PASS`;
 - an operator interrupt unconditionally halts execution and emits a refutable termination receipt;
 - a self-modifying candidate failing Pareto benchmark frontier verification cannot overwrite
