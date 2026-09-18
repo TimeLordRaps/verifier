@@ -167,10 +167,11 @@ def test_evaluate_estate_sync_detects_drift(tmp_path: Path):
     (cg / "index.html").write_text('vstd-labs/gdc-sat-kernel <span>v1.4.0</span>', encoding="utf-8")
     (cg / "catalog.html").write_text('vstd-labs%2Fgdc-sat-kernel <span>v1.4.0</span>', encoding="utf-8")
 
-    # Evaluate against target version 1.4.2 with target_sync=True
+    current_version = module.get_package_version(ROOT)
+    # Evaluate against current target version with target_sync=True
     eval_res = module.evaluate_estate_sync(
         root=ROOT,
-        target_version="1.4.2",
+        target_version=current_version,
         vstd_labs_dir=labs,
         claimgarden_dir=cg,
         offline=True,

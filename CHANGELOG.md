@@ -14,6 +14,14 @@
 
 ## Unreleased
 
+## 1.5.0 - UNRELEASED
+
+### Zero-Identity / Zero-Knowledge (ZIZK) Actor Identity Architecture
+
+- Normative three-token specification (`standard/VSTD-ZIZK-TOKENS.md`) and schemas (`vstd-birth-token-1`, `vstd-aging-token-1`, `vstd-lifetime-token-1`, `vstd-actor-binding-1`).
+- Enforce the ZIZK prime invariant: actor identity never substitutes for, upgrades, or shortcuts independent artifact verification.
+- Provide zero-identity offline evaluation engine and comprehensive adversarial audit harness blocking 16 prohibited inference classes and 6 attack vectors.
+
 ## 1.4.2 - 2026-09-17
 
 ### Diagnostics and Verification Modernization

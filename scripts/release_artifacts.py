@@ -57,14 +57,18 @@ PACKAGED_SCHEMA_NAMES = frozenset(
     {
         "artifact-control-1.schema.json",
         "graph-topology.schema.json",
+        "vstd-actor-binding-1.schema.json",
+        "vstd-aging-token-1.schema.json",
         "vstd-artifact-network-0.1.schema.json",
         "vstd-authority-model-0.1.schema.json",
+        "vstd-birth-token-1.schema.json",
         "vstd-bounded-completeness-0.1.schema.json",
         "vstd-component-index-1.schema.json",
         "vstd-component-package-1.schema.json",
         "vstd-deriver-self-status-0.1.schema.json",
         "vstd-global-cycle-assessment-0.1.schema.json",
         "vstd-graph-assurance-1.schema.json",
+        "vstd-lifetime-token-1.schema.json",
         "vstd-proposition-transfer-0.1.schema.json",
         "vstd-push-request-0.1.schema.json",
         "vstd-relation-boundary-0.1.schema.json",
@@ -91,6 +95,28 @@ _GENERATED_WHEEL_TEXT_NAMES = {
 
 class ReleaseError(RuntimeError):
     """Release construction or verification failed closed."""
+
+
+def _schema_inventory_error(surface: str, observed: set[str]) -> str:
+    """Name the exact divergence so the failure is actionable without a rebuild.
+
+    The packaged schema set is declared once in ``PACKAGED_SCHEMA_NAMES`` and
+    packaged by glob, so adding a schema file changes the artifact without
+    changing the declaration. Reporting only that the sets differ leaves the
+    reader to diff twenty-seven names by hand across three platform jobs.
+    """
+    missing = sorted(PACKAGED_SCHEMA_NAMES - observed)
+    undeclared = sorted(observed - PACKAGED_SCHEMA_NAMES)
+    parts = [f"{surface} packaged schema inventory differs from the canonical release set"]
+    if undeclared:
+        parts.append(f"present but undeclared: {', '.join(undeclared)}")
+    if missing:
+        parts.append(f"declared but absent: {', '.join(missing)}")
+    parts.append(
+        "reconcile scripts/release_artifacts.py PACKAGED_SCHEMA_NAMES with "
+        "standard/schemas/ and src/verifier/schemas/"
+    )
+    return "; ".join(parts)
 
 
 def _run(
@@ -526,9 +552,7 @@ def _verify_python_distributions(wheel: Path, sdist: Path, release: str) -> None
             if path.startswith(f"{IMPORT_PACKAGE}/schemas/") and path.endswith(".json")
         }
         if wheel_schemas != PACKAGED_SCHEMA_NAMES:
-            raise ReleaseError(
-                "wheel packaged schema inventory differs from the canonical release set"
-            )
+            raise ReleaseError(_schema_inventory_error("wheel", wheel_schemas))
 
     if _canonical_distribution_name(name) != expected_name or version != release:
         raise ReleaseError(
@@ -567,9 +591,7 @@ def _verify_python_distributions(wheel: Path, sdist: Path, release: str) -> None
             if path.startswith(sdist_schema_prefix) and path.endswith(".json")
         }
         if sdist_schemas != PACKAGED_SCHEMA_NAMES:
-            raise ReleaseError(
-                "sdist packaged schema inventory differs from the canonical release set"
-            )
+            raise ReleaseError(_schema_inventory_error("sdist", sdist_schemas))
 
     if (
         _canonical_distribution_name(sdist_name) != expected_name

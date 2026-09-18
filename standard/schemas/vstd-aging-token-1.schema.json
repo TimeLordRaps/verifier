@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-aging-token-1.schema.json",
+  "title": "Verifier Standard (VSTD) zero-identity aging token",
+  "description": "Cryptographic accumulator proving continuous unrevoked tenure across epochs without leaking transaction history.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "token_id",
+    "birth_token_id",
+    "genesis_key_digest",
+    "accumulated_epochs",
+    "epoch_start",
+    "epoch_end",
+    "accumulator_digest",
+    "revocation_status",
+    "attested_by",
+    "issued_at",
+    "signature_base64url"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "VSTD-AGING-TOKEN-1"
+    },
+    "token_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "birth_token_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "genesis_key_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "accumulated_epochs": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "epoch_start": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "epoch_end": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "accumulator_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "revocation_status": {
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "REVOKED"
+      ]
+    },
+    "attested_by": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "issued_at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "signature_base64url": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+}
