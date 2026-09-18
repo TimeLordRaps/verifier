@@ -738,6 +738,24 @@ def check_terminology(errors: list[str]) -> None:
         errors.append(f"terminology presentation gate failed: {exc}")
 
 
+def check_mandatory_documentation(errors: list[str]) -> None:
+    """Every release must include its documentation, tutorials, and CLI/API references simultaneously."""
+
+    path = ROOT / "scripts/check_public_estate_sync.py"
+    spec = importlib.util.spec_from_file_location("check_public_estate_sync", path)
+    if spec is None or spec.loader is None:
+        errors.append("cannot load scripts/check_public_estate_sync.py")
+        return
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+        version = module.get_package_version(ROOT)
+        doc_errors = module.check_mandatory_documentation_coverage(ROOT, version)
+        errors.extend(doc_errors)
+    except Exception as exc:
+        errors.append(f"mandatory documentation coverage presentation gate failed: {exc}")
+
+
 def run() -> list[str]:
     errors: list[str] = []
     check_local_links(errors)
@@ -753,6 +771,7 @@ def run() -> list[str]:
     check_generated_documentation(errors)
     check_acronyms(errors)
     check_terminology(errors)
+    check_mandatory_documentation(errors)
     return errors
 
 

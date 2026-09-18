@@ -220,7 +220,7 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
   records allocation but never grants a VSTD verdict from repository state.
 - `scripts/` — presentation, release-state, artifact, Pages, reference, and experiment-index
   gates, including `check_presentation.py`, `check_time_status.py`,
-  `check_terminology.py`, `check_release_metadata.py`, and `release_artifacts.py`.
+  `check_terminology.py`, `check_release_metadata.py`, `check_public_estate_sync.py`, and `release_artifacts.py`.
 - `tests/` — flat `tests/test_*.py`, no `conftest.py`.
 
 ## 5. Invariants that must not be refactored away

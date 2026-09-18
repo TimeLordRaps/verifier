@@ -77,6 +77,16 @@ def require_finalized(root: Path, version: str) -> None:
     if "release-candidate" in description or "after the release exists" in description:
         raise ValueError("Zenodo metadata still describes an unpublished candidate")
 
+    if (root / "docs").is_dir():
+        from check_public_estate_sync import check_mandatory_documentation_coverage
+
+        doc_errors = check_mandatory_documentation_coverage(root, version)
+        if doc_errors:
+            raise ValueError(
+                f"mandatory documentation coverage incomplete for {version}: "
+                + "; ".join(doc_errors)
+            )
+
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
