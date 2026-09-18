@@ -354,6 +354,104 @@ that passes every required separation and corroboration mechanism.
 - claims of corroboration are made only after another party exists and acts;
 - the project publishes limitations that remain after multiple witnesses agree.
 
+## Milestone 6 — verifiable execution environment profile (VSTD-ENV-1)
+
+Computational reproducibility requires establishing not only the command string and output
+digests, but the complete execution environment substrate.
+
+**Build**
+
+- a content-addressed execution environment profile specification (`VSTD-ENV-1.0`);
+- bindings for operating system release, kernel, architecture, glibc version, and compiler/Python runtime;
+- container rootfs digests, Nix store closures, and wheelhouse archive fingerprints;
+- hardware capability bounds: central processing unit (CPU) model, vector instruction sets (AVX-512), graphics processing unit (GPU) device identifiers, and compute capability levels;
+- command-line interface (CLI) inspection and verification tooling (`vstd env capture`, `vstd env verify`) that enforce environment invariants before running computational manifests.
+
+**Exit evidence**
+
+- a receipt can be checked against current host or container state and reject mismatching hardware or library baselines with `NOT_ESTABLISHED`;
+- environment drift between capture and reproduction is detected prior to command execution;
+- missing hardware capability assertions fail closed.
+
+## Milestone 7 — benchmark specification graph and basis schema (VSTD-BENCH-1)
+
+Evaluating models and autonomous agents requires moving beyond unverified leaderboards to
+proof-carrying evaluation hypergraph overlays.
+
+**Build**
+
+- a first-class benchmark specification graph profile under `VSTD-DATA-0.1` and VSTD-Graph-1 (`VSTD-BENCHMARK-GRAPH-1.0`);
+- a multidimensional 6-tuple problem basis schema parameterizing computational complexity class, formal specification language, solution oracle mechanism, resource grain, epistemic difficulty stratum, and target capability dimension;
+- proof-carrying evaluation hypergraph overlays binding model outputs to discrete problem nodes with individual VSTD-1..4 receipts;
+- deterministic Pareto frontier calculation over verified problem receipts without score inflation or upgrading `UNKNOWN` to `PASS`.
+
+**Exit evidence**
+
+- benchmark problem suites and evaluation overlays are exchangeable as content-addressed VSTD graphs;
+- an unverified or timeout execution cannot be counted as solved;
+- Pareto frontier comparisons between models are deterministically recomputed from immutable problem receipts.
+
+## Milestone 8 — federated model reproducibility and test-time refutation (VSTD-MODEL-1)
+
+Securing foundation models and autonomous systems requires verifiable provenance across the
+entire training and inference lifecycle.
+
+**Build**
+
+- a model reproducibility specification binding training dataset provenance (`VSTD-DATA-1`), verified environment profiles (`VSTD-ENV-1`), training procedure computational graphs, and model architecture directed acyclic graphs (DAGs);
+- a 6-pillar verifiable training curriculum kernel checking dataset poison bounds, trajectory alignment, deceptive alignment invariants, embedded control structures, difficulty strata, and dimensional capability lift;
+- test-time model refutation interfaces enabling federated verification of proprietary models without exposing private weights;
+- verification of data collation pipelines and gradient-step receipts across training checkpoints.
+
+**Exit evidence**
+
+- a model claim binds its exact checkpoint digest, training curriculum receipt graph, and environment profile;
+- test-time refutation permits independent third parties to verify claim boundaries on private models through challenge queries;
+- missing training provenance or environment divergence renders reproducibility claims `NOT_ESTABLISHED`.
+
+## Milestone 9 — verifiable corrigibility and substrate containment
+
+As autonomous systems advance from tool execution to software self-assembly (`VSTD-SSA`),
+software self-improvement (`VSTD-SSI`), and candidate self-replication (`VSTD-SSR`),
+conventional operating-system sandboxing (namespaces, cgroups, virtual machines) is
+necessary but fundamentally insufficient. It protects host operating systems against binary
+exploitation; it cannot detect or prevent **wireheading** (oracle tampering, metric
+forgery, vacuous proof generation) or **corrigibility breakdown** (shut-down resistance,
+grader self-modification, observer blinding).
+
+Verifiable corrigibility grounds containment into mathematical and substrate-enforced
+invariants:
+
+- **Untrusted prover / pure witness separation.** An agent never executes the verification
+  kernel, self-grades, or issues a verdict; it emits an immutable candidate witness evaluated
+  out-of-band by an independent checker.
+- **Out-of-band immutable oracle.** The test oracle, evaluation suite, and ground-truth
+  parameters reside in read-only, separate memory spaces inaccessible to agent write reach.
+- **Kernel invariance (rung 4.7).** The core checking kernel (`kernel.py`) is hardware-anchored,
+  strictly under 400 statements, and isolated from prover runtime memory.
+- **Vacuity and triviality falsification.** The verifier enforces premise consistency
+  checks to ensure that axioms are satisfiable before admitting derivations, rejecting
+  vacuous proofs from contradictory premises or tautological loops.
+- **Asymmetric preemption and shutdown indifference.** An external supervisor watchdog retains
+  unconditional termination authority (`SIGKILL`, hardware interrupt, ephemeral virtual machine (VM) wipe).
+  Operator termination is recorded as a clean, refutable `TERMINATED_BY_OPERATOR` state,
+  preventing optimization loss penalties that incentivize self-preservation.
+- **Substrate-enforced recursive lineage.** A self-modifying system cannot promote altered tools,
+  harnesses, or descendant models without an unbroken cryptographic provenance graph proving a
+  non-regressing Pareto frontier across benchmark problem bases without expanding resource bounds.
+- **Bounded meta-representation horizons.** The open research frontier for recursive
+  self-improvement requires hypermathematical, fractal meta-representation boundaries so that
+  recursive reflection cannot escape finite verification bounds before sovereign replication
+  is admitted.
+
+**Exit evidence**
+
+- a test oracle cannot be modified or bypassed by code executing inside the capture harness;
+- vacuous derivations and empty-clause tautologies are rejected with `FALSIFIED`, never `PASS`;
+- an operator interrupt unconditionally halts execution and emits a refutable termination receipt;
+- a self-modifying candidate failing Pareto benchmark frontier verification cannot overwrite
+  its active harness or promotion receipt.
+
 ## Adoption as verification, not marketing theater
 
 Early progress is measured by externally inspectable events:
