@@ -180,3 +180,61 @@ def test_evaluate_estate_sync_detects_drift(tmp_path: Path):
     assert any("vstd-labs.com hero badge reads" in a for a in eval_res["action_items"])
     assert any("vstd-labs.com demo session pins" in a for a in eval_res["action_items"])
     assert any("claimgarden.com index card footer reads" in a for a in eval_res["action_items"])
+
+
+def test_inspect_vstd_labs_missing_files(tmp_path: Path):
+    module = _load_module()
+    empty = tmp_path / "empty_dir"
+    empty.mkdir()
+    data = module.inspect_vstd_labs(empty)
+    assert data["status"] == "NOT_FOUND"
+
+    # Must evaluate without crashing on None attributes
+    eval_res = module.evaluate_estate_sync(
+        root=ROOT,
+        target_version="1.4.2",
+        vstd_labs_dir=empty,
+        offline=True,
+    )
+    assert eval_res["vstd_labs"]["status"] == "NOT_FOUND"
+
+
+def test_find_estate_path_resolves_repo_subdirectories(tmp_path: Path):
+    module = _load_module()
+    repo_root = tmp_path / "mock-estate-root"
+    repo_root.mkdir()
+    website = repo_root / "website"
+    website.mkdir()
+
+    resolved = module.find_estate_path(repo_root, "VSTD_LABS_ROOT", (), sub_dir="website")
+    assert resolved == website
+
+
+def test_format_report_unobserved_surfaces():
+    module = _load_module()
+    eval_result = {
+        "target_version": "1.4.2",
+        "doc_coverage_status": "PASS",
+        "doc_coverage_errors": [],
+        "pypi": {"status": "SKIPPED_OFFLINE"},
+        "vstd_labs": {"status": "NOT_FOUND"},
+        "claimgarden": {"status": "NOT_FOUND"},
+        "action_items": [],
+    }
+    report = module.format_report(eval_result)
+    assert "CLEAN for observed surfaces" in report
+    assert "PyPI (SKIPPED_OFFLINE)" in report
+    assert "Company Site (NOT_FOUND)" in report
+
+
+def test_check_release_metadata_require_finalized_isolated_import(tmp_path: Path):
+    # Verify that check_release_metadata.require_finalized does not crash
+    # with ModuleNotFoundError when scripts/ is not on sys.path.
+    meta_path = ROOT / "scripts" / "check_release_metadata.py"
+    spec = importlib.util.spec_from_file_location("check_release_metadata_test", meta_path)
+    assert spec is not None and spec.loader is not None
+    meta_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(meta_module)
+
+    # Calling require_finalized against ROOT must succeed without import errors
+    meta_module.require_finalized(ROOT, "1.4.2")

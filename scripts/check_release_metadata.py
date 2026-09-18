@@ -78,14 +78,22 @@ def require_finalized(root: Path, version: str) -> None:
         raise ValueError("Zenodo metadata still describes an unpublished candidate")
 
     if (root / "docs").is_dir():
-        from check_public_estate_sync import check_mandatory_documentation_coverage
+        script_path = root / "scripts" / "check_public_estate_sync.py"
+        if not script_path.is_file():
+            script_path = Path(__file__).resolve().parent / "check_public_estate_sync.py"
+        if script_path.is_file():
+            import importlib.util
 
-        doc_errors = check_mandatory_documentation_coverage(root, version)
-        if doc_errors:
-            raise ValueError(
-                f"mandatory documentation coverage incomplete for {version}: "
-                + "; ".join(doc_errors)
-            )
+            spec = importlib.util.spec_from_file_location("check_public_estate_sync", script_path)
+            if spec is not None and spec.loader is not None:
+                sync_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(sync_module)
+                doc_errors = sync_module.check_mandatory_documentation_coverage(root, version)
+                if doc_errors:
+                    raise ValueError(
+                        f"mandatory documentation coverage incomplete for {version}: "
+                        + "; ".join(doc_errors)
+                    )
 
 
 def main(argv: list[str] | None = None) -> int:
