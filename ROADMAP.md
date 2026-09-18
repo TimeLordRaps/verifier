@@ -1,9 +1,9 @@
 # Verifier Standard (VSTD) public technical roadmap
 
-> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
-> grounded decision certificate (GDC); Internet Engineering Task Force (IETF);
-> reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
-> Supply Chain Integrity, Transparency, and Trust (SCITT);
+> **Acronyms:** artificial intelligence (AI); Concise Binary Object Representation (CBOR);
+> CBOR Object Signing and Encryption (COSE); grounded decision certificate (GDC);
+> Internet Engineering Task Force (IETF); reduced instruction set computer (RISC);
+> Boolean satisfiability problem (SAT); Supply Chain Integrity, Transparency, and Trust (SCITT);
 > zero-identity/zero-knowledge (ZIZK).
 
 TRUST is mechanism-earned forward artifact support; ROT is typed, time-indexed
@@ -419,6 +419,12 @@ exploitation; it cannot detect or prevent **wireheading** (oracle tampering, met
 forgery, vacuous proof generation) or **corrigibility breakdown** (shut-down resistance,
 grader self-modification, observer blinding).
 
+VSTD does not claim to have solved artificial intelligence (AI) alignment, control, or
+corrigibility. Universal corrigibility across unconstrained superintelligent state spaces
+cannot be guaranteed mathematically or certified in the abstract. Instead, VSTD provides a
+portable, bounded, and refutable computational claim surface for evidencing concrete risk
+reductions associated with incorrigible models.
+
 ### Tiered severity and zero false confidence
 
 In corrigibility engineering, false confidence is more dangerous than an explicit absence of
@@ -514,6 +520,9 @@ independence, interoperability, or adoption of the standard.
 This roadmap does not promise to:
 
 - certify general intelligence, alignment, intent, or moral status;
+- claim to have solved the artificial intelligence (AI) alignment, control, or corrigibility
+  problem; VSTD provides only refutable computational claim surfaces and substrate containment
+  boundaries for evidencing bounded risk reductions associated with incorrigible models;
 - reveal hidden model state or unobservable harness context;
 - prove all physical execution has been recorded;
 - replace sandboxing, signatures, identity systems, transparency logs, or domain
