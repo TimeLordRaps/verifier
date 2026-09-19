@@ -107,6 +107,7 @@ class _BuiltPageLinks(HTMLParser):
                 self.links.append(attributes[name])
 
 
+@pytest.mark.timeout(180)
 def test_professional_presentation_surface_has_no_drift() -> None:
     path = ROOT / "scripts/check_presentation.py"
     spec = importlib.util.spec_from_file_location("check_presentation", path)

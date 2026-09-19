@@ -5,6 +5,7 @@ Enforce newcomer-readable acronym expansion across Verifier Standard (VSTD) pros
 
 from __future__ import annotations
 
+import functools
 from pathlib import Path
 import re
 import sys
@@ -61,12 +62,14 @@ def public_reader_files() -> list[Path]:
     return sorted(files)
 
 
+@functools.lru_cache(maxsize=None)
 def _term_pattern(term: str) -> re.Pattern[str]:
     return re.compile(
         rf"(?<![A-Za-z0-9_-]){re.escape(term)}s?(?![A-Za-z0-9_-])"
     )
 
 
+@functools.lru_cache(maxsize=None)
 def _definition_pattern(expansion: str, term: str) -> re.Pattern[str]:
     """Match a definition even when Markdown wraps it across physical lines, contains backticks, or uses plurals."""
 
@@ -78,7 +81,7 @@ def _definition_pattern(expansion: str, term: str) -> re.Pattern[str]:
 
 def _required_terms(text: str, expansions: dict[str, str]) -> set[str]:
     candidate_terms = {
-        term for term in expansions if _term_pattern(term).search(text) is not None
+        term for term in expansions if term in text and _term_pattern(term).search(text) is not None
     }
     # To prevent false positives where an acronym only appears inside
     # another acronym's definition (e.g. within compound definitions),
