@@ -1,6 +1,9 @@
 # Contributing to Verifier Standard (VSTD)
 
-> **Acronyms:** GNU Privacy Guard (GPG); identifier (ID); uniform resource locator (URL).
+> **Acronyms:** Extensible Markup Language (XML); GNU Privacy Guard (GPG); identifier (ID);
+> JavaScript Object Notation (JSON); Java unit test report format (JUnit);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); uniform resource locator (URL);
+> Verifier Standard (VSTD).
 
 Contributions are welcome when they make a declared verification surface more precise,
 more checkable outside its producer, or easier to implement without strengthening unsupported

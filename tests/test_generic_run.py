@@ -718,3 +718,25 @@ def test_generic_run_mechanism_hash_binds_every_decomposed_module() -> None:
     assert binding["verifier"]["parser_hash"] == "sha256:" + hashlib.sha256(
         (directory / "run_validation.py").read_bytes()
     ).hexdigest()
+
+
+def test_substrate_protection_blocks_output_targeting_verifier(tmp_path: Path) -> None:
+    import verifier
+
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    pkg_file = Path(verifier.__file__).resolve()
+    manifest["outputs"] = [{"path": str(pkg_file), "role": "subversion_attempt"}]
+
+    with pytest.raises(RunError, match="Substrate protection violation: declared output"):
+        capture_run(manifest, manifest_dir=proj)
+
+
+def test_substrate_protection_blocks_pip_mutation_commands(tmp_path: Path) -> None:
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    manifest["command"] = ["python", "-m", "pip", "uninstall", "-y", "verifier-standard"]
+
+    with pytest.raises(RunError, match="Substrate protection violation: command targets verifier-standard modification"):
+        capture_run(manifest, manifest_dir=proj)
+

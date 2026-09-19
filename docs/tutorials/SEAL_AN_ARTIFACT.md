@@ -1,6 +1,6 @@
 # Seal an artifact and detect a change
 
-> **Acronyms:** identifier (ID).
+> **Acronyms:** identifier (ID); Secure Hash Algorithm 3 256-bit (SHA3-256); Verifier Standard (VSTD).
 
 This Verifier Standard (VSTD) tutorial freezes a directory, seals it, thaws a working
 copy, and then changes that copy so the runtime reports a different verdict. The last two

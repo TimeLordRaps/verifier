@@ -3,9 +3,11 @@
 > **Acronyms:** artificial intelligence (AI); application programming interface (API);
 > Concise Binary Object Representation (CBOR); Confidential Consortium Framework (CCF);
 > CBOR Object Signing and Encryption (COSE); CBOR Web Token (CWT); European Union (EU);
-> grounded decision certificate (GDC); Hypertext Transfer Protocol (HTTP); Request for Comments (RFC);
+> grounded decision certificate (GDC); Hypertext Transfer Protocol (HTTP); identifier (ID);
+> Internet Engineering Task Force (IETF); Request for Comments (RFC);
 > Supply Chain Integrity, Transparency, and Trust (SCITT); SCITT Reference APIs (SCRAPI); Transparency Service (TS);
-> verifiable data structure proof (VDP); verifiable data structure (VDS); working group (WG); zero-knowledge (ZK).
+> verifiable data structure proof (VDP); verifiable data structure (VDS); Verifier Standard (VSTD);
+> working group (WG); zero-knowledge (ZK).
 
 > **Status:** experimental, non-normative, reviewed against public specifications on
 > 2026-08-25. This document does not alter VSTD semantics and does not imply IETF,

@@ -1,5 +1,6 @@
 """Terminology: Advanced Micro Devices (AMD); application-specific integrated circuit (ASIC);
-JavaScript Object Notation (JSON); system management interface (SMI); Verifier Standard (VSTD).
+JavaScript Object Notation (JSON); system management interface (SMI);
+universally unique identifier (UUID); Verifier Standard (VSTD).
 
 AMD SMI/ROCm discovery and offline evidence normalization."""
 

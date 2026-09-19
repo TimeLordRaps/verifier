@@ -3,7 +3,8 @@
 > **Acronyms:** artificial intelligence (AI); Advanced Micro Devices (AMD); application programming interface (API);
 > Amazon Web Services (AWS); Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
 > conjunctive normal form (CNF); Device Identifier Composition Engine (DICE);
-> grounded decision certificate (GDC); identifier (ID); machine learning (ML); NVIDIA Management Library (NVML);
+> floating-point operation (FLOP); grounded decision certificate (GDC); identifier (ID);
+> machine learning (ML); NVIDIA Management Library (NVML);
 > JavaScript Object Notation (JSON);
 > Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
 > system management interface (SMI); Security Protocol and Data Model (SPDM);

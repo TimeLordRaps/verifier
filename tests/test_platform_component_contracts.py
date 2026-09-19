@@ -1,8 +1,9 @@
 """Machine-check the bounded cross-platform component-contract surface.
 
-Terminology: continuous integration (CI); JavaScript Object Notation (JSON);
-Java unit test report format (JUnit); Secure Hash Algorithm 256-bit (SHA-256);
-Verifier Standard (VSTD).
+Terminology: 64-bit Arm instruction-set architecture (ARM64);
+continuous integration (CI); identifier (ID);
+JavaScript Object Notation (JSON); Java unit test report format (JUnit);
+Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 """
 
 from __future__ import annotations

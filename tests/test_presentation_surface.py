@@ -1,4 +1,5 @@
-"""Terminology: application programming interface (API); Concise Binary Object Representation (CBOR);
+"""Terminology: 64-bit Arm instruction-set architecture (ARM64);
+application programming interface (API); Concise Binary Object Representation (CBOR);
 CBOR Object Signing and Encryption (COSE); continuous integration (CI); Hypertext Markup Language (HTML);
 Supply Chain Integrity, Transparency, and Trust (SCITT); uniform resource locator (URL);
 Verifier Standard (VSTD).
@@ -143,6 +144,48 @@ def test_acronym_gate_rejects_missing_and_late_first_use(tmp_path: Path) -> None
 
     readme.write_text(
         "# Verifier Standard (VSTD) application programming interface (API)\n",
+        encoding="utf-8",
+    )
+    assert module.validate_repo() == []
+
+    # Pluralized acronym detection:
+    readme.write_text(
+        "# Verifier Standard (VSTD)\n\nWe provide public APIs.\n",
+        encoding="utf-8",
+    )
+    errors = module.validate_repo()
+    assert any("API is not expanded" in error for error in errors)
+
+    # Pluralized definition parsing:
+    readme.write_text(
+        "# Verifier Standard (VSTD)\n\n"
+        "We support application programming interfaces (APIs).\n",
+        encoding="utf-8",
+    )
+    assert module.validate_repo() == []
+
+    # Backticked definition parsing:
+    readme.write_text(
+        "# Verifier Standard (VSTD)\n\n"
+        "We support application programming interface (`API`).\n",
+        encoding="utf-8",
+    )
+    assert module.validate_repo() == []
+
+    # Compound definition masking (parent definition containing child acronym does not falsely require child):
+    c_term = "SUB" + "TERM"
+    p_term = "PAR" + "ENT"
+    glossary.write_text(
+        "| Term | Expansion | Note |\n"
+        "|---|---|---|\n"
+        f"| `{c_term}` | sub term | child |\n"
+        f"| `{p_term}` | parent {c_term} standard | parent |\n"
+        "| `VSTD` | Verifier Standard | standard |\n",
+        encoding="utf-8",
+    )
+    readme.write_text(
+        "# Verifier Standard (VSTD)\n\n"
+        f"We support parent {c_term} standard ({p_term}).\n",
         encoding="utf-8",
     )
     assert module.validate_repo() == []

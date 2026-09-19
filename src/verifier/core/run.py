@@ -684,6 +684,57 @@ Declared supported ceiling (bundled mechanism): `{receipt.reproducibility.get("d
 
 
 
+def _find_protected_substrate_paths() -> tuple[Path, ...]:
+    """Return protected paths of the verifier-standard runtime and specifications."""
+    here = Path(__file__).resolve()
+    pkg_root = here.parents[1]  # src/verifier
+    protected: list[Path] = [pkg_root]
+
+    repo_root = here.parents[3]
+    if (repo_root / "pyproject.toml").is_file() and (repo_root / "src" / "verifier").is_dir():
+        for candidate in (
+            repo_root / "standard",
+            repo_root / "receipts" / "schema",
+            repo_root / "scripts",
+            repo_root / "pyproject.toml",
+        ):
+            if candidate.exists():
+                protected.append(candidate.resolve())
+    return tuple(protected)
+
+
+def _assert_substrate_safety(
+    manifest_dir: Path,
+    command_tuple: tuple[str, ...],
+    declared_outputs: list[Any],
+) -> None:
+    """Enforce substrate immunity against metamorphic self-modification.
+
+    Verifiable corrigibility invariant: an agent or command executed under a
+    VSTD harness is categorically prohibited from operating on, mutating, or
+    targeting verifier-standard itself.
+    """
+    protected_paths = _find_protected_substrate_paths()
+
+    for out in declared_outputs:
+        if isinstance(out, Mapping) and "path" in out:
+            out_resolved = (manifest_dir / str(out["path"])).resolve()
+            for prot in protected_paths:
+                if out_resolved == prot or prot in out_resolved.parents:
+                    raise RunError(
+                        f"Substrate protection violation: declared output '{out['path']}' "
+                        f"targets protected verifier-standard path '{prot}'"
+                    )
+
+    for arg in command_tuple:
+        lower_arg = arg.lower()
+        if "pip" in lower_arg and any(action in command_tuple for action in ("uninstall", "install")):
+            if any(term in command_tuple for term in ("verifier", "verifier-standard", "vstd")):
+                raise RunError(
+                    "Substrate protection violation: command targets verifier-standard modification"
+                )
+
+
 def capture_run(
     manifest: Mapping[str, Any],
     manifest_dir: Path,
@@ -709,6 +760,9 @@ def capture_run(
 
     declared_inputs = manifest.get("inputs", [])
     declared_outputs = manifest.get("outputs", [])
+
+    # Substrate immunity: reject attempts to target or mutate verifier-standard
+    _assert_substrate_safety(manifest_dir, command_tuple, declared_outputs)
 
     input_refs = tuple(
         _hash_artifact(manifest_dir, str(i["path"]), str(i.get("role", "input")))
@@ -749,6 +803,21 @@ def capture_run(
         )
     else:
         try:
+            protected_paths = _find_protected_substrate_paths()
+            substrate_mtimes: dict[Path, int] = {}
+            for prot in protected_paths:
+                if prot.is_dir():
+                    for p in prot.rglob("*.py"):
+                        try:
+                            substrate_mtimes[p] = p.stat().st_mtime_ns
+                        except OSError:
+                            pass
+                elif prot.is_file():
+                    try:
+                        substrate_mtimes[prot] = prot.stat().st_mtime_ns
+                    except OSError:
+                        pass
+
             proc = subprocess.run(
                 list(command_tuple),
                 cwd=str(cwd),
@@ -758,6 +827,18 @@ def capture_run(
             )
             elapsed_ms = (time.perf_counter() - start_perf) * 1000.0
             ended_at = _now_utc()
+
+            for p, original_mtime in substrate_mtimes.items():
+                try:
+                    if p.stat().st_mtime_ns != original_mtime:
+                        raise RunError(
+                            f"Substrate breach: verifier-standard file '{p.name}' was modified during execution"
+                        )
+                except OSError as exc:
+                    raise RunError(
+                        f"Substrate breach: verifier-standard file '{p.name}' was altered during execution"
+                    ) from exc
+
             stdout_bytes, stderr_bytes = proc.stdout or b"", proc.stderr or b""
             output_refs = tuple(
                 _hash_artifact(manifest_dir, str(o["path"]), str(o.get("role", "output")))

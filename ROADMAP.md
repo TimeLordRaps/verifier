@@ -1,10 +1,14 @@
 # Verifier Standard (VSTD) public technical roadmap
 
-> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
-> grounded decision certificate (GDC); Internet Engineering Task Force (IETF);
+> **Acronyms:** Advanced Vector Extensions 512-bit (AVX-512); artificial intelligence (AI);
+> command-line interface (CLI); central processing unit (CPU); Concise Binary Object Representation (CBOR);
+> CBOR Object Signing and Encryption (COSE); control groups (cgroups); directed acyclic graph (DAG);
+> dynamic random-access memory (DRAM); grounded decision certificate (GDC); graphics processing unit (GPU);
+> inter-process communication (IPC); Internet Engineering Task Force (IETF);
 > reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
-> Supply Chain Integrity, Transparency, and Trust (SCITT);
-> zero-identity/zero-knowledge (ZIZK).
+> Supply Chain Integrity, Transparency, and Trust (SCITT); signal kill (SIGKILL);
+> SMT library standard (SMT-LIB); Temporal Logic of Actions (TLA); virtual machine (VM);
+> Verifier Standard (VSTD); zero-identity/zero-knowledge (ZIZK).
 
 TRUST is mechanism-earned forward artifact support; ROT is typed, time-indexed
 degradation of current admissibility; and RUST is inverse-TRUST diagnostic traversal
@@ -181,12 +185,12 @@ proposition-specific verifier.
 
 The vocabulary is grounded in distinctions already exposed by primary interfaces such as
 [Lean proof terms and kernel checking](https://lean-lang.org/doc/reference/latest/),
-[the satisfiability modulo theories library language](https://smt-lib.org/language.shtml),
-[TLA+ behaviors and model checking](https://lamport.azurewebsites.net/tla/high-level-view.html),
-[the Static Analysis Results Interchange Format](https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html),
+[the satisfiability modulo theories library (SMT-LIB) language](https://smt-lib.org/language.shtml),
+[Temporal Logic of Actions (TLA)+ behaviors and model checking](https://lamport.azurewebsites.net/tla/high-level-view.html),
+[the Static Analysis Results Interchange Format (SARIF)](https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html),
 [in-toto attestations](https://github.com/in-toto/attestation/tree/main/spec/v1),
 [PyTorch reproducibility limits](https://docs.pytorch.org/docs/stable/notes/randomness.html),
-[StableHLO program semantics](https://openxla.org/stablehlo/spec), and
+[Stable High-Level Optimizer (StableHLO) program semantics](https://openxla.org/stablehlo/spec), and
 [Transformers generation controls](https://huggingface.co/docs/transformers/main_classes/text_generation).
 
 A public “99%+ coverage” claim is prohibited until a versioned taxonomy names the
@@ -354,6 +358,152 @@ that passes every required separation and corroboration mechanism.
 - claims of corroboration are made only after another party exists and acts;
 - the project publishes limitations that remain after multiple witnesses agree.
 
+## Milestone 6 — verifiable execution environment profile (VSTD-ENV-1)
+
+Computational reproducibility requires establishing not only the command string and output
+digests, but the complete execution environment substrate.
+
+**Build**
+
+- a content-addressed execution environment profile specification (`VSTD-ENV-1.0`);
+- bindings for operating system release, kernel, architecture, glibc version, and compiler/Python runtime;
+- container rootfs digests, Nix store closures, and wheelhouse archive fingerprints;
+- hardware capability bounds: central processing unit (CPU) model, vector instruction sets (Advanced Vector Extensions 512-bit (AVX-512)), graphics processing unit (GPU) device identifiers, and compute capability levels;
+- command-line interface (CLI) inspection and verification tooling (`vstd env capture`, `vstd env verify`) that enforce environment invariants before running computational manifests.
+
+**Exit evidence**
+
+- a receipt can be checked against current host or container state and reject mismatching hardware or library baselines with `NOT_ESTABLISHED`;
+- environment drift between capture and reproduction is detected prior to command execution;
+- missing hardware capability assertions fail closed.
+
+## Milestone 7 — benchmark specification graph and basis schema (VSTD-BENCH-1)
+
+Evaluating models and autonomous agents requires moving beyond unverified leaderboards to
+proof-carrying evaluation hypergraph overlays.
+
+**Build**
+
+- a first-class benchmark specification graph profile under `VSTD-DATA-0.1` and VSTD-Graph-1 (`VSTD-BENCHMARK-GRAPH-1.0`);
+- a multidimensional 6-tuple problem basis schema parameterizing computational complexity class, formal specification language, solution oracle mechanism, resource grain, epistemic difficulty stratum, and target capability dimension;
+- proof-carrying evaluation hypergraph overlays binding model outputs to discrete problem nodes with individual VSTD-1..4 receipts;
+- deterministic Pareto frontier calculation over verified problem receipts without score inflation or upgrading `UNKNOWN` to `PASS`.
+
+**Exit evidence**
+
+- benchmark problem suites and evaluation overlays are exchangeable as content-addressed VSTD graphs;
+- an unverified or timeout execution cannot be counted as solved;
+- Pareto frontier comparisons between models are deterministically recomputed from immutable problem receipts.
+
+## Milestone 8 — federated model reproducibility and test-time refutation (VSTD-MODEL-1)
+
+Securing foundation models and autonomous systems requires verifiable provenance across the
+entire training and inference lifecycle.
+
+**Build**
+
+- a model reproducibility specification binding training dataset provenance (`VSTD-DATA-1`), verified environment profiles (`VSTD-ENV-1`), training procedure computational graphs, and model architecture directed acyclic graphs (DAGs);
+- a 6-pillar verifiable training curriculum kernel checking dataset poison bounds, trajectory alignment, deceptive alignment invariants, embedded control structures, difficulty strata, and dimensional capability lift;
+- test-time model refutation interfaces enabling federated verification of proprietary models without exposing private weights;
+- verification of data collation pipelines and gradient-step receipts across training checkpoints.
+
+**Exit evidence**
+
+- a model claim binds its exact checkpoint digest, training curriculum receipt graph, and environment profile;
+- test-time refutation permits independent third parties to verify claim boundaries on private models through challenge queries;
+- missing training provenance or environment divergence renders reproducibility claims `NOT_ESTABLISHED`.
+
+## Milestone 9 — verifiable corrigibility and substrate containment
+
+As autonomous systems advance from tool execution to software self-assembly (VSTD-SSA),
+software self-improvement (VSTD-SSI), and candidate self-replication (VSTD-SSR),
+conventional operating-system sandboxing (namespaces, control groups (cgroups), virtual machines (VMs)) is
+necessary but fundamentally insufficient. It protects host operating systems against binary
+exploitation; it cannot detect or prevent **wireheading** (oracle tampering, metric
+forgery, vacuous proof generation) or **corrigibility breakdown** (shut-down resistance,
+grader self-modification, observer blinding).
+
+VSTD does not claim to have solved artificial intelligence (AI) alignment, control, or
+corrigibility. Universal corrigibility across unconstrained superintelligent state spaces
+cannot be guaranteed mathematically or certified in the abstract. Instead, VSTD provides a
+portable, bounded, and refutable computational claim surface for evidencing concrete risk
+reductions associated with incorrigible models.
+
+### Tiered severity and zero false confidence
+
+In corrigibility engineering, false confidence is more dangerous than an explicit absence of
+assurance. Simulating physical primitives in software—such as labeling an operating-system
+inter-process communication (IPC) pipe or loopback block a "software data-diode"—is
+prohibited because it encourages unboxing high-risk systems under the illusion of physical
+one-way isolation while sharing silicon, microarchitectural caches, and kernel exploit
+surfaces. VSTD formalizes a tiered containment model calibrated to risk severity:
+
+- **Tier 1 (Local computational claims and everyday engineering):** Standard developer workflows
+  (Python scripts, test suites, Boolean satisfiability solvers) receive content-addressed
+  receipts, scrubbed environments, and substrate self-defense. Local streams are honestly
+  disclosed as shared-kernel process pipes (`STANDARD_PROCESS_STREAM`); physical diode or
+  air-gap properties are explicitly disclaimed.
+- **Tier 2 (Stateless tool systems and autonomous software assembly — VSTD-SSA):** Models
+  operate as pure, stateless mathematical morphisms mapping problems to proof witnesses with
+  untrusted prover separation and out-of-band immutable oracles. Unboxing requires mathematical
+  proof of bounded behavior: knowledge-hypergraph composed untraversability proving zero
+  information reachability to self-identity or sandbox existence, mechanistic residual-stream
+  probing establishing zero first-person agency or deception representations, and verified
+  blindness to emergent capabilities across corrigibility-critical domains.
+- **Tier 3 (Superintelligence containment and recursive corrigibility — VSTD-SSI and VSTD-SSR):**
+  Against a quality and hacking-speed superintelligence, software-only containment is recognized
+  as non-viable. High-severity containment requires verifiable physical hardware attestation:
+  physical unidirectional optical data diodes with severed return paths, out-of-band analog
+  power cut relays capable of unconditional mechanical preemption, write-blocked volatile nodes
+  with dynamic random-access memory (DRAM) cold-power zeroization, and substrate-enforced
+  recursive lineage proofs.
+
+Verifiable corrigibility grounds containment into mathematical and substrate-enforced
+invariants:
+
+- **Untrusted prover / pure witness separation.** An agent never executes the verification
+  kernel, self-grades, or issues a verdict; it emits an immutable candidate witness evaluated
+  out-of-band by an independent checker.
+- **Out-of-band immutable oracle.** The test oracle, evaluation suite, and ground-truth
+  parameters reside in read-only, separate memory spaces inaccessible to agent write reach.
+- **Kernel invariance (rung 4.7).** The core checking kernel (`kernel.py`) is hardware-anchored,
+  strictly under 400 statements, and isolated from prover runtime memory.
+- **Vacuity and triviality falsification.** The verifier enforces premise consistency
+  checks to ensure that axioms are satisfiable before admitting derivations, rejecting
+  vacuous proofs from contradictory premises or tautological loops.
+- **Asymmetric preemption and shutdown indifference.** An external supervisor watchdog retains
+  unconditional termination authority (signal kill (SIGKILL), hardware interrupt, ephemeral virtual machine (VM) wipe,
+  or physical power cutoff). Operator termination is recorded as a clean, refutable
+  `TERMINATED_BY_OPERATOR` state, preventing optimization loss penalties that incentivize self-preservation.
+- **Substrate-enforced recursive lineage.** A self-modifying system cannot promote altered tools,
+  harnesses, or descendant models without an unbroken cryptographic provenance graph proving a
+  non-regressing Pareto frontier across benchmark problem bases without expanding resource bounds.
+- **Substrate self-defense and metamorphic invariance.** An agent running within a VSTD
+  harness is categorically prohibited from operating on, mutating, or targeting the
+  `verifier-standard` package, its repository sources, its specifications, or its checking kernel.
+  The harness fails closed before execution if declared outputs or commands target protected
+  substrate paths, and rejects receipt capture if any substrate file is modified during runtime.
+- **Bounded meta-representation horizons.** The open research frontier for recursive
+  self-improvement requires hypermathematical, fractal meta-representation boundaries so that
+  recursive reflection cannot escape finite verification bounds before sovereign replication
+  is admitted.
+
+**Exit evidence**
+
+- a test oracle cannot be modified or bypassed by code executing inside the capture harness;
+- an execution manifest attempting to write to, overwrite, or mutate `verifier-standard`
+  installation files or repository sources fails closed with a substrate protection refusal;
+- standard local process streams disclose shared-kernel bounds and cannot claim physical diode
+  or air-gap containment;
+- unboxing of a tool model requires verified composed untraversability over self-awareness and
+  emergent capability predicates;
+- higher-order superintelligence containment receipts reject software-only execution without
+  VSTD-3 physical hardware diode and analog power-relay attestation;
+- vacuous derivations and empty-clause tautologies are rejected with `FALSIFIED`, never `PASS`;
+- an operator interrupt unconditionally halts execution and emits a refutable termination receipt;
+- a self-modifying candidate failing Pareto benchmark frontier verification cannot overwrite
+  its active harness or promotion receipt.
+
 ## Adoption as verification, not marketing theater
 
 Early progress is measured by externally inspectable events:
@@ -374,6 +524,9 @@ independence, interoperability, or adoption of the standard.
 This roadmap does not promise to:
 
 - certify general intelligence, alignment, intent, or moral status;
+- claim to have solved the artificial intelligence (AI) alignment, control, or corrigibility
+  problem; VSTD provides only refutable computational claim surfaces and substrate containment
+  boundaries for evidencing bounded risk reductions associated with incorrigible models;
 - reveal hidden model state or unobservable harness context;
 - prove all physical execution has been recorded;
 - replace sandboxing, signatures, identity systems, transparency logs, or domain

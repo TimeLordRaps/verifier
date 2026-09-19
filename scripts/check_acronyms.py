@@ -63,21 +63,36 @@ def public_reader_files() -> list[Path]:
 
 def _term_pattern(term: str) -> re.Pattern[str]:
     return re.compile(
-        rf"(?<![A-Za-z0-9]){re.escape(term)}(?![A-Za-z0-9])"
+        rf"(?<![A-Za-z0-9_-]){re.escape(term)}s?(?![A-Za-z0-9_-])"
     )
 
 
 def _definition_pattern(expansion: str, term: str) -> re.Pattern[str]:
-    """Match a definition even when Markdown wraps it across physical lines."""
+    """Match a definition even when Markdown wraps it across physical lines, contains backticks, or uses plurals."""
 
     words = re.split(r"\s+", expansion.strip())
-    expanded = r"\s+".join(re.escape(word) for word in words)
-    return re.compile(rf"{expanded}\s+\({re.escape(term)}\)")
+    word_patterns = [rf"`?{re.escape(word)}(?:s|es)?`?" for word in words]
+    expanded = r"[\s`]+".join(word_patterns)
+    return re.compile(rf"{expanded}[\s`]*\([\s`]*{re.escape(term)}s?[\s`]*\)`?")
 
 
 def _required_terms(text: str, expansions: dict[str, str]) -> set[str]:
-    return {
+    candidate_terms = {
         term for term in expansions if _term_pattern(term).search(text) is not None
+    }
+    # To prevent false positives where an acronym only appears inside
+    # another acronym's definition (e.g. within compound definitions),
+    # mask out valid definition spans of candidate terms.
+    masked = text
+    for term in candidate_terms:
+        masked = _definition_pattern(expansions[term], term).sub(
+            lambda m: " " * len(m.group(0)), masked
+        )
+    return {
+        term
+        for term in candidate_terms
+        if _term_pattern(term).search(masked) is not None
+        or _definition_pattern(expansions[term], term).search(text) is not None
     }
 
 

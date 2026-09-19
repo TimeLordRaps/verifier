@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Build bounded component-contract evidence for one exact platform test run.
 
-Terminology: continuous integration (CI); identifier (ID);
-JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256);
-Verifier Standard (VSTD).
+Terminology: 64-bit Arm instruction-set architecture (ARM64);
+continuous integration (CI); identifier (ID);
+Java unit test report format (JUnit); JavaScript Object Notation (JSON);
+Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
 The source manifest records configured intent only. This builder runs after the
 mapped tests and refuses to emit a report unless the supplied JUnit document
