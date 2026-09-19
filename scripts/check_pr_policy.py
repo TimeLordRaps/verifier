@@ -86,7 +86,7 @@ MAX_RECORDS = 99
 MAX_REPORT_BYTES = 16 * 1024 * 1024
 MAX_SKIP_REASON_CHARACTERS = 4096
 TEST_EVIDENCE_CLAIM_BOUNDARY = (
-    "Inventory of the twelve expected hosted pytest reports for this repository-check run; "
+    "Inventory of the thirteen expected hosted pytest reports for this repository-check run; "
     "it records bounded skip observations from every pytest invocation in that workflow but "
     "does not establish that passing tests prove correctness or completeness."
 )
