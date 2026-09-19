@@ -249,7 +249,7 @@ def _read_json_object(path: str | Path) -> Mapping[str, Any]:
     return value
 
 
-def _parse_claim_garden_response(response: TransportResponse, expected_status: int) -> Mapping[str, Any]:
+def _parse_claim_garden_response(response: TransportResponse, expected_status: tuple[int, ...]) -> Mapping[str, Any]:
     content_type = next((value for key, value in response.headers.items() if key.lower() == "content-type"), "")
     if content_type.split(";", 1)[0].strip().lower() != "application/json":
         raise ClaimGardenClientError("Claim Garden response is not JSON")
@@ -261,7 +261,7 @@ def _parse_claim_garden_response(response: TransportResponse, expected_status: i
         raise ClaimGardenClientError("Claim Garden response is malformed") from exc
     if not isinstance(value, Mapping):
         raise ClaimGardenClientError("Claim Garden response must be a JSON object")
-    if response.status != expected_status:
+    if response.status not in expected_status:
         code = value.get("error") or value.get("message")
         raise ClaimGardenClientError(f"Claim Garden refused request: {code if code else response.status}")
     return value
@@ -276,18 +276,23 @@ def publish_claim(
     *,
     claim: str | Path | Mapping[str, Any] | None = None,
     endpoint: str = "https://claimgarden.com",
+    publisher_id: str | None = None,
     credential_file: str | Path | None = None,
     expected_head: str | None = None,
     genesis: bool = False,
     transport: Transport = _default_transport,
 ) -> Mapping[str, Any]:
-    """Publish a verified computational claim and receipt to Claim Garden.
+    """Submit a locally preflighted claim for authenticated storage and human review.
 
     Evaluates local preflight checks before any network activity:
     1. Verdict verification: must be VERIFIED.
     2. Statement count verification: statements checked must be greater than 0.
     3. Digest verification: recomputed canonical claim digest must match receipt's claim_digest.
     4. Receipt digest integrity: recomputed canonical digest must match if present.
+
+    Publisher identity and credentials are required and never inferred from a notary.
+    Storage response binding is checked, but server signatures are not authenticated
+    here and successful transport never establishes correctness or publication.
     """
     claim_dict: Mapping[str, Any] | None = None
     receipt_dict: Mapping[str, Any] | None = None
@@ -355,15 +360,15 @@ def publish_claim(
     statements_checked: int | None = None
     if isinstance(receipt_dict.get("execution_metrics"), Mapping):
         val = receipt_dict["execution_metrics"].get("statements_checked")
-        if isinstance(val, int):
+        if type(val) is int:
             statements_checked = val
     if statements_checked is None and "statements_checked" in receipt_dict:
         val = receipt_dict["statements_checked"]
-        if isinstance(val, int):
+        if type(val) is int:
             statements_checked = val
     if statements_checked is None and "statement_count" in receipt_dict:
         val = receipt_dict["statement_count"]
-        if isinstance(val, int):
+        if type(val) is int:
             statements_checked = val
 
     if statements_checked is not None:
@@ -379,15 +384,13 @@ def publish_claim(
             count = len(receipt_dict["evidence"]["atomic_reasons"])
         elif isinstance(receipt_dict.get("evidence", {}).get("clauses"), (list, tuple)):
             count = len(receipt_dict["evidence"]["clauses"])
-        elif isinstance(claim_dict.get("proposition", {}).get("statement"), str) and claim_dict["proposition"]["statement"].strip():
-            count = 1
-        elif isinstance(claim_dict.get("statement"), str) and claim_dict["statement"].strip():
-            count = 1
         if count <= 0:
             raise ClaimGardenClientError("statement count must be greater than 0")
 
     # --- Preflight check 3: Claim digest verification ---
     expected_claim_digest = hashlib.sha256(_canonical_json_bytes(claim_dict)).hexdigest()
+    if not isinstance(receipt_dict.get("claim_digest"), str):
+        raise ClaimGardenClientError("receipt claim digest is required")
     if "claim_digest" in receipt_dict:
         declared_digest = str(receipt_dict["claim_digest"])
         normalized_declared = declared_digest[7:] if declared_digest.startswith("sha256:") else declared_digest
@@ -434,7 +437,14 @@ def publish_claim(
             raise ClaimGardenClientError("preflight check failed: unsigned receipt missing notary binding")
 
     # --- Packaging phase ---
+    if not isinstance(publisher_id, str) or re.fullmatch(r"publisher:sha256:[0-9a-f]{64}", publisher_id) is None:
+        raise ClaimGardenClientError("publisher identity is required and must be a publisher:sha256 coordinate")
+    if credential_file is None:
+        raise ClaimGardenClientError("publisher credential file is required")
+    if expected_head is not None or genesis:
+        raise ClaimGardenClientError("claim storage does not support silo lineage options")
     packet = {
+        "publisher_id": publisher_id,
         "claim": claim_dict,
         "receipt": receipt_dict,
     }
@@ -442,29 +452,55 @@ def publish_claim(
     # --- Transmission phase ---
     base = _base_url(endpoint)
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
-    token: str | None = None
-    if credential_file is not None:
+    try:
         token_bytes = _read_bounded_regular(credential_file, MAX_CREDENTIAL_BYTES, "publisher credential")
-        try:
-            token = token_bytes.decode("ascii").strip()
-        except UnicodeError as exc:
-            raise ClaimGardenClientError("publisher credential is malformed") from exc
-        if not _TOKEN.fullmatch(token):
-            raise ClaimGardenClientError("publisher credential is malformed")
-        headers["Authorization"] = f"Bearer {token}"
+        token = token_bytes.decode("ascii").strip()
+    except (NetworkError, UnicodeError) as exc:
+        raise ClaimGardenClientError("publisher credential is unreadable or malformed") from exc
+    if not _TOKEN.fullmatch(token):
+        raise ClaimGardenClientError("publisher credential is malformed")
+    headers["Authorization"] = f"Bearer {token}"
 
     req = TransportRequest("POST", base + "/v1/claims/publish", headers, _canonical_json_bytes(packet))
     resp = transport(req)
-    parsed = _parse_claim_garden_response(resp, 201)
+    parsed = _parse_claim_garden_response(resp, (200, 201))
+    claim_digest = "sha256:" + expected_claim_digest
+    retained = parsed.get("receipt")
+    retrieval_path = (f"/v1/claims/records/{claim_digest}?publisher_id="
+                      + urllib.parse.quote(publisher_id, safe=""))
+    if (parsed.get("schema_version") != "CLAIM-GARDEN-STORED-1.0"
+            or parsed.get("status") != "STORED"
+            or parsed.get("state") != "PENDING_REVIEW"
+            or parsed.get("publication_gate") != "HUMAN_REVIEW_REQUIRED"
+            or parsed.get("claim_id") != claim_dict.get("claim_id")
+            or not isinstance(parsed.get("claim_id"), str) or not parsed["claim_id"]
+            or parsed.get("claim_digest") != claim_digest
+            or parsed.get("retrieval_path") != retrieval_path
+            or type(parsed.get("deduplicated")) is not bool
+            or parsed["deduplicated"] != (resp.status == 200)
+            or not isinstance(parsed.get("receipt_id"), str) or not parsed["receipt_id"]
+            or not isinstance(retained, Mapping)
+            or retained.get("receipt_id") != parsed["receipt_id"]
+            or retained.get("claim_id") != parsed["claim_id"]
+            or retained.get("claim_digest") != claim_digest
+            or retained.get("verdict") != "VERIFIED"):
+        raise ClaimGardenClientError("Claim Garden storage response does not bind the submitted claim and review state")
+    metrics = retained.get("execution_metrics")
+    if (not isinstance(metrics, Mapping) or type(metrics.get("statements_checked")) is not int
+            or metrics["statements_checked"] < 1):
+        raise ClaimGardenClientError("Claim Garden storage receipt has no positive checked-statement count")
 
     return {
         "result": "SUBMITTED",
-        "status": parsed.get("status", "ADMITTED"),
-        "claim_id": parsed.get("claim_id", claim_dict.get("claim_id")),
-        "receipt_id": parsed.get("receipt_id", receipt_dict.get("receipt_id")),
-        "claim_digest": parsed.get("claim_digest", receipt_dict.get("claim_digest", "sha256:" + expected_claim_digest)),
-        "state": parsed.get("state", "PENDING_REVIEW"),
-        "publication_gate": parsed.get("publication_gate", "CLI_VERIFIED_TAMPER_LOCKED"),
+        "status": parsed["status"],
+        "publisher_id": publisher_id,
+        "claim_id": parsed["claim_id"],
+        "receipt_id": parsed["receipt_id"],
+        "claim_digest": parsed["claim_digest"],
+        "state": parsed["state"],
+        "publication_gate": parsed["publication_gate"],
+        "deduplicated": parsed["deduplicated"],
+        "retrieval_path": parsed["retrieval_path"],
         "transport_performed": True,
         "publication": "NOT_ESTABLISHED",
     }
@@ -478,4 +514,3 @@ __all__ = [
     "register_publisher",
     "submit_candidate",
 ]
-

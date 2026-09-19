@@ -82,7 +82,7 @@
 <tr><td><code>vstd artifact</code></td><td>Freezes exact regular-file bytes, adds or verifies finite self-closing seals, and creates observable copy-on-write thaw descendants.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:freeze_artifact</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:seal_artifact</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:verify_frozen_artifact</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:thaw_artifact</code></a></td></tr>
 <tr><td><code>vstd experiment</code></td><td>Validates experimental workflow manifests or maps normalized GitHub snapshots without granting a VSTD verdict.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/experimental_workflow_cli.py"><code>verifier.runtime.experimental_workflow_cli:handle_experiment_command</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/experimental_workflow/profile.py"><code>verifier.experimental_workflow.profile:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/experimental_workflow/github.py"><code>verifier.experimental_workflow.github:github_snapshot_to_events</code></a></td></tr>
 <tr><td><code>vstd hardware / continuity / fleet / evidence / claims</code></td><td>Evaluates VSTD-3 substrate-accountability receipts, their continuity and fleet evidence, and their declared claims.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/hardware_cli.py"><code>verifier.runtime.hardware_cli:handle_vstd3_command</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
-<tr><td><code>vstd publish</code></td><td>Evaluates local preflight checks and pushes a verified computational claim and receipt to Claim Garden.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/claim_garden.py"><code>verifier.interoperability.claim_garden:publish_claim</code></a></td></tr>
+<tr><td><code>vstd publish</code></td><td>Checks local inputs and submits a claim and receipt for authenticated storage pending human review.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/claim_garden.py"><code>verifier.interoperability.claim_garden:publish_claim</code></a></td></tr>
 </tbody></table></div>
       </div>
     </section>
@@ -639,14 +639,15 @@
 </article>
 <article class="ref-item" id="cli-vstd-publish">
 <h3><code>vstd publish</code></h3>
-<p class="ref-help">Publish a verified computational claim and receipt to Claim Garden.</p>
+<p class="ref-help">Submit a preflighted claim and receipt for authenticated storage and human review.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>receipt</code></td><td>positional</td><td>Path to receipt.json, claim packet JSON, or directory containing receipt and claim.</td></tr>
 <tr><td><code>--claim</code></td><td>optional</td><td>Optional path to separate claim JSON if not bundled or co-located with receipt.</td></tr>
 <tr><td><code>--endpoint</code></td><td>optional</td><td>Target Claim Garden HTTPS origin (default: https://claimgarden.com). [default: https://claimgarden.com]</td></tr>
-<tr><td><code>--credential-file</code></td><td>optional</td><td>Optional publisher credential file containing bearer access token.</td></tr>
-<tr><td><code>--expected-head</code></td><td>optional</td><td>Optional expected head digest for lineage-bound publication.</td></tr>
-<tr><td><code>--genesis</code></td><td>optional</td><td>Declare first published candidate in a lineage.</td></tr>
+<tr><td><code>--publisher-id</code></td><td>required option</td><td>Registered publisher:sha256 identity submitting this claim (not the receipt notary).</td></tr>
+<tr><td><code>--credential-file</code></td><td>required option</td><td>Publisher credential file containing the required bearer access token.</td></tr>
+<tr><td><code>--expected-head</code></td><td>optional</td><td>Reserved silo-lineage option; rejected for claim storage.</td></tr>
+<tr><td><code>--genesis</code></td><td>optional</td><td>Reserved silo-lineage option; rejected for claim storage.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td>Emit canonical JSON result instead of formatted text.</td></tr>
 </tbody></table>
 </article></div>

@@ -78,19 +78,13 @@ reproduction supports the receipt's bounded reproducibility statement. A mismatc
 refutes that statement. Missing capability or evidence remains `UNKNOWN`; it is not
 silently converted into success.
 
-## 6. Publish the verified claim (`vstd publish`)
+## 6. Submit a compatible claim (`vstd publish`)
 
-Once a claim and receipt are verified locally with an overall verdict of `VERIFIED`,
-publish the verified claim packet to Claim Garden:
-
-```bash
-vstd publish /tmp/vstd-receipt/receipt.json --claim /tmp/vstd-receipt/claim.json
-```
-
-The command-line interface (CLI) evaluates fail-closed preflight checks before transmission
-(verdict is `VERIFIED`, statement count is greater than zero, and canonical Secure Hash Algorithm 256-bit (SHA-256)
-digests match). See [the publication tutorial](tutorials/PUBLISH_A_CLAIM.md) for endpoint
-and publisher credential details.
+The generic receipt above does not automatically satisfy the computational claim-packet
+contract. For a compatible claim and receipt, the command requires a registered submitting
+publisher identity and credential file. Success records storage pending human review;
+publication remains `NOT_ESTABLISHED`. See [the claim submission tutorial](tutorials/PUBLISH_A_CLAIM.md)
+for input boundaries, local preflight, authentication and response binding.
 
 ## 7. Read the normative path
 

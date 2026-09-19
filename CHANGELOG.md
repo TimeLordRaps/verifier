@@ -57,6 +57,9 @@ declare the experimental mechanisms complete. See the
 - Add `vstd publish` with local and remote Claim Garden transports from the
   pending publish-command branch, plus a required optional grammar-constraint
   test job. Neither is evidence of package publication or hosted candidate checks.
+- Require the submitting publisher identity and credential before claim transport;
+  bind storage responses to the exact claim and retained receipt, accept consistent
+  new or deduplicated storage, and preserve the human-review publication boundary.
 - Preserve zero required runtime dependencies and existing command aliases.
   The draft compatibility identifiers and migration limits are documented.
 

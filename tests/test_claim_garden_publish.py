@@ -10,9 +10,11 @@ Fail-closed preflight and transmission tests for Claim Garden publication.
 from __future__ import annotations
 
 import hashlib
+import copy
 import json
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 import pytest
 
@@ -24,6 +26,29 @@ from verifier.interoperability.claim_garden import (
     publish_claim,
 )
 from verifier.runtime.public_cli import main
+
+PUBLISHER = "publisher:sha256:" + "a" * 64
+
+
+@pytest.fixture
+def credential(tmp_path: Path) -> Path:
+    path = tmp_path / "publisher.credential"
+    path.write_text("T" * 48, encoding="ascii")
+    return path
+
+
+def stored_response(claim: dict[str, Any], receipt: dict[str, Any], duplicate: bool = False) -> dict[str, Any]:
+    retained = copy.deepcopy(receipt)
+    retained["receipt_id"] = "retained-server-receipt"
+    retained["claim_digest"] = "sha256:" + receipt["claim_digest"].removeprefix("sha256:")
+    return {
+        "schema_version": "CLAIM-GARDEN-STORED-1.0", "status": "STORED",
+        "state": "PENDING_REVIEW", "publication_gate": "HUMAN_REVIEW_REQUIRED",
+        "claim_id": claim["claim_id"], "claim_digest": retained["claim_digest"],
+        "receipt_id": retained["receipt_id"], "receipt": retained,
+        "retrieval_path": f"/v1/claims/records/{retained['claim_digest']}?publisher_id={quote(PUBLISHER, safe='')}",
+        "deduplicated": duplicate,
+    }
 
 
 def _canonical_digest(data: Any) -> str:
@@ -89,34 +114,29 @@ def _valid_claim_packet() -> tuple[dict[str, Any], dict[str, Any]]:
     return claim, receipt
 
 
-def test_publish_claim_success_with_packet_dict(tmp_path: Path) -> None:
+def test_publish_claim_success_with_packet_dict(tmp_path: Path, credential: Path) -> None:
     claim, receipt = _valid_claim_packet()
     requests: list[TransportRequest] = []
 
     def transport(request: TransportRequest) -> TransportResponse:
         requests.append(request)
-        body = {
-            "status": "ADMITTED",
-            "claim_id": claim["claim_id"],
-            "receipt_id": receipt["receipt_id"],
-            "claim_digest": receipt["claim_digest"],
-            "state": "PENDING_REVIEW",
-            "publication_gate": "CLI_VERIFIED_TAMPER_LOCKED",
-        }
+        body = stored_response(claim, receipt)
         return TransportResponse(201, {"Content-Type": "application/json"}, canonical_json_dumps(body).encode("utf-8"))
 
     result = publish_claim(
         receipt=receipt,
         claim=claim,
         endpoint="https://hub.invalid",
+        publisher_id=PUBLISHER,
+        credential_file=credential,
         transport=transport,
     )
 
     assert result["result"] == "SUBMITTED"
-    assert result["status"] == "ADMITTED"
+    assert result["status"] == "STORED"
     assert result["claim_id"] == claim["claim_id"]
-    assert result["receipt_id"] == receipt["receipt_id"]
-    assert result["publication_gate"] == "CLI_VERIFIED_TAMPER_LOCKED"
+    assert result["receipt_id"] == "retained-server-receipt"
+    assert result["publication_gate"] == "HUMAN_REVIEW_REQUIRED"
     assert result["transport_performed"] is True
     assert result["publication"] == "NOT_ESTABLISHED"
 
@@ -137,17 +157,18 @@ def test_publish_claim_with_credential_file(tmp_path: Path) -> None:
 
     def transport(request: TransportRequest) -> TransportResponse:
         requests.append(request)
-        body = {"status": "ADMITTED", "state": "PENDING_REVIEW"}
+        body = stored_response(claim, receipt)
         return TransportResponse(201, {"Content-Type": "application/json"}, canonical_json_dumps(body).encode("utf-8"))
 
     result = publish_claim(
         receipt=receipt,
         claim=claim,
         endpoint="https://hub.invalid",
+        publisher_id=PUBLISHER,
         credential_file=credential,
         transport=transport,
     )
-    assert result["status"] == "ADMITTED"
+    assert result["status"] == "STORED"
     assert len(requests) == 1
     assert requests[0].headers.get("Authorization") == f"Bearer {token}"
 
@@ -257,7 +278,7 @@ def test_publish_claim_refuses_missing_notary_binding_signature() -> None:
     assert calls == 0
 
 
-def test_publish_claim_from_packet_file(tmp_path: Path) -> None:
+def test_publish_claim_from_packet_file(tmp_path: Path, credential: Path) -> None:
     claim, receipt = _valid_claim_packet()
     packet_path = tmp_path / "packet.json"
     packet_path.write_text(json.dumps({"claim": claim, "receipt": receipt}), encoding="utf-8")
@@ -266,19 +287,21 @@ def test_publish_claim_from_packet_file(tmp_path: Path) -> None:
 
     def transport(request: TransportRequest) -> TransportResponse:
         requests.append(request)
-        body = {"status": "ADMITTED", "state": "PENDING_REVIEW"}
+        body = stored_response(claim, receipt)
         return TransportResponse(201, {"Content-Type": "application/json"}, canonical_json_dumps(body).encode("utf-8"))
 
     result = publish_claim(
         receipt=packet_path,
         endpoint="https://hub.invalid",
+        publisher_id=PUBLISHER,
+        credential_file=credential,
         transport=transport,
     )
-    assert result["status"] == "ADMITTED"
+    assert result["status"] == "STORED"
     assert len(requests) == 1
 
 
-def test_publish_claim_from_directory(tmp_path: Path) -> None:
+def test_publish_claim_from_directory(tmp_path: Path, credential: Path) -> None:
     claim, receipt = _valid_claim_packet()
     bundle_dir = tmp_path / "bundle"
     bundle_dir.mkdir()
@@ -289,53 +312,57 @@ def test_publish_claim_from_directory(tmp_path: Path) -> None:
 
     def transport(request: TransportRequest) -> TransportResponse:
         requests.append(request)
-        body = {"status": "ADMITTED", "state": "PENDING_REVIEW"}
+        body = stored_response(claim, receipt)
         return TransportResponse(201, {"Content-Type": "application/json"}, canonical_json_dumps(body).encode("utf-8"))
 
     result = publish_claim(
         receipt=bundle_dir,
         endpoint="https://hub.invalid",
+        publisher_id=PUBLISHER,
+        credential_file=credential,
         transport=transport,
     )
-    assert result["status"] == "ADMITTED"
+    assert result["status"] == "STORED"
     assert len(requests) == 1
 
 
-def test_publish_cli_integration_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+def test_publish_cli_integration_success(tmp_path: Path, credential: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
     claim, receipt = _valid_claim_packet()
     packet_path = tmp_path / "packet.json"
     packet_path.write_text(json.dumps({"claim": claim, "receipt": receipt}), encoding="utf-8")
 
     def fake_publish_claim(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        assert kwargs["publisher_id"] == PUBLISHER
+        assert kwargs["credential_file"] == str(credential)
         return {
             "result": "SUBMITTED",
-            "status": "ADMITTED",
+            "status": "STORED",
             "claim_id": claim["claim_id"],
             "receipt_id": receipt["receipt_id"],
             "claim_digest": receipt["claim_digest"],
             "state": "PENDING_REVIEW",
-            "publication_gate": "CLI_VERIFIED_TAMPER_LOCKED",
+            "publication_gate": "HUMAN_REVIEW_REQUIRED",
             "publication": "NOT_ESTABLISHED",
         }
 
     import verifier.interoperability.claim_garden as claim_garden_mod
     monkeypatch.setattr(claim_garden_mod, "publish_claim", fake_publish_claim)
 
-    exit_code = main(["publish", str(packet_path), "--endpoint", "https://hub.invalid", "--json"])
+    exit_code = main(["publish", str(packet_path), "--publisher-id", PUBLISHER, "--credential-file", str(credential), "--endpoint", "https://hub.invalid", "--json"])
     assert exit_code == 0
     captured = capsys.readouterr()
     data = json.loads(captured.out)
-    assert data["status"] == "ADMITTED"
-    assert data["publication_gate"] == "CLI_VERIFIED_TAMPER_LOCKED"
+    assert data["status"] == "STORED"
+    assert data["publication_gate"] == "HUMAN_REVIEW_REQUIRED"
 
 
-def test_publish_cli_integration_failure(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_publish_cli_integration_failure(tmp_path: Path, credential: Path, capsys: pytest.CaptureFixture[str]) -> None:
     claim, receipt = _valid_claim_packet()
     receipt["verdict"] = "FALSIFIED"
     packet_path = tmp_path / "falsified.json"
     packet_path.write_text(json.dumps({"claim": claim, "receipt": receipt}), encoding="utf-8")
 
-    exit_code = main(["publish", str(packet_path), "--endpoint", "https://hub.invalid", "--json"])
+    exit_code = main(["publish", str(packet_path), "--publisher-id", PUBLISHER, "--credential-file", str(credential), "--endpoint", "https://hub.invalid", "--json"])
     assert exit_code == 1
     captured = capsys.readouterr()
     data = json.loads(captured.out)

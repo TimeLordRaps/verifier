@@ -480,7 +480,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     publish_parser = subparsers.add_parser(
         "publish",
-        help="Publish a verified computational claim and receipt to Claim Garden.",
+        help="Submit a preflighted claim and receipt for authenticated storage and human review.",
     )
     publish_parser.add_argument(
         "receipt",
@@ -496,17 +496,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="Target Claim Garden HTTPS origin (default: https://claimgarden.com).",
     )
     publish_parser.add_argument(
+        "--publisher-id",
+        required=True,
+        help="Registered publisher:sha256 identity submitting this claim (not the receipt notary).",
+    )
+    publish_parser.add_argument(
         "--credential-file",
-        help="Optional publisher credential file containing bearer access token.",
+        required=True,
+        help="Publisher credential file containing the required bearer access token.",
     )
     publish_parser.add_argument(
         "--expected-head",
-        help="Optional expected head digest for lineage-bound publication.",
+        help="Reserved silo-lineage option; rejected for claim storage.",
     )
     publish_parser.add_argument(
         "--genesis",
         action="store_true",
-        help="Declare first published candidate in a lineage.",
+        help="Reserved silo-lineage option; rejected for claim storage.",
     )
     publish_parser.add_argument(
         "--json",
@@ -966,6 +972,7 @@ def main(argv: list[str] | None = None) -> int:
                     args.receipt,
                     claim=args.claim,
                     endpoint=args.endpoint,
+                    publisher_id=args.publisher_id,
                     credential_file=args.credential_file,
                     expected_head=args.expected_head,
                     genesis=args.genesis,

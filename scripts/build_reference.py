@@ -178,7 +178,7 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ),
     (
         "vstd publish",
-        "Evaluates local preflight checks and pushes a verified computational claim and receipt to Claim Garden.",
+        "Checks local inputs and submits a claim and receipt for authenticated storage pending human review.",
         ("verifier.interoperability.claim_garden:publish_claim",),
     ),
 )

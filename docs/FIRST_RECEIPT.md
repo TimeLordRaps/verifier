@@ -67,20 +67,14 @@ supports byte-level reproducibility for that rerun and those outputs. A mismatch
 refutes that bounded statement. Missing evidence or capability must remain
 `UNKNOWN`, rather than becoming success.
 
-## Publish to Claim Garden
+## Submit a compatible claim for storage
 
-When local inspection and validation confirm a `VERIFIED` verdict, publish the verified
-receipt and claim bundle to Claim Garden (`https://claimgarden.com`):
-
-```bash
-vstd publish receipt-demo
-```
-
-The CLI executes local fail-closed preflight checks: verifying that the overall verdict is
-`VERIFIED`, statements checked count is positive, and canonical Secure Hash Algorithm
-256-bit (SHA-256) digests of the claim and receipt match. If any check fails, publication
-refuses network submission. See the [claim publication tutorial](tutorials/PUBLISH_A_CLAIM.md)
-for endpoint configuration and publisher credentials.
+The generic receipt above is not automatically a Claim Garden computational claim packet.
+For an independently prepared compatible claim and receipt, `vstd publish` requires a
+registered submitting publisher identity and its credential file. Successful authenticated
+storage remains pending human review, with publication `NOT_ESTABLISHED`.
+See the [claim submission tutorial](tutorials/PUBLISH_A_CLAIM.md) for the exact input,
+credential, digest, response-binding and duplicate-submission contract.
 
 ## Follow the evidence boundary
 
