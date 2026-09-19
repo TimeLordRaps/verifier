@@ -161,6 +161,11 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
             "verifier.hardware.validation:validate_vstd3_receipt",
         ),
     ),
+    (
+        "vstd publish",
+        "Evaluates local preflight checks and pushes a verified computational claim and receipt to Claim Garden.",
+        ("verifier.interoperability.claim_garden:publish_claim",),
+    ),
 )
 
 

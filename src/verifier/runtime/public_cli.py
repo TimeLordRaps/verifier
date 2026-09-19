@@ -1,7 +1,7 @@
 """Terminology: application programming interface (API); command-line interface (CLI);
-identifier (ID); JavaScript Object Notation (JSON);
-Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD);
-YAML Ain't Markup Language (YAML).
+Hypertext Transfer Protocol Secure (HTTPS); identifier (ID);
+JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256);
+Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
 
 Public, target-neutral CLI for the VSTD reference implementation.
 
@@ -474,6 +474,42 @@ def build_parser() -> argparse.ArgumentParser:
     add_experiment_parsers(subparsers)
     add_vstd3_parsers(subparsers)
     add_network_parsers(subparsers)
+
+    publish_parser = subparsers.add_parser(
+        "publish",
+        help="Publish a verified computational claim and receipt to Claim Garden.",
+    )
+    publish_parser.add_argument(
+        "receipt",
+        help="Path to receipt.json, claim packet JSON, or directory containing receipt and claim.",
+    )
+    publish_parser.add_argument(
+        "--claim",
+        help="Optional path to separate claim JSON if not bundled or co-located with receipt.",
+    )
+    publish_parser.add_argument(
+        "--endpoint",
+        default="https://claimgarden.com",
+        help="Target Claim Garden HTTPS origin (default: https://claimgarden.com).",
+    )
+    publish_parser.add_argument(
+        "--credential-file",
+        help="Optional publisher credential file containing bearer access token.",
+    )
+    publish_parser.add_argument(
+        "--expected-head",
+        help="Optional expected head digest for lineage-bound publication.",
+    )
+    publish_parser.add_argument(
+        "--genesis",
+        action="store_true",
+        help="Declare first published candidate in a lineage.",
+    )
+    publish_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Emit canonical JSON result instead of formatted text.",
+    )
     return parser
 
 
@@ -913,6 +949,58 @@ def main(argv: list[str] | None = None) -> int:
             return handle_experiment_command(args)
         if args.command == "network":
             return handle_network_command(args)
+        if args.command == "publish":
+            from verifier.interoperability.claim_garden import (
+                ClaimGardenClientError,
+                publish_claim,
+            )
+
+            try:
+                result = publish_claim(
+                    args.receipt,
+                    claim=args.claim,
+                    endpoint=args.endpoint,
+                    credential_file=args.credential_file,
+                    expected_head=args.expected_head,
+                    genesis=args.genesis,
+                )
+            except ClaimGardenClientError as exc:
+                if args.json:
+                    print(
+                        json.dumps(
+                            {"error": str(exc), "result": "REJECTED"},
+                            indent=2,
+                            sort_keys=True,
+                        )
+                    )
+                else:
+                    print(f"[FAIL] {exc}", file=sys.stderr)
+                return 1
+
+            if args.json:
+                print(json.dumps(result, indent=2, sort_keys=True))
+            else:
+                status_label = (
+                    result.get("status") or result.get("result") or "SUBMITTED"
+                )
+                claim_id = result.get("claim_id") or args.receipt
+                print(f"[{status_label}] {claim_id}")
+                if "receipt_id" in result:
+                    print(f"  Receipt ID:       {result['receipt_id']}")
+                if "claim_digest" in result:
+                    print(f"  Claim Digest:     {result['claim_digest']}")
+                if "state" in result:
+                    print(f"  State:            {result['state']}")
+                if "publication_gate" in result:
+                    print(f"  Publication Gate: {result['publication_gate']}")
+                if "publication" in result:
+                    print(f"  Publication:      {result['publication']}")
+            return (
+                0
+                if result.get("status") == "ADMITTED"
+                or result.get("result") == "SUBMITTED"
+                else 1
+            )
         if args.command in {"hardware", "continuity", "fleet", "evidence", "claims"}:
             return handle_vstd3_command(args)
     except (OSError, RunError, ValueError, KeyError) as exc:

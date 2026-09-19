@@ -144,7 +144,8 @@ Use the pull-request template to record:
 
 Before promotion, also record the exact current head and base, executed integration commit,
 repository-check event and run, every actionable finding and its disposition, every skipped
-or unrun check with its claim consequence, the canonical promotion-record digest, exact-head
+or unrun check with its rubric classification and claim consequence per [`docs/TEST_SKIP_RUBRIC.md`](docs/TEST_SKIP_RUBRIC.md),
+the canonical promotion-record digest, exact-head
 human acceptance evidence, and the owner plus scope of post-merge validation. A head, base,
 record, or human-gate change invalidates the earlier acceptance. Refresh the record and
 affected evidence before the pull request can pass policy again.
@@ -160,7 +161,8 @@ The installed workflow generates inputs from source-side fixtures but consumes t
 the isolated installed package outside the checkout; it is not deployment evidence.
 A newly added pytest invocation must be added
 to this exact inventory before promotion can pass. Free-form `DISCLOSED` prose is not
-evidence and is rejected; `NONE` is permitted only when all twelve reports contain actual
+evidence and is rejected; skipped tests must be categorized against the formal rubric in
+[`docs/TEST_SKIP_RUBRIC.md`](docs/TEST_SKIP_RUBRIC.md); `NONE` is permitted only when all twelve reports contain actual
 test cases and record zero skips. An empty report is rejected even if its summary claims
 that tests ran.
 
