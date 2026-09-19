@@ -23,6 +23,14 @@ PORTAL = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(PORTAL)
 
 
+def test_repository_checks_fetch_the_pinned_documentation_release() -> None:
+    workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    fetches = re.findall(r"git fetch --no-tags --depth=1 origin (\S+)", workflow)
+    assert fetches, "Shallow hosted checkouts need the pinned documentation release"
+    expected = f"refs/tags/{PORTAL.RELEASE_TAG}:refs/tags/{PORTAL.RELEASE_TAG}"
+    assert all(refspec == expected for refspec in fetches)
+
+
 class Page(HTMLParser):
     def __init__(self, content: str) -> None:
         super().__init__()
