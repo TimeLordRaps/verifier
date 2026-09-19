@@ -146,6 +146,7 @@ normative definitions are in [`standard/LADDER.md`](../standard/LADDER.md).
 | `VSTD-BENCH` | benchmark specification graph | Benchmark specification graph profile. |
 | `VSTD-ENV` | verifiable execution environment | Verifiable execution environment profile. |
 | `VSTD-MODEL` | model reproducibility specification | Model reproducibility and test-time refutation profile. |
+| `VSTD-SIM` | generative simulation specification | Abstract generative simulation specification. |
 | `VSTD-SSA` | software self-assembly | Autonomous software self-assembly profile. |
 | `VSTD-SSI` | software self-improvement | Recursive software self-improvement profile. |
 | `VSTD-SSR` | candidate self-replication | Candidate software self-replication profile. |

@@ -436,9 +436,9 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     )
     assert coordinate == {
         "canonical_base_url": "https://timelordraps.github.io/verifier/",
-        "documentation_version": "1.5.0",
+        "documentation_version": "2.0.0",
         "normative_source": "standard/",
-        "release_state": "RELEASED",
+        "release_state": "UNRELEASED_CANDIDATE",
         "schema_version": 1,
         "source_ref": "test-commit",
     }
@@ -656,6 +656,19 @@ def test_conformance_gate_requires_real_scitt_cose_integration() -> None:
     assert "import cbor2, cryptography, scitt_cose" in steps
     assert "tests/test_scitt_crypto_example.py" in steps
     assert "scitt-crypto" in jobs["conformance-gate"]["needs"]
+
+
+def test_conformance_gate_requires_real_logits_constraints_integration() -> None:
+    workflow = yaml.safe_load(
+        (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    )
+    jobs = workflow["jobs"]
+    logits_job = jobs["logits-constraints"]
+    steps = "\n".join(str(step.get("run", "")) for step in logits_job["steps"])
+    assert 'pip install --extra-index-url https://download.pytorch.org/whl/cpu ".[test,constraints]" transformers' in steps
+    assert "import llguidance, torch, transformers" in steps
+    assert "tests/test_logits_constraint_kernel.py" in steps
+    assert "logits-constraints" in jobs["conformance-gate"]["needs"]
 
 
 def test_installed_wheel_smoke_exercises_supported_surface_analysis() -> None:

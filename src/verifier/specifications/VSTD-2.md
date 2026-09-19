@@ -361,3 +361,13 @@ A VSTD-2 geometry document conforms to the implemented vertical slice when:
 The current slice does not infer loci automatically, prove ontology completeness,
 translate arbitrary CI/CD workflow languages, or certify its own Python runtime. Those
 are explicit present limits, not assumed capabilities.
+
+
+## Grounded certification obligation coordinates
+
+The additive grounded certification contract decomposes this numbered profile
+into obligations `2.1` through `2.7`. See
+[`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md) for their exact propositions,
+dependencies, admission policy, portable replay and cumulative prerequisite rules.
+These identifiers preserve the requirements above and do not rename this profile's
+existing receipt serialization or promote historical receipts automatically.

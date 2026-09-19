@@ -58,6 +58,10 @@ or external adoption is claimed. See [current maturity](#current-maturity) and
 
 ## 30–60 second demonstration
 
+**Source candidate:** 2.0.0 is unreleased. Its experimental declarations and local
+checks are described in [candidate boundaries and migration](docs/V2_CANDIDATE.md).
+The published package installation below remains at 1.5.0.
+
 ### Option 1: Instant Python inspection (from PyPI)
 
 ```bash
@@ -194,7 +198,7 @@ Automated agent evaluations and language model leaderboards are vulnerable to pr
 
 In formal mathematical ecosystems—such as `hypermath` (algebraic kernel, Lean 4 bridge), `ordinatics` (ordinal arithmetic, Veblen hierarchies), `grounded-hyperset-theory` (Aczel's Anti-Foundation Axiom (AFA), accessible pointed graphs (APGs)), and `grounded-hypercalculi` (stratified semantic reflection)—mathematical claims span multiple formal representations. VSTD provides the meta-verification envelope: it explicitly enumerates axioms (refusing ungrounded axioms or `sorry` escapes), binds the exact prover kernel binary digest, and composes heterogeneous formal proofs into a single refutation graph.
 
-**Tutorial & example:** [Grounded decision certificates](docs/PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc) and [Normative VSTD-4 specification](standard/VSTD-4.md).
+**Foundations, tutorial & example:** [Mathematical foundations and interoperability](docs/MATHEMATICAL_FOUNDATIONS.md), [Grounded decision certificates](docs/PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc), and [Normative VSTD-4 specification](standard/VSTD-4.md).
 </details>
 
 <details>
@@ -394,6 +398,7 @@ python -m pip install ".[yaml]"          # YAML Ain't Markup Language (YAML) man
 python -m pip install ".[jsonschema]"    # JSON Schema validation
 python -m pip install ".[seal]"          # optional Ed25519 artifact sealing
 python -m pip install ".[scitt]"         # optional SCITT/COSE experiment
+python -m pip install ".[constraints]"   # optional logits-level grammar constraints
 ```
 
 `vstd` is the canonical cross-platform CLI name. `verifier` remains a compatibility
@@ -496,6 +501,11 @@ checkout. See the generated [CLI and API
 reference](https://timelordraps.github.io/verifier/reference.html).
 
 ## Receipts, Graphs, and grounded certificates
+
+The unreleased 2.0.0 candidate adds [grounded certification across object profiles](docs/GROUNDED_CERTIFICATION.md):
+47 explicit `X.M` obligations, externally selected mechanism policies and portable
+replay. The guide separates native checker coverage from required domain mechanisms.
+
 
 - [VSTD-1 receipts](standard/VSTD-1.md) carry claim coordinates, evidence,
   checker results, trust boundaries, and reproducibility information.
@@ -651,7 +661,7 @@ Additional entry points:
 
 A release contains a canonical artifact set: ZIP archive format (ZIP), wheel, source
 distribution, and external manifest bound to the exact public Git commit and file
-members. At the version 1.5.0 source coordinate, the continuous integration (CI)
+members. At the version 2.0.0 source coordinate, the continuous integration (CI)
 workflow builds the artifact set on Linux, Windows, and macOS and rejects cross-platform
 byte differences. It also captures and reruns the portable generic example on three
 GitHub-hosted operating-system virtual machines, then requires a bounded `PASS` over the

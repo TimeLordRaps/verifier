@@ -146,3 +146,13 @@ interoperability deployment, accreditation, or a universal way to infer real-wor
 separation. A deployment must supply mechanisms that actually check its evidence;
 registering a mechanism names the trust boundary but does not make that mechanism
 correct.
+
+
+## Grounded certification obligation coordinates
+
+The additive grounded certification contract decomposes this numbered profile
+into obligations `5.1` through `5.11`. See
+[`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md) for their exact propositions,
+dependencies, admission policy, portable replay and cumulative prerequisite rules.
+These identifiers preserve the requirements above and do not rename this profile's
+existing receipt serialization or promote historical receipts automatically.

@@ -726,13 +726,23 @@ def _assert_substrate_safety(
                         f"targets protected verifier-standard path '{prot}'"
                     )
 
-    for arg in command_tuple:
-        lower_arg = arg.lower()
-        if "pip" in lower_arg and any(action in command_tuple for action in ("uninstall", "install")):
-            if any(term in command_tuple for term in ("verifier", "verifier-standard", "vstd")):
+    lower_args = [a.lower() for a in command_tuple]
+    has_pip = any("pip" in a for a in lower_args)
+    has_mutation_action = any(
+        act in lower_args for act in ("uninstall", "install", "upgrade", "remove")
+    )
+    if has_pip and has_mutation_action:
+        for arg in lower_args:
+            norm = arg.replace("_", "-")
+            if any(term in norm for term in ("verifier-standard", "verifier", "vstd")):
                 raise RunError(
                     "Substrate protection violation: command targets verifier-standard modification"
                 )
+            if norm in (".", "-e", "--editable"):
+                if any(manifest_dir.resolve() == prot or prot in manifest_dir.resolve().parents for prot in protected_paths):
+                    raise RunError(
+                        "Substrate protection violation: command targets local protected repository installation"
+                    )
 
 
 def capture_run(

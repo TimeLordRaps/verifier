@@ -199,6 +199,37 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  logits-constraints:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --extra-index-url https://download.pytorch.org/whl/cpu ".[test,constraints]" transformers
+      - name: Require the real logits-level constraint kernel path
+        run: |
+          python -c "import llguidance, torch, transformers"
+          python -u -m pytest -vv -s --durations=10 --timeout=60 -p scripts.pytest_public_evidence --junitxml=logits-constraints.xml tests/test_logits_constraint_kernel.py
+      - name: Require a public boundary check for the logits-constraints test evidence
+        id: logits-constraints-evidence-boundary
+        if: always()
+        run: python scripts/check_release_boundary.py logits-constraints.xml
+      - name: Publish skipped logits-constraints tests and reasons in the run summary
+        if: always() && steps.logits-constraints-evidence-boundary.outcome == 'success'
+        run: >-
+          python scripts/summarize_test_skips.py logits-constraints.xml
+          --coordinate python-3.12
+          --append-output "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always() && steps.logits-constraints-evidence-boundary.outcome == 'success'
+        with:
+          name: logits-constraints-${{ github.run_id }}-${{ github.run_attempt }}-python-3.12
+          path: logits-constraints.xml
+          if-no-files-found: error
+          retention-days: 30
+
   release-integrity:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
@@ -574,7 +605,7 @@ jobs:
   # This identifier remains stable because main branch protection requires it.
   conformance-gate:
     if: always()
-    needs: [coordinate, base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, release-integrity, release-reproducibility, platform-comparability-observation, platform-comparability, platform-python-contracts, installed-wheel-smoke, presentation, codeql]
+    needs: [coordinate, base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, logits-constraints, release-integrity, release-reproducibility, platform-comparability-observation, platform-comparability, platform-python-contracts, installed-wheel-smoke, presentation, codeql]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -586,6 +617,7 @@ jobs:
           STDLIB: ${{ needs.stdlib-smoke.result }}
           SCITT: ${{ needs.scitt-crypto.result }}
           ARTIFACT_SEAL: ${{ needs.artifact-seal.result }}
+          LOGITS_CONSTRAINTS: ${{ needs.logits-constraints.result }}
           RELEASE: ${{ needs.release-integrity.result }}
           REPRODUCIBLE: ${{ needs.release-reproducibility.result }}
           PLATFORM_OBSERVATIONS: ${{ needs.platform-comparability-observation.result }}
@@ -601,6 +633,7 @@ jobs:
           test "$STDLIB" = success
           test "$SCITT" = success
           test "$ARTIFACT_SEAL" = success
+          test "$LOGITS_CONSTRAINTS" = success
           test "$RELEASE" = success
           test "$REPRODUCIBLE" = success
           test "$PLATFORM_OBSERVATIONS" = success

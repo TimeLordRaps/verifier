@@ -31,6 +31,31 @@ def test_mandatory_documentation_coverage_passes_on_repo():
     assert errors == [], f"Unexpected documentation coverage errors: {errors}"
 
 
+def test_candidate_install_commands_pin_the_previous_release(tmp_path: Path):
+    module = _load_module()
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "CHANGELOG.md").write_text(
+        "## 2.0.0 - UNRELEASED\n\n## 1.5.0 - 2026-09-18\n", encoding="utf-8",
+    )
+    installation = tmp_path / "docs/INSTALLATION.md"
+    installation.write_text("python -m pip install verifier-standard==1.5.0\n", encoding="utf-8")
+    assert module.check_documentation_version_references(tmp_path, "2.0.0") == []
+    installation.write_text("python -m pip install verifier-standard==2.0.0\n", encoding="utf-8")
+    assert module.check_documentation_version_references(tmp_path, "2.0.0")
+
+
+def test_finalized_install_commands_must_pin_target_release(tmp_path: Path):
+    module = _load_module()
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "CHANGELOG.md").write_text(
+        "## 2.0.0 - 2026-09-20\n\n## 1.5.0 - 2026-09-18\n", encoding="utf-8",
+    )
+    (tmp_path / "docs/INSTALLATION.md").write_text(
+        "python -m pip install verifier-standard==1.5.0\n", encoding="utf-8",
+    )
+    assert module.check_documentation_version_references(tmp_path, "2.0.0")
+
+
 def test_mandatory_documentation_coverage_fails_on_missing_file(tmp_path: Path):
     module = _load_module()
     # Create partial tree missing reference.html

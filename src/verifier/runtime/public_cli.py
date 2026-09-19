@@ -228,6 +228,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
+    from verifier.runtime.certification_cli import add_certification_parser
+    add_certification_parser(subparsers)
+
     demo_parser = subparsers.add_parser(
         "demo",
         help="Run the side-effect-free VSTD adversarial flagship demonstration.",
@@ -831,6 +834,9 @@ def _handle_artifact_command(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        if args.command == "certification":
+            from verifier.runtime.certification_cli import handle_certification_command
+            return handle_certification_command(args)
         if args.command == "demo":
             results = run_demo(args.scenario)
             report = demo_report(results)

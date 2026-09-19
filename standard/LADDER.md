@@ -70,6 +70,7 @@ The rest of the Standard uses the following terms precisely:
 | **Object profile depth** | For one verification object, start at `VSTD-1` and count upward only while every required coordinate remains established. The last uninterrupted number is its depth. | Depth is a compact summary of separately established results, not a new verdict, evidence-strength rating, or permission to ignore a later established coordinate after an earlier gap. |
 | **Candidate Graph profile** | The greatest Graph checklist position satisfied by the current caller-supplied ratings. | The current calculation is `NOT_ESTABLISHED` because those ratings are not evidence-bound. It is not a verified Graph profile. |
 | **Evidence-bound Graph profile** | The greatest Graph checklist position obtained after rerunning exact member, ancestor, and edge rating mechanisms from content-addressed evidence. | It is established only under the named mechanisms, trust roots, evidence, bounds, lifecycle view, and conflict state. |
+| **Grounded certification obligation** | `X.M` selects one separately evidence-bound obligation within object numbered profile `X`. | Profile-specific sequences and cumulative prerequisites are defined in `GROUNDED_CERTIFICATION.md`; the suffix is not a software revision or confidence score. |
 | **VSTD-4 rung** | One of the fourteen ordered refutability obligations `4.1` through `4.14`. | “Rung” names only this internal sequence, never a top-level VSTD profile. |
 | **Verification order** | One adjacent meta-verification order in the VSTD-2 geometry model. | The compatibility names `VerificationLayer` and `verification_layers` do not denote numbered VSTD profiles. |
 | **Level** | A retained word in an explicitly named external taxonomy or compatibility identifier, including `ReproducibilityLevel`, `AvailabilityLevel`, `graph_level`, and serialized Graph `level` fields. | In Graph compatibility identifiers, the value is the candidate Graph profile number; “level” is not the governing name for a VSTD profile. |
@@ -465,6 +466,7 @@ closed. It never means the prerequisite coordinates became unnecessary.
 
 ## 7. Numbering
 
+- **Grounded certification obligations use `X.M` coordinates** within each object numbered profile; see [the obligation catalogue](GROUNDED_CERTIFICATION.md).
 - **Numbered profiles use integers**: VSTD-1 … VSTD-5, VSTD-Graph-1 … VSTD-Graph-5.
 - **Repository releases use [semantic versioning](https://semver.org/)** and are independent
   of profile numbers.

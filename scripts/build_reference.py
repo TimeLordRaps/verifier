@@ -36,6 +36,21 @@ SOURCE_BASE = "https://github.com/TimeLordRaps/verifier/blob/main/"
 # silently publishing a stale pipeline map.
 PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     (
+        "vstd certification catalog",
+        "Lists the object-profile obligation catalogue and bounded native checker coverage.",
+        ("verifier.core.profile_obligations:obligation_catalog",),
+    ),
+    (
+        "vstd certification assess",
+        "Executes externally admitted native obligation mechanisms and emits a new grounded certificate.",
+        ("verifier.core.grounded_certification:build_grounded_certificate",),
+    ),
+    (
+        "vstd certification check",
+        "Rehashes and reruns a certificate against the consumer's expected request and admission policy.",
+        ("verifier.core.grounded_certification:recheck_grounded_certificate",),
+    ),
+    (
         "vstd demo",
         "Runs the four adversarial specimens in-process and reports whether each "
         "defensive outcome matched its declared invariant.",

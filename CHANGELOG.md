@@ -2,18 +2,63 @@
 
 > **Acronyms:** 64-bit Arm instruction-set architecture (ARM64); artificial intelligence (AI);
 > Advanced Micro Devices (AMD); application programming interface (API); Amazon Web Services (AWS);
-> Concise Binary Object Representation (CBOR); continuous integration (CI); command-line interface (CLI);
-> conjunctive normal form (CNF); CBOR Object Signing and Encryption (COSE);
+> benchmark specification graph (VSTD-BENCH); Concise Binary Object Representation (CBOR);
+> continuous integration (CI); command-line interface (CLI); conjunctive normal form (CNF);
+> CBOR Object Signing and Encryption (COSE); verifiable execution environment (VSTD-ENV);
 > grounded decision certificate (GDC); Hypertext Transfer Protocol Secure (HTTPS);
 > Internet Engineering Task Force (IETF); Java unit test report format (JUnit);
-> JavaScript Object Notation (JSON); nondeterministic polynomial time (NP);
-> Python Package Index (PyPI); reduced instruction set computer (RISC);
-> Boolean satisfiability problem (SAT); Secure Hash Algorithm 256-bit (SHA-256);
-> Secure Hash Algorithm 3 256-bit (SHA3-256); Supply Chain Integrity, Transparency, and Trust (SCITT);
-> Secure Shell (SSH); Coordinated Universal Time (UTC); Verifier Standard (VSTD);
-> ZIP archive format (ZIP); zero-identity/zero-knowledge (ZIZK).
+> JavaScript Object Notation (JSON); model reproducibility specification (VSTD-MODEL);
+> nondeterministic polynomial time (NP); Python Package Index (PyPI);
+> reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
+> Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
+> generative simulation specification (VSTD-SIM);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
+> Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
+> zero-identity/zero-knowledge (ZIZK).
 
 ## Unreleased
+
+## 2.0.0 - UNRELEASED
+
+**Release name: The grounded certification release.**
+
+The release name centers exact claim/evidence binding, bounded certificate checking,
+and evidence-bound assessment. It does not establish conformance for an artifact or
+declare the experimental mechanisms complete. See the
+[release framing and profile distinctions](docs/V2_CANDIDATE.md#release-name-and-grounded-certification).
+
+### Grounded certification across object profiles
+
+- Define 47 obligation coordinates across all five object numbered profiles,
+  preserving the existing fourteen VSTD-4 rungs and receipt identifiers.
+- Execute exact obligation bindings under a checker-selected mechanism admission
+  policy; derive per-obligation, per-profile and cumulative results without
+  suppressing missing prerequisites, `UNKNOWN` or refutation.
+- Add strict request, policy and certificate formats with bounded embedded evidence,
+  specification/implementation commitments and offline replay against an external
+  expected request. Add `vstd certification catalog`, `assess` and `check`.
+- Provide six bounded native adapters and a runnable partial-certification example.
+  Other obligations require explicitly admitted domain mechanisms; a registered
+  mechanism or complete catalogue is not evidence that those obligations hold.
+
+### Experimental component declarations and bounded local checks
+
+- Add draft environment, benchmark, dataset, graph, training-lineage, model-risk,
+  and generative simulation representations under `verifier.corrigibility`.
+  These are non-normative candidates; their names do not establish conformance to
+  existing numbered profiles. See [candidate boundaries](docs/V2_CANDIDATE.md).
+- Check supplied trace replay, predicates on finite traces, projected trace
+  distance, and supplied agent observation/action bounds. Missing prerequisites
+  preserve `NOT_ESTABLISHED`; these checks are not inductive proofs, universal
+  bisimulation, physical containment, or authenticated distributed consensus.
+- Preserve `UNVERIFIED` for containment declarations. Physical attestation,
+  preemption, and unboxing proof mechanisms remain unimplemented. Benchmark
+  witnesses cannot obtain `SOLVED` from a self-reported validity flag.
+- Add `vstd publish` with local and remote Claim Garden transports from the
+  pending publish-command branch, plus a required optional grammar-constraint
+  test job. Neither is evidence of package publication or hosted candidate checks.
+- Preserve zero required runtime dependencies and existing command aliases.
+  The draft compatibility identifiers and migration limits are documented.
 
 ## 1.5.0 - 2026-09-18
 

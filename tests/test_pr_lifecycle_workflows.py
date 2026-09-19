@@ -187,6 +187,7 @@ def test_repository_checks_cover_merge_queue_and_publish_skip_reasons() -> None:
             "platform-python-contracts",
         ),
         "scitt-crypto": ("scitt-crypto.xml", "scitt-crypto"),
+        "logits-constraints": ("logits-constraints.xml", "logits-constraints"),
     }
     observed_pytest_jobs = {
         job_name

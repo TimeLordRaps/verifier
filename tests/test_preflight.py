@@ -54,6 +54,19 @@ def test_schema_inventory_conforms() -> None:
     assert preflight.check_schema_inventory() is True
 
 
+@pytest.mark.parametrize("check", [preflight.check_schema_inventory, preflight.check_full_test_suite, preflight.check_test_skips])
+def test_nested_test_commands_are_verbose_and_bounded(check, monkeypatch: pytest.MonkeyPatch) -> None:
+    commands = []
+    def observe(command, **kwargs):
+        commands.append(command)
+        return 0, "1 passed", ""
+    monkeypatch.setattr(preflight, "_run_command", observe)
+    assert check()
+    assert len(commands) == 1
+    assert {"-u", "-vv", "-s", "--durations=10", "--timeout=60"} <= set(commands[0])
+    assert not {"-q", "-qq"} & set(commands[0])
+
+
 def test_git_signatures_on_head_or_range() -> None:
     assert isinstance(preflight.check_git_signatures("HEAD~1..HEAD"), bool)
 
@@ -138,5 +151,4 @@ def test_audit_test_skips_detects_summary_count_discrepancy() -> None:
     assert counts["OS_CAPABILITY_GUARD"] == 5
     assert any("PYTEST_SUMMARY_DISCREPANCY" in item[0] for item in unclassified)
     assert any("pytest reported 39 skipped tests, but audit parsed only 5" in item[1] for item in unclassified)
-
 

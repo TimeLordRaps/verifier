@@ -190,3 +190,13 @@ receipt.json
   reproducibility comparison.
 - **VSTD-2 — Verification Surface**: verification geometry, residual-driven deconstruction, horizons, valences, and bounded self-closure. Its results remain separate from VSTD-1 claim-mechanics results.
 - **Unassigned Future Work**: Additional proof mechanisms, execution-environment binding, and cross-institutional proof-carrying software gates require separate scoped proposals and evidence. No future version number is reserved here.
+
+
+## Grounded certification obligation coordinates
+
+The additive grounded certification contract decomposes this numbered profile
+into obligations `1.1` through `1.7`. See
+[`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md) for their exact propositions,
+dependencies, admission policy, portable replay and cumulative prerequisite rules.
+These identifiers preserve the requirements above and do not rename this profile's
+existing receipt serialization or promote historical receipts automatically.

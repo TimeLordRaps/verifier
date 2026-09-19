@@ -12,6 +12,16 @@ import verifier
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_EXPORTS = {
+    "CertificationError",
+    "CertificationPolicy",
+    "CertificationRequest",
+    "MechanismAdmission",
+    "ProfileObligation",
+    "NativeCertificationMechanism",
+    "obligation_catalog",
+    "assess_grounded_certification",
+    "build_grounded_certificate",
+    "recheck_grounded_certificate",
     "AssuranceLedger",
     "ArtifactControlError",
     "ArtifactVerification",

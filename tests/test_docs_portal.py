@@ -85,7 +85,7 @@ def test_release_and_repository_editions_remain_distinct(site: Path) -> None:
     assert f"package version {PORTAL.RELEASE}" in released
     assert "UNRELEASED SOURCE" not in released
     coordinate = json.loads((site / "portal-coordinate.json").read_text(encoding="utf-8"))
-    assert coordinate["release_version"] == "1.4.0"
+    assert coordinate["release_version"] == "1.5.0"
     assert coordinate["release_commit"] in released
     assert PORTAL.REPOSITORY + "/blob/main/" not in released
     for prefix in ("", PORTAL.RELEASE_PATH):
@@ -109,9 +109,8 @@ def test_search_results_bind_to_real_sections_and_correct_edition(site: Path) ->
 def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path) -> None:
     """Bind the onboarding guides to real routes and to the correct edition.
 
-    The pinned release predates these pages, so the release edition must send a
-    reader back to the repository edition rather than advertise a route its own
-    commit never contained.
+    The pinned 1.5.0 release includes these pages. Its navigation must retain
+    the release coordinate rather than silently routing to newer source.
     """
 
     guides = (
@@ -122,7 +121,7 @@ def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path)
     )
     for route in guides:
         assert (site / route).is_file()
-        assert not (site / PORTAL.RELEASE_PATH / route).exists()
+        assert (site / PORTAL.RELEASE_PATH / route).is_file()
 
     groups = dict(PORTAL.navigation("", site))
     assert [target for _, target in groups["Tutorials"]] == [
@@ -134,7 +133,7 @@ def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path)
 
     released = dict(PORTAL.navigation(PORTAL.RELEASE_PATH, site))
     for _, target in released["Tutorials"] + [released["Start here"][-1]]:
-        assert not target.startswith(PORTAL.RELEASE_PATH)
+        assert target.startswith(PORTAL.RELEASE_PATH)
 
     entries = json.loads((site / "search-index.json").read_text(encoding="utf-8"))
     titles = {item["title"] for item in entries if item["edition"] == "repository"}

@@ -82,7 +82,7 @@ def _valid_claim_packet() -> tuple[dict[str, Any], dict[str, Any]]:
         "verifier_coordinate": {
             "engine": "vstd-gdc-checker",
             "verifier_id": "vstd-kernel-gdc-4.7",
-            "version": "1.5.0",
+            "version": "2.0.0",
         },
         "vstd_layer_achieved": "VSTD-4",
     }

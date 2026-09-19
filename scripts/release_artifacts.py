@@ -72,6 +72,7 @@ PACKAGED_SCHEMA_NAMES = frozenset(
         "vstd-proposition-transfer-0.1.schema.json",
         "vstd-push-request-0.1.schema.json",
         "vstd-relation-boundary-0.1.schema.json",
+        "vstd-risk-profile-2.schema.json",
         "vstd-self-derivation-mechanism-0.1.schema.json",
         "vstd-silo-assessment-0.1.schema.json",
         "vstd-silo-assessment-receipt-0.1.schema.json",
@@ -80,6 +81,10 @@ PACKAGED_SCHEMA_NAMES = frozenset(
         "vstd-silo-composition-assessment-receipt-0.1.schema.json",
         "vstd-silo-formation-receipt-0.1.schema.json",
         "vstd-silo-transfer-0.1.schema.json",
+        "vstd-sim-1.schema.json",
+        "vstd-grounded-request-1.schema.json",
+        "vstd-grounded-policy-1.schema.json",
+        "vstd-grounded-certification-1.schema.json",
         "vstd-source-grounding-0.1.schema.json",
         "vstd-typed-formation-0.1.schema.json",
     }

@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-grounded-policy-1.schema.json",
+  "title": "Verifier Standard grounded policy version 1",
+  "description": "Structural contract only. Replay under an external policy and exact expected request is required for certification.",
+  "$ref": "#/$defs/policy",
+  "$defs": {
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mechanism_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mechanism_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "trust_roots": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "mechanism_id",
+        "mechanism_digest",
+        "trust_roots"
+      ]
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "VSTD-GROUNDED-POLICY-1"
+        },
+        "admissions": {
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "1.1",
+              "1.2",
+              "1.3",
+              "1.4",
+              "1.5",
+              "1.6",
+              "1.7",
+              "2.1",
+              "2.2",
+              "2.3",
+              "2.4",
+              "2.5",
+              "2.6",
+              "2.7",
+              "3.1",
+              "3.2",
+              "3.3",
+              "3.4",
+              "3.5",
+              "3.6",
+              "3.7",
+              "3.8",
+              "4.1",
+              "4.2",
+              "4.3",
+              "4.4",
+              "4.5",
+              "4.6",
+              "4.7",
+              "4.8",
+              "4.9",
+              "4.10",
+              "4.11",
+              "4.12",
+              "4.13",
+              "4.14",
+              "5.1",
+              "5.2",
+              "5.3",
+              "5.4",
+              "5.5",
+              "5.6",
+              "5.7",
+              "5.8",
+              "5.9",
+              "5.10",
+              "5.11"
+            ]
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/admission"
+          }
+        },
+        "max_evidence_items": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "max_evidence_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 33554432
+        },
+        "max_certificate_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 33554432
+        },
+        "catalog_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "specification_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "admissions",
+        "max_evidence_items",
+        "max_evidence_bytes",
+        "max_certificate_bytes",
+        "catalog_digest",
+        "specification_digest"
+      ]
+    }
+  }
+}

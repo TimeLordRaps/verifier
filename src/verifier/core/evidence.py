@@ -285,6 +285,10 @@ class VerificationSession:
             )
         self._mechanisms[mechanism.mechanism_id] = mechanism
 
+    def registered_mechanisms(self) -> tuple[VerificationMechanism, ...]:
+        """Snapshot caller-registered capabilities for an isolated evidence replay."""
+        return tuple(self._mechanisms[key] for key in sorted(self._mechanisms))
+
     def evaluate(self, binding: BoundProposition) -> EvaluatedProposition:
         binding, binding_digest = self._snapshot_binding(binding)
         mechanism = self._mechanisms.get(binding.mechanism_id)

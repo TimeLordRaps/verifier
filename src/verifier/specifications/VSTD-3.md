@@ -427,3 +427,13 @@ VSTD-3 conformance is falsified for a claimed surface if any of these occurs:
 Implementation limitations and the complete threat model are in
 `../docs/profiles/vstd-3/threat-model.md`; vendor requirements are in
 `../docs/profiles/vstd-3/vendor-integration.md`.
+
+
+## Grounded certification obligation coordinates
+
+The additive grounded certification contract decomposes this numbered profile
+into obligations `3.1` through `3.8`. See
+[`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md) for their exact propositions,
+dependencies, admission policy, portable replay and cumulative prerequisite rules.
+These identifiers preserve the requirements above and do not rename this profile's
+existing receipt serialization or promote historical receipts automatically.

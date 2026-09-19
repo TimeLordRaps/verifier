@@ -35,7 +35,7 @@
 
   <main id="top">
     <div class="wrap ref-hero">
-      <div class="eyebrow">Reference &middot; RELEASED SOURCE · package version 1.5.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
+      <div class="eyebrow">Reference &middot; UNRELEASED SOURCE · base package version 2.0.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
       <h1>Inspect the whole pipeline.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
@@ -64,6 +64,9 @@
         <p class="section-lead">Each entry point below is imported while this page is built. A
         rename, move, or deletion fails the build instead of publishing a stale map.</p>
         <div class="ref-table"><table><thead><tr><th>Command</th><th>What it does</th><th>Implementation entry points</th></tr></thead><tbody>
+<tr><td><code>vstd certification catalog</code></td><td>Lists the object-profile obligation catalogue and bounded native checker coverage.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/profile_obligations.py"><code>verifier.core.profile_obligations:obligation_catalog</code></a></td></tr>
+<tr><td><code>vstd certification assess</code></td><td>Executes externally admitted native obligation mechanisms and emits a new grounded certificate.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification:build_grounded_certificate</code></a></td></tr>
+<tr><td><code>vstd certification check</code></td><td>Rehashes and reruns a certificate against the consumer's expected request and admission policy.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification:recheck_grounded_certificate</code></a></td></tr>
 <tr><td><code>vstd demo</code></td><td>Runs the four adversarial specimens in-process and reports whether each defensive outcome matched its declared invariant.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:run_demo</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:demo_report</code></a></td></tr>
 <tr><td><code>vstd plan</code></td><td>Resolves a manifest's command and declared paths without executing anything.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:describe_run_plan</code></a></td></tr>
 <tr><td><code>vstd components inspect</code></td><td>Loads a bounded stored component package and checks retained-byte bindings; does not extract, install, execute, or qualify its implementation.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/storage.py"><code>verifier.interoperability.storage:load_component_package</code></a></td></tr>
@@ -96,6 +99,39 @@
 <h3><code>vstd</code></h3>
 <p class="ref-help">Subcommand group.</p>
 <p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-certification">
+<h3><code>vstd certification</code></h3>
+<p class="ref-help">Inspect and replay grounded object-profile obligations.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-certification-catalog">
+<h3><code>vstd certification catalog</code></h3>
+<p class="ref-help">List all X.M obligations and native mechanism coverage.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-assess">
+<h3><code>vstd certification assess</code></h3>
+<p class="ref-help">Execute admitted built-in checks and emit a fresh certificate.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>request</code></td><td>positional</td><td>Externally selected grounded request file.</td></tr>
+<tr><td><code>--evidence</code></td><td>required option</td><td>Object mapping evidence addresses to base64 bytes.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected admission policy file.</td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>New certificate file; existing files are never overwritten.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-check">
+<h3><code>vstd certification check</code></h3>
+<p class="ref-help">Rehash and rerun a certificate against an external request and policy.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>certificate</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>The request the consumer intends to check.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected policy, not authority supplied by the certificate.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
 </article>
 <article class="ref-item" id="cli-vstd-demo">
 <h3><code>vstd demo</code></h3>
@@ -685,6 +721,32 @@
 <tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
 </tbody></table>
 </article>
+<article class="ref-item" id="api-CertificationError">
+<h3><code>CertificationError</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>CertificationError</code></pre>
+<p class="ref-help">Malformed, substituted, or unreplayable grounded certification input.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
+
+</article>
+<article class="ref-item" id="api-CertificationPolicy">
+<h3><code>CertificationPolicy</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>CertificationPolicy(admissions: 'Mapping[str, MechanismAdmission]', max_evidence_items: 'int' = 512, max_evidence_bytes: 'int' = 8388608, max_certificate_bytes: 'int' = 16777216, catalog: 'str' = &lt;factory&gt;, specification: 'str' = &lt;factory&gt;) -&gt; None</code></pre>
+<p class="ref-help">External mechanism admission and resource policy, not certificate authority.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-CertificationRequest">
+<h3><code>CertificationRequest</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>CertificationRequest(claim_id: 'str', binding: 'ClaimBinding', target_profile: 'int', obligations: 'Mapping[str, BoundProposition]') -&gt; None</code></pre>
+<p class="ref-help">Exact claim and individual evidence propositions; no supplied outcomes.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="api-ControlSurfaceContext">
 <h3><code>ControlSurfaceContext</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>ControlSurfaceContext(schema_id: 'str' = 'VSTD-2', interaction_mode: 'InteractionMode' = &lt;InteractionMode.STATIC: 'STATIC'&gt;, domain_tags: 'tuple[str, ...]' = (), operating_regime: 'str' = '', consequence_profiles: 'tuple[str, ...]' = (), authority_requirements: 'tuple[str, ...]' = ()) -&gt; None</code></pre>
@@ -746,6 +808,15 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/catalog.py"><code>verifier.interoperability.catalog</code></a></p>
 <p class="ref-help">Members: <code>STATIC, OFFLINE_REPLAY, SIMULATION, LIVE_READ_ONLY, LIVE_MUTATING</code></p>
 </article>
+<article class="ref-item" id="api-MechanismAdmission">
+<h3><code>MechanismAdmission</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>MechanismAdmission(mechanism_id: 'str', mechanism_digest: 'str', trust_roots: 'tuple[str, ...]') -&gt; None</code></pre>
+<p class="ref-help">Checker-selected executable and trust roots for one exact obligation.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="api-MechanismDecision">
 <h3><code>MechanismDecision</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>MechanismDecision(outcome: 'MechanismOutcome', details: 'str', observations: 'Mapping[str, Any]' = &lt;factory&gt;) -&gt; None</code></pre>
@@ -758,6 +829,15 @@
 <p class="ref-help">Enumeration of the exported result values.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <p class="ref-help">Members: <code>PASS, FAIL, UNKNOWN</code></p>
+</article>
+<article class="ref-item" id="api-NativeCertificationMechanism">
+<h3><code>NativeCertificationMechanism</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>NativeCertificationMechanism()</code></pre>
+<p class="ref-help">Execute bounded claim-record, geometry and decision-certificate checks.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/certification_mechanisms.py"><code>verifier.core.certification_mechanisms</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>evaluate(self, binding: 'BoundProposition', evidence: 'Sequence[bytes]') -&gt; 'MechanismDecision'</code></td><td></td></tr>
+</tbody></table>
 </article>
 <article class="ref-item" id="api-ObligationCoordinate">
 <h3><code>ObligationCoordinate</code> <span class="ref-tag">class</span></h3>
@@ -783,6 +863,15 @@
 <p class="ref-help">Typed outcome of a bounded platform comparison.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/platform_comparison.py"><code>verifier.core.platform_comparison</code></a></p>
 <p class="ref-help">Members: <code>PASS, CONFLICTED, NOT_ESTABLISHED, INVALID</code></p>
+</article>
+<article class="ref-item" id="api-ProfileObligation">
+<h3><code>ProfileObligation</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>ProfileObligation(profile: 'int', index: 'int', name: 'str', requirement: 'str', depends_on: 'tuple[str, ...]', source: 'str') -&gt; None</code></pre>
+<p class="ref-help">A separately checked proposition with explicit prerequisite obligations.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/profile_obligations.py"><code>verifier.core.profile_obligations</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+</tbody></table>
 </article>
 <article class="ref-item" id="api-ProvenanceHypergraph">
 <h3><code>ProvenanceHypergraph</code> <span class="ref-tag">class</span></h3>
@@ -867,6 +956,7 @@
 <tr><td><code>evaluate(self, binding: 'BoundProposition') -&gt; 'EvaluatedProposition'</code></td><td></td></tr>
 <tr><td><code>evaluate_compound(self, bindings: 'Sequence[BoundProposition]') -&gt; 'tuple[EvaluatedProposition, ...]'</code></td><td>Run one compound mechanism invocation over separately bound propositions.</td></tr>
 <tr><td><code>register(self, mechanism: 'VerificationMechanism') -&gt; 'None'</code></td><td></td></tr>
+<tr><td><code>registered_mechanisms(self) -&gt; 'tuple[VerificationMechanism, ...]'</code></td><td>Snapshot caller-registered capabilities for an isolated evidence replay.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-VerificationVerdict">
@@ -904,6 +994,13 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
 
 </article>
+<article class="ref-item" id="api-assess_grounded_certification">
+<h3><code>assess_grounded_certification</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>assess_grounded_certification(request: 'CertificationRequest', *, policy: 'CertificationPolicy', session: 'VerificationSession') -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Execute each admitted obligation and derive cumulative certification.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
+
+</article>
 <article class="ref-item" id="api-assess_witness_corroboration">
 <h3><code>assess_witness_corroboration</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>assess_witness_corroboration(entry: 'EvidenceBoundDepthResult', bundle: 'WitnessBundle', *, session: 'VerificationSession') -&gt; 'WitnessCorroborationResult'</code></pre>
@@ -923,6 +1020,13 @@
 <pre class="ref-signature"><code>build_evidence_bound_vstd4_receipt(result: 'EvidenceBoundDepthResult', *, receipt_id: 'str', claim_id: 'str', binding: 'ClaimBinding', prerequisite_evidence: 'Mapping[int, BoundProposition]', rung_evidence: 'Mapping[str, BoundProposition]', session: 'VerificationSession', status: 'str' = 'VALID') -&gt; 'dict[str, object]'</code></pre>
 <p class="ref-help">Serialize every input needed to rerun an evidence-bound VSTD-4 result.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
+
+</article>
+<article class="ref-item" id="api-build_grounded_certificate">
+<h3><code>build_grounded_certificate</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>build_grounded_certificate(request: 'CertificationRequest', *, policy: 'CertificationPolicy', session: 'VerificationSession') -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Build a fresh portable certificate by executing, never accepting a result.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
 
 </article>
 <article class="ref-item" id="api-build_vstd5_receipt">
@@ -1002,6 +1106,13 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry_io.py"><code>verifier.core.geometry_io</code></a></p>
 
 </article>
+<article class="ref-item" id="api-obligation_catalog">
+<h3><code>obligation_catalog</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>obligation_catalog() -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Return the fixed object-axis catalogue; no supplied ratings or verdicts.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/profile_obligations.py"><code>verifier.core.profile_obligations</code></a></p>
+
+</article>
 <article class="ref-item" id="api-recheck_assurance_log">
 <h3><code>recheck_assurance_log</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>recheck_assurance_log(payload: 'Mapping[str, Any]', *, mechanisms: 'Iterable[VerificationMechanism]') -&gt; 'AssuranceLedger'</code></pre>
@@ -1021,6 +1132,13 @@
 <pre class="ref-signature"><code>recheck_evidence_bound_vstd4_receipt(receipt: 'Mapping[str, object]', *, mechanisms: 'Sequence[VerificationMechanism]') -&gt; 'EvidenceBoundDepthResult'</code></pre>
 <p class="ref-help">Reconstruct evidence bytes and rerun an evidence-bound VSTD-4 receipt.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
+
+</article>
+<article class="ref-item" id="api-recheck_grounded_certificate">
+<h3><code>recheck_grounded_certificate</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>recheck_grounded_certificate(certificate: 'Mapping[str, Any]', *, policy: 'CertificationPolicy', mechanisms: 'Sequence[VerificationMechanism]', expected_request_digest: 'str') -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Rehash and rerun under an external policy; reject a changed carried result.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
 
 </article>
 <article class="ref-item" id="api-recheck_vstd5_receipt">

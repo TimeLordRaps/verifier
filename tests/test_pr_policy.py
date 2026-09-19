@@ -598,6 +598,7 @@ def test_expected_reports_match_repository_check_matrix_exactly() -> None:
             ("coverage", "python-3.12", "coverage-tests.xml"),
             ("scitt-crypto", "python-3.12", "scitt-crypto.xml"),
             ("artifact-seal", "python-3.12", "artifact-seal.xml"),
+            ("logits-constraints", "python-3.12", "logits-constraints.xml"),
             ("installed-composition", "python-3.12", "installed-composition-contracts.xml"),
         ]
     )
@@ -610,7 +611,7 @@ def test_manifest_builder_produces_valid_canonical_artifact(tmp_path: Path) -> N
     body = _body(manifest=manifest, disposition="NONE")
     result = _validate(body, manifest=manifest)
     assert result["test_evidence_manifest_sha256"] == _module()._canonical_json_sha256(manifest)
-    assert result["test_evidence_total_tests"] == 12
+    assert result["test_evidence_total_tests"] == 13
     assert result["test_evidence_total_skipped"] == 0
     assert result["test_evidence_skip_observation_omission_count"] == 0
 
@@ -635,6 +636,7 @@ def test_installed_composition_report_is_retained_and_downloaded_for_both_policy
     for job in ("evaluate-policy", "evaluate-merge-group"):
         commands = "\n".join(step.get("run", "") for step in policy["jobs"][job]["steps"])
         assert '--pattern "installed-composition-contracts-$RUN_ID-$RUN_ATTEMPT-*"' in commands
+        assert '--pattern "logits-constraints-$RUN_ID-$RUN_ATTEMPT-*"' in commands
 
 
 def test_trusted_workflow_never_checks_out_pull_request_code() -> None:

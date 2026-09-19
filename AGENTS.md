@@ -289,11 +289,11 @@ CRLF/LF equivalence as byte identity. This matters when working on Windows.
 - a stale generated CLI/API reference or experiment index.
 
 The protected repository-check aggregate (the `conformance-gate` job identifier) requires `coordinate`, `base`,
-`coverage`, `stdlib-smoke`, `scitt-crypto`, `artifact-seal`, `release-integrity`, `release-reproducibility`,
+`coverage`, `stdlib-smoke`, `scitt-crypto`, `artifact-seal`, `logits-constraints`, `release-integrity`, `release-reproducibility`,
 `installed-wheel-smoke`, and `presentation` to all succeed. The dedicated SCITT/COSE job
-installs `.[test,scitt]`; the normal test matrix may skip that optional cryptographic
-integration module. The artifact-seal job installs `.[test,seal]` and must execute the
-complete freeze/seal/thaw adversarial suite.
+installs `.[test,scitt]`; the artifact-seal job installs `.[test,seal]` and must execute the
+complete freeze/seal/thaw adversarial suite; the dedicated logits-constraints job installs `.[test,constraints]`
+(plus transformers) and executes the constraint-kernel suite; the normal test matrix may skip those optional integrations.
 
 ## 7. Conventions
 

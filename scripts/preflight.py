@@ -12,6 +12,16 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import threading
+
+try:
+    from scripts.check_public_estate_sync import (
+        check_documentation_version_references, installation_documentation_version,
+    )
+except ModuleNotFoundError:
+    from check_public_estate_sync import (
+        check_documentation_version_references, installation_documentation_version,
+    )
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,7 +32,29 @@ def _run_command(cmd: list[str], *, cwd: Path = ROOT, env: dict[str, str] | None
     full_env = os.environ.copy()
     if env:
         full_env.update(env)
-    res = subprocess.run(cmd, cwd=str(cwd), capture_output=True, text=True, env=full_env)
+    if "pytest" in cmd:
+        # Preserve live test names and traces while retaining skip-audit evidence.
+        process = subprocess.Popen(cmd, cwd=str(cwd), stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT, text=True, env=full_env)
+        def stop() -> None:
+            print("[TEST STOP LOSS] total execution exceeded 600 seconds", flush=True)
+            if os.name == "nt":
+                subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], timeout=10)
+            else:
+                process.kill()
+        timer = threading.Timer(600, stop)
+        timer.daemon = True
+        timer.start()
+        lines = []
+        try:
+            assert process.stdout is not None
+            for line in process.stdout:
+                print(line, end="", flush=True)
+                lines.append(line)
+            return process.wait(timeout=10), "".join(lines), ""
+        finally:
+            timer.cancel()
+    res = subprocess.run(cmd, cwd=str(cwd), capture_output=True, text=True, env=full_env, timeout=120)
     return res.returncode, res.stdout.strip(), res.stderr.strip()
 
 
@@ -142,9 +174,14 @@ def check_readme_version() -> bool:
         return False
     expected = m.group(1)
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    try:
+        released = installation_documentation_version(ROOT, expected)
+    except ValueError as exc:
+        print(f"[README VERSION] FAIL: {exc}")
+        return False
 
     errors: list[str] = []
-    pip_cmd = f'python -m pip install "verifier-standard=={expected}"'
+    pip_cmd = f'python -m pip install "verifier-standard=={released}"'
     if pip_cmd not in readme:
         errors.append(f"README.md missing pinned install command: {pip_cmd!r}")
 
@@ -152,11 +189,11 @@ def check_readme_version() -> bool:
     if source_coord not in readme:
         errors.append(f"README.md missing source coordinate statement: {source_coord!r}")
 
-    release_stmt = f"Version {expected} is the current release"
+    release_stmt = f"Version {released} is the current release"
     if release_stmt not in readme:
         errors.append(f"README.md missing current release statement: {release_stmt!r}")
 
-    tag_url = f"https://github.com/TimeLordRaps/verifier/releases/tag/v{expected}"
+    tag_url = f"https://github.com/TimeLordRaps/verifier/releases/tag/v{released}"
     if tag_url not in readme:
         errors.append(f"README.md missing release tag URL: {tag_url!r}")
 
@@ -181,32 +218,7 @@ def check_docs_versions() -> bool:
         return False
     expected = m.group(1)
 
-    pip_pat = re.compile(r'verifier-standard(?:\[[a-zA-Z0-9,._-]+\])?==([0-9a-zA-Z.-]+)')
-    git_pat = re.compile(r'(?:--branch\s+v|checkout\s+v|origin\s+tag\s+v|tag\s+`v)([0-9a-zA-Z.-]+)')
-    ver_pat = re.compile(r"verifier\.__version__\)?\s*(?:\n\s*)?#\s*'([^']+)'")
-
-    errors: list[str] = []
-    docs_dir = ROOT / "docs"
-    if docs_dir.is_dir():
-        for doc_path in sorted(docs_dir.rglob("*.md")):
-            rel_path = doc_path.relative_to(ROOT).as_posix()
-            text = doc_path.read_text(encoding="utf-8")
-            for line_no, line in enumerate(text.splitlines(), 1):
-                for match in pip_pat.finditer(line):
-                    if match.group(1) != expected:
-                        errors.append(
-                            f"{rel_path}:{line_no}: pinned pip install specifies {match.group(1)!r}, expected {expected!r}"
-                        )
-                for match in git_pat.finditer(line):
-                    if match.group(1) != expected:
-                        errors.append(
-                            f"{rel_path}:{line_no}: git command specifies tag/branch v{match.group(1)}, expected v{expected}"
-                        )
-            for match in ver_pat.finditer(text):
-                if match.group(1) != expected:
-                    errors.append(
-                        f"{rel_path}: verifier.__version__ output comment specifies {match.group(1)!r}, expected {expected!r}"
-                    )
+    errors = check_documentation_version_references(ROOT, expected)
 
     if errors:
         print(f"[DOCS VERSIONS] FAIL: Documentation version synchronization failure (expected {expected}):")
@@ -222,9 +234,10 @@ def check_schema_inventory() -> bool:
     """Run packaging and schema inventory assertions."""
     cmd = [
         sys.executable,
+        "-u",
         "-m",
         "pytest",
-        "-q",
+        "-vv", "-s", "--durations=10", "--timeout=60",
         "tests/test_packaged_specifications.py",
         "tests/test_release_artifacts.py",
         "-k",
@@ -335,7 +348,7 @@ def audit_test_skips(output: str) -> tuple[bool, dict[str, int], list[tuple[str,
 def check_test_skips(output: str | None = None) -> bool:
     """Run skip audit and print classified skip rationale or unclassified slippage."""
     if output is None:
-        cmd = [sys.executable, "-m", "pytest", "-q", "-rs", "tests/"]
+        cmd = [sys.executable, "-u", "-m", "pytest", "-vv", "-s", "--durations=10", "--timeout=60", "-rs", "tests/"]
         code, stdout, stderr = _run_command(cmd)
         output = stdout + "\n" + stderr
 
@@ -365,7 +378,7 @@ def check_test_skips(output: str | None = None) -> bool:
 
 def check_full_test_suite() -> bool:
     """Run full repository pytest test suite and audit test skips."""
-    cmd = [sys.executable, "-m", "pytest", "-q", "-rs"]
+    cmd = [sys.executable, "-u", "-m", "pytest", "-vv", "-s", "--durations=10", "--timeout=60", "-rs"]
     code, stdout, stderr = _run_command(cmd)
     if code != 0:
         print(f"[TEST SUITE] FAIL: Pytest suite failed:")

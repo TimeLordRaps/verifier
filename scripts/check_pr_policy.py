@@ -103,6 +103,7 @@ EXPECTED_REPORTS = (
     ("coverage", "python-3.12", "coverage-tests.xml"),
     ("scitt-crypto", "python-3.12", "scitt-crypto.xml"),
     ("artifact-seal", "python-3.12", "artifact-seal.xml"),
+    ("logits-constraints", "python-3.12", "logits-constraints.xml"),
     ("installed-composition", "python-3.12", "installed-composition-contracts.xml"),
 )
 REPORT_ARTIFACT_PREFIXES = {
@@ -110,6 +111,7 @@ REPORT_ARTIFACT_PREFIXES = {
     "base": "base-contracts",
     "coverage": "coverage-tests",
     "installed-composition": "installed-composition-contracts",
+    "logits-constraints": "logits-constraints",
     "platform": "platform-python-contracts",
     "scitt-crypto": "scitt-crypto",
 }

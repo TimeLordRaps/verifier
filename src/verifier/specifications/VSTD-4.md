@@ -373,3 +373,13 @@ evidence, and resource limits.
 No external implementation, interoperability profile, or third-party attack has
 yet been demonstrated for `VSTD4-GDC-1`. This implementation status MUST remain
 visible in claims about the format.
+
+
+## Grounded certification obligation coordinates
+
+The additive grounded certification contract decomposes this numbered profile
+into obligations `4.1` through `4.14`. See
+[`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md) for their exact propositions,
+dependencies, admission policy, portable replay and cumulative prerequisite rules.
+These identifiers preserve the requirements above and do not rename this profile's
+existing receipt serialization or promote historical receipts automatically.

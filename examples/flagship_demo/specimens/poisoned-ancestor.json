@@ -30,7 +30,7 @@
         "format_fragment": "UP,WIDTH-K,RES",
         "implementation_hash": "sha256:a7d3c7b3123e9932395eff82f231c53e5b701888abbd203a47f155644cd10a64",
         "parser_hash": "sha256:c657e7777a850e584b7c010f8f7ff778b5269507db3eb0b2ac362a7cdac4cd67",
-        "specification_hash": "sha256:e1eb5bea41c03b0cfc58c9af5cc23d47b1128253c504c8d3674f87bf6da7ed52"
+        "specification_hash": "sha256:9c47296bd789741290bb5ada2bcb1683d6e1e30173d95cfa1ab2244c796c848b"
       }
     },
     "collection": {
@@ -65,7 +65,7 @@
       "level": 0,
       "max_level": 5,
       "rating_basis": "CALLER_SUPPLIED",
-      "refutation_digest": "022ac984bda6a4e63f65ba8e294f1fabdecb1660e70fe6442cb4819a27434d84",
+      "refutation_digest": "81eb710c854d487148152715d615bd45802f8e62f1d4f1d010491134f5dd63be",
       "witness_digest": null
     },
     "hypergraph": {
@@ -592,7 +592,7 @@
         ]
       },
       "header": {
-        "binding": "d17ad10464fab5b474fc36cc5ce9a9b2ba54a3aa081ccb0e8feceea68bf1d7b6",
+        "binding": "05280dc400f80e901a50baae7c8e0fcf398d463d1d4d331c9df5d03435f9c2df",
         "clause_count": 17,
         "format": "VSTD4-GDC-1",
         "literal_count": 25,

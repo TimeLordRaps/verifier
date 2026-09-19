@@ -153,7 +153,7 @@ When working in advanced mathematical foundations, interactive theorem provers (
   1. **Axiom Enumeration**: It binds the exact explicit axiom set (refusing ungrounded axioms or `sorry` escapes).
   2. **Environment & Kernel Binding**: It hashes the exact prover kernel binary, source files, and dependencies.
   3. **Heterogeneous Composition**: It allows an ordinal bound in `ordinatics`, a hyperset graph in `grounded-hyperset-theory`, and an equational derivation in `hypermath` to link together into a unified, refutable proof graph.
-- **Tutorial & Runnable Specimen**: Review [Python API Guide: Grounded Decision Certificates](PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc) and the [Normative VSTD-4 Grounded Certificate Specification](../standard/VSTD-4.md).
+- **Foundations, Tutorial & Runnable Specimen**: Review [Mathematical Foundations Guide](MATHEMATICAL_FOUNDATIONS.md), [Python API Guide: Grounded Decision Certificates](PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc), and the [Normative VSTD-4 Grounded Certificate Specification](../standard/VSTD-4.md).
 
 ### G. For Nanochemistry, Molecular Robotics & Mechanosynthesis (Self-Assembly Containment and Anti-Replication Gates)
 In molecular dynamics simulations, chemical reaction networks (CRNs), and autonomous molecular robotics (such as deoxyribonucleic acid (DNA) origami walkers or mechanosynthetic tooltips), molecular self-assembly poses an urgent containment challenge: preventing runaway autocatalytic self-replication.
