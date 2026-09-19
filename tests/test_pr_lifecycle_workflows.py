@@ -1,4 +1,4 @@
-"""Terminology: identifier (ID); Secure Hash Algorithm 256-bit (SHA-256).
+"""Terminology: identifier (ID); operating system (OS); Secure Hash Algorithm 256-bit (SHA-256).
 
 Repository-process tests for pull-request promotion and delivery.
 """
@@ -395,3 +395,9 @@ def test_contributor_surfaces_require_refresh_acceptance_and_aftercare() -> None
     assert "DISCLOSED — test-evidence-sha256=<64hex>" in template
     assert "NONE — test-evidence-sha256=<64hex>" in template
     assert "<64hex>` means exactly 64 lowercase hexadecimal characters" in template
+    assert "## Test skip rubric disclosure" in template
+    assert "OS_CAPABILITY_GUARD" in template
+    assert "OPTIONAL_DEPENDENCY_ABSENT" in template
+    assert "Mandatory test skip disclosure and rubric classification" in agents
+    assert "docs/TEST_SKIP_RUBRIC.md" in agents
+    assert "docs/TEST_SKIP_RUBRIC.md" in contributing
