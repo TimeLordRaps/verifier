@@ -435,6 +435,14 @@
             "^(DATA|ENV|BENCH|HYPER|MODEL|SIM)\\.[1-5]$": {
               "additionalProperties": false,
               "properties": {
+                "blocked_by": {
+                  "type": "array",
+                  "items": {
+                    "pattern": "^(DATA|ENV|BENCH|HYPER|MODEL|SIM)\\.[1-5]$",
+                    "type": "string"
+                  },
+                  "uniqueItems": true
+                },
                 "established": {
                   "type": "boolean"
                 },
@@ -514,6 +522,7 @@
                 "name",
                 "proposition",
                 "established",
+                "blocked_by",
                 "evaluation"
               ],
               "type": "object"

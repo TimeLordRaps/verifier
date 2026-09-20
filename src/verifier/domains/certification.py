@@ -166,7 +166,7 @@ class NativeDomainAdapter:
             same(bundle["domain"], self.domain, "domain differs")
             same(digest(bundle["artifact"]), binding.parameters["artifact_digest"], "artifact differs")
             same(digest(self.policy), binding.parameters["policy_digest"], "checker policy differs")
-            names = dict((f"{self.domain}.{i}", name) for i,(name,_) in enumerate(CHECKS[self.domain],1))
+            names = dict((f"{self.domain}.{i}", c[0]) for i,c in enumerate(CHECKS[self.domain],1))
             if binding.predicate not in names:
                 raise Unavailable("unsupported domain predicate")
             budget = Budget(self.policy["max_operations"], self.policy["max_items"])
@@ -205,18 +205,22 @@ def build_domain_certificate(request: dict, evidence: dict, *, policy: dict) -> 
     session = VerificationSession(store)
     adapter = NativeDomainAdapter(request["domain"], policy)
     session.register(adapter)
-    rows, depth = {}, 0
-    for i, (name, statement) in enumerate(CHECKS[request["domain"]][:request["target_depth"]], 1):
+    rows, depth, holds = {}, 0, set()
+    for i, (name, statement, depends) in enumerate(CHECKS[request["domain"]][:request["target_depth"]], 1):
         coordinate = f"{request['domain']}.{i}"
         proposition = BoundProposition(subject_id=request["subject_id"], predicate=coordinate, expected=True,
             mechanism_id=adapter.mechanism_id, mechanism_digest=adapter.mechanism_digest, evidence_refs=(ref,),
             trust_roots=tuple(policy["trust_roots"]), bounds=EvidenceBounds(1, policy["max_evidence_bytes"]),
             parameters={"artifact_digest": request["artifact_digest"], "policy_digest": digest(policy), "request_digest": digest(request)})
         evaluated = session.evaluate(proposition).to_dict()
-        established = depth == i-1 and evaluated["outcome"] == "PASS"
+        blocked = [f"{request['domain']}.{d}" for d in depends if d not in holds]
+        established = not blocked and evaluated["outcome"] == "PASS"
         if established:
-            depth = i
-        rows[coordinate] = {"name": name, "proposition": statement, "established": established, "evaluation": evaluated}
+            holds.add(i)
+            if depth == i-1:
+                depth = i
+        rows[coordinate] = {"name": name, "proposition": statement, "established": established,
+                            "blocked_by": blocked, "evaluation": evaluated}
     outcomes = [r["evaluation"]["outcome"] for r in rows.values()]
     status = "FAIL" if "FAIL" in outcomes else "UNKNOWN" if "UNKNOWN" in outcomes else "PASS"
     result = {"status": status, "domain_depth": depth, "scope": SCOPES[request["domain"]],

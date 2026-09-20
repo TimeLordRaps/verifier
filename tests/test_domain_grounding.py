@@ -434,3 +434,40 @@ def test_shards_cannot_shadow_reference_relation_namespace(shadow: str, bundles:
     assert result["domain_depth"] == 4
     assert result["checks"]["SIM.5"]["evaluation"]["outcome"] == "FAIL"
     assert "reserved relation namespace" in result["checks"]["SIM.5"]["evaluation"]["details"]
+
+
+def test_unavailable_check_does_not_block_independent_siblings(bundles: dict, policy: dict) -> None:
+    """SIM fans out from SIM.1; an unavailable SIM.3 must not unestablish SIM.4/SIM.5.
+
+    Regression guard. The catalog previously synthesized a linear ``i-1`` chain for
+    every domain, so a single UNKNOWN made every later check report
+    ``established: false`` while its own evaluation said PASS -- the certificate
+    contradicted itself. Establishment now follows the declared dependency graph.
+    """
+    bundle = deepcopy(bundles["SIM"])
+    bundle["artifact"]["projection"] = {}
+    checks = assess(bundle, policy)["result"]["checks"]
+
+    assert checks["SIM.3"]["evaluation"]["outcome"] == "UNKNOWN"
+    assert checks["SIM.3"]["established"] is False
+
+    # Asserted before any blocked_by lookup so this fails on the establishment
+    # semantics themselves, not merely on the absence of the explanatory field.
+    independent = ("SIM.2", "SIM.4", "SIM.5")
+    assert [checks[c]["evaluation"]["outcome"] for c in independent] == ["PASS"] * 3
+    assert [checks[c]["established"] for c in independent] == [True] * 3
+    assert [checks[c]["blocked_by"] for c in independent] == [[]] * 3
+
+    # The consecutive-prefix depth is unchanged: it still stops at the gap.
+    assert assess(bundle, policy)["result"]["domain_depth"] == 2
+
+
+def test_declared_dependencies_match_established_blocking(bundles: dict, policy: dict) -> None:
+    """Every ``blocked_by`` entry must be a dependency the catalog actually declares."""
+    from verifier.domains.catalog import domain_catalog
+
+    declared = {c["id"]: set(c["depends_on"]) for d in domain_catalog()["domains"].values() for c in d["checks"]}
+    for domain in CHECKS:
+        for coordinate, row in assess(bundles[domain], policy)["result"]["checks"].items():
+            assert set(row["blocked_by"]) <= declared[coordinate]
+            assert coordinate not in declared[coordinate], "check cannot depend on itself"
