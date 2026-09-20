@@ -85,6 +85,10 @@ PACKAGED_SCHEMA_NAMES = frozenset(
         "vstd-grounded-request-1.schema.json",
         "vstd-grounded-policy-1.schema.json",
         "vstd-grounded-certification-1.schema.json",
+        "vstd-domain-request-1.schema.json",
+        "vstd-domain-policy-1.schema.json",
+        "vstd-domain-evidence-1.schema.json",
+        "vstd-domain-certification-1.schema.json",
         "vstd-source-grounding-0.1.schema.json",
         "vstd-typed-formation-0.1.schema.json",
     }

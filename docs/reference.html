@@ -105,6 +105,34 @@
 <p class="ref-help">Inspect and replay grounded object-profile obligations.</p>
 <p class="ref-none">No arguments; this command only groups subcommands.</p>
 </article>
+<article class="ref-item" id="cli-vstd-certification-domain-catalog">
+<h3><code>vstd certification domain-catalog</code></h3>
+<p class="ref-help">List native DATA, ENV, BENCH, HYPER, MODEL and SIM checks.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-domain-assess">
+<h3><code>vstd certification domain-assess</code></h3>
+<p class="ref-help">Execute or replay grounded domain computations under external policy.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>input</code></td><td>positional</td><td>Evidence bundle for assess; certificate for check.</td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>Externally selected domain request.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected domain policy.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>New certificate file; never overwrites existing files.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-domain-check">
+<h3><code>vstd certification domain-check</code></h3>
+<p class="ref-help">Execute or replay grounded domain computations under external policy.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>input</code></td><td>positional</td><td>Evidence bundle for assess; certificate for check.</td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>Externally selected domain request.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected domain policy.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="cli-vstd-certification-catalog">
 <h3><code>vstd certification catalog</code></h3>
 <p class="ref-help">List all X.M obligations and native mechanism coverage.</p>
@@ -840,6 +868,15 @@
 <tr><td><code>evaluate(self, binding: 'BoundProposition', evidence: 'Sequence[bytes]') -&gt; 'MechanismDecision'</code></td><td></td></tr>
 </tbody></table>
 </article>
+<article class="ref-item" id="api-NativeDomainAdapter">
+<h3><code>NativeDomainAdapter</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>NativeDomainAdapter(domain: 'str', policy: 'dict') -&gt; 'None'</code></pre>
+<p class="ref-help">Executable mechanism for one domain; registration supplies no implicit authority.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>evaluate(self, binding: 'BoundProposition', evidence: 'Sequence[bytes]') -&gt; 'MechanismDecision'</code></td><td></td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="api-ObligationCoordinate">
 <h3><code>ObligationCoordinate</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>ObligationCoordinate(obligation_id: 'str' = '', content_digest: 'str' = '', scope: 'Mapping[str, str]' = &lt;factory&gt;, assumptions: 'tuple[str, ...]' = (), exclusions: 'tuple[str, ...]' = ()) -&gt; None</code></pre>
@@ -1009,6 +1046,13 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/witness.py"><code>verifier.core.witness</code></a></p>
 
 </article>
+<article class="ref-item" id="api-build_domain_certificate">
+<h3><code>build_domain_certificate</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>build_domain_certificate(request: 'dict', evidence: 'dict', *, policy: 'dict') -&gt; 'dict'</code></pre>
+<p class="ref-help">Execute every requested prerequisite with content-addressed evidence.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
+
+</article>
 <article class="ref-item" id="api-build_evidence_bound_graph_level_record">
 <h3><code>build_evidence_bound_graph_level_record</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>build_evidence_bound_graph_level_record(result: 'EvidenceBoundGraphLevelResult', *, graph: 'ProvenanceHypergraph', members: 'Sequence[str]', binding: 'ClaimBinding', object_evidence: 'Mapping[str, BoundProposition]', edge_evidence: 'Mapping[str, BoundProposition]', session: 'VerificationSession') -&gt; 'dict[str, Any]'</code></pre>
@@ -1072,6 +1116,27 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt</code></a></p>
 
 </article>
+<article class="ref-item" id="api-domain_catalog">
+<h3><code>domain_catalog</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>domain_catalog() -&gt; 'dict'</code></pre>
+<p class="ref-help">Describe all native domain propositions, scopes and cumulative prerequisites.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/catalog.py"><code>verifier.domains.catalog</code></a></p>
+
+</article>
+<article class="ref-item" id="api-domain_policy">
+<h3><code>domain_policy</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>domain_policy(*, trust_roots: 'list[str]', witness_keys: 'dict | None' = None, max_operations: 'int' = 1000000, max_items: 'int' = 4096, max_evidence_bytes: 'int' = 4194304, max_tolerance: 'float' = 1e-08) -&gt; 'dict'</code></pre>
+<p class="ref-help">Create a checker-selected policy; never derive roots from a certificate.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
+
+</article>
+<article class="ref-item" id="api-domain_request">
+<h3><code>domain_request</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>domain_request(evidence: 'dict', *, target_depth: 'int | None' = None) -&gt; 'dict'</code></pre>
+<p class="ref-help">Bind a consumer-selected subject, artifact and complete evidence inventory.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
+
+</article>
 <article class="ref-item" id="api-establish_graph_level">
 <h3><code>establish_graph_level</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>establish_graph_level(graph: 'ProvenanceHypergraph', *, collection_id: 'str', members: 'Sequence[str]', object_evidence: 'Mapping[str, BoundProposition]', edge_evidence: 'Mapping[str, BoundProposition]', session: 'VerificationSession', binding: 'ClaimBinding') -&gt; 'EvidenceBoundGraphLevelResult'</code></pre>
@@ -1119,6 +1184,13 @@
 <pre class="ref-signature"><code>recheck_assurance_log(payload: 'Mapping[str, Any]', *, mechanisms: 'Iterable[VerificationMechanism]') -&gt; 'AssuranceLedger'</code></pre>
 <p class="ref-help">Rebuild and replay a portable assurance log from its embedded bytes.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
+
+</article>
+<article class="ref-item" id="api-recheck_domain_certificate">
+<h3><code>recheck_domain_certificate</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>recheck_domain_certificate(certificate: 'dict', *, expected_request: 'dict', policy: 'dict') -&gt; 'dict'</code></pre>
+<p class="ref-help">Replay against external intent; return REJECTED for substitution or forged output.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
 
 </article>
 <article class="ref-item" id="api-recheck_evidence_bound_graph_level_record">

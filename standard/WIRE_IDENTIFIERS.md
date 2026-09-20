@@ -75,6 +75,10 @@ receipts, or new numbered profiles. They dispatch independently by:
 | Grounded certification request | `VSTD-GROUNDED-REQUEST-1` |
 | Grounded certification admission policy | `VSTD-GROUNDED-POLICY-1` |
 | Grounded certification certificate | `VSTD-GROUNDED-CERTIFICATION-1` |
+| Grounded domain request | `VSTD-DOMAIN-REQUEST-1` |
+| Grounded domain policy | `VSTD-DOMAIN-POLICY-1` |
+| Grounded domain retained evidence | `VSTD-DOMAIN-EVIDENCE-1` |
+| Grounded domain certificate | `VSTD-DOMAIN-CERTIFICATION-1` |
 | Freeze manifest | `VSTD-ARTIFACT-FREEZE-1` |
 | Self-closing seal envelope | `VSTD-ARTIFACT-SEAL-1` |
 | Seal closure payload | `VSTD-ARTIFACT-SEAL-CLOSURE-1` |

@@ -5,6 +5,12 @@
 This policy applies beginning with the first release that contains it. It does not
 retroactively change frozen receipts or earlier release bytes.
 
+The unreleased 2.0.0 domain path adds `NativeDomainAdapter`, `domain_catalog`,
+`domain_policy`, `domain_request`, `build_domain_certificate`, and
+`recheck_domain_certificate` to the supported exports. These functions consume
+the additive [domain contracts](../standard/DOMAIN_GROUNDING.md); they do not
+reinterpret historical domain records or establish object numbered-profile conformance.
+
 ## Supported boundary
 
 The supported Python runtime API is the set of names exported by `verifier.__all__` and

@@ -24,6 +24,16 @@ from verifier.core.receipt import strict_json_loads
 def add_certification_parser(subparsers: Any) -> None:
     parser = subparsers.add_parser("certification", help="Inspect and replay grounded object-profile obligations.")
     commands = parser.add_subparsers(dest="certification_command", required=True)
+    domain_catalog = commands.add_parser("domain-catalog", help="List native DATA, ENV, BENCH, HYPER, MODEL and SIM checks.")
+    domain_catalog.add_argument("--json", action="store_true")
+    for name in ("domain-assess", "domain-check"):
+        domain = commands.add_parser(name, help="Execute or replay grounded domain computations under external policy.")
+        domain.add_argument("input", help="Evidence bundle for assess; certificate for check.")
+        domain.add_argument("--request", required=True, help="Externally selected domain request.")
+        domain.add_argument("--policy", required=True, help="Checker-selected domain policy.")
+        domain.add_argument("--json", action="store_true")
+        if name == "domain-assess":
+            domain.add_argument("--output", help="New certificate file; never overwrites existing files.")
     catalog = commands.add_parser("catalog", help="List all X.M obligations and native mechanism coverage.")
     catalog.add_argument("--json", action="store_true")
     assess = commands.add_parser("assess", help="Execute admitted built-in checks and emit a fresh certificate.")
@@ -49,6 +59,8 @@ def _read(path: str) -> Any:
 
 def handle_certification_command(args: argparse.Namespace) -> int:
     try:
+        if args.certification_command.startswith("domain-"):
+            return _domain_command(args)
         mechanism = NativeCertificationMechanism()
         if args.certification_command == "catalog":
             result = obligation_catalog()
@@ -102,3 +114,35 @@ def handle_certification_command(args: argparse.Namespace) -> int:
         else:
             print(f"[REJECTED] {exc}")
         return 1
+
+
+def _domain_command(args: argparse.Namespace) -> int:
+    from verifier.domains.catalog import domain_catalog
+    from verifier.domains.certification import build_domain_certificate, recheck_domain_certificate, implementation_digest
+    if args.certification_command == "domain-catalog":
+        result = domain_catalog()
+        result["mechanism_digest"] = implementation_digest()
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    request, policy, source = _read(args.request), _read(args.policy), _read(args.input)
+    if args.certification_command == "domain-assess":
+        certificate = build_domain_certificate(request, source, policy=policy)
+        result = certificate["result"]
+        if args.output:
+            with Path(args.output).open("x", encoding="utf-8", newline="\n") as handle:
+                json.dump(certificate, handle, sort_keys=True, indent=2, allow_nan=False)
+                handle.write("\n")
+        emitted = certificate
+    else:
+        result = recheck_domain_certificate(source, expected_request=request, policy=policy)
+        emitted = result
+    if args.json:
+        print(json.dumps(emitted, indent=2, sort_keys=True, allow_nan=False))
+    else:
+        print(f"[{result['status']}] domain depth {result['domain_depth']}; object profile conformance NOT_ESTABLISHED")
+        for key, row in result.get("checks", {}).items():
+            evaluation = row["evaluation"]
+            print(f"  {key}: {evaluation['outcome']}; established={row['established']}; {evaluation['details']}")
+        if "reason" in result:
+            print(result["reason"])
+    return {"PASS": 0, "FAIL": 1, "UNKNOWN": 2, "REJECTED": 1}[result["status"]]

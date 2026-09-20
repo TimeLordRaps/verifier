@@ -15,6 +15,12 @@ __standard__ = "VSTD-5"
 __standard_status__ = "PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM"
 
 _LAZY_EXPORTS = {
+    "NativeDomainAdapter": ("verifier.domains.certification", "NativeDomainAdapter"),
+    "domain_catalog": ("verifier.domains.catalog", "domain_catalog"),
+    "domain_policy": ("verifier.domains.certification", "domain_policy"),
+    "domain_request": ("verifier.domains.certification", "domain_request"),
+    "build_domain_certificate": ("verifier.domains.certification", "build_domain_certificate"),
+    "recheck_domain_certificate": ("verifier.domains.certification", "recheck_domain_certificate"),
     "CertificationError": ("verifier.core.grounded_certification", "CertificationError"),
     "CertificationPolicy": ("verifier.core.grounded_certification", "CertificationPolicy"),
     "CertificationRequest": ("verifier.core.grounded_certification", "CertificationRequest"),
@@ -170,6 +176,14 @@ def __dir__() -> list[str]:
 
 
 if TYPE_CHECKING:
+    from verifier.domains.catalog import domain_catalog as domain_catalog
+    from verifier.domains.certification import (
+        NativeDomainAdapter as NativeDomainAdapter,
+        domain_policy as domain_policy,
+        domain_request as domain_request,
+        build_domain_certificate as build_domain_certificate,
+        recheck_domain_certificate as recheck_domain_certificate,
+    )
     from verifier.core.grounded_certification import (
         CertificationError as CertificationError,
         CertificationPolicy as CertificationPolicy,

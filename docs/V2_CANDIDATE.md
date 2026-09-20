@@ -33,6 +33,16 @@ certificates. Six obligations have built-in native adapters; the remaining 41
 require explicitly registered domain mechanisms that check their stated propositions.
 The catalogue and orchestration do not by themselves discharge those obligations.
 
+The candidate also adds six native grounded domain adapters with 28 cumulative
+checks: dataset transformations and split/overlap analysis; retained environment
+inventory/configuration/resource/reproduction observations; executable benchmark
+oracles and scoring; checkpoint/optimizer/gradient replay; model inference, metrics
+and challenges; simulation transition/invariant/projection/channel/shard checks.
+These paths have portable certificates with external request and policy binding.
+Their supported formats and exclusions are defined in
+[the domain contract](../standard/DOMAIN_GROUNDING.md). A complete native domain
+assessment is not complete object-profile certification.
+
 ## Recovered scope and lifecycle
 
 This candidate includes the grounded certification engine and commands, the
@@ -42,7 +52,10 @@ version is a packaging coordinate, not evidence that new verification mechanisms
 or normative profiles are complete. Existing `standard/` specifications remain
 authoritative. The draft schemas are record formats, not conformance mechanisms.
 
-| Component | Implemented boundary | Not established |
+The following table describes the retained experimental helpers, whose historical
+receipts are not upgraded by the new grounded domain paths above.
+
+| Experimental component | Implemented boundary | Not established |
 |---|---|---|
 | Graph | Directed acyclic graph structure, declared status and dependency checks | Truth of supplied premises or independent proof checking |
 | Environment | Declared hardware/software records, comparisons and consistency rules | Network isolation, resource enforcement or authenticated observation |
@@ -86,8 +99,9 @@ outcomes; no response predicate is executed by the current model helper.
 - Callers must handle `UNKNOWN`, `UNVERIFIED`, `NOT_ESTABLISHED` and unsupported
   operation exceptions. Code relying on self-reported success must migrate to
   independently checked evidence before making stronger claims.
-- Production reliance on containment or portable simulation proof requires a
-  separate mechanism design and validation gate. This candidate does not supply it.
+- Physical containment still requires a separate mechanism and validation gate.
+  Portable finite simulation computation is available through the grounded domain
+  path; the earlier experimental receipts do not acquire that binding retroactively.
 
 ## Publication gates
 

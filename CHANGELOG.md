@@ -22,6 +22,16 @@
 
 **Release name: The grounded certification release.**
 
+- Add six executable grounded domain adapters: dataset integrity and lineage (DATA),
+  execution environments (ENV), benchmark specification graphs (BENCH), hyperparameters
+  and training lineage (HYPER), model reproducibility specifications (MODEL), and
+  generative simulations (SIM). Their 28 cumulative domain checks replay retained
+  computations with external request/policy binding, strict certificate replay,
+  bounded work, and preserved `UNKNOWN`. Add `certification domain-catalog`,
+  `domain-assess`, and `domain-check`, four additive schemas and six runnable specimens.
+  Domain depth remains separate from object and Graph numbered-profile conformance;
+  see [native coverage and exclusions](standard/DOMAIN_GROUNDING.md).
+
 The release name centers exact claim/evidence binding, bounded certificate checking,
 and evidence-bound assessment. It does not establish conformance for an artifact or
 declare the experimental mechanisms complete. See the
