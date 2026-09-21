@@ -25,7 +25,7 @@
 
 **Release name: The grounded certification release.**
 
-- Add eight executable grounded domain adapters: dataset integrity and lineage (DATA),
+- Add nine executable grounded domain adapters: dataset integrity and lineage (DATA),
   execution environments (ENV), benchmark specification graphs (BENCH), hyperparameters
   and training lineage (HYPER), model reproducibility specifications (MODEL),
   generative simulations (SIM), instrumented agent observation surfaces (HARNESS),
