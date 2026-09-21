@@ -10,7 +10,8 @@ Check that a pull-request description still describes the branch it is attached 
 `check_pr_policy.py` checks that the promotion record is complete and accepted.
 This check is the separate question of whether the description's technical inventory
 is still true: whether it names the domains that exist, counts the checks that exist,
-binds the head that exists, and inventories the files that exist.
+binds the head that exists, inventories the files that exist, and keeps the
+fields another workflow parses machine-readable.
 
 A description is evidence a reviewer reads instead of the tree. A description that
 silently stopped matching the tree is a claim without evidence, so every mismatch
@@ -181,6 +182,27 @@ def check_inventory_is_bound(body: str, findings: list[str]) -> None:
             ))
 
 
+def check_machine_read_fields_are_parseable(body: str, findings: list[str]) -> None:
+    """Fields the promotion-check workflow parses must stay machine-readable.
+
+    `pr-policy.yml` extracts the repository-check run with an anchored
+    digits-only expression. Prose appended to that line does not degrade the
+    workflow gracefully: the extraction yields nothing, the step exits on an
+    empty value, and the failure surfaces with no explanation of its cause.
+    This check reproduces the workflow's own expression so the mismatch is
+    reported here, with the reason, before a push.
+    """
+    if "Repository-check run:" not in body:
+        _fail(findings, "the promotion record states no `Repository-check run:` field.")
+        return
+    if not re.search(r"^- Repository-check run:\s*([1-9][0-9]*)\s*$", body, re.MULTILINE):
+        _fail(findings, (
+            "the `- Repository-check run:` line is not parseable by pr-policy.yml, "
+            "which reads it as digits alone on the line. Qualifying prose belongs on "
+            "a following line, not appended to this one."
+        ))
+
+
 def resolve_body(args: argparse.Namespace) -> str | None:
     """Read the description from a file, or from the pull request for this branch."""
     if args.body is not None:
@@ -230,6 +252,7 @@ def main(argv: list[str] | None = None) -> int:
     check_counts_are_described(body, findings)
     check_head_is_bound(body, findings, args.head)
     check_inventory_is_bound(body, findings)
+    check_machine_read_fields_are_parseable(body, findings)
 
     if args.json:
         print(json.dumps({"findings": findings, "status": "FAIL" if findings else "PASS"}, indent=2))

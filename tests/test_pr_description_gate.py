@@ -1,4 +1,4 @@
-"""Terminology: pull request (PR); Secure Hash Algorithm 256-bit (SHA-256).
+"""Terminology: continuous integration (CI); pull request (PR); Secure Hash Algorithm 256-bit (SHA-256).
 
 Qualify the pull-request description gate.
 
@@ -160,3 +160,30 @@ def test_the_real_description_is_current() -> None:
     GATE.check_domains_are_described(result.stdout, findings)
     GATE.check_counts_are_described(result.stdout, findings)
     assert findings == [], findings
+
+
+def test_an_unparseable_run_field_fails() -> None:
+    """Prose appended to a machine-read field must fail here, not silently in the
+    continuous integration (CI) checks.
+
+    This is a regression test for a real failure: explanatory text was appended to
+    the run line, the promotion workflow's digits-only extraction returned nothing,
+    and the step exited with no stated reason.
+    """
+    findings: list[str] = []
+    GATE.check_machine_read_fields_are_parseable(
+        "- Repository-check run: 123 — stale; see below\n", findings
+    )
+    assert any("not parseable" in finding for finding in findings)
+
+
+def test_a_bare_run_field_passes() -> None:
+    findings: list[str] = []
+    GATE.check_machine_read_fields_are_parseable("- Repository-check run: 35559556082\n", findings)
+    assert findings == []
+
+
+def test_a_missing_run_field_fails() -> None:
+    findings: list[str] = []
+    GATE.check_machine_read_fields_are_parseable("no record here", findings)
+    assert findings and "no `Repository-check run:`" in findings[0]
