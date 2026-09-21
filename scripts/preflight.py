@@ -345,6 +345,29 @@ def audit_test_skips(output: str) -> tuple[bool, dict[str, int], list[tuple[str,
     return success, counts, unclassified
 
 
+def check_pr_description() -> bool:
+    """Check that an attached pull-request description still describes this tree.
+
+    Runs before push because the description is the artifact a reviewer reads instead
+    of the tree: a push that changes the domains, the counts, the head or the file
+    inventory silently invalidates it. Passing when no description can be read is
+    deliberate; absence of a description is not evidence that it disagrees.
+    """
+    script = ROOT / "scripts" / "check_pr_description.py"
+    if not script.exists():
+        print("[PR DESCRIPTION GATE] FAIL: scripts/check_pr_description.py is missing")
+        return False
+    code, stdout, stderr = _run_command([sys.executable, str(script)])
+    output = (stdout or stderr).strip()
+    if output:
+        print(output)
+    if code != 0:
+        print("[PR DESCRIPTION GATE] FAIL: update the description, or the tree, until they agree")
+        return False
+    print("[PR DESCRIPTION GATE] PASS")
+    return True
+
+
 def check_test_skips(output: str | None = None) -> bool:
     """Run skip audit and print classified skip rationale or unclassified slippage."""
     if output is None:
@@ -474,6 +497,8 @@ def handle_pre_push(args: list[str]) -> int:
         success = False
     if not check_schema_inventory():
         success = False
+    if not check_pr_description():
+        success = False
 
     return 0 if success else 1
 
@@ -519,6 +544,9 @@ def main() -> int:
         success = False
 
     if not check_schema_inventory():
+        success = False
+
+    if not check_pr_description():
         success = False
 
     if args.full:
