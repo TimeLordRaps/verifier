@@ -655,7 +655,7 @@ DOMAIN_OBLIGATIONS = (
     *_domain_rows("OWNER", 1, (
         ("Holder binding", "The holder is bound as an actor by an actor-binding token, never named in free text.", (), ""),
         ("Held-object binding", "The held object is bound by its own object certificate at a stated coordinate.", (), ""),
-        ("Limb inventory", "Every limb of the holding is enumerated, and a limb the inventory omits is unheld rather than permitted.", (1, 2), ""),
+        ("Limb inventory", "Every limb of the holding is enumerated under three kinds -- rights, discharge-duties and answering-duties -- and a limb the inventory omits is unheld rather than permitted.", (1, 2), ""),
         ("Instrument", "The instrument that establishes the holding is bound together with the authority that issued it.", (3,), ""),
         ("Term", "The holding's start, and its end or its declared non-expiry, are stated on the instrument's own clock.", (4,), ""),
         ("Bearer capability", "The holder's kind scopes which limbs it can bear, and a limb its kind cannot bear is unheld rather than held and unexercised.", (1, 3), ""),
@@ -674,7 +674,7 @@ DOMAIN_OBLIGATIONS = (
         ("Ancestry immutability", "Ownership events never alter the held object's ancestry or its coordinate.", (1,), ""),
         ("Asymmetry", "Holding is asymmetric: two holders cannot hold the same limb over the same object at the same position in the order unless that limb is declared shared.", (), ""),
         ("Non-transitivity of authority", "Holding an object confers no holding over the objects it was composed from, nor over the objects composed from it.", (4,), ""),
-        ("Duty-only over an actor", "Where the held object is itself an actor, only the duty limb is holdable and every other limb is unheld.", (4, 5), ""),
+        ("Person-limb typing", "Where the held object is a natural person, no right is holdable and only duties are; and an answering-duty terminates in a natural person, so a holder that is not one may carry discharge-duties but never the answering-duty for them.", (4, 5), ""),
     )),
     *_domain_rows("OWNER", 4, (
         ("Chain origin", "The chain of holdings begins at a declared origin whose instrument is bound.", (), ""),

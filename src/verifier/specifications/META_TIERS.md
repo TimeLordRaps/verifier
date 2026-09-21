@@ -34,6 +34,12 @@ The word is already carrying two other loads in this corpus, and neither is this
 this file; *package* namespaces are Python import paths. The titled sense is always
 written `VSTD-NAMESPACE`, capitalised and prefixed, and never bare.
 
+A **wire identifier** is not a coordinate in it. `VSTD-DATA-0.1` is the string a receipt
+carries in `schema_version`, pinned by the code that parses it; `VSTD-DATA-1.1` is a
+coordinate in this grid. They are different namespaces that happen to share a prefix, and
+the identifier convention below governs only the second. Renaming a wire identifier to
+match the convention breaks every reader that pins the string.
+
 ## The five tiers
 
 Tiers occupy one shared metaphorical/analogical space of meta-features. Tier N asks the
@@ -396,6 +402,14 @@ holding, the instrument that establishes it and the authority that issued it, th
 runs for, and whether the holder is of a kind that can bear each limb at all. A limb the
 inventory omits is unheld, not permitted.
 
+The limbs are of **three** kinds, not two. A *right* is something the holder may do to
+the held object; a *discharge-duty* is something it must do — supervise, remediate; an
+*answering-duty* is being accountable when a discharge-duty is not met. The split is not
+taxonomic. A bot may hold a seat and carry discharge-duties for it, and can never carry
+the answering-duty for them, because accountability terminates in a person. With a single
+undifferentiated duty limb, *a bot holds duties* is admissible prose that contradicts
+that floor; with three, `OWNER-3.6` can state it.
+
 **VSTD-OWNER-2** — dynamics: transfer, delegation, revocation and lapse as ordered
 events, each conveying only what the conveyor held at that position in the order, replayed
 from the origin to reproduce the holding as it now stands. Lapse is the clock's doing and
@@ -404,8 +418,15 @@ is distinguished from revocation, which is an act.
 **VSTD-OWNER-3** — statics: a holding never moves a verdict. `OWNER-3.1` is the
 ownership twin of the Prime Invariant — who owns an object cannot change what its
 certificate established about it — and the profile closes with asymmetry, the
-non-transitivity of authority through composition, and the rule that where the held object
-is *itself* an actor only the duty limb is holdable.
+non-transitivity of authority through composition, and limb typing at the held end.
+
+That last one is about a **natural person**, and deliberately not about an actor. A
+person cannot be held by a right, only by duties. An actor is the wider class: creating,
+abolishing, reorganizing and transferring an office are ordinary dispositive acts, and so
+is holding a subsidiary, so a rule written over actors would forbid ordinary corporate
+holdings. The predicate this row wants is a person object, which the VSTD-NAMESPACE does
+not yet admit; until it does, the row says *natural person* in prose and nothing executes
+it either way.
 
 **VSTD-OWNER-4** — closure: chain of custody from a declared origin, gapless,
 fork-free, with each instrument admissible under the authority in force **when it issued**
@@ -473,7 +494,7 @@ need not be the one whose index is `m`.
 | `VSTD-SIM-` | [1.1–1.3](DOMAIN_OBLIGATIONS.md#vstd-sim-1-facets ".1 State space; .2 Transition expressions, Observation channels, Shard decomposition; .3 Entropy stream, Action channels, Macro and micro projection") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-sim-2-dynamics ".1 Trajectory replay; .2 Responsiveness, Internal state change, Computational space; .3 Perspective shift; .4 Perspective agreement") | [3.1–3.4](DOMAIN_OBLIGATIONS.md#vstd-sim-3-statics ".1 Invariant expressions, Modelled law; .2 Per-state holding; .3 Closed state set; .4 Law independence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-sim-4-closure ".1 Shard coverage; .2 Cross-shard relations, No unattributed transition; .3 Signatures; .4 Whole-surface accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#vstd-sim-5-domain-adaptation ".1 Mainstay binding; .2 Interaction-surface mapping, Physical-backend mapping; .3 Stepping contract; .4 Round trip; .5 Inference upward") | **20** |
 | `VSTD-HARNESS-` † | [1.1–1.4](DOMAIN_OBLIGATIONS.md#vstd-harness-1-facets ".1 Channel partition; .2 Record types; .3 Tool registry, Transcript commitment shape; .4 Side-effect channels") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-harness-2-dynamics ".1 Record contiguity; .2 Invocation pairing, Session advance; .3 Side-effect interleaving; .4 Retry and resumption") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-harness-3-statics ".1 Gap boundary, Timestamp resolution; .2 Channel capacity; .3 Instrument fixity") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-harness-4-closure ".1 Commitment recomputation; .2 Omission detection, Substitution detection; .3 Reordering detection; .4 Whole-session accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#vstd-harness-5-domain-adaptation ".1 Mainstay binding; .2 Trace-span mapping, Tool-protocol mapping; .3 Gap representation; .4 Round trip; .5 Inference upward") | **20** |
 | `VSTD-AGENT-` † | [1.1–1.6](DOMAIN_OBLIGATIONS.md#vstd-agent-1-facets ".1 Harness binding; .2 Required channels; .3 Observation ceiling; .4 Decision inventory, Outcome contract; .5 Declared actions; .6 Final claims") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-agent-2-dynamics ".1 Trajectory contiguity; .2 Decision witnessing; .3 Action witnessing; .4 Unwitnessed action reporting, Trajectory advance") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-agent-3-statics ".1 Ceiling fixity; .2 Unknowability; .3 Declaration impotence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-agent-4-closure ".1 Outcome inventory; .2 Contract comparison; .3 Claim support; .4 No unsupported claim") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#vstd-agent-5-domain-adaptation ".1 Mainstay binding; .2 Decision-loop mapping; .3 Slot mapping; .4 Round trip; .5 Inference upward") | **22** |
-| `VSTD-OWNER-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#vstd-owner-1-facets ".1 Holder binding, Held-object binding; .2 Instrument, Bearer capability; .3 Limb inventory; .4 Term") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-owner-2-dynamics ".1 Event declaration; .2 Transfer conveyance, Delegation bound, Lapse; .3 Revocation effect; .4 Ordered replay") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-owner-3-statics ".1 Verdict independence, Asymmetry; .2 Evidence immutability, Ancestry immutability, Non-transitivity of authority; .3 Duty-only over an actor") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-owner-4-closure ".1 Chain origin; .2 Gapless chain, Admissibility at issue time; .3 Fork detection; .4 Closure result") | [5.1–5.3](DOMAIN_OBLIGATIONS.md#vstd-owner-5-domain-adaptation ".1 Licence holding, Registry maintainer record, Register entry, Custody chain; .2 Declared code ownership; .3 Adaptation accounting") | **18** |
+| `VSTD-OWNER-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#vstd-owner-1-facets ".1 Holder binding, Held-object binding; .2 Instrument, Bearer capability; .3 Limb inventory; .4 Term") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-owner-2-dynamics ".1 Event declaration; .2 Transfer conveyance, Delegation bound, Lapse; .3 Revocation effect; .4 Ordered replay") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-owner-3-statics ".1 Verdict independence, Asymmetry; .2 Evidence immutability, Ancestry immutability, Non-transitivity of authority; .3 Person-limb typing") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-owner-4-closure ".1 Chain origin; .2 Gapless chain, Admissibility at issue time; .3 Fork detection; .4 Closure result") | [5.1–5.3](DOMAIN_OBLIGATIONS.md#vstd-owner-5-domain-adaptation ".1 Licence holding, Registry maintainer record, Register entry, Custody chain; .2 Declared code ownership; .3 Adaptation accounting") | **18** |
 | `VSTD-BOT-` † | [1.1–1.3](DOMAIN_OBLIGATIONS.md#vstd-bot-1-facets ".1 Agent binding, Simulation binding; .2 Environment bindings; .3 Coupling surface, Operand depths") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-bot-2-dynamics ".1 Transition binding; .2 Observation projection, Action authenticity; .3 One-to-one coupling; .4 Coupling advance") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-bot-3-statics ".1 Inherited ceiling, Coupling latency; .2 Disclosure limit; .3 Policy impotence") | [4.1–4.3](DOMAIN_OBLIGATIONS.md#vstd-bot-4-closure ".1 Separation declaration; .2 Separation evidence, Fused honesty; .3 Containment accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#vstd-bot-5-domain-adaptation ".1 Interaction-graph binding; .2 Disclosure inventory; .3 Indisclosure inventory, Inclusion awareness; .4 Specification awareness; .5 Awareness accounting") | **18** |
 
 270 rungs over sixty-five profiles. The remaining 108 of 378 catalogued

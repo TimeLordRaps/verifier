@@ -819,7 +819,9 @@ invariants that require tiers 3 and 5 to be mechanized.
 
 The holder is bound by the actor-binding token `VSTD-ACTOR-BINDING-1`, already
 specified in [`VSTD-ZIZK-TOKENS.md`](VSTD-ZIZK-TOKENS.md), so a holding names a bound
-actor rather than a string. A holding never reaches a verdict: `OWNER-3.1` makes that
+actor rather than a string. That token is the anchor available today; the binding is
+expected to be absorbed into `VSTD-HYPER`, so `OWNER-1.1` is the one line that is
+retyped when it is. A holding never reaches a verdict: `OWNER-3.1` makes that
 normative, and it is the ownership twin of the Prime Invariant.
 
 ### VSTD-OWNER-1: Facets
@@ -830,7 +832,7 @@ normative, and it is the ownership twin of the Prime Invariant.
 |---|---|---|---|---|
 | OWNER-1.1 | Holder binding | The holder is bound as an actor by an actor-binding token, never named in free text. | none | none |
 | OWNER-1.2 | Held-object binding | The held object is bound by its own object certificate at a stated coordinate. | none | none |
-| OWNER-1.3 | Limb inventory | Every limb of the holding is enumerated, and a limb the inventory omits is unheld rather than permitted. | OWNER-1.1, OWNER-1.2 | none |
+| OWNER-1.3 | Limb inventory | Every limb of the holding is enumerated under three kinds -- rights, discharge-duties and answering-duties -- and a limb the inventory omits is unheld rather than permitted. | OWNER-1.1, OWNER-1.2 | none |
 | OWNER-1.4 | Instrument | The instrument that establishes the holding is bound together with the authority that issued it. | OWNER-1.3 | none |
 | OWNER-1.5 | Term | The holding's start, and its end or its declared non-expiry, are stated on the instrument's own clock. | OWNER-1.4 | none |
 | OWNER-1.6 | Bearer capability | The holder's kind scopes which limbs it can bear, and a limb its kind cannot bear is unheld rather than held and unexercised. | OWNER-1.1, OWNER-1.3 | none |
@@ -859,7 +861,7 @@ normative, and it is the ownership twin of the Prime Invariant.
 | OWNER-3.3 | Ancestry immutability | Ownership events never alter the held object's ancestry or its coordinate. | OWNER-3.1 | none |
 | OWNER-3.4 | Asymmetry | Holding is asymmetric: two holders cannot hold the same limb over the same object at the same position in the order unless that limb is declared shared. | none | none |
 | OWNER-3.5 | Non-transitivity of authority | Holding an object confers no holding over the objects it was composed from, nor over the objects composed from it. | OWNER-3.4 | none |
-| OWNER-3.6 | Duty-only over an actor | Where the held object is itself an actor, only the duty limb is holdable and every other limb is unheld. | OWNER-3.4, OWNER-3.5 | none |
+| OWNER-3.6 | Person-limb typing | Where the held object is a natural person, no right is holdable and only duties are; and an answering-duty terminates in a natural person, so a holder that is not one may carry discharge-duties but never the answering-duty for them. | OWNER-3.4, OWNER-3.5 | none |
 
 ### VSTD-OWNER-4: Closure
 

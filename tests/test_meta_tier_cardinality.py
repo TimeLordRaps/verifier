@@ -1,4 +1,4 @@
-"""Every numeral META_TIERS.md publishes about the grid must be measurable.
+"""Every numeral the Verifier Standard (VSTD) meta-tier grid publishes must be measurable.
 
 The grid's size, depth and reachability figures were typed into the specification.
 This module re-derives each one from the catalogued dependencies, so a numeral that
