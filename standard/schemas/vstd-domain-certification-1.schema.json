@@ -239,6 +239,80 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "HARNESS"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "effects": {},
+                  "record_count": {},
+                  "surface": {},
+                  "tools": {},
+                  "transcript_digest": {},
+                  "transcript_root": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "effects": {},
+                  "invocations": {},
+                  "records": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "AGENT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "actions_digest": {},
+                  "claims": {},
+                  "harness_certificate_digest": {},
+                  "harness_subject_id": {},
+                  "outcomes": {},
+                  "required_channels": {},
+                  "steps_digest": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "actions": {},
+                  "harness_certificate": {},
+                  "outcomes": {},
+                  "steps": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
         }
       ],
       "properties": {
@@ -252,7 +326,9 @@
             "BENCH",
             "HYPER",
             "MODEL",
-            "SIM"
+            "SIM",
+            "HARNESS",
+            "AGENT"
           ]
         },
         "inputs": {
@@ -381,6 +457,38 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "HARNESS"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "AGENT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
         }
       ],
       "properties": {
@@ -395,7 +503,9 @@
             "BENCH",
             "HYPER",
             "MODEL",
-            "SIM"
+            "SIM",
+            "HARNESS",
+            "AGENT"
           ]
         },
         "evidence_ref": {
@@ -432,13 +542,13 @@
           "additionalProperties": false,
           "minProperties": 1,
           "patternProperties": {
-            "^(DATA|ENV|BENCH|HYPER|MODEL|SIM)\\.[1-5]$": {
+            "^(DATA|ENV|BENCH|HYPER|MODEL|SIM|HARNESS|AGENT)\\.[1-5]$": {
               "additionalProperties": false,
               "properties": {
                 "blocked_by": {
                   "type": "array",
                   "items": {
-                    "pattern": "^(DATA|ENV|BENCH|HYPER|MODEL|SIM)\\.[1-5]$",
+                    "pattern": "^(DATA|ENV|BENCH|HYPER|MODEL|SIM|HARNESS|AGENT)\\.[1-5]$",
                     "type": "string"
                   },
                   "uniqueItems": true

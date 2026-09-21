@@ -509,10 +509,11 @@ The unreleased 2.0.0 candidate adds [grounded certification across object profil
 47 explicit `X.M` obligations, externally selected mechanism policies and portable
 replay. The guide separates native checker coverage from required domain mechanisms.
 
-Six [grounded domain adapters](standard/DOMAIN_GROUNDING.md) also execute retained
+Eight [grounded domain adapters](standard/DOMAIN_GROUNDING.md) also execute retained
 dataset transformations, environment observation checks, benchmark oracles, training
-updates and gradients, model inference/evaluation, and simulation transitions and
-relations. Their 28 cumulative domain checks produce replayable certificates under
+updates and gradients, model inference/evaluation, simulation transitions and
+relations, declared agent observation surfaces, and agent trajectories bounded by one
+such surface. Their 38 cumulative domain checks produce replayable certificates under
 an external request and policy. Domain depth does not confer object or Graph
 numbered-profile conformance. Run `PYTHONPATH=src python examples/domain_grounding.py`
 or inspect `vstd certification domain-catalog --json`.

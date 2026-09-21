@@ -12,6 +12,8 @@
 > reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
 > Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
 > generative simulation specification (VSTD-SIM);
+> instrumented agent observation surface (VSTD-HARNESS);
+> agent trajectory bounded by one observation surface (VSTD-AGENT);
 > Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
 > Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
 > zero-identity/zero-knowledge (ZIZK).
@@ -22,13 +24,16 @@
 
 **Release name: The grounded certification release.**
 
-- Add six executable grounded domain adapters: dataset integrity and lineage (DATA),
+- Add eight executable grounded domain adapters: dataset integrity and lineage (DATA),
   execution environments (ENV), benchmark specification graphs (BENCH), hyperparameters
-  and training lineage (HYPER), model reproducibility specifications (MODEL), and
-  generative simulations (SIM). Their 28 cumulative domain checks replay retained
+  and training lineage (HYPER), model reproducibility specifications (MODEL),
+  generative simulations (SIM), instrumented agent observation surfaces (HARNESS), and
+  agent trajectories bounded by one such surface (AGENT). An AGENT certificate cannot
+  establish more than its bound HARNESS declared observable; a claim resting on a
+  declared gap or an undeclared channel is `UNKNOWN`. Their 38 cumulative domain checks replay retained
   computations with external request/policy binding, strict certificate replay,
   bounded work, and preserved `UNKNOWN`. Add `certification domain-catalog`,
-  `domain-assess`, and `domain-check`, four additive schemas and six runnable specimens.
+  `domain-assess`, and `domain-check`, four additive schemas and eight runnable specimens.
   Domain depth remains separate from object and Graph numbered-profile conformance;
   see [native coverage and exclusions](standard/DOMAIN_GROUNDING.md).
 
