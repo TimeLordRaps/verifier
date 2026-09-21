@@ -41,7 +41,10 @@ NUMBER_WORDS = {
 }
 
 # Adapter support modules carry no domain of their own.
-NON_DOMAIN_MODULES = frozenset({"__init__", "catalog", "certification", "common", "numerical"})
+NON_DOMAIN_MODULES = frozenset({
+    "__init__", "catalog", "certification", "common", "numerical",
+    "statics", "mainstays",
+})
 
 # Either dash spelling is accepted; the description uses an en dash.
 DASH = r"[–—-]"

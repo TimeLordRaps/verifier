@@ -24,3 +24,14 @@ not validate the ratings themselves.
 
 VSTD-Graph-2 does not establish that the evidence sources behind the collection
 are accountable. That is the blind spot closed by VSTD-Graph-3.
+
+
+## Grounded certification obligation coordinates
+
+The additive grounded certification contract decomposes this numbered profile into
+obligations `Graph-2.1` through `Graph-2.5`. See
+[`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) for their exact propositions, dependencies,
+admission policy, portable replay and cumulative prerequisite rules. These identifiers
+are disjoint from the object-axis coordinates, preserve the requirements above, and do
+not rename this profile's existing receipt serialization or promote historical receipts
+automatically.

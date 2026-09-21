@@ -24,3 +24,14 @@ The evidence-bound path reruns every exact rating mechanism and embeds the propo
 bindings and evidence bytes for offline replay. Those bindings commit to the exact Graph,
 deduplicated members, collection identifier, and claim binding. A Graph-4 edge rating mechanism must
 actually check the applicable `RefutabilityClosure`; naming one is insufficient.
+
+
+## Grounded certification obligation coordinates
+
+The additive grounded certification contract decomposes this numbered profile into
+obligations `Graph-4.1` through `Graph-4.6`. See
+[`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) for their exact propositions, dependencies,
+admission policy, portable replay and cumulative prerequisite rules. These identifiers
+are disjoint from the object-axis coordinates, preserve the requirements above, and do
+not rename this profile's existing receipt serialization or promote historical receipts
+automatically.

@@ -24,3 +24,14 @@ deduplicated member set, collection identifier, and claim binding.
 
 VSTD-Graph-3 cannot establish that an outside party could refute the composed
 collection. That blind spot is closed by VSTD-Graph-4.
+
+
+## Grounded certification obligation coordinates
+
+The additive grounded certification contract decomposes this numbered profile into
+obligations `Graph-3.1` through `Graph-3.5`. See
+[`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) for their exact propositions, dependencies,
+admission policy, portable replay and cumulative prerequisite rules. These identifiers
+are disjoint from the object-axis coordinates, preserve the requirements above, and do
+not rename this profile's existing receipt serialization or promote historical receipts
+automatically.

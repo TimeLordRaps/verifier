@@ -22,3 +22,14 @@ conformance.
 Conflicting witness records are retained as conflict records and make the relevant
 subject inadmissible to a clean candidate Graph profile. They are never averaged into
 a passing collection.
+
+
+## Grounded certification obligation coordinates
+
+The additive grounded certification contract decomposes this numbered profile into
+obligations `Graph-5.1` through `Graph-5.6`. See
+[`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) for their exact propositions, dependencies,
+admission policy, portable replay and cumulative prerequisite rules. These identifiers
+are disjoint from the object-axis coordinates, preserve the requirements above, and do
+not rename this profile's existing receipt serialization or promote historical receipts
+automatically.

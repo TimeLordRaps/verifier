@@ -183,3 +183,14 @@ When an upstream source $S$ is marked `REVOKED` (e.g. due to copyright claim, da
 - **Translation completeness**: SAT success establishes the encoded formula, not the
   completeness or correctness of the translation from policy prose or the external
   world into that formula.
+
+
+## Grounded certification obligation coordinates
+
+The additive grounded certification contract decomposes this numbered profile into
+obligations `Graph-1.1` through `Graph-1.6`. See
+[`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) for their exact propositions, dependencies,
+admission policy, portable replay and cumulative prerequisite rules. These identifiers
+are disjoint from the object-axis coordinates, preserve the requirements above, and do
+not rename this profile's existing receipt serialization or promote historical receipts
+automatically.
