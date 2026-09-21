@@ -232,6 +232,92 @@ Three rules prevent most misreadings:
 2. A later-profile result cannot repair missing evidence for an earlier profile.
 3. `UNKNOWN` is a correct result when the mechanism, evidence, or bound is insufficient.
 
+### How VSTD identifiers are named
+
+VSTD is an object-oriented representation meta-language, and its nomenclature is meant to
+be followed rather than looked up. Every specification surface has one identifier shape:
+
+```
+VSTD-<NAME>-<level>.<module>
+```
+
+- **`<NAME>`** is the surface. It is one of `BOT`, `SIM`, `AGENT`, `HARNESS`, `MODEL`,
+  `HYPER`, `BENCH`, `DATA`, `ENV`, `GRAPH`, or omitted entirely. Every name other than the
+  empty one makes a claim about something particular. Omitting it names the claim surface
+  itself — the basic, lowest-level foundational computational claim meta-surface — which is
+  why it carries no object segment: `VSTD-1` through `VSTD-5`.
+- **`<level>`** is `1`, `2`, `3`, `4` or `5`. It is a topological stepping stone toward
+  verification, never a version.
+- **`<module>`** numbers the modules inside that level, from `1`.
+
+The five levels mean the same kind of thing for every `NAME`. That shared reading is the
+whole point: it is what keeps the topology small enough to navigate by name instead of by
+index.
+
+This is not a new numbering laid over the standard. Both axes of the
+[normative ladder](standard/LADDER.md) already instantiate these five levels. Claim
+mechanics, verification surface, substrate accountability, refutability and witness
+corroboration are facets, dynamics, statics, closure and adaptation; so are recorded
+lineage, bounded collection surface, accountable provenance closure, refutable
+transformation closure and corroborated verification network. The convention is that
+ladder made total over the object set.
+
+| Level | For any surface, it represents |
+|---:|---|
+| 1 | A meta-structure abstraction of the facets of the surface. |
+| 2 | The dynamics of the structures the surface can and does represent. |
+| 3 | The static, unchanging natural phenomena around the surface. |
+| 4 | The closure conditions the specification can be completed around. |
+| 5 | The domain adaptation surfaces that levels 1 through 4 let form naturally, usually inferring structure from a domain's mainstay representation. |
+
+Level 5 is where a specification meets an existing ecosystem rather than replacing it. A
+modular neural-network framework, for example, already abstracts networks into composable
+units; a level-5 surface takes that as the domain's mainstay representation and generalizes
+it into the meta-framework rather than restating it.
+
+Worked examples, one per level:
+
+| Identifier | What it names |
+|---|---|
+| `VSTD-BENCH-1` | A bench as a meta-structure: a set of problems, some form from which a solution is deducible, a sampling procedure, baseline mechanics, feature representational spaces or categories, and a domain or set of domains. |
+| `VSTD-SIM-2` | The dynamics a simulation represents: responsiveness, internal state changes, computational spaces, and perspective shifts. |
+| `VSTD-MODEL-3` | What is static around a model: weights, hardware requirements, quantization specifications and configurations, and training data as a `VSTD-DATA-5` specified object. |
+| `VSTD-HYPER-4` | Closure for hyperparameters and training lineage: boundary saturation, an open-ended collapsable meta-language, and fractal re-representations. |
+| `VSTD-BOT-5` | The adaptation surface of a situated agent: an interaction graph over the `VSTD-SIM-5` specified interaction surface, together with disclosable and undisclosed self-awareness — including awareness of being inside a simulation, and of which simulation specification surfaces it is aware of. |
+
+Four rules prevent the usual misreadings:
+
+1. **A level is not a version.** A semantic-version-shaped string such as `VSTD-SIM-2.0.0`
+   is a malformed identifier, not a release of a level: it destroys the level and module
+   reading and detaches the surface from the shared graph.
+2. **A name does not imply composition.** `VSTD-BOT-5` refers to the adaptation surface of
+   `BOT`. Where one surface is specified in terms of another, as `VSTD-MODEL-3` is in terms
+   of `VSTD-DATA-5`, that reference is written out.
+3. **An identifier names a coordinate, not a verdict.** Naming a surface establishes
+   nothing about it. What a result means is separate, and stays tied to one exact
+   proposition, mechanism, evidence set and bound.
+4. **These are not the other coordinate systems.** Domain check coordinates such as
+   `DATA.1`, serialized receipt identifiers such as `VSTD-DATA-0.1`, and repository
+   releases are each a different coordinate, and one is never inferred from another.
+
+Rule 4 is the one that costs people time, in two directions.
+
+A **domain check coordinate** numbers a position in that adapter's prerequisite graph, not
+a level. `DATA.1` is the check the other `DATA` checks depend on; it is not the
+`VSTD-DATA-1` surface, and check index *n* does not mean level *n*.
+
+A **serialized receipt identifier** selects the reader and schema for a stored receipt, so
+it is governed by its own registry and changes only in ways that keep already-written
+receipts readable. Some carry a `-0.<n>` form inherited from earlier releases;
+`VSTD-DATA-0.1` is the serialized identifier for `VSTD-Graph-1` receipts, not a level-zero
+surface. Read a receipt identifier as naming a stored contract, never as a surface at that
+level. The registry is [WIRE_IDENTIFIERS.md](standard/WIRE_IDENTIFIERS.md).
+
+Finally, the convention names surfaces; it does not assert that an implementation exists at
+every coordinate it can spell. Which surfaces are implemented, and to what depth, is
+reported by the tool and by
+[current maturity](#current-maturity) — never by an identifier being well-formed.
+
 Choose the smallest useful starting point:
 
 | Goal | Start here |
