@@ -33,10 +33,32 @@ def _load_gate():
 GATE = _load_gate()
 
 
-def _body(head: str, *, domains: str = "six", checks: str = "28", files: str = "620",
-          ranges: str = "DATA.1–DATA.5 ENV.1–ENV.4 BENCH.1–BENCH.4 "
-                        "HYPER.1–HYPER.5 MODEL.1–MODEL.5 SIM.1–SIM.5") -> str:
-    """Build a minimal description carrying exactly the claims the gate reads."""
+NUMBER_WORDS = {
+    5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven",
+}
+
+
+def _ranges(inventory: dict[str, int]) -> str:
+    """Spell every catalogued domain's coordinate range, as the description does."""
+    return " ".join(
+        f"{domain}.1–{domain}.{count}" for domain, count in sorted(inventory.items())
+    )
+
+
+def _body(head: str, *, domains: str | None = None, checks: str | None = None,
+          files: str = "620", ranges: str | None = None) -> str:
+    """Build a minimal description carrying exactly the claims the gate reads.
+
+    Every default is derived from the live catalogue rather than written down, so a
+    test fails here only when the gate's own behaviour changes — not merely because
+    a domain was added. A fixture that has to be hand-edited whenever the tree grows
+    is the failure this gate exists to prevent, and it should not be reintroduced in
+    the gate's own tests.
+    """
+    inventory = GATE.domain_inventory()
+    domains = domains if domains is not None else NUMBER_WORDS[len(inventory)]
+    checks = checks if checks is not None else str(sum(inventory.values()))
+    ranges = ranges if ranges is not None else _ranges(inventory)
     return (
         f"This candidate adds {domains} grounded domain adapters with {checks} "
         f"computational checks.\n\n{ranges}\n\n"
@@ -68,42 +90,53 @@ def test_a_current_description_passes(head: str, tracked: str) -> None:
 def test_an_undescribed_new_domain_fails(head: str, tracked: str, monkeypatch) -> None:
     """Adding an adapter without describing it is the failure this gate exists for.
 
-    This is the load-bearing case: it simulates exactly what happens when HARNESS or
-    AGENT lands in the catalogue and the description is left alone.
+    This is the load-bearing case: it simulates exactly what happens when a new
+    adapter lands in the catalogue and the description is left alone. A synthetic
+    domain name is used so the test does not decay as real domains are added.
     """
+    body = _body(head, files=tracked)  # written before the new domain existed
+
     inventory = dict(GATE.domain_inventory())
-    inventory["HARNESS"] = 5
+    inventory["SYNTHETIC"] = 5
     monkeypatch.setattr(GATE, "domain_inventory", lambda: inventory)
     monkeypatch.setattr(GATE, "adapter_modules", lambda: set(inventory))
 
     findings: list[str] = []
-    GATE.check_domains_are_described(_body(head, files=tracked), findings)
-    assert any("HARNESS" in finding and "never names it" in finding for finding in findings)
+    GATE.check_domains_are_described(body, findings)
+    assert any("SYNTHETIC" in finding and "never names it" in finding for finding in findings)
 
 
 def test_a_stale_domain_count_fails(head: str, tracked: str, monkeypatch) -> None:
     """The prose count must follow the catalogue, not the other way round."""
+    body = _body(head, files=tracked)  # written before the new domain existed
     inventory = dict(GATE.domain_inventory())
-    inventory["HARNESS"] = 5
+    inventory["SYNTHETIC"] = 5
     monkeypatch.setattr(GATE, "domain_inventory", lambda: inventory)
 
     findings: list[str] = []
-    GATE.check_counts_are_described(_body(head, domains="six", files=tracked), findings)
-    assert any("seven" in finding for finding in findings)
+    GATE.check_counts_are_described(body, findings)
+    expected = NUMBER_WORDS[len(inventory)]
+    assert any(expected in finding for finding in findings)
 
 
 def test_a_stale_check_total_fails(head: str, tracked: str) -> None:
     findings: list[str] = []
-    GATE.check_counts_are_described(_body(head, checks="27", files=tracked), findings)
-    assert any("total of 28" in finding for finding in findings)
+    actual = sum(GATE.domain_inventory().values())
+    GATE.check_counts_are_described(_body(head, checks=str(actual - 1), files=tracked), findings)
+    assert any(f"total of {actual}" in finding for finding in findings)
 
 
 def test_a_changed_coordinate_range_fails(head: str, tracked: str) -> None:
     """Adding a sixth SIM check without widening the stated range must fail."""
-    body = _body(head, files=tracked).replace("SIM.1–SIM.5", "SIM.1–SIM.4")
+    inventory = GATE.domain_inventory()
+    domain = sorted(inventory)[-1]
+    count = inventory[domain]
+    body = _body(head, files=tracked).replace(
+        f"{domain}.1–{domain}.{count}", f"{domain}.1–{domain}.{count - 1}"
+    )
     findings: list[str] = []
     GATE.check_domains_are_described(body, findings)
-    assert any("SIM.1-SIM.5" in finding for finding in findings)
+    assert any(f"{domain}.1-{domain}.{count}" in finding for finding in findings)
 
 
 def test_a_stale_head_fails(tracked: str) -> None:
@@ -127,7 +160,7 @@ def test_a_stale_file_inventory_fails(head: str) -> None:
 
 def test_an_undeclared_module_fails(head: str, tracked: str, monkeypatch) -> None:
     """A module on disk that the catalogue never declares is reported, not ignored."""
-    monkeypatch.setattr(GATE, "adapter_modules", lambda: set(GATE.domain_inventory()) | {"AGENT"})
+    monkeypatch.setattr(GATE, "adapter_modules", lambda: set(GATE.domain_inventory()) | {"SYNTHETIC"})
     findings: list[str] = []
     GATE.check_domains_are_described(_body(head, files=tracked), findings)
     assert any("catalogue does not declare" in finding for finding in findings)
