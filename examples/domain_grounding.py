@@ -148,6 +148,81 @@ def specimens() -> dict:
                     "support": [2], "channels": ["tool_io"]}]},
         {"harness_certificate": harness_certificate, "steps": steps, "actions": actions,
          "outcomes": {"run_tests": "exit_code_0"}})
+
+    # BOT: one agent driving the SIM specimen's world. Each transition is one tool
+    # invocation whose input is the simulation's retained action and whose output is
+    # the simulation's own observation projection of the state it reached.
+    world_tool = {"name": "step_world", "inputs": ["move"], "outputs": ["x"]}
+    world_calls = [{"input": {"move": 0.0}, "output": states[1]},
+                   {"input": {"move": 1.0}, "output": states[2]}]
+    world_payloads = [{"role": "user", "channel": "world_observation", "payload": states[0]},
+                      {"role": "tool", "channel": "world_action", "payload": world_calls[0]},
+                      {"role": "tool", "channel": "world_action", "payload": world_calls[1]}]
+    world_records = [{"index": i, "channel": m["channel"], "role": m["role"], "payload": m["payload"],
+                      "payload_digest": digest(m["payload"])} for i, m in enumerate(world_payloads)]
+    world_invocations = [dict(call, index=i+1, tool="step_world", declaration_digest=digest(world_tool))
+                         for i, call in enumerate(world_calls)]
+    bot_harness = {"surface": {"world_observation": "instrumented", "world_action": "instrumented",
+                               "simulator_internals": "declared-gap"},
+                   "tools": {"step_world": digest(world_tool)},
+                   "effects": {"world_action": "instrumented"},
+                   "record_count": len(world_records), "transcript_digest": digest(world_records),
+                   "transcript_root": merkle_root(world_records, Budget(10000))}
+    bot_harness_inputs = {"records": world_records, "invocations": world_invocations,
+                          "effects": [{"index": 1, "channel": "world_action", "payload": world_calls[0]},
+                                      {"index": 2, "channel": "world_action", "payload": world_calls[1]}]}
+    bot_steps = [{"index": 0, "record": 0, "decision": "observe the initial world state"},
+                 {"index": 1, "record": 1, "decision": "hold position"},
+                 {"index": 2, "record": 2, "decision": "advance one unit"}]
+    bot_actions = [{"tool": "step_world", "record": 1}, {"tool": "step_world", "record": 2}]
+    def _environment(name: str, executable: str, identifiers: list) -> tuple:
+        source = ("# " + name + " runtime" + chr(10)).encode()
+        inventory = {executable: "sha256:" + hashlib.sha256(source).hexdigest()}
+        configuration = dict(collect_configuration(), role=name)
+        return ({"scope": "retained-process-observations", "files": inventory,
+                 "configuration": configuration, "execution_ids": identifiers,
+                 "ceilings": {"wall_seconds": 10.0, "memory_bytes": 1048576, "threads": 128},
+                 "execution": {"executable": executable, "input_digest": digest([]), "output_digest": digest([])}},
+                {"files": {executable: {"sha256": inventory[executable],
+                                        "base64": base64.b64encode(source).decode()}},
+                 "configuration": configuration, "measurements": [], "executions": []})
+    from verifier.domains.certification import build_domain_certificate, domain_policy, domain_request
+    loop_policy = domain_policy(trust_roots=["example:retained-inputs", "example:local-checker"])
+    def _evidence(domain: str, subject: str, artifact: dict, inputs: dict) -> dict:
+        return {"schema_version": "VSTD-DOMAIN-EVIDENCE-1", "domain": domain,
+                "subject_id": subject, "artifact": artifact, "inputs": inputs}
+    def _certificate(domain: str, subject: str, artifact: dict, inputs: dict, depth: int) -> dict:
+        evidence = _evidence(domain, subject, artifact, inputs)
+        return build_domain_certificate(domain_request(evidence, target_depth=depth), evidence, policy=loop_policy)
+    agent_environment, agent_environment_inputs = _environment("agent", "policy.py", ["agent-0", "agent-1"])
+    world_environment, world_environment_inputs = _environment("simulator", "world.py", ["world-0", "world-1"])
+    bot_harness_certificate = _certificate("HARNESS", "example:bot-harness", bot_harness, bot_harness_inputs, 5)
+    bot_agent = {"harness_certificate_digest": digest(bot_harness_certificate),
+                 "harness_subject_id": "example:bot-harness",
+                 "required_channels": ["world_action", "world_observation"],
+                 "steps_digest": digest(bot_steps), "actions_digest": digest(bot_actions),
+                 "outcomes": {"x": "2.0"},
+                 "claims": [{"id": "claim:reached-two", "statement": "the world reached x = 2.0 under the retained actions",
+                             "support": [2], "channels": ["world_action"]}]}
+    bot_agent_inputs = {"harness_certificate": bot_harness_certificate, "steps": bot_steps,
+                        "actions": bot_actions, "outcomes": {"x": "2.0"}}
+    agent_certificate = _certificate("AGENT", "example:bot-agent", bot_agent, bot_agent_inputs, 5)
+    sim_certificate = _certificate("SIM", result["SIM"]["subject_id"], result["SIM"]["artifact"],
+                                   result["SIM"]["inputs"], 4)
+    agent_env_certificate = _certificate("ENV", "example:agent-runtime", agent_environment,
+                                         agent_environment_inputs, 2)
+    world_env_certificate = _certificate("ENV", "example:simulator-runtime", world_environment,
+                                         world_environment_inputs, 2)
+    add("BOT", {"agent_certificate_digest": digest(agent_certificate),
+        "sim_certificate_digest": digest(sim_certificate),
+        "agent_environment_certificate_digest": digest(agent_env_certificate),
+        "sim_environment_certificate_digest": digest(world_env_certificate),
+        "step_map": [1, 2], "exogenous_transitions": [],
+        "initial_observation_record": 0, "separation": "distinct"},
+        {"agent_certificate": agent_certificate, "sim_certificate": sim_certificate,
+         "agent_environment_certificate": agent_env_certificate,
+         "sim_environment_certificate": world_env_certificate})
+
     return result
 
 

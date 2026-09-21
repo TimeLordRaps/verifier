@@ -313,6 +313,45 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "BOT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "agent_certificate_digest": {},
+                  "agent_environment_certificate_digest": {},
+                  "exogenous_transitions": {},
+                  "initial_observation_record": {},
+                  "separation": {},
+                  "sim_certificate_digest": {},
+                  "sim_environment_certificate_digest": {},
+                  "step_map": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "agent_certificate": {},
+                  "agent_environment_certificate": {},
+                  "sim_certificate": {},
+                  "sim_environment_certificate": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
         }
       ],
       "properties": {
@@ -328,7 +367,8 @@
             "MODEL",
             "SIM",
             "HARNESS",
-            "AGENT"
+            "AGENT",
+            "BOT"
           ]
         },
         "inputs": {
@@ -489,6 +529,22 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "BOT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
         }
       ],
       "properties": {
@@ -505,7 +561,8 @@
             "MODEL",
             "SIM",
             "HARNESS",
-            "AGENT"
+            "AGENT",
+            "BOT"
           ]
         },
         "evidence_ref": {
@@ -542,15 +599,15 @@
           "additionalProperties": false,
           "minProperties": 1,
           "patternProperties": {
-            "^(DATA|ENV|BENCH|HYPER|MODEL|SIM|HARNESS|AGENT)\\.[1-5]$": {
+            "^(DATA|ENV|BENCH|HYPER|MODEL|SIM|HARNESS|AGENT|BOT)\\.[1-5]$": {
               "additionalProperties": false,
               "properties": {
                 "blocked_by": {
-                  "type": "array",
                   "items": {
-                    "pattern": "^(DATA|ENV|BENCH|HYPER|MODEL|SIM|HARNESS|AGENT)\\.[1-5]$",
+                    "pattern": "^(DATA|ENV|BENCH|HYPER|MODEL|SIM|HARNESS|AGENT|BOT)\\.[1-5]$",
                     "type": "string"
                   },
+                  "type": "array",
                   "uniqueItems": true
                 },
                 "established": {

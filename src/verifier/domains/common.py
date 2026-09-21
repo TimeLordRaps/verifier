@@ -137,6 +137,41 @@ def legacy(value: Any, cls: Any, schema: str | None = None) -> Any:
     return result
 
 
+CERTIFICATE_FIELDS = {"schema_version", "request", "evidence", "policy_digest", "mechanism_digest",
+                      "specification_digest", "result", "certificate_digest"}
+EVIDENCE_FIELDS = {"schema_version", "domain", "subject_id", "artifact", "inputs"}
+
+
+def bind_certificate(inputs: dict, artifact: dict, key: str, domain: str,
+                     mechanism_digest: str, depth: int) -> dict:
+    """Re-derive one bound domain certificate from its retained bytes and return its evidence.
+
+    A certificate carrying a different mechanism digest is `Unavailable`, not a weaker
+    witness. Binding supplies no assurance of its own: the bound result is a ceiling on
+    what the binding certificate may establish, never a floor beneath it.
+    """
+    certificate = obj(need(inputs, key + "_certificate"), CERTIFICATE_FIELDS)
+    same(certificate["schema_version"], "VSTD-DOMAIN-CERTIFICATION-1", "unsupported bound certificate")
+    body = {k: v for k, v in certificate.items() if k != "certificate_digest"}
+    same(digest(body), certificate["certificate_digest"], "bound certificate digest differs")
+    same(digest(certificate), need(artifact, key + "_certificate_digest"),
+         "bound certificate differs from the retained one")
+    if certificate["mechanism_digest"] != mechanism_digest:
+        raise Unavailable("bound certificate was produced by a different mechanism")
+    evidence = obj(certificate["evidence"], EVIDENCE_FIELDS)
+    if evidence["domain"] != domain:
+        raise Refuted("bound certificate certifies a different domain")
+    result = obj(certificate["result"])
+    if result.get("object_profile_conformance") != "NOT_ESTABLISHED":
+        raise Refuted("bound certificate misreports object profile conformance")
+    if result.get("status") != "PASS":
+        raise Unavailable("bound certificate did not establish its own domain")
+    established = result.get("domain_depth")
+    if type(established) is not int or established < depth:
+        raise Unavailable("bound certificate did not reach the domain depth this binding requires")
+    return evidence
+
+
 def unique(records: list, key: str) -> dict:
     result = {}
     for record in records:

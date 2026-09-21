@@ -29,6 +29,7 @@ _ARTIFACT_FIELDS = {
     "MODEL": "architecture_digest weights_digest dependencies tolerance samples_digest metric metric_bounds challenges",
     "HARNESS": "surface transcript_digest transcript_root tools effects record_count",
     "AGENT": "harness_certificate_digest harness_subject_id required_channels steps_digest actions_digest outcomes claims",
+    "BOT": "agent_certificate_digest sim_certificate_digest agent_environment_certificate_digest sim_environment_certificate_digest step_map exogenous_transitions initial_observation_record separation",
     "SIM": "transition trajectory_digest entropy_digest times_digest initial_state invariants finite_state_set finite_entropy_set projection macro_digest tolerance observation action_bounds shards",
 }
 _INPUT_FIELDS = {
@@ -38,6 +39,7 @@ _INPUT_FIELDS = {
     "SIM": "states entropy times macro_states observations actions shards",
     "HARNESS": "records invocations effects",
     "AGENT": "harness_certificate steps actions outcomes",
+    "BOT": "agent_certificate sim_certificate agent_environment_certificate sim_environment_certificate",
 }
 
 
@@ -74,7 +76,7 @@ def _hash(value: Any) -> str:
 
 def implementation_digest() -> str:
     dependencies = {}
-    for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "data", "env", "bench", "numerical", "hyper", "model", "sim", "harness", "agent")),
+    for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "data", "env", "bench", "numerical", "hyper", "model", "sim", "harness", "agent", "bot")),
                            ("verifier.core", ("certificate", "evidence", "receipt"))):
         for name in names:
             dependencies[package+"."+name] = hashlib.sha256(resources.files(package).joinpath(name+".py").read_bytes()).hexdigest()
@@ -189,7 +191,7 @@ class NativeDomainAdapter:
                         raise Unavailable("requested numerical tolerance exceeds checker policy")
             module = import_module("verifier.domains."+self.domain.lower())
             kwargs = {"witness_keys": self.policy["witness_keys"]} if self.domain == "SIM" else {}
-            if self.domain == "AGENT":
+            if self.domain in ("AGENT", "BOT"):
                 kwargs = {"mechanism_digest": self.mechanism_digest}
             observed = module.evaluate(names[binding.predicate], artifact, bundle["inputs"], budget, **kwargs)
             observed["operations"] = budget.used

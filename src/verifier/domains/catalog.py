@@ -4,7 +4,8 @@ DATA means dataset integrity and lineage; ENV means verifiable execution environ
 BENCH means benchmark specification graph; HYPER means hyperparameters and training
 lineage; MODEL means model reproducibility specification; SIM means generative
 simulation specification; HARNESS means an instrumented agent observation surface;
-AGENT means an agent trajectory bounded by that surface. Domain depths are dimensionless
+AGENT means an agent trajectory bounded by that surface; BOT means one agent situated
+in one simulation. Domain depths are dimensionless
 prerequisite counts, separate from the VSTD object and Graph numbered profiles.
 
 Each check carries the exact set of lower checks its own evaluation re-executes or
@@ -74,6 +75,13 @@ CHECKS = {
         ("outcomes", "Compare the complete retained outcome inventory with the bound outcome contract.", (1, 2)),
         ("claims", "Check that every final claim rests only on records inside the bound observation ceiling.", (1, 2, 3, 4)),
     ),
+    "BOT": (
+        ("binding", "Re-derive the bound agent, simulation and two environment certificates from their retained bytes.", ()),
+        ("alignment", "Bind every simulation transition to one retained record; refuse an undeclared unattributed transition.", (1,)),
+        ("observation", "Check that every retained observation is the simulation's own projection of that state.", (1, 2)),
+        ("actuation", "Check that every replayed simulation action is an action the agent actually invoked.", (1, 2, 3)),
+        ("containment", "Check the declared separation of the agent and simulator execution environments.", (1,)),
+    ),
 }
 
 SCOPES = {
@@ -85,6 +93,7 @@ SCOPES = {
     "SIM": "retained transition model, trace and explicitly enumerated state boundary",
     "HARNESS": "declared instrumented observation surface and its retained transcript",
     "AGENT": "retained trajectory inside the observation ceiling of one bound harness certificate",
+    "BOT": "closed loop between one bound agent certificate and one bound simulation certificate",
 }
 
 
