@@ -3,9 +3,11 @@
 Tests for the accessibility surface: the guided entry point and plain-language
 artifact reading.
 
-The load-bearing tests here are the two that keep the surface honest as the
-runtime changes: every command `vstd start` recommends must still parse, and
-`vstd explain` must never restate a counted prefix as a total.
+The load-bearing tests here are the ones that keep the surface honest as the
+runtime changes: every command `vstd start` recommends must still parse and
+every path it names must still exist, the printed guided path must say nothing
+absent from the structure a `--json` reader gets, and `vstd explain` must never
+restate a counted prefix as a total.
 """
 
 from __future__ import annotations
@@ -21,7 +23,8 @@ import pytest
 
 from verifier.domains.certification import (build_domain_certificate, domain_policy,
                                             domain_request)
-from verifier.runtime.accessibility_cli import explain_report, start_report
+from verifier.runtime.accessibility_cli import (_print_start, explain_report,
+                                                 start_report)
 from verifier.runtime.public_cli import build_parser, main
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -64,8 +67,9 @@ def test_every_repository_path_a_step_names_still_exists() -> None:
     manifest exists, so the parser test alone would not notice the example
     moving. This checks the arguments, not just the verbs.
     """
+    report = start_report()
     named = []
-    for step in start_report()["steps"]:
+    for step in report["steps"]:
         for token in shlex.split(step["command"])[1:]:
             if token.startswith("-") or "/" not in token:
                 continue
@@ -73,8 +77,32 @@ def test_every_repository_path_a_step_names_still_exists() -> None:
                 continue  # produced by an earlier step, not shipped
             named.append(token)
     assert named, "at least one step should reference a shipped example"
+    named.extend(report["guides"])  # the footer rots the same way
     missing = [t for t in named if not (ROOT / t).exists()]
     assert missing == [], missing
+
+
+def test_start_tells_a_person_and_a_program_the_same_thing(capsys) -> None:
+    """Prose printed only by the printer is invisible to a --json consumer.
+
+    The guided path claims a person and an assistant reading it are never told
+    different things, so anything the printer says has to come from the report.
+    """
+    report = start_report()
+    _print_start(report)
+    printed = capsys.readouterr().out
+    for guide in report["guides"]:
+        assert guide in printed
+    assert report["next"] in printed
+    # Nothing in the printed output may be absent from the structure.
+    from_structure = " ".join(
+        [report["purpose"], report["boundary"], report["next"], *report["guides"]]
+        + [s["title"] + s["why"] + s["command"] for s in report["steps"]]
+        + [c["term"] + c["meaning"] for c in report["concepts"]]
+    )
+    for token in printed.split():
+        if "/" in token and token.endswith(".md"):
+            assert token.rstrip(",") in from_structure, token
 
 
 def test_start_is_side_effect_free_and_machine_readable(capsys, tmp_path) -> None:

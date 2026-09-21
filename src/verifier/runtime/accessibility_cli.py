@@ -121,6 +121,9 @@ def add_accessibility_parsers(subparsers: argparse._SubParsersAction) -> None:
 # start
 # --------------------------------------------------------------------------
 
+_GUIDES = ("docs/QUICKSTART.md", "docs/NEWCOMER_GUIDE.md")
+
+
 def start_report() -> dict[str, Any]:
     """Return the guided path. Pure data, so prose and JSON cannot disagree."""
     return {
@@ -128,6 +131,8 @@ def start_report() -> dict[str, Any]:
         "purpose": "Ordered path from an installed package to a checked result.",
         "steps": [dict(step, order=i) for i, step in enumerate(_STEPS, 1)],
         "concepts": [{"term": t, "meaning": m} for t, m in _CONCEPTS],
+        "guides": list(_GUIDES),
+        "next": "vstd explain <path-to-json>",
         "boundary": "This command runs nothing and writes nothing.",
     }
 
@@ -146,8 +151,8 @@ def _print_start(report: dict[str, Any]) -> None:
     for concept in report["concepts"]:
         print(f"  {concept['term']:<22} {concept['meaning']}")
     print()
-    print("Full guides:   docs/QUICKSTART.md, docs/NEWCOMER_GUIDE.md")
-    print("Explain any result:  vstd explain <path-to-json>")
+    print("Full guides:   " + ", ".join(report["guides"]))
+    print("Explain any result:  " + report["next"])
 
 
 # --------------------------------------------------------------------------
