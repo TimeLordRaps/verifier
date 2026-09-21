@@ -546,14 +546,14 @@ the Prime Invariant forbids.
 
 **Build**
 
-- a privacy declaration (`VSTD-PRIVACY-DECLARATION-0.1`) binding an actor identity, a
+- a privacy declaration (`VSTD-PRIVACY-DECLARATION-1`) binding an actor identity, a
   decision class, the disclosed and withheld coordinates, and the exact boundary delta that
   minimization produces;
-- a federation admission policy (`VSTD-PRIVACY-POLICY-0.1`) stating what a member requires
+- a federation admission policy (`VSTD-PRIVACY-POLICY-1`) stating what a member requires
   before acting on a minimized record, under which no member can widen another member's
   declared boundary;
-- offline assessment and evidence-bound result objects (`VSTD-PRIVACY-ASSESSMENT-0.1`,
-  `VSTD-PRIVACY-ASSESSMENT-RECEIPT-0.1`) reporting satisfaction as `ACCEPTED_BOUNDED`,
+- offline assessment and evidence-bound result objects (`VSTD-PRIVACY-ASSESSMENT-1`,
+  `VSTD-PRIVACY-ASSESSMENT-RECEIPT-1`) reporting satisfaction as `ACCEPTED_BOUNDED`,
   `UNKNOWN`, `CONFLICTED`, or `REJECTED`;
 - an extension of the prohibited-inference list to federation-scale errors: that
   member-by-member satisfaction composes into federation-wide unlinkability, that a
