@@ -504,6 +504,87 @@ invariants:
 - a self-modifying candidate failing Pareto benchmark frontier verification cannot overwrite
   its active harness or promotion receipt.
 
+## Milestone 10 — verifiable declarative privacy for federated actor identities
+
+An **actor identity** is the entity accountable for a decision taken in a VSTD
+specification space: which claim to publish, which policy to admit under, which challenge
+to raise, which adjudication to record. Version 2.0.0 gives those decisions a bounded
+identity through the zero-identity/zero-knowledge (ZIZK) token family and holds that
+identity strictly adjacent to every verdict. What 2.0.0 does not give an actor is a way to
+declare what it withholds and have that declaration checked by parties that do not trust
+it.
+
+Three properties are named separately because each is separately refutable, and a record
+can satisfy any one of them while failing the others:
+
+- **Declarative.** The privacy property is a declared object with an explicit boundary,
+  stated before the decision, rather than a property read off an implementation afterwards.
+  An actor states which coordinates it discloses, which it withholds, and under which
+  transformation.
+- **Federated.** Every member evaluates that declaration offline against retained bytes.
+  No hub, registry, or directory grants a privacy result, and a missing coordinate fails
+  closed to `UNKNOWN`.
+- **Verifiable.** Satisfaction is a bounded result over inspected evidence, reported in the
+  identity verdict set already defined for actor evaluation, and a contradiction is
+  `REJECTED` rather than a warning.
+
+The hinge is the tenth prohibited inference in
+[`standard/VSTD-ZIZK-TOKENS.md`](standard/VSTD-ZIZK-TOKENS.md): *disclosure minimization
+preserves the original claim boundary.* VSTD forbids that inference and currently offers
+nothing in its place, so a minimized record is simply worth less than an unminimized one,
+and an actor that protects a subject pays for it in evidential weight. A privacy
+declaration replaces the forbidden inference with a stated, checkable boundary delta: the
+claim before minimization, the transformation applied, and the narrower claim that
+survives it.
+
+These objects belong to the stored non-receipt mechanism registry in
+[`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md) section 2, beside the ZIZK
+token family. They introduce no new name into the specification-surface object set and no
+numbered profile. An actor's privacy property is an adjacent proposition; admitting it to
+the numbered surfaces would let a property of an actor reach a computational verdict, which
+the Prime Invariant forbids.
+
+**Build**
+
+- a privacy declaration (`VSTD-PRIVACY-DECLARATION-0.1`) binding an actor identity, a
+  decision class, the disclosed and withheld coordinates, and the exact boundary delta that
+  minimization produces;
+- a federation admission policy (`VSTD-PRIVACY-POLICY-0.1`) stating what a member requires
+  before acting on a minimized record, under which no member can widen another member's
+  declared boundary;
+- offline assessment and evidence-bound result objects (`VSTD-PRIVACY-ASSESSMENT-0.1`,
+  `VSTD-PRIVACY-ASSESSMENT-RECEIPT-0.1`) reporting satisfaction as `ACCEPTED_BOUNDED`,
+  `UNKNOWN`, `CONFLICTED`, or `REJECTED`;
+- an extension of the prohibited-inference list to federation-scale errors: that
+  member-by-member satisfaction composes into federation-wide unlinkability, that a
+  coordinate withheld by one member is absent from the others, and that a lapsed
+  disclosure permission remains in force;
+- declared correlation bounds stating which linkage a declaration does and does not
+  constrain, so that a set of individually satisfied declarations is not readable as a
+  joint guarantee.
+
+**Exit evidence**
+
+- a minimized record carries the claim it supports after minimization, and a reader that
+  treats it as the pre-minimization claim is refuted by the record's own boundary delta;
+- an independent member reaches the same privacy result offline from retained bytes, with
+  no directory, hub, or registry consulted;
+- a record disclosing more than its declaration permits evaluates to `REJECTED`, and one
+  missing a required coordinate to `UNKNOWN`, never to a pass carrying a warning;
+- no tenure, lease scope, or other actor standing improves a privacy result, and no privacy
+  result improves a computational verdict;
+- two members that each satisfy their own declaration, but whose records jointly recover a
+  withheld coordinate, produce a recorded conflict rather than a silent success.
+
+**Sequencing**
+
+This is the first substantial specification work after 2.0.0, and it does not begin while
+2.0.0 is still moving. Stabilization means the release is published, its supported Python
+exports are frozen under [`docs/API_STABILITY.md`](docs/API_STABILITY.md), and the domain
+adapters introduced in 2.0.0 have completed a release cycle without a breaking change to
+their contracts. Nothing in this milestone alters a 2.0.0 receipt, reader, verdict, or
+serialized identifier.
+
 ## Adoption as verification, not marketing theater
 
 Early progress is measured by externally inspectable events:
@@ -531,4 +612,7 @@ This roadmap does not promise to:
 - prove all physical execution has been recorded;
 - replace sandboxing, signatures, identity systems, transparency logs, or domain
   truth tests;
+- guarantee anonymity, unlinkability, or compliance with any privacy regulation; a
+  satisfied privacy declaration bounds what one record discloses, never what a
+  federation can jointly infer;
 - treat one closure coordinate's evidence as proof of another coordinate.
