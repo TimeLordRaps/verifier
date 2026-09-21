@@ -342,14 +342,7 @@ def test_explain_reports_malformed_and_missing_inputs_with_a_next_step(tmp_path,
     assert "vstd start" in capsys.readouterr().out
 
     assert main(["explain", str(tmp_path / "absent.json")]) == 1
-    assert "Not a file" in capsys.readouterr().out
-
-
-def test_explain_tolerates_an_unrecognized_json_object(tmp_path, capsys) -> None:
-    path = tmp_path / "other.json"
-    path.write_text('{"unrelated": true}', encoding="utf-8")
-    assert main(["explain", str(path)]) == 0
-    assert "not a VSTD artifact" in capsys.readouterr().out
+    assert "Nothing to explain" in capsys.readouterr().out
 
 
 def test_version_flag_reports_the_package_version(capsys) -> None:
@@ -365,3 +358,57 @@ def test_module_entry_point_dispatches_to_the_same_cli() -> None:
     assert (ROOT / "src/verifier/__main__.py").is_file()
     spec = importlib.util.find_spec("verifier.__main__")
     assert spec is not None
+
+
+def test_explain_accepts_the_same_directory_validate_accepts(tmp_path, capsys) -> None:
+    """Step five takes a directory; step six must not reject the same one.
+
+    The guided path says `vstd validate ./my-receipt` and then explains the
+    result, so handing `explain` that directory is the obvious next keystroke.
+    Requiring the inner filename made two adjacent steps disagree.
+    """
+    directory = tmp_path / "my-receipt"
+    directory.mkdir()
+    (directory / "receipt.json").write_text(
+        json.dumps({"schema_version": "VSTD-1", "receipt_kind": "run",
+                    "run_id": "RUN-000001", "status": "COMPLETED"}),
+        encoding="utf-8")
+    from_directory = main(["explain", str(directory)])
+    directory_text = capsys.readouterr().out
+    from_file = main(["explain", str(directory / "receipt.json")])
+    file_text = capsys.readouterr().out
+    assert "Nothing to explain" not in directory_text
+    assert (from_directory, directory_text) == (from_file, file_text)
+
+
+def test_explain_reports_a_non_vstd_document_as_a_mistake_not_a_clean_read(
+        tmp_path, capsys) -> None:
+    """Pointing at the wrong file is one mistake, however it is malformed.
+
+    An unreadable file already exited 1. A readable file that is simply not a
+    VSTD artifact is the same mistake, so exiting 0 there would let
+    `vstd explain notes.json && deploy` proceed on a document the runtime never
+    recognised.
+    """
+    stray = tmp_path / "notes.json"
+    stray.write_text(json.dumps({"hello": 1}), encoding="utf-8")
+    assert main(["explain", str(stray)]) == 1
+    assert "not a VSTD artifact" in capsys.readouterr().out
+
+    unreadable = tmp_path / "notes.txt"
+    unreadable.write_text("not json", encoding="utf-8")
+    assert main(["explain", str(unreadable)]) == 1
+
+    assert main(["explain", str(tmp_path / "absent.json")]) == 1
+
+
+def test_bare_invocation_points_somewhere_instead_of_only_complaining(capsys) -> None:
+    """`vstd` alone is the first thing most people type.
+
+    argparse's default is a usage error on stderr that lists every subcommand
+    and names none of them as the place to begin. The exit code stays 2,
+    because no command was given, but the output has to be usable.
+    """
+    assert main([]) == 2
+    out = capsys.readouterr().out
+    assert "vstd start" in out and "vstd explain" in out

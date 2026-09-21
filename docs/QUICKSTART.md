@@ -106,9 +106,12 @@ for input boundaries, local preflight, authentication and response binding.
 ## 7. Read any result in plain language
 
 ```bash
+vstd explain ./my-receipt
 vstd explain ./my-receipt/receipt.json
 vstd explain ./specimen/certificate.json --json
 ```
+
+It takes either the directory `vstd validate` takes or the JSON file inside it.
 
 `vstd explain` restates a stored receipt or certificate: what was established,
 what was not, the checker's own reason for each gap, and the next command worth
@@ -119,7 +122,7 @@ It exits on the verdict already stored in the artifact — `0` for `PASS`, `1`
 for `FAIL`, `2` for `UNKNOWN` — so `vstd explain cert.json && ...` cannot read
 success out of a certificate whose printed status is `FAIL`. A document that
 carries no verdict, such as a run receipt, has nothing to propagate and reports
-a successful read.
+a successful read. Pointing it at something that is not a VSTD artifact at all is a usage error and exits `1`, like pointing it at a missing file.
 
 For a **run receipt** — the first artifact most people produce — it reports the
 claim, the observed run and its exit code, what was digested, the receipt's own

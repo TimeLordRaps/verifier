@@ -428,6 +428,24 @@ def _explain_other(document: dict[str, Any], path: Path) -> dict[str, Any]:
     }
 
 
+# The guided path hands `vstd validate` a directory at step five, so a reader
+# naturally hands `vstd explain` the same directory at step six. Accepting only
+# the inner file would make the two steps disagree for no reason.
+_IN_DIRECTORY = ("receipt.json", "certificate.json")
+
+
+def resolve_explain_target(path: Path) -> Path | None:
+    """Return the artifact to explain, or None if there is nothing to read."""
+    path = path.resolve()
+    if path.is_file():
+        return path
+    if path.is_dir():
+        for name in _IN_DIRECTORY:
+            if (path / name).is_file():
+                return path / name
+    return None
+
+
 def explain_report(path: Path) -> dict[str, Any]:
     """Return a structured explanation of one stored artifact."""
     document = json.loads(path.read_text(encoding="utf-8"))
@@ -443,6 +461,10 @@ def explain_report(path: Path) -> dict[str, Any]:
     else:
         report = _explain_other(document, path)
     report["schema_version"] = "VSTD-EXPLANATION-1"
+    # A document with no `schema_version` is not a VSTD artifact at all. That is
+    # the same class of mistake as pointing at a missing file, so the caller
+    # reports it the same way rather than as a successful read of nothing.
+    report["recognized"] = bool(version)
     report["source"] = str(path)
     report["boundary"] = (
         "Restated from the stored result. No evidence was re-evaluated and no "
@@ -506,11 +528,12 @@ def handle_accessibility_command(args: argparse.Namespace) -> int:
             _print_start(report)
         return 0
 
-    path = Path(args.path).resolve()
-    if not path.is_file():
-        print(f"[FAIL] Not a file: {path}")
-        print("       `vstd explain` reads one receipt or certificate JSON file.")
-        print("       Try `vstd start` if you do not have one yet.")
+    path = resolve_explain_target(Path(args.path))
+    if path is None:
+        given = Path(args.path).resolve()
+        print(f"[FAIL] Nothing to explain at: {given}")
+        print("       `vstd explain` reads a receipt or certificate JSON file, or a")
+        print("       directory containing one. Try `vstd start` if you have none yet.")
         return 1
     try:
         report = explain_report(path)
@@ -523,4 +546,6 @@ def handle_accessibility_command(args: argparse.Namespace) -> int:
         print(json.dumps(report, indent=2, sort_keys=True))
     else:
         _print_explain(report)
+    if not report["recognized"]:
+        return 1
     return explanation_exit_code(report)

@@ -855,7 +855,14 @@ def _handle_artifact_command(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    # A bare `vstd` is the first thing most people type. argparse's own answer
+    # is a usage error on stderr listing every subcommand and naming none of
+    # them as the place to begin, which is the least useful moment in the tool.
+    if not (sys.argv[1:] if argv is None else argv):
+        parser.print_help()
+        return 2
+    args = parser.parse_args(argv)
     try:
         if args.command in ("start", "explain"):
             from verifier.runtime.accessibility_cli import handle_accessibility_command
