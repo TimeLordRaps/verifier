@@ -305,6 +305,45 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "BOT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "agent_certificate_digest": {},
+              "agent_environment_certificate_digest": {},
+              "exogenous_transitions": {},
+              "initial_observation_record": {},
+              "separation": {},
+              "sim_certificate_digest": {},
+              "sim_environment_certificate_digest": {},
+              "step_map": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "agent_certificate": {},
+              "agent_environment_certificate": {},
+              "sim_certificate": {},
+              "sim_environment_certificate": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
     }
   ],
   "description": "Structural envelope only. Domain evaluators check retained contract semantics; certificate replay requires external intent and policy.",
@@ -321,7 +360,8 @@
         "MODEL",
         "SIM",
         "HARNESS",
-        "AGENT"
+        "AGENT",
+        "BOT"
       ]
     },
     "inputs": {

@@ -33,13 +33,14 @@ certificates. Six obligations have built-in native adapters; the remaining 41
 require explicitly registered domain mechanisms that check their stated propositions.
 The catalogue and orchestration do not by themselves discharge those obligations.
 
-The candidate also adds eight native grounded domain adapters with 38 cumulative
+The candidate also adds nine native grounded domain adapters with 43 cumulative
 checks: dataset transformations and split/overlap analysis; retained environment
 inventory/configuration/resource/reproduction observations; executable benchmark
 oracles and scoring; checkpoint/optimizer/gradient replay; model inference, metrics
 and challenges; simulation transition/invariant/projection/channel/shard checks;
-declared agent observation surfaces and their retained transcripts; and agent
-trajectories bounded by one harness certificate's observation ceiling.
+declared agent observation surfaces and their retained transcripts; agent
+trajectories bounded by one harness certificate's observation ceiling; and the closed
+loop between one bound agent certificate and one bound simulation certificate.
 These paths have portable certificates with external request and policy binding.
 Their supported formats and exclusions are defined in
 [the domain contract](../standard/DOMAIN_GROUNDING.md). A complete native domain

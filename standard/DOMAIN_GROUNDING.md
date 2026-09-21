@@ -6,9 +6,9 @@ execution environment; BENCH denotes a benchmark specification graph; HYPER deno
 hyperparameters and training lineage; MODEL denotes a model reproducibility
 specification; SIM denotes a generative simulation specification; HARNESS denotes an
 instrumented observation surface; AGENT denotes a retained trajectory bounded by one
-harness certificate.
+harness certificate; BOT denotes one agent situated in one simulation.
 
-These eight application receipt families supplement object and Graph numbered profiles.
+These nine application receipt families supplement object and Graph numbered profiles.
 `DATA.1` through `DATA.5`, for example, are domain check coordinates. Domain depth is
 the dimensionless count of consecutive established domain prerequisites. It MUST NOT
 be represented as object profile depth, Graph conformance, or discharge of the 47
@@ -65,8 +65,9 @@ claims about unobserved history or the outside world.
 | SIM | replay; invariants; refinement; channels; shards | Bound finite expression trees, entropy and causal times; every retained state; optional transition-closed enumerated state boundary; aligned macro projection; observation projections and action bounds; aligned shard relations and optionally authenticated signatures | Unbounded induction, general bisimulation, physical containment, witness independence or consensus |
 | HARNESS | surface; messages; tools; effects; transcript | Declared channels each dispositioned instrumented or declared-gap; contiguous retained records with user/agent/tool roles and exact payload digests; tool invocations bound to a registered declaration and a retained tool record; retained effects on declared instrumented effect channels; transcript digest and digest-tree commitment | Completeness of an undeclared channel, authenticity of the recorder, unretained side effects, the conduct or capability of the actor observed |
 | AGENT | harness; trajectory; actions; outcomes; claims | One bound HARNESS certificate re-derived from its retained bytes under the same mechanism; contiguous steps each witnessed by a record on a required channel; actions matched to witnessed tool invocations; complete outcome contract equality; claims whose support indices and named channels lie inside the observation ceiling | Intent, planning, deception, capability elicitation, safety of the agent, and anything resting on a declared gap or an undeclared channel |
+| BOT | binding; alignment; observation; actuation; containment | One bound AGENT certificate at complete depth and one bound SIM certificate with established channels, each re-derived from its retained bytes under the same mechanism; a strictly increasing map from simulation transitions to retained records inside the agent's observation ceiling; equality of every retained observation with the simulation's own projection and of every replayed action with the agent's own invocation; declared separation of the two retained environments | Intent, competence, safety, open-endedness, physical or process isolation, and any transition the contract declares exogenous |
 
-`examples/domain_grounding.py` constructs all eight complete native specimens and
+`examples/domain_grounding.py` constructs all nine complete native specimens and
 rechecks their certificates. Its environment specimen measures an actual in-process
 sort task; memory means Python traced allocation peak bytes. Its benchmark resource
 observations measure candidate construction, not a solver speed comparison.
@@ -149,6 +150,32 @@ that would settle it was never observed, so neither establishing nor refuting it
 available. An agent certificate therefore cannot establish more than its harness declared
 observable, and widening that surface requires a new harness certificate rather than a
 new agent claim.
+
+### The closed loop
+
+BOT binds four certificates — one AGENT, one SIM and two ENV — and reaches the harness through
+the agent rather than beside it, so the chain from HARNESS to AGENT to BOT stays one-way. Binding
+supplies no assurance of its own: each bound result is a ceiling on what BOT may establish, never
+a floor beneath it, and a bound certificate carrying a different mechanism digest is `UNKNOWN`.
+
+What BOT establishes is the correspondence, which no part checks alone. An AGENT certificate
+establishes that a trajectory is consistent with its own transcript. A SIM certificate establishes
+that a trajectory replays under its own transition program. Both can hold of a pair that never
+interacted. BOT therefore requires a strictly increasing map from simulation transitions to
+retained records, each on a channel inside the agent's observation ceiling; the retained output of
+each aligned invocation MUST equal the simulation's own observation projection of the state it
+reached, and its retained input MUST equal the action the simulation replayed. A simulation
+transition that no retained record accounts for is `FAIL` unless the contract declares it
+exogenous, in which case it is named and excluded from what the agent is answerable for.
+
+Environment separation is declared, not measured. `distinct` requires the two bound environment
+certificates to name different subjects, retain different software inventories, and share no
+execution identity. `fused` — one runtime for both the agent and the simulator — is `UNKNOWN`:
+the declaration is honest and the certificate still reaches domain depth 4, but containment is
+never established, because no retained evidence distinguishes a simulator the agent cannot read
+from one it can. Open-endedness is not checkable at any depth. A simulation is bounded by the
+finite evidence retained for it, and no certificate in this family establishes a property of runs
+that were not retained.
 
 ## Degradation and extension
 

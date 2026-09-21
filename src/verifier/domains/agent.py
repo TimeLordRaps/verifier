@@ -6,31 +6,13 @@ UNKNOWN; it is never reconstructed and never passed. Counts are dimensionless.
 """
 from __future__ import annotations
 
-from .common import (Budget, Refuted, Unavailable, digest, need, obj, same, seq, text)
-
-CERTIFICATE_FIELDS = {"schema_version", "request", "evidence", "policy_digest",
-                      "mechanism_digest", "specification_digest", "result", "certificate_digest"}
+from .common import (Budget, Refuted, Unavailable, bind_certificate, digest, need, obj, same, seq, text)
 
 
 def ceiling(artifact: dict, inputs: dict, mechanism_digest: str) -> dict:
     """Re-derive the observation ceiling from the bound harness certificate."""
-    certificate = obj(need(inputs, "harness_certificate"), CERTIFICATE_FIELDS)
-    same(certificate["schema_version"], "VSTD-DOMAIN-CERTIFICATION-1", "unsupported harness certificate")
-    body = {k: v for k, v in certificate.items() if k != "certificate_digest"}
-    same(digest(body), certificate["certificate_digest"], "harness certificate digest differs")
-    same(digest(certificate), need(artifact, "harness_certificate_digest"),
-         "bound harness certificate differs from the retained one")
-    if certificate["mechanism_digest"] != mechanism_digest:
-        raise Unavailable("harness certificate was produced by a different mechanism")
-    evidence = obj(certificate["evidence"], {"schema_version", "domain", "subject_id", "artifact", "inputs"})
-    if evidence["domain"] != "HARNESS":
-        raise Refuted("bound certificate is not a harness certificate")
+    evidence = bind_certificate(inputs, artifact, "harness", "HARNESS", mechanism_digest, 5)
     same(evidence["subject_id"], need(artifact, "harness_subject_id"), "harness subject differs")
-    result = obj(certificate["result"])
-    if result.get("object_profile_conformance") != "NOT_ESTABLISHED":
-        raise Refuted("harness certificate misreports object profile conformance")
-    if result.get("status") != "PASS" or result.get("domain_depth") != 5:
-        raise Unavailable("bound harness did not establish its complete observation surface")
     declared = obj(need(evidence["artifact"], "surface"))
     instrumented = {c for c, d in declared.items() if d == "instrumented"}
     required = seq(need(artifact, "required_channels"), budget=Budget(1024, 1024))
