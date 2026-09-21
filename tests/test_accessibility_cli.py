@@ -57,6 +57,26 @@ def test_every_recommended_command_still_parses() -> None:
         parser.parse_args(argv[1:])
 
 
+def test_every_repository_path_a_step_names_still_exists() -> None:
+    """A step can stay parseable while its file argument goes stale.
+
+    `vstd plan examples/generic_run/manifest.json` parses whether or not that
+    manifest exists, so the parser test alone would not notice the example
+    moving. This checks the arguments, not just the verbs.
+    """
+    named = []
+    for step in start_report()["steps"]:
+        for token in shlex.split(step["command"])[1:]:
+            if token.startswith("-") or "/" not in token:
+                continue
+            if token.startswith("./"):
+                continue  # produced by an earlier step, not shipped
+            named.append(token)
+    assert named, "at least one step should reference a shipped example"
+    missing = [t for t in named if not (ROOT / t).exists()]
+    assert missing == [], missing
+
+
 def test_start_is_side_effect_free_and_machine_readable(capsys, tmp_path) -> None:
     before = sorted(p.name for p in tmp_path.iterdir())
     assert main(["start", "--json"]) == 0
