@@ -1,8 +1,9 @@
 """Verifier Standard (VSTD) grounded claim-coordinate certification example.
 
-JavaScript Object Notation (JSON). This executable specimen earns obligation 1.1
-only. Missing obligations keep the complete profile UNKNOWN. It does not invent
-evidence to turn a partial example into a conforming full profile.
+JavaScript Object Notation (JSON); command-line interface (CLI). This
+executable specimen earns obligation 1.1 only. Missing obligations keep the
+complete profile UNKNOWN. It does not invent evidence to turn a partial example
+into a conforming full profile.
 """
 from __future__ import annotations
 
@@ -58,8 +59,17 @@ def main() -> int:
                         "evidence.json": session.evidence.export_base64(refs),
                         "certificate.json": certificate}.items():
         (args.output/name).write_bytes((json.dumps(value, sort_keys=True, indent=2) + "\n").encode())
-    print("Obligation 1.1: PASS; complete VSTD-1 grounded certification: UNKNOWN.")
-    return 0
+    # Report the observed result rather than a hardcoded sentence, and exit on
+    # the same convention the CLI uses: PASS 0, FAIL 1, UNKNOWN 2. An absent
+    # obligation leaves the profile UNKNOWN, so this example exits 2 by design;
+    # returning 0 would let an incomplete certification read as success.
+    result = certificate["result"]
+    status = result["status"]
+    print(f"Obligation 1.1: {result['obligations']['1.1']['outcome']}; "
+          f"complete VSTD-1 grounded certification: {status}.")
+    print(f"Certified profile depth: {result['certified_profile_depth']}. "
+          f"Explain it with: vstd explain {args.output / 'certificate.json'}")
+    return {"PASS": 0, "FAIL": 1, "UNKNOWN": 2}[status]
 
 
 if __name__ == "__main__":

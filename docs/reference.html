@@ -64,6 +64,8 @@
         <p class="section-lead">Each entry point below is imported while this page is built. A
         rename, move, or deletion fails the build instead of publishing a stale map.</p>
         <div class="ref-table"><table><thead><tr><th>Command</th><th>What it does</th><th>Implementation entry points</th></tr></thead><tbody>
+<tr><td><code>vstd start</code></td><td>Prints the ordered, copy-pasteable path from an installed package to a checked result; runs nothing and writes nothing.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/accessibility_cli.py"><code>verifier.runtime.accessibility_cli:start_report</code></a></td></tr>
+<tr><td><code>vstd explain</code></td><td>Restates a stored receipt or certificate in plain language, naming what was established, what was not and why; never re-evaluates evidence.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/accessibility_cli.py"><code>verifier.runtime.accessibility_cli:explain_report</code></a></td></tr>
 <tr><td><code>vstd certification catalog</code></td><td>Lists the object-profile obligation catalogue and bounded native checker coverage.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/profile_obligations.py"><code>verifier.core.profile_obligations:obligation_catalog</code></a></td></tr>
 <tr><td><code>vstd certification assess</code></td><td>Executes externally admitted native obligation mechanisms and emits a new grounded certificate.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification:build_grounded_certificate</code></a></td></tr>
 <tr><td><code>vstd certification check</code></td><td>Rehashes and reruns a certificate against the consumer's expected request and admission policy.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification:recheck_grounded_certificate</code></a></td></tr>
@@ -98,7 +100,24 @@
         <div class="ref-list"><article class="ref-item" id="cli-vstd">
 <h3><code>vstd</code></h3>
 <p class="ref-help">Subcommand group.</p>
-<p class="ref-none">No arguments; this command only groups subcommands.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--version</code></td><td>optional</td><td>Show the installed verifier-standard version and exit. [default: ==SUPPRESS==]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-start">
+<h3><code>vstd start</code></h3>
+<p class="ref-help">Show the shortest guided path from nothing to a checked result.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit the same path as a machine-readable task list.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-explain">
+<h3><code>vstd explain</code></h3>
+<p class="ref-help">Describe a receipt or certificate in plain language.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>path</code></td><td>positional</td><td>A receipt or certificate JSON file.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit the same explanation as structured data.</td></tr>
+</tbody></table>
 </article>
 <article class="ref-item" id="cli-vstd-certification">
 <h3><code>vstd certification</code></h3>

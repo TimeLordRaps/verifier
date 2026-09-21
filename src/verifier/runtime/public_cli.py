@@ -225,8 +225,25 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="vstd",
         description="Target-neutral VSTD receipt and provenance reference runtime.",
+        epilog="\n".join((
+            "new here?          run `vstd start` for the ordered path from "
+            "nothing to a checked result.",
+            "holding a result?  run `vstd explain <file.json>` to read it in "
+            "plain language.",
+            "most commands take --json for programmatic use.",
+        )),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    from verifier import __version__
+
+    parser.add_argument(
+        "--version", action="version", version=f"vstd {__version__}",
+        help="Show the installed verifier-standard version and exit.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    from verifier.runtime.accessibility_cli import add_accessibility_parsers
+    add_accessibility_parsers(subparsers)
 
     from verifier.runtime.certification_cli import add_certification_parser
     add_certification_parser(subparsers)
@@ -840,6 +857,9 @@ def _handle_artifact_command(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        if args.command in ("start", "explain"):
+            from verifier.runtime.accessibility_cli import handle_accessibility_command
+            return handle_accessibility_command(args)
         if args.command == "certification":
             from verifier.runtime.certification_cli import handle_certification_command
             return handle_certification_command(args)

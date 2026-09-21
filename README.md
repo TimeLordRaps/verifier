@@ -82,6 +82,7 @@ print(verifier.__standard_status__)# 'PROJECT SPECIFICATION; EVIDENCE-BOUND REFE
 git clone https://github.com/TimeLordRaps/verifier.git
 cd verifier
 python -m pip install .
+vstd start   # the ordered path; runs nothing and writes nothing
 vstd demo
 ```
 
@@ -235,6 +236,8 @@ Choose the smallest useful starting point:
 
 | Goal | Start here |
 |---|---|
+| Be told what to run, in order, by the tool itself | Run `vstd start` |
+| Understand a receipt or certificate you already have | Run `vstd explain <file.json>` |
 | Start from scratch with a beginner walkthrough | [Newcomer guide](docs/NEWCOMER_GUIDE.md) |
 | See defensive behavior immediately | Run [`vstd demo`](#30-60-second-demonstration) |
 | Capture and reproduce one command | [Generic computation](#capture-a-generic-computation) |

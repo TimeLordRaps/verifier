@@ -28,8 +28,8 @@ From a reviewed source checkout, generate the runnable specimen:
 
 ```bash
 PYTHONPATH=src python examples/grounded_certification.py grounded-example
-PYTHONPATH=src python -m verifier.runtime.public_cli certification catalog --json
-PYTHONPATH=src python -m verifier.runtime.public_cli certification check grounded-example/certificate.json \
+PYTHONPATH=src python -m verifier certification catalog --json
+PYTHONPATH=src python -m verifier certification check grounded-example/certificate.json \
   --request grounded-example/request.json --policy grounded-example/policy.json --json
 ```
 

@@ -36,6 +36,18 @@ SOURCE_BASE = "https://github.com/TimeLordRaps/verifier/blob/main/"
 # silently publishing a stale pipeline map.
 PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     (
+        "vstd start",
+        "Prints the ordered, copy-pasteable path from an installed package to a "
+        "checked result; runs nothing and writes nothing.",
+        ("verifier.runtime.accessibility_cli:start_report",),
+    ),
+    (
+        "vstd explain",
+        "Restates a stored receipt or certificate in plain language, naming what "
+        "was established, what was not and why; never re-evaluates evidence.",
+        ("verifier.runtime.accessibility_cli:explain_report",),
+    ),
+    (
         "vstd certification catalog",
         "Lists the object-profile obligation catalogue and bounded native checker coverage.",
         ("verifier.core.profile_obligations:obligation_catalog",),
