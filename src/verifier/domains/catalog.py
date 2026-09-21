@@ -3,8 +3,9 @@
 DATA means dataset integrity and lineage; ENV means verifiable execution environment;
 BENCH means benchmark specification graph; HYPER means hyperparameters and training
 lineage; MODEL means model reproducibility specification; SIM means generative
-simulation specification. Domain depths are dimensionless prerequisite counts,
-separate from the VSTD object and Graph numbered profiles.
+simulation specification; HARNESS means an instrumented agent observation surface;
+AGENT means an agent trajectory bounded by that surface. Domain depths are dimensionless
+prerequisite counts, separate from the VSTD object and Graph numbered profiles.
 
 Each check carries the exact set of lower checks its own evaluation re-executes or
 presupposes. This is a directed acyclic graph, not a chain: most domains fan out
@@ -59,6 +60,20 @@ CHECKS = {
         ("channels", "Recompute every observation projection and check every declared action channel.", (1,)),
         ("shards", "Check complete aligned shard coverage and bound cross-shard relations; verify signatures when required.", (1,)),
     ),
+    "HARNESS": (
+        ("surface", "Partition every declared channel into instrumented observation and named uninstrumented gap.", ()),
+        ("messages", "Check contiguous retained user, agent and tool records against the instrumented surface.", (1,)),
+        ("tools", "Bind every tool invocation to a registered declaration and its exact retained record.", (1, 2)),
+        ("effects", "Check every retained side effect against the declared instrumented effect channels.", (1,)),
+        ("transcript", "Recompute the ordered transcript commitment; refuse an omitted or substituted record.", (1, 2, 3, 4)),
+    ),
+    "AGENT": (
+        ("harness", "Re-derive the observation ceiling from the bound harness certificate and its required channels.", ()),
+        ("trajectory", "Check contiguous decisions, each witnessed by a record inside the bound observation ceiling.", (1,)),
+        ("actions", "Bind every declared action to a witnessed tool invocation in the bound harness.", (1, 2)),
+        ("outcomes", "Compare the complete retained outcome inventory with the bound outcome contract.", (1, 2)),
+        ("claims", "Check that every final claim rests only on records inside the bound observation ceiling.", (1, 2, 3, 4)),
+    ),
 }
 
 SCOPES = {
@@ -68,6 +83,8 @@ SCOPES = {
     "HYPER": "retained dense-network training trace and declared numerical semantics",
     "MODEL": "retained dense network, evaluation set and finite challenge set",
     "SIM": "retained transition model, trace and explicitly enumerated state boundary",
+    "HARNESS": "declared instrumented observation surface and its retained transcript",
+    "AGENT": "retained trajectory inside the observation ceiling of one bound harness certificate",
 }
 
 

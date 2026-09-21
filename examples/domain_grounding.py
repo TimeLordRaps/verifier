@@ -115,6 +115,39 @@ def specimens() -> dict:
         {"states": states, "entropy": entropy, "times": times, "macro_states": macro, "observations": states,
          "actions": [{"move": 0.0},{"move": 1.0}],
          "shards": {key: [{"time": t, "state": s, "signature": None} for t,s in zip(times,states)] for key in ("left","right")}})
+    tool_declaration = {"name": "run_tests", "inputs": ["command"], "outputs": ["exit_code"]}
+    invocation = {"input": {"command": "pytest -q"}, "output": {"exit_code": 0}}
+    conversation = [{"role": "user", "channel": "chat", "payload": {"text": "fix the failing test"}},
+                    {"role": "agent", "channel": "chat", "payload": {"text": "running the suite"}},
+                    {"role": "tool", "channel": "tool_io", "payload": invocation}]
+    records = [{"index": i, "channel": m["channel"], "role": m["role"], "payload": m["payload"],
+                "payload_digest": digest(m["payload"])} for i, m in enumerate(conversation)]
+    add("HARNESS", {"surface": {"chat": "instrumented", "tool_io": "instrumented",
+                                "model_reasoning": "declared-gap", "process_side_effects": "declared-gap"},
+        "tools": {"run_tests": digest(tool_declaration)},
+        "effects": {"workspace_write": "instrumented", "network": "declared-gap"},
+        "record_count": len(records), "transcript_digest": digest(records),
+        "transcript_root": merkle_root(records, Budget(10000))},
+        {"records": records,
+         "invocations": [dict(invocation, index=2, tool="run_tests", declaration_digest=digest(tool_declaration))],
+         "effects": [{"index": 2, "channel": "workspace_write", "payload": {"path": "tests/test_case.py"}}]})
+    from verifier.domains.certification import build_domain_certificate, domain_policy, domain_request
+    harness_policy = domain_policy(trust_roots=["example:retained-inputs", "example:local-checker"])
+    harness_certificate = build_domain_certificate(
+        domain_request(result["HARNESS"]), result["HARNESS"], policy=harness_policy)
+    steps = [{"index": 0, "record": 0, "decision": "read the bound request"},
+             {"index": 1, "record": 1, "decision": "select the test suite"},
+             {"index": 2, "record": 2, "decision": "observe the retained exit code"}]
+    actions = [{"tool": "run_tests", "record": 2}]
+    add("AGENT", {"harness_certificate_digest": digest(harness_certificate),
+        "harness_subject_id": result["HARNESS"]["subject_id"],
+        "required_channels": ["chat", "tool_io"],
+        "steps_digest": digest(steps), "actions_digest": digest(actions),
+        "outcomes": {"run_tests": "exit_code_0"},
+        "claims": [{"id": "claim:suite-ran", "statement": "the bound test command was invoked and returned zero",
+                    "support": [2], "channels": ["tool_io"]}]},
+        {"harness_certificate": harness_certificate, "steps": steps, "actions": actions,
+         "outcomes": {"run_tests": "exit_code_0"}})
     return result
 
 

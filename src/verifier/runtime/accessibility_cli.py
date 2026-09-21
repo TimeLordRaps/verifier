@@ -73,8 +73,8 @@ _STEPS: tuple[dict[str, str], ...] = (
     },
     {
         "id": "domain-catalog",
-        "title": "See the six executable domain adapters",
-        "why": "DATA, ENV, BENCH, HYPER, MODEL and SIM, with their check graphs.",
+        "title": "See the eight executable domain adapters",
+        "why": "DATA, ENV, BENCH, HYPER, MODEL, SIM, HARNESS and AGENT, with their check graphs.",
         "command": "vstd certification domain-catalog",
     },
 )

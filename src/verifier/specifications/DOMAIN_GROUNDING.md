@@ -4,9 +4,11 @@ Verifier Standard (VSTD) domain certification executes bounded computations over
 retained artifacts. DATA denotes dataset integrity and lineage; ENV denotes an
 execution environment; BENCH denotes a benchmark specification graph; HYPER denotes
 hyperparameters and training lineage; MODEL denotes a model reproducibility
-specification; SIM denotes a generative simulation specification.
+specification; SIM denotes a generative simulation specification; HARNESS denotes an
+instrumented observation surface; AGENT denotes a retained trajectory bounded by one
+harness certificate.
 
-These six application receipt families supplement object and Graph numbered profiles.
+These eight application receipt families supplement object and Graph numbered profiles.
 `DATA.1` through `DATA.5`, for example, are domain check coordinates. Domain depth is
 the dimensionless count of consecutive established domain prerequisites. It MUST NOT
 be represented as object profile depth, Graph conformance, or discharge of the 47
@@ -61,8 +63,10 @@ claims about unobserved history or the outside world.
 | HYPER | configuration; checkpoints; lineage; updates; training | Dense linear/rectified-linear networks; contiguous checkpoints and exact batches; stochastic gradient descent (SGD), adaptive moment estimation (Adam), Adam with decoupled weight decay (AdamW); constant schedule; equal-sized microbatch accumulation; clipping; loss and analytic gradient replay | Arbitrary accelerator kernels, mixed precision, distributed training, unsupported schedules or optimizers |
 | MODEL | artifacts; tensors; inference; evaluation; challenges | Dense linear and rectified linear unit (ReLU) networks; complete finite tensor shapes; mean squared/absolute error and classification accuracy; explicit finite output predicates | Universal robustness, alignment/corrigibility guarantees, generalization, arbitrary model formats |
 | SIM | replay; invariants; refinement; channels; shards | Bound finite expression trees, entropy and causal times; every retained state; optional transition-closed enumerated state boundary; aligned macro projection; observation projections and action bounds; aligned shard relations and optionally authenticated signatures | Unbounded induction, general bisimulation, physical containment, witness independence or consensus |
+| HARNESS | surface; messages; tools; effects; transcript | Declared channels each dispositioned instrumented or declared-gap; contiguous retained records with user/agent/tool roles and exact payload digests; tool invocations bound to a registered declaration and a retained tool record; retained effects on declared instrumented effect channels; transcript digest and digest-tree commitment | Completeness of an undeclared channel, authenticity of the recorder, unretained side effects, the conduct or capability of the actor observed |
+| AGENT | harness; trajectory; actions; outcomes; claims | One bound HARNESS certificate re-derived from its retained bytes under the same mechanism; contiguous steps each witnessed by a record on a required channel; actions matched to witnessed tool invocations; complete outcome contract equality; claims whose support indices and named channels lie inside the observation ceiling | Intent, planning, deception, capability elicitation, safety of the agent, and anything resting on a declared gap or an undeclared channel |
 
-`examples/domain_grounding.py` constructs all six complete native specimens and
+`examples/domain_grounding.py` constructs all eight complete native specimens and
 rechecks their certificates. Its environment specimen measures an actual in-process
 sort task; memory means Python traced allocation peak bytes. Its benchmark resource
 observations measure candidate construction, not a solver speed comparison.
@@ -118,6 +122,33 @@ signature covers canonical artifact digest, shard, step, causal time and state. 
 missing backend/key is `UNKNOWN`; a wrong signature is `FAIL`. Unsigned shard checks
 establish only the retained relations. A signature does not establish independent
 observation or a physically isolated witness.
+
+### Observation surface and ceiling
+
+A harness contract declares every channel it accounts for and dispositions each one
+`instrumented` or `declared-gap`. A gap is named, never absent: a channel the contract
+omits entirely is undeclared, and a retained record or effect on an undeclared channel is
+`FAIL`, not a gap. An empty surface, or one declaring no instrumented channel, is `UNKNOWN`.
+Retained records are contiguous from zero and each carries the exact digest of its payload.
+A tool invocation MUST name a registered declaration and a retained record whose role is
+`tool` and whose payload digest covers exactly that invocation's input and output. The
+transcript check compares both the canonical digest and the digest-tree commitment, so an
+omitted or substituted record is detected rather than silently shortening the transcript.
+A harness certificate establishes what was observable. It establishes nothing about what
+the observed actor did, intended, or was capable of.
+
+An agent contract binds exactly one harness certificate by digest and re-derives that
+certificate's own digest from its retained bytes. A certificate carrying a different
+mechanism digest is `UNKNOWN`, not a weaker witness. The bound certificate MUST be `PASS`
+at complete domain depth and MUST retain `object_profile_conformance` as `NOT_ESTABLISHED`;
+a bound certificate reporting otherwise is `FAIL`. The agent's required channels are its
+observation ceiling and MUST be a subset of the bound harness's instrumented channels.
+Every step, action and claim support index MUST resolve to a retained record on a channel
+inside that ceiling. A claim naming a channel outside the ceiling is `UNKNOWN`: the record
+that would settle it was never observed, so neither establishing nor refuting it is
+available. An agent certificate therefore cannot establish more than its harness declared
+observable, and widening that surface requires a new harness certificate rather than a
+new agent claim.
 
 ## Degradation and extension
 

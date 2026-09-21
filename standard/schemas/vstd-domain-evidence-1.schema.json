@@ -231,6 +231,80 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "HARNESS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "effects": {},
+              "record_count": {},
+              "surface": {},
+              "tools": {},
+              "transcript_digest": {},
+              "transcript_root": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "effects": {},
+              "invocations": {},
+              "records": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "AGENT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "actions_digest": {},
+              "claims": {},
+              "harness_certificate_digest": {},
+              "harness_subject_id": {},
+              "outcomes": {},
+              "required_channels": {},
+              "steps_digest": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "actions": {},
+              "harness_certificate": {},
+              "outcomes": {},
+              "steps": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
     }
   ],
   "description": "Structural envelope only. Domain evaluators check retained contract semantics; certificate replay requires external intent and policy.",
@@ -245,7 +319,9 @@
         "BENCH",
         "HYPER",
         "MODEL",
-        "SIM"
+        "SIM",
+        "HARNESS",
+        "AGENT"
       ]
     },
     "inputs": {
