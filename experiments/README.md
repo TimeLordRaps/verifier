@@ -28,7 +28,7 @@ Consult [claims and limits](../docs/CLAIMS_AND_LIMITS.md) before extending a res
 
 The experimental status applies to the named study or unfinished mechanism, not
 automatically to an underlying governing architecture. Normative requirements remain
-in [`standard/`](../standard/), and implemented reference paths retain their separately
+in [`standard/`](../src/verifier/standard/), and implemented reference paths retain their separately
 documented [maturity](../README.md#current-maturity).
 
 A completed study may remain here as a research record while a linked example teaches

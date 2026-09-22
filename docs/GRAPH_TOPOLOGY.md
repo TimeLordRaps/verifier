@@ -65,7 +65,7 @@ filename, or unrelated digest. Graph changes require a fresh binding and reanaly
 The checker coordinate records named source files read locally during the call. It does
 not attest the loaded process, interpreter or complete dependency closure. Recheck retained
 inputs in the intended environment; a carried report and its digests are not self-authenticating.
-The [contract schema](../standard/schemas/graph-topology.schema.json) checks shape only;
+The [contract schema](../src/verifier/schemas/graph-topology.schema.json) checks shape only;
 the runtime additionally rejects ambiguous bindings and enforces exact types and references.
 Runtime offsets must be integers, not floating-point values or Booleans. Structurally valid
 contracts exceeding semantic work bounds remain representable but not established.

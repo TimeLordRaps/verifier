@@ -32,7 +32,7 @@ distinct evidence passes every required coordinate in profiles 1 through `N`. A
 later-profile result never supplies, implies, upgrades, or repairs a prerequisite
 coordinate.
 
-Follow the terminology contract in [`standard/LADDER.md`](standard/LADDER.md#terminology-contract).
+Follow the terminology contract in [`standard/LADDER.md`](src/verifier/standard/LADDER.md#terminology-contract).
 Use **layer** only for a literal implementation, protocol, or physical stack; use **level**
 only for an explicitly named external taxonomy or retained compatibility identifier. In
 new prose, qualify **profile** as numbered, receipt, application, or geometry profile;
@@ -45,7 +45,7 @@ preference; explain their compatibility meaning adjacent to them.
 This is maintainer-led alpha project work. It is **not** an accredited, consensus,
 IETF, ISO, or W3C standard, and it has no demonstrated external adoption. Do not write
 text implying otherwise. Orientation: [`README.md`](README.md),
-[`standard/LADDER.md`](standard/LADDER.md),
+[`standard/LADDER.md`](src/verifier/standard/LADDER.md),
 [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md), [`GOVERNANCE.md`](GOVERNANCE.md).
 
 ### 1.1 Operating control surfaces
@@ -94,7 +94,7 @@ forward artifact support; `RUST` is inverse-direction diagnostic traversal from 
 descendant deviation toward recorded ancestors; `ROT` is typed, time-indexed degradation
 of current admissibility without rewriting historical evidence. Define the terms at first
 use in every independently readable surface and preserve their normative meaning from
-[`standard/LADDER.md`](standard/LADDER.md).
+[`standard/LADDER.md`](src/verifier/standard/LADDER.md).
 
 Assurance events are not self-authenticating status words. Portable reliance requires
 `recheck_assurance_log` to reconstruct the historical Graph, rehash embedded evidence,
@@ -251,7 +251,7 @@ instructions, so removing it would render already-published refutation steps unr
 The evidence is the published releases, not a file in the current checkout.
 
 **Wire identifiers.** Current readers dispatch on the exact identifiers and required
-profile discriminators in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md),
+profile discriminators in [`standard/WIRE_IDENTIFIERS.md`](src/verifier/standard/WIRE_IDENTIFIERS.md),
 not on filenames or field resemblance. VSTD-1 and VSTD-2 use their full numbered-profile identifiers;
 do not restore retired partial-profile object identifiers or compatibility reads. Published
 release bytes remain historical facts in their tags and Git history, not active current

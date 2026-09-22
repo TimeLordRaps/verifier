@@ -257,7 +257,12 @@ class MarkdownRenderer:
                 asset_route = PurePosixPath(*parts[1:])
                 rewritten = _relative_link(self.route, asset_route)
             elif (
-                parts[:2] in {("receipts", "schema"), ("standard", "schemas")}
+                parts[:-1]
+                in {
+                    ("receipts", "schema"),
+                    ("standard", "schemas"),
+                    ("src", "verifier", "schemas"),
+                }
                 and resolved.is_file()
             ):
                 rewritten = _relative_link(

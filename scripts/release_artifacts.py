@@ -122,7 +122,7 @@ def _schema_inventory_error(surface: str, observed: set[str]) -> str:
         parts.append(f"declared but absent: {', '.join(missing)}")
     parts.append(
         "reconcile scripts/release_artifacts.py PACKAGED_SCHEMA_NAMES with "
-        "standard/schemas/ and src/verifier/schemas/"
+        "src/verifier/schemas/"
     )
     return "; ".join(parts)
 

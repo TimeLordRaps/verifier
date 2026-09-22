@@ -174,11 +174,11 @@ and by what. Full contract: [grounded certification](GROUNDED_CERTIFICATION.md).
 
 ## 9. Read the normative path
 
-1. [`standard/LADDER.md`](../standard/LADDER.md) — verification-complex terminology, numbered profiles, separate evidence per closure coordinate,
+1. [`standard/LADDER.md`](../src/verifier/standard/LADDER.md) — verification-complex terminology, numbered profiles, separate evidence per closure coordinate,
    and composition.
-2. [`standard/VSTD-4.md`](../standard/VSTD-4.md) — refutability and the grounded
+2. [`standard/VSTD-4.md`](../src/verifier/standard/VSTD-4.md) — refutability and the grounded
    decision certificate.
-3. [`standard/GRAPH-1.md`](../standard/GRAPH-1.md) — collection provenance.
+3. [`standard/GRAPH-1.md`](../src/verifier/standard/GRAPH-1.md) — collection provenance.
 4. [`docs/CLAIMS_AND_LIMITS.md`](CLAIMS_AND_LIMITS.md) — permitted public wording.
 
 To evaluate the project rather than merely run it, start by trying to create a receipt

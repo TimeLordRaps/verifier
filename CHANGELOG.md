@@ -39,7 +39,7 @@
   bounded work, and preserved `UNKNOWN`. Add `certification domain-catalog`,
   `domain-assess`, and `domain-check`, four additive schemas and nine runnable specimens.
   Domain depth remains separate from object and Graph numbered-profile conformance;
-  see [native coverage and exclusions](standard/DOMAIN_GROUNDING.md).
+  see [native coverage and exclusions](src/verifier/standard/DOMAIN_GROUNDING.md).
 
 The release name centers exact claim/evidence binding, bounded certificate checking,
 and evidence-bound assessment. It does not establish conformance for an artifact or
@@ -148,7 +148,7 @@ declare the experimental mechanisms complete. See the
 
 ### TOKEN, the zero-identity zero-knowledge token
 
-- Catalogue `TOKEN`, normative in [`standard/ZIZK_TOKENS.md`](standard/ZIZK_TOKENS.md):
+- Catalogue `TOKEN`, normative in [`standard/ZIZK_TOKENS.md`](src/verifier/standard/ZIZK_TOKENS.md):
   76 obligations over six levels and 24 rungs, the deepest ladder on the domain axis. A
   token is exactly one of three kinds -- birth, aging or lifetime -- which are one
   identity's lifecycle rather than three independent formats.
@@ -170,7 +170,7 @@ declare the experimental mechanisms complete. See the
 
 ### The meta-tier grid, the relational objects and the VSTD-NAMESPACE
 
-- Publish the meta-tier grid in [`standard/META_TIERS.md`](standard/META_TIERS.md): every
+- Publish the meta-tier grid in [`standard/META_TIERS.md`](src/verifier/standard/META_TIERS.md): every
   verifiable object carries the same five tiers -- facets, dynamics, statics, closure and
   domain adaptation -- at the coordinate `<NAME>-<tier>.<m>`. `<m>` is a **depth**,
   not a count: it is the longest prerequisite chain inside one profile, so independent

@@ -91,7 +91,7 @@ evidence by the mechanism that earned it.
 refutability closure, and artifact-seal structural closure are distinct propositions.
 “Profile” is likewise qualified as a numbered, receipt, application, or geometry profile
 when context does not make the category unique. The exact compatibility names and
-exceptions are normative in [`standard/LADDER.md`](../standard/LADDER.md#terminology-contract).
+exceptions are normative in [`standard/LADDER.md`](../src/verifier/standard/LADDER.md#terminology-contract).
 
 ## Operational traversal and recursive Graph materialization
 
@@ -167,7 +167,7 @@ itself. Geometry profiles constrain reusable selections of VSTD-2 geometry; they
 by explicit shared coordinates, seams, mappings, and evidence-bearing transformations.
 The current `VSTD-2` receipt has no geometry-profile or profile-composition field, so this
 relationship is conceptual rather than a new serialized contract. See
-[`VSTD-2` section 8.1](../standard/VSTD-2.md#81-profiles-and-profiler-adapters).
+[`VSTD-2` section 8.1](../src/verifier/standard/VSTD-2.md#81-profiles-and-profiler-adapters).
 
 The complete apparatus that constructs or assesses a Graph is a verifying process. In a
 later order it may become the subject of a new VSTD-2 surface, while an adjacent adapter

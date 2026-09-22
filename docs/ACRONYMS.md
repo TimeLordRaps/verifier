@@ -9,7 +9,7 @@ identifiers, code symbols, filenames, and third-party names remain byte-for-byte
 are formal semantic names, not acronyms. They mean mechanism-earned forward artifact
 support, typed time-indexed degradation of current admissibility, and inverse-TRUST
 diagnostic traversal, respectively. `RUST` is not the Rust programming language. Their
-normative definitions are in [`standard/LADDER.md`](../standard/LADDER.md).
+normative definitions are in [`standard/LADDER.md`](../src/verifier/standard/LADDER.md).
 
 | Term | Expansion used in this repository | Scope note |
 |---|---|---|

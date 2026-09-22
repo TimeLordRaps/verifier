@@ -109,7 +109,7 @@ The `VSTD-2` planning schema is not their native input. Discovery and readiness 
 execute stored source or validate a claimed proof; supplied readiness declarations
 are not verification evidence. A subsequent formation result covers only the finite
 constructor calculus, not source self-derivation, completeness, grounding or authority
-axiom agency preservation. See the [exact contract](../../standard/TYPED_FORMATION.md).
+axiom agency preservation. See the [exact contract](../../src/verifier/standard/TYPED_FORMATION.md).
 
 The separate experimental formation receipt rechecker accepts canonical
 `verifier-silo-formation-selection-1` selection bytes, exact commit bytes,
@@ -117,7 +117,7 @@ The separate experimental formation receipt rechecker accepts canonical
 dictionary. It captures actual census observations, rebuilds the entire receipt
 and returns the fresh unversioned inspection only on exact equality. Negative,
 incomplete and unknown fields remain unchanged by reproduction. Its stored
-implementation retains the [portable receipt contract](../../standard/FORMATION_RECEIPT.md)
+implementation retains the [portable receipt contract](../../src/verifier/standard/FORMATION_RECEIPT.md)
 and structural schema. Catalog matching and readiness do not perform this replay
 or establish the roles of supplied input bytes.
 

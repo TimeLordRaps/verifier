@@ -83,7 +83,7 @@ result fields. A member-only declaration therefore remains `NOT_ADMISSIBLE`
 with unknown composite completeness, member binding, local-addition
 preservation, and composed authority agency.
 
-The separate [finite authority-composition checker](../standard/FINITE_AUTHORITY_COMPOSITION.md)
+The separate [finite authority-composition checker](../src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md)
 adds a bounded correspondence test that the existing composition receipt does
 not perform: it constructs the reachable asynchronous-interleaving product of
 two to four selected member models and checks exact state and transition
@@ -175,22 +175,22 @@ artifact does not supply decryption material or make unavailable bytes present.
   history and unselected bytes are rejected.
 
 The strict combined schema is
-[`verifier-artifact-network-1.schema.json`](../standard/schemas/verifier-artifact-network-1.schema.json).
+[`verifier-artifact-network-1.schema.json`](../src/verifier/schemas/verifier-artifact-network-1.schema.json).
 The exact interpreted mechanism has its own schema:
-[`verifier-self-derivation-mechanism-1.schema.json`](../standard/schemas/verifier-self-derivation-mechanism-1.schema.json).
+[`verifier-self-derivation-mechanism-1.schema.json`](../src/verifier/schemas/verifier-self-derivation-mechanism-1.schema.json).
 The finite authority-model schema is
-[`verifier-authority-model-1.schema.json`](../standard/schemas/verifier-authority-model-1.schema.json).
+[`verifier-authority-model-1.schema.json`](../src/verifier/schemas/verifier-authority-model-1.schema.json).
 The computed result, non-circular binding, and host-neutral client contract also
 have independently consumable schemas:
-[`verifier-silo-assessment-1.schema.json`](../standard/schemas/verifier-silo-assessment-1.schema.json),
-[`verifier-silo-assessment-receipt-1.schema.json`](../standard/schemas/verifier-silo-assessment-receipt-1.schema.json),
-and [`verifier-push-request-1.schema.json`](../standard/schemas/verifier-push-request-1.schema.json).
+[`verifier-silo-assessment-1.schema.json`](../src/verifier/schemas/verifier-silo-assessment-1.schema.json),
+[`verifier-silo-assessment-receipt-1.schema.json`](../src/verifier/schemas/verifier-silo-assessment-receipt-1.schema.json),
+and [`verifier-push-request-1.schema.json`](../src/verifier/schemas/verifier-push-request-1.schema.json).
 The composition declaration, typed result, and receipt schemas are
-[`verifier-silo-composition-1.schema.json`](../standard/schemas/verifier-silo-composition-1.schema.json),
-[`verifier-silo-composition-assessment-1.schema.json`](../standard/schemas/verifier-silo-composition-assessment-1.schema.json),
-and [`verifier-silo-composition-assessment-receipt-1.schema.json`](../standard/schemas/verifier-silo-composition-assessment-receipt-1.schema.json).
+[`verifier-silo-composition-1.schema.json`](../src/verifier/schemas/verifier-silo-composition-1.schema.json),
+[`verifier-silo-composition-assessment-1.schema.json`](../src/verifier/schemas/verifier-silo-composition-assessment-1.schema.json),
+and [`verifier-silo-composition-assessment-receipt-1.schema.json`](../src/verifier/schemas/verifier-silo-composition-assessment-receipt-1.schema.json).
 The bounded download envelope is
-[`verifier-silo-transfer-1.schema.json`](../standard/schemas/verifier-silo-transfer-1.schema.json).
+[`verifier-silo-transfer-1.schema.json`](../src/verifier/schemas/verifier-silo-transfer-1.schema.json).
 
 ## CLI surface
 

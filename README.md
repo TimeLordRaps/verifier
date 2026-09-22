@@ -50,7 +50,7 @@ sealing, reproduction, and evidence-bound assessment. Some compatibility paths r
 or external adoption is claimed. See [current maturity](#current-maturity) and
 [claims and limits](docs/CLAIMS_AND_LIMITS.md) for the exact surface-by-surface boundary.
 
-[Normative specifications](standard/LADDER.md) ·
+[Normative specifications](src/verifier/standard/LADDER.md) ·
 [60-second quickstart](docs/QUICKSTART.md) ·
 [Implementation reference](https://timelordraps.github.io/verifier/reference.html) ·
 [Report an ambiguity or counterexample](https://github.com/TimeLordRaps/verifier/issues/new/choose) ·
@@ -183,7 +183,7 @@ When building optimizing compilers, linkers, or reproducible build systems, a tr
 
 When analyzing self-referential systems, ordinal bounds, non-well-founded belief graphs, or transfinite induction, claims operate at high levels of abstraction where subtle circular reasoning or silent domain upgrades can invalidate safety bounds. VSTD enforces strict stratified profiles (Profiles 1–5): a higher-profile result never supplies or repairs missing lower-profile evidence, self-attestation is never promoted to independent verification, and ungrounded induction steps fail closed.
 
-**Tutorial & example:** [Normative ladder](standard/LADDER.md) and runnable adversarial suite [`examples/flagship_demo/`](examples/flagship_demo/README.md).
+**Tutorial & example:** [Normative ladder](src/verifier/standard/LADDER.md) and runnable adversarial suite [`examples/flagship_demo/`](examples/flagship_demo/README.md).
 </details>
 
 <details>
@@ -199,7 +199,7 @@ Automated agent evaluations and language model leaderboards are vulnerable to pr
 
 In formal mathematical ecosystems—such as `hypermath` (algebraic kernel, Lean 4 bridge), `ordinatics` (ordinal arithmetic, Veblen hierarchies), `grounded-hyperset-theory` (Aczel's Anti-Foundation Axiom (AFA), accessible pointed graphs (APGs)), and `grounded-hypercalculi` (stratified semantic reflection)—mathematical claims span multiple formal representations. VSTD provides the meta-verification envelope: it explicitly enumerates axioms (refusing ungrounded axioms or `sorry` escapes), binds the exact prover kernel binary digest, and composes heterogeneous formal proofs into a single refutation graph.
 
-**Foundations, tutorial & example:** [Mathematical foundations and interoperability](docs/MATHEMATICAL_FOUNDATIONS.md), [Grounded decision certificates](docs/PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc), and [Normative VSTD-4 specification](standard/VSTD-4.md).
+**Foundations, tutorial & example:** [Mathematical foundations and interoperability](docs/MATHEMATICAL_FOUNDATIONS.md), [Grounded decision certificates](docs/PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc), and [Normative VSTD-4 specification](src/verifier/standard/VSTD-4.md).
 </details>
 
 <details>
@@ -257,7 +257,7 @@ whole point: it is what keeps the topology small enough to navigate by name inst
 index.
 
 This is not a new numbering laid over the standard. Both axes of the
-[normative ladder](standard/LADDER.md) already instantiate these five levels. Claim
+[normative ladder](src/verifier/standard/LADDER.md) already instantiate these five levels. Claim
 mechanics, verification surface, substrate accountability, refutability and witness
 corroboration are facets, dynamics, statics, closure and adaptation; so are recorded
 lineage, bounded collection surface, accountable provenance closure, refutable
@@ -313,7 +313,7 @@ it is governed by its own registry and changes only in ways that keep already-wr
 receipts readable. Some carry a `-0.<n>` form inherited from earlier releases;
 `verifier-data-1` is the serialized identifier for `GRAPH-1` receipts, not a level-zero
 surface. Read a receipt identifier as naming a stored contract, never as a surface at that
-level. The registry is [WIRE_IDENTIFIERS.md](standard/WIRE_IDENTIFIERS.md).
+level. The registry is [WIRE_IDENTIFIERS.md](src/verifier/standard/WIRE_IDENTIFIERS.md).
 
 Finally, the convention names surfaces; it does not assert that an implementation exists at
 every coordinate it can spell. Which surfaces are implemented, and to what depth, is
@@ -331,7 +331,7 @@ Choose the smallest useful starting point:
 | Capture and reproduce one command | [Generic computation](#capture-a-generic-computation) |
 | Preserve and seal exact artifact bytes | [Artifact control](#freeze-seal-verify-and-thaw-an-artifact) |
 | Browse exact stored component declarations | [Component hub](docs/COMPONENT_HUB.md) |
-| Understand the formal profile composition | [Normative Ladder](standard/LADDER.md) |
+| Understand the formal profile composition | [Normative Ladder](src/verifier/standard/LADDER.md) |
 | Integrate or independently review the code | [Architecture map](docs/ARCHITECTURE.md) |
 | Challenge an overclaim or ambiguous rule | [Issue forms](https://github.com/TimeLordRaps/verifier/issues/new/choose) |
 
@@ -394,7 +394,7 @@ external interoperability, certification, or a second implementation.
 
 The authoritative implementation-to-specification map is
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Normative meaning remains under
-[standard/](standard/).
+[standard/](src/verifier/standard/).
 
 ## Why VSTD exists
 
@@ -475,7 +475,7 @@ backend under this governing architecture.
 
 For exact ownership, dispatch paths, schemas, compatibility surfaces, and unimplemented
 horizons, use the [architecture map](docs/ARCHITECTURE.md) and
-[normative Ladder](standard/LADDER.md).
+[normative Ladder](src/verifier/standard/LADDER.md).
 
 ## Install and use
 
@@ -531,7 +531,7 @@ the parent, sidecar agreement remains `NOT_ESTABLISHED`. The sidecar's unkeyed h
 prove that the historical copy occurred. A supplied parent establishes only internal
 consistency unless an expected artifact/key identifier or separately verified external log
 also supplies continuity. See the normative
-[artifact-control mechanism](standard/ARTIFACT_CONTROL.md) and the architectural
+[artifact-control mechanism](src/verifier/standard/ARTIFACT_CONTROL.md) and the architectural
 [realm/time-capsule model](docs/REALMS_AND_TIME_CAPSULES.md).
 
 ### Capture a generic computation
@@ -597,7 +597,7 @@ The unreleased 2.0.0 candidate adds [grounded certification across object profil
 47 explicit `X.M` obligations, externally selected mechanism policies and portable
 replay. The guide separates native checker coverage from required domain mechanisms.
 
-Nine [grounded domain adapters](standard/DOMAIN_GROUNDING.md) also execute retained
+Nine [grounded domain adapters](src/verifier/standard/DOMAIN_GROUNDING.md) also execute retained
 dataset transformations, environment observation checks, benchmark oracles, training
 updates and gradients, model inference/evaluation, simulation transitions and
 relations, declared agent observation surfaces, agent trajectories bounded by one such
@@ -608,14 +608,14 @@ numbered-profile conformance. Run `PYTHONPATH=src python examples/domain_groundi
 or inspect `vstd certification domain-catalog --json`.
 
 
-- [VSTD-1 receipts](standard/VSTD-1.md) carry claim coordinates, evidence,
+- [VSTD-1 receipts](src/verifier/standard/VSTD-1.md) carry claim coordinates, evidence,
   checker results, trust boundaries, and reproducibility information.
-- [GRAPH-1](standard/GRAPH-1.md) records content-addressed artifacts,
+- [GRAPH-1](src/verifier/standard/GRAPH-1.md) records content-addressed artifacts,
   many-to-many transformations, conflicts, and bounded downstream reachability. Its frozen
   reader preserves separate historical artifact/transformation namespaces; new construction
   plus evidence-bound establishment and assurance propagation require global cross-kind
   disjointness.
-- [`VSTD4-GDC-1`](standard/VSTD-4.md) binds a decision certificate to a formula,
+- [`VSTD4-GDC-1`](src/verifier/standard/VSTD-4.md) binds a decision certificate to a formula,
   grounding, claim coordinate, verifier descriptor, roots, and resource bounds.
 
 The grounded-certificate checker rejects over-budget headers before proof work, rejects
@@ -736,9 +736,9 @@ adoption.
 
 Read authoritative material in this order:
 
-1. [Verification complex, terminology, and profile composition](standard/LADDER.md)
-2. [Object and Graph numbered-profile documents](standard/)
-3. [Serialized receipt identifiers](standard/WIRE_IDENTIFIERS.md)
+1. [Verification complex, terminology, and profile composition](src/verifier/standard/LADDER.md)
+2. [Object and Graph numbered-profile documents](src/verifier/standard/)
+3. [Serialized receipt identifiers](src/verifier/standard/WIRE_IDENTIFIERS.md)
 4. [Published schemas](receipts/schema/)
 5. [Implementation ownership](docs/ARCHITECTURE.md)
 6. [Claims and limits](docs/CLAIMS_AND_LIMITS.md)

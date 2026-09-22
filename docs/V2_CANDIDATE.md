@@ -24,7 +24,7 @@ all five object numbered profiles: `1.1–1.7`, `2.1–2.7`, `3.1–3.8`, `4.1�
 and `5.1–5.11`. VSTD-4 retains its existing rung meanings; the other coordinates
 are obligations, not software versions or certification strength scores.
 The `VSTD-3` receipt identifier remains unchanged. See the
-[normative contract](../standard/GROUNDED_CERTIFICATION.md) and
+[normative contract](../src/verifier/standard/GROUNDED_CERTIFICATION.md) and
 [executable certification guide](GROUNDED_CERTIFICATION.md).
 
 The new engine binds an external admission policy, checks each exact proposition,
@@ -43,7 +43,7 @@ trajectories bounded by one harness certificate's observation ceiling; and the c
 loop between one bound agent certificate and one bound simulation certificate.
 These paths have portable certificates with external request and policy binding.
 Their supported formats and exclusions are defined in
-[the domain contract](../standard/DOMAIN_GROUNDING.md). A complete native domain
+[the domain contract](../src/verifier/standard/DOMAIN_GROUNDING.md). A complete native domain
 assessment is not complete object-profile certification.
 
 ## Recovered scope and lifecycle

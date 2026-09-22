@@ -59,7 +59,7 @@ gate conformance.
 - No dependency added to `verifier-standard`; the evaluator is standard library only.
 - No serialized receipt identifier, schema `$id`, receipt digest, console alias, lifecycle token,
   or conformance behavior is touched. See
-  [`../../../standard/WIRE_IDENTIFIERS.md`](../../../standard/WIRE_IDENTIFIERS.md).
+  [`../../../standard/WIRE_IDENTIFIERS.md`](../../../src/verifier/standard/WIRE_IDENTIFIERS.md).
 - No cryptographic guarantee is invented. Signature and revocation results are fixture
   inputs here. A deployment would have to produce them through a named real protocol; the
   model decides only what may be concluded from the asserted results.

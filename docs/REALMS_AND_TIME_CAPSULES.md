@@ -52,7 +52,7 @@ order the resulting condensation graph without pretending the cycles disappeared
 
 ## 3. Structural seals and temporal capsules
 
-The artifact-control seal in [`standard/ARTIFACT_CONTROL.md`](../standard/ARTIFACT_CONTROL.md)
+The artifact-control seal in [`standard/ARTIFACT_CONTROL.md`](../src/verifier/standard/ARTIFACT_CONTROL.md)
 establishes finite structural closure. It makes no internal time proposition. A
 **time capsule** is the composition:
 

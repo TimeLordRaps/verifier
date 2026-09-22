@@ -5,7 +5,7 @@ format**, `verifier-component-package-1`. It is a local, self-contained JavaScri
 Notation (JSON) document, not a receipt, installation archive, or conformance result.
 It retains component descriptions and exact artifact bytes so a catalog can be shared,
 inspected and used for verification-surface-hole planning without executing its contents.
-The [stored-document schema](../standard/schemas/verifier-component-package-1.schema.json)
+The [stored-document schema](../src/verifier/schemas/verifier-component-package-1.schema.json)
 describes its structural contract; runtime checks additionally enforce byte digests,
 canonical catalog form and reference bindings.
 

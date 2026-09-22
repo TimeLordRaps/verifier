@@ -337,6 +337,6 @@ even then it submits a candidate for human review rather than publishing.
 - [Seal an artifact and detect a change](SEAL_AN_ARTIFACT.md) covers the single-bundle
   freeze, seal, and thaw cycle this store is built on.
 - [`docs/ARTIFACT_NETWORK.md`](../ARTIFACT_NETWORK.md) is the mechanism's own documentation.
-- [`standard/FINITE_AUTHORITY_COMPOSITION.md`](../../standard/FINITE_AUTHORITY_COMPOSITION.md)
+- [`standard/FINITE_AUTHORITY_COMPOSITION.md`](../../src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md)
   is the normative composition text.
 - [`docs/COMPONENT_HUB.md`](../COMPONENT_HUB.md) describes the hub these commands target.

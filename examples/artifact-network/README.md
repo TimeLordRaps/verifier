@@ -58,7 +58,7 @@ The native `verifier.interoperability.proposition_transfer` module checks actual
 source sets, their declared bounds, exact target union, and target bounds
 separately. Its portable receipt is a recomputable semantic record, not an
 execution-identity or authority receipt. See
-[`PROPOSITION_TRANSFER.md`](../../standard/PROPOSITION_TRANSFER.md).
+[`PROPOSITION_TRANSFER.md`](../../src/verifier/standard/PROPOSITION_TRANSFER.md).
 
 ```console
 python scripts/build_proposition_transfer_fixture.py --write

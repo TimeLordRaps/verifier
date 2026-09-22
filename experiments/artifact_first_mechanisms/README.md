@@ -5,7 +5,7 @@
 
 This directory does **not** make VSTD's ZIZK artifact-first architecture experimental.
 That governing orientation is normative in
-[`standard/LADDER.md` section 1.1](../../standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
+[`standard/LADDER.md` section 1.1](../../src/verifier/standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
 
 TRUST is mechanism-earned forward artifact support; ROT is typed, time-indexed
 degradation of current admissibility; and RUST is the inverse-TRUST diagnostic backtrace

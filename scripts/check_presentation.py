@@ -429,7 +429,7 @@ def check_claim_boundaries(errors: list[str]) -> None:
         "vstd demo",
         "A later-profile result does **not** supply",
         "It cannot prove general AI",
-        "[Normative specifications](standard/LADDER.md)",
+        "[Normative specifications](src/verifier/standard/LADDER.md)",
         "[Report an ambiguity or counterexample]",
         "[Report a vulnerability privately]",
         "SCITT registration proves neither payload",

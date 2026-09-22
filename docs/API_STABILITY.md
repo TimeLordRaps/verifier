@@ -8,7 +8,7 @@ retroactively change frozen receipts or earlier release bytes.
 The unreleased 2.0.0 domain path adds `NativeDomainAdapter`, `domain_catalog`,
 `domain_policy`, `domain_request`, `build_domain_certificate`, and
 `recheck_domain_certificate` to the supported exports. These functions consume
-the additive [domain contracts](../standard/DOMAIN_GROUNDING.md); they do not
+the additive [domain contracts](../src/verifier/standard/DOMAIN_GROUNDING.md); they do not
 reinterpret historical domain records or establish object numbered-profile conformance.
 
 ## Supported boundary
@@ -114,8 +114,8 @@ to every name under `verifier.interoperability`:
 | Component descriptors, kinds, catalog matching, stored packages, planning, execution-readiness preflight | Experimental; declarations and byte bindings do not supply execution, qualification, or authority. |
 | Graph topology | Experimental direct submodule only; separate from supported analysis and from a general geometry satisfiability checker. |
 | Composed untraversability | Experimental direct submodule only; observer-relative bounded knowledge closure, not universal confidentiality or runtime enforcement. |
-| Typed formation | Experimental direct `formation_*` submodules only; finite proof-step production, independent checking, evidence-bound session integration and retained-silo inspection. Catalog discovery is inert; census-byte retention is not silo completeness. No source self-status, completeness or agency upgrade. See [typed formation](../standard/TYPED_FORMATION.md). |
-| Finite authority composition | Experimental direct `authority_composition` submodule and strict `network compose --require-finite-authority-composition` mode; exact selected finite asynchronous-interleaving correspondence, with separate coordinate, transition and authority results. Strict qualification additionally requires the legacy composition assessment and exact input binding; no runtime correspondence, source proof or six-axis status upgrade. See [finite authority composition](../standard/FINITE_AUTHORITY_COMPOSITION.md). |
+| Typed formation | Experimental direct `formation_*` submodules only; finite proof-step production, independent checking, evidence-bound session integration and retained-silo inspection. Catalog discovery is inert; census-byte retention is not silo completeness. No source self-status, completeness or agency upgrade. See [typed formation](../src/verifier/standard/TYPED_FORMATION.md). |
+| Finite authority composition | Experimental direct `authority_composition` submodule and strict `network compose --require-finite-authority-composition` mode; exact selected finite asynchronous-interleaving correspondence, with separate coordinate, transition and authority results. Strict qualification additionally requires the legacy composition assessment and exact input binding; no runtime correspondence, source proof or six-axis status upgrade. See [finite authority composition](../src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md). |
 
 `verifier.interoperability` contains both the supported analyzer names exported by
 `verifier.__all__` and an experimental planning surface. Its complete characterized names
@@ -249,7 +249,7 @@ increase assurance or establish an external standard.
   alias where unambiguous; `verifiable` is permanent because published refutation steps
   bind it.
 - Serialized receipt identifiers and released receipt bytes follow
-  [`WIRE_IDENTIFIERS.md`](../standard/WIRE_IDENTIFIERS.md), not this Python policy.
+  [`WIRE_IDENTIFIERS.md`](../src/verifier/standard/WIRE_IDENTIFIERS.md), not this Python policy.
 - Published JavaScript Object Notation (JSON) Schemas change only under their declared
   profile and compatibility rules.
 - Artifact-control formats follow `standard/ARTIFACT_CONTROL.md`. They are not receipts;

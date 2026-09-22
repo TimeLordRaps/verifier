@@ -112,7 +112,7 @@ and challenges.
 
 ## Implemented 1.2 artifact-control foundation
 
-[`standard/ARTIFACT_CONTROL.md`](standard/ARTIFACT_CONTROL.md) defines a mechanism beneath
+[`standard/ARTIFACT_CONTROL.md`](src/verifier/standard/ARTIFACT_CONTROL.md) defines a mechanism beneath
 the numbered profiles: exact regular-file byte and path preservation, dual-algorithm
 artifact-derived identity, an observable read-only payload-tree guard, finite readable
 self-closing seals, external artifact/key anchor checks, and copy-on-write thaw descendants.
@@ -252,7 +252,7 @@ for implemented mechanism maturity, see the
 | Interoperability catalog and surface planning | [`examples/interoperability_planning/`](examples/interoperability_planning/) | Strict VSTD-2 loading plus stable modeled-hole analysis and command-line diagnostics; first-party inventory of 17 exact entry points across 12 organizational implementation-family labels—not 12 independent/native implementations or interoperability results; experimental immutable descriptors, exact candidate matching, registry-bound nonexecuting plans, declaration-bound structural conflict witnesses, and execution-readiness preflight; no checker execution or new closure result. | Add Boolean satisfiability analysis only over explicit geometry constraints with a checkable unsatisfiable witness, execute separately authorized components, bind their results, perform post-execution reanalysis, and obtain independent interoperability specimens. |
 | Stored interoperability components | [`examples/stored_components/`](examples/stored_components/) | Experimental v1.3.0 stored-format foundation: exact retained bytes, catalog and implementation bindings, dependency declarations, deterministic storage, strict inspection, and package-selected nonexecuting hole planning. The seed exporter captures 17 first-party entries, not 17 independent native integrations. | Hosted discovery and distribution; separately qualified native execution and dependency resolution. Storage integrity does not imply native correctness or authorization. |
 | SCITT interoperability | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) | Experimental adapter, rerunnable real-COSE specimen with ephemeral keys, and adversarial tests; no IETF review or external interoperability result. | Independent implementation and interoperability result. |
-| Artifact-first mechanism completion | [`standard/schemas/verifier-graph-assurance-1.schema.json`](standard/schemas/verifier-graph-assurance-1.schema.json) | Event serialization, evidence-bound TRUST/ROT/RUST dispatch, challenge projection, conflict resolution, structural concentration, explicit localization, and bounded diagnostic attribution are implemented and adversarially tested. The complete domain-independent transfer algebra, complete trichotomy derivation, cross-implementation replay, and specific optional proof backends remain open. | Supply and falsify real domain mechanisms without creating actor-tied trust or topology-derived assurance. |
+| Artifact-first mechanism completion | [`standard/schemas/verifier-graph-assurance-1.schema.json`](src/verifier/schemas/verifier-graph-assurance-1.schema.json) | Event serialization, evidence-bound TRUST/ROT/RUST dispatch, challenge projection, conflict resolution, structural concentration, explicit localization, and bounded diagnostic attribution are implemented and adversarially tested. The complete domain-independent transfer algebra, complete trichotomy derivation, cross-implementation replay, and specific optional proof backends remain open. | Supply and falsify real domain mechanisms without creating actor-tied trust or topology-derived assurance. |
 | Workflow and allocation | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Strict validator, verdict-neutral GitHub adapter, generated index, and allocation records; no optimality claim or independent consumer. | A second observable adapter and independent consumer. |
 
 ## Milestone 1 — make refutation the front door
@@ -529,7 +529,7 @@ can satisfy any one of them while failing the others:
   `REJECTED` rather than a warning.
 
 The hinge is the tenth prohibited inference in
-[`standard/ZIZK_TOKENS.md`](standard/ZIZK_TOKENS.md): *disclosure minimization
+[`standard/ZIZK_TOKENS.md`](src/verifier/standard/ZIZK_TOKENS.md): *disclosure minimization
 preserves the original claim boundary.* VSTD forbids that inference and currently offers
 nothing in its place, so a minimized record is simply worth less than an unminimized one,
 and an actor that protects a subject pays for it in evidential weight. A privacy
@@ -538,7 +538,7 @@ claim before minimization, the transformation applied, and the narrower claim th
 survives it.
 
 These objects belong to the stored non-receipt mechanism registry in
-[`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md) section 2, beside the ZIZK
+[`standard/WIRE_IDENTIFIERS.md`](src/verifier/standard/WIRE_IDENTIFIERS.md) section 2, beside the ZIZK
 token family. They introduce no new name into the specification-surface object set and no
 numbered profile. An actor's privacy property is an adjacent proposition; admitting it to
 the numbered surfaces would let a property of an actor reach a computational verdict, which

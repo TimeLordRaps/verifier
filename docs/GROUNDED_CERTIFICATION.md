@@ -13,7 +13,7 @@ It also supplies nine executable domain adapters with 43 separate domain checks.
 `X` selects the numbered profile; `M` selects one separately checked obligation.
 Neither number is a confidence score. The sequences are `1.1–1.7`, `2.1–2.7`,
 `3.1–3.8`, `4.1–4.14`, and `5.1–5.11`. The existing VSTD-4 obligations retain the
-name **rungs**. The [normative catalogue](../standard/GROUNDED_CERTIFICATION.md)
+name **rungs**. The [normative catalogue](../src/verifier/standard/GROUNDED_CERTIFICATION.md)
 defines all 47 propositions, their dependencies, source requirements and failure
 semantics. `VSTD-3` remains a frozen receipt serialization identifier.
 
@@ -98,7 +98,7 @@ Dataset integrity and lineage (DATA), execution environments (ENV), benchmark
 specification graphs (BENCH), hyperparameters and training lineage (HYPER), model
 reproducibility specifications (MODEL), and generative simulations (SIM) have their
 own grounded paths. These execute retained computations rather than promoting the
-older declaration-based records. The [normative domain contract](../standard/DOMAIN_GROUNDING.md)
+older declaration-based records. The [normative domain contract](../src/verifier/standard/DOMAIN_GROUNDING.md)
 lists supported mainstays, numerical semantics, trust boundaries and exclusions.
 
 | Domain | Native domain checks | Complete native domain depth |
