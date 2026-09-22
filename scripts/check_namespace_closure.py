@@ -3,7 +3,7 @@
 
 Keep the VSTD-NAMESPACE closed.
 
-The namespace is the base abstract `VSTD` plus seventeen objects and nothing else.
+The namespace is the base abstract `VSTD` plus eighteen objects and nothing else.
 ALL-CAPS is the namespace marker, so an object is spelled by its bare name --
 `DATA`, `GRAPH-1`, `OWNER-4.5` -- and the `VSTD-` prefix survives only where a
 bare name would say nothing (`VSTD-1` through `VSTD-6`, the base abstract's own
@@ -12,8 +12,8 @@ tiers) or would be ambiguous (`VSTD-NAMESPACE`, the name of the space itself).
 Nothing enforced this before, and 137 names under 59 invented heads had
 accumulated by v2.0.0.  Two checks run here:
 
-  catalogue  every object the catalogue carries is one of the seventeen, or a
-             named composition over them.  This is the load-bearing check: it
+  catalogue  every object the catalogue carries is one of the eighteen.  This is
+             the load-bearing check: it
              reads the object set rather than prose, so a new name cannot enter
              by being written down somewhere.
 
@@ -34,32 +34,24 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-#: The closed set.  `VSTD` is the base abstract; these are the seventeen objects.
+#: The closed set.  `VSTD` is the base abstract; these are the eighteen objects.
 OBJECTS: frozenset[str] = frozenset({
     "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
     "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
-    "TOKEN",
+    "TRAIN", "TOKEN",
 })
 
-#: Named compositions: expressible in the namespace without being members of it.
-#: A composition is written *over* the objects, so admitting one as an object would
-#: double-count what it is made of -- and the namespace would stop being a basis.
-#: It is still catalogued, because a named composition nothing checks is just prose,
-#: which is why the domain catalogue carries one entry more than the namespace does.
-#: This is not a second exception list and it is not a waiting room: a head leaves
-#: this table by being admitted to OBJECTS or by ceasing to be named, never by being
-#: forgotten, and its definition here must say what it is composed of.
-COMPOSITIONS: dict[str, str] = {
-    "TRAIN": (
-        "a training run is HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH) indexed by a "
-        "GRAPH-1 recorded lineage, where VSTD is the model and training-loop "
-        "algorithms and GRAPH-1 carries the order the data was consumed in. "
-        "Catalogued as 35 obligations over six tiers, and the only *composed* domain "
-        "entry -- it is grounded without being certifiable because "
-        "it inherits a substrate from its operands, and has none of its own to "
-        "adapt. Ruled 2026-09-22"
-    ),
-}
+#: Named compositions that are *not* members of the namespace.  Empty by ruling.
+#: Being written over other objects was once taken to disqualify a name from
+#: membership, on the grounds that the namespace would stop being a basis.  TRAIN was
+#: admitted anyway on 2026-09-22: composition is a property an object has, not a
+#: reason it is not one, and TRAIN carries a substrate of its own -- a checkpoint
+#: inventory and a step trace -- which `verifier.domains.train` replays.  What TRAIN
+#: is composed of is recorded in COMPOSITION_OF, which is where that fact belongs.
+#: The table stays because the question can recur: a head enters only with a
+#: definition saying what it is composed of, and leaves only by being admitted to
+#: OBJECTS or by ceasing to be named, never by being forgotten.
+COMPOSITIONS: dict[str, str] = {}
 
 #: Strings that contain an object name without naming an object.  Each carries
 #: the reason it survives; a test requires the reason to be there.

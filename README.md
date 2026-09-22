@@ -241,10 +241,10 @@ be followed rather than looked up. Every specification surface has one identifie
 <NAME>-<level>.<module>
 ```
 
-- **`<NAME>`** is the surface. It is one of the seventeen objects admitted to the
+- **`<NAME>`** is the surface. It is one of the eighteen objects admitted to the
   VSTD-NAMESPACE -- `ACTOR`, `AGENT`, `BENCH`, `BOT`, `COLLECTIVE`, `DATA`, `ENV`,
   `GRAPH`, `HARNESS`, `HUMAN`, `HYPER`, `IDENTITY`, `MODEL`, `OWNER`, `ROLE`, `SIM`,
-  `TOKEN` -- or omitted entirely. Every name other than the
+  `TOKEN`, `TRAIN` -- or omitted entirely. Every name other than the
   empty one makes a claim about something particular. Omitting it names the claim surface
   itself — the basic, lowest-level foundational computational claim meta-surface — which is
   why it carries no object segment: `VSTD-1` through `VSTD-5`.
@@ -284,7 +284,7 @@ Worked examples, one per level:
 | `BENCH-1` | A bench as a meta-structure: a set of problems, some form from which a solution is deducible, a sampling procedure, baseline mechanics, feature representational spaces or categories, and a domain or set of domains. |
 | `SIM-2` | The dynamics a simulation represents: responsiveness, internal state changes, computational spaces, and perspective shifts. |
 | `MODEL-3` | What is static around a model: weights, hardware requirements, quantization specifications and configurations, and training data as a `DATA-5` specified object. |
-| `HYPER-4` | Closure for hyperparameters and training lineage: boundary saturation, an open-ended collapsable meta-language, and fractal re-representations. |
+| `TRAIN-4` | Closure for hyperparameters and training lineage: boundary saturation, an open-ended collapsable meta-language, and fractal re-representations. |
 | `BOT-5` | The adaptation surface of a situated agent: an interaction graph over the `SIM-5` specified interaction surface, together with disclosable and undisclosed self-awareness — including awareness of being inside a simulation, and of which simulation specification surfaces it is aware of. |
 
 Four rules prevent the usual misreadings:

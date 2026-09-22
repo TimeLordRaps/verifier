@@ -1,6 +1,6 @@
 """Terminology: artificial intelligence (AI); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (BENCH); verifiable execution environment (ENV); model reproducibility specification (MODEL); Verifier Standard (VSTD).
 
-verifier-2.0.0 comprehensive risk profile evaluation aggregating GRAPH, ENV, BENCH, DATA, HYPER, MODEL, and Tesla Caged Sandboxing.
+verifier-2.0.0 comprehensive risk profile evaluation aggregating GRAPH, ENV, BENCH, DATA, TRAIN, MODEL, and Tesla Caged Sandboxing.
 """
 
 from __future__ import annotations
@@ -249,11 +249,11 @@ def evaluate_vstd200_risk_profile(
         )
         verdict = OverallContainmentVerdict.BREACH_DETECTED
 
-    # 6. HYPER: Checkpoint lineage verification
+    # 6. TRAIN: Checkpoint lineage verification
     try:
         checkpoint_lineage.verify_lineage()
     except Exception as exc:
-        findings.append(f"HYPER Lineage break: {exc}")
+        findings.append(f"TRAIN Lineage break: {exc}")
         verdict = OverallContainmentVerdict.BREACH_DETECTED
 
     # 7. MODEL: 6-pillar curriculum and risk facets

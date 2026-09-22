@@ -13,7 +13,8 @@
 > Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
 > generative simulation specification (SIM);
 > dataset integrity and lineage (DATA);
-> hyperparameters and training lineage (HYPER);
+> training run specification (TRAIN);
+> certificate composition operator (HYPER);
 > instrumented agent observation surface (HARNESS);
 > agent trajectory bounded by one observation surface (AGENT);
 > one agent situated in one simulation (BOT);
@@ -28,8 +29,8 @@
 **Release name: The grounded certification release.**
 
 - Add nine executable grounded domain adapters: dataset integrity and lineage (DATA),
-  execution environments (ENV), benchmark specification graphs (BENCH), hyperparameters
-  and training lineage (HYPER), model reproducibility specifications (MODEL),
+  execution environments (ENV), benchmark specification graphs (BENCH), training run
+  specifications (TRAIN), model reproducibility specifications (MODEL),
   generative simulations (SIM), instrumented agent observation surfaces (HARNESS),
   agent trajectories bounded by one such surface (AGENT), and one agent situated in one
   simulation (BOT). An AGENT certificate cannot establish more than its bound HARNESS
@@ -101,20 +102,26 @@ declare the experimental mechanisms complete. See the
 
 ### TRAIN is catalogued but not certifiable
 
-- Fix 14 mechanism names on `TRAIN` that resolved to
-  no check in any family. `CHECKS` and `SCOPES` are each keyed by
-  9 objects and neither has a `TRAIN` entry, yet the catalogue
-  gave 25 of its 35 obligations a mechanism -- several of them **another object's
-  check name**, `configuration` being ENV's and `lineage` being DATA's. The 14 unresolvable
-  names are cleared, so `TRAIN` reports 11 of 35 mechanized rather than 25,
-  and the domain axis reports 191 of 626.
+- **`TRAIN`'s behavioural adapter was misfiled under `HYPER`, and the catalogue was
+  corrected to match the misfiling instead of the other way round.** `CHECKS` and `SCOPES`
+  were each keyed by 9 objects with no `TRAIN` entry, so object-scoped resolution read all
+  14 of `TRAIN`'s behavioural mechanism names as naming a check in no family, and they were
+  cleared. The checks existed: `configuration`, `checkpoints`, `lineage`, `updates` and
+  `training` were keyed under `HYPER` because the module implementing them was still called
+  `hyper.py`, left over from before `HYPER` was formalized as the composition operator.
+  `verifier.domains.hyper` is renamed to `verifier.domains.train` and `CHECKS["HYPER"]` to
+  `CHECKS["TRAIN"]`, and all 14 names are restored verbatim -- each one's requirement is the
+  description of the check it names. `TRAIN` reports 25 of 35 mechanized and the domain axis
+  205 of 626. Two of the five names are also check names on other objects -- `configuration`
+  is ENV's and `lineage` is DATA's -- so resolution stays scoped to the obligation's own
+  object, which is what made the misfiling visible rather than what caused it.
 - **Certifiable is not the same property as grounded**, and conflating them is what let
   this through. `build_domain_certificate` rejects any domain absent from `CHECKS`, so
-  `TRAIN` could never be certified at all -- it was not partially grounded, it was
+  `HYPER` could never be certified at all -- it was not partially grounded, it was
   unreachable -- while the grid published it as the most heavily mechanized object on the
   axis. New `CERTIFIABLE_OBJECTS` and `UNCERTIFIABLE_OBJECTS` name the real partition,
   which has three parts over 17 objects rather than two:
-  9 certifiable, `TRAIN` and `TOKEN` catalogued with statics and
+  9 certifiable, `HYPER` and `TOKEN` catalogued with statics and
   adaptation mechanisms that do execute, and six ungrounded with no mechanism anywhere.
 - **A mechanism name is a promise that something executes it.** The suite now resolves
   every name against the registered checks of that obligation's **own** object, and asserts
@@ -225,7 +232,7 @@ declare the experimental mechanisms complete. See the
 - **Wire identifiers are untouched.** The lowercase `schema_version` strings -- `verifier-data-1`
   and its siblings -- are a different namespace that happens to share a prefix. Renaming one
   to match the convention would break every reader that pins the string.
-- Add `scripts/check_namespace_closure.py`, which closes the namespace at seventeen objects
+- Add `scripts/check_namespace_closure.py`, which closes the namespace at eighteen objects
   and fails on any surviving prefix outside those two cases. It reads the object set rather
   than prose, so a new name cannot enter by being written down somewhere. Four of the
   renamed coordinates were **built at runtime** from an f-string over the object name and

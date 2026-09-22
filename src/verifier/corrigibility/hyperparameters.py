@@ -1,6 +1,6 @@
 """Terminology: directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
-HYPER: Hyperparameter, checkpoint lineage, and training run traceability.
+TRAIN: Hyperparameter, checkpoint lineage, and training run traceability.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ class PrecisionType(str, Enum):
 
 
 class HyperparameterError(ValueError):
-    """Base error for HYPER operations."""
+    """Base error for TRAIN operations."""
 
 
 class CheckpointLineageBrokenError(HyperparameterError):

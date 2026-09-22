@@ -25,7 +25,7 @@ _ARTIFACT_FIELDS = {
     "DATA": "shards fields shard_fields transforms source_shards splits final_shards identity_field overlap",
     "ENV": "scope files configuration ceilings execution execution_ids",
     "BENCH": "problems minimum_score",
-    "HYPER": "configuration architecture checkpoint_digests steps_digest start_step tolerance",
+    "TRAIN": "configuration architecture checkpoint_digests steps_digest start_step tolerance",
     "MODEL": "architecture_digest weights_digest dependencies tolerance samples_digest metric metric_bounds challenges",
     "HARNESS": "surface transcript_digest transcript_root tools effects record_count",
     "AGENT": "harness_certificate_digest harness_subject_id required_channels steps_digest actions_digest outcomes claims",
@@ -34,7 +34,7 @@ _ARTIFACT_FIELDS = {
 }
 _INPUT_FIELDS = {
     "DATA": "shards", "ENV": "files configuration measurements executions",
-    "BENCH": "runs score", "HYPER": "checkpoints steps batches",
+    "BENCH": "runs score", "TRAIN": "checkpoints steps batches",
     "MODEL": "architecture weights dependencies samples metric_value",
     "SIM": "states entropy times macro_states observations actions shards",
     "HARNESS": "records invocations effects",
@@ -76,7 +76,7 @@ def _hash(value: Any) -> str:
 
 def implementation_digest() -> str:
     dependencies = {}
-    for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "data", "env", "bench", "numerical", "hyper", "model", "sim", "harness", "agent", "bot")),
+    for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "data", "env", "bench", "numerical", "train", "model", "sim", "harness", "agent", "bot")),
                            ("verifier.core", ("certificate", "evidence", "receipt"))):
         for name in names:
             dependencies[package+"."+name] = hashlib.sha256(resources.files(package).joinpath(name+".py").read_bytes()).hexdigest()
@@ -178,7 +178,7 @@ class NativeDomainAdapter:
             budget = Budget(self.policy["max_operations"], self.policy["max_items"])
             inspect_structure(bundle, budget)
             artifact = bundle["artifact"]
-            numerical_contracts = [artifact] if self.domain in ("HYPER", "MODEL", "SIM") else []
+            numerical_contracts = [artifact] if self.domain in ("TRAIN", "MODEL", "SIM") else []
             if self.domain == "BENCH":
                 numerical_contracts = [p.get("specification", {}) for p in artifact.get("problems", [])
                                        if isinstance(p,dict) and p.get("kind") == "linear-system"]

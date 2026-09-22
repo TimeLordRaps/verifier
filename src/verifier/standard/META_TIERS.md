@@ -706,8 +706,8 @@ obligation rather than a rung in its own right:
 | DATA | `DATA-1.1`-`1.6` | `DATA-2.1`-`2.6` | `DATA-3.1`-`3.6` | `DATA-4.1`-`4.6` | `DATA-5.1`-`5.6` | `DATA-6.1`-`6.6` |
 | ENV | `ENV-1.1`-`1.6` | `ENV-2.1`-`2.6` | `ENV-3.1`-`3.5` | `ENV-4.1`-`4.5` | `ENV-5.1`-`5.6` | `ENV-6.1`-`6.6` |
 | BENCH | `BENCH-1.1`-`1.7` | `BENCH-2.1`-`2.6` | `BENCH-3.1`-`3.7` | `BENCH-4.1`-`4.5` | `BENCH-5.1`-`5.6` | `BENCH-6.1`-`6.6` |
-| TRAIN § | `TRAIN-1.1`-`1.6` | `TRAIN-2.1`-`2.6` | `TRAIN-3.1`-`3.5` | `TRAIN-4.1`-`4.6` | `TRAIN-5.1`-`5.6` | `TRAIN-6.1`-`6.6` |
-| HYPER | `HYPER-1.1`-`1.6` | `HYPER-2.1`-`2.6` | `HYPER-3.1`-`3.5` | `HYPER-4.1`-`4.5` | `HYPER-5.1`-`5.5` | `HYPER-6.1`-`6.6` |
+| TRAIN | `TRAIN-1.1`-`1.6` | `TRAIN-2.1`-`2.6` | `TRAIN-3.1`-`3.5` | `TRAIN-4.1`-`4.6` | `TRAIN-5.1`-`5.6` | `TRAIN-6.1`-`6.6` |
+| HYPER § | `HYPER-1.1`-`1.6` | `HYPER-2.1`-`2.6` | `HYPER-3.1`-`3.5` | `HYPER-4.1`-`4.5` | `HYPER-5.1`-`5.5` | `HYPER-6.1`-`6.6` |
 | MODEL | `MODEL-1.1`-`1.5` | `MODEL-2.1`-`2.5` | `MODEL-3.1`-`3.6` | `MODEL-4.1`-`4.5` | `MODEL-5.1`-`5.6` | `MODEL-6.1`-`6.6` |
 | SIM | `SIM-1.1`-`1.7` | `SIM-2.1`-`2.6` | `SIM-3.1`-`3.5` | `SIM-4.1`-`4.5` | `SIM-5.1`-`5.6` | `SIM-6.1`-`6.6` |
 | HARNESS † | `HARNESS-1.1`-`1.5` | `HARNESS-2.1`-`2.5` | `HARNESS-3.1`-`3.4` | `HARNESS-4.1`-`4.5` | `HARNESS-5.1`-`5.6` | `HARNESS-6.1`-`6.6` |
@@ -727,7 +727,7 @@ Every cell is a coordinate range into a catalogued obligation set: the object ax
 [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 701 obligations across the three
 namespaces, which are disjoint: `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, and each
 catalogue carries its own digest. † marks the three objects whose adapters live on the open
-release branch rather than in this tree; § marks `TRAIN`, which is catalogued but
+release branch rather than in this tree; § marks `HYPER`, which is catalogued but
 not certifiable; ‡ marks the six objects with no adapter anywhere: `OWNER` and
 the five identity objects.
 
@@ -747,8 +747,8 @@ need not be the one whose index is `m`.
 | `DATA-` | [1.1–1.4](DOMAIN_OBLIGATIONS.md#data-1-facets ".1 Retention boundary; .2 Shard and record inventory, Field contract; .3 Record identity, Digest tree commitment; .4 Schema conformance") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#data-2-dynamics ".1 Transformation declaration; .2 Exact re-execution; .3 Pipeline ordering, Raw-to-retained path; .4 Idempotence, Rebuild drift") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#data-3-statics ".1 Sampling frame, Measurement instrument, Origin rights; .2 Censoring and truncation, Distribution statics; .3 Pipeline independence") | [4.1–4.5](DOMAIN_OBLIGATIONS.md#data-4-closure ".1 Split declaration; .2 Complete membership; .3 Identity separation, Exact overlap; .4 Lexical overlap; .5 No unaccounted record") | [5.1–5.4](DOMAIN_OBLIGATIONS.md#data-5-domain-adaptation ".1 Mainstay binding; .2 Columnar shard mapping, Schema mapping, Dataset card mapping; .3 Round trip; .4 Inference upward") | **20** |
 | `ENV-` | [1.1–1.4](DOMAIN_OBLIGATIONS.md#env-1-facets ".1 Environment boundary; .2 Software inventory, Configuration surface; .3 Executable coordinates, Observed configuration; .4 Unpinned residue") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#env-2-dynamics ".1 Nondeterminism declaration, Execution pair; .2 Scheduling surface, Input agreement; .3 Result agreement; .4 Divergence attribution") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#env-3-statics ".1 Instruction set, Resource ceilings; .2 Floating-point semantics, Physical envelope; .3 Envelope independence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#env-4-closure ".1 Pin completeness; .2 Host isolation, Network closure; .3 Standup sufficiency; .4 Standup evidence") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#env-5-domain-adaptation ".1 Mainstay binding; .2 Image closure mapping, Derivation mapping; .3 Build provenance mapping; .4 Round trip; .5 Inference upward") | **20** |
 | `BENCH-` | [1.1–1.5](DOMAIN_OBLIGATIONS.md#bench-1-facets ".1 Domain declaration; .2 Problem set, Feature representation; .3 Solution deducibility, Sampling procedure; .4 Oracle binding; .5 Baseline mechanics") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#bench-2-dynamics ".1 Attempt policy, Contamination accumulation; .2 Attempt inventory; .3 Sequential adaptivity, Response curve; .4 Measurement feedback") | [3.1–3.4](DOMAIN_OBLIGATIONS.md#bench-3-statics ".1 Chance floor, Oracle ceiling, Budget ceilings; .2 Label noise, Hardness classes; .3 Natural distribution; .4 Harness independence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#bench-4-closure ".1 Run inventory; .2 No missing run, No duplicate or substituted run; .3 Weighted score; .4 Surface completeness") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#bench-5-domain-adaptation ".1 Mainstay binding; .2 Task specification mapping, Scoring contract mapping; .3 Budget mapping; .4 Round trip; .5 Inference upward") | **22** |
-| `TRAIN-` § | [1.1–1.4](DOMAIN_OBLIGATIONS.md#train-1-facets ".1 Optimizer contract, Checkpoint inventory; .2 Numerical semantics, Step index; .3 Batch binding; .4 Retention boundary") | [2.1–2.5](DOMAIN_OBLIGATIONS.md#train-2-dynamics ".1 Loss replay; .2 Gradient replay; .3 Optimizer update; .4 State advance, Unsupported update reporting; .5 Step-by-step advance") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#train-3-statics ".1 Arithmetic semantics, True gradient; .2 Accumulation order, Objective geometry; .3 Choice independence") | [4.1–4.6](DOMAIN_OBLIGATIONS.md#train-4-closure ".1 Contiguity; .2 Parent binding; .3 Batch and hyperparameter binding; .4 Result binding; .5 No reordering; .6 Whole-run accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#train-5-domain-adaptation ".1 Mainstay binding; .2 Training-loop mapping, Checkpoint-format mapping; .3 Batch source mapping; .4 Round trip; .5 Inference upward") | **23** |
-| `HYPER-` | [1.1–1.5](DOMAIN_OBLIGATIONS.md#hyper-1-facets ".1 Operand set; .2 Slot schema, Substrate presence; .3 Slot versus operand; .4 Composed identity; .5 Operand admissibility") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#hyper-2-dynamics ".1 Strength ordering, Recomposition; .2 Non-increase, Associativity; .3 UNKNOWN absorption; .4 Depth propagation") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#hyper-3-statics ".1 Composed ceiling, Substrate recurrence, Decider exteriority; .2 Manufacture impossibility; .3 Level independence") | [4.1–4.5](DOMAIN_OBLIGATIONS.md#hyper-4-closure ".1 Saturation; .2 Collapse; .3 Expansion fidelity; .4 Fractal re-representation; .5 Boundary completeness") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#hyper-5-domain-adaptation ".1 Mainstay binding; .2 Layout mapping; .3 Authorization mapping; .4 Round trip; .5 Inference upward") | **22** |
+| `TRAIN-` | [1.1–1.4](DOMAIN_OBLIGATIONS.md#train-1-facets ".1 Optimizer contract, Checkpoint inventory; .2 Numerical semantics, Step index; .3 Batch binding; .4 Retention boundary") | [2.1–2.5](DOMAIN_OBLIGATIONS.md#train-2-dynamics ".1 Loss replay; .2 Gradient replay; .3 Optimizer update; .4 State advance, Unsupported update reporting; .5 Step-by-step advance") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#train-3-statics ".1 Arithmetic semantics, True gradient; .2 Accumulation order, Objective geometry; .3 Choice independence") | [4.1–4.6](DOMAIN_OBLIGATIONS.md#train-4-closure ".1 Contiguity; .2 Parent binding; .3 Batch and hyperparameter binding; .4 Result binding; .5 No reordering; .6 Whole-run accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#train-5-domain-adaptation ".1 Mainstay binding; .2 Training-loop mapping, Checkpoint-format mapping; .3 Batch source mapping; .4 Round trip; .5 Inference upward") | **23** |
+| `HYPER-` § | [1.1–1.5](DOMAIN_OBLIGATIONS.md#hyper-1-facets ".1 Operand set; .2 Slot schema, Substrate presence; .3 Slot versus operand; .4 Composed identity; .5 Operand admissibility") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#hyper-2-dynamics ".1 Strength ordering, Recomposition; .2 Non-increase, Associativity; .3 UNKNOWN absorption; .4 Depth propagation") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#hyper-3-statics ".1 Composed ceiling, Substrate recurrence, Decider exteriority; .2 Manufacture impossibility; .3 Level independence") | [4.1–4.5](DOMAIN_OBLIGATIONS.md#hyper-4-closure ".1 Saturation; .2 Collapse; .3 Expansion fidelity; .4 Fractal re-representation; .5 Boundary completeness") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#hyper-5-domain-adaptation ".1 Mainstay binding; .2 Layout mapping; .3 Authorization mapping; .4 Round trip; .5 Inference upward") | **22** |
 | `MODEL-` | [1.1–1.3](DOMAIN_OBLIGATIONS.md#model-1-facets ".1 Tensor inventory, Dependency artifacts; .2 Architecture compatibility; .3 Module decomposition, Input and output surface") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#model-2-dynamics ".1 Forward execution; .2 Output agreement; .3 Batching behaviour, Precision behaviour; .4 Sampling and decoding") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#model-3-statics ".1 Weight bytes, Training-data citation; .2 Hardware requirements, Quantization specification, Provenance citation; .3 Artifact immutability") | [4.1–4.3](DOMAIN_OBLIGATIONS.md#model-4-closure ".1 Evaluation set, Probe inventory; .2 Metric recomputation, Probe execution; .3 Refutability") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#model-5-domain-adaptation ".1 Mainstay binding; .2 Module-graph mapping, Serialized-weights mapping; .3 Operator coverage; .4 Round trip; .5 Inference upward") | **18** |
 | `SIM-` | [1.1–1.3](DOMAIN_OBLIGATIONS.md#sim-1-facets ".1 State space; .2 Transition expressions, Observation channels, Shard decomposition; .3 Entropy stream, Action channels, Macro and micro projection") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#sim-2-dynamics ".1 Trajectory replay; .2 Responsiveness, Internal state change, Computational space; .3 Perspective shift; .4 Perspective agreement") | [3.1–3.4](DOMAIN_OBLIGATIONS.md#sim-3-statics ".1 Invariant expressions, Modelled law; .2 Per-state holding; .3 Closed state set; .4 Law independence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#sim-4-closure ".1 Shard coverage; .2 Cross-shard relations, No unattributed transition; .3 Signatures; .4 Whole-surface accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#sim-5-domain-adaptation ".1 Mainstay binding; .2 Interaction-surface mapping, Physical-backend mapping; .3 Stepping contract; .4 Round trip; .5 Inference upward") | **20** |
 | `HARNESS-` † | [1.1–1.4](DOMAIN_OBLIGATIONS.md#harness-1-facets ".1 Channel partition; .2 Record types; .3 Tool registry, Transcript commitment shape; .4 Side-effect channels") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#harness-2-dynamics ".1 Record contiguity; .2 Invocation pairing, Session advance; .3 Side-effect interleaving; .4 Retry and resumption") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#harness-3-statics ".1 Gap boundary, Timestamp resolution; .2 Channel capacity; .3 Instrument fixity") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#harness-4-closure ".1 Commitment recomputation; .2 Omission detection, Substitution detection; .3 Reordering detection; .4 Whole-session accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#harness-5-domain-adaptation ".1 Mainstay binding; .2 Trace-span mapping, Tool-protocol mapping; .3 Gap representation; .4 Round trip; .5 Inference upward") | **20** |
@@ -774,11 +774,11 @@ nine have a behavioural adapter, which is what a domain certificate requires; th
 count in each cell of the depth grid below is how many of that profile's obligations
 one of the three families establishes today.
 
-Of the 626 domain obligations, 191 are mechanized, across three disjoint families: 78
+Of the 626 domain obligations, 205 are mechanized, across three disjoint families: 92
 behavioural adapter checks, 41 tier-3 statics checks and 72 tier-5 adaptation checks.
 Tier 5 is fully mechanized on the 11 grounded objects and tier 3 on seven of them; on the
 six ungrounded objects no tier is mechanized at all, and level 6 is mechanized nowhere.
-What remains bare is 86 at tier 1, 86 at tier 2, 51 at tier 3, 73 at tier 4, 37 at tier 5,
+What remains bare is 81 at tier 1, 81 at tier 2, 51 at tier 3, 69 at tier 4, 37 at tier 5,
 and the whole of level 6. The two specification axes are unmechanized by construction —
 they are checked against retained evidence rather than by any domain adapter.
 [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) sets out the three families and why a
@@ -809,8 +809,8 @@ depth is strictly below the count somewhere.
 | DATA | **4** of 6 (5) | **4** of 6 (3) | **3** of 6 (6) | **5** of 6 (5) | **4** of 6 (6) | **5** of 6 (0) | 20 | 21 | 25/36 |
 | ENV | **4** of 6 (4) | **4** of 6 (3) | **3** of 5 (1) | **4** of 5 (0) | **5** of 6 (6) | **5** of 6 (0) | 20 | 21 | 14/34 |
 | BENCH | **5** of 7 (3) | **4** of 6 (0) | **4** of 7 (1) | **4** of 5 (4) | **5** of 6 (6) | **5** of 6 (0) | 22 | 23 | 14/37 |
-| TRAIN § | **4** of 6 (0) | **5** of 6 (0) | **3** of 5 (5) | **6** (0) | **5** of 6 (6) | **5** of 6 (0) | 23 | 24 | 11/35 |
-| HYPER | **5** of 6 (0) | **4** of 6 (0) | **3** of 5 (5) | **5** (0) | **5** (5) | **5** of 6 (0) | 22 | 23 | 10/33 |
+| TRAIN | **4** of 6 (5) | **5** of 6 (5) | **3** of 5 (5) | **6** (4) | **5** of 6 (6) | **5** of 6 (0) | 23 | 24 | 25/35 |
+| HYPER § | **5** of 6 (0) | **4** of 6 (0) | **3** of 5 (5) | **5** (0) | **5** (5) | **5** of 6 (0) | 22 | 23 | 10/33 |
 | MODEL | **3** of 5 (3) | **4** of 5 (2) | **3** of 6 (1) | **3** of 5 (4) | **5** of 6 (6) | **5** of 6 (0) | 18 | 19 | 16/33 |
 | SIM | **3** of 7 (2) | **4** of 6 (2) | **4** of 5 (3) | **4** of 5 (3) | **5** of 6 (6) | **5** of 6 (0) | 20 | 21 | 16/35 |
 | HARNESS † | **4** of 5 (2) | **4** of 5 (4) | **3** of 4 (4) | **4** of 5 (3) | **5** of 6 (6) | **5** of 6 (0) | 20 | 21 | 19/31 |
@@ -830,20 +830,29 @@ Where `i` is smaller than the module count, both are shown: `8` of
 `14` reads *eight is the depth of a profile holding fourteen modules*. A parenthesised
 count is how many of that profile's obligations a mechanism establishes today; the two
 specification axes carry no domain adapter by construction and show none. † marks the
-three adapters on the open release branch. § marks `TRAIN`, which is **catalogued but
+three adapters on the open release branch. § marks `HYPER`, which is **catalogued but
 not certifiable**: its statics and adaptation mechanisms resolve and execute, but it has
 no behavioural adapter and no `CHECKS` entry, so `build_domain_certificate` rejects it
 and no certificate over it can be built at all. ‡ marks the six ungrounded objects --
 `OWNER` and the five identity objects -- which have no adapter anywhere and
 therefore show none either.
 
-**A mechanism name is a promise that something executes it.** Fourteen `TRAIN`
-obligations named a check that exists in no family -- several of them another object's
-check name, `configuration` being ENV's and `lineage` being DATA's -- and this grid
-published them as mechanized. Unlike the `‡` rows, that defect was always mechanically
-checkable and nothing checked it. The suite now resolves every mechanism name against
-the registered checks of that obligation's **own** object, because a name that resolves
-under a different object resolves to the wrong check.
+**A mechanism name is a promise that something executes it.** The suite resolves every
+mechanism name against the registered checks of that obligation's **own** object, because
+a name that resolves under a different object resolves to the wrong check. Unlike the `‡`
+rows, that is mechanically checkable, and for the life of this catalogue nothing checked
+it.
+
+Object-scoped resolution is also what exposed the misfiling. Fourteen `TRAIN` obligations
+named `configuration`, `checkpoints`, `lineage`, `updates` or `training`; `CHECKS` had no
+`TRAIN` key, so all fourteen were read as naming a check in no family and were cleared on
+2026-09-21. The checks existed -- keyed under `HYPER`, because the adapter module was
+still called `hyper.py`. Renaming it to `train.py` on 2026-09-22 restored all fourteen
+verbatim, and each one's requirement is the description of the check it names. `TRAIN`
+reports 25 of 35 and the axis 205 of 626. Two of those names are also check names on
+other objects -- `configuration` is ENV's and `lineage` is DATA's -- which is why
+resolution stays object-scoped: the collision is real and it is the resolver, not the
+name, that keeps it harmless.
 
 **A passing test suite is not evidence about a ‡ row.** An ungrounded object has no
 mechanism, so the only executable checks over it are that its catalogue is well-formed and
@@ -929,11 +938,11 @@ carrying fewer rungs than it has tiers.
 Both numbers still move. Cataloguing an object raises its obligation count and lowers its
 `i`, because declared dependencies turn a default total order into a DAG; the domain
 objects were catalogued with their dependencies declared from the start, so their `i` is
-already a depth rather than a count. What remains provisional is mechanization: 191 of
-626 domain obligations have a check behind them, and every one of the remaining 435 is
-a coordinate a certificate can name but not yet clear. 216 of those 435 are the whole of the
-six ungrounded objects, which have no adapter at all, and 72 are the unmechanized
-obligations of TRAIN and TOKEN, neither of which has a behavioural adapter and so
+already a depth rather than a count. What remains provisional is mechanization: 205 of
+626 domain obligations have a check behind them, and every one of the remaining 421 is
+a coordinate a certificate can name but not yet clear. 216 of those 421 are the whole of the
+six ungrounded objects, which have no adapter at all, and 71 are the unmechanized
+obligations of HYPER and TOKEN, neither of which has a behavioural adapter and so
 neither can be certified.
 
 ## What follows mechanically
@@ -1002,19 +1011,21 @@ separable: extending one provably cannot move another's.
 
 What differs between them is not the form of the obligations but how many carry a
 mechanism. The two specification axes are checked against retained evidence rather than by
-a domain adapter. Of the seventeen domain objects, 191 of 626 obligations name a check in one
+a domain adapter. Of the seventeen domain objects, 205 of 626 obligations name a check in one
 of the three families — behavioural in [`DOMAIN_GROUNDING.md`](DOMAIN_GROUNDING.md), statics and
-adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 435 are
+adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 421 are
 specified without a mechanism and are reported `UNKNOWN` — never absent, and never passed;
-216 of them are the whole of the six objects with no adapter at all, 72 more are the
-unmechanized obligations of `TRAIN` and `TOKEN`, which have no behavioural adapter, and the
-remaining 147 are the bare tiers of the nine certifiable objects.
+216 of them are the whole of the six objects with no adapter at all, 71 more are the
+unmechanized obligations of `HYPER` and `TOKEN`, which have no behavioural adapter, and the
+remaining 134 are the bare tiers of the nine certifiable objects.
 
 `HYPER` no longer names two objects. The combination operator keeps the name; the
 training-run certifier that used to share it is now `TRAIN`, with its own row above.
-**It does not have its own adapter module.** `TRAIN` is catalogued but not
-certifiable: its statics and adaptation mechanisms resolve, but there is no
-`CHECKS["TRAIN"]` and no `train.py`, and `build_domain_certificate` rejects any domain
-absent from `CHECKS`. Until an adapter exists, no certificate over `TRAIN` can be
-produced at all. The rename landed while 2.0.0 was unreleased, so no shipped
+**It has its own adapter module, and always did.** `verifier.domains.train` shipped as
+`hyper.py` for the whole life of this catalogue -- a name left over from before `HYPER`
+was formalized as the operator -- which is why `TRAIN` was recorded as having no adapter
+while `HYPER` was published as certifiable. `CHECKS["TRAIN"]` keys its five checks, so
+`build_domain_certificate` accepts it. `HYPER` is the entry with no behavioural adapter:
+the operator holds between certified objects and has no substrate of its own to adapt,
+so its residue is permanent. The rename landed while 2.0.0 was unreleased, so no shipped
 schema or digest carried the old spelling.

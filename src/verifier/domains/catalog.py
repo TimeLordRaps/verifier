@@ -1,8 +1,8 @@
 """Verifier Standard (VSTD) domain mainstays and their precise checking scopes.
 
 DATA means dataset integrity and lineage; ENV means verifiable execution environment;
-BENCH means benchmark specification graph; HYPER means hyperparameters and training
-lineage; MODEL means model reproducibility specification; SIM means generative
+BENCH means benchmark specification graph; TRAIN means training run
+specification; MODEL means model reproducibility specification; SIM means generative
 simulation specification; HARNESS means an instrumented agent observation surface;
 AGENT means an agent trajectory bounded by that surface; BOT means one agent situated
 in one simulation. Domain depths are dimensionless
@@ -11,7 +11,7 @@ prerequisite counts, separate from the VSTD object and Graph numbered profiles.
 Each check carries the exact set of lower checks its own evaluation re-executes or
 presupposes. This is a directed acyclic graph, not a chain: most domains fan out
 from a shared prologue, so a check is not blocked by an unrelated sibling. Only
-HYPER is genuinely linear.
+TRAIN is genuinely linear.
 """
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ CHECKS = {
         ("coverage", "Recompute weighted score over every problem with no missing, duplicate or substituted run.", (1, 2)),
         ("budgets", "Check complete retained timing and memory observations against the problem ceilings.", (1,)),
     ),
-    "HYPER": (
+    "TRAIN": (
         ("configuration", "Validate the bound optimizer, schedule, accumulation and precision contract.", ()),
         ("checkpoints", "Rehash all retained weights and optimizer states in the checkpoint inventory.", (1,)),
         ("lineage", "Check contiguous steps and exact parent, batch, hyperparameter and result bindings.", (1, 2)),
@@ -88,7 +88,7 @@ SCOPES = {
     "DATA": "complete retained dataset and declared transformation boundary",
     "ENV": "retained software inventory and named collector observations",
     "BENCH": "complete retained finite problem suite and its named oracles",
-    "HYPER": "retained dense-network training trace and declared numerical semantics",
+    "TRAIN": "retained dense-network training trace and declared numerical semantics",
     "MODEL": "retained dense network, evaluation set and finite challenge set",
     "SIM": "retained transition model, trace and explicitly enumerated state boundary",
     "HARNESS": "declared instrumented observation surface and its retained transcript",

@@ -194,7 +194,7 @@ def test_dense_backprop_matches_independent_finite_difference() -> None:
 
 @pytest.mark.parametrize("optimizer,expected", [("sgd", [0.9,-0.2]), ("adam", [0.9,-0.1]), ("adamw", [0.89,-0.1])])
 def test_optimizer_equations_independent_known_answer(optimizer: str, expected: list, bundles: dict) -> None:
-    config = deepcopy(bundles["HYPER"]["artifact"]["configuration"])
+    config = deepcopy(bundles["TRAIN"]["artifact"]["configuration"])
     config.update(optimizer=optimizer, epsilon=1e-15, weight_decay=0.1 if optimizer == "adamw" else 0.0)
     weights, state = update([{"weight": [[1.0]], "bias": [0.0]}], [1.0,2.0],
         {"step": 0, "first": [0.0,0.0], "second": [0.0,0.0]}, config, Budget(100))
@@ -204,19 +204,19 @@ def test_optimizer_equations_independent_known_answer(optimizer: str, expected: 
 
 
 def test_training_recomputes_gradients_not_only_optimizer(bundles: dict, policy: dict) -> None:
-    bundle = deepcopy(bundles["HYPER"])
+    bundle = deepcopy(bundles["TRAIN"])
     batch = [[{"input": [1.0], "target": [3.0]}]]
     bundle["inputs"]["batches"] = {digest(batch): batch}
     bundle["inputs"]["steps"][0]["batch"] = digest(batch)
     bundle["artifact"]["steps_digest"] = digest(bundle["inputs"]["steps"])
     result = assess(bundle, policy)["result"]
     assert result["domain_depth"] == 4
-    assert result["checks"]["HYPER.5"]["evaluation"]["outcome"] == "FAIL"
+    assert result["checks"]["TRAIN.5"]["evaluation"]["outcome"] == "FAIL"
 
 
 def test_training_parent_and_update_are_checked(bundles: dict, policy: dict) -> None:
     for mutation in ("parent", "gradient"):
-        bundle = deepcopy(bundles["HYPER"])
+        bundle = deepcopy(bundles["TRAIN"])
         step = bundle["inputs"]["steps"][0]
         if mutation == "parent":
             step["parent"] = step["result"]
@@ -377,7 +377,7 @@ def test_other_native_model_metrics(metric: str, targets: list, measured: float,
 
 
 def test_training_resume_and_gradient_accumulation(bundles: dict, policy: dict) -> None:
-    bundle = deepcopy(bundles["HYPER"])
+    bundle = deepcopy(bundles["TRAIN"])
     checkpoints = bundle["inputs"]["checkpoints"]
     checkpoints.append({"weights": [{"weight": [[1.32]], "bias": [0.32]}],
         "optimizer_state": {"step": 2, "first": [-1.2,-1.2], "second": [0.0,0.0]}})

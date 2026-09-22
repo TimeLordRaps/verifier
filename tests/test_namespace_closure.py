@@ -46,7 +46,7 @@ def _gate():
     return module
 
 
-def test_the_catalogue_carries_no_object_outside_the_seventeen() -> None:
+def test_the_catalogue_carries_no_object_outside_the_eighteen() -> None:
     """The load-bearing check: the object set, not prose about it."""
 
     found = _gate().catalogue_offenders()
@@ -60,14 +60,21 @@ def test_no_object_still_carries_the_prefix() -> None:
     )
 
 
-def test_the_namespace_is_the_base_abstract_and_seventeen_objects() -> None:
+def test_the_namespace_is_the_base_abstract_and_eighteen_objects() -> None:
+    """Enumerated by Tyler on 2026-09-22: VSTD and these eighteen, nineteen names.
+
+    TRAIN is the eighteenth. It was held out while being composed was treated as
+    disqualifying; it is in because composition is a property an object has, not a
+    reason it is not one.
+    """
     gate = _gate()
-    assert len(gate.OBJECTS) == 17
+    assert len(gate.OBJECTS) == 18
     assert gate.OBJECTS == {
         "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
         "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
-        "TOKEN",
+        "TRAIN", "TOKEN",
     }
+    assert len({"VSTD"} | gate.OBJECTS) == 19, "the namespace is nineteen names"
 
 
 def test_the_gate_reads_the_live_catalogue_not_a_copy_of_it() -> None:
@@ -142,27 +149,30 @@ def test_no_zero_is_admissible_in_either_position() -> None:
 def test_the_one_composition_is_declared_the_same_way_in_all_three_places() -> None:
     """A name carried in one place and not the others is exactly how TRAIN drifted.
 
-    It is in the domain catalogue and not in the namespace, which is a real asymmetry
-    and not a defect -- the mirror of GRAPH, which is in the namespace and carries its
-    own axis instead of a catalogue entry. An asymmetry has to be stated as one
-    everywhere it is stated at all: the gate's object set, the runtime partition, and
-    the normative document. Every operand must itself be a namespace object, or the
-    composition would be written over something that does not exist.
+    TRAIN is composed *and* a namespace object, admitted 2026-09-22. The composition
+    still has to be stated identically everywhere it is stated at all: the gate's
+    object set, the runtime partition, and the normative document. Every operand must
+    itself be a namespace object, or the composition would be written over something
+    that does not exist.
+
+    ``COMPOSITIONS`` is the table of names expressible in the namespace *without*
+    being members of it. It is empty, and the emptiness is asserted rather than
+    assumed: a head may only be added there with a definition, so a future entry
+    cannot slip in by being written down.
     """
 
     sys.path.insert(0, str(ROOT / "src"))
     from verifier.core.profile_obligations import (
-        COMPOSED_OBJECTS,
         COMPOSITION_OF,
         DOMAIN_OBJECTS,
     )
 
     gate = _gate()
-    assert set(COMPOSED_OBJECTS) == set(gate.COMPOSITIONS)
-    assert set(COMPOSED_OBJECTS).isdisjoint(gate.OBJECTS), "a composition is not a basis element"
-    assert set(COMPOSED_OBJECTS) <= set(DOMAIN_OBJECTS), "and it is still catalogued"
+    assert gate.COMPOSITIONS == {}, "no name is catalogued outside the namespace"
+    assert set(COMPOSITION_OF) <= set(gate.OBJECTS), "a composition is still an object"
+    assert set(COMPOSITION_OF) <= set(DOMAIN_OBJECTS), "and it is still catalogued"
 
-    for name in COMPOSED_OBJECTS:
+    for name in COMPOSITION_OF:
         operands, index = COMPOSITION_OF[name]
         assert len(set(operands)) == len(operands), name
         assert set(operands) - {"VSTD"} <= gate.OBJECTS, "an operand must be an object"

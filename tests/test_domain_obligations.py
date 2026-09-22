@@ -23,7 +23,7 @@ from verifier.core.profile_obligations import (
     GRAPH_BY_ID,
     TIER_NAMES,
     ADAPTER_PENDING_OBJECTS,
-    COMPOSED_OBJECTS,
+    OPERATOR_OBJECTS,
     UNCERTIFIABLE_OBJECTS,
     catalog_digest,
     domain_catalog_digest,
@@ -268,7 +268,7 @@ def test_every_mechanism_name_resolves_to_a_registered_check() -> None:
 
 
 def test_certifiable_is_not_the_same_property_as_grounded() -> None:
-    """Conflating the two published a false claim about TRAIN for this catalogue's life.
+    """Conflating the two published a false claim about HYPER for this catalogue's life.
 
     `build_domain_certificate` rejects any domain absent from CHECKS, so CERTIFIABLE_OBJECTS
     is the set of objects a domain certificate can be built for at all. It is asserted
@@ -280,26 +280,31 @@ def test_certifiable_is_not_the_same_property_as_grounded() -> None:
     assert set(CERTIFIABLE_OBJECTS).isdisjoint(UNCERTIFIABLE_OBJECTS)
     assert set(CERTIFIABLE_OBJECTS) | set(UNCERTIFIABLE_OBJECTS) == set(DOMAIN_OBJECTS)
 
-    # TRAIN is the case a two-part partition could not express: grounded, because
+    # HYPER is the case a two-part partition could not express: grounded, because
     # statics and adaptation checks do execute over it, and certifiable not at all.
-    # Ruled 2026-09-22, and there turned out to be exactly two reasons, which is why
-    # the residue is named by two constants rather than by a literal. TRAIN is the
-    # catalogue's one *composition*: it inherits a substrate from the objects it is
-    # written over and has none of its own for an adapter to bind, so its residue is
-    # permanent -- the shape every composed entry would have. TOKEN has a substrate and
-    # working mechanics, but they live outside verifier.domains, so its residue is a
-    # pending wiring decision with a price attached, not a property of the object.
-    # Enumerating them separately is the point: collapsing them would hide that one of
-    # the two can be discharged and the other never can.
+    # There are exactly two reasons, which is why the residue is named by two constants
+    # rather than by a literal. HYPER is the composition *operator*: it holds between
+    # certified objects and carries no substrate of its own for an adapter to bind, so
+    # its residue is permanent -- the shape every relational entry would have. TOKEN has
+    # a substrate and working mechanics, but they live outside verifier.domains, so its
+    # residue is a pending wiring decision with a price attached, not a property of the
+    # object. Enumerating them separately is the point: collapsing them would hide that
+    # one of the two can be discharged and the other never can.
+    #
+    # TRAIN sat in HYPER's slot here until 2026-09-22, and that was the false claim. A
+    # training run has a substrate -- the checkpoint inventory and the step trace -- and
+    # verifier.domains.train replays it. The adapter was never missing; it was filed
+    # under the operator's name.
     residue = set(UNCERTIFIABLE_OBJECTS) - set(UNGROUNDED_OBJECTS)
-    assert residue == set(COMPOSED_OBJECTS) | set(ADAPTER_PENDING_OBJECTS)
-    assert set(COMPOSED_OBJECTS) == {"TRAIN"}
+    assert residue == set(OPERATOR_OBJECTS) | set(ADAPTER_PENDING_OBJECTS)
+    assert set(OPERATOR_OBJECTS) == {"HYPER"}
     assert set(ADAPTER_PENDING_OBJECTS) == {"TOKEN"}
-    assert not set(COMPOSED_OBJECTS) & set(ADAPTER_PENDING_OBJECTS), "the reasons are distinct"
-    assert "TRAIN" in GROUNDED_OBJECTS and "TRAIN" not in CERTIFIABLE_OBJECTS
-    train = [o for o in DOMAIN_OBLIGATIONS if o.object_name == "TRAIN"]
-    assert any(o.mechanized for o in train), "its statics and adaptation rows do resolve"
-    assert not any(o.mechanized for o in train if o.profile in (1, 2, 4)), (
+    assert not set(OPERATOR_OBJECTS) & set(ADAPTER_PENDING_OBJECTS), "the reasons are distinct"
+    assert "HYPER" in GROUNDED_OBJECTS and "HYPER" not in CERTIFIABLE_OBJECTS
+    assert "TRAIN" in CERTIFIABLE_OBJECTS, "the object that owns the adapter is certifiable"
+    hyper = [o for o in DOMAIN_OBLIGATIONS if o.object_name == "HYPER"]
+    assert any(o.mechanized for o in hyper), "its statics and adaptation rows do resolve"
+    assert not any(o.mechanized for o in hyper if o.profile in (1, 2, 4)), (
         "with no behavioural adapter, no facets, dynamics or closure row may name a check")
 
     # An ungrounded object carries no mechanism in any family, which is the stronger claim.

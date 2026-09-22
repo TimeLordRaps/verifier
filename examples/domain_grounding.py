@@ -98,7 +98,7 @@ def specimens() -> dict:
     commitments = [digest(c) for c in checkpoints]
     steps = [{"index": 0, "parent": commitments[0], "result": commitments[1], "configuration_digest": digest(config),
               "batch": digest(batch), "gradients": [-2.0,-2.0], "loss": 1.0}]
-    add("HYPER", {"configuration": config, "architecture": architecture, "checkpoint_digests": commitments,
+    add("TRAIN", {"configuration": config, "architecture": architecture, "checkpoint_digests": commitments,
         "steps_digest": digest(steps), "start_step": 0, "tolerance": 1e-12},
         {"checkpoints": checkpoints, "steps": steps, "batches": {digest(batch): batch}})
     states = [{"x": 0.0}, {"x": 1.0}, {"x": 2.0}]

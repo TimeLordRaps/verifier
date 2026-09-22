@@ -95,7 +95,7 @@ for a neighboring claim from satisfying the selected obligation.
 ## Six executable domain adapters
 
 Dataset integrity and lineage (DATA), execution environments (ENV), benchmark
-specification graphs (BENCH), hyperparameters and training lineage (HYPER), model
+specification graphs (BENCH), training run specification (TRAIN), model
 reproducibility specifications (MODEL), and generative simulations (SIM) have their
 own grounded paths. These execute retained computations rather than promoting the
 older declaration-based records. The [normative domain contract](../src/verifier/standard/DOMAIN_GROUNDING.md)
@@ -106,7 +106,7 @@ lists supported mainstays, numerical semantics, trust boundaries and exclusions.
 | DATA | Artifact integrity, schema, transformation replay, split separation, lexical overlap | 5 |
 | ENV | Software inventory, configuration observations, measured-resource bounds, two bound execution observations | 4 |
 | BENCH | Problem binding, executable oracles, full-suite scoring, measured-resource bounds | 4 |
-| HYPER | Optimizer contract, checkpoints, contiguous lineage, numerical updates, recomputed loss/gradients | 5 |
+| TRAIN | Optimizer contract, checkpoints, contiguous lineage, numerical updates, recomputed loss/gradients | 5 |
 | MODEL | Artifact dependencies, tensor shapes, inference, full-set metrics, finite challenges | 5 |
 | SIM | Transition replay, invariants, macro projection, observation/action channels, shard relations/signatures | 5 |
 

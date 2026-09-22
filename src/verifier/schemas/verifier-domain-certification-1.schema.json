@@ -120,7 +120,7 @@
           "if": {
             "properties": {
               "domain": {
-                "const": "HYPER"
+                "const": "TRAIN"
               }
             }
           },
@@ -363,7 +363,7 @@
             "DATA",
             "ENV",
             "BENCH",
-            "HYPER",
+            "TRAIN",
             "MODEL",
             "SIM",
             "HARNESS",
@@ -454,7 +454,7 @@
           "if": {
             "properties": {
               "domain": {
-                "const": "HYPER"
+                "const": "TRAIN"
               }
             }
           },
@@ -557,7 +557,7 @@
             "DATA",
             "ENV",
             "BENCH",
-            "HYPER",
+            "TRAIN",
             "MODEL",
             "SIM",
             "HARNESS",
@@ -599,12 +599,12 @@
           "additionalProperties": false,
           "minProperties": 1,
           "patternProperties": {
-            "^(DATA|ENV|BENCH|HYPER|MODEL|SIM|HARNESS|AGENT|BOT)\\.[1-5]$": {
+            "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT)\\.[1-5]$": {
               "additionalProperties": false,
               "properties": {
                 "blocked_by": {
                   "items": {
-                    "pattern": "^(DATA|ENV|BENCH|HYPER|MODEL|SIM|HARNESS|AGENT|BOT)\\.[1-5]$",
+                    "pattern": "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT)\\.[1-5]$",
                     "type": "string"
                   },
                   "type": "array",

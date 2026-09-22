@@ -42,17 +42,17 @@ and each carries its own digest, so extending one cannot move another.
 **Nine of the seventeen are certifiable, and the partition has three parts rather than
 two.** A *behavioural* adapter is keyed in `verifier.domains.catalog.CHECKS`, and
 `build_domain_certificate` rejects any domain absent from it, so those nine -- `DATA`,
-`ENV`, `BENCH`, `HYPER`, `MODEL`, `SIM`, `HARNESS`,
+`ENV`, `BENCH`, `TRAIN`, `MODEL`, `SIM`, `HARNESS`,
 `AGENT` and `BOT` -- are the objects a domain certificate can be built for at
 all.
 
-`TRAIN` is **catalogued but not certifiable**. Its statics and adaptation
-mechanisms resolve and execute, so 11 of its 35 obligations are mechanized, but it has
+`HYPER` is **catalogued but not certifiable**. Its statics and adaptation
+mechanisms resolve and execute, so 10 of its 33 obligations are mechanized, but it has
 no behavioural adapter and no `CHECKS` entry, so no certificate over it can be produced
 at all, and its facets, dynamics and closure obligations are specified with no mechanism.
 **Partial mechanization is not grounding.** That distinction is invisible in a two-part
-partition, which is how 14 `TRAIN` obligations came to name checks belonging to no
-family -- several of them another object's check name -- and be published as mechanized.
+partition, which is how `HYPER` came to be published as the most heavily mechanized
+object on the axis while no certificate over it could be built at all.
 
 The other six -- `OWNER` and the five identity objects `HUMAN`, `ROLE`,
 `COLLECTIVE`, `IDENTITY` and `ACTOR` -- are **ungrounded**: no adapter
@@ -410,49 +410,54 @@ until the mainstay representation is named, which is what the adaptation registr
 
 ## TRAIN
 
-**TRAIN is a composition, and it is the one entry here that is not a member of the
-VSTD-NAMESPACE.** The namespace is `VSTD` plus seventeen objects and TRAIN is not among
-them. A training run is `HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH)` indexed by a
+**TRAIN is a composition, and it is a member of the VSTD-NAMESPACE.** The namespace is
+`VSTD` plus eighteen objects, and TRAIN is one of them -- admitted 2026-09-22. A
+training run is `HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH)` indexed by a
 `GRAPH-1` recorded lineage, where `VSTD` is the model and training-loop algorithms and
 `GRAPH-1` carries the order the data was consumed in -- the one fact no operand states,
 since `DATA` certifies what the corpus is and never the sequence it was read in. The
-obligations below are what that composition must satisfy. They are catalogued because a
-named composition nothing checks is only prose, not because there is an eighteenth object.
+obligations below are what that composition must satisfy. Being written over other
+objects is a property TRAIN has, not a reason it is not one.
 
-This is also why TRAIN is grounded without being certifiable. Its statics and adaptation
-mechanisms resolve and execute, because it inherits a substrate from its operands; it has
-no behavioural adapter in `verifier.domains.catalog.CHECKS`, because it has no substrate
-of its own to adapt. `TOKEN` is the only other entry in that position and it is there for
+This is also why TRAIN is certifiable, which it was not recorded as being until
+2026-09-22. A composition inherits its operands' substrates, but a training run also
+carries one of its own -- the checkpoint inventory and the step trace -- and
+`verifier.domains.train` replays it under `CHECKS["TRAIN"]`. That module shipped for the
+whole life of this catalogue under the name `hyper`, left over from before `HYPER` was
+formalized as the composition operator, which is why the partition recorded TRAIN in
+`HYPER`'s place. `HYPER` is the entry that is grounded without being certifiable: the
+operator holds *between* certified objects and has no substrate of its own for an
+adapter to bind to. `TOKEN` is the only other entry in that position and it is there for
 the opposite reason -- a substrate of its own whose mechanics are not yet wired into
-`verifier.domains` -- which is why the two are enumerated as `COMPOSED_OBJECTS` and
-`ADAPTER_PENDING_OBJECTS` rather than as one residue. TRAIN's is the permanent one: an
-adapter can be written for TOKEN and never for a composition. Every other uncertifiable
+`verifier.domains` -- which is why the two are enumerated as `OPERATOR_OBJECTS` and
+`ADAPTER_PENDING_OBJECTS` rather than as one residue. HYPER's is the permanent one: an
+adapter can be written for TOKEN and never for an operator. Every other uncertifiable
 entry is ungrounded and carries no mechanism in any family at all. Ruled 2026-09-22.
 
 ### TRAIN-1: Facets
 
-`TRAIN-1.1` through `TRAIN-1.6`; topological depth 4; 0 of 6 mechanized.
+`TRAIN-1.1` through `TRAIN-1.6`; topological depth 4; 5 of 6 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
-| TRAIN-1.1 | Optimizer contract | The optimizer, schedule, accumulation and precision contract is bound. | none | none |
-| TRAIN-1.2 | Numerical semantics | The declared floating-point format and accumulation order are bound. | TRAIN-1.1 | none |
-| TRAIN-1.3 | Checkpoint inventory | Every retained weight and optimizer state is rehashed. | none | none |
-| TRAIN-1.4 | Step index | A contiguous step index is bound over the retained trace. | TRAIN-1.3 | none |
-| TRAIN-1.5 | Batch binding | Each step is bound to the batch it consumed. | TRAIN-1.4 | none |
+| TRAIN-1.1 | Optimizer contract | The optimizer, schedule, accumulation and precision contract is bound. | none | configuration |
+| TRAIN-1.2 | Numerical semantics | The declared floating-point format and accumulation order are bound. | TRAIN-1.1 | configuration |
+| TRAIN-1.3 | Checkpoint inventory | Every retained weight and optimizer state is rehashed. | none | checkpoints |
+| TRAIN-1.4 | Step index | A contiguous step index is bound over the retained trace. | TRAIN-1.3 | checkpoints |
+| TRAIN-1.5 | Batch binding | Each step is bound to the batch it consumed. | TRAIN-1.4 | checkpoints |
 | TRAIN-1.6 | Retention boundary | Which steps and states are retained, and which were discarded, is declared. | TRAIN-1.1, TRAIN-1.5 | none |
 
 ### TRAIN-2: Dynamics
 
-`TRAIN-2.1` through `TRAIN-2.6`; topological depth 5; 0 of 6 mechanized.
+`TRAIN-2.1` through `TRAIN-2.6`; topological depth 5; 5 of 6 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
-| TRAIN-2.1 | Loss replay | Dense-network losses are recomputed from the bound batches. | none | none |
-| TRAIN-2.2 | Gradient replay | Analytic gradients are recomputed and compared with the retained ones. | TRAIN-2.1 | none |
-| TRAIN-2.3 | Optimizer update | Every supported optimizer update is recomputed from retained gradients and state. | TRAIN-2.2 | none |
-| TRAIN-2.4 | State advance | Applying the recomputed update reproduces the next retained state. | TRAIN-2.3 | none |
-| TRAIN-2.5 | Step-by-step advance | The run is replayed step by step across the retained trace. | TRAIN-2.4 | none |
+| TRAIN-2.1 | Loss replay | Dense-network losses are recomputed from the bound batches. | none | training |
+| TRAIN-2.2 | Gradient replay | Analytic gradients are recomputed and compared with the retained ones. | TRAIN-2.1 | training |
+| TRAIN-2.3 | Optimizer update | Every supported optimizer update is recomputed from retained gradients and state. | TRAIN-2.2 | updates |
+| TRAIN-2.4 | State advance | Applying the recomputed update reproduces the next retained state. | TRAIN-2.3 | updates |
+| TRAIN-2.5 | Step-by-step advance | The run is replayed step by step across the retained trace. | TRAIN-2.4 | training |
 | TRAIN-2.6 | Unsupported update reporting | An unsupported optimizer is reported UNKNOWN and never passed. | TRAIN-2.3 | none |
 
 ### TRAIN-3: Statics
@@ -469,14 +474,14 @@ entry is ungrounded and carries no mechanism in any family at all. Ruled 2026-09
 
 ### TRAIN-4: Closure
 
-`TRAIN-4.1` through `TRAIN-4.6`; topological depth 6; 0 of 6 mechanized.
+`TRAIN-4.1` through `TRAIN-4.6`; topological depth 6; 4 of 6 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
-| TRAIN-4.1 | Contiguity | The retained steps form an uninterrupted sequence with no gap. | none | none |
-| TRAIN-4.2 | Parent binding | Each step binds to its exact parent state. | TRAIN-4.1 | none |
-| TRAIN-4.3 | Batch and hyperparameter binding | Each step binds its exact batch and hyperparameter values. | TRAIN-4.2 | none |
-| TRAIN-4.4 | Result binding | Each step binds its exact result. | TRAIN-4.3 | none |
+| TRAIN-4.1 | Contiguity | The retained steps form an uninterrupted sequence with no gap. | none | lineage |
+| TRAIN-4.2 | Parent binding | Each step binds to its exact parent state. | TRAIN-4.1 | lineage |
+| TRAIN-4.3 | Batch and hyperparameter binding | Each step binds its exact batch and hyperparameter values. | TRAIN-4.2 | lineage |
+| TRAIN-4.4 | Result binding | Each step binds its exact result. | TRAIN-4.3 | lineage |
 | TRAIN-4.5 | No reordering | The retained order is the executed order, and a reordered pair is detectable. | TRAIN-4.4 | none |
 | TRAIN-4.6 | Whole-run accounting | The trace accounts for the whole run rather than a selected prefix of it. | TRAIN-4.5 | none |
 
@@ -1657,13 +1662,13 @@ outside the root grant however long its holder has been accruing epochs. This is
 same rule level 6 states for disclosure, at a different tier and about a different
 quantity.
 
-`TOKEN` is **grounded but not certifiable, and for a different reason than `TRAIN`.**
-`TRAIN` has no substrate of its own, because it inherits one from the objects it is
-composed over. `TOKEN` has a substrate -- the commitment, the accumulator and the lease
-algebra -- and working mechanics over it, but those mechanics live in
+`TOKEN` is **grounded but not certifiable, and for a different reason than `HYPER`.**
+`HYPER` has no substrate of its own, because it is the operator that holds *between*
+objects rather than over one. `TOKEN` has a substrate -- the commitment, the accumulator
+and the lease algebra -- and working mechanics over it, but those mechanics live in
 `verifier.identity` rather than in `verifier.domains`, so it has no entry in
 `verifier.domains.catalog.CHECKS`. The two reasons are enumerated separately in
-`profile_obligations` as `COMPOSED_OBJECTS` and `ADAPTER_PENDING_OBJECTS`, because only
+`profile_obligations` as `OPERATOR_OBJECTS` and `ADAPTER_PENDING_OBJECTS`, because only
 one of them can ever be discharged: wiring a behavioural adapter for `TOKEN` is a
 release decision rather than a catalogue edit, since a new module joining the
 `verifier.domains` tuple moves `implementation_digest()` and invalidates every domain

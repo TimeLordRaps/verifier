@@ -112,7 +112,7 @@
       "if": {
         "properties": {
           "domain": {
-            "const": "HYPER"
+            "const": "TRAIN"
           }
         }
       },
@@ -356,7 +356,7 @@
         "DATA",
         "ENV",
         "BENCH",
-        "HYPER",
+        "TRAIN",
         "MODEL",
         "SIM",
         "HARNESS",

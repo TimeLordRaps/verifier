@@ -1,4 +1,4 @@
-"""Hyperparameters and training lineage (HYPER): checkpoint and numerical replay."""
+"""Training run specification (TRAIN): checkpoint and numerical replay."""
 from __future__ import annotations
 
 from .common import Budget, Refuted, Unavailable, close, digest, integer, need, number, obj, same, seq

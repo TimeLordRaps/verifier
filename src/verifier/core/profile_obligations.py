@@ -421,19 +421,19 @@ DOMAIN_OBLIGATIONS = (
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("TRAIN", 1, (
-        ("Optimizer contract", "The optimizer, schedule, accumulation and precision contract is bound.", (), ""),
-        ("Numerical semantics", "The declared floating-point format and accumulation order are bound.", (1,), ""),
-        ("Checkpoint inventory", "Every retained weight and optimizer state is rehashed.", (), ""),
-        ("Step index", "A contiguous step index is bound over the retained trace.", (3,), ""),
-        ("Batch binding", "Each step is bound to the batch it consumed.", (4,), ""),
+        ("Optimizer contract", "The optimizer, schedule, accumulation and precision contract is bound.", (), "configuration"),
+        ("Numerical semantics", "The declared floating-point format and accumulation order are bound.", (1,), "configuration"),
+        ("Checkpoint inventory", "Every retained weight and optimizer state is rehashed.", (), "checkpoints"),
+        ("Step index", "A contiguous step index is bound over the retained trace.", (3,), "checkpoints"),
+        ("Batch binding", "Each step is bound to the batch it consumed.", (4,), "checkpoints"),
         ("Retention boundary", "Which steps and states are retained, and which were discarded, is declared.", (1, 5), ""),
     )),
     *_domain_rows("TRAIN", 2, (
-        ("Loss replay", "Dense-network losses are recomputed from the bound batches.", (), ""),
-        ("Gradient replay", "Analytic gradients are recomputed and compared with the retained ones.", (1,), ""),
-        ("Optimizer update", "Every supported optimizer update is recomputed from retained gradients and state.", (2,), ""),
-        ("State advance", "Applying the recomputed update reproduces the next retained state.", (3,), ""),
-        ("Step-by-step advance", "The run is replayed step by step across the retained trace.", (4,), ""),
+        ("Loss replay", "Dense-network losses are recomputed from the bound batches.", (), "training"),
+        ("Gradient replay", "Analytic gradients are recomputed and compared with the retained ones.", (1,), "training"),
+        ("Optimizer update", "Every supported optimizer update is recomputed from retained gradients and state.", (2,), "updates"),
+        ("State advance", "Applying the recomputed update reproduces the next retained state.", (3,), "updates"),
+        ("Step-by-step advance", "The run is replayed step by step across the retained trace.", (4,), "training"),
         ("Unsupported update reporting", "An unsupported optimizer is reported UNKNOWN and never passed.", (3,), ""),
     )),
     *_domain_rows("TRAIN", 3, (
@@ -444,10 +444,10 @@ DOMAIN_OBLIGATIONS = (
         ("Choice independence", "The facts above are unchanged when the run's configuration is perturbed.", (2, 4), "statics:independence"),
     )),
     *_domain_rows("TRAIN", 4, (
-        ("Contiguity", "The retained steps form an uninterrupted sequence with no gap.", (), ""),
-        ("Parent binding", "Each step binds to its exact parent state.", (1,), ""),
-        ("Batch and hyperparameter binding", "Each step binds its exact batch and hyperparameter values.", (2,), ""),
-        ("Result binding", "Each step binds its exact result.", (3,), ""),
+        ("Contiguity", "The retained steps form an uninterrupted sequence with no gap.", (), "lineage"),
+        ("Parent binding", "Each step binds to its exact parent state.", (1,), "lineage"),
+        ("Batch and hyperparameter binding", "Each step binds its exact batch and hyperparameter values.", (2,), "lineage"),
+        ("Result binding", "Each step binds its exact result.", (3,), "lineage"),
         ("No reordering", "The retained order is the executed order, and a reordered pair is detectable.", (4,), ""),
         ("Whole-run accounting", "The trace accounts for the whole run rather than a selected prefix of it.", (5,), ""),
     )),
@@ -1135,20 +1135,29 @@ UNGROUNDED_OBJECTS = ("OWNER", "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY", "ACTOR
 GROUNDED_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in UNGROUNDED_OBJECTS)
 
 # Grounded is not the same as certifiable, and conflating the two published a false claim
-# about TRAIN for the life of this catalogue. A *behavioural* adapter is keyed in
+# about HYPER for the life of this catalogue. A *behavioural* adapter is keyed in
 # verifier.domains.catalog.CHECKS, and build_domain_certificate rejects any domain absent
 # from it, so only these nine can have a domain certificate built for them at all.
-# TRAIN and TOKEN are catalogued and their statics and adaptation mechanisms resolve and
+# HYPER and TOKEN are catalogued and their statics and adaptation mechanisms resolve and
 # execute, but neither has a behavioural adapter, so no certificate over either can be
 # produced; the other six carry no mechanism of any kind. Membership is asserted against
 # CHECKS by the suite rather than imported here, because verifier.domains depends on this
 # module.
-# The catalogue is not the namespace, and the two differ in both directions. GRAPH is a
-# namespace object with no entry here, because it carries its own axis; TRAIN is an entry
-# here that is not a namespace object, because it is a composition over other entries.
-# Naming a composition does not make it a basis element -- admitting TRAIN would have
-# double-counted the six objects it is written over.
-COMPOSED_OBJECTS = ("TRAIN",)
+# The catalogue is not the namespace, and it is the smaller of the two: GRAPH is a
+# namespace object with no entry here, because it carries its own axis. TRAIN is an entry
+# here and a namespace object both, admitted 2026-09-22. Being written over other objects
+# is a property TRAIN has, not a reason it is not one.
+#
+# The residue -- grounded but not certifiable -- has two members for two distinct reasons.
+# HYPER is the composition operator itself: it holds *between* certified objects instead
+# of over a substrate of its own, so a behavioural adapter has nothing to bind to and
+# never will. That residue is permanent, and it is the shape every relational entry would
+# have. This is the position TRAIN was wrongly recorded in until 2026-09-22. TRAIN does
+# carry a substrate -- a checkpoint inventory and a step trace -- and the module that
+# replays it had been shipping the whole time under the name `hyper`, left over from
+# before HYPER was formalized as the operator. Renaming it to `train` is what made the
+# published partition true rather than what changed it.
+OPERATOR_OBJECTS = ("HYPER",)
 COMPOSITION_OF = {
     # HYPER(operands) indexed by a graph profile. VSTD is the model and training-loop
     # algorithms; GRAPH-1 carries the order the data was consumed in, which is the one
@@ -1158,7 +1167,7 @@ COMPOSITION_OF = {
 }
 
 # The second reason an object can be grounded without being certifiable, and it is not the
-# same reason as composition. TOKEN has a substrate of its own -- the commitment, the
+# same reason as HYPER carries. TOKEN has a substrate of its own -- the commitment, the
 # accumulator and the lease algebra -- and executable mechanics over it. Those mechanics
 # live in verifier.identity, which implementation_digest() does not cover, so wiring them
 # into a behavioural adapter is not a catalogue edit: a new module joining the
@@ -1167,7 +1176,7 @@ COMPOSITION_OF = {
 # residue below stays measured instead of shrinking to fit.
 ADAPTER_PENDING_OBJECTS = ("TOKEN",)
 
-CERTIFIABLE_OBJECTS = ("DATA", "ENV", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
+CERTIFIABLE_OBJECTS = ("DATA", "ENV", "BENCH", "TRAIN", "MODEL", "SIM", "HARNESS",
                        "AGENT", "BOT")
 UNCERTIFIABLE_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in CERTIFIABLE_OBJECTS)
 TIER_NAMES = {1: "Facets", 2: "Dynamics", 3: "Statics", 4: "Closure",
