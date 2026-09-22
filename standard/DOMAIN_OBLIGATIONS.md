@@ -23,9 +23,11 @@
 **License:** Apache-2.0
 **Date:** 2026-09-21
 
-The object axis carries `1.1`-`5.11` and the Graph axis carries `Graph-1.1`-`Graph-5.6`.
+The object axis carries `1.1`-`5.11` and the Graph axis carries `Graph-1.1`-`Graph-5.6`;
+neither carries a level 6, because both are corroboration ladders and disclosure has no
+rungs. Level 6 exists on the domain objects only.
 This file carries the third namespace: the eleven domain objects, coordinate
-`<object>-<tier>.<index>`, 304 obligations. The three namespaces are disjoint.
+`<object>-<tier>.<index>`, 370 obligations. The three namespaces are disjoint.
 `DATA-4.2` never aliases `4.2` or `Graph-4.2`, no catalogue admits another's identifiers,
 and each carries its own digest, so extending one cannot move another.
 
@@ -40,6 +42,41 @@ Each obligation binds a predicate `vstd.<object>.obligation.<tier>.<index>`. The
 with no mechanism is specified and unmechanized: it is reported `UNKNOWN`, never absent
 and never passed. Dependencies are within one numbered profile; cumulative profile
 prerequisites apply across tiers as they do on both other axes.
+
+## Tiers 1-5 corroborate; level 6 discloses
+
+Tiers 1 through 5 are a **corroboration ladder**. Each rung is evidence that raises
+what the object is known to satisfy, every rung is settled by the act of certifying,
+and the rung totals and composition figures in
+[`META_TIERS.md`](META_TIERS.md) count reachable states on that ladder.
+
+**Level 6 is not a rung.** It bounds what a certificate may *emit* rather than what it
+establishes. Three things follow, and each is a row below:
+
+- It runs on a different clock. Every other level is decided once, when the object is
+  certified; a disclosure bound is decided again at **every emission** of the
+  certificate (`<object>-6.4`), so a certificate that was admissible when it was made
+  can stop being admissible without anything about the object changing.
+- It is the only level that is **not monotone under composition**. Everywhere else a
+  composition is bounded by its operands; disclosure is the **join** of its operands
+  and is bounded by neither, so two certificates each strictly within bound can compose
+  to one that is not (`<object>-6.5`, stated in general at `HYPER-6.5`).
+- It **cannot move a verdict**. `<object>-6.6` is the twin of the Prime Invariant: a
+  disclosure bound never changes a computational verdict, neither upward nor downward.
+  Redaction that moves a result makes the certificate malformed rather than private.
+  This is also why level 6 is excluded from the rung totals -- a level that by its own
+  statement cannot change what is established is not evidence, and counting it as a
+  rung would inflate every reachability figure the grid publishes.
+
+Four of the six rows -- `6.2`, `6.3`, `6.4` and `6.6` -- are the **same proposition at
+every object**, and that uniformity is the argument that disclosure is a level rather
+than a twelfth object: an object contributes rows that differ, a level contributes the
+same row everywhere. Only `6.1` (what this object emits) and `6.5` (what composing it
+reveals) are object-specific. All 66 rows are specified with no mechanism and
+report `UNKNOWN`: no adapter runs at emission time, and no observer model is
+established anywhere in the implementation, so a `PASS` here would be a claim nothing
+supports. Level 6 therefore adds no module to `verifier.domains` and **does not move**
+`implementation_digest()`.
 
 ## Three mechanism families
 
@@ -143,6 +180,19 @@ until the mainstay representation is named, which is what the adaptation registr
 | Hugging Face datasets (`huggingface-datasets`) | dataset_infos.json and card front matter | DatasetInfo, Features, Split, DownloadChecksum | 5 coordinates | 19 coordinates |
 | Apache Iceberg table format (`apache-iceberg`) | metadata.json, manifest lists and manifests | table, snapshot, manifest, data-file, partition-spec | 5 coordinates | 19 coordinates |
 
+### VSTD-DATA-6: Disclosure
+
+`DATA-6.1` through `DATA-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| DATA-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- counts, digests, the bound field contract, split membership and distribution statics -- and is separated from the retained record contents those figures were computed over. | none | none |
+| DATA-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | DATA-6.1 | none |
+| DATA-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | DATA-6.1 | none |
+| DATA-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | DATA-6.2, DATA-6.3 | none |
+| DATA-6.5 | Composition delta | Emitting this certificate beside another VSTD-DATA certificate over an overlapping corpus discloses the intersection: two split memberships and two inventories can each be within bound while the pair identifies which records are shared, so the join is evaluated against both operands and not against either alone. | DATA-6.2, DATA-6.4 | none |
+| DATA-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | DATA-6.2, DATA-6.4, DATA-6.5 | none |
+
 ## VSTD-ENV
 
 ### VSTD-ENV-1: Facets
@@ -217,6 +267,19 @@ until the mainstay representation is named, which is what the adaptation registr
 | Resolved dependency lockfile (`lockfile`) | uv.lock, poetry.lock or hashed requirements | package, version, artifact-hash, marker, resolution | 3 coordinates | 19 coordinates |
 | Software bill of materials (`sbom`) | SPDX or CycloneDX document | component, relationship, licence, supplier | 4 coordinates | 18 coordinates |
 | in-toto attestation (`in-toto-attestation`) | DSSE envelope over a predicate | statement, subject, predicate, builder, material, byproduct | 5 coordinates | 17 coordinates |
+
+### VSTD-ENV-6: Disclosure
+
+`ENV-6.1` through `ENV-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| ENV-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the software inventory, executable coordinates, configuration surface, instruction set and resource ceilings -- and is separated from host identifiers, operator accounts and network topology the adapter observed but does not emit. | none | none |
+| ENV-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | ENV-6.1 | none |
+| ENV-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | ENV-6.1 | none |
+| ENV-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | ENV-6.2, ENV-6.3 | none |
+| ENV-6.5 | Composition delta | Emitting this certificate beside a VSTD-TRAIN or VSTD-MODEL certificate discloses the machine: a pinned toolchain and a pinned resource ceiling are each ordinary in isolation and together name one fleet, so the join is evaluated against both operands and not against either alone. | ENV-6.2, ENV-6.4 | none |
+| ENV-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | ENV-6.2, ENV-6.4, ENV-6.5 | none |
 
 ## VSTD-BENCH
 
@@ -296,6 +359,19 @@ until the mainstay representation is named, which is what the adaptation registr
 | SWE-bench instance record (`swe-bench`) | instance JSONL | instance, repository, base-commit, patch, test-patch, test-status-set | 6 coordinates | 19 coordinates |
 | MLPerf result log (`mlperf`) | result summary and detail logs | benchmark, scenario, division, system, result, constraint | 4 coordinates | 21 coordinates |
 
+### VSTD-BENCH-6: Disclosure
+
+`BENCH-6.1` through `BENCH-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| BENCH-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the problem set identity, sampling procedure, scoring contract, budget ceilings and per-run outcomes -- and is separated from the oracle answers, which the adapter binds and never emits. | none | none |
+| BENCH-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | BENCH-6.1 | none |
+| BENCH-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | BENCH-6.1 | none |
+| BENCH-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | BENCH-6.2, BENCH-6.3 | none |
+| BENCH-6.5 | Composition delta | Repeated emission is itself composition: each emitted outcome vector is a bounded observation of the oracle, and a sufficient number of them reconstructs it. The bound is therefore evaluated over the accumulated sequence of emissions rather than over one, and a bound that holds for every single emission while the sequence reconstructs the oracle is not satisfied. | BENCH-6.2, BENCH-6.4 | none |
+| BENCH-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | BENCH-6.2, BENCH-6.4, BENCH-6.5 | none |
+
 ## VSTD-TRAIN
 
 ### VSTD-TRAIN-1: Facets
@@ -372,6 +448,19 @@ until the mainstay representation is named, which is what the adaptation registr
 | MLflow tracking run (`mlflow-run`) | run metadata, params, metrics and artifacts | run, parameter, metric-point, tag, artifact, experiment | 5 coordinates | 18 coordinates |
 | TensorBoard event file (`tensorboard-event`) | tfevents protocol buffer stream | event, summary, step, wall-time, tag | 2 coordinates | 21 coordinates |
 
+### VSTD-TRAIN-6: Disclosure
+
+`TRAIN-6.1` through `TRAIN-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| TRAIN-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the checkpoint inventory, step index, optimizer contract, batch binding and loss trace -- and is separated from the batch contents and the gradient values each step was computed from. | none | none |
+| TRAIN-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | TRAIN-6.1 | none |
+| TRAIN-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | TRAIN-6.1 | none |
+| TRAIN-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | TRAIN-6.2, TRAIN-6.3 | none |
+| TRAIN-6.5 | Composition delta | Emitting this certificate beside a VSTD-DATA certificate over the training corpus discloses membership: a per-step loss trace and a split membership are each within bound while the pair reveals which records were trained on, so the join is evaluated against both operands and not against either alone. | TRAIN-6.2, TRAIN-6.4 | none |
+| TRAIN-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | TRAIN-6.2, TRAIN-6.4, TRAIN-6.5 | none |
+
 ## VSTD-HYPER
 
 ### VSTD-HYPER-1: Facets
@@ -444,6 +533,19 @@ until the mainstay representation is named, which is what the adaptation registr
 | Supply-chain Levels for Software Artifacts provenance (`slsa-provenance`) | provenance predicate | subject, buildDefinition, runDetails, resolvedDependency, builder | 3 coordinates | 19 coordinates |
 | Sigstore bundle (`sigstore-bundle`) | verification material and DSSE envelope | bundle, envelope, certificate, transparency-entry, identity | 2 coordinates | 20 coordinates |
 | Open Container Initiative image index and referrers (`oci-referrers`) | index plus subject descriptors | index, manifest, subject-descriptor, artifact-type | 3 coordinates | 19 coordinates |
+
+### VSTD-HYPER-6: Disclosure
+
+`HYPER-6.1` through `HYPER-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| HYPER-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the operand set, slot schema, composed identity, composed ceiling and operand depths -- and is separated from the operand-internal evidence each operand certificate withheld under its own level 6. | none | none |
+| HYPER-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | HYPER-6.1 | none |
+| HYPER-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | HYPER-6.1 | none |
+| HYPER-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | HYPER-6.2, HYPER-6.3 | none |
+| HYPER-6.5 | Composition delta | This is the object where the delta is stated in general, and where it is sharpest. HYPER-2.2 establishes that a composition strength never increases above its operands; disclosure is the one property for which the opposite holds. The disclosure of a composition is the JOIN of its operands, not their meet, and the join is not bounded by either: two operands each strictly within bound can compose to a disclosure outside both. A composition is therefore never admissible on the grounds that its operands were, and HYPER-6.5 is evaluated on the composite rather than inherited from the operand certificates. | HYPER-6.2, HYPER-6.4 | none |
+| HYPER-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | HYPER-6.2, HYPER-6.4, HYPER-6.5 | none |
 
 ## VSTD-MODEL
 
@@ -518,6 +620,19 @@ until the mainstay representation is named, which is what the adaptation registr
 | GGUF model container (`gguf`) | key-value metadata plus tensor table | metadata-kv, tensor-info, tensor-data, quantization-type, alignment | 4 coordinates | 17 coordinates |
 | Hugging Face model repository (`huggingface-model-repository`) | config.json, weight index and model card | config, weight-index, tokenizer, model-card, shard | 4 coordinates | 17 coordinates |
 | StableHLO portable operation set (`stablehlo`) | MLIR module with versioned opset | module, function, operation, opset-version, type | 3 coordinates | 18 coordinates |
+
+### VSTD-MODEL-6: Disclosure
+
+`MODEL-6.1` through `MODEL-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| MODEL-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the tensor inventory, architecture, module decomposition, quantization specification and evaluation metrics -- and is separated from the weight bytes, the provenance citations and the training-data citation. | none | none |
+| MODEL-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | MODEL-6.1 | none |
+| MODEL-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | MODEL-6.1 | none |
+| MODEL-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | MODEL-6.2, MODEL-6.3 | none |
+| MODEL-6.5 | Composition delta | Emitting this certificate beside a VSTD-TRAIN or VSTD-DATA certificate discloses the corpus through the model: an architecture, a metric vector and a split membership are each within bound while the three together support extraction, so the join is evaluated against all operands and not against any one alone. | MODEL-6.2, MODEL-6.4 | none |
+| MODEL-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | MODEL-6.2, MODEL-6.4, MODEL-6.5 | none |
 
 ## VSTD-SIM
 
@@ -595,6 +710,19 @@ until the mainstay representation is named, which is what the adaptation registr
 | OpenUSD stage (`openusd`) | layered stage with composition arcs | stage, prim, attribute, relationship, layer, composition-arc | 3 coordinates | 20 coordinates |
 | ROS 2 bag recording (`ros2-bag`) | storage plus metadata.yaml | bag, topic, message, timestamp, qos-profile | 3 coordinates | 20 coordinates |
 
+### VSTD-SIM-6: Disclosure
+
+`SIM-6.1` through `SIM-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| SIM-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the state space, transition expressions, observation channels, invariants and shard decomposition -- and is separated from the entropy stream and the trajectory contents replayed against it. | none | none |
+| SIM-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | SIM-6.1 | none |
+| SIM-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | SIM-6.1 | none |
+| SIM-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | SIM-6.2, SIM-6.3 | none |
+| SIM-6.5 | Composition delta | Emitting this certificate beside a VSTD-BOT certificate discloses the decider: a state space and a coupling surface are each within bound while the pair localizes which decisions were taken by which actor, so the join is evaluated against both operands and not against either alone. | SIM-6.2, SIM-6.4 | none |
+| SIM-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | SIM-6.2, SIM-6.4, SIM-6.5 | none |
+
 ## VSTD-HARNESS  
 *On the open release branch; no behavioural adapter in this tree.*
 
@@ -667,6 +795,19 @@ until the mainstay representation is named, which is what the adaptation registr
 | Model Context Protocol (`model-context-protocol`) | JSON-RPC over a transport | server, tool, resource, prompt, call, result, capability | 4 coordinates | 15 coordinates |
 | HTTP Archive (`har`) | HAR log | log, entry, request, response, timing | 2 coordinates | 17 coordinates |
 
+### VSTD-HARNESS-6: Disclosure
+
+`HARNESS-6.1` through `HARNESS-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| HARNESS-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the channel partition, record types, tool registry, transcript commitment shape and side-effect channels -- and is separated from the transcript contents and side-effect payloads the commitments were computed over. | none | none |
+| HARNESS-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | HARNESS-6.1 | none |
+| HARNESS-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | HARNESS-6.1 | none |
+| HARNESS-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | HARNESS-6.2, HARNESS-6.3 | none |
+| HARNESS-6.5 | Composition delta | Emitting this certificate beside a VSTD-AGENT certificate discloses the session: a commitment shape and a decision inventory are each within bound while the pair reconstructs the order and content of a run, so the join is evaluated against both operands and not against either alone. | HARNESS-6.2, HARNESS-6.4 | none |
+| HARNESS-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | HARNESS-6.2, HARNESS-6.4, HARNESS-6.5 | none |
+
 ## VSTD-AGENT  
 *On the open release branch; no behavioural adapter in this tree.*
 
@@ -738,6 +879,19 @@ until the mainstay representation is named, which is what the adaptation registr
 | Step trajectory record (`agent-trajectory`) | trajectory JSONL | trajectory, step, thought, action, observation, terminal | 4 coordinates | 15 coordinates |
 | OpenTelemetry generative AI agent spans (`opentelemetry-genai-agent`) | agent and tool span tree | agent-span, tool-span, decision-attribute, outcome-status | 3 coordinates | 16 coordinates |
 
+### VSTD-AGENT-6: Disclosure
+
+`AGENT-6.1` through `AGENT-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| AGENT-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the harness binding, decision inventory, outcome contract, declared actions and final claims -- and is separated from the deliberation behind each decision, which AGENT-3.2 already holds to be unknowable and which level 6 additionally holds to be unemitted. | none | none |
+| AGENT-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | AGENT-6.1 | none |
+| AGENT-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | AGENT-6.1 | none |
+| AGENT-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | AGENT-6.2, AGENT-6.3 | none |
+| AGENT-6.5 | Composition delta | Emitting this certificate beside a VSTD-HARNESS certificate discloses the operator: a decision inventory and a timestamp resolution are each within bound while the pair identifies who was at the keyboard and when, so the join is evaluated against both operands and not against either alone. | AGENT-6.2, AGENT-6.4 | none |
+| AGENT-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | AGENT-6.2, AGENT-6.4, AGENT-6.5 | none |
+
 ## VSTD-BOT  
 *On the open release branch; no behavioural adapter in this tree.*
 
@@ -806,6 +960,19 @@ until the mainstay representation is named, which is what the adaptation registr
 |---|---|---|---|---|
 | Interaction graph over a bound simulation surface (`embodied-interaction-graph`) | composed agent trajectory and simulation trace | interaction-node, observation-edge, action-edge, disclosure-set, indisclosure-set, awareness-level | 4 coordinates | 14 coordinates |
 | Unified Robot Description Format (`urdf`) | URDF or SDFormat model | robot, link, joint, inertial, collision, transmission | 3 coordinates | 15 coordinates |
+
+### VSTD-BOT-6: Disclosure
+
+`BOT-6.1` through `BOT-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| BOT-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the agent and simulation bindings, coupling surface, separation declaration and containment accounting -- and is separated from the indisclosure inventory itself, which names what the bot was not told and therefore leaks it. | none | none |
+| BOT-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | BOT-6.1 | none |
+| BOT-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | BOT-6.1 | none |
+| BOT-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | BOT-6.2, BOT-6.3 | none |
+| BOT-6.5 | Composition delta | Emitting this certificate beside the VSTD-SIM certificate it is coupled to discloses the separation: a containment accounting and a state space are each within bound while the pair reveals which boundary the separation evidence was defending, so the join is evaluated against both operands and not against either alone. | BOT-6.2, BOT-6.4 | none |
+| BOT-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | BOT-6.2, BOT-6.4, BOT-6.5 | none |
 
 ## VSTD-OWNER
 
@@ -896,6 +1063,19 @@ executing adapter; `VSTD-OWNER` has no adapter, so it registers none. The format
 tier 5 names -- licence expressions, registry maintainer records, corporate and
 beneficial-ownership registers, declared code ownership and custody chains -- are
 named as unestablished rather than registered.
+
+### VSTD-OWNER-6: Disclosure
+
+`OWNER-6.1` through `OWNER-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| OWNER-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the holder binding, held-object binding, limb inventory, term, and the chain of custody from its declared origin -- and is separated from the instrument contents, and the identity of the natural person each answering-duty chain terminates in. | none | none |
+| OWNER-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | OWNER-6.1 | none |
+| OWNER-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | OWNER-6.1 | none |
+| OWNER-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | OWNER-6.2, OWNER-6.3 | none |
+| OWNER-6.5 | Composition delta | Emitting this certificate beside the VSTD-OWNER certificate of an adjacent holding discloses the graph: two chains each within bound reveal, at their shared positions, a structure neither states alone, so the join is evaluated against both operands and not against either alone. | OWNER-6.2, OWNER-6.4 | none |
+| OWNER-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | OWNER-6.2, OWNER-6.4, OWNER-6.5 | none |
 ## Depth, not count
 
 `m` in `VSTD-<object>-<tier>.<m>` is the depth of complete modules represented, so the

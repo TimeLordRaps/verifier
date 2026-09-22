@@ -40,7 +40,7 @@ coordinate in this grid. They are different namespaces that happen to share a pr
 the identifier convention below governs only the second. Renaming a wire identifier to
 match the convention breaks every reader that pins the string.
 
-## The five tiers
+## The five corroboration tiers, and level 6
 
 Tiers occupy one shared metaphorical/analogical space of meta-features. Tier N asks the
 same *kind* of question on every object axis.
@@ -52,6 +52,30 @@ same *kind* of question on every object axis.
 | 3 | The **static unchanging natural phenomena** around the surface. |
 | 4 | The **closure conditions** under which the specification can be completed. |
 | 5 | **Domain adaptation surfaces** that tiers 1-4 allow to form naturally; these typically infer structure from domain mainstay representations. |
+| 6 | The **disclosure bounds** on what a certificate of this object may emit, and to whom. Not a rung: see below. |
+
+**Tiers 1-5 corroborate; level 6 discloses, and the difference is structural.** Every
+tier from 1 to 5 is a rung on a corroboration ladder: it is evidence that raises what the
+object is known to satisfy, and it is settled once, by the act of certifying. Level 6 is
+none of those things. It bounds what a certificate may *emit* rather than what it
+establishes; it is re-decided at **every emission** rather than once; it is the only
+level in the grid that is **not monotone under composition**, because disclosure is the
+**join** of the operands rather than bounded by them; and by its own `<object>-6.6` it
+**cannot move a verdict** in tiers 1-5, in either direction.
+
+That last property is why level 6 is deliberately absent from the ladder strip, the rung
+totals and the composition lattice below. A level that by its own statement cannot change
+what is established is not evidence, and counting its 5 positions per object as
+rungs would inflate every reachability figure this file publishes. The strip is *what a
+certificate climbs*, and a disclosure bound is not climbed.
+
+Four of level 6's six rows are the **same proposition at every object**, which is the
+argument that disclosure is a level rather than a twelfth object: an object contributes rows
+that differ, a level contributes the same row everywhere. All 66 rows are specified
+with no mechanism and report `UNKNOWN` -- no adapter runs at emission time and no observer
+model is established anywhere in the implementation, so a `PASS` would be a claim nothing
+supports. Level 6 adds no module to `verifier.domains` and **does not move**
+`implementation_digest()`.
 
 The tier-5 pattern in one sentence: a mainstay framework already represents the object
 modularly for one domain (PyTorch for neural networks, Gymnasium for environments, OCI for
@@ -470,26 +494,26 @@ were catalogued against these tiers, so the grid below is a coordinate map, not 
 of adapter checks onto tiers — an adapter check is now a *mechanism* attached to an
 obligation rather than a rung in its own right:
 
-| Object | 1 facets | 2 dynamics | 3 statics | 4 closure | 5 adaptation |
-|---|---|---|---|---|---|
-| VSTD | `1.1`-`1.7` | `2.1`-`2.7` | `3.1`-`3.8` | `4.1`-`4.14` | `5.1`-`5.11` |
-| GRAPH | `Graph-1.1`-`1.6` | `Graph-2.1`-`2.5` | `Graph-3.1`-`3.5` | `Graph-4.1`-`4.6` | `Graph-5.1`-`5.6` |
-| DATA | `DATA-1.1`-`1.6` | `DATA-2.1`-`2.6` | `DATA-3.1`-`3.6` | `DATA-4.1`-`4.6` | `DATA-5.1`-`5.6` |
-| ENV | `ENV-1.1`-`1.6` | `ENV-2.1`-`2.6` | `ENV-3.1`-`3.5` | `ENV-4.1`-`4.5` | `ENV-5.1`-`5.6` |
-| BENCH | `BENCH-1.1`-`1.7` | `BENCH-2.1`-`2.6` | `BENCH-3.1`-`3.7` | `BENCH-4.1`-`4.5` | `BENCH-5.1`-`5.6` |
-| TRAIN | `TRAIN-1.1`-`1.6` | `TRAIN-2.1`-`2.6` | `TRAIN-3.1`-`3.5` | `TRAIN-4.1`-`4.6` | `TRAIN-5.1`-`5.6` |
-| HYPER | `HYPER-1.1`-`1.6` | `HYPER-2.1`-`2.6` | `HYPER-3.1`-`3.5` | `HYPER-4.1`-`4.5` | `HYPER-5.1`-`5.5` |
-| MODEL | `MODEL-1.1`-`1.5` | `MODEL-2.1`-`2.5` | `MODEL-3.1`-`3.6` | `MODEL-4.1`-`4.5` | `MODEL-5.1`-`5.6` |
-| SIM | `SIM-1.1`-`1.7` | `SIM-2.1`-`2.6` | `SIM-3.1`-`3.5` | `SIM-4.1`-`4.5` | `SIM-5.1`-`5.6` |
-| HARNESS † | `HARNESS-1.1`-`1.5` | `HARNESS-2.1`-`2.5` | `HARNESS-3.1`-`3.4` | `HARNESS-4.1`-`4.5` | `HARNESS-5.1`-`5.6` |
-| AGENT † | `AGENT-1.1`-`1.7` | `AGENT-2.1`-`2.5` | `AGENT-3.1`-`3.3` | `AGENT-4.1`-`4.4` | `AGENT-5.1`-`5.5` |
-| BOT † | `BOT-1.1`-`1.5` | `BOT-2.1`-`2.5` | `BOT-3.1`-`3.4` | `BOT-4.1`-`4.4` | `BOT-5.1`-`5.6` |
-| OWNER ‡ | `OWNER-1.1`-`1.6` | `OWNER-2.1`-`2.6` | `OWNER-3.1`-`3.6` | `OWNER-4.1`-`4.6` | `OWNER-5.1`-`5.6` |
+| Object | 1 facets | 2 dynamics | 3 statics | 4 closure | 5 adaptation | 6 disclosure |
+|---|---|---|---|---|---|---|
+| VSTD | `1.1`-`1.7` | `2.1`-`2.7` | `3.1`-`3.8` | `4.1`-`4.14` | `5.1`-`5.11` | — |
+| GRAPH | `Graph-1.1`-`1.6` | `Graph-2.1`-`2.5` | `Graph-3.1`-`3.5` | `Graph-4.1`-`4.6` | `Graph-5.1`-`5.6` | — |
+| DATA | `DATA-1.1`-`1.6` | `DATA-2.1`-`2.6` | `DATA-3.1`-`3.6` | `DATA-4.1`-`4.6` | `DATA-5.1`-`5.6` | `DATA-6.1`-`6.6` |
+| ENV | `ENV-1.1`-`1.6` | `ENV-2.1`-`2.6` | `ENV-3.1`-`3.5` | `ENV-4.1`-`4.5` | `ENV-5.1`-`5.6` | `ENV-6.1`-`6.6` |
+| BENCH | `BENCH-1.1`-`1.7` | `BENCH-2.1`-`2.6` | `BENCH-3.1`-`3.7` | `BENCH-4.1`-`4.5` | `BENCH-5.1`-`5.6` | `BENCH-6.1`-`6.6` |
+| TRAIN | `TRAIN-1.1`-`1.6` | `TRAIN-2.1`-`2.6` | `TRAIN-3.1`-`3.5` | `TRAIN-4.1`-`4.6` | `TRAIN-5.1`-`5.6` | `TRAIN-6.1`-`6.6` |
+| HYPER | `HYPER-1.1`-`1.6` | `HYPER-2.1`-`2.6` | `HYPER-3.1`-`3.5` | `HYPER-4.1`-`4.5` | `HYPER-5.1`-`5.5` | `HYPER-6.1`-`6.6` |
+| MODEL | `MODEL-1.1`-`1.5` | `MODEL-2.1`-`2.5` | `MODEL-3.1`-`3.6` | `MODEL-4.1`-`4.5` | `MODEL-5.1`-`5.6` | `MODEL-6.1`-`6.6` |
+| SIM | `SIM-1.1`-`1.7` | `SIM-2.1`-`2.6` | `SIM-3.1`-`3.5` | `SIM-4.1`-`4.5` | `SIM-5.1`-`5.6` | `SIM-6.1`-`6.6` |
+| HARNESS † | `HARNESS-1.1`-`1.5` | `HARNESS-2.1`-`2.5` | `HARNESS-3.1`-`3.4` | `HARNESS-4.1`-`4.5` | `HARNESS-5.1`-`5.6` | `HARNESS-6.1`-`6.6` |
+| AGENT † | `AGENT-1.1`-`1.7` | `AGENT-2.1`-`2.5` | `AGENT-3.1`-`3.3` | `AGENT-4.1`-`4.4` | `AGENT-5.1`-`5.5` | `AGENT-6.1`-`6.6` |
+| BOT † | `BOT-1.1`-`1.5` | `BOT-2.1`-`2.5` | `BOT-3.1`-`3.4` | `BOT-4.1`-`4.4` | `BOT-5.1`-`5.6` | `BOT-6.1`-`6.6` |
+| OWNER ‡ | `OWNER-1.1`-`1.6` | `OWNER-2.1`-`2.6` | `OWNER-3.1`-`3.6` | `OWNER-4.1`-`4.6` | `OWNER-5.1`-`5.6` | `OWNER-6.1`-`6.6` |
 
 Every cell is a coordinate range into a catalogued obligation set: the object axis in
 [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md), the Graph axis in
 [`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md), the eleven domain objects in
-[`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 379 obligations across the three
+[`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 445 obligations across the three
 namespaces, which are disjoint: `DATA-4.2` never aliases `4.2` or `Graph-4.2`, and each
 catalogue carries its own digest. † marks the three objects whose adapters live on the open
 release branch rather than in this tree; ‡ marks the one object with no adapter anywhere.
@@ -556,22 +580,24 @@ a directed acyclic graph — where two modules both depend on a third but not on
 rather than at two. Every one of the sixty-five profiles is a DAG, so on every object the
 depth is strictly below the count somewhere.
 
-| Object | 1 | 2 | 3 | 4 | 5 | sum i | states | mechanized |
-|---|---|---|---|---|---|---|---|---|
-| VSTD | **5** of 7 | **5** of 7 | **6** of 8 | **8** of 14 | **5** of 11 | 29 | 30 | n/a |
-| GRAPH | **3** of 6 | **4** of 5 | **3** of 5 | **4** of 6 | **4** of 6 | 18 | 19 | n/a |
-| DATA | **4** of 6 (5) | **4** of 6 (3) | **3** of 6 (6) | **5** of 6 (5) | **4** of 6 (6) | 20 | 21 | 25/30 |
-| ENV | **4** of 6 (4) | **4** of 6 (3) | **3** of 5 (1) | **4** of 5 (0) | **5** of 6 (6) | 20 | 21 | 14/28 |
-| BENCH | **5** of 7 (3) | **4** of 6 (0) | **4** of 7 (1) | **4** of 5 (4) | **5** of 6 (6) | 22 | 23 | 14/31 |
-| TRAIN | **4** of 6 (5) | **5** of 6 (5) | **3** of 5 (5) | **6** (4) | **5** of 6 (6) | 23 | 24 | 25/29 |
-| HYPER | **5** of 6 (0) | **4** of 6 (0) | **3** of 5 (5) | **5** (0) | **5** (5) | 22 | 23 | 10/27 |
-| MODEL | **3** of 5 (3) | **4** of 5 (2) | **3** of 6 (1) | **3** of 5 (4) | **5** of 6 (6) | 18 | 19 | 16/27 |
-| SIM | **3** of 7 (2) | **4** of 6 (2) | **4** of 5 (3) | **4** of 5 (3) | **5** of 6 (6) | 20 | 21 | 16/29 |
-| HARNESS † | **4** of 5 (2) | **4** of 5 (4) | **3** of 4 (4) | **4** of 5 (3) | **5** of 6 (6) | 20 | 21 | 19/25 |
-| AGENT † | **6** of 7 (3) | **4** of 5 (4) | **3** (3) | **4** (3) | **5** (5) | 22 | 23 | 18/24 |
-| BOT † | **3** of 5 (3) | **4** of 5 (4) | **3** of 4 (4) | **3** of 4 (3) | **5** of 6 (6) | 18 | 19 | 20/24 |
-| OWNER ‡ | **4** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | 18 | 19 | 0/30 |
+| Object | 1 | 2 | 3 | 4 | 5 | 6 | sum i | states | mechanized |
+|---|---|---|---|---|---|---|---|---|---|
+| VSTD | **5** of 7 | **5** of 7 | **6** of 8 | **8** of 14 | **5** of 11 | — | 29 | 30 | n/a |
+| GRAPH | **3** of 6 | **4** of 5 | **3** of 5 | **4** of 6 | **4** of 6 | — | 18 | 19 | n/a |
+| DATA | **4** of 6 (5) | **4** of 6 (3) | **3** of 6 (6) | **5** of 6 (5) | **4** of 6 (6) | **5** of 6 (0) | 20 | 21 | 25/36 |
+| ENV | **4** of 6 (4) | **4** of 6 (3) | **3** of 5 (1) | **4** of 5 (0) | **5** of 6 (6) | **5** of 6 (0) | 20 | 21 | 14/34 |
+| BENCH | **5** of 7 (3) | **4** of 6 (0) | **4** of 7 (1) | **4** of 5 (4) | **5** of 6 (6) | **5** of 6 (0) | 22 | 23 | 14/37 |
+| TRAIN | **4** of 6 (5) | **5** of 6 (5) | **3** of 5 (5) | **6** (4) | **5** of 6 (6) | **5** of 6 (0) | 23 | 24 | 25/35 |
+| HYPER | **5** of 6 (0) | **4** of 6 (0) | **3** of 5 (5) | **5** (0) | **5** (5) | **5** of 6 (0) | 22 | 23 | 10/33 |
+| MODEL | **3** of 5 (3) | **4** of 5 (2) | **3** of 6 (1) | **3** of 5 (4) | **5** of 6 (6) | **5** of 6 (0) | 18 | 19 | 16/33 |
+| SIM | **3** of 7 (2) | **4** of 6 (2) | **4** of 5 (3) | **4** of 5 (3) | **5** of 6 (6) | **5** of 6 (0) | 20 | 21 | 16/35 |
+| HARNESS † | **4** of 5 (2) | **4** of 5 (4) | **3** of 4 (4) | **4** of 5 (3) | **5** of 6 (6) | **5** of 6 (0) | 20 | 21 | 19/31 |
+| AGENT † | **6** of 7 (3) | **4** of 5 (4) | **3** (3) | **4** (3) | **5** (5) | **5** of 6 (0) | 22 | 23 | 18/30 |
+| BOT † | **3** of 5 (3) | **4** of 5 (4) | **3** of 4 (4) | **3** of 4 (3) | **5** of 6 (6) | **5** of 6 (0) | 18 | 19 | 20/30 |
+| OWNER ‡ | **4** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | **5** of 6 (0) | 18 | 19 | 0/36 |
 
+**Bold is `i`.** The `6` column is shown for completeness and is **excluded from `sum i`
+and from `states`**, which count corroboration rungs only; level 6 carries no rungs.
 **Bold is `i`.** Where `i` is smaller than the module count, both are shown: `8` of
 `14` reads *eight is the depth of a profile holding fourteen modules*. A parenthesised
 count is how many of that profile's obligations a mechanism establishes today; the two
@@ -710,7 +736,7 @@ profile, and an admission policy. Three disjoint namespaces hold them.
 |---|---|---|---|
 | Object `VSTD-1..5` | `1.1`-`5.11` | 47 | [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md) |
 | Graph `VSTD-Graph-1..5` | `Graph-1.1`-`Graph-5.6` | 28 | [`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) |
-| The eleven domain objects | `<object>-1.1`-`<object>-5.6` | 304 | [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) |
+| The eleven domain objects | `<object>-1.1`-`<object>-6.6` | 370 | [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) |
 
 The namespaces do not overlap and no catalogue admits another's identifiers, so `DATA-4.2`
 never aliases `4.2` or `Graph-4.2`. Each computes its own digest, which is what makes them
@@ -718,9 +744,9 @@ separable: extending one provably cannot move another's.
 
 What differs between them is not the form of the obligations but how many carry a
 mechanism. The two specification axes are checked against retained evidence rather than by
-a domain adapter. Of the eleven domain objects, 177 of 304 obligations name a check in one
+a domain adapter. Of the eleven domain objects, 177 of 370 obligations name a check in one
 of the three families — behavioural in [`DOMAIN_GROUNDING.md`](DOMAIN_GROUNDING.md), statics and
-adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 127 are
+adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 193 are
 specified without a mechanism and are reported `UNKNOWN` — never absent, and never passed.
 
 `VSTD-HYPER` no longer names two objects. The combination operator keeps the name; the

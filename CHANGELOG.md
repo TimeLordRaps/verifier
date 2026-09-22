@@ -60,6 +60,41 @@ declare the experimental mechanisms complete. See the
   Other obligations require explicitly admitted domain mechanisms; a registered
   mechanism or complete catalogue is not evidence that those obligations hold.
 
+### Level 6 -- disclosure bounds on every domain object
+
+- Add a sixth level to each of the eleven domain objects, coordinate
+  `<object>-6.1`-`6.6`: 66 new obligations bounding what a
+  certificate of that object may **emit**, and to whom. The object axis and the Graph axis
+  do not receive one -- both are corroboration ladders, and disclosure has no rungs.
+- **Level 6 is a level, not a twelfth object.** Four of its six rows state the same
+  proposition at every object; only `6.1` (what this object emits) and `6.5` (what
+  composing it reveals) are object-specific. An object contributes rows that differ; a
+  level contributes the same row everywhere, and `tests/test_domain_obligations.py`
+  asserts exactly that partition.
+- Three properties separate it from every other level, and each is a row. It is decided at
+  **every emission** rather than once at certification (`6.4`), so a certificate can stop
+  being admissible without the object changing. It is the only level that is **not
+  monotone under composition** (`6.5`): disclosure is the **join** of the operands rather
+  than bounded by them, so two certificates each strictly within bound can compose to one
+  that is not -- stated in general at `HYPER-6.5`, where it is the exact converse of the
+  non-increase property `HYPER-2.2` establishes for strength. And it **cannot move a
+  verdict** (`6.6`): a disclosure bound never changes a computational verdict, neither
+  upward nor downward, and a redaction that moves one makes the certificate malformed
+  rather than more private.
+- Because `6.6` holds, level 6 is **excluded from the rung totals and the composition
+  lattice**, which count reachable evidence states: a level that by its own statement
+  cannot change what is established is not evidence, and counting its 5 positions per
+  object as rungs would inflate every reachability figure the grid publishes. The ladder
+  strip stays five wide -- it is what a certificate *climbs*, and a disclosure bound is not
+  climbed. 379 corroboration obligations and 66 disclosure obligations now make
+  445 in all, and the suite re-derives both halves separately.
+- All 66 rows are specified with **no mechanism** and report `UNKNOWN`, never
+  `PASS`: no adapter runs at emission time and no observer model is established anywhere in
+  the implementation, so a pass here would be a claim nothing supports. Level 6 therefore
+  adds no module to `verifier.domains` and **does not move** `implementation_digest()`,
+  which is unchanged at `sha256:b505a4a2...` -- so no domain policy bound to it is
+  invalidated by this change.
+
 ### The meta-tier grid, the relational objects and the VSTD-NAMESPACE
 
 - Publish the meta-tier grid in [`standard/META_TIERS.md`](standard/META_TIERS.md): every

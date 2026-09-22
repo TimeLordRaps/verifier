@@ -12,6 +12,7 @@ import pytest
 
 from verifier.core.profile_obligations import (
     BY_ID,
+    DISCLOSURE_TIER,
     DOMAIN_BY_ID,
     DOMAIN_OBJECTS,
     GROUNDED_OBJECTS,
@@ -39,7 +40,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 def test_every_domain_profile_has_contiguous_obligations() -> None:
     assert set(DOMAIN_OBJECTS) == {o.object_name for o in DOMAIN_OBLIGATIONS}
     for object_name in DOMAIN_OBJECTS:
-        for profile in range(1, 6):
+        for profile in range(1, 7):
             rows = [o for o in DOMAIN_OBLIGATIONS
                     if o.object_name == object_name and o.profile == profile]
             assert rows, (object_name, profile)
@@ -114,7 +115,9 @@ def test_an_absent_mechanism_is_unknown_and_never_passed() -> None:
         assert obligation.mechanism == ""
         assert obligation.to_dict()["mechanized"] is False
     grounded = {o.profile for o in bare if o.object_name in GROUNDED_OBJECTS}
-    assert grounded == {1, 2, 3, 4}, "tier 5 of a grounded object is fully mechanized"
+    assert grounded == {1, 2, 3, 4, 6}, (
+        "tier 5 of a grounded object is fully mechanized, and level 6 is mechanized "
+        "nowhere -- no adapter runs at emission time")
 
 
 def test_every_tier_three_and_five_profile_is_mechanized_somewhere() -> None:
@@ -132,7 +135,7 @@ def test_an_ungrounded_object_mechanizes_nothing_at_any_tier() -> None:
         rows = [o for o in DOMAIN_OBLIGATIONS if o.object_name == object_name]
         assert rows, object_name
         assert not any(o.mechanized for o in rows), object_name
-        for profile in range(1, 6):
+        for profile in range(1, 7):
             assert [o for o in rows if o.profile == profile], (object_name, profile)
 
 
@@ -151,7 +154,7 @@ def test_the_relational_partition_is_exact() -> None:
 
 def test_tier_depth_is_a_depth_not_a_count() -> None:
     for object_name in DOMAIN_OBJECTS:
-        for profile in range(1, 6):
+        for profile in range(1, 7):
             count = len([o for o in DOMAIN_OBLIGATIONS
                          if o.object_name == object_name and o.profile == profile])
             depth = tier_depth(object_name, profile)
@@ -180,6 +183,48 @@ def test_domain_obligation_digest_pins_the_domain_bytes_only() -> None:
 
 @pytest.mark.parametrize("object_name", DOMAIN_OBJECTS)
 def test_no_domain_profile_is_empty(object_name: str) -> None:
-    for profile in range(1, 6):
+    for profile in range(1, 7):
         assert [o for o in DOMAIN_OBLIGATIONS
                 if o.object_name == object_name and o.profile == profile]
+
+
+def test_the_disclosure_level_is_a_level_and_not_an_object() -> None:
+    """Level 6 is the same six rows everywhere; an object would contribute rows that differ.
+
+    Four of the six are the same proposition at every object, which is the whole argument
+    that disclosure is a level rather than a twelfth domain object. Only 6.1 (what this
+    object emits) and 6.5 (what composing it reveals) are object-specific.
+    """
+    shapes = set()
+    uniform: dict[int, set[str]] = {}
+    for object_name in DOMAIN_OBJECTS:
+        rows = [o for o in DOMAIN_OBLIGATIONS
+                if o.object_name == object_name and o.profile == DISCLOSURE_TIER]
+        assert len(rows) == 6, object_name
+        # The prefix is the object; the shape is what is left when it is removed.
+        shapes.add(tuple((o.index, o.name,
+                          tuple(d.split("-", 1)[1] for d in o.depends_on))
+                         for o in rows))
+        for o in rows:
+            uniform.setdefault(o.index, set()).add(o.requirement)
+    assert len(shapes) == 1, "level 6 must have one shape on every object"
+    assert {i for i, texts in uniform.items() if len(texts) == 1} == {2, 3, 4, 6}
+    assert {i for i, texts in uniform.items() if len(texts) > 1} == {1, 5}
+
+
+def test_the_disclosure_level_is_mechanized_nowhere() -> None:
+    """A PASS here would claim an observer model the implementation does not establish."""
+    six = [o for o in DOMAIN_OBLIGATIONS if o.profile == DISCLOSURE_TIER]
+    assert len(six) == 6 * len(DOMAIN_OBJECTS)
+    assert not any(o.mechanized for o in six)
+    assert all(o.to_dict()["mechanized"] is False for o in six)
+
+
+def test_the_disclosure_level_adds_no_adapter_module() -> None:
+    """Level 6 must not move implementation_digest(): it names no check in any family."""
+    behavioural = {c[0] for rows in CHECKS.values() for c in rows}
+    statics = {STATICS_PREFIX + n for rows in STATICS_BY_NAME.values() for n in rows}
+    adaptation = {MAINSTAY_PREFIX + n for n in ADAPTATION_CHECKS}
+    for obligation in DOMAIN_OBLIGATIONS:
+        if obligation.profile == DISCLOSURE_TIER:
+            assert obligation.mechanism not in behavioural | statics | adaptation

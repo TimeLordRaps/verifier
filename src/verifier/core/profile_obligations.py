@@ -5,6 +5,11 @@ Graph-X.M identifier selects obligation M within numbered Graph profile X. Both 
 dimensionless and are neither software versions nor confidence scores. The two
 namespaces are disjoint; existing VSTD-4 rung identifiers and dependencies retain
 their exact meanings.
+
+Level 6 rows state what composing one object with another discloses, so a domain
+obligation may name an object other than its own: the model reproducibility
+specification (VSTD-MODEL) and the generative simulation specification (VSTD-SIM)
+appear in the composition deltas of the objects they are composed with.
 """
 from __future__ import annotations
 
@@ -310,6 +315,14 @@ DOMAIN_OBLIGATIONS = (
         ("Inference upward", "What the mainstay cannot express is stated as the residual this object carries over it.", (5,), "mainstay:residual"),
     )),
 
+    *_domain_rows("DATA", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- counts, digests, the bound field contract, split membership and distribution statics -- and is separated from the retained record contents those figures were computed over.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside another VSTD-DATA certificate over an overlapping corpus discloses the intersection: two split memberships and two inventories can each be within bound while the pair identifies which records are shared, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
     *_domain_rows("ENV", 1, (
         ("Environment boundary", "What is inside the environment and what is host is declared.", (), ""),
         ("Software inventory", "Every file in the selected software inventory is materialized and rehashed.", (1,), "closure"),
@@ -349,6 +362,14 @@ DOMAIN_OBLIGATIONS = (
         ("Inference upward", "What the mainstay cannot pin is stated as the residual this object carries over it.", (5,), "mainstay:residual"),
     )),
 
+    *_domain_rows("ENV", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the software inventory, executable coordinates, configuration surface, instruction set and resource ceilings -- and is separated from host identifiers, operator accounts and network topology the adapter observed but does not emit.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside a VSTD-TRAIN or VSTD-MODEL certificate discloses the machine: a pinned toolchain and a pinned resource ceiling are each ordinary in isolation and together name one fleet, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
     *_domain_rows("BENCH", 1, (
         ("Domain declaration", "The domain or set of domains the bench measures is declared.", (), ""),
         ("Problem set", "Each finite problem is bound to its exact specification and candidate answer.", (1,), "problems"),
@@ -391,6 +412,14 @@ DOMAIN_OBLIGATIONS = (
         ("Inference upward", "What the mainstay cannot express is stated as the residual this object carries over it.", (5,), "mainstay:residual"),
     )),
 
+    *_domain_rows("BENCH", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the problem set identity, sampling procedure, scoring contract, budget ceilings and per-run outcomes -- and is separated from the oracle answers, which the adapter binds and never emits.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Repeated emission is itself composition: each emitted outcome vector is a bounded observation of the oracle, and a sufficient number of them reconstructs it. The bound is therefore evaluated over the accumulated sequence of emissions rather than over one, and a bound that holds for every single emission while the sequence reconstructs the oracle is not satisfied.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
     *_domain_rows("TRAIN", 1, (
         ("Optimizer contract", "The optimizer, schedule, accumulation and precision contract is bound.", (), "configuration"),
         ("Numerical semantics", "The declared floating-point format and accumulation order are bound.", (1,), "configuration"),
@@ -431,6 +460,14 @@ DOMAIN_OBLIGATIONS = (
         ("Inference upward", "What the mainstay cannot express is stated as the residual this object carries over it.", (5,), "mainstay:residual"),
     )),
 
+    *_domain_rows("TRAIN", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the checkpoint inventory, step index, optimizer contract, batch binding and loss trace -- and is separated from the batch contents and the gradient values each step was computed from.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside a VSTD-DATA certificate over the training corpus discloses membership: a per-step loss trace and a split membership are each within bound while the pair reveals which records were trained on, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
     *_domain_rows("HYPER", 1, (
         ("Operand set", "The set of bound certificates entering the composition, and its arity, is declared.", (), ""),
         ("Slot schema", "Which slot each operand fills, and which slots are unfilled, is declared.", (1,), ""),
@@ -469,6 +506,14 @@ DOMAIN_OBLIGATIONS = (
         ("Inference upward", "What the mainstay cannot express is stated as the residual this object carries over it.", (4,), "mainstay:residual"),
     )),
 
+    *_domain_rows("HYPER", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the operand set, slot schema, composed identity, composed ceiling and operand depths -- and is separated from the operand-internal evidence each operand certificate withheld under its own level 6.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "This is the object where the delta is stated in general, and where it is sharpest. HYPER-2.2 establishes that a composition strength never increases above its operands; disclosure is the one property for which the opposite holds. The disclosure of a composition is the JOIN of its operands, not their meet, and the join is not bounded by either: two operands each strictly within bound can compose to a disclosure outside both. A composition is therefore never admissible on the grounds that its operands were, and HYPER-6.5 is evaluated on the composite rather than inherited from the operand certificates.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
     *_domain_rows("MODEL", 1, (
         ("Tensor inventory", "Complete finite tensor shapes are bound.", (), "tensors"),
         ("Architecture compatibility", "Shapes are checked compatible across the declared computation graph.", (1,), "tensors"),
@@ -507,6 +552,14 @@ DOMAIN_OBLIGATIONS = (
         ("Inference upward", "The residual this object carries over the mainstay is stated.", (5,), "mainstay:residual"),
     )),
 
+    *_domain_rows("MODEL", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the tensor inventory, architecture, module decomposition, quantization specification and evaluation metrics -- and is separated from the weight bytes, the provenance citations and the training-data citation.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside a VSTD-TRAIN or VSTD-DATA certificate discloses the corpus through the model: an architecture, a metric vector and a split membership are each within bound while the three together support extraction, so the join is evaluated against all operands and not against any one alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
     *_domain_rows("SIM", 1, (
         ("State space", "The state space and its encoding are bound.", (), ""),
         ("Transition expressions", "The bound transition expressions are declared over that space.", (1,), ""),
@@ -547,6 +600,14 @@ DOMAIN_OBLIGATIONS = (
         ("Inference upward", "The residual this object carries over the mainstay is stated.", (5,), "mainstay:residual"),
     )),
 
+    *_domain_rows("SIM", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the state space, transition expressions, observation channels, invariants and shard decomposition -- and is separated from the entropy stream and the trajectory contents replayed against it.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside a VSTD-BOT certificate discloses the decider: a state space and a coupling surface are each within bound while the pair localizes which decisions were taken by which actor, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
     *_domain_rows("HARNESS", 1, (
         ("Channel partition", "Every declared channel is partitioned into instrumented observation and named uninstrumented gap.", (), "surface"),
         ("Record types", "The user, agent and tool record types are bound.", (1,), "surface"),
@@ -583,6 +644,14 @@ DOMAIN_OBLIGATIONS = (
         ("Inference upward", "The residual this object carries over the mainstay is stated.", (5,), "mainstay:residual"),
     )),
 
+    *_domain_rows("HARNESS", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the channel partition, record types, tool registry, transcript commitment shape and side-effect channels -- and is separated from the transcript contents and side-effect payloads the commitments were computed over.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside a VSTD-AGENT certificate discloses the session: a commitment shape and a decision inventory are each within bound while the pair reconstructs the order and content of a run, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
     *_domain_rows("AGENT", 1, (
         ("Harness binding", "The harness certificate is re-derived from its retained bytes.", (), "harness"),
         ("Required channels", "The channels the agent's account requires are present in the bound harness surface.", (1,), "harness"),
@@ -618,6 +687,14 @@ DOMAIN_OBLIGATIONS = (
         ("Inference upward", "The residual this object carries over the mainstay is stated.", (4,), "mainstay:residual"),
     )),
 
+    *_domain_rows("AGENT", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the harness binding, decision inventory, outcome contract, declared actions and final claims -- and is separated from the deliberation behind each decision, which AGENT-3.2 already holds to be unknowable and which level 6 additionally holds to be unemitted.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside a VSTD-HARNESS certificate discloses the operator: a decision inventory and a timestamp resolution are each within bound while the pair identifies who was at the keyboard and when, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
     *_domain_rows("BOT", 1, (
         ("Agent binding", "The agent certificate is re-derived from its retained bytes.", (), "binding"),
         ("Simulation binding", "The simulation certificate is re-derived from its retained bytes.", (), "binding"),
@@ -651,6 +728,14 @@ DOMAIN_OBLIGATIONS = (
         ("Inclusion awareness", "Whether it is aware of being inside a simulation, and to what degree, is recorded.", (2,), "mainstay:inclusion"),
         ("Specification awareness", "Which simulation specification surfaces it is aware of is recorded.", (4,), "mainstay:awareness"),
         ("Awareness accounting", "Disclosed and indisclosed awareness are accounted for without inferring either from the other.", (3, 5), "mainstay:accounting"),
+    )),
+    *_domain_rows("BOT", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the agent and simulation bindings, coupling surface, separation declaration and containment accounting -- and is separated from the indisclosure inventory itself, which names what the bot was not told and therefore leaks it.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside the VSTD-SIM certificate it is coupled to discloses the separation: a containment accounting and a state space are each within bound while the pair reveals which boundary the separation evidence was defending, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("OWNER", 1, (
         ("Holder binding", "The holder is bound as an actor by an actor-binding token, never named in free text.", (), ""),
@@ -692,6 +777,14 @@ DOMAIN_OBLIGATIONS = (
         ("Custody chain", "Physical and cryptographic custody transfers are bound as ordered events on the custody clock.", (), ""),
         ("Adaptation accounting", "Each adaptation above is reported as established or unestablished, and an absent register is unestablished rather than unheld.", (1, 2, 3, 4, 5), ""),
     )),
+    *_domain_rows("OWNER", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the holder binding, held-object binding, limb inventory, term, and the chain of custody from its declared origin -- and is separated from the instrument contents, and the identity of the natural person each answering-duty chain terminates in.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside the VSTD-OWNER certificate of an adjacent holding discloses the graph: two chains each within bound reveal, at their shared positions, a structure neither states alone, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
 )
 
 DOMAIN_BY_ID = {o.id: o for o in DOMAIN_OBLIGATIONS}
@@ -706,7 +799,15 @@ RELATIONAL_OBJECTS = ("GRAPH", "HYPER", "OWNER")
 UNGROUNDED_OBJECTS = ("OWNER",)
 GROUNDED_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in UNGROUNDED_OBJECTS)
 TIER_NAMES = {1: "Facets", 2: "Dynamics", 3: "Statics", 4: "Closure",
-              5: "Domain adaptation"}
+              5: "Domain adaptation", 6: "Disclosure"}
+# Tiers 1..5 are the corroboration ladder: each rung is evidence that raises what the
+# object is known to satisfy, and every one is settled by the act of certifying.
+# Tier 6 is not a rung. It bounds what a certificate may *emit* rather than what it
+# establishes, it is evaluated per emission rather than once, and DISCLOSURE_TIER.6
+# forbids it from moving any verdict in 1..5 -- so it is deliberately excluded from
+# the rung totals and the composition lattice, which count reachable evidence states.
+CORROBORATION_TIERS = (1, 2, 3, 4, 5)
+DISCLOSURE_TIER = 6
 
 
 def domain_obligation_catalog() -> dict[str, Any]:

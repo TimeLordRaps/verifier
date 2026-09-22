@@ -14,6 +14,8 @@ from pathlib import Path
 import pytest
 
 from verifier.core.profile_obligations import (
+    CORROBORATION_TIERS,
+    DISCLOSURE_TIER,
     DOMAIN_OBJECTS,
     DOMAIN_OBLIGATIONS,
     GRAPH_OBLIGATIONS,
@@ -46,13 +48,42 @@ def _published(pattern: str) -> int:
     return int(found.group(1).replace(",", ""))
 
 
+def _corroboration_total() -> int:
+    """Tiers 1-5 across all three namespaces: the obligations the ladders are built from."""
+    domain = [o for o in DOMAIN_OBLIGATIONS if o.profile in CORROBORATION_TIERS]
+    return len(domain) + len(GRAPH_OBLIGATIONS) + len(OBLIGATIONS)
+
+
+def test_the_disclosure_level_is_excluded_from_every_lattice_figure() -> None:
+    """Level 6 cannot move a verdict, so counting it as a rung would inflate every figure.
+
+    This is the arithmetic half of `<object>-6.6`. The grand total the file publishes is
+    the corroboration total plus the disclosure rows, and no lattice figure sees the
+    second term.
+    """
+    disclosure = [o for o in DOMAIN_OBLIGATIONS if o.profile == DISCLOSURE_TIER]
+    assert disclosure, "the level is meant to be inhabited"
+    assert len(disclosure) == 6 * len(DOMAIN_OBJECTS)
+
+    grand = len(DOMAIN_OBLIGATIONS) + len(GRAPH_OBLIGATIONS) + len(OBLIGATIONS)
+    assert _corroboration_total() + len(disclosure) == grand
+    assert grand == _published(r"([\d,]+) obligations across the three")
+
+    # Every depth the lattice is built from is a corroboration depth.
+    assert all(len(d) == len(CORROBORATION_TIERS) for d in ALL_DEPTHS.values())
+    rungs = sum(sum(d) for d in ALL_DEPTHS.values())
+    assert rungs == sum(tier_depth(o, t)
+                        for o in DOMAIN_OBJECTS for t in CORROBORATION_TIERS) + sum(
+        sum(d) for d in SPEC_AXES.values())
+
+
 @pytest.mark.parametrize("object_name", sorted(DOMAIN_OBJECTS))
 def test_the_ladder_strip_depth_matches_tier_depth(object_name: str) -> None:
     """The published climb of each domain object is its measured topological depth."""
     assert _strip_depths(f"VSTD-{object_name}-") == DOMAIN_DEPTHS[object_name]
 
 
-def test_every_object_carries_five_profiles() -> None:
+def test_every_object_carries_five_corroboration_profiles() -> None:
     assert all(len(d) == 5 for d in ALL_DEPTHS.values())
     assert len(ALL_DEPTHS) == 13
     assert len(ALL_DEPTHS) * 5 == 65
@@ -70,10 +101,16 @@ def test_the_published_obligation_total_is_the_sum_of_the_catalogues() -> None:
 
 
 def test_unreachable_coordinates_are_the_total_less_the_rungs() -> None:
-    total = len(DOMAIN_OBLIGATIONS) + len(GRAPH_OBLIGATIONS) + len(OBLIGATIONS)
+    """Unreachable-as-an-`m` is a statement about rungs, so it is scoped to tiers 1-5.
+
+    Level 6 carries no rungs at all, by construction rather than by shortfall, so folding
+    it into this figure would silently restate "not a rung" as "not yet reached".
+    """
+    corroboration = _corroboration_total()
     rungs = sum(sum(d) for d in ALL_DEPTHS.values())
-    published = _published(r"The remaining ([\d,]+) of [\d,]+ catalogued")
-    assert published == total - rungs
+    published = _published(r"The remaining ([\d,]+) of ([\d,]+) catalogued")
+    assert published == corroboration - rungs
+    assert _published(r"The remaining [\d,]+ of ([\d,]+) catalogued") == corroboration
 
 
 def test_the_free_product_is_the_product_of_every_depth() -> None:
