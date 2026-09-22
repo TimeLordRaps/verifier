@@ -410,10 +410,11 @@ the answering-duty for them, because accountability terminates in a person. With
 undifferentiated duty limb, *a bot holds duties* is admissible prose that contradicts
 that floor; with three, `OWNER-3.6` can state it.
 
-**VSTD-OWNER-2** — dynamics: transfer, delegation, revocation and lapse as ordered
-events, each conveying only what the conveyor held at that position in the order, replayed
-from the origin to reproduce the holding as it now stands. Lapse is the clock's doing and
-is distinguished from revocation, which is an act.
+**VSTD-OWNER-2** — dynamics: transfer, delegation and revocation as ordered events,
+each conveying only what the conveyor held at that position in the order, replayed from
+the origin to reproduce the holding as it now stands. **Lapse is not among them**: a term
+ending is the clock's doing rather than an act, so it declares nothing and occupies no
+position — which is why `OWNER-4.5` must quantify over the term as well as the order.
 
 **VSTD-OWNER-3** — statics: a holding never moves a verdict. `OWNER-3.1` is the
 ownership twin of the Prime Invariant — who owns an object cannot change what its
@@ -577,6 +578,13 @@ count is how many of that profile's obligations a mechanism establishes today; t
 specification axes carry no domain adapter by construction and show none. † marks the
 three adapters on the open release branch; ‡ marks `VSTD-OWNER`, which is relational and
 ungrounded and therefore shows none either.
+
+**A passing test suite is not evidence about a ‡ row.** An ungrounded object has no
+mechanism, so the only executable checks over it are that its catalogue is well-formed and
+that the figures derived from it are correct — both of which hold no matter what its
+obligations say. Its normative text is the whole artifact, and adversarial reading is its
+only gate. Three authoring defects were found in `VSTD-OWNER` this way on the day it
+landed, with the suite green for every one of them.
 
 ### Almost none of that product is reachable
 
