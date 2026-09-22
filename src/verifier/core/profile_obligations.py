@@ -674,14 +674,15 @@ DOMAIN_OBLIGATIONS = (
         ("Ancestry immutability", "Ownership events never alter the held object's ancestry or its coordinate.", (1,), ""),
         ("Asymmetry", "Holding is asymmetric: two holders cannot hold the same limb over the same object at the same position in the order unless that limb is declared shared.", (), ""),
         ("Non-transitivity of authority", "Holding an object confers no holding over the objects it was composed from, nor over the objects composed from it.", (4,), ""),
-        ("Person-limb typing", "Where the held object is a natural person, no right is holdable and only duties are; and an answering-duty terminates in a natural person, so a holder that is not one may carry discharge-duties but never the answering-duty for them.", (4, 5), ""),
+        ("Person-limb typing", "Where the held object is a natural person, no right is holdable and only duties are; and a holder that is not a natural person may carry discharge-duties but never an answering-duty.", (4, 5), ""),
     )),
     *_domain_rows("OWNER", 4, (
         ("Chain origin", "The chain of holdings begins at a declared origin whose instrument is bound.", (), ""),
         ("Gapless chain", "Every position in the order between the origin and the head is covered by exactly one holding.", (1,), ""),
         ("Fork detection", "No two holdings claim the same limb over the same object at the same position, and a fork is reported rather than resolved.", (2,), ""),
         ("Admissibility at issue time", "Each instrument is admissible under the authority in force when it issued, not under the authority in force now.", (1,), ""),
-        ("Closure result", "The chain is closed only when origin, gaplessness, fork-freedom and admissibility at issue time all hold; otherwise the result is UNKNOWN and never FAIL.", (2, 3, 4), ""),
+        ("Accountability floor", "For every discharge-duty in the chain an answering-duty exists over the same object at the same position, and every answering-duty chain terminates in a natural person; a chain that discharges without answering is not closed.", (1, 2), ""),
+        ("Closure result", "The chain is closed only when origin, gaplessness, fork-freedom, admissibility at issue time and the accountability floor all hold; otherwise the result is UNKNOWN and never FAIL.", (2, 3, 4, 5), ""),
     )),
     *_domain_rows("OWNER", 5, (
         ("Licence holding", "Licence holdings over a corpus or a model are bound per source, and the composite redistribution term is the meet of its sources.", (), ""),

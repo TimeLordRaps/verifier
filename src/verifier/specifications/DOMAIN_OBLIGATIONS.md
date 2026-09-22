@@ -25,13 +25,13 @@
 
 The object axis carries `1.1`-`5.11` and the Graph axis carries `Graph-1.1`-`Graph-5.6`.
 This file carries the third namespace: the eleven domain objects, coordinate
-`<object>-<tier>.<index>`, 303 obligations. The three namespaces are disjoint.
+`<object>-<tier>.<index>`, 304 obligations. The three namespaces are disjoint.
 `DATA-4.2` never aliases `4.2` or `Graph-4.2`, no catalogue admits another's identifiers,
 and each carries its own digest, so extending one cannot move another.
 
 Ten of the eleven are **grounded**: an adapter executes them. The eleventh, `VSTD-OWNER`,
 is **relational and ungrounded** -- it certifies a holding between a bound actor and a
-bound object, and no adapter executes it, so all 29 of its obligations report
+bound object, and no adapter executes it, so all 30 of its obligations report
 `UNKNOWN`. The relational objects are `VSTD-GRAPH`, `VSTD-HYPER` and `VSTD-OWNER`; the
 first carries its own axis and the other two sit on this one.
 
@@ -861,11 +861,11 @@ normative, and it is the ownership twin of the Prime Invariant.
 | OWNER-3.3 | Ancestry immutability | Ownership events never alter the held object's ancestry or its coordinate. | OWNER-3.1 | none |
 | OWNER-3.4 | Asymmetry | Holding is asymmetric: two holders cannot hold the same limb over the same object at the same position in the order unless that limb is declared shared. | none | none |
 | OWNER-3.5 | Non-transitivity of authority | Holding an object confers no holding over the objects it was composed from, nor over the objects composed from it. | OWNER-3.4 | none |
-| OWNER-3.6 | Person-limb typing | Where the held object is a natural person, no right is holdable and only duties are; and an answering-duty terminates in a natural person, so a holder that is not one may carry discharge-duties but never the answering-duty for them. | OWNER-3.4, OWNER-3.5 | none |
+| OWNER-3.6 | Person-limb typing | Where the held object is a natural person, no right is holdable and only duties are; and a holder that is not a natural person may carry discharge-duties but never an answering-duty. | OWNER-3.4, OWNER-3.5 | none |
 
 ### VSTD-OWNER-4: Closure
 
-`OWNER-4.1` through `OWNER-4.5`; topological depth 4; 0 of 5 mechanized.
+`OWNER-4.1` through `OWNER-4.6`; topological depth 4; 0 of 6 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
@@ -873,7 +873,8 @@ normative, and it is the ownership twin of the Prime Invariant.
 | OWNER-4.2 | Gapless chain | Every position in the order between the origin and the head is covered by exactly one holding. | OWNER-4.1 | none |
 | OWNER-4.3 | Fork detection | No two holdings claim the same limb over the same object at the same position, and a fork is reported rather than resolved. | OWNER-4.2 | none |
 | OWNER-4.4 | Admissibility at issue time | Each instrument is admissible under the authority in force when it issued, not under the authority in force now. | OWNER-4.1 | none |
-| OWNER-4.5 | Closure result | The chain is closed only when origin, gaplessness, fork-freedom and admissibility at issue time all hold; otherwise the result is UNKNOWN and never FAIL. | OWNER-4.2, OWNER-4.3, OWNER-4.4 | none |
+| OWNER-4.5 | Accountability floor | For every discharge-duty in the chain an answering-duty exists over the same object at the same position, and every answering-duty chain terminates in a natural person; a chain that discharges without answering is not closed. | OWNER-4.1, OWNER-4.2 | none |
+| OWNER-4.6 | Closure result | The chain is closed only when origin, gaplessness, fork-freedom, admissibility at issue time and the accountability floor all hold; otherwise the result is UNKNOWN and never FAIL. | OWNER-4.2, OWNER-4.3, OWNER-4.4, OWNER-4.5 | none |
 
 ### VSTD-OWNER-5: Domain adaptation
 

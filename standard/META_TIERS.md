@@ -430,7 +430,16 @@ it either way.
 
 **VSTD-OWNER-4** — closure: chain of custody from a declared origin, gapless,
 fork-free, with each instrument admissible under the authority in force **when it issued**
-rather than the authority in force now. Failing any of the four is `UNKNOWN`, never `FAIL`.
+rather than the authority in force now, over a chain that answers for itself. Failing
+any of the five is `UNKNOWN`, never `FAIL`.
+
+The **accountability floor** is why this profile carries six rows rather than five.
+`OWNER-3.6` types *who may* hold an answering-duty; it never requires one to **exist**.
+Without `OWNER-4.5` a chain whose holdings enumerate discharge-duties only satisfies
+every other obligation here and certifies as closed, with no answering-duty anywhere in
+it — supervision owed by nobody. Termination is a property of a walk rather than of a
+single holding, which is why it is closure work and not statics: tier 3 constrains what
+one surface does not get to choose, and tier 4 constrains the chain.
 
 **VSTD-OWNER-5** — domain adaptation: licence expressions, registry maintainer records,
 corporate and beneficial-ownership registers, declared code ownership and custody chains.
@@ -462,12 +471,12 @@ obligation rather than a rung in its own right:
 | HARNESS † | `HARNESS-1.1`-`1.5` | `HARNESS-2.1`-`2.5` | `HARNESS-3.1`-`3.4` | `HARNESS-4.1`-`4.5` | `HARNESS-5.1`-`5.6` |
 | AGENT † | `AGENT-1.1`-`1.7` | `AGENT-2.1`-`2.5` | `AGENT-3.1`-`3.3` | `AGENT-4.1`-`4.4` | `AGENT-5.1`-`5.5` |
 | BOT † | `BOT-1.1`-`1.5` | `BOT-2.1`-`2.5` | `BOT-3.1`-`3.4` | `BOT-4.1`-`4.4` | `BOT-5.1`-`5.6` |
-| OWNER ‡ | `OWNER-1.1`-`1.6` | `OWNER-2.1`-`2.6` | `OWNER-3.1`-`3.6` | `OWNER-4.1`-`4.5` | `OWNER-5.1`-`5.6` |
+| OWNER ‡ | `OWNER-1.1`-`1.6` | `OWNER-2.1`-`2.6` | `OWNER-3.1`-`3.6` | `OWNER-4.1`-`4.6` | `OWNER-5.1`-`5.6` |
 
 Every cell is a coordinate range into a catalogued obligation set: the object axis in
 [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md), the Graph axis in
 [`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md), the eleven domain objects in
-[`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 378 obligations across the three
+[`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 379 obligations across the three
 namespaces, which are disjoint: `DATA-4.2` never aliases `4.2` or `Graph-4.2`, and each
 catalogue carries its own digest. † marks the three objects whose adapters live on the open
 release branch rather than in this tree; ‡ marks the one object with no adapter anywhere.
@@ -494,10 +503,10 @@ need not be the one whose index is `m`.
 | `VSTD-SIM-` | [1.1–1.3](DOMAIN_OBLIGATIONS.md#vstd-sim-1-facets ".1 State space; .2 Transition expressions, Observation channels, Shard decomposition; .3 Entropy stream, Action channels, Macro and micro projection") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-sim-2-dynamics ".1 Trajectory replay; .2 Responsiveness, Internal state change, Computational space; .3 Perspective shift; .4 Perspective agreement") | [3.1–3.4](DOMAIN_OBLIGATIONS.md#vstd-sim-3-statics ".1 Invariant expressions, Modelled law; .2 Per-state holding; .3 Closed state set; .4 Law independence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-sim-4-closure ".1 Shard coverage; .2 Cross-shard relations, No unattributed transition; .3 Signatures; .4 Whole-surface accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#vstd-sim-5-domain-adaptation ".1 Mainstay binding; .2 Interaction-surface mapping, Physical-backend mapping; .3 Stepping contract; .4 Round trip; .5 Inference upward") | **20** |
 | `VSTD-HARNESS-` † | [1.1–1.4](DOMAIN_OBLIGATIONS.md#vstd-harness-1-facets ".1 Channel partition; .2 Record types; .3 Tool registry, Transcript commitment shape; .4 Side-effect channels") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-harness-2-dynamics ".1 Record contiguity; .2 Invocation pairing, Session advance; .3 Side-effect interleaving; .4 Retry and resumption") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-harness-3-statics ".1 Gap boundary, Timestamp resolution; .2 Channel capacity; .3 Instrument fixity") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-harness-4-closure ".1 Commitment recomputation; .2 Omission detection, Substitution detection; .3 Reordering detection; .4 Whole-session accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#vstd-harness-5-domain-adaptation ".1 Mainstay binding; .2 Trace-span mapping, Tool-protocol mapping; .3 Gap representation; .4 Round trip; .5 Inference upward") | **20** |
 | `VSTD-AGENT-` † | [1.1–1.6](DOMAIN_OBLIGATIONS.md#vstd-agent-1-facets ".1 Harness binding; .2 Required channels; .3 Observation ceiling; .4 Decision inventory, Outcome contract; .5 Declared actions; .6 Final claims") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-agent-2-dynamics ".1 Trajectory contiguity; .2 Decision witnessing; .3 Action witnessing; .4 Unwitnessed action reporting, Trajectory advance") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-agent-3-statics ".1 Ceiling fixity; .2 Unknowability; .3 Declaration impotence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-agent-4-closure ".1 Outcome inventory; .2 Contract comparison; .3 Claim support; .4 No unsupported claim") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#vstd-agent-5-domain-adaptation ".1 Mainstay binding; .2 Decision-loop mapping; .3 Slot mapping; .4 Round trip; .5 Inference upward") | **22** |
-| `VSTD-OWNER-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#vstd-owner-1-facets ".1 Holder binding, Held-object binding; .2 Instrument, Bearer capability; .3 Limb inventory; .4 Term") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-owner-2-dynamics ".1 Event declaration; .2 Transfer conveyance, Delegation bound, Lapse; .3 Revocation effect; .4 Ordered replay") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-owner-3-statics ".1 Verdict independence, Asymmetry; .2 Evidence immutability, Ancestry immutability, Non-transitivity of authority; .3 Person-limb typing") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-owner-4-closure ".1 Chain origin; .2 Gapless chain, Admissibility at issue time; .3 Fork detection; .4 Closure result") | [5.1–5.3](DOMAIN_OBLIGATIONS.md#vstd-owner-5-domain-adaptation ".1 Licence holding, Registry maintainer record, Register entry, Custody chain; .2 Declared code ownership; .3 Adaptation accounting") | **18** |
+| `VSTD-OWNER-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#vstd-owner-1-facets ".1 Holder binding, Held-object binding; .2 Instrument, Bearer capability; .3 Limb inventory; .4 Term") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-owner-2-dynamics ".1 Event declaration; .2 Transfer conveyance, Delegation bound, Lapse; .3 Revocation effect; .4 Ordered replay") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-owner-3-statics ".1 Verdict independence, Asymmetry; .2 Evidence immutability, Ancestry immutability, Non-transitivity of authority; .3 Person-limb typing") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-owner-4-closure ".1 Chain origin; .2 Gapless chain, Admissibility at issue time; .3 Fork detection, Accountability floor; .4 Closure result") | [5.1–5.3](DOMAIN_OBLIGATIONS.md#vstd-owner-5-domain-adaptation ".1 Licence holding, Registry maintainer record, Register entry, Custody chain; .2 Declared code ownership; .3 Adaptation accounting") | **18** |
 | `VSTD-BOT-` † | [1.1–1.3](DOMAIN_OBLIGATIONS.md#vstd-bot-1-facets ".1 Agent binding, Simulation binding; .2 Environment bindings; .3 Coupling surface, Operand depths") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-bot-2-dynamics ".1 Transition binding; .2 Observation projection, Action authenticity; .3 One-to-one coupling; .4 Coupling advance") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-bot-3-statics ".1 Inherited ceiling, Coupling latency; .2 Disclosure limit; .3 Policy impotence") | [4.1–4.3](DOMAIN_OBLIGATIONS.md#vstd-bot-4-closure ".1 Separation declaration; .2 Separation evidence, Fused honesty; .3 Containment accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#vstd-bot-5-domain-adaptation ".1 Interaction-graph binding; .2 Disclosure inventory; .3 Indisclosure inventory, Inclusion awareness; .4 Specification awareness; .5 Awareness accounting") | **18** |
 
-270 rungs over sixty-five profiles. The remaining 108 of 378 catalogued
+270 rungs over sixty-five profiles. The remaining 109 of 379 catalogued
 obligations sit above their profile's depth: nameable, and unreachable as an `m`,
 because independent obligations are cleared at one depth rather than at several. A
 certificate that names one of them is malformed.
@@ -508,7 +517,7 @@ never passed. Only ten of the eleven domain objects have adapters at all; the pa
 count in each cell of the depth grid below is how many of that profile's obligations
 one of the three families establishes today.
 
-Of the 303 domain obligations, 177 are mechanized, across three disjoint families:
+Of the 304 domain obligations, 177 are mechanized, across three disjoint families:
 92 behavioural adapter checks, 27 tier-3 statics checks and
 58 tier-5 adaptation checks. Tier 5 is now mechanized on every object and tier 3 on
 every object; what remains bare is spread across tiers 1, 2 and 4. The two specification
@@ -548,7 +557,7 @@ depth is strictly below the count somewhere.
 | HARNESS † | **4** of 5 (2) | **4** of 5 (4) | **3** of 4 (4) | **4** of 5 (3) | **5** of 6 (6) | 20 | 21 | 19/25 |
 | AGENT † | **6** of 7 (3) | **4** of 5 (4) | **3** (3) | **4** (3) | **5** (5) | 22 | 23 | 18/24 |
 | BOT † | **3** of 5 (3) | **4** of 5 (4) | **3** of 4 (4) | **3** of 4 (3) | **5** of 6 (6) | 18 | 19 | 20/24 |
-| OWNER ‡ | **4** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | **4** of 5 (0) | **3** of 6 (0) | 18 | 19 | 0/29 |
+| OWNER ‡ | **4** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | 18 | 19 | 0/30 |
 
 **Bold is `i`.** Where `i` is smaller than the module count, both are shown: `8` of
 `14` reads *eight is the depth of a profile holding fourteen modules*. A parenthesised
@@ -617,9 +626,9 @@ Both numbers still move. Cataloguing an object raises its obligation count and l
 `i`, because declared dependencies turn a default total order into a DAG; the domain
 objects were catalogued with their dependencies declared from the start, so their `i` is
 already a depth rather than a count. What remains provisional is mechanization: 177 of
-303 domain obligations have a check behind them, and every one of the remaining 126 is
-a coordinate a certificate can name but not yet clear. 29 of those 126 are the whole
-of `VSTD-OWNER`, which has no adapter at all.
+304 domain obligations have a check behind them, and every one of the remaining 127 is
+a coordinate a certificate can name but not yet clear. 30 of those 127 are the
+whole of `VSTD-OWNER`, which has no adapter at all.
 
 ## What follows mechanically
 
@@ -679,7 +688,7 @@ profile, and an admission policy. Three disjoint namespaces hold them.
 |---|---|---|---|
 | Object `VSTD-1..5` | `1.1`-`5.11` | 47 | [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md) |
 | Graph `VSTD-Graph-1..5` | `Graph-1.1`-`Graph-5.6` | 28 | [`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) |
-| The eleven domain objects | `<object>-1.1`-`<object>-5.6` | 303 | [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) |
+| The eleven domain objects | `<object>-1.1`-`<object>-5.6` | 304 | [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) |
 
 The namespaces do not overlap and no catalogue admits another's identifiers, so `DATA-4.2`
 never aliases `4.2` or `Graph-4.2`. Each computes its own digest, which is what makes them
@@ -687,9 +696,9 @@ separable: extending one provably cannot move another's.
 
 What differs between them is not the form of the obligations but how many carry a
 mechanism. The two specification axes are checked against retained evidence rather than by
-a domain adapter. Of the eleven domain objects, 177 of 303 obligations name a check in one
+a domain adapter. Of the eleven domain objects, 177 of 304 obligations name a check in one
 of the three families — behavioural in [`DOMAIN_GROUNDING.md`](DOMAIN_GROUNDING.md), statics and
-adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 126 are
+adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 127 are
 specified without a mechanism and are reported `UNKNOWN` — never absent, and never passed.
 
 `VSTD-HYPER` no longer names two objects. The combination operator keeps the name; the
