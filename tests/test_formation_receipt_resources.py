@@ -88,11 +88,11 @@ def test_formation_receipt_resources_are_packaged_registered_and_experimental() 
 
     assert NAME in PACKAGED_SCHEMA_NAMES
     assert (ROOT / "standard/schemas" / NAME).read_bytes() == (ROOT / "src/verifier/schemas" / NAME).read_bytes()
-    assert (ROOT / "standard/FORMATION_RECEIPT.md").read_bytes() == (ROOT / "src/verifier/specifications/FORMATION_RECEIPT.md").read_bytes()
+    assert (ROOT / "standard/FORMATION_RECEIPT.md").read_bytes() == (ROOT / "src/verifier/standard/FORMATION_RECEIPT.md").read_bytes()
     identifiers = (ROOT / "standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
     assert "verifier-silo-formation-selection-1" in identifiers
     assert "verifier-silo-formation-receipt-1" in identifiers
     for path in ("src/verifier/interoperability/formation_receipt.py",
                  "src/verifier/schemas/" + NAME,
-                 "src/verifier/specifications/FORMATION_RECEIPT.md"):
+                 "src/verifier/standard/FORMATION_RECEIPT.md"):
         assert path in REVIEWED_CANDIDATE_SOURCE_PATHS

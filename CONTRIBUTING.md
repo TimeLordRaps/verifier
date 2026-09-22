@@ -14,7 +14,7 @@ are useful contributions.
 
 | Change | Primary location | Required companion work |
 |---|---|---|
-| Normative requirement or numbered-profile meaning | `standard/` | Matching installed copy under `src/verifier/specifications/`, compatibility analysis, schema/model/runtime review, and falsification test |
+| Normative requirement or numbered-profile meaning | `standard/` | Matching installed copy under `src/verifier/standard/`, compatibility analysis, schema/model/runtime review, and falsification test |
 | Frozen identifier or profile dispatch | `standard/WIRE_IDENTIFIERS.md` | Historical-receipt audit; never silently redefine a released value |
 | Published receipt shape | `receipts/schema/` | Typed model, validator, examples, Pages schema route, and adversarial schema tests |
 | Reference implementation | `src/verifier/` | Tests for the exact implemented proposition and failure boundary |

@@ -69,7 +69,7 @@ verifier = "verifier.runtime.public_cli:main"
 verifiable = "verifier.runtime.public_cli:main"
 
 [tool.setuptools.package-data]
-verifier = ["artifact_control/*.json", "hardware/*.json", "profiles/*.json", "schemas/*.json", "specifications/*.md"]
+verifier = ["artifact_control/*.json", "hardware/*.json", "profiles/*.json", "schemas/*.json", "standard/*.md"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

@@ -68,7 +68,7 @@ def test_authority_composition_package_detection_planning_and_readiness_are_iner
     binding = next(item for item in package.implementations if item.component_id == COMPONENT)
     required = {
         "src/verifier/interoperability/authority_composition.py",
-        "src/verifier/specifications/FINITE_AUTHORITY_COMPOSITION.md",
+        "src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md",
     }
     assert required <= set(binding.artifact_paths)
     artifacts = {item.path: item for item in package.artifacts}

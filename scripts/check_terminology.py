@@ -36,7 +36,7 @@ IGNORED_PARTS = {
 }
 GENERATED_PREFIXES = (
     "examples/flagship_demo/specimens/",
-    "src/verifier/specifications/",
+    "src/verifier/standard/",
 )
 SCAN_EXCLUSIONS = {
     "examples/zizk_artifact_first/zero_identity/ROUND1_ZERO_IDENTITY_REPORT.md",

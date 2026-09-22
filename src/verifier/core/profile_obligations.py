@@ -211,7 +211,7 @@ def specification_digest() -> str:
     import hashlib
     names = ("GROUNDED_CERTIFICATION.md", "LADDER.md", "WIRE_IDENTIFIERS.md",
              *(f"VSTD-{p}.md" for p in range(1, 6)))
-    root = files("verifier.specifications")
+    root = files("verifier.standard")
     return canonical_digest({name: hashlib.sha256(root.joinpath(name).read_bytes()).hexdigest()
                              for name in names})
 
@@ -221,7 +221,7 @@ def graph_specification_digest() -> str:
     import hashlib
     names = ("GRAPH_GROUNDING.md", "LADDER.md",
              *(f"GRAPH-{p}.md" for p in range(1, 6)))
-    root = files("verifier.specifications")
+    root = files("verifier.standard")
     return canonical_digest({name: hashlib.sha256(root.joinpath(name).read_bytes()).hexdigest()
                              for name in names})
 
@@ -1200,7 +1200,7 @@ def domain_obligation_digest() -> str:
     """Pin the installed domain-object normative bytes, separately from both axes."""
     import hashlib
     names = ("DOMAIN_OBLIGATIONS.md", "META_TIERS.md")
-    root = files("verifier.specifications")
+    root = files("verifier.standard")
     return canonical_digest({name: hashlib.sha256(root.joinpath(name).read_bytes()).hexdigest()
                              for name in names})
 

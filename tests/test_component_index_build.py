@@ -238,7 +238,7 @@ def test_worktree_index_retains_reviewed_proposition_transfer_sources(tmp_path: 
         "src/verifier/interoperability/proposition_transfer.py",
         "src/verifier/profiles/proposition-transfer-rule-1.json",
         "src/verifier/schemas/verifier-proposition-transfer-1.schema.json",
-        "src/verifier/specifications/PROPOSITION_TRANSFER.md",
+        "src/verifier/standard/PROPOSITION_TRANSFER.md",
     }
     output = tmp_path / "components"
 

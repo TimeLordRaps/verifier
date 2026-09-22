@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 def test_packaged_specification_bytes_match_normative_sources() -> None:
     normative_files = sorted((REPO_ROOT / "standard").glob("*.md"))
-    packaged_dir = REPO_ROOT / "src" / "verifier" / "specifications"
+    packaged_dir = REPO_ROOT / "src" / "verifier" / "standard"
     assert {path.name for path in packaged_dir.glob("*.md")} == {
         path.name for path in normative_files
     }

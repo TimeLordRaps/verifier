@@ -114,7 +114,7 @@ def test_formation_profile_and_packaged_contract_are_exact_inert_resources() -> 
     assert artifact.read_bytes() == wire.profile_bytes()
     assert digest_bytes(artifact.read_bytes()) == PROFILE_DIGEST
     for source, packaged in (
-        ("standard/TYPED_FORMATION.md", "specifications/TYPED_FORMATION.md"),
+        ("standard/TYPED_FORMATION.md", "standard/TYPED_FORMATION.md"),
         ("standard/schemas/verifier-typed-formation-1.schema.json", "schemas/verifier-typed-formation-1.schema.json"),
     ):
         assert (ROOT / source).read_bytes() == importlib.resources.files("verifier").joinpath(packaged).read_bytes()
@@ -183,11 +183,11 @@ def test_formation_package_index_detection_plan_and_readiness_remain_nonexecutin
     component = package.registry.get(_component_id(role))
     assert component == reference_component_registry().get(component.component_id)
     artifacts = {artifact.path: artifact for artifact in package.artifacts}
-    required = {PROFILE_PATH, "src/verifier/specifications/TYPED_FORMATION.md",
+    required = {PROFILE_PATH, "src/verifier/standard/TYPED_FORMATION.md",
                 "src/verifier/schemas/verifier-typed-formation-1.schema.json",
                 "src/verifier/interoperability/" + reference.split(":")[0] + ".py"}
     if role == "receipt-rechecker":
-        required.update({"src/verifier/specifications/FORMATION_RECEIPT.md",
+        required.update({"src/verifier/standard/FORMATION_RECEIPT.md",
                          "src/verifier/schemas/verifier-silo-formation-receipt-1.schema.json"})
     implementation = next(item for item in package.implementations if item.component_id == component.component_id)
     assert required <= set(implementation.artifact_paths)

@@ -241,7 +241,7 @@ retired pre-current-profile field arrangements.
 ## Installed specification ownership
 
 Every `standard/*.md` file has a byte-identical installed resource under
-`src/verifier/specifications/`. Verifier descriptors use those resources when no source
+`src/verifier/standard/`. Verifier descriptors use those resources when no source
 checkout is present. The installed-wheel gate runs outside the checkout and rejects an
 unavailable specification digest.
 

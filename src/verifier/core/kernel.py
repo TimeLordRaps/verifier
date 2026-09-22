@@ -649,7 +649,7 @@ def reference_descriptor() -> VerifierDescriptor:
                 here.parent / relative,
                 Path.cwd() / relative,
                 here.parents[3] / relative,
-                here.parents[1] / "specifications" / relative.name,
+                here.parents[1] / "standard" / relative.name,
             )
             for path in paths:
                 try:

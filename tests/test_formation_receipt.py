@@ -306,7 +306,7 @@ def test_admission_errors_expose_exact_codes() -> None:
 
 
 def test_specification_has_an_exact_packaged_mirror() -> None:
-    assert (ROOT / "standard/FORMATION_RECEIPT.md").read_bytes() == (ROOT / "src/verifier/specifications/FORMATION_RECEIPT.md").read_bytes()
+    assert (ROOT / "standard/FORMATION_RECEIPT.md").read_bytes() == (ROOT / "src/verifier/standard/FORMATION_RECEIPT.md").read_bytes()
 
 
 @pytest.mark.parametrize("case", RECEIPT_CORPUS["cases"], ids=lambda case: case["case_id"])

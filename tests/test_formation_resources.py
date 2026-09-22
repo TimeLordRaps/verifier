@@ -106,7 +106,7 @@ def test_formation_resources_are_explicitly_packaged_and_experimental() -> None:
     assert "verifier-typed-formation-1.schema.json" in PACKAGED_SCHEMA_NAMES
     specification = ROOT / "standard/TYPED_FORMATION.md"
     assert specification.read_bytes() == (
-        ROOT / "src/verifier/specifications/TYPED_FORMATION.md"
+        ROOT / "src/verifier/standard/TYPED_FORMATION.md"
     ).read_bytes()
     assert "Experimental typed formation" in specification.read_text(encoding="utf-8")
     assert "COMPLETENESS_NOT_ESTABLISHED" in specification.read_text(encoding="utf-8")

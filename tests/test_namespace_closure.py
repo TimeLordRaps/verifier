@@ -169,7 +169,7 @@ def test_the_one_composition_is_declared_the_same_way_in_all_three_places() -> N
         assert index.split("-")[0] in gate.OBJECTS, "and so must the axis it is indexed by"
 
         published = " ".join(
-            (ROOT / "src/verifier/specifications/DOMAIN_OBLIGATIONS.md")
+            (ROOT / "src/verifier/standard/DOMAIN_OBLIGATIONS.md")
             .read_text(encoding="utf-8").split()
         )
         assert (

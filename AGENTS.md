@@ -212,7 +212,7 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 - `src/verifier/constraints/`, `hardware/`, `layer4/`, `data/` — profile-specific runtime
   surfaces, including additive Graph assurance propagation; `layer4/` is a retained module path.
 - `src/verifier/runtime/` — `public_cli.py` (every CLI entry point) and `demo.py`.
-- `src/verifier/specifications/` — byte-identical copies of normative spec files.
+- `src/verifier/standard/` — byte-identical copies of normative spec files.
 - `receipts/schema/` — receipt JSON Schemas. `standard/schemas/` — strict non-receipt
   mechanism schemas. `examples/` — supported runnable specimens.
 - `experiments/` — non-normative roadmap-steering studies with profile manifests, explicit horizons,
@@ -258,7 +258,7 @@ release bytes remain historical facts in their tags and Git history, not active 
 profiles.
 
 **Packaged specification bytes.** Every `standard/*.md` file has a byte-identical
-installed copy under `src/verifier/specifications/` so verifier descriptors do not depend
+installed copy under `src/verifier/standard/` so verifier descriptors do not depend
 on a source checkout. `tests/test_packaged_specifications.py` enforces the complete set.
 
 **Schema `$id` is a live route.** Every `receipts/schema/*.json` and

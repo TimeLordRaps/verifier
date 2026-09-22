@@ -108,5 +108,5 @@ def domain_catalog() -> dict:
 
 
 def domain_specification_digest() -> str:
-    data = files("verifier.specifications").joinpath("DOMAIN_GROUNDING.md").read_bytes()
+    data = files("verifier.standard").joinpath("DOMAIN_GROUNDING.md").read_bytes()
     return canonical_digest({"catalog": domain_catalog(), "specification": hashlib.sha256(data).hexdigest()})

@@ -199,7 +199,7 @@ def test_qualifier_package_detection_planning_and_readiness_remain_nonexecuting(
         "src/verifier/interoperability/composition_qualification.py",
         "src/verifier/interoperability/authority_composition.py",
         "src/verifier/interoperability/network.py",
-        "src/verifier/specifications/FINITE_AUTHORITY_COMPOSITION.md",
+        "src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md",
     }
     assert required <= set(binding.artifact_paths)
     artifacts = {item.path: item for item in package.artifacts}

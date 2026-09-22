@@ -25,7 +25,7 @@ from verifier.core.profile_obligations import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-META = (REPO_ROOT / "src/verifier/specifications/META_TIERS.md").read_text(encoding="utf-8")
+META = (REPO_ROOT / "src/verifier/standard/META_TIERS.md").read_text(encoding="utf-8")
 
 # The two specification axes carry no catalogued dependencies of their own, so their
 # depths are read back out of the published ladder strip rather than computed.

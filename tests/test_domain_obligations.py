@@ -178,7 +178,7 @@ def test_tier_depth_is_a_depth_not_a_count() -> None:
 
 
 def test_normative_domain_catalogue_and_runtime_rows_agree() -> None:
-    text = (REPO_ROOT / "src/verifier/specifications/DOMAIN_OBLIGATIONS.md").read_text(encoding="utf-8")
+    text = (REPO_ROOT / "src/verifier/standard/DOMAIN_OBLIGATIONS.md").read_text(encoding="utf-8")
     for obligation in DOMAIN_OBLIGATIONS:
         dependencies = ", ".join(obligation.depends_on) or "none"
         row = (f"| {obligation.id} | {obligation.name} | {obligation.requirement} "

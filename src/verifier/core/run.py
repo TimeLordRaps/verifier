@@ -159,7 +159,7 @@ def _assessment_context(
         )
     )
     specification = here.parents[3] / "standard" / "VSTD-1.md"
-    packaged_specification = here.parents[1] / "specifications" / "VSTD-1.md"
+    packaged_specification = here.parents[1] / "standard" / "VSTD-1.md"
     verifier = {
         "specification_hash": _digest_if_available(
             specification, "standard/VSTD-1.md", packaged_specification
