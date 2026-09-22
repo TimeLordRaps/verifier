@@ -555,6 +555,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: python scripts/check_presentation.py
+      - name: Check the VSTD-NAMESPACE is still closed
+        run: python scripts/check_namespace_closure.py
       - name: Check the pull-request description still describes this tree
         if: github.event_name == 'pull_request'
         env:
