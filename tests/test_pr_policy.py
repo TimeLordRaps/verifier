@@ -184,7 +184,7 @@ def _comment(body: str, *, association: str = "OWNER") -> dict[str, object]:
         "html_url": ACCEPTANCE_URL,
         "author_association": association,
         "user": {"login": "maintainer"},
-        "body": f"VSTD-HUMAN-ACCEPTANCE: {HEAD} {digest}",
+        "body": f"acceptance-clearance: {HEAD} {digest}",
     }
 
 
@@ -322,7 +322,7 @@ def test_mid_run_review_withdrawal_is_rejected_by_complete_reconfirmation() -> N
         "author_association": "OWNER",
         "state": "CHANGES_REQUESTED",
         "commit_id": HEAD,
-        "body": f"VSTD-HUMAN-ACCEPTANCE: {HEAD} {digest}",
+        "body": f"acceptance-clearance: {HEAD} {digest}",
     }]
     with pytest.raises(_module().PullRequestPolicyError, match="current state requests changes"):
         _module().confirm_current_evidence(
@@ -342,7 +342,7 @@ def test_trusted_review_requires_marker_for_exact_record() -> None:
         "author_association": "COLLABORATOR",
         "state": "APPROVED",
         "commit_id": HEAD,
-        "body": f"VSTD-HUMAN-ACCEPTANCE: {HEAD} {digest}",
+        "body": f"acceptance-clearance: {HEAD} {digest}",
     }
     result = _module().validate(
         _event(body),
@@ -364,7 +364,7 @@ def test_same_reviewer_later_state_revokes_approval(later_state: str, message: s
     digest = _module().promotion_record_sha256(body)
     common = {"user": {"login": "reviewer"}, "author_association": "COLLABORATOR", "commit_id": HEAD}
     reviews = [
-        {**common, "id": 1, "html_url": ACCEPTANCE_URL, "state": "APPROVED", "body": f"VSTD-HUMAN-ACCEPTANCE: {HEAD} {digest}"},
+        {**common, "id": 1, "html_url": ACCEPTANCE_URL, "state": "APPROVED", "body": f"acceptance-clearance: {HEAD} {digest}"},
         {**common, "id": 2, "html_url": ACCEPTANCE_URL + "-withdrawn", "state": later_state, "body": "withdrawn"},
     ]
     with pytest.raises(_module().PullRequestPolicyError, match=message):

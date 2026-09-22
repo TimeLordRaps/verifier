@@ -62,8 +62,8 @@ declare the experimental mechanisms complete. See the
 
 ### Level 6 -- disclosure bounds on every domain object
 
-- Add a sixth level to each of the eleven domain objects, coordinate
-  `<object>-6.1`-`6.6`: 66 new obligations bounding what a
+- Add a sixth level to each of the seventeen domain objects, coordinate
+  `<object>-6.1`-`6.6`: 102 new obligations bounding what a
   certificate of that object may **emit**, and to whom. The object axis and the Graph axis
   do not receive one -- both are corroboration ladders, and disclosure has no rungs.
 - **Level 6 is a level, not a twelfth object.** Four of its six rows state the same
@@ -86,14 +86,16 @@ declare the experimental mechanisms complete. See the
   cannot change what is established is not evidence, and counting its 5 positions per
   object as rungs would inflate every reachability figure the grid publishes. The ladder
   strip stays five wide -- it is what a certificate *climbs*, and a disclosure bound is not
-  climbed. 379 corroboration obligations and 66 disclosure obligations now make
-  445 in all, and the suite re-derives both halves separately.
-- All 66 rows are specified with **no mechanism** and report `UNKNOWN`, never
+  climbed. 599 corroboration obligations and 102 disclosure obligations now make
+  701 in all, and the suite re-derives both halves separately.
+- All 102 rows are specified with **no mechanism** and report `UNKNOWN`, never
   `PASS`: no adapter runs at emission time and no observer model is established anywhere in
   the implementation, so a pass here would be a claim nothing supports. Level 6 therefore
   adds no module to `verifier.domains` and **does not move** `implementation_digest()`,
-  which is unchanged at `sha256:b505a4a2...` -- so no domain policy bound to it is
-  invalidated by this change.
+  which reaches the adapter sources, the registered checks and `DOMAIN_GROUNDING.md` and
+  none of the three -- so no domain policy bound to it is invalidated by this change. The
+  digest is not published as a literal here: it moves with every adapter edit, so a value
+  written into a changelog is stale before the release it describes.
 
 ### TRAIN is catalogued but not certifiable
 
@@ -103,15 +105,15 @@ declare the experimental mechanisms complete. See the
   gave 25 of its 35 obligations a mechanism -- several of them **another object's
   check name**, `configuration` being ENV's and `lineage` being DATA's. The 14 unresolvable
   names are cleared, so `TRAIN` reports 11 of 35 mechanized rather than 25,
-  and the domain axis reports 163 of 512.
+  and the domain axis reports 191 of 626.
 - **Certifiable is not the same property as grounded**, and conflating them is what let
   this through. `build_domain_certificate` rejects any domain absent from `CHECKS`, so
   `TRAIN` could never be certified at all -- it was not partially grounded, it was
   unreachable -- while the grid published it as the most heavily mechanized object on the
   axis. New `CERTIFIABLE_OBJECTS` and `UNCERTIFIABLE_OBJECTS` name the real partition,
-  which has three parts over 15 objects rather than two:
-  9 certifiable, `TRAIN` catalogued with statics and
-  adaptation mechanisms that do execute, and five ungrounded with no mechanism anywhere.
+  which has three parts over 17 objects rather than two:
+  9 certifiable, `TRAIN` and `TOKEN` catalogued with statics and
+  adaptation mechanisms that do execute, and six ungrounded with no mechanism anywhere.
 - **A mechanism name is a promise that something executes it.** The suite now resolves
   every name against the registered checks of that obligation's **own** object, and asserts
   `CERTIFIABLE_OBJECTS` against both `CHECKS` and `SCOPES`. Resolution is object-scoped
@@ -122,40 +124,121 @@ declare the experimental mechanisms complete. See the
   grounded because an adapter executes them, that `TRAIN` has its own adapter module,
   and the grid cell reading 25/35.
 - No adapter is added and no obligation is removed, so `implementation_digest()` is
-  unchanged at `sha256:b505a4a2...` and no domain policy bound to it is invalidated. Until
+  unmoved and no domain policy bound to it is invalidated. Until
   a `TRAIN` adapter exists, no certificate over the object can be produced.
+
+### The actor-identity family: HUMAN, ROLE, COLLECTIVE, IDENTITY and ACTOR
+
+- Catalogue five objects for the parties a claim can be about, each carrying the same six
+  levels every domain object carries: `HUMAN` (36 obligations), `ROLE` (35),
+  `COLLECTIVE` (32), `IDENTITY` (39) and `ACTOR` (38) -- 180 in all. `IDENTITY` is
+  **relational**: it binds a bearer to a role rather than certifying a substrate of its own.
+- **The bearer of a role is a sum of exactly two classes, `HUMAN` or `BOT`**, declared at
+  `ROLE-1.5` as a property of the seat and not of any occupancy of it. `AGENT` is not
+  admissible as a bearer: it certifies a trajectory bounded by one harness, which is not a
+  party that can answer for a decision, so admitting it would have made every
+  accountability floor dischargeable by a program.
+- Three statics rows exist to stop the family being read as more than it is. `HUMAN-3.6`
+  states that no composition yields a human; `ROLE-3.6` that a class is not its occupants;
+  `COLLECTIVE-3.1` that a collective has no decisions of its own. A graph of roles is not
+  a party, and the catalogue says so rather than leaving it to be inferred.
+- All five are **ungrounded**. No adapter executes any of their 180 obligations, so every
+  one is specified with no mechanism and reports `UNKNOWN` -- never absent, and never
+  passed. They are specification surfaces, and this release does not claim otherwise.
+
+### TOKEN, the zero-identity zero-knowledge token
+
+- Catalogue `TOKEN`, normative in [`standard/ZIZK_TOKENS.md`](standard/ZIZK_TOKENS.md):
+  76 obligations over six levels and 24 rungs, the deepest ladder on the domain axis. A
+  token is exactly one of three kinds -- birth, aging or lifetime -- which are one
+  identity's lifecycle rather than three independent formats.
+- Add 14 `statics:` checks at tier 3 and 14 adaptation checks at tier 5, so 28 of its
+  76 obligations execute today. Each statics check was exercised on both paths: it
+  passes on a constructed evidence fixture and refutes on a tampered one. The
+  preimage check **records** a search that found no preimage rather than passing on it.
+- **`TOKEN` is grounded without being certifiable, and for a different reason than
+  `TRAIN`.** It has a substrate of its own and working mechanics over it, but they live in
+  `verifier.identity` rather than `verifier.domains`, so there is no `CHECKS` entry and
+  `build_domain_certificate` rejects it. `COMPOSED_OBJECTS` and `ADAPTER_PENDING_OBJECTS`
+  name the two reasons separately because they are not the same residue: `TRAIN` inherits
+  its substrate from its operands and can never have an adapter, while `TOKEN`'s residue
+  is dischargeable by writing one. Collapsing them into a single set would have hidden that.
+- The ZIZK Prime Invariant governs it: an actor identity never upgrades a computational
+  verdict. `TOKEN-3.5` states it -- elapsed tenure is a quantity of time and confers no
+  scope -- and the `authority` statics check executes it; `TOKEN-3.9` separates holding a
+  token from being the party it was issued to.
 
 ### The meta-tier grid, the relational objects and the VSTD-NAMESPACE
 
 - Publish the meta-tier grid in [`standard/META_TIERS.md`](standard/META_TIERS.md): every
   verifiable object carries the same five tiers -- facets, dynamics, statics, closure and
-  domain adaptation -- at the coordinate `VSTD-<NAME>-<tier>.<m>`. `<m>` is a **depth**,
+  domain adaptation -- at the coordinate `<NAME>-<tier>.<m>`. `<m>` is a **depth**,
   not a count: it is the longest prerequisite chain inside one profile, so independent
-  obligations are cleared at one rung rather than at several. 270 rungs over
-  sixty-five profiles; the remaining 109 catalogued obligations are nameable
+  obligations are cleared at one rung rather than at several. 386 rungs over
+  ninety-five profiles; the remaining 213 of 599 catalogued obligations are nameable
   and unreachable as an `<m>`, and a certificate naming one of them is malformed.
 - Title the namespace of these objects the **VSTD-NAMESPACE**. `NAMESPACE` is deliberately
   not itself a member of the `<NAME>` set, so `VSTD-NAMESPACE-1.1` does not parse. A wire
   identifier such as the `schema_version` string `verifier-data-1` is not a coordinate in the
   grid and is not renamed to match it; pinning readers would break.
 - Partition the domain objects into **grounded** and **ungrounded**, and name the
-  **relational** ones -- `GRAPH`, `HYPER` and `OWNER` -- which hold between
+  **relational** ones -- `GRAPH`, `HYPER`, `OWNER` and `IDENTITY` -- which hold between
   certified objects instead of certifying a substrate of their own. `GRAPH` carries
-  its own axis; the other two sit on the domain axis.
+  its own axis; the other three sit on the domain axis.
 - Add `OWNER`, a holding between a certified actor and a certified object, typed by
   the `ACTOR` certificate. It is relational and **ungrounded**: no
-  adapter executes it, so all 30 of its obligations are specified with no
+  adapter executes it, so all 36 of its obligations are specified with no
   mechanism and report `UNKNOWN` -- never absent, and never passed. Its closure profile
   carries an accountability floor, so a chain of discharge-duties that nobody answers for
   is not closed.
 - The three obligation namespaces stay disjoint and separately digested:
-  47 object, 28 Graph and 304 domain coordinates,
-  379 in all. `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, and extending one
+  47 object, 28 Graph and 626 domain coordinates,
+  701 in all. `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, and extending one
   catalogue provably cannot move another.
+- The `.m` ordinals are a **topological order**, and `tests/test_obligation_topological_order.py`
+  now holds them to it: every prerequisite resolves, no dependency edge crosses a rung
+  boundary, no edge runs from a higher ordinal to a lower one, and the numbering is dense
+  from 1. Measured over all 701 obligations and 847 edges, and the guard checks that it
+  still sees every axis rather than passing on an empty scan.
 - Every numeral the grid publishes -- depths, rung totals, obligation counts, the
   unreachable remainder and both composition-lattice figures -- is re-derived from the
   catalogued dependencies by `tests/test_meta_tier_cardinality.py`, so a figure that stops
   being true fails the suite instead of standing as prose.
+
+### Breaking: object coordinates are spelled bare
+
+- **Removed the `VSTD-` prefix from every object coordinate.** A coordinate is now its bare
+  object name and nothing else -- `DATA-1.1`, `OWNER-4.5`, `GRAPH-3.2` -- where each was
+  previously written with the prefix in front of it. 1,286 occurrences across 101 files.
+  ALL-CAPS is the namespace marker, so the prefix was carrying no information the name did
+  not already carry.
+- Ten specification files are renamed with it: the five Graph specifications in each of the
+  two mirrors lose the prefix and become `GRAPH-1.md` through `GRAPH-5.md`. Any link or
+  path pinning the old filenames breaks. Packaging globs `specifications/*.md`, so the
+  renames carry into the wheel with no manifest edit.
+- The prefix survives in exactly two places, both where a bare spelling would say less:
+  `VSTD-1` through `VSTD-6`, the base abstract object's own tiers, where a bare numeral
+  names nothing; and the title **VSTD-NAMESPACE**, where a bare `NAMESPACE` collides with
+  the two other things that word already means in this repository.
+- **Wire identifiers are untouched.** The lowercase `schema_version` strings -- `verifier-data-1`
+  and its siblings -- are a different namespace that happens to share a prefix. Renaming one
+  to match the convention would break every reader that pins the string.
+- Add `scripts/check_namespace_closure.py`, which closes the namespace at seventeen objects
+  and fails on any surviving prefix outside those two cases. It reads the object set rather
+  than prose, so a new name cannot enter by being written down somewhere. Four of the
+  renamed coordinates were **built at runtime** from an f-string over the object name and
+  so were invisible to a byte sweep; the gate resolves names the same way. `TRAIN` is
+  carried as a named composition rather than an object, with its decomposition recorded
+  beside it, because a composition is written *over* the namespace rather than being a
+  member of it.
+- Rename the release acceptance keyword to **`acceptance-clearance`**. The previous spelling
+  was minted inside the object namespace without ever being declared an object, and it rode
+  a head that genuinely is one -- so every sweep shaped around invented names went straight
+  past it, and it had never once been used on a pull request. Only the spelling moved; the
+  mechanism is unchanged, and it remains the sole thing binding a human's approval to the
+  promotion-record digest, since GitHub stamps a review with a commit but knows nothing of
+  the record. `scripts/check_pr_policy.py` parses the new keyword verbatim, so this changes
+  what a maintainer types to accept a release.
 
 ### Breaking: the verifier-actor-binding-1 wire object is withdrawn
 

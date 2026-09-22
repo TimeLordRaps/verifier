@@ -173,7 +173,7 @@ link its review or comment. The digest deliberately excludes its own field and t
 avoid a circular record; it includes every other promotion field and every human-gate line.
 
 The human acceptance is an approving review on the exact head or a trusted maintainer
-comment containing `VSTD-HUMAN-ACCEPTANCE: <full-head-commit-identifier>
+comment containing `acceptance-clearance: <full-head-commit-identifier>
 <promotion-record-sha256>`, linked from the pull-request
 body. Automated contributors MUST NOT create that marker for their own work. This mechanism
 establishes a recorded repository action by an authorized account; it does not establish

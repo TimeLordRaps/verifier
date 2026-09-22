@@ -55,7 +55,7 @@ def _rows(*rows: tuple[str, str, str]) -> tuple[Static, ...]:
     return tuple(Static(*row) for row in rows)
 
 
-#: The six objects whose tier-3 profile carried no mechanism. Order inside each
+#: The seven objects whose tier-3 profile carried no mechanism. Order inside each
 #: tuple matches the obligation order in ``DOMAIN_OBLIGATIONS.md``.
 STATICS: dict[str, tuple[Static, ...]] = {
     "DATA": _rows(
@@ -72,6 +72,22 @@ STATICS: dict[str, tuple[Static, ...]] = {
         ("objective", "recompute", "The analytic gradient of the bound objective is recomputed at a retained point, independently of what the run produced."),
         ("geometry", "recompute", "The curvature the architecture and data together fix is recomputed as a conditioning bound at that point."),
         ("independence", "invariance", "The facts above are unchanged when the run's configuration is perturbed."),
+    ),
+    "TOKEN": _rows(
+        ("hash", "witness", "The hash implementation the tokens are built on is probed; the mapping it computes is recomputed and the search that found no preimage is only recorded."),
+        ("chain", "recompute", "The accumulator is refolded over the retained epochs, and a single altered status is shown to change every digest after it."),
+        ("binding", "recompute", "The birth commitment is recomputed from its declared opening, so a second opening would have to be a collision."),
+        ("soulbound", "recompute", "No retained lease appears under two delegates; transfer is absent from the evidence, not forbidden by a rule in it."),
+        ("authority", "recompute", "Every lease's scope lies inside the root grant whatever its accumulated tenure, which is the Prime Invariant in its arithmetic form."),
+        ("algorithm", "recompute", "The algorithm each signature was verified under is read from inside the signed preimage, and an accepted set admitting both a symmetric and an asymmetric algorithm is a confusion rather than a choice."),
+        ("keying", "recompute", "Each issuing key identifier is recomputed from the key's own bytes, so a token cannot name a key that is resolved on its behalf."),
+        ("window", "recompute", "Validity windows are recomputed as instants on one clock: a window that ends at or before it starts is empty, and one no wider than the stated skew is undetermined rather than valid."),
+        ("possession", "recompute", "A token binding a confirmation key is recomputed as non-bearer, and a presentation carrying no proof under that key establishes possession of nothing."),
+        ("attenuation", "recompute", "Caveat sets are recomputed along each delegation path and shown never to lose an entry, so no step re-widens what an earlier step narrowed."),
+        ("freshness", "recompute", "Status age is recomputed against the published schedule; a status older than the schedule is stale, and stale is a different verdict from current rather than a weaker one."),
+        ("replay", "recompute", "No two retained issuances share a replay identifier, so a repeated presentation is distinguishable from a reissue."),
+        ("disclosure", "recompute", "The withheld fields are recomputed as the complement of the disclosed set over the bound digests, so a field in neither is unaccounted for rather than absent."),
+        ("independence", "invariance", "The facts above are unchanged when the issuance the deployment chose is perturbed."),
     ),
     "HYPER": _rows(
         ("ceiling", "recompute", "The composed depth is recomputed as the minimum over operand established depths and must not be exceeded."),
@@ -104,6 +120,7 @@ STATICS: dict[str, tuple[Static, ...]] = {
 CHOICE_FIELDS = {
     "DATA": ("pipeline",), "TRAIN": ("configuration",), "HYPER": ("composition",),
     "HARNESS": ("session",), "AGENT": ("declarations",), "BOT": ("policies",),
+    "TOKEN": ("issuance",),
 }
 
 BY_NAME = {object_name: {static.name: static for static in rows}
@@ -143,6 +160,39 @@ def _arithmetic(measurement: dict, budget: Budget) -> dict:
 
 
 # ------------------------------------------------------------------- recompute
+
+def _hash(measurement: dict, budget: Budget) -> dict:
+    """Recompute what a hash probe determines; record the search it could not finish.
+
+    Preimage resistance is not a property of a token, and no token can be asked
+    to demonstrate it. What a probe *determines* is the mapping the executing
+    implementation computes, and that is recomputed here trial by trial. What it
+    leaves undetermined is the exhaustive search, and an unfinished search is
+    recorded rather than passed -- exactly as an undetermined floating-point
+    behaviour is recorded rather than passed for TRAIN.
+    """
+    observed = obj(measurement, {"algorithm", "digest_size", "trials", "searched", "found"})
+    algorithm = text(observed["algorithm"])
+    size = integer(observed["digest_size"], 1)
+    if size < 256:
+        raise Refuted(f"a {size}-bit digest cannot carry the commitment this object binds")
+    trials = seq(observed["trials"], budget)
+    if not trials:
+        raise Unavailable("a hash probe with no trial determines nothing")
+    images: dict[str, Any] = {}
+    budget.tick(len(trials))
+    for trial in trials:
+        pair = obj(trial, {"preimage", "image"})
+        computed = digest(pair["preimage"])
+        same(pair["image"], computed, "the probed implementation does not compute the image it reports")
+        if computed in images and canonical_key(images[computed]) != canonical_key(pair["preimage"]):
+            raise Refuted("two distinct preimages share an image: the commitment does not bind")
+        images[computed] = pair["preimage"]
+    if integer(observed["found"]) != 0:
+        raise Refuted("the probe found a preimage, so the commitment hides nothing")
+    return {"algorithm": algorithm, "digest_size": size, "determined_trials": len(trials),
+            "searched_without_finding": integer(observed["searched"])}
+
 
 def _entropy(counts: list[int]) -> float:
     total = sum(counts)
@@ -260,6 +310,179 @@ def _train(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
     close(condition, need(artifact, "condition_number"), tolerance,
           "recomputed conditioning differs from the declared geometry")
     return {"condition_number": condition, "curvature_extremes": [min(curvature), max(curvature)]}
+
+
+def _leases(inputs: dict, budget: Budget) -> list[dict]:
+    return [obj(lease, {"token_id", "delegate_key_id", "permitted_scopes", "accumulated_epochs"})
+            for lease in seq(need(inputs, "leases"), budget)]
+
+
+def _token(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
+    if check == "chain":
+        steps = seq(need(inputs, "epochs"), budget)
+        if not steps:
+            raise Unavailable("an accumulator with no retained epoch cannot be refolded")
+        accumulator = text(need(artifact, "accumulator_seed"))
+        folded = [accumulator]
+        budget.tick(len(steps))
+        for step in steps:
+            entry = obj(step, {"epoch", "status", "digest"})
+            accumulator = digest([accumulator, integer(entry["epoch"]), text(entry["status"])])
+            same(entry["digest"], accumulator,
+                 "a retained epoch digest is not the fold of the epoch before it")
+            folded.append(accumulator)
+        # One-wayness is what makes the fold evidence rather than bookkeeping: an
+        # epoch whose status could be rewritten without moving what follows it
+        # would leave the history editable after the fact.
+        first = obj(steps[0])
+        rewritten = "REVOKED" if text(first["status"]) != "REVOKED" else "ACTIVE"
+        if digest([folded[0], integer(first["epoch"]), rewritten]) == folded[1]:
+            raise Refuted("the accumulator is insensitive to the status it folds")
+        return {"epochs": len(steps), "head": accumulator}
+    if check == "binding":
+        genesis = obj(need(artifact, "genesis"),
+                      {"genesis_key_digest", "birth_epoch", "salt", "commitment"})
+        budget.tick()
+        computed = digest([text(genesis["genesis_key_digest"]),
+                           integer(genesis["birth_epoch"]), text(genesis["salt"])])
+        same(genesis["commitment"], computed,
+             "the bound commitment is not the digest of the opening declared for it")
+        return {"commitment": computed, "birth_epoch": integer(genesis["birth_epoch"])}
+    if check == "algorithm":
+        accepted = {text(name) for name in seq(need(inputs, "accepted_algorithms"), budget)}
+        if "none" in {name.lower() for name in accepted}:
+            raise Refuted("an accepted algorithm set containing 'none' accepts unsigned tokens")
+        # Algorithm confusion is not a defect in a token. It is a defect in what the
+        # verifier will accept for one key, which is why it is read from the accepted
+        # set rather than from the tokens presented under it.
+        symmetric = {name for name in accepted if name.upper().startswith(("HS", "AES"))}
+        if symmetric and symmetric != accepted:
+            raise Refuted("one key accepts both a symmetric and an asymmetric algorithm: "
+                          + sorted(symmetric)[0])
+        signed = seq(need(artifact, "signed_preimages"), budget)
+        for entry in signed:
+            record = obj(entry, {"token_id", "algorithm", "preimage_digest"})
+            text(record["preimage_digest"])
+            if text(record["algorithm"]) not in accepted:
+                raise Refuted("a token verified under an algorithm outside the accepted set: "
+                              + text(record["token_id"]))
+        return {"accepted": sorted(accepted), "verified": len(signed)}
+    if check == "keying":
+        identified = set()
+        for key in seq(need(artifact, "issuing_keys"), budget):
+            record = obj(key, {"key_id", "key_bytes"})
+            same(record["key_id"], digest(text(record["key_bytes"])),
+                 "a key identifier is not the digest of the key it names")
+            identified.add(text(record["key_id"]))
+        return {"keys": len(identified)}
+    if check == "window":
+        skew = integer(need(artifact, "clock_skew"))
+        widths = []
+        for entry in seq(need(inputs, "windows"), budget):
+            record = obj(entry, {"token_id", "not_before", "expires_at"})
+            start, end = integer(record["not_before"]), integer(record["expires_at"])
+            if start >= end:
+                raise Refuted("a validity window ends at or before it starts: "
+                              + text(record["token_id"]))
+            if end - start <= skew:
+                raise Unavailable("a window no wider than the stated clock skew is "
+                                  "undetermined: " + text(record["token_id"]))
+            widths.append(end - start)
+        return {"windows": len(widths), "skew": skew, "narrowest": min(widths)}
+    if check == "possession":
+        presentations = seq(need(inputs, "presentations"), budget)
+        bearer = confirmed = 0
+        for entry in presentations:
+            record = obj(entry, {"token_id", "confirmation_key_id", "proof"})
+            if record["confirmation_key_id"] is None:
+                # A token binding no confirmation key is a bearer token. That is a
+                # declaration about who may present it, not a missing field.
+                bearer += 1
+                continue
+            text(record["confirmation_key_id"])
+            if record["proof"] is None:
+                raise Refuted("a token binding a confirmation key was presented without a "
+                              "proof: " + text(record["token_id"]))
+            text(record["proof"])
+            confirmed += 1
+        return {"presentations": len(presentations), "bearer": bearer, "confirmed": confirmed}
+    if check == "attenuation":
+        paths = seq(need(inputs, "delegations"), budget)
+        deepest = 0
+        for path in paths:
+            record = obj(path, {"token_id", "caveat_sets"})
+            steps = [{text(caveat) for caveat in seq(step, budget, nonempty=False)}
+                     for step in seq(record["caveat_sets"], budget)]
+            deepest = max(deepest, len(steps))
+            for earlier, later in zip(steps, steps[1:]):
+                if not earlier <= later:
+                    raise Refuted("a delegation step drops a caveat an earlier step imposed: "
+                                  + text(record["token_id"]))
+        return {"paths": len(paths), "depth": deepest}
+    if check == "freshness":
+        schedule = integer(need(artifact, "status_schedule"), 1)
+        observed_at = integer(need(artifact, "observed_at"))
+        statuses = seq(need(inputs, "statuses"), budget)
+        stale = []
+        for entry in statuses:
+            record = obj(entry, {"token_id", "published_at", "verdict"})
+            age = observed_at - integer(record["published_at"])
+            if age < 0:
+                raise Refuted("a status was published after it was observed: "
+                              + text(record["token_id"]))
+            if age <= schedule:
+                continue
+            # Soft-fail is the failure this row exists for: a stale status that reports
+            # itself current is worse than no status, because it is believed.
+            if text(record["verdict"]) == "CURRENT":
+                raise Refuted("a status older than its publication schedule reports itself "
+                              "current: " + text(record["token_id"]))
+            stale.append(text(record["token_id"]))
+        return {"statuses": len(statuses), "schedule": schedule, "stale": sorted(stale)}
+    if check == "replay":
+        seen: dict[str, str] = {}
+        issuances = seq(need(inputs, "issuances"), budget)
+        for entry in issuances:
+            record = obj(entry, {"token_id", "replay_id"})
+            replay_id, token_id = text(record["replay_id"]), text(record["token_id"])
+            if seen.setdefault(replay_id, token_id) != token_id:
+                raise Refuted("two issuances share a replay identifier: " + replay_id)
+        return {"issuances": len(issuances), "distinct": len(seen)}
+    if check == "disclosure":
+        bound = {text(entry) for entry in seq(need(artifact, "field_digests"), budget)}
+        shown = {text(entry) for entry in seq(need(inputs, "disclosed"), budget, nonempty=False)}
+        withheld = {text(entry) for entry in seq(need(inputs, "withheld"), budget, nonempty=False)}
+        both = sorted(shown & withheld)
+        if both:
+            raise Refuted("a field is both disclosed and withheld: " + both[0])
+        unaccounted = sorted(bound - (shown | withheld))
+        if unaccounted:
+            raise Refuted("a bound field digest is neither disclosed nor withheld: "
+                          + unaccounted[0])
+        stray = sorted((shown | withheld) - bound)
+        if stray:
+            raise Refuted("a disclosed field is not among the bound digests: " + stray[0])
+        return {"bound": len(bound), "disclosed": len(shown), "withheld": len(withheld)}
+    leases = _leases(inputs, budget)
+    if check == "soulbound":
+        delegates: dict[str, str] = {}
+        budget.tick(len(leases))
+        for lease in leases:
+            token_id, delegate = text(lease["token_id"]), text(lease["delegate_key_id"])
+            if delegates.setdefault(token_id, delegate) != delegate:
+                raise Refuted(f"a soulbound lease appears under two delegates: {token_id}")
+        return {"leases": len(leases), "distinct_tokens": len(delegates)}
+    root = {text(scope) for scope in seq(need(artifact, "root_scopes"), budget)}
+    tenures: list[int] = []
+    budget.tick(len(leases))
+    for lease in leases:
+        scopes = {text(scope) for scope in seq(lease["permitted_scopes"], budget)}
+        beyond = sorted(scopes - root)
+        if beyond:
+            raise Refuted(f"a lease conveys a scope no tenure could have granted: {beyond[0]}")
+        tenures.append(integer(lease["accumulated_epochs"]))
+    return {"root_scopes": len(root), "leases": len(leases),
+            "tenure_range": [min(tenures), max(tenures)] if tenures else []}
 
 
 def _hyper(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
@@ -482,7 +705,7 @@ def _decide(object_name: str, check: str, artifact: dict, inputs: dict,
 
 _RECOMPUTE: dict[str, Callable[..., dict]] = {
     "DATA": _data, "TRAIN": _train, "HYPER": _hyper,
-    "HARNESS": _harness, "AGENT": _agent, "BOT": _bot,
+    "HARNESS": _harness, "AGENT": _agent, "BOT": _bot, "TOKEN": _token,
 }
 
 
@@ -503,6 +726,8 @@ def evaluate(object_name: str, check: str, artifact: dict, inputs: dict,
             return _clock(_probe(artifact, "clock_probe", subject, budget), artifact, inputs, budget)
         if object_name == "BOT":
             return _latency(_probe(artifact, "latency_probe", subject, budget), artifact, inputs, budget)
+        if object_name == "TOKEN":
+            return _hash(_probe(artifact, "hash_probe", subject, budget), budget)
         measurement = _probe(artifact, check + "_probe", subject, budget)
         if check == "frame":
             observed = obj(measurement, {"population", "frame_size", "covered"})

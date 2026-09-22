@@ -342,7 +342,7 @@ marker on its own work:
 3. after every new commit, refresh the promotion record, all affected checks, every skip
    or omitted-check reason, and the resulting claim limits;
 4. obtain a trusted participant's acceptance bound to the current head through an approving
-   review or a comment containing `VSTD-HUMAN-ACCEPTANCE: <full-head-commit-identifier>
+   review or a comment containing `acceptance-clearance: <full-head-commit-identifier>
    <promotion-record-sha256>`; the record proves
    an authenticated repository action, not comprehension, independence, or correctness;
 5. do not merge without separate explicit merge authority, and never treat approval or

@@ -22,6 +22,7 @@ from verifier.core.profile_obligations import (
     DOMAIN_OBLIGATIONS,
     GRAPH_BY_ID,
     TIER_NAMES,
+    ADAPTER_PENDING_OBJECTS,
     COMPOSED_OBJECTS,
     UNCERTIFIABLE_OBJECTS,
     catalog_digest,
@@ -281,13 +282,20 @@ def test_certifiable_is_not_the_same_property_as_grounded() -> None:
 
     # TRAIN is the case a two-part partition could not express: grounded, because
     # statics and adaptation checks do execute over it, and certifiable not at all.
-    # Ruled 2026-09-22, the reason is that it is the catalogue's one *composition*: it
-    # inherits a substrate from the objects it is written over, and has none of its own
-    # for a behavioural adapter to bind. So this residue is not an anomaly awaiting a
-    # fix -- it is the shape every composed entry would have -- and the set of objects
-    # that are grounded but uncertifiable is exactly the set that are composed.
-    assert set(UNCERTIFIABLE_OBJECTS) - set(UNGROUNDED_OBJECTS) == set(COMPOSED_OBJECTS)
+    # Ruled 2026-09-22, and there turned out to be exactly two reasons, which is why
+    # the residue is named by two constants rather than by a literal. TRAIN is the
+    # catalogue's one *composition*: it inherits a substrate from the objects it is
+    # written over and has none of its own for an adapter to bind, so its residue is
+    # permanent -- the shape every composed entry would have. TOKEN has a substrate and
+    # working mechanics, but they live outside verifier.domains, so its residue is a
+    # pending wiring decision with a price attached, not a property of the object.
+    # Enumerating them separately is the point: collapsing them would hide that one of
+    # the two can be discharged and the other never can.
+    residue = set(UNCERTIFIABLE_OBJECTS) - set(UNGROUNDED_OBJECTS)
+    assert residue == set(COMPOSED_OBJECTS) | set(ADAPTER_PENDING_OBJECTS)
     assert set(COMPOSED_OBJECTS) == {"TRAIN"}
+    assert set(ADAPTER_PENDING_OBJECTS) == {"TOKEN"}
+    assert not set(COMPOSED_OBJECTS) & set(ADAPTER_PENDING_OBJECTS), "the reasons are distinct"
     assert "TRAIN" in GROUNDED_OBJECTS and "TRAIN" not in CERTIFIABLE_OBJECTS
     train = [o for o in DOMAIN_OBLIGATIONS if o.object_name == "TRAIN"]
     assert any(o.mechanized for o in train), "its statics and adaptation rows do resolve"

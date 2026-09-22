@@ -26,7 +26,7 @@ These fields are checked against the live pull request. Refresh them after every
 - Promotion record SHA-256: PENDING — digest of the canonical promotion fields and complete human-gate section.
 - Actionable findings: PENDING — replace with `CLEAR —` followed by every finding and its resolved disposition, or explain why none existed.
 - Tests skipped or not run: PENDING — after the recorded repository-check run completes, copy its machine-produced values exactly as `DISCLOSED — test-evidence-sha256=<64hex> — total-skipped=<count>; skip-observation-omissions=<comma-separated-manifest-list>`, where `<64hex>` means exactly 64 lowercase hexadecimal characters; use `NONE — test-evidence-sha256=<64hex> — total-skipped=0; skip-observation-omissions=NONE` only when the bound manifest records zero skips and no observation omissions.
-- Human acceptance evidence: PENDING — link an exact-head approving review or trusted maintainer comment containing `VSTD-HUMAN-ACCEPTANCE: FULL_COMMIT_ID PROMOTION_RECORD_SHA256`.
+- Human acceptance evidence: PENDING — link an exact-head approving review or trusted maintainer comment containing `acceptance-clearance: FULL_COMMIT_ID PROMOTION_RECORD_SHA256`.
 - Post-merge validation owner and surfaces: PENDING — replace with `ASSIGNED —` and name the owner plus the exact `main`, Pages, release, or other surfaces to observe.
 
 ## Human review gates

@@ -85,14 +85,14 @@ def test_the_ladder_strip_depth_matches_tier_depth(object_name: str) -> None:
 
 def test_every_object_carries_five_corroboration_profiles() -> None:
     assert all(len(d) == 5 for d in ALL_DEPTHS.values())
-    assert len(ALL_DEPTHS) == 18
-    assert len(ALL_DEPTHS) * 5 == 90
+    assert len(ALL_DEPTHS) == 19
+    assert len(ALL_DEPTHS) * 5 == 95
 
 
 def test_the_published_rung_total_is_the_sum_of_the_depths() -> None:
     rungs = sum(sum(d) for d in ALL_DEPTHS.values())
-    assert rungs == _published(r"([\d,]+) rungs over ninety profiles")
-    assert rungs == _published(r"([\d,]+) rungs across the eighteen ladders")
+    assert rungs == _published(r"([\d,]+) rungs over ninety-five profiles")
+    assert rungs == _published(r"([\d,]+) rungs across the nineteen ladders")
 
 
 def test_the_published_obligation_total_is_the_sum_of_the_catalogues() -> None:
@@ -114,10 +114,11 @@ def test_unreachable_coordinates_are_the_total_less_the_rungs() -> None:
 
 
 def test_the_free_product_is_the_product_of_every_depth() -> None:
-    """`prod(i, 18 x 5)` is a product of depths, never of obligation counts."""
+    """`prod(i, 19 x 5)` is a product of depths, never of obligation counts."""
     free = prod(d for depths in ALL_DEPTHS.values() for d in depths)
-    assert free == _published(r"prod\(i, 18 x 5\) = ([\d,]+)")
-    assert free == _published(r"free product over 90 cells\s+([\d,]+)")
+    ladders = len(ALL_DEPTHS)
+    assert free == _published(rf"prod\(i, {ladders} x 5\) = ([\d,]+)")
+    assert free == _published(rf"free product over {ladders * 5} cells\s+([\d,]+)")
     counts = prod(len([o for o in DOMAIN_OBLIGATIONS
                        if o.object_name == name and o.profile == tier])
                   for name in DOMAIN_OBJECTS for tier in range(1, 6))

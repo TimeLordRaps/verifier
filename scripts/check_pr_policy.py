@@ -69,7 +69,7 @@ PLACEHOLDER = re.compile(
     re.IGNORECASE,
 )
 ACCEPTANCE_MARKER = re.compile(
-    r"^VSTD-HUMAN-ACCEPTANCE:\s*([0-9a-f]{40})\s+([0-9a-f]{64})\s*$",
+    r"^acceptance-clearance:\s*([0-9a-f]{40})\s+([0-9a-f]{64})\s*$",
     re.MULTILINE,
 )
 GATE_DISPOSITION = re.compile(r"^- \[(ACCEPTED|NOT APPLICABLE)\] .+", re.IGNORECASE)

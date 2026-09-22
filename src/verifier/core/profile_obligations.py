@@ -1025,12 +1025,100 @@ DOMAIN_OBLIGATIONS = (
         ("Composition delta", "Emitting this certificate beside the OWNER certificate of a holding this actor carries discloses the relation: an actor within bound and a holding within bound together locate the party in a structure of things held, and what a party holds narrows who it is, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
+    *_domain_rows("TOKEN", 1, (
+        ("Token kind", "The token is exactly one of birth, aging or lifetime, declared at a stated coordinate. A token of no declared kind is malformed, and a token of two is malformed rather than both.", (), ""),
+        ("Canonical bytes", "The canonical byte serialization is bound, and it excludes the signature field, so the signed preimage is recomputable from the token rather than trusted alongside it.", (1,), ""),
+        ("Genesis commitment", "A birth token binds a commitment over the genesis key digest, the birth epoch and a salt. The commitment is the token's whole claim about origin: it establishes that the controlling key existed at or before the epoch, and nothing else.", (1,), ""),
+        ("Tenure accumulator", "An aging token binds an accumulator digest and the epoch interval it spans, each step folding its predecessor, so tenure is carried as a chain rather than as a stated number.", (1,), ""),
+        ("Lease scope", "A lifetime token binds the permitted scopes, the validity window and, where one is declared, the invocation bound. A scope the declaration omits is not conveyed.", (1,), ""),
+        ("Issuance binding", "Every token binds the key that issued it and the instant it was issued, and an unbound issuer makes the token unspecified rather than self-issued.", (2, 3, 4, 5), ""),
+        ("Algorithm binding", "The signature algorithm is bound inside the signed preimage, and the algorithms a verifier will accept are declared separately from the token. An algorithm a token names for itself is a request rather than a fact about it.", (2, 6), ""),
+        ("Key identification", "The issuing key is identified by a digest of the key itself. An identifier that has to be resolved through a directory the token points at identifies whatever that directory returns, which is not the same thing.", (6,), ""),
+        ("Audience", "The verifiers the token is addressed to are bound. A token that names none is addressed to every verifier, which is a scope the certificate states rather than a field it omits.", (5,), ""),
+        ("Validity window", "Not-before and expiry are bound as instants on a named clock. A token binding no expiry declares an unbounded window, and the certificate reports it as unbounded rather than as unstated.", (5,), ""),
+        ("Replay identifier", "Each issuance binds an identifier unique to it, so a token presented twice is distinguishable from two tokens issued alike.", (6,), ""),
+        ("Confirmation key", "A token that is not a bearer token binds the key its presenter must prove possession of. A token binding none is a bearer token and is declared as one.", (5, 8), ""),
+        ("Caveat set", "The conditions attached to a lease are bound as an ordered set, each carrying what would discharge it. A condition with no stated discharge restricts the lease permanently rather than conditionally.", (5,), ""),
+        ("Disclosure digests", "Where a field may be withheld, the token binds a digest of the field rather than the field. A withheld field is then absent from the token and accounted for by its digest, rather than present and hidden.", (2,), ""),
+    )),
+    *_domain_rows("TOKEN", 2, (
+        ("Genesis", "Birth is an event at a stated epoch, and no token of any kind is valid before the birth it descends from.", (), ""),
+        ("Epoch advance", "Tenure advances one accumulator step per epoch, each step binding the digest of the step before it and the status recorded at that epoch.", (1,), ""),
+        ("Revocation", "Revocation is an event that ends tenure from that epoch forward. It never reaches epochs already accumulated, and it is not an erasure of them.", (2,), ""),
+        ("Lease grant", "A lease is granted from a parent grant and conveys a subset of the parent's scopes. A grant conveying a scope its parent lacks is malformed rather than an extension.", (1,), ""),
+        ("Lease expiry", "A lease ends at its stated instant or at its invocation bound, whichever is reached first. Expiry is not revocation, and a certificate that reports one as the other is wrong about which event occurred.", (4,), ""),
+        ("Attenuation", "A holder narrows a lease it already holds without returning to the issuer. The narrowed lease descends from the one it attenuates and can never re-widen, so attenuation is an event with a direction.", (4,), ""),
+        ("Discharge", "A condition owed to a third party is satisfied by that party, not by the holder asserting it. An undischarged condition leaves the lease unusable rather than unconditional.", (6,), ""),
+        ("Presentation", "Presenting a token is an event distinct from holding it. Where a confirmation key is bound, possession is proved at presentation and the proof binds the instant it was made.", (5,), ""),
+        ("Key rotation", "An issuing key is retired at a stated epoch. Tokens issued before that epoch stay verifiable under the retired key, and a token issued under it afterwards is invalid rather than merely suspect.", (1,), ""),
+        ("Reissuance", "Reissuance mints a token descending from the same genesis. It never extends the token it replaces, and the replaced token ends on its own terms rather than on the new one's.", (1, 4), ""),
+        ("Suspension", "Suspension halts tenure accrual without ending it. Resumption continues the accumulator rather than restarting it, so a suspended interval is visible in the chain rather than missing from it.", (2, 3), ""),
+        ("Status publication", "Revocation status is published on a schedule the certificate states. A status older than that schedule is stale, and an absent status is unobserved rather than clear.", (3,), ""),
+        ("Clock disagreement", "The issuing clock and the verifying clock are separate. A window evaluated across them carries the stated skew, and an event falling inside the skew is undetermined rather than resolved in either direction.", (5,), ""),
+        ("Chain replay", "Replaying the events from genesis reproduces the current accumulator digest, the revocation status, the suspended intervals, the attenuations and the set of outstanding leases.", (2, 3, 5, 6, 11, 12), ""),
+    )),
+    *_domain_rows("TOKEN", 3, (
+        ("Preimage resistance", "The commitment hides its opening because the hash function is preimage-resistant, which is a property of the function observed rather than a property of the token declared.", (), "statics:hash"),
+        ("Chain one-wayness", "The accumulator is one-way over its history: an epoch cannot be inserted, removed or reordered without changing every digest after it.", (1,), "statics:chain"),
+        ("Commitment binding", "A commitment fixes exactly one opening. A second opening that verifies is a collision in the hash function, never an alternative reading of the same token.", (1,), "statics:binding"),
+        ("Soulbound non-transfer", "A soulbound lease names its delegate at issuance, and no operation defined on the token moves it to another delegate. Transfer is not forbidden by policy here; it is absent from the algebra.", (), "statics:soulbound"),
+        ("Tenure is not authority", "Elapsed tenure is a quantity of time and confers no scope. No accumulator value implies any permitted scope, and no scope implies any tenure -- this is the Prime Invariant in its arithmetic form.", (2,), "statics:authority"),
+        ("Algorithm confusion", "A verifier that accepts both a symmetric and an asymmetric algorithm for one key accepts a token signed with the public key as though it were signed by the private one. This is a property of the accepted set, not of any token presented under it.", (1,), "statics:algorithm"),
+        ("Key identity", "A key identifier that is a digest of the key resolves to that key and to nothing else. An identifier the token chooses resolves to whatever answers to it.", (1,), "statics:keying"),
+        ("Window emptiness", "A window ending at or before it starts contains no instant, so no token is valid within it. Emptiness is arithmetic on the bound instants rather than a judgement about the issuer.", (), "statics:window"),
+        ("Possession is not presentation", "Holding a token and being the party it was issued to are different facts. Only a proof under the bound confirmation key establishes the second, and a bearer token establishes it for nobody.", (7,), "statics:possession"),
+        ("Attenuation is one-way", "Conditions accumulate along a delegation path and are never removed by a later step. A step that drops a condition has widened the lease, whatever it is called.", (5,), "statics:attenuation"),
+        ("Freshness is not validity", "A status observation is evidence about the epoch it was published in, not about the epoch it is read in. Age is recomputed from the two instants, and it never becomes zero by being relied upon.", (8,), "statics:freshness"),
+        ("Replay distinctness", "Two presentations carrying one issuance identifier are one issuance presented twice. No property of the token distinguishes them, which is why the identifier has to.", (3,), "statics:replay"),
+        ("Disclosure complement", "Withheld and disclosed fields partition the bound digests. Neither side is inferable from the other, so a field in neither is unaccounted for rather than withheld by default.", (1,), "statics:disclosure"),
+        ("Choice independence", "The facts above hold for any key, salt and epoch schedule an issuer may choose, so none of them is a property of a particular deployment.", (3, 5, 6, 7, 8, 9, 10, 11, 12, 13), "statics:independence"),
+    )),
+    *_domain_rows("TOKEN", 4, (
+        ("Inventory", "The tokens the certificate accounts for are enumerated, each at a stated coordinate, and the enumeration is the whole holding rather than a selected part of it.", (), ""),
+        ("Epoch contiguity", "The accumulated epochs form an uninterrupted interval with no gap, and a gap is reported as a gap rather than closed by restating the endpoints.", (1,), ""),
+        ("Parent binding", "Every lease binds its exact parent grant, and a lease with no parent binds the birth token directly. A lease whose parent is absent from the inventory resolves to nothing.", (1,), ""),
+        ("Scope monotonicity", "Scope is non-increasing along every path of the delegation tree, so no reachable lease conveys a scope the birth token never held.", (3,), ""),
+        ("Signature closure", "Every token in the inventory verifies under the issuing key it binds, against the canonical preimage rather than against a re-serialization of it.", (1,), ""),
+        ("Algorithm closure", "Every token in the inventory verifies under exactly one algorithm, and the accepted set contains no algorithm the inventory never uses. An unused accepted algorithm is surface the closure reports rather than ignores.", (1,), ""),
+        ("Key closure", "Every issuing key the inventory refers to is present in the bound key set, and every key in the set is referred to. A key present but unused is reported as unused.", (1,), ""),
+        ("Audience closure", "Every token resolves to a verifier in the bound audience set. A token addressed outside it is reported at its coordinate rather than dropped from the count.", (1,), ""),
+        ("Window coverage", "The validity windows are reported as an interval set over the certificate period. A token whose window lies wholly outside that period is reported as out of period rather than omitted.", (1,), ""),
+        ("Discharge closure", "Every condition owed to a third party has a discharge in the inventory, and an undischarged condition is reported as undischarged rather than as satisfied by absence.", (1, 3), ""),
+        ("Replay closure", "The issuance identifiers over the inventory are distinct. A repetition is reported with both coordinates, because which two collided is the finding.", (1,), ""),
+        ("Status coverage", "Every token carries a status observation no older than the published schedule. A token with none is reported as unobserved, which is not the same result as active.", (1,), ""),
+        ("Disclosure closure", "The disclosed and the withheld fields together account for every bound digest exactly once, with neither side inferred from the other.", (1,), ""),
+        ("Closure result", "The inventory, the contiguity, the scope monotonicity, the signature closure and every closure above are reported together. A closure that omits any of them is incomplete rather than passing.", (2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), ""),
+    )),
+    *_domain_rows("TOKEN", 5, (
+        ("Mainstay binding", "The token format the object is expressed in is named and version-pinned.", (), "mainstay:binding"),
+        ("Claim-set mapping", "The mainstay's claim set is mapped onto the declared facets, and a facet the claim set cannot carry is reported rather than dropped.", (1,), "mainstay:layout"),
+        ("Validity-window mapping", "The mainstay's validity model is mapped onto the lease window and the accumulated epoch interval.", (1,), "mainstay:schema"),
+        ("Attenuation mapping", "The mainstay's delegation or attenuation model is mapped onto the scope subset relation, which is the one structure most token formats do carry.", (2,), "mainstay:upstream"),
+        ("Round trip", "A token expressed in a mainstay, mapped upward and expressed again yields the same canonical bytes.", (3, 4), "mainstay:roundtrip"),
+        ("Header metadata mapping", "The declared provenance and statics map onto the mainstay's metadata record. A parameter the mainstay carries outside the signed region is named as unprotected rather than counted as bound.", (1,), "mainstay:metadata"),
+        ("Proof attestation mapping", "The issuance attestation maps onto the mainstay's attestation or proof format, and an attestation that format cannot carry is named rather than approximated by one it can.", (1,), "mainstay:attestation"),
+        ("Ceiling mapping", "The declared ceilings map onto the mainstay's limit model. A ceiling the mainstay has no field for is named as unexpressible rather than written into a field a verifier will ignore.", (2,), "mainstay:limits"),
+        ("Presentation authorization mapping", "Proof of possession at presentation maps onto the mainstay's authorization model. A mainstay with only bearer semantics is reported as bearer-only, which is a finding about the format.", (1,), "mainstay:authorization"),
+        ("Attenuation operators", "The attenuation operators the mainstay's operation set cannot express are named. A format that can only reissue cannot attenuate, and the difference belongs to the format rather than to the holding.", (4,), "mainstay:operators"),
+        ("Selective disclosure mapping", "What the token discloses in the mainstay's encoding is enumerated at its coordinates.", (2,), "mainstay:disclosed"),
+        ("Withheld field mapping", "What it does not disclose is named as unestablished rather than absent, so a field withheld in the mainstay is not read as a field the object lacks.", (11,), "mainstay:indisclosed"),
+        ("Transparency inclusion", "Inclusion in whatever public log the mainstay defines is recorded rather than inferred. A mainstay defining no log records that absence rather than treating non-inclusion as exclusion.", (1,), "mainstay:inclusion"),
+        ("Inference upward", "What the mainstay cannot express is stated as the residual this object carries over it.", (5, 6, 7, 8, 9, 10, 11, 12, 13), "mainstay:residual"),
+    )),
+    *_domain_rows("TOKEN", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the token kind, the commitment, the accumulated epoch interval, the revocation status and the permitted scopes -- and is separated from the genesis secret, the salt and the opening of any commitment.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside an ACTOR certificate discloses correlation: a birth epoch is within bound and a set of decision classes is within bound, while the pair singles the party out, because tenure is close to unique over any population small enough to enumerate. The join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
 )
 
 DOMAIN_BY_ID = {o.id: o for o in DOMAIN_OBLIGATIONS}
 DOMAIN_OBJECTS = ("DATA", "ENV", "BENCH", "TRAIN", "HYPER", "MODEL", "SIM",
                   "HARNESS", "AGENT", "BOT", "OWNER",
-                  "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY", "ACTOR")
+                  "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY", "ACTOR", "TOKEN")
 
 # A relational object holds *between* certified objects instead of certifying a
 # substrate of its own. GRAPH carries its own axis; HYPER, OWNER and IDENTITY sit
@@ -1050,10 +1138,11 @@ GROUNDED_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in UNGROUNDED_OBJECT
 # about TRAIN for the life of this catalogue. A *behavioural* adapter is keyed in
 # verifier.domains.catalog.CHECKS, and build_domain_certificate rejects any domain absent
 # from it, so only these nine can have a domain certificate built for them at all.
-# TRAIN is catalogued and its statics and adaptation mechanisms resolve and execute,
-# but it has no behavioural adapter, so no certificate over it can be produced; the other
-# five carry no mechanism of any kind. Membership is asserted against CHECKS by the suite
-# rather than imported here, because verifier.domains depends on this module.
+# TRAIN and TOKEN are catalogued and their statics and adaptation mechanisms resolve and
+# execute, but neither has a behavioural adapter, so no certificate over either can be
+# produced; the other six carry no mechanism of any kind. Membership is asserted against
+# CHECKS by the suite rather than imported here, because verifier.domains depends on this
+# module.
 # The catalogue is not the namespace, and the two differ in both directions. GRAPH is a
 # namespace object with no entry here, because it carries its own axis; TRAIN is an entry
 # here that is not a namespace object, because it is a composition over other entries.
@@ -1067,6 +1156,16 @@ COMPOSITION_OF = {
     # sequence it was read in.
     "TRAIN": (("VSTD", "MODEL", "DATA", "ENV", "SIM", "BENCH"), "GRAPH-1"),
 }
+
+# The second reason an object can be grounded without being certifiable, and it is not the
+# same reason as composition. TOKEN has a substrate of its own -- the commitment, the
+# accumulator and the lease algebra -- and executable mechanics over it. Those mechanics
+# live in verifier.identity, which implementation_digest() does not cover, so wiring them
+# into a behavioural adapter is not a catalogue edit: a new module joining the
+# verifier.domains tuple moves that digest and invalidates every domain policy already
+# issued. TOKEN is therefore listed here rather than quietly left out of a claim, so the
+# residue below stays measured instead of shrinking to fit.
+ADAPTER_PENDING_OBJECTS = ("TOKEN",)
 
 CERTIFIABLE_OBJECTS = ("DATA", "ENV", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
                        "AGENT", "BOT")
@@ -1110,7 +1209,7 @@ def tier_depth(object_name: str, tier: int) -> int:
     """The longest prerequisite chain inside one numbered profile of one object.
 
     This is `i` in `META_TIERS.md`: the largest `m` a grounded certificate can
-    reach for `VSTD-<object>-<tier>.<m>`, which is a depth and not a count.
+    reach for `<object>-<tier>.<m>`, which is a depth and not a count.
     """
     here = [o for o in DOMAIN_OBLIGATIONS
             if o.object_name == object_name and o.profile == tier]

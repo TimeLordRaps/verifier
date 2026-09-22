@@ -3,7 +3,7 @@
 
 Keep the VSTD-NAMESPACE closed.
 
-The namespace is the base abstract `VSTD` plus sixteen objects and nothing else.
+The namespace is the base abstract `VSTD` plus seventeen objects and nothing else.
 ALL-CAPS is the namespace marker, so an object is spelled by its bare name --
 `DATA`, `GRAPH-1`, `OWNER-4.5` -- and the `VSTD-` prefix survives only where a
 bare name would say nothing (`VSTD-1` through `VSTD-6`, the base abstract's own
@@ -12,7 +12,7 @@ tiers) or would be ambiguous (`VSTD-NAMESPACE`, the name of the space itself).
 Nothing enforced this before, and 137 names under 59 invented heads had
 accumulated by v2.0.0.  Two checks run here:
 
-  catalogue  every object the catalogue carries is one of the sixteen, or a
+  catalogue  every object the catalogue carries is one of the seventeen, or a
              named composition over them.  This is the load-bearing check: it
              reads the object set rather than prose, so a new name cannot enter
              by being written down somewhere.
@@ -34,10 +34,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-#: The closed set.  `VSTD` is the base abstract; these are the sixteen objects.
+#: The closed set.  `VSTD` is the base abstract; these are the seventeen objects.
 OBJECTS: frozenset[str] = frozenset({
     "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
     "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
+    "TOKEN",
 })
 
 #: Named compositions: expressible in the namespace without being members of it.
@@ -53,9 +54,10 @@ COMPOSITIONS: dict[str, str] = {
         "a training run is HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH) indexed by a "
         "GRAPH-1 recorded lineage, where VSTD is the model and training-loop "
         "algorithms and GRAPH-1 carries the order the data was consumed in. "
-        "Catalogued as 35 obligations over six tiers, and the only domain entry that "
-        "is grounded without being certifiable: it inherits a substrate from its "
-        "operands, and has none of its own to adapt. Ruled 2026-09-22"
+        "Catalogued as 35 obligations over six tiers, and the only *composed* domain "
+        "entry -- it is grounded without being certifiable because "
+        "it inherits a substrate from its operands, and has none of its own to "
+        "adapt. Ruled 2026-09-22"
     ),
 }
 
@@ -64,10 +66,6 @@ COMPOSITIONS: dict[str, str] = {
 EXCEPTIONS: dict[str, str] = {
     "VSTD-NAMESPACE": "the name of the space itself; a bare NAMESPACE is ambiguous",
     "VSTD-NAMESPACE-1.1": "the published example of an identifier that does not parse",
-    "VSTD-HUMAN-ACCEPTANCE": (
-        "an acceptance-comment keyword parsed by scripts/check_pr_policy.py, not an "
-        "identifier; rewriting it changes what a human must type to accept a release"
-    ),
     "VSTD-INDIVIDUAL": "historical note: the object renamed to ROLE on 2026-09-21",
     "VSTD-Conformant": "prose adjective, not an identifier",
     "VSTD-2-near-miss": "reject-path fixture: a VSTD-shaped identifier that must not resolve",
@@ -104,7 +102,7 @@ def admissible(token: str) -> bool:
 
 
 def catalogue_offenders() -> list[str]:
-    """Every object the catalogue carries must be one of the sixteen."""
+    """Every object the catalogue carries must be one of the seventeen."""
 
     from verifier.core.profile_obligations import DOMAIN_OBJECTS
 
@@ -139,7 +137,7 @@ def main() -> int:
     residue = residue_offenders()
 
     if catalogue:
-        print(f"[NAMESPACE CLOSURE] FAIL: {len(catalogue)} object(s) outside the sixteen:")
+        print(f"[NAMESPACE CLOSURE] FAIL: {len(catalogue)} object(s) outside the seventeen:")
         for name in catalogue:
             print(f"  the catalogue carries {name}")
     if residue:

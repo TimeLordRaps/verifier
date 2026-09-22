@@ -238,11 +238,13 @@ VSTD is an object-oriented representation meta-language, and its nomenclature is
 be followed rather than looked up. Every specification surface has one identifier shape:
 
 ```
-VSTD-<NAME>-<level>.<module>
+<NAME>-<level>.<module>
 ```
 
-- **`<NAME>`** is the surface. It is one of `BOT`, `SIM`, `AGENT`, `HARNESS`, `MODEL`,
-  `HYPER`, `BENCH`, `DATA`, `ENV`, `GRAPH`, or omitted entirely. Every name other than the
+- **`<NAME>`** is the surface. It is one of the seventeen objects admitted to the
+  VSTD-NAMESPACE -- `ACTOR`, `AGENT`, `BENCH`, `BOT`, `COLLECTIVE`, `DATA`, `ENV`,
+  `GRAPH`, `HARNESS`, `HUMAN`, `HYPER`, `IDENTITY`, `MODEL`, `OWNER`, `ROLE`, `SIM`,
+  `TOKEN` -- or omitted entirely. Every name other than the
   empty one makes a claim about something particular. Omitting it names the claim surface
   itself — the basic, lowest-level foundational computational claim meta-surface — which is
   why it carries no object segment: `VSTD-1` through `VSTD-5`.

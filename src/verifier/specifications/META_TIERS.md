@@ -1,4 +1,4 @@
-# The Verifier Standard (VSTD) meta-tier grid — eighteen objects, five tiers
+# The Verifier Standard (VSTD) meta-tier grid — nineteen ladders, five tiers
 
 > **Acronyms:** benchmark specification graph (BENCH); dataset integrity and lineage (DATA);
 > directed acyclic graph (DAG); generative simulation specification (SIM); object composition specification (HYPER);
@@ -13,7 +13,7 @@
 **License:** Apache-2.0
 **Date:** 2026-09-20
 
-Identifier form, for every object: `VSTD-<object>-<tier>.<m>`, tier one of 1..5, `m` the
+Identifier form, for every object: `<object>-<tier>.<m>`, tier one of 1..5, `m` the
 minimum clearance attained up that tier — the depth of complete modules the certificate
 represents. Both one-indexed. See `WIRE_IDENTIFIERS.md` and `GROUNDED_CERTIFICATION.md`.
 
@@ -692,10 +692,10 @@ instrument boundary, which is the one place a mainstay already draws this object
 
 # The grid as catalogued coordinates
 
-Eighteen objects, ninety numbered profiles, every one of them carrying obligations
-of its own. The object axis and the Graph axis are the two `LADDER.md` already carried.
-The other sixteen
-were catalogued against these tiers, so the grid below is a coordinate map, not a mapping
+Nineteen objects, ninety-five numbered profiles, every one of them carrying
+obligations of its own. The object axis and the Graph axis are the two `LADDER.md`
+already carried. The other seventeen were catalogued against these tiers, so the
+grid below is a coordinate map, not a mapping
 of adapter checks onto tiers — an adapter check is now a *mechanism* attached to an
 obligation rather than a rung in its own right:
 
@@ -719,11 +719,12 @@ obligation rather than a rung in its own right:
 | COLLECTIVE ‡ | `COLLECTIVE-1.1`-`1.6` | `COLLECTIVE-2.1`-`2.6` | `COLLECTIVE-3.1`-`3.4` | `COLLECTIVE-4.1`-`4.4` | `COLLECTIVE-5.1`-`5.6` | `COLLECTIVE-6.1`-`6.6` |
 | IDENTITY ‡ | `IDENTITY-1.1`-`1.6` | `IDENTITY-2.1`-`2.7` | `IDENTITY-3.1`-`3.6` | `IDENTITY-4.1`-`4.7` | `IDENTITY-5.1`-`5.7` | `IDENTITY-6.1`-`6.6` |
 | ACTOR ‡ | `ACTOR-1.1`-`1.7` | `ACTOR-2.1`-`2.7` | `ACTOR-3.1`-`3.6` | `ACTOR-4.1`-`4.6` | `ACTOR-5.1`-`5.6` | `ACTOR-6.1`-`6.6` |
+| TOKEN | `TOKEN-1.1`-`1.14` | `TOKEN-2.1`-`2.14` | `TOKEN-3.1`-`3.14` | `TOKEN-4.1`-`4.14` | `TOKEN-5.1`-`5.14` | `TOKEN-6.1`-`6.6` |
 
 Every cell is a coordinate range into a catalogued obligation set: the object axis in
 [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md), the Graph axis in
-[`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md), the sixteen domain objects in
-[`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 625 obligations across the three
+[`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md), the seventeen domain objects in
+[`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 701 obligations across the three
 namespaces, which are disjoint: `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, and each
 catalogue carries its own digest. † marks the three objects whose adapters live on the open
 release branch rather than in this tree; § marks `TRAIN`, which is catalogued but
@@ -759,24 +760,25 @@ need not be the one whose index is `m`.
 | `COLLECTIVE-` ‡ | [1.1–1.3](DOMAIN_OBLIGATIONS.md#collective-1-facets ".1 Role graph; .2 Relation types, Role set, Accountable decision classes, Boundary; .3 Facet completeness") | [2.1–2.3](DOMAIN_OBLIGATIONS.md#collective-2-dynamics ".1 Reorganization, Quorum and countersignature; .2 Role lifecycle, Escalation; .3 Decision assembly, Merger and split") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#collective-3-statics ".1 No decisions of its own, External legal existence; .2 Separation of duty needs persons; .3 Graph impotence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#collective-4-closure ".1 Complete role graph; .2 Decision decomposition; .3 Quorum recomputation; .4 Closure result") | [5.1–5.4](DOMAIN_OBLIGATIONS.md#collective-5-domain-adaptation ".1 Organizational role mainstay, Corporate registry mapping, Access control policy mapping; .2 Round trip; .3 Inference upward; .4 Adaptation accounting") | **17** |
 | `IDENTITY-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#identity-1-facets ".1 Bearer binding, Role binding; .2 Occupancy evidence, Inherited scope; .3 Assurance level; .4 Validity and revocation surface") | [2.1–2.3](DOMAIN_OBLIGATIONS.md#identity-2-dynamics ".1 Enrollment; .2 Re-verification and renewal, Hand-over, Revocation, Presentation, Simulation end; .3 Presentation linkability") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#identity-3-statics ".1 Bearer-bounded, Multiple occupancy, Revocation does not un-happen; .2 Evidence ceiling, The binding is not the bearer; .3 Weakest operand") | [4.1–4.3](DOMAIN_OBLIGATIONS.md#identity-4-closure ".1 Presentation binding, Bearer class declared; .2 Assurance support, No self-asserted attribute, Bot containment, Human exit; .3 Closure result") | [5.1–5.6](DOMAIN_OBLIGATIONS.md#identity-5-domain-adaptation ".1 Verifiable credential mainstay, Decentralized identifier mapping; .2 Selective disclosure mapping; .3 Unlinkability mapping; .4 Round trip; .5 Inference upward; .6 Adaptation accounting") | **19** |
 | `ACTOR-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#actor-1-facets ".1 Actor identity; .2 Branch binding, Control surface, Decision classes, Admitted specification spaces; .3 Instrument boundary; .4 Facet completeness") | [2.1–2.5](DOMAIN_OBLIGATIONS.md#actor-2-dynamics ".1 Delegation, Key rotation; .2 Revocation, Collective membership; .3 Dissolution; .4 Succession; .5 Accountability replay") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#actor-3-statics ".1 Decisions are factual, No sole witness, Instrument is not a party; .2 Non-transferable accountability; .3 Revocation does not un-decide, Weakest operand") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#actor-4-closure ".1 Decision inventory; .2 Exactly one actor; .3 None unattributed, None doubly attributed, Independent attribution; .4 Closure result") | [5.1–5.4](DOMAIN_OBLIGATIONS.md#actor-5-domain-adaptation ".1 Mainstay binding; .2 Key event mapping, Controller mapping, Principal mapping; .3 Round trip; .4 Inference upward") | **20** |
+| `TOKEN-` | [1.1–1.5](DOMAIN_OBLIGATIONS.md#token-1-facets ".1 Token kind; .2 Canonical bytes, Genesis commitment, Tenure accumulator, Lease scope; .3 Issuance binding, Audience, Validity window, Caveat set, Disclosure digests; .4 Algorithm binding, Key identification, Replay identifier; .5 Confirmation key") | [2.1–2.5](DOMAIN_OBLIGATIONS.md#token-2-dynamics ".1 Genesis; .2 Epoch advance, Lease grant, Key rotation; .3 Revocation, Lease expiry, Attenuation, Reissuance; .4 Discharge, Presentation, Suspension, Status publication, Clock disagreement; .5 Chain replay") | [3.1–3.5](DOMAIN_OBLIGATIONS.md#token-3-statics ".1 Preimage resistance, Soulbound non-transfer, Window emptiness; .2 Chain one-wayness, Commitment binding, Algorithm confusion, Key identity, Freshness is not validity, Disclosure complement; .3 Tenure is not authority, Possession is not presentation, Replay distinctness; .4 Attenuation is one-way; .5 Choice independence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#token-4-closure ".1 Inventory; .2 Epoch contiguity, Parent binding, Signature closure, Algorithm closure, Key closure, Audience closure, Window coverage, Replay closure, Status coverage, Disclosure closure; .3 Scope monotonicity, Discharge closure; .4 Closure result") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#token-5-domain-adaptation ".1 Mainstay binding; .2 Claim-set mapping, Validity-window mapping, Header metadata mapping, Proof attestation mapping, Presentation authorization mapping, Transparency inclusion; .3 Attenuation mapping, Ceiling mapping, Selective disclosure mapping; .4 Round trip, Attenuation operators, Withheld field mapping; .5 Inference upward") | **24** |
 
-362 rungs over ninety profiles. The remaining 167 of 529 catalogued
+386 rungs over ninety-five profiles. The remaining 213 of 599 catalogued
 obligations sit above their profile's depth: nameable, and unreachable as an `m`,
 because independent obligations are cleared at one depth rather than at several. A
 certificate that names one of them is malformed.
 
 An obligation is either **mechanized** — an adapter check establishes it today — or
 specified without a mechanism, in which case it is reported `UNKNOWN`, never absent and
-never passed. Only ten of the sixteen domain objects have an adapter in any family, and only
+never passed. Only 11 of the seventeen domain objects have an adapter in any family, and only
 nine have a behavioural adapter, which is what a domain certificate requires; the parenthesised
 count in each cell of the depth grid below is how many of that profile's obligations
 one of the three families establishes today.
 
-Of the 550 domain obligations, 163 are mechanized, across three disjoint families: 78
-behavioural adapter checks, 27 tier-3 statics checks and 58 tier-5 adaptation checks.
-Tier 5 is fully mechanized on the ten grounded objects and tier 3 on six of them; on the
+Of the 626 domain obligations, 191 are mechanized, across three disjoint families: 78
+behavioural adapter checks, 41 tier-3 statics checks and 72 tier-5 adaptation checks.
+Tier 5 is fully mechanized on the 11 grounded objects and tier 3 on seven of them; on the
 six ungrounded objects no tier is mechanized at all, and level 6 is mechanized nowhere.
-What remains bare is 72 at tier 1, 72 at tier 2, 51 at tier 3, 59 at tier 4, 37 at tier 5,
+What remains bare is 86 at tier 1, 86 at tier 2, 51 at tier 3, 73 at tier 4, 37 at tier 5,
 and the whole of level 6. The two specification axes are unmechanized by construction —
 they are checked against retained evidence rather than by any domain adapter.
 [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) sets out the three families and why a
@@ -784,20 +786,20 @@ static needs a different kind of evidence from a dynamic.
 
 ## The cardinality of the grid
 
-Ninety cells is the shape of the grid, not its size. Each cell is a numbered profile with
+Ninety-five cells is the shape of the grid, not its size. Each cell is a numbered profile with
 its own internal topology, and a grounded certificate does not name the cell — it names a
-position inside it: `VSTD-<object>-<tier>.<m>`, where `m` is the depth of complete modules
+position inside it: `<object>-<tier>.<m>`, where `m` is the depth of complete modules
 represented. Write `i` for the depth of one cell's module topology and the grid spans
 
 ```
-prod(i, 18 x 5) = 273,457,513,497,334,816,890,950,735,729,000,448,000,000,000,000,000,000
+prod(i, 19 x 5) = 683,643,783,743,337,042,227,376,839,322,501,120,000,000,000,000,000,000,000
 ```
 
 `i` is a **depth, not a count**: the longest chain of modules each of which is a
 prerequisite of the next. The two coincide only where a profile is a chain. Wherever it is
 a directed acyclic graph — where two modules both depend on a third but not on each other
 — the depth is strictly smaller, because independent modules are cleared at one depth
-rather than at two. Every one of the ninety profiles is a DAG, so on every object the
+rather than at two. Every one of the ninety-five profiles is a DAG, so on every object the
 depth is strictly below the count somewhere.
 
 | Object | 1 | 2 | 3 | 4 | 5 | 6 | sum i | states | mechanized |
@@ -820,6 +822,7 @@ depth is strictly below the count somewhere.
 | COLLECTIVE ‡ | **3** of 6 (0) | **3** of 6 (0) | **3** of 4 (0) | **4** (0) | **4** of 6 (0) | **5** of 6 (0) | 17 | 18 | 0/32 |
 | IDENTITY ‡ | **4** of 6 (0) | **3** of 7 (0) | **3** of 6 (0) | **3** of 7 (0) | **6** of 7 (0) | **5** of 6 (0) | 19 | 20 | 0/39 |
 | ACTOR ‡ | **4** of 7 (0) | **5** of 7 (0) | **3** of 6 (0) | **4** of 6 (0) | **4** of 6 (0) | **5** of 6 (0) | 20 | 21 | 0/38 |
+| TOKEN | **5** of 14 (0) | **5** of 14 (0) | **5** of 14 (14) | **4** of 14 (0) | **5** of 14 (14) | **5** of 6 (0) | 24 | 25 | 28/76 |
 
 **Bold is `i`.** The `6` column is shown for completeness and is **excluded from `sum i`
 and from `states`**, which count corroboration rungs only; level 6 carries no rungs.
@@ -864,7 +867,7 @@ uninterrupted established prefix, or zero. One scalar per object, running straig
 all five tiers. An object's reachable positions are therefore `1 + sum(i)`, not `prod(i)`:
 thirty for the object axis, not 6,000.
 
-**Across objects, the composition lattice orders the eighteen ladders against each other.** A
+**Across objects, the composition lattice orders the nineteen ladders against each other.** A
 composed object cannot outrun its operands. `HYPER-2` states this twice, and the two
 statements do not bound it equally:
 
@@ -876,11 +879,11 @@ statements do not bound it equally:
 The tighter one governs. A composition that may advance while an operand is still partial
 can report a depth its operands never established, which is exactly what non-increasing
 strength forbids — so the reachable count is **206,159,635,176,678**, around one in
-1,326,435,765,483,300,349,832,750,705,642,497,469,635 of the free product.
+3,316,089,413,708,250,874,581,876,764,106,243,674,088,950 of the free product.
 
 ```
-free product over 90 cells    273,457,513,497,334,816,890,950,735,729,000,448,000,000,000,000,000,000
-cumulative profiles, per object          604,271,182,670,563,814,784,000
+free product over 95 cells    683,643,783,743,337,042,227,376,839,322,501,120,000,000,000,000,000,000,000
+cumulative profiles, per object       15,106,779,566,764,095,369,600,000
 + composition, operands positive         343,872,709,682,315,103,844,560
 + composition, operands complete             206,159,635,176,678   <- reachable
 ```
@@ -910,12 +913,12 @@ Nothing was removed from the specification to get there. The ordering was always
 
 ### Where the rungs are
 
-362 rungs across the eighteen ladders:
+386 rungs across the nineteen ladders:
 
 | | Objects | Rungs | Rungs per object |
 |---|---|---|---|
 | Specification axes (VSTD, GRAPH) | 2 | 47 | 23.5 |
-| Domain objects | 16 | 315 | 19.7 |
+| Domain objects | 17 | 339 | 19.9 |
 
 The two axes remain the deepest single objects, which is expected: `VSTD` is the
 foundational claim surface every other object's evidence is read through, and a foundation
@@ -926,11 +929,12 @@ carrying fewer rungs than it has tiers.
 Both numbers still move. Cataloguing an object raises its obligation count and lowers its
 `i`, because declared dependencies turn a default total order into a DAG; the domain
 objects were catalogued with their dependencies declared from the start, so their `i` is
-already a depth rather than a count. What remains provisional is mechanization: 163 of
-550 domain obligations have a check behind them, and every one of the remaining 387 is
-a coordinate a certificate can name but not yet clear. 216 of those 387 are the whole of the
-six ungrounded objects, which have no adapter at all, and 24 are the unmechanized
-obligations of TRAIN, which has no behavioural adapter and so cannot be certified.
+already a depth rather than a count. What remains provisional is mechanization: 191 of
+626 domain obligations have a check behind them, and every one of the remaining 435 is
+a coordinate a certificate can name but not yet clear. 216 of those 435 are the whole of the
+six ungrounded objects, which have no adapter at all, and 72 are the unmechanized
+obligations of TRAIN and TOKEN, neither of which has a behavioural adapter and so
+neither can be certified.
 
 ## What follows mechanically
 
@@ -990,7 +994,7 @@ profile, and an admission policy. Three disjoint namespaces hold them.
 |---|---|---|---|
 | Object `VSTD-1..5` | `1.1`-`5.11` | 47 | [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md) |
 | Graph `GRAPH-1..5` | `GRAPH-1.1`-`GRAPH-5.6` | 28 | [`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) |
-| The sixteen domain objects | `<object>-1.1`-`<object>-6.6` | 550 | [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) |
+| The seventeen domain objects | `<object>-1.1`-`<object>-6.6` | 626 | [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) |
 
 The namespaces do not overlap and no catalogue admits another's identifiers, so `DATA-4.2`
 never aliases `4.2` or `GRAPH-4.2`. Each computes its own digest, which is what makes them
@@ -998,12 +1002,13 @@ separable: extending one provably cannot move another's.
 
 What differs between them is not the form of the obligations but how many carry a
 mechanism. The two specification axes are checked against retained evidence rather than by
-a domain adapter. Of the sixteen domain objects, 163 of 550 obligations name a check in one
+a domain adapter. Of the seventeen domain objects, 191 of 626 obligations name a check in one
 of the three families — behavioural in [`DOMAIN_GROUNDING.md`](DOMAIN_GROUNDING.md), statics and
-adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 387 are
+adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 435 are
 specified without a mechanism and are reported `UNKNOWN` — never absent, and never passed;
-216 of them are the whole of the six objects with no adapter at all, and the remaining
-24 are `TRAIN`, which has no behavioural adapter.
+216 of them are the whole of the six objects with no adapter at all, 72 more are the
+unmechanized obligations of `TRAIN` and `TOKEN`, which have no behavioural adapter, and the
+remaining 147 are the bare tiers of the nine certifiable objects.
 
 `HYPER` no longer names two objects. The combination operator keeps the name; the
 training-run certifier that used to share it is now `TRAIN`, with its own row above.

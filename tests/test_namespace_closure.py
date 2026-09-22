@@ -46,7 +46,7 @@ def _gate():
     return module
 
 
-def test_the_catalogue_carries_no_object_outside_the_sixteen() -> None:
+def test_the_catalogue_carries_no_object_outside_the_seventeen() -> None:
     """The load-bearing check: the object set, not prose about it."""
 
     found = _gate().catalogue_offenders()
@@ -60,12 +60,13 @@ def test_no_object_still_carries_the_prefix() -> None:
     )
 
 
-def test_the_namespace_is_the_base_abstract_and_sixteen_objects() -> None:
+def test_the_namespace_is_the_base_abstract_and_seventeen_objects() -> None:
     gate = _gate()
-    assert len(gate.OBJECTS) == 16
+    assert len(gate.OBJECTS) == 17
     assert gate.OBJECTS == {
         "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
         "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
+        "TOKEN",
     }
 
 
@@ -187,19 +188,31 @@ def test_every_exception_and_composition_head_carries_its_reason() -> None:
             assert len(reason) > 20, f"{name} carries no real reason: {reason!r}"
 
 
-def test_the_acceptance_keyword_survives_the_prefix_drop() -> None:
-    """It is a keyword a human types, not an identifier.
+def test_the_acceptance_keyword_left_the_namespace() -> None:
+    """Ruled 2026-09-22: the keyword is `acceptance-clearance`, and is not a VSTD name.
 
-    scripts/check_pr_policy.py parses this exact string; shortening it with the
-    objects would silently change what Tyler must write to accept a release.
+    It was minted by an agent in 7ad211a (merged from codex/pr-lifecycle-hardening),
+    never declared, and it rode a *legitimate* head -- HUMAN is one of the sixteen --
+    so every head-shaped sweep went straight past it, exactly as they went past
+    the two zero-module names the tightened tier regex later caught.  It had also
+    never once been used on a pull request.
+
+    The mechanism stayed and only the spelling moved, because it is the sole thing
+    binding a human's approval to the promotion record digest: GitHub stamps a review
+    with a commit but knows nothing of the record, and a comment carries neither.
+    An earlier version of this test asserted the opposite -- that the keyword must
+    survive because renaming it would change what Tyler types.  That was circular;
+    the cost existed only because an agent had wired the name into four files.
     """
 
     gate = _gate()
-    keyword = named("HUMAN-ACCEPTANCE")
-    assert gate.admissible(keyword)
-    assert keyword in gate.EXCEPTIONS
-    assert keyword in (ROOT / "scripts" / "check_pr_policy.py").read_text(encoding="utf-8")
+    stale = named("HUMAN-ACCEPTANCE")
+    assert not gate.admissible(stale), "the minted spelling is refused like any other"
+    assert stale not in gate.EXCEPTIONS, "and it is not excused by an exception either"
 
+    policy = (ROOT / "scripts" / "check_pr_policy.py").read_text(encoding="utf-8")
+    assert "acceptance-clearance:" in policy, "the parser still has a keyword to parse"
+    assert stale not in policy
 
 def test_the_gate_runs_as_a_script() -> None:
     finished = subprocess.run(
