@@ -1012,12 +1012,15 @@ mechanism and reports `UNKNOWN`. That is the honest report of a specified holdin
 nothing yet checks, and it is why `OWNER` is excluded from the grounded-object
 invariants that require tiers 3 and 5 to be mechanized.
 
-The holder is bound by the actor-binding token `VSTD-ACTOR-BINDING-1`, already
-specified in [`VSTD-ZIZK-TOKENS.md`](VSTD-ZIZK-TOKENS.md), so a holding names a bound
-actor rather than a string. That token is the anchor available today; the binding is
-expected to be absorbed into `VSTD-HYPER`, so `OWNER-1.1` is the one line that is
-retyped when it is. A holding never reaches a verdict: `OWNER-3.1` makes that
-normative, and it is the ownership twin of the Prime Invariant.
+The holder is bound by its own `VSTD-ACTOR` certificate, so a holding names a
+certified actor rather than a string. This is the absorption the earlier text anticipated:
+the binding was carried by a wire token, `VSTD-ACTOR-BINDING-1`, only for as long as no
+actor object existed to carry it, and `VSTD-ACTOR` now does. A holding is therefore the
+composition `VSTD-HYPER(VSTD-ACTOR + the held object)`, which is what puts `VSTD-OWNER`
+inside the composition lattice rather than beside it. A holding never reaches a verdict:
+`OWNER-3.1` makes that normative, and it is the ownership twin of the Prime Invariant --
+now derived from `VSTD-HYPER-3` rather than declared, since the weakest operand bounds the
+composition and the held object is one of the two operands.
 
 ### VSTD-OWNER-1: Facets
 
@@ -1025,7 +1028,7 @@ normative, and it is the ownership twin of the Prime Invariant.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
-| OWNER-1.1 | Holder binding | The holder is bound as an actor by an actor-binding token, never named in free text. | none | none |
+| OWNER-1.1 | Holder binding | The holder is bound by its own VSTD-ACTOR certificate at a stated coordinate, never named in free text and never by a wire token. The holding is the composition VSTD-HYPER(VSTD-ACTOR + the held object), so the holder is an operand of it rather than a string inside it. | none | none |
 | OWNER-1.2 | Held-object binding | The held object is bound by its own object certificate at a stated coordinate. | none | none |
 | OWNER-1.3 | Limb inventory | Every limb of the holding is enumerated under three kinds -- rights, discharge-duties and answering-duties -- and a limb the inventory omits is unheld rather than permitted. | OWNER-1.1, OWNER-1.2 | none |
 | OWNER-1.4 | Instrument | The instrument that establishes the holding is bound together with the authority that issued it. | OWNER-1.3 | none |

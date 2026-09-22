@@ -130,17 +130,27 @@ def test_the_cumulative_product_is_one_plus_each_ladder() -> None:
     assert cumulative == _published(r"cumulative profiles, per object\s+([\d,]+)")
 
 
-def test_an_unconstrained_ladder_multiplies_the_reachable_counts() -> None:
-    """OWNER composes nothing, so it scales the two lattice figures by its own ladder."""
+def test_only_the_composition_operator_escapes_the_lattice() -> None:
+    """VSTD-HYPER is the last unconstrained ladder; OWNER stopped being one.
+
+    OWNER-1.1 binds a VSTD-ACTOR certificate, so OWNER sits on a composition edge and its
+    own reachable positions no longer multiply through. The previous version of this guard
+    asserted that they did, which is why it is inverted here rather than deleted: a ladder
+    that escapes the lattice INFLATES a reachable count, so a passing divisibility check
+    would have been evidence of the defect, not of correctness.
+    """
     positive = _published(r"\+ composition, operands positive\s+([\d,]+)")
     complete = _published(r"\+ composition, operands complete\s+([\d,]+)")
     factor = 1 + sum(DOMAIN_DEPTHS["OWNER"])
-    assert _published(r"by its own (\d+)\nreachable positions") == factor
-    assert _published(r"the free product by prod\(i\) = (\d+)") == prod(DOMAIN_DEPTHS["OWNER"])
-    assert positive % factor == 0 and complete % factor == 0
+    assert not (positive % factor == 0 and complete % factor == 0), (
+        "OWNER still factors out of both gated figures, so its edge is not being applied"
+    )
     assert complete < positive, "the tighter gate must admit fewer states"
     free = prod(d for depths in ALL_DEPTHS.values() for d in depths)
     assert free // complete == _published(r"around one in\n([\d,]+) of the free product")
+    # The prose must name the one escape and must no longer claim OWNER is another.
+    assert "`VSTD-HYPER` is the only ladder the lattice leaves unconstrained" in META
+    assert "`VSTD-OWNER` composes nothing and is composed of nothing" not in META
 
 
 def test_the_ungrounded_object_is_marked_in_every_published_table() -> None:

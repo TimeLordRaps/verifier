@@ -12,7 +12,6 @@ from verifier.identity.invariants import (
     PropertyStatus,
 )
 from verifier.identity.tokens import (
-    ActorBinding,
     AgingToken,
     BirthToken,
     LifetimeToken,
@@ -35,7 +34,6 @@ __all__ = [
     "PROPERTY_STATUSES",
     "IdentityVerdict",
     "PropertyStatus",
-    "ActorBinding",
     "AgingToken",
     "BirthToken",
     "LifetimeToken",

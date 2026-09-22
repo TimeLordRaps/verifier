@@ -416,10 +416,12 @@ artifacts to one another, `VSTD-HYPER` relates operands to the object composed f
 and `VSTD-OWNER` relates an actor to an object it holds. None of the three certifies a
 substrate of its own, which is why none of them is a domain in the adapter sense.
 
-The holder is bound by the actor-binding token `VSTD-ACTOR-BINDING-1`, so a holding names
-a bound actor rather than a string. An **agent is not an actor**: an agent occupies a
-decider slot inside `VSTD-AGENT`, while an actor is the party a binding is issued to, and
-`VSTD-OWNER` types its holder as the latter.
+The holder is bound by its own `VSTD-ACTOR` certificate, so a holding names a certified
+actor rather than a string. An **agent is not an actor**: an agent occupies a decider slot
+inside `VSTD-AGENT`, while an actor is the party accountable for the decision, and
+`VSTD-OWNER` types its holder as the latter. A holding is the composition
+`VSTD-HYPER(VSTD-ACTOR + the held object)`; an earlier draft carried the holder on a wire
+token because no actor object existed yet, and `VSTD-ACTOR` replaced it.
 
 **VSTD-OWNER-1** — facets: the holder, the held object, the enumerated limbs of the
 holding, the instrument that establishes it and the authority that issued it, the term it
@@ -868,26 +870,29 @@ statements do not bound it equally:
 
 | Gate | The sentence it comes from | Accessible states |
 |---|---|---|
-| Operands non-`UNKNOWN` | one `UNKNOWN` operand makes the composition `UNKNOWN` | 360,121,040,618,342,315,750,640 |
-| Operands complete | strength is non-increasing; the composition claims no more than its operands established | 2,310,167,730,389,958 |
+| Operands non-`UNKNOWN` | one `UNKNOWN` operand makes the composition `UNKNOWN` | 343,872,709,682,315,103,844,560 |
+| Operands complete | strength is non-increasing; the composition claims no more than its operands established | 206,159,635,176,678 |
 
 The tighter one governs. A composition that may advance while an operand is still partial
 can report a depth its operands never established, which is exactly what non-increasing
-strength forbids — so the reachable count is **2,310,167,730,389,958**, around one in
-118,371,280,968,059,833,866,352,231,936,918,911,224 of the free product.
+strength forbids — so the reachable count is **206,159,635,176,678**, around one in
+1,326,435,765,483,300,349,832,750,705,642,497,469,635 of the free product.
 
 ```
 free product over 90 cells    273,457,513,497,334,816,890,950,735,729,000,448,000,000,000,000,000,000
 cumulative profiles, per object          604,271,182,670,563,814,784,000
-+ composition, operands positive         360,121,040,618,342,315,750,640
-+ composition, operands complete           2,310,167,730,389,958   <- reachable
++ composition, operands positive         343,872,709,682,315,103,844,560
++ composition, operands complete             206,159,635,176,678   <- reachable
 ```
 
-`VSTD-OWNER` composes nothing and is composed of nothing, so the composition lattice does
-not constrain it. It multiplies each figure below the free product by its own 19
-reachable positions, and the free product by prod(i) = 576. `VSTD-HYPER` is outside the
-edges for the opposite reason: it is the composition operator rather than a composed
-object.
+`VSTD-HYPER` is the only ladder the lattice leaves unconstrained, and for the one reason
+that cannot be repaired: it is the composition operator rather than a composed object, so
+there is no edge for it to sit on. Every other ladder is now on one. `VSTD-OWNER` was the
+second such ladder until `OWNER-1.1` was retyped to bind a `VSTD-ACTOR` certificate; it
+composed nothing then, and multiplied both gated figures by its own 19 reachable
+positions. That is why those figures **fell** by a factor of about eleven when the edge
+was added rather than rising: an unconstrained ladder inflates a count, it never tightens
+one.
 
 The identity family **is** inside the lattice, and its edges are declared rather than
 assumed. `COLLECTIVE-1.1` and `COLLECTIVE-1.3` bind a graph and a role set;

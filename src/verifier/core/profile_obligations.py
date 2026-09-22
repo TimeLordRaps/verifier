@@ -738,7 +738,7 @@ DOMAIN_OBLIGATIONS = (
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("OWNER", 1, (
-        ("Holder binding", "The holder is bound as an actor by an actor-binding token, never named in free text.", (), ""),
+        ("Holder binding", "The holder is bound by its own VSTD-ACTOR certificate at a stated coordinate, never named in free text and never by a wire token. The holding is the composition VSTD-HYPER(VSTD-ACTOR + the held object), so the holder is an operand of it rather than a string inside it.", (), ""),
         ("Held-object binding", "The held object is bound by its own object certificate at a stated coordinate.", (), ""),
         ("Limb inventory", "Every limb of the holding is enumerated under three kinds -- rights, discharge-duties and answering-duties -- and a limb the inventory omits is unheld rather than permitted.", (1, 2), ""),
         ("Instrument", "The instrument that establishes the holding is bound together with the authority that issued it.", (3,), ""),

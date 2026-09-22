@@ -26,7 +26,6 @@ through bounded cryptographic tokens:
 1. **Birth Token (`VSTD-BIRTH-TOKEN-1`)**: Anchors identity creation epoch without leaking civil identity or activity telemetry.
 2. **Aging Token (`VSTD-AGING-TOKEN-1`)**: Cryptographically proves continuous, unrevoked tenure across discrete epochs without leaking transaction history.
 3. **Lifetime Token (`VSTD-LIFETIME-TOKEN-1`)**: Grants ephemeral, soulbound capability leases for runner delegation with zero blast radius to genesis keys.
-4. **Actor Binding (`VSTD-ACTOR-BINDING-1`)**: Records mutual dual-signed edges between an actor and a publisher or operator.
 
 ## 2. Prime Invariant: Actor Identity Is Strictly Adjacent
 
@@ -69,13 +68,18 @@ A Lifetime Token is an ephemeral, soulbound capability lease delegated to a runn
 - **Bounding Invariant:** The lease is restricted to explicitly listed `permitted_scopes`, cannot be re-delegated (`soulbound = true`), and becomes invalid after expiry.
 - **Semantics:** Allows temporary automated execution with strictly bounded blast radius. If compromised, the runner key cannot rotate the actor genesis key or act outside its permitted scopes.
 
-### 3.4 Actor Binding (`VSTD-ACTOR-BINDING-1`)
+### 3.4 Actor Binding -- withdrawn
 
-An Actor Binding records an attribution or control relationship between two distinct identities.
-
-- **Wire Identifier:** `schema_version = "VSTD-ACTOR-BINDING-1"`
-- **Mutual Signature:** Requires signatures from both parties over an immutable normative proposition literal.
-- **Semantics:** Establishes only that both keys signed the exact stated proposition at this hub at this time. It establishes no real-world identity, no mutual endorsement of claims, and no transfer of verification truth.
+The `VSTD-ACTOR-BINDING-1` wire object recorded a dual-signed edge between two identities.
+It is **withdrawn in 2.0.0** and superseded by the composition
+`VSTD-HYPER(VSTD-ACTOR + the bound object)`, which is strictly stronger: the binding's
+`kind` was a closed enum of two, its `subject_id` was an untyped string that could not name
+a certified object, and it carried no verdict, no operands and no closure condition. The
+composition supplies all four, and it **derives** the Prime Invariant instead of asserting
+it -- `VSTD-HYPER-3` makes the weakest operand the composed ceiling, so an actor can never
+be represented as possessing a stronger truth about an object than the object itself
+supports. Producers on 1.5.0 emitting this token should express the same fact as a
+`VSTD-OWNER` holding or a `VSTD-HYPER` composition.
 
 ## 4. The 16 Prohibited Inferences
 

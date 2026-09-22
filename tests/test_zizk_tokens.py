@@ -9,7 +9,6 @@ from pathlib import Path
 import pytest
 
 from verifier.identity.tokens import (
-    ActorBinding,
     AgingToken,
     BirthToken,
     LifetimeToken,
@@ -92,26 +91,6 @@ def test_lifetime_token_lease_and_bounds() -> None:
     data = json.loads(raw_bytes.decode("utf-8"))
     assert data["soulbound"] is True
     assert data["permitted_scopes"] == ["sat:verify", "receipt:check"]
-
-
-def test_actor_binding_structure() -> None:
-    binding = ActorBinding(
-        schema_version="VSTD-ACTOR-BINDING-1",
-        binding_id="bind:001",
-        kind="PUBLISHER_CONTROL",
-        actor_id="actor:sha256:4444444444444444444444444444444444444444444444444444444444444444",
-        subject_id="publisher:sha256:5555555555555555555555555555555555555555555555555555555555555555",
-        bound_proposition="Mutual signature establishing dual control at hub.",
-        actor_key_id="key:actor_01",
-        subject_key_id="key:pub_01",
-        issued_at="2026-01-01T00:00:00Z",
-        actor_signature_base64url="sig_actor",
-        subject_signature_base64url="sig_pub",
-    )
-    raw_bytes = binding.canonical_bytes()
-    data = json.loads(raw_bytes.decode("utf-8"))
-    assert data["kind"] == "PUBLISHER_CONTROL"
-    assert data["actor_id"].startswith("actor:sha256:")
 
 
 def test_offline_evaluator_accepted_bounded() -> None:

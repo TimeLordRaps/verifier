@@ -57,7 +57,6 @@ PACKAGED_SCHEMA_NAMES = frozenset(
     {
         "artifact-control-1.schema.json",
         "graph-topology.schema.json",
-        "vstd-actor-binding-1.schema.json",
         "vstd-aging-token-1.schema.json",
         "vstd-artifact-network-0.1.schema.json",
         "vstd-authority-model-0.1.schema.json",

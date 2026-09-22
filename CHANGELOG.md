@@ -142,8 +142,8 @@ declare the experimental mechanisms complete. See the
   **relational** ones -- `VSTD-GRAPH`, `VSTD-HYPER` and `VSTD-OWNER` -- which hold between
   certified objects instead of certifying a substrate of their own. `VSTD-GRAPH` carries
   its own axis; the other two sit on the domain axis.
-- Add `VSTD-OWNER`, a holding between a bound actor and a bound object, typed by the
-  existing `VSTD-ACTOR-BINDING-1` wire object. It is relational and **ungrounded**: no
+- Add `VSTD-OWNER`, a holding between a certified actor and a certified object, typed by
+  the `VSTD-ACTOR` certificate. It is relational and **ungrounded**: no
   adapter executes it, so all 30 of its obligations are specified with no
   mechanism and report `UNKNOWN` -- never absent, and never passed. Its closure profile
   carries an accountability floor, so a chain of discharge-duties that nobody answers for
@@ -156,6 +156,31 @@ declare the experimental mechanisms complete. See the
   unreachable remainder and both composition-lattice figures -- is re-derived from the
   catalogued dependencies by `tests/test_meta_tier_cardinality.py`, so a figure that stops
   being true fails the suite instead of standing as prose.
+
+### Breaking: the VSTD-ACTOR-BINDING-1 wire object is withdrawn
+
+- **Removed** `VSTD-ACTOR-BINDING-1`, its JSON schema (`vstd-actor-binding-1.schema.json`)
+  and the `ActorBinding` model. The token shipped in 1.5.0, so this is a breaking change
+  for any producer emitting it.
+- It is superseded by the composition `VSTD-HYPER(VSTD-ACTOR + the bound object)`. The
+  composition is strictly stronger on every axis the token was weak on: the token's `kind`
+  was a closed enum of two, its `subject_id` was an untyped string that could not name a
+  certified object, and it carried no verdict, no operands and no closure condition.
+- The supersession **derives the ZIZK Prime Invariant instead of declaring it**.
+  `VSTD-HYPER-3` makes the weakest operand the composed ceiling, so an actor can never be
+  represented as possessing a stronger truth about an object than the object itself
+  supports. Prohibited inferences 13, 15 and 16 collapse into the operator the same way.
+- `OWNER-1.1` is retyped accordingly and now binds a `VSTD-ACTOR` certificate. The
+  published text had already named it as the one line that would be retyped on absorption.
+- This puts `VSTD-OWNER` **inside** the composition lattice, so the two gated reachability
+  figures in `META_TIERS.md` fall: operands-positive from
+  360,121,040,618,342,315,750,640 to 343,872,709,682,315,103,844,560, and operands-complete
+  from 2,310,167,730,389,958 to 206,159,635,176,678. An unconstrained ladder inflated them.
+  `VSTD-HYPER` is now the only ladder outside every composition edge, because it is the
+  operator rather than a composed object.
+- Section 3 of `VSTD-ZIZK-TOKENS.md` is titled "The Three-Token Zero-Knowledge Lifecycle"
+  and carried four subsections. Birth, aging and lifetime are one identity's lifecycle; the
+  binding was the dyadic one bolted onto them. The heading is now true.
 
 ### Experimental component declarations and bounded local checks
 

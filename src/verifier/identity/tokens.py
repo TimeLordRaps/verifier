@@ -12,7 +12,6 @@ from typing import Any, Final, Literal
 BIRTH_TOKEN_SCHEMA: Final[str] = "VSTD-BIRTH-TOKEN-1"
 AGING_TOKEN_SCHEMA: Final[str] = "VSTD-AGING-TOKEN-1"
 LIFETIME_TOKEN_SCHEMA: Final[str] = "VSTD-LIFETIME-TOKEN-1"
-ACTOR_BINDING_SCHEMA: Final[str] = "VSTD-ACTOR-BINDING-1"
 
 
 def canonical_token_bytes(payload: dict[str, Any]) -> bytes:
@@ -82,24 +81,6 @@ class LifetimeToken:
     signature_base64url: str
     max_invocations: int | None = None
     parent_grant_id: str | None = None
-
-    def canonical_bytes(self) -> bytes:
-        return canonical_token_bytes(asdict(self))
-
-
-@dataclass(frozen=True)
-class ActorBinding:
-    schema_version: Literal["VSTD-ACTOR-BINDING-1"]
-    binding_id: str
-    kind: Literal["PUBLISHER_CONTROL", "PIPELINE_OPERATION"]
-    actor_id: str
-    subject_id: str
-    bound_proposition: str
-    actor_key_id: str
-    subject_key_id: str
-    issued_at: str
-    actor_signature_base64url: str
-    subject_signature_base64url: str
 
     def canonical_bytes(self) -> bytes:
         return canonical_token_bytes(asdict(self))
