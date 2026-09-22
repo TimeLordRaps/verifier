@@ -66,8 +66,8 @@ PENDING: dict[str, str] = {
 SHIPPED_HISTORY = ("CHANGELOG.md", "## 1.5.0 - 2026-09-18")
 
 _TOKEN = re.compile(r"VSTD-[A-Za-z0-9][A-Za-z0-9.]*(?:-[A-Za-z0-9][A-Za-z0-9.]*)*")
-_BASE_TIER = re.compile(r"[1-5](\.[0-9]+)?$")
-_OBJECT_TAIL = re.compile(r"(-([1-6](\.([0-9]+|m))?|N|[1-5]\.\.[1-5]))?$")
+_BASE_TIER = re.compile(r"[1-5](\.[1-9][0-9]*)?$")
+_OBJECT_TAIL = re.compile(r"(-([1-6](\.([1-9][0-9]*|m))?|N|[1-5]\.\.[1-5]))?$")
 
 
 def admissible(token: str) -> bool:

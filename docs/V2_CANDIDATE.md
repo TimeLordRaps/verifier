@@ -23,7 +23,7 @@ The release now adds 47 individually evidence-bound obligation coordinates acros
 all five object numbered profiles: `1.1–1.7`, `2.1–2.7`, `3.1–3.8`, `4.1–4.14`,
 and `5.1–5.11`. VSTD-4 retains its existing rung meanings; the other coordinates
 are obligations, not software versions or certification strength scores.
-The `VSTD-3.0` receipt identifier remains unchanged. See the
+The `VSTD-3` receipt identifier remains unchanged. See the
 [normative contract](../standard/GROUNDED_CERTIFICATION.md) and
 [executable certification guide](GROUNDED_CERTIFICATION.md).
 

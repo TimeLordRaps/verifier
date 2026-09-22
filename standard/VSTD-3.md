@@ -18,7 +18,7 @@
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 
 **Numbered profile:** VSTD-3 on the object axis; required closure coordinate: Substrate Accountability (see `LADDER.md`)
-**Receipt serialization:** `schema_version = "VSTD-3.0"` — frozen; see `WIRE_IDENTIFIERS.md`
+**Receipt serialization:** `schema_version = "VSTD-3"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** implemented project specification
 **Editor:** TimeLordRaps
 **License:** Apache-2.0

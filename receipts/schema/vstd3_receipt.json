@@ -1638,7 +1638,7 @@
           "type": "string"
         },
         "schema_version": {
-          "const": "VSTD-3.0"
+          "const": "VSTD-3"
         },
         "topology_snapshots": {
           "items": {

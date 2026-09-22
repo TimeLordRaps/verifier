@@ -15,7 +15,7 @@ Neither number is a confidence score. The sequences are `1.1–1.7`, `2.1–2.7`
 `3.1–3.8`, `4.1–4.14`, and `5.1–5.11`. The existing VSTD-4 obligations retain the
 name **rungs**. The [normative catalogue](../standard/GROUNDED_CERTIFICATION.md)
 defines all 47 propositions, their dependencies, source requirements and failure
-semantics. `VSTD-3.0` remains a frozen receipt serialization identifier.
+semantics. `VSTD-3` remains a frozen receipt serialization identifier.
 
 An obligation needs its own exact claim/evidence/mechanism binding. A later success
 does not repair an earlier gap. Reports preserve the direct result, blocked

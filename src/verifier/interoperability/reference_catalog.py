@@ -205,7 +205,7 @@ def reference_component_registry() -> InteroperabilityComponentRegistry:
             "vstd-3-hardware",
             "Verifier Standard substrate-accountability model",
             ("VSTD-3 hardware receipt",),
-            ("VSTD-3.0",),
+            ("VSTD-3",),
             ("typed VSTD3Receipt",),
             ("ReceiptValidation",),
             ("PASS", "FAIL", "UNKNOWN"),

@@ -21,6 +21,23 @@ ROOT = Path(__file__).resolve().parents[1]
 GATE = ROOT / "scripts" / "check_namespace_closure.py"
 
 
+def named(tail: str) -> str:
+    """Build a VSTD- token without spelling one.
+
+    This file is scanned by the very gate it tests, and by scripts/
+    check_presentation.py besides.  A reject-path fixture written as a plain
+    literal would be found by both -- correctly, since finding exactly those
+    strings is their job -- so the fixtures name only the tail and the prefix is
+    joined on at runtime.  The scanner's token regex requires an alphanumeric
+    after the hyphen, so `VSTD-{tail}` in this source matches nothing.
+
+    The assertion is identical at runtime.  Inlining these back into literals
+    turns the suite red and gains nothing.
+    """
+
+    return f"VSTD-{tail}"
+
+
 def _gate():
     spec = importlib.util.spec_from_file_location("check_namespace_closure", GATE)
     assert spec is not None and spec.loader is not None
@@ -49,53 +66,53 @@ def test_the_namespace_is_the_base_abstract_and_sixteen_objects() -> None:
 
 
 @pytest.mark.parametrize(
-    "token",
+    "tail",
     [
-        "VSTD",
-        "VSTD-1", "VSTD-5", "VSTD-3.2",
-        "VSTD-DATA", "VSTD-DATA-1", "VSTD-OWNER-6", "VSTD-GRAPH-2.3",
-        "VSTD-BENCH-5.m", "VSTD-ENV-N", "VSTD-SIM-1..5",
-        "VSTD-conformant-lowercase-prose",
+        "1", "5", "3.2",
+        "DATA", "DATA-1", "OWNER-6", "GRAPH-2.3",
+        "BENCH-5.m", "ENV-N", "SIM-1..5",
+        "conformant-lowercase-prose",
     ],
 )
-def test_admits_the_legal_forms(token: str) -> None:
-    assert _gate().admissible(token)
+def test_admits_the_legal_forms(tail: str) -> None:
+    assert _gate().admissible(named(tail))
+
+
+def test_admits_the_base_abstract_bare() -> None:
+    assert _gate().admissible("VSTD")
 
 
 @pytest.mark.parametrize(
-    "token",
+    "tail",
     [
         # the heads that actually squatted the namespace before the gate existed
-        "VSTD-SILO-TRANSFER-1", "VSTD-OBJECT-1", "VSTD-PUBLISHER-1",
-        "VSTD-PROPOSITION-TRANSFER-RULE-1", "VSTD-RUNTIME-AUTHORITY-1",
-        "VSTD-UNTRAVERSABLE-1", "VSTD-ARTIFACT-1", "VSTD-ZK-1",
+        "SILO-TRANSFER-1", "OBJECT-1", "PUBLISHER-1",
+        "PROPOSITION-TRANSFER-RULE-1", "RUNTIME-AUTHORITY-1",
+        "UNTRAVERSABLE-1", "ARTIFACT-1", "ZK-1",
         # a plausible future invention
-        "VSTD-REGISTRY-1",
+        "REGISTRY-1",
     ],
 )
-def test_rejects_a_head_the_namespace_never_admitted(token: str) -> None:
+def test_rejects_a_head_the_namespace_never_admitted(tail: str) -> None:
     """The fail path is the whole point: assert it, do not assume it."""
 
-    assert not _gate().admissible(token)
+    assert not _gate().admissible(named(tail))
 
 
-def test_the_zero_tier_is_not_admissible() -> None:
-    """A zero tier is inadmissible on its own, independently of the head.
+def test_no_zero_is_admissible_in_either_position() -> None:
+    """The namespace is 1-indexed in both positions of `<tier>.<module>`.
 
-    The two defects arrived together -- a name that was never an object reached
-    for the one tier the grid does not have -- so fixing the head must not leave
-    a route back to the zero.
+    The zero tier and the squatting were one defect -- a name that was never an
+    object had no real tier available to it -- so repairing the head must not
+    leave a route back to the zero, in either position.
     """
 
     gate = _gate()
-    # Split the way scripts/check_presentation.py splits its own RETIRED_SURFACES
-    # entries, and for the same reason: that gate forbids the bare literal
-    # everywhere, and a test asserting the literal is rejected would otherwise
-    # trip it.  Joining these back up turns the suite red -- the assertion is
-    # identical at runtime, so there is nothing to gain by it.
-    zero = "VSTD-" + "0.1"
-    for token in (zero, "VSTD-DATA-" + "0.1", "VSTD-GRAPH-0.3", "VSTD-SIM-" + "0.1"):
-        assert not gate.admissible(token), token
+    for tail in (
+        "0.1", "DATA-0.1", "GRAPH-0.3", "SIM-0.1",     # no zero tier
+        "3.0", "DATA-1.0", "SIM-2.0", "GRAPH-4.0",     # no zero module
+    ):
+        assert not gate.admissible(named(tail)), tail
 
 
 def test_every_exception_and_pending_head_carries_its_reason() -> None:

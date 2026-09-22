@@ -365,7 +365,7 @@ digests, but the complete execution environment substrate.
 
 **Build**
 
-- a content-addressed execution environment profile specification (`VSTD-ENV-1.0`);
+- a content-addressed execution environment profile specification (`VSTD-ENV-1`);
 - bindings for operating system release, kernel, architecture, glibc version, and compiler/Python runtime;
 - container rootfs digests, Nix store closures, and wheelhouse archive fingerprints;
 - hardware capability bounds: central processing unit (CPU) model, vector instruction sets (Advanced Vector Extensions 512-bit (AVX-512)), graphics processing unit (GPU) device identifiers, and compute capability levels;

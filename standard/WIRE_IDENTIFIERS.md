@@ -24,7 +24,7 @@ closed:
 |---|---|
 | `VSTD-1.md` | `schema_version = "VSTD-1"` |
 | `VSTD-2.md` | `schema_version = "VSTD-2"` |
-| `VSTD-3.md` | `schema_version = "VSTD-3.0"` |
+| `VSTD-3.md` | `schema_version = "VSTD-3"` |
 | `VSTD-4.md` | `schema_version = "VSTD-4"` |
 | `VSTD-5.md` | `schema_version = "VSTD-5"` |
 | `VSTD-GRAPH-1.md` | `schema_version = "verifier-data-1"` |

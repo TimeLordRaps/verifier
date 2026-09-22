@@ -55,5 +55,5 @@ execution records are not converted into device attestation without new evidence
 
 ## Schema/version dispatch
 
-Dispatch by exact `schema_version`. VSTD-3 receipts use the serialized receipt identifier `VSTD-3.0`. Unknown versions
+Dispatch by exact `schema_version`. VSTD-3 receipts use the serialized receipt identifier `VSTD-3`. Unknown versions
 must fail closed. Do not guess a compatible decoder from field similarity.

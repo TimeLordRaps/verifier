@@ -102,7 +102,7 @@ def _valid_claim_packet() -> tuple[dict[str, Any], dict[str, Any]]:
             },
             "command": "vstd verify receipt.json",
         },
-        "schema_version": "VSTD-3.0",
+        "schema_version": "VSTD-3",
         "verdict": "VERIFIED",
         "verifier_coordinate": {
             "engine": "vstd-gdc-checker",
