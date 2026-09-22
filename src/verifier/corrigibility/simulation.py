@@ -1,6 +1,6 @@
-"""Terminology: abstract syntax tree (AST); application programming interface (API); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); pseudorandom number generator (PRNG); Secure Hash Algorithm 256-bit (SHA-256); generative simulation specification (VSTD-SIM); second-order hyperparameter ontology (VSTD-HYPER); model reproducibility specification (VSTD-MODEL); Verifier Standard (VSTD).
+"""Terminology: abstract syntax tree (AST); application programming interface (API); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); pseudorandom number generator (PRNG); Secure Hash Algorithm 256-bit (SHA-256); generative simulation specification (SIM); second-order hyperparameter ontology (HYPER); model reproducibility specification (MODEL); Verifier Standard (VSTD).
 
-Abstract, substrate-neutral generative simulation specification (VSTD-SIM-1..5) inverting
+Abstract, substrate-neutral generative simulation specification (SIM-1..5) inverting
 model verification across second-order hyperparameter ontology frames.
 """
 
@@ -19,7 +19,7 @@ _DIGEST_PATTERN = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 
 class SimulationTier(str, Enum):
-    """The 5-tier abstract VSTD-SIM verification ladder."""
+    """The 5-tier abstract SIM verification ladder."""
 
     SIM_1_TRACE_REPLAY = "SIM_1_TRACE_REPLAY"
     SIM_2_INVARIANT_SAFETY = "SIM_2_INVARIANT_SAFETY"
@@ -100,7 +100,7 @@ def compute_state_digest(data: Any) -> str:
 
 @dataclass(frozen=True)
 class SecondOrderHyperOntology:
-    """Second-Order VSTD-HYPER (HYPER^2): the Ontological Frame governing the simulated universe."""
+    """Second-Order HYPER (HYPER^2): the Ontological Frame governing the simulated universe."""
 
     frame_id: str
     state_topology: StateTopologyType

@@ -361,7 +361,7 @@ attestation; it is an explicit gap or `UNSUPPORTED` result.
 
 Validated hardware sources, identities, measurements, topology, execution,
 accounting, continuity, provider evidence, and receipts become artifact nodes in the
-existing VSTD-GRAPH hypergraph. Transformations connect those artifacts to existing
+existing GRAPH hypergraph. Transformations connect those artifacts to existing
 model, checkpoint, dataset, evaluation, or deployment artifacts. Revoking upstream
 hardware or firmware evidence therefore reaches downstream artifacts through the
 existing blast-radius algorithm. VSTD-3 does not create a second lineage graph.
@@ -404,7 +404,7 @@ trust anchors. Merely labeling bytes `SPDM`, `EAT`, or `DICE` is not verificatio
 
 ## 23. Compatibility
 
-VSTD-3 adds record and enum values. It does not reinterpret VSTD-1, VSTD-GRAPH-1,
+VSTD-3 adds record and enum values. It does not reinterpret VSTD-1, GRAPH-1,
 VSTD-2, or their current serialized receipt identifiers. Each reader remains bounded to its
 versioned surface. VSTD-3 hardware nodes use additive artifact and
 transformation enum values in the existing hypergraph.

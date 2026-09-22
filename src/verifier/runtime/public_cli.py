@@ -100,7 +100,7 @@ def _load_hypergraph(path_or_dir: Path) -> tuple[dict[str, Any], ProvenanceHyper
     payload = _read_receipt(path_or_dir)
     if payload is None or not _is_data_receipt(payload):
         raise ValueError(
-            "not a readable VSTD-GRAPH-1 receipt with serialized schema_version identifier "
+            "not a readable GRAPH-1 receipt with serialized schema_version identifier "
             f"verifier-data-1: {_receipt_file(path_or_dir)}"
         )
     return payload, ProvenanceHypergraph.from_dict(payload["hypergraph"])
@@ -151,7 +151,7 @@ def _inspect_data_receipt(path_or_dir: Path) -> int:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 1
     print("=" * 70)
-    print(f"VSTD-GRAPH RECEIPT: {payload.get('receipt_id')}")
+    print(f"GRAPH RECEIPT: {payload.get('receipt_id')}")
     print("=" * 70)
     print(f"Canonical Digest: {payload.get('canonical_digest')}")
     print(f"Target Artifact:  {payload.get('dataset_spec', {}).get('target_artifact_id')}")
@@ -376,7 +376,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     for command, help_text in (
         ("validate", "Run implemented receipt checks; Graph candidate validation is not conformance."),
-        ("inspect", "Inspect a generic-run or VSTD-GRAPH receipt; validate and report VSTD-3."),
+        ("inspect", "Inspect a generic-run or GRAPH receipt; validate and report VSTD-3."),
         ("reproduce", "Replay the mechanisms available in a stored receipt."),
     ):
         command_parser = subparsers.add_parser(command, help=help_text)
@@ -400,7 +400,7 @@ def build_parser() -> argparse.ArgumentParser:
     impact_parser.add_argument("artifact_id")
     impact_parser.add_argument("--search-root", default="receipts")
 
-    data_parser = subparsers.add_parser("data", help="Inspect a stored VSTD-GRAPH hypergraph.")
+    data_parser = subparsers.add_parser("data", help="Inspect a stored GRAPH hypergraph.")
     data_commands = data_parser.add_subparsers(dest="data_command", required=True)
 
     trace_parser = data_commands.add_parser("trace")
@@ -568,7 +568,7 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
         elif args.rerun:
             handler = lambda: _receipt_command_failure(
                 argparse.Namespace(command=args.command, json=False),
-                "--rerun is not defined for stored VSTD-GRAPH receipts",
+                "--rerun is not defined for stored GRAPH receipts",
             )
         else:
             handler = lambda: reproduce_data_receipt(receipt_path)

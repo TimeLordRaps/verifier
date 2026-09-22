@@ -37,7 +37,7 @@ def _strip_depths(stem: str) -> tuple[int, ...]:
     return tuple(int(end) for _, _, end in _STRIP.findall(line))
 
 
-SPEC_AXES = {"VSTD": _strip_depths("VSTD-"), "GRAPH": _strip_depths("VSTD-GRAPH-")}
+SPEC_AXES = {"VSTD": _strip_depths("VSTD-"), "GRAPH": _strip_depths("GRAPH-")}
 DOMAIN_DEPTHS = {o: tuple(tier_depth(o, t) for t in range(1, 6)) for o in DOMAIN_OBJECTS}
 ALL_DEPTHS = {**SPEC_AXES, **DOMAIN_DEPTHS}
 
@@ -80,7 +80,7 @@ def test_the_disclosure_level_is_excluded_from_every_lattice_figure() -> None:
 @pytest.mark.parametrize("object_name", sorted(DOMAIN_OBJECTS))
 def test_the_ladder_strip_depth_matches_tier_depth(object_name: str) -> None:
     """The published climb of each domain object is its measured topological depth."""
-    assert _strip_depths(f"VSTD-{object_name}-") == DOMAIN_DEPTHS[object_name]
+    assert _strip_depths(f"{object_name}-") == DOMAIN_DEPTHS[object_name]
 
 
 def test_every_object_carries_five_corroboration_profiles() -> None:
@@ -131,9 +131,9 @@ def test_the_cumulative_product_is_one_plus_each_ladder() -> None:
 
 
 def test_only_the_composition_operator_escapes_the_lattice() -> None:
-    """VSTD-HYPER is the last unconstrained ladder; OWNER stopped being one.
+    """HYPER is the last unconstrained ladder; OWNER stopped being one.
 
-    OWNER-1.1 binds a VSTD-ACTOR certificate, so OWNER sits on a composition edge and its
+    OWNER-1.1 binds a ACTOR certificate, so OWNER sits on a composition edge and its
     own reachable positions no longer multiply through. The previous version of this guard
     asserted that they did, which is why it is inverted here rather than deleted: a ladder
     that escapes the lattice INFLATES a reachable count, so a passing divisibility check
@@ -149,14 +149,14 @@ def test_only_the_composition_operator_escapes_the_lattice() -> None:
     free = prod(d for depths in ALL_DEPTHS.values() for d in depths)
     assert free // complete == _published(r"around one in\n([\d,]+) of the free product")
     # The prose must name the one escape and must no longer claim OWNER is another.
-    assert "`VSTD-HYPER` is the only ladder the lattice leaves unconstrained" in META
-    assert "`VSTD-OWNER` composes nothing and is composed of nothing" not in META
+    assert "`HYPER` is the only ladder the lattice leaves unconstrained" in META
+    assert "`OWNER` composes nothing and is composed of nothing" not in META
 
 
 def test_the_ungrounded_object_is_marked_in_every_published_table() -> None:
     """A row with no adapter anywhere must be visibly distinguished from one with."""
     for name in UNGROUNDED_OBJECTS:
         rows = [line for line in META.splitlines()
-                if line.startswith(f"| {name} ") or line.startswith(f"| `VSTD-{name}-` ")]
+                if line.startswith(f"| {name} ") or line.startswith(f"| `{name}-` ")]
         assert len(rows) == 3, (name, len(rows))
         assert all("‡" in row for row in rows), name

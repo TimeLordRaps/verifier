@@ -255,7 +255,7 @@ to an output must localize to an input, the transformation, or the composition.
 
 Output VSTD-4 normative depth MUST NOT exceed the weakest required input or transformation
 VSTD-4 normative depth.
-This closure is both the handoff to VSTD-GRAPH edge evidence and the entry gate to
+This closure is both the handoff to GRAPH edge evidence and the entry gate to
 VSTD-5.
 
 ---

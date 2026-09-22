@@ -22,6 +22,7 @@ from verifier.core.profile_obligations import (
     DOMAIN_OBLIGATIONS,
     GRAPH_BY_ID,
     TIER_NAMES,
+    COMPOSED_OBJECTS,
     UNCERTIFIABLE_OBJECTS,
     catalog_digest,
     domain_catalog_digest,
@@ -184,7 +185,7 @@ def test_normative_domain_catalogue_and_runtime_rows_agree() -> None:
         assert row in text, obligation.id
     for object_name in DOMAIN_OBJECTS:
         for profile, name in TIER_NAMES.items():
-            assert f"### VSTD-{object_name}-{profile}: {name}" in text
+            assert f"### {object_name}-{profile}: {name}" in text
 
 
 def test_domain_obligation_digest_pins_the_domain_bytes_only() -> None:
@@ -245,7 +246,7 @@ def test_the_disclosure_level_adds_no_adapter_module() -> None:
 def test_every_mechanism_name_resolves_to_a_registered_check() -> None:
     """A mechanism is a promise that something executes it. An unresolvable name is not.
 
-    The four VSTD-OWNER defects found on landing day were all unmechanized prose, where
+    The four OWNER defects found on landing day were all unmechanized prose, where
     adversarial reading was the only possible gate. This class is the opposite: it was
     always mechanically checkable, and nothing checked it, so a mechanism could name a
     check belonging to a different object -- or to none -- and the suite stayed green.
@@ -266,7 +267,7 @@ def test_every_mechanism_name_resolves_to_a_registered_check() -> None:
 
 
 def test_certifiable_is_not_the_same_property_as_grounded() -> None:
-    """Conflating the two published a false claim about VSTD-TRAIN for this catalogue's life.
+    """Conflating the two published a false claim about TRAIN for this catalogue's life.
 
     `build_domain_certificate` rejects any domain absent from CHECKS, so CERTIFIABLE_OBJECTS
     is the set of objects a domain certificate can be built for at all. It is asserted
@@ -278,9 +279,15 @@ def test_certifiable_is_not_the_same_property_as_grounded() -> None:
     assert set(CERTIFIABLE_OBJECTS).isdisjoint(UNCERTIFIABLE_OBJECTS)
     assert set(CERTIFIABLE_OBJECTS) | set(UNCERTIFIABLE_OBJECTS) == set(DOMAIN_OBJECTS)
 
-    # VSTD-TRAIN is the case a two-part partition could not express: grounded, because
+    # TRAIN is the case a two-part partition could not express: grounded, because
     # statics and adaptation checks do execute over it, and certifiable not at all.
-    assert set(UNCERTIFIABLE_OBJECTS) - set(UNGROUNDED_OBJECTS) == {"TRAIN"}
+    # Ruled 2026-09-22, the reason is that it is the catalogue's one *composition*: it
+    # inherits a substrate from the objects it is written over, and has none of its own
+    # for a behavioural adapter to bind. So this residue is not an anomaly awaiting a
+    # fix -- it is the shape every composed entry would have -- and the set of objects
+    # that are grounded but uncertifiable is exactly the set that are composed.
+    assert set(UNCERTIFIABLE_OBJECTS) - set(UNGROUNDED_OBJECTS) == set(COMPOSED_OBJECTS)
+    assert set(COMPOSED_OBJECTS) == {"TRAIN"}
     assert "TRAIN" in GROUNDED_OBJECTS and "TRAIN" not in CERTIFIABLE_OBJECTS
     train = [o for o in DOMAIN_OBLIGATIONS if o.object_name == "TRAIN"]
     assert any(o.mechanized for o in train), "its statics and adaptation rows do resolve"

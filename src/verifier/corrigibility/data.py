@@ -1,6 +1,6 @@
 """Terminology: identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
-VSTD-DATA: Bounded training/eval dataset provenance, integrity digests, and contamination boundaries.
+DATA: Bounded training/eval dataset provenance, integrity digests, and contamination boundaries.
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ class ContaminationVerdict(str, Enum):
 
 
 class DatasetError(ValueError):
-    """Base error for VSTD-DATA operations."""
+    """Base error for DATA operations."""
 
 
 class ContaminationError(DatasetError):

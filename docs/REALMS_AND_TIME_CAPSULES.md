@@ -131,7 +131,7 @@ This is an architectural allocation, not a new serialized profile:
 - **VSTD-3** anchors observations to runtime and physical substrate.
 - **VSTD-4** exposes violations of transition, continuity, or mapping laws.
 - **VSTD-5** may corroborate those bounded results through evidenced independent witnesses.
-- **VSTD-GRAPH** represents the complete multi-temporal topology and retained conflicts.
+- **GRAPH** represents the complete multi-temporal topology and retained conflicts.
 
 Current VSTD 1.2 artifact control can seal an independently serialized realm descriptor
 as a generic `bound_contexts` artifact. It does not define the descriptor's schema, check

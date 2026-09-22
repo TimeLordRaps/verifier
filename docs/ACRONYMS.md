@@ -143,10 +143,6 @@ normative definitions are in [`standard/LADDER.md`](../standard/LADDER.md).
 | `VDS` | verifiable data structure | Append-only or otherwise provable data structure. |
 | `VM` | virtual machine | Software-defined machine environment. |
 | `VSTD` | Verifier Standard | Repository standard and reference implementation. |
-| `VSTD-BENCH` | benchmark specification graph | Benchmark specification graph profile. |
-| `VSTD-ENV` | verifiable execution environment | Verifiable execution environment profile. |
-| `VSTD-MODEL` | model reproducibility specification | Model reproducibility and test-time refutation profile. |
-| `VSTD-SIM` | generative simulation specification | Abstract generative simulation specification. |
 | `verifier-ssa` | software self-assembly | Autonomous software self-assembly profile. |
 | `verifier-ssi` | software self-improvement | Recursive software self-improvement profile. |
 | `verifier-ssr` | candidate self-replication | Candidate software self-replication profile. |

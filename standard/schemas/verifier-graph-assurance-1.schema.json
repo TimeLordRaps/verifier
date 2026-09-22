@@ -2,7 +2,7 @@
   "$comment": "Terminology: Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD). TRUST, RUST, and ROT are formal semantic names, not acronyms.",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/verifier-graph-assurance-1.schema.json",
-  "title": "VSTD-GRAPH Assurance Event Log",
+  "title": "GRAPH Assurance Event Log",
   "description": "Strict shape for the additive, hash-chained reference event log. Schema validity establishes shape only. Mechanism outcomes must be replayed from the embedded evidence with the exact bound mechanism implementation.",
   "type": "object",
   "additionalProperties": false,

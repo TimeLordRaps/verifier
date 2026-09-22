@@ -1,21 +1,21 @@
-# Grounded certification obligations of the eighteen certified objects
+# Grounded certification obligations of the sixteen domain objects
 
 > **Acronyms:** artificial intelligence (AI);
-> benchmark specification graph (VSTD-BENCH);
-> dataset integrity and lineage (VSTD-DATA);
+> benchmark specification graph (BENCH);
+> dataset integrity and lineage (DATA);
 > directed acyclic graph (DAG);
 > Extensible Markup Language (XML);
-> generative simulation specification (VSTD-SIM);
+> generative simulation specification (SIM);
 > Hypertext Transfer Protocol (HTTP);
 > JavaScript Object Notation (JSON);
 > JSON Lines (JSONL);
-> model reproducibility specification (VSTD-MODEL);
-> object composition specification (VSTD-HYPER);
+> model reproducibility specification (MODEL);
+> object composition specification (HYPER);
 > Software Package Data Exchange (SPDX);
 > Stable High-Level Optimizer (StableHLO);
-> training run specification (VSTD-TRAIN);
+> training run specification (TRAIN);
 > Verifier Standard (VSTD);
-> verifiable execution environment (VSTD-ENV);
+> verifiable execution environment (ENV);
 > YAML Ain't Markup Language (YAML).
 
 **Status:** project specification (normative for the sixteen domain objects' obligations)
@@ -33,21 +33,21 @@ and each carries its own digest, so extending one cannot move another.
 
 **Nine of the sixteen are certifiable, and the partition has three parts rather than
 two.** A *behavioural* adapter is keyed in `verifier.domains.catalog.CHECKS`, and
-`build_domain_certificate` rejects any domain absent from it, so those nine -- `VSTD-DATA`,
-`VSTD-ENV`, `VSTD-BENCH`, `VSTD-HYPER`, `VSTD-MODEL`, `VSTD-SIM`, `VSTD-HARNESS`,
-`VSTD-AGENT` and `VSTD-BOT` -- are the objects a domain certificate can be built for at
+`build_domain_certificate` rejects any domain absent from it, so those nine -- `DATA`,
+`ENV`, `BENCH`, `HYPER`, `MODEL`, `SIM`, `HARNESS`,
+`AGENT` and `BOT` -- are the objects a domain certificate can be built for at
 all.
 
-`VSTD-TRAIN` is **catalogued but not certifiable**. Its statics and adaptation
+`TRAIN` is **catalogued but not certifiable**. Its statics and adaptation
 mechanisms resolve and execute, so 11 of its 35 obligations are mechanized, but it has
 no behavioural adapter and no `CHECKS` entry, so no certificate over it can be produced
 at all, and its facets, dynamics and closure obligations are specified with no mechanism.
 **Partial mechanization is not grounding.** That distinction is invisible in a two-part
-partition, which is how 14 `VSTD-TRAIN` obligations came to name checks belonging to no
+partition, which is how 14 `TRAIN` obligations came to name checks belonging to no
 family -- several of them another object's check name -- and be published as mechanized.
 
-The other six -- `VSTD-OWNER` and the five identity objects `VSTD-HUMAN`, `VSTD-ROLE`,
-`VSTD-COLLECTIVE`, `VSTD-IDENTITY` and `VSTD-ACTOR` -- are **ungrounded**: no adapter
+The other six -- `OWNER` and the five identity objects `HUMAN`, `ROLE`,
+`COLLECTIVE`, `IDENTITY` and `ACTOR` -- are **ungrounded**: no adapter
 executes them in any family, so all 216 of their obligations report `UNKNOWN`.
 
 **A mechanism name is a promise that something executes it.** Every name in the
@@ -57,12 +57,12 @@ object resolves to the wrong check.
 
 **Ungrounded and relational are independent properties.** A relational object holds
 *between* certified objects instead of certifying a substrate of its own; the relational
-objects are `VSTD-GRAPH`, `VSTD-HYPER`, `VSTD-OWNER` and `VSTD-IDENTITY`, of which the
-first carries its own axis and the other three sit on this one. `VSTD-HYPER` is
-relational and grounded; `VSTD-HUMAN`, `VSTD-ROLE`, `VSTD-COLLECTIVE` and `VSTD-ACTOR`
+objects are `GRAPH`, `HYPER`, `OWNER` and `IDENTITY`, of which the
+first carries its own axis and the other three sit on this one. `HYPER` is
+relational and grounded; `HUMAN`, `ROLE`, `COLLECTIVE` and `ACTOR`
 are ungrounded and not relational -- an actor is a party, not a relation between
-certified objects, even though it is the operand `VSTD-OWNER` holds against. Until the identity family was catalogued the two properties could not
-be distinguished here, because `VSTD-OWNER` was the only ungrounded object and it was
+certified objects, even though it is the operand `OWNER` holds against. Until the identity family was catalogued the two properties could not
+be distinguished here, because `OWNER` was the only ungrounded object and it was
 relational too -- a containment that held by coincidence of there being one.
 
 Each obligation binds a predicate `vstd.<object>.obligation.<tier>.<index>`. The
@@ -130,9 +130,9 @@ Tier 5 needs a third kind again, because it describes an object in the terms its
 already publishes in rather than in this standard's terms. Nothing can be checked there
 until the mainstay representation is named, which is what the adaptation registry does.
 
-## VSTD-DATA
+## DATA
 
-### VSTD-DATA-1: Facets
+### DATA-1: Facets
 
 `DATA-1.1` through `DATA-1.6`; topological depth 4; 5 of 6 mechanized.
 
@@ -145,7 +145,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | DATA-1.5 | Schema conformance | Each retained record is checked against the bound field contract. | DATA-1.3, DATA-1.4 | schema |
 | DATA-1.6 | Digest tree commitment | The inventory's digest tree is recomputed from retained bytes and compared with the declared root. | DATA-1.2 | inventory |
 
-### VSTD-DATA-2: Dynamics
+### DATA-2: Dynamics
 
 `DATA-2.1` through `DATA-2.6`; topological depth 4; 3 of 6 mechanized.
 
@@ -158,7 +158,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | DATA-2.5 | Raw-to-retained path | Every retained record is traced to a raw input through the executed transformations. | DATA-2.2 | none |
 | DATA-2.6 | Rebuild drift | A second rebuild is compared against the retained corpus and any divergence is localized. | DATA-2.3, DATA-2.5 | none |
 
-### VSTD-DATA-3: Statics
+### DATA-3: Statics
 
 `DATA-3.1` through `DATA-3.6`; topological depth 3; 6 of 6 mechanized.
 
@@ -171,7 +171,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | DATA-3.5 | Origin rights | Licence and legal facts of origin are bound per source, and the composite redistribution term is the meet of its sources. | none | statics:rights |
 | DATA-3.6 | Pipeline independence | The facts above are unchanged when the retaining pipeline's declarations are perturbed. | DATA-3.3, DATA-3.4, DATA-3.5 | statics:independence |
 
-### VSTD-DATA-4: Closure
+### DATA-4: Closure
 
 `DATA-4.1` through `DATA-4.6`; topological depth 5; 5 of 6 mechanized.
 
@@ -184,7 +184,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | DATA-4.5 | Lexical overlap | Near-duplicate overlap is recomputed under the declared similarity bound. | DATA-4.4 | overlap |
 | DATA-4.6 | No unaccounted record | The inventory admits no record outside the declared splits and retention boundary. | DATA-4.3, DATA-4.5 | none |
 
-### VSTD-DATA-5: Domain adaptation
+### DATA-5: Domain adaptation
 
 `DATA-5.1` through `DATA-5.6`; topological depth 4; 6 of 6 mechanized.
 
@@ -197,7 +197,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | DATA-5.5 | Round trip | Export and re-import reproduces the retained inventory byte for byte, or names its loss. | DATA-5.2, DATA-5.3, DATA-5.4 | mainstay:roundtrip |
 | DATA-5.6 | Inference upward | What the mainstay cannot express is stated as the residual this object carries over it. | DATA-5.5 | mainstay:residual |
 
-### Registered mainstays of VSTD-DATA
+### Registered mainstays of DATA
 
 | Format | Carried in | Meta-surface entities | Expresses | Residual |
 |---|---|---|---|---|
@@ -208,7 +208,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | Hugging Face datasets (`huggingface-datasets`) | dataset_infos.json and card front matter | DatasetInfo, Features, Split, DownloadChecksum | 5 coordinates | 19 coordinates |
 | Apache Iceberg table format (`apache-iceberg`) | metadata.json, manifest lists and manifests | table, snapshot, manifest, data-file, partition-spec | 5 coordinates | 19 coordinates |
 
-### VSTD-DATA-6: Disclosure
+### DATA-6: Disclosure
 
 `DATA-6.1` through `DATA-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -218,12 +218,12 @@ until the mainstay representation is named, which is what the adaptation registr
 | DATA-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | DATA-6.1 | none |
 | DATA-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | DATA-6.1 | none |
 | DATA-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | DATA-6.2, DATA-6.3 | none |
-| DATA-6.5 | Composition delta | Emitting this certificate beside another VSTD-DATA certificate over an overlapping corpus discloses the intersection: two split memberships and two inventories can each be within bound while the pair identifies which records are shared, so the join is evaluated against both operands and not against either alone. | DATA-6.2, DATA-6.4 | none |
+| DATA-6.5 | Composition delta | Emitting this certificate beside another DATA certificate over an overlapping corpus discloses the intersection: two split memberships and two inventories can each be within bound while the pair identifies which records are shared, so the join is evaluated against both operands and not against either alone. | DATA-6.2, DATA-6.4 | none |
 | DATA-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | DATA-6.2, DATA-6.4, DATA-6.5 | none |
 
-## VSTD-ENV
+## ENV
 
-### VSTD-ENV-1: Facets
+### ENV-1: Facets
 
 `ENV-1.1` through `ENV-1.6`; topological depth 4; 4 of 6 mechanized.
 
@@ -236,7 +236,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | ENV-1.5 | Observed configuration | Retained collector observations are compared with the required configuration surface. | ENV-1.4 | configuration |
 | ENV-1.6 | Unpinned residue | Every inventory element without a pinned digest is named rather than assumed absent. | ENV-1.2, ENV-1.5 | none |
 
-### VSTD-ENV-2: Dynamics
+### ENV-2: Dynamics
 
 `ENV-2.1` through `ENV-2.6`; topological depth 4; 3 of 6 mechanized.
 
@@ -249,7 +249,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | ENV-2.5 | Result agreement | The two executions are compared result for result and divergence is localized. | ENV-2.4 | reproduction |
 | ENV-2.6 | Divergence attribution | Each divergence is attributed to a declared nondeterminism source or reported unattributed. | ENV-2.1, ENV-2.2, ENV-2.5 | none |
 
-### VSTD-ENV-3: Statics
+### ENV-3: Statics
 
 `ENV-3.1` through `ENV-3.5`; topological depth 3; 1 of 5 mechanized.
 
@@ -261,7 +261,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | ENV-3.4 | Physical envelope | Memory, clock, thermal and power limits of the machine are recorded. | ENV-3.3 | none |
 | ENV-3.5 | Envelope independence | The envelope holds whether or not the specification declares it. | ENV-3.1, ENV-3.2, ENV-3.4 | none |
 
-### VSTD-ENV-4: Closure
+### ENV-4: Closure
 
 `ENV-4.1` through `ENV-4.5`; topological depth 4; 0 of 5 mechanized.
 
@@ -273,7 +273,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | ENV-4.4 | Standup sufficiency | A second party can stand the environment up from the record alone. | ENV-4.2, ENV-4.3 | none |
 | ENV-4.5 | Standup evidence | A retained independent standup is compared against the original. | ENV-4.4 | none |
 
-### VSTD-ENV-5: Domain adaptation
+### ENV-5: Domain adaptation
 
 `ENV-5.1` through `ENV-5.6`; topological depth 5; 6 of 6 mechanized.
 
@@ -286,7 +286,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | ENV-5.5 | Round trip | Rebuilding from the mainstay representation reproduces the pinned inventory. | ENV-5.4 | mainstay:roundtrip |
 | ENV-5.6 | Inference upward | What the mainstay cannot pin is stated as the residual this object carries over it. | ENV-5.5 | mainstay:residual |
 
-### Registered mainstays of VSTD-ENV
+### Registered mainstays of ENV
 
 | Format | Carried in | Meta-surface entities | Expresses | Residual |
 |---|---|---|---|---|
@@ -296,7 +296,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | Software bill of materials (`sbom`) | SPDX or CycloneDX document | component, relationship, licence, supplier | 4 coordinates | 18 coordinates |
 | in-toto attestation (`in-toto-attestation`) | DSSE envelope over a predicate | statement, subject, predicate, builder, material, byproduct | 5 coordinates | 17 coordinates |
 
-### VSTD-ENV-6: Disclosure
+### ENV-6: Disclosure
 
 `ENV-6.1` through `ENV-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -306,12 +306,12 @@ until the mainstay representation is named, which is what the adaptation registr
 | ENV-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | ENV-6.1 | none |
 | ENV-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | ENV-6.1 | none |
 | ENV-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | ENV-6.2, ENV-6.3 | none |
-| ENV-6.5 | Composition delta | Emitting this certificate beside a VSTD-TRAIN or VSTD-MODEL certificate discloses the machine: a pinned toolchain and a pinned resource ceiling are each ordinary in isolation and together name one fleet, so the join is evaluated against both operands and not against either alone. | ENV-6.2, ENV-6.4 | none |
+| ENV-6.5 | Composition delta | Emitting this certificate beside a TRAIN or MODEL certificate discloses the machine: a pinned toolchain and a pinned resource ceiling are each ordinary in isolation and together name one fleet, so the join is evaluated against both operands and not against either alone. | ENV-6.2, ENV-6.4 | none |
 | ENV-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | ENV-6.2, ENV-6.4, ENV-6.5 | none |
 
-## VSTD-BENCH
+## BENCH
 
-### VSTD-BENCH-1: Facets
+### BENCH-1: Facets
 
 `BENCH-1.1` through `BENCH-1.7`; topological depth 5; 3 of 7 mechanized.
 
@@ -325,7 +325,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | BENCH-1.6 | Baseline mechanics | The baseline a score is read against is bound and executable. | BENCH-1.4 | none |
 | BENCH-1.7 | Feature representation | The representational spaces or categories the problems are typed by are declared. | BENCH-1.1 | none |
 
-### VSTD-BENCH-2: Dynamics
+### BENCH-2: Dynamics
 
 `BENCH-2.1` through `BENCH-2.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -338,7 +338,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | BENCH-2.5 | Response curve | Score as a function of budget is recomputed over the retained attempts. | BENCH-2.2 | none |
 | BENCH-2.6 | Measurement feedback | The effect of publication on the systems measured is declared as an uncontrolled dynamic. | BENCH-2.3, BENCH-2.4, BENCH-2.5 | none |
 
-### VSTD-BENCH-3: Statics
+### BENCH-3: Statics
 
 `BENCH-3.1` through `BENCH-3.7`; topological depth 4; 1 of 7 mechanized.
 
@@ -352,7 +352,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | BENCH-3.6 | Budget ceilings | Retained timing and memory observations are checked against the problem ceilings. | none | budgets |
 | BENCH-3.7 | Harness independence | The facts above hold when the harness changes. | BENCH-3.3, BENCH-3.5, BENCH-3.6 | none |
 
-### VSTD-BENCH-4: Closure
+### BENCH-4: Closure
 
 `BENCH-4.1` through `BENCH-4.5`; topological depth 4; 4 of 5 mechanized.
 
@@ -364,7 +364,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | BENCH-4.4 | Weighted score | The weighted score is recomputed over the complete inventory under the declared weights. | BENCH-4.2, BENCH-4.3 | coverage |
 | BENCH-4.5 | Surface completeness | The scored set covers the whole declared measurement surface. | BENCH-4.4 | none |
 
-### VSTD-BENCH-5: Domain adaptation
+### BENCH-5: Domain adaptation
 
 `BENCH-5.1` through `BENCH-5.6`; topological depth 5; 6 of 6 mechanized.
 
@@ -377,7 +377,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | BENCH-5.5 | Round trip | Running the mainstay's export reproduces the retained scores. | BENCH-5.2, BENCH-5.3, BENCH-5.4 | mainstay:roundtrip |
 | BENCH-5.6 | Inference upward | What the mainstay cannot express is stated as the residual this object carries over it. | BENCH-5.5 | mainstay:residual |
 
-### Registered mainstays of VSTD-BENCH
+### Registered mainstays of BENCH
 
 | Format | Carried in | Meta-surface entities | Expresses | Residual |
 |---|---|---|---|---|
@@ -387,7 +387,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | SWE-bench instance record (`swe-bench`) | instance JSONL | instance, repository, base-commit, patch, test-patch, test-status-set | 6 coordinates | 19 coordinates |
 | MLPerf result log (`mlperf`) | result summary and detail logs | benchmark, scenario, division, system, result, constraint | 4 coordinates | 21 coordinates |
 
-### VSTD-BENCH-6: Disclosure
+### BENCH-6: Disclosure
 
 `BENCH-6.1` through `BENCH-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -400,9 +400,25 @@ until the mainstay representation is named, which is what the adaptation registr
 | BENCH-6.5 | Composition delta | Repeated emission is itself composition: each emitted outcome vector is a bounded observation of the oracle, and a sufficient number of them reconstructs it. The bound is therefore evaluated over the accumulated sequence of emissions rather than over one, and a bound that holds for every single emission while the sequence reconstructs the oracle is not satisfied. | BENCH-6.2, BENCH-6.4 | none |
 | BENCH-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | BENCH-6.2, BENCH-6.4, BENCH-6.5 | none |
 
-## VSTD-TRAIN
+## TRAIN
 
-### VSTD-TRAIN-1: Facets
+**TRAIN is a composition, and it is the one entry here that is not a member of the
+VSTD-NAMESPACE.** The namespace is `VSTD` plus sixteen objects and TRAIN is not among
+them. A training run is `HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH)` indexed by a
+`GRAPH-1` recorded lineage, where `VSTD` is the model and training-loop algorithms and
+`GRAPH-1` carries the order the data was consumed in -- the one fact no operand states,
+since `DATA` certifies what the corpus is and never the sequence it was read in. The
+obligations below are what that composition must satisfy. They are catalogued because a
+named composition nothing checks is only prose, not because there is a seventeenth object.
+
+This is also why TRAIN is the single domain entry that is grounded without being
+certifiable. Its statics and adaptation mechanisms resolve and execute, because it
+inherits a substrate from its operands; it has no behavioural adapter in
+`verifier.domains.catalog.CHECKS`, because it has no substrate of its own to adapt. Every
+other uncertifiable entry is ungrounded and carries no mechanism in any family at all.
+Ruled 2026-09-22.
+
+### TRAIN-1: Facets
 
 `TRAIN-1.1` through `TRAIN-1.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -415,7 +431,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | TRAIN-1.5 | Batch binding | Each step is bound to the batch it consumed. | TRAIN-1.4 | none |
 | TRAIN-1.6 | Retention boundary | Which steps and states are retained, and which were discarded, is declared. | TRAIN-1.1, TRAIN-1.5 | none |
 
-### VSTD-TRAIN-2: Dynamics
+### TRAIN-2: Dynamics
 
 `TRAIN-2.1` through `TRAIN-2.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -428,7 +444,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | TRAIN-2.5 | Step-by-step advance | The run is replayed step by step across the retained trace. | TRAIN-2.4 | none |
 | TRAIN-2.6 | Unsupported update reporting | An unsupported optimizer is reported UNKNOWN and never passed. | TRAIN-2.3 | none |
 
-### VSTD-TRAIN-3: Statics
+### TRAIN-3: Statics
 
 `TRAIN-3.1` through `TRAIN-3.5`; topological depth 3; 5 of 5 mechanized.
 
@@ -440,7 +456,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | TRAIN-3.4 | Objective geometry | The curvature and conditioning that the architecture and data together fix are stated. | TRAIN-3.3 | statics:geometry |
 | TRAIN-3.5 | Choice independence | The facts above are unchanged when the run's configuration is perturbed. | TRAIN-3.2, TRAIN-3.4 | statics:independence |
 
-### VSTD-TRAIN-4: Closure
+### TRAIN-4: Closure
 
 `TRAIN-4.1` through `TRAIN-4.6`; topological depth 6; 0 of 6 mechanized.
 
@@ -453,7 +469,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | TRAIN-4.5 | No reordering | The retained order is the executed order, and a reordered pair is detectable. | TRAIN-4.4 | none |
 | TRAIN-4.6 | Whole-run accounting | The trace accounts for the whole run rather than a selected prefix of it. | TRAIN-4.5 | none |
 
-### VSTD-TRAIN-5: Domain adaptation
+### TRAIN-5: Domain adaptation
 
 `TRAIN-5.1` through `TRAIN-5.6`; topological depth 5; 6 of 6 mechanized.
 
@@ -462,11 +478,11 @@ until the mainstay representation is named, which is what the adaptation registr
 | TRAIN-5.1 | Mainstay binding | The training-loop framework is named and version-pinned. | none | mainstay:binding |
 | TRAIN-5.2 | Training-loop mapping | The retained trace is mapped onto the mainstay's loop and callback model. | TRAIN-5.1 | mainstay:layout |
 | TRAIN-5.3 | Checkpoint-format mapping | The checkpoint inventory is mapped onto the mainstay's serialization format. | TRAIN-5.1 | mainstay:schema |
-| TRAIN-5.4 | Batch source mapping | The batch binding is mapped onto the retained inventory a VSTD-DATA-5 object exposes. | TRAIN-5.2 | mainstay:upstream |
+| TRAIN-5.4 | Batch source mapping | The batch binding is mapped onto the retained inventory a DATA-5 object exposes. | TRAIN-5.2 | mainstay:upstream |
 | TRAIN-5.5 | Round trip | Resuming from the mapped checkpoint reproduces the retained next step. | TRAIN-5.3, TRAIN-5.4 | mainstay:roundtrip |
 | TRAIN-5.6 | Inference upward | What the mainstay cannot express is stated as the residual this object carries over it. | TRAIN-5.5 | mainstay:residual |
 
-### Registered mainstays of VSTD-TRAIN
+### Registered mainstays of TRAIN
 
 | Format | Carried in | Meta-surface entities | Expresses | Residual |
 |---|---|---|---|---|
@@ -476,7 +492,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | MLflow tracking run (`mlflow-run`) | run metadata, params, metrics and artifacts | run, parameter, metric-point, tag, artifact, experiment | 5 coordinates | 18 coordinates |
 | TensorBoard event file (`tensorboard-event`) | tfevents protocol buffer stream | event, summary, step, wall-time, tag | 2 coordinates | 21 coordinates |
 
-### VSTD-TRAIN-6: Disclosure
+### TRAIN-6: Disclosure
 
 `TRAIN-6.1` through `TRAIN-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -486,12 +502,12 @@ until the mainstay representation is named, which is what the adaptation registr
 | TRAIN-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | TRAIN-6.1 | none |
 | TRAIN-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | TRAIN-6.1 | none |
 | TRAIN-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | TRAIN-6.2, TRAIN-6.3 | none |
-| TRAIN-6.5 | Composition delta | Emitting this certificate beside a VSTD-DATA certificate over the training corpus discloses membership: a per-step loss trace and a split membership are each within bound while the pair reveals which records were trained on, so the join is evaluated against both operands and not against either alone. | TRAIN-6.2, TRAIN-6.4 | none |
+| TRAIN-6.5 | Composition delta | Emitting this certificate beside a DATA certificate over the training corpus discloses membership: a per-step loss trace and a split membership are each within bound while the pair reveals which records were trained on, so the join is evaluated against both operands and not against either alone. | TRAIN-6.2, TRAIN-6.4 | none |
 | TRAIN-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | TRAIN-6.2, TRAIN-6.4, TRAIN-6.5 | none |
 
-## VSTD-HYPER
+## HYPER
 
-### VSTD-HYPER-1: Facets
+### HYPER-1: Facets
 
 `HYPER-1.1` through `HYPER-1.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -504,7 +520,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | HYPER-1.5 | Composed identity | The identity of the composed object is derived from its operands and its filled slots. | HYPER-1.3, HYPER-1.4 | none |
 | HYPER-1.6 | Operand admissibility | Each operand is admitted under the composed object's own policy. | HYPER-1.5 | none |
 
-### VSTD-HYPER-2: Dynamics
+### HYPER-2: Dynamics
 
 `HYPER-2.1` through `HYPER-2.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -517,7 +533,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | HYPER-2.5 | Associativity | Which regroupings of operands are equivalent, and which are not, is stated. | HYPER-2.4 | none |
 | HYPER-2.6 | Depth propagation | The composed object's depth is bounded by its operands' established depths. | HYPER-2.2, HYPER-2.3, HYPER-2.5 | none |
 
-### VSTD-HYPER-3: Statics
+### HYPER-3: Statics
 
 `HYPER-3.1` through `HYPER-3.5`; topological depth 3; 5 of 5 mechanized.
 
@@ -529,7 +545,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | HYPER-3.4 | Manufacture impossibility | No composition manufactures evidence absent from its operands. | HYPER-3.1, HYPER-3.2 | statics:conservation |
 | HYPER-3.5 | Level independence | The facts above hold at every depth of nesting and are unchanged when the composition's own declarations are perturbed. | HYPER-3.3, HYPER-3.4 | statics:independence |
 
-### VSTD-HYPER-4: Closure
+### HYPER-4: Closure
 
 `HYPER-4.1` through `HYPER-4.5`; topological depth 5; 0 of 5 mechanized.
 
@@ -541,7 +557,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | HYPER-4.4 | Fractal re-representation | The substrate is exhibited recurring identically at every level. | HYPER-4.3 | none |
 | HYPER-4.5 | Boundary completeness | The composition's boundary admits no unbound operand. | HYPER-4.1, HYPER-4.4 | none |
 
-### VSTD-HYPER-5: Domain adaptation
+### HYPER-5: Domain adaptation
 
 `HYPER-5.1` through `HYPER-5.5`; topological depth 5; 5 of 5 mechanized.
 
@@ -553,7 +569,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | HYPER-5.4 | Round trip | The mainstay's verifier accepts the mapped composition and rejects a substituted operand. | HYPER-5.3 | mainstay:roundtrip |
 | HYPER-5.5 | Inference upward | What the mainstay cannot express is stated as the residual this object carries over it. | HYPER-5.4 | mainstay:residual |
 
-### Registered mainstays of VSTD-HYPER
+### Registered mainstays of HYPER
 
 | Format | Carried in | Meta-surface entities | Expresses | Residual |
 |---|---|---|---|---|
@@ -562,7 +578,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | Sigstore bundle (`sigstore-bundle`) | verification material and DSSE envelope | bundle, envelope, certificate, transparency-entry, identity | 2 coordinates | 20 coordinates |
 | Open Container Initiative image index and referrers (`oci-referrers`) | index plus subject descriptors | index, manifest, subject-descriptor, artifact-type | 3 coordinates | 19 coordinates |
 
-### VSTD-HYPER-6: Disclosure
+### HYPER-6: Disclosure
 
 `HYPER-6.1` through `HYPER-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -575,9 +591,9 @@ until the mainstay representation is named, which is what the adaptation registr
 | HYPER-6.5 | Composition delta | This is the object where the delta is stated in general, and where it is sharpest. HYPER-2.2 establishes that a composition strength never increases above its operands; disclosure is the one property for which the opposite holds. The disclosure of a composition is the JOIN of its operands, not their meet, and the join is not bounded by either: two operands each strictly within bound can compose to a disclosure outside both. A composition is therefore never admissible on the grounds that its operands were, and HYPER-6.5 is evaluated on the composite rather than inherited from the operand certificates. | HYPER-6.2, HYPER-6.4 | none |
 | HYPER-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | HYPER-6.2, HYPER-6.4, HYPER-6.5 | none |
 
-## VSTD-MODEL
+## MODEL
 
-### VSTD-MODEL-1: Facets
+### MODEL-1: Facets
 
 `MODEL-1.1` through `MODEL-1.5`; topological depth 3; 3 of 5 mechanized.
 
@@ -589,7 +605,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | MODEL-1.4 | Input and output surface | The declared input and output surface is bound with its types. | MODEL-1.2 | none |
 | MODEL-1.5 | Dependency artifacts | The named dependency artifacts are bound by digest. | none | artifacts |
 
-### VSTD-MODEL-2: Dynamics
+### MODEL-2: Dynamics
 
 `MODEL-2.1` through `MODEL-2.5`; topological depth 4; 2 of 5 mechanized.
 
@@ -601,7 +617,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | MODEL-2.4 | Precision behaviour | Results under the declared precision are bounded, with divergence localized. | MODEL-2.2 | none |
 | MODEL-2.5 | Sampling and decoding | The decoding procedure and its entropy source are bound and replayed. | MODEL-2.3, MODEL-2.4 | none |
 
-### VSTD-MODEL-3: Statics
+### MODEL-3: Statics
 
 `MODEL-3.1` through `MODEL-3.6`; topological depth 3; 1 of 6 mechanized.
 
@@ -614,7 +630,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | MODEL-3.5 | Provenance citation | The training-run object the model's provenance is bound through is cited. | MODEL-3.4 | none |
 | MODEL-3.6 | Artifact immutability | The facts above are properties of the artifact rather than of any deployment of it. | MODEL-3.2, MODEL-3.3, MODEL-3.5 | none |
 
-### VSTD-MODEL-4: Closure
+### MODEL-4: Closure
 
 `MODEL-4.1` through `MODEL-4.5`; topological depth 3; 4 of 5 mechanized.
 
@@ -626,7 +642,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | MODEL-4.4 | Probe execution | Each probe is executed against its bound output condition. | MODEL-4.3 | challenges |
 | MODEL-4.5 | Refutability | The claimed behaviour is refutable rather than merely unrefuted. | MODEL-4.2, MODEL-4.4 | none |
 
-### VSTD-MODEL-5: Domain adaptation
+### MODEL-5: Domain adaptation
 
 `MODEL-5.1` through `MODEL-5.6`; topological depth 5; 6 of 6 mechanized.
 
@@ -639,7 +655,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | MODEL-5.5 | Round trip | Export and re-import reproduces the retained outputs within the declared tolerance. | MODEL-5.3, MODEL-5.4 | mainstay:roundtrip |
 | MODEL-5.6 | Inference upward | The residual this object carries over the mainstay is stated. | MODEL-5.5 | mainstay:residual |
 
-### Registered mainstays of VSTD-MODEL
+### Registered mainstays of MODEL
 
 | Format | Carried in | Meta-surface entities | Expresses | Residual |
 |---|---|---|---|---|
@@ -649,7 +665,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | Hugging Face model repository (`huggingface-model-repository`) | config.json, weight index and model card | config, weight-index, tokenizer, model-card, shard | 4 coordinates | 17 coordinates |
 | StableHLO portable operation set (`stablehlo`) | MLIR module with versioned opset | module, function, operation, opset-version, type | 3 coordinates | 18 coordinates |
 
-### VSTD-MODEL-6: Disclosure
+### MODEL-6: Disclosure
 
 `MODEL-6.1` through `MODEL-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -659,12 +675,12 @@ until the mainstay representation is named, which is what the adaptation registr
 | MODEL-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | MODEL-6.1 | none |
 | MODEL-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | MODEL-6.1 | none |
 | MODEL-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | MODEL-6.2, MODEL-6.3 | none |
-| MODEL-6.5 | Composition delta | Emitting this certificate beside a VSTD-TRAIN or VSTD-DATA certificate discloses the corpus through the model: an architecture, a metric vector and a split membership are each within bound while the three together support extraction, so the join is evaluated against all operands and not against any one alone. | MODEL-6.2, MODEL-6.4 | none |
+| MODEL-6.5 | Composition delta | Emitting this certificate beside a TRAIN or DATA certificate discloses the corpus through the model: an architecture, a metric vector and a split membership are each within bound while the three together support extraction, so the join is evaluated against all operands and not against any one alone. | MODEL-6.2, MODEL-6.4 | none |
 | MODEL-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | MODEL-6.2, MODEL-6.4, MODEL-6.5 | none |
 
-## VSTD-SIM
+## SIM
 
-### VSTD-SIM-1: Facets
+### SIM-1: Facets
 
 `SIM-1.1` through `SIM-1.7`; topological depth 3; 2 of 7 mechanized.
 
@@ -678,7 +694,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | SIM-1.6 | Shard decomposition | The shard partition of the state space is declared. | SIM-1.1 | none |
 | SIM-1.7 | Macro and micro projection | The projection relating macro states to micro states is bound. | SIM-1.6 | none |
 
-### VSTD-SIM-2: Dynamics
+### SIM-2: Dynamics
 
 `SIM-2.1` through `SIM-2.6`; topological depth 4; 2 of 6 mechanized.
 
@@ -691,7 +707,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | SIM-2.5 | Perspective shift | The bound projection is executed and aligned macro states are compared within the declared tolerance. | SIM-2.3 | refinement |
 | SIM-2.6 | Perspective agreement | A shift of perspective preserves the trajectory's identity. | SIM-2.2, SIM-2.4, SIM-2.5 | none |
 
-### VSTD-SIM-3: Statics
+### SIM-3: Statics
 
 `SIM-3.1` through `SIM-3.5`; topological depth 4; 3 of 5 mechanized.
 
@@ -703,7 +719,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | SIM-3.4 | Modelled law | The physical law the simulation is a model of is stated as external to the simulation. | none | none |
 | SIM-3.5 | Law independence | The law holds whether or not the simulation represents it correctly. | SIM-3.3, SIM-3.4 | none |
 
-### VSTD-SIM-4: Closure
+### SIM-4: Closure
 
 `SIM-4.1` through `SIM-4.5`; topological depth 4; 3 of 5 mechanized.
 
@@ -715,7 +731,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | SIM-4.4 | No unattributed transition | Every transition is attributed to a bound transition expression. | SIM-4.1 | none |
 | SIM-4.5 | Whole-surface accounting | The retained trajectory accounts for the whole simulated surface. | SIM-4.3, SIM-4.4 | none |
 
-### VSTD-SIM-5: Domain adaptation
+### SIM-5: Domain adaptation
 
 `SIM-5.1` through `SIM-5.6`; topological depth 5; 6 of 6 mechanized.
 
@@ -728,7 +744,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | SIM-5.5 | Round trip | Driving the mainstay reproduces the retained trajectory within the declared tolerance. | SIM-5.4 | mainstay:roundtrip |
 | SIM-5.6 | Inference upward | The residual this object carries over the mainstay is stated. | SIM-5.5 | mainstay:residual |
 
-### Registered mainstays of VSTD-SIM
+### Registered mainstays of SIM
 
 | Format | Carried in | Meta-surface entities | Expresses | Residual |
 |---|---|---|---|---|
@@ -738,7 +754,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | OpenUSD stage (`openusd`) | layered stage with composition arcs | stage, prim, attribute, relationship, layer, composition-arc | 3 coordinates | 20 coordinates |
 | ROS 2 bag recording (`ros2-bag`) | storage plus metadata.yaml | bag, topic, message, timestamp, qos-profile | 3 coordinates | 20 coordinates |
 
-### VSTD-SIM-6: Disclosure
+### SIM-6: Disclosure
 
 `SIM-6.1` through `SIM-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -748,13 +764,13 @@ until the mainstay representation is named, which is what the adaptation registr
 | SIM-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | SIM-6.1 | none |
 | SIM-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | SIM-6.1 | none |
 | SIM-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | SIM-6.2, SIM-6.3 | none |
-| SIM-6.5 | Composition delta | Emitting this certificate beside a VSTD-BOT certificate discloses the decider: a state space and a coupling surface are each within bound while the pair localizes which decisions were taken by which actor, so the join is evaluated against both operands and not against either alone. | SIM-6.2, SIM-6.4 | none |
+| SIM-6.5 | Composition delta | Emitting this certificate beside a BOT certificate discloses the decider: a state space and a coupling surface are each within bound while the pair localizes which decisions were taken by which actor, so the join is evaluated against both operands and not against either alone. | SIM-6.2, SIM-6.4 | none |
 | SIM-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | SIM-6.2, SIM-6.4, SIM-6.5 | none |
 
-## VSTD-HARNESS  
+## HARNESS  
 *On the open release branch; no behavioural adapter in this tree.*
 
-### VSTD-HARNESS-1: Facets
+### HARNESS-1: Facets
 
 `HARNESS-1.1` through `HARNESS-1.5`; topological depth 4; 2 of 5 mechanized.
 
@@ -766,7 +782,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | HARNESS-1.4 | Side-effect channels | The declared side-effect channels are enumerated. | HARNESS-1.3 | none |
 | HARNESS-1.5 | Transcript commitment shape | The shape of the ordered transcript commitment is declared. | HARNESS-1.2 | none |
 
-### VSTD-HARNESS-2: Dynamics
+### HARNESS-2: Dynamics
 
 `HARNESS-2.1` through `HARNESS-2.5`; topological depth 4; 4 of 5 mechanized.
 
@@ -778,7 +794,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | HARNESS-2.4 | Session advance | The session is replayed record by record. | HARNESS-2.1 | messages |
 | HARNESS-2.5 | Retry and resumption | What a retry or a resumption does to the sequence is declared and evidenced. | HARNESS-2.3, HARNESS-2.4 | none |
 
-### VSTD-HARNESS-3: Statics
+### HARNESS-3: Statics
 
 `HARNESS-3.1` through `HARNESS-3.4`; topological depth 3; 4 of 4 mechanized.
 
@@ -789,7 +805,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | HARNESS-3.3 | Channel capacity | The capacity and truncation behaviour of each instrumented channel is recorded. | HARNESS-3.1 | statics:capacity |
 | HARNESS-3.4 | Instrument fixity | The facts above are unchanged when the recorded session content is perturbed. | HARNESS-3.1, HARNESS-3.2, HARNESS-3.3 | statics:fixity |
 
-### VSTD-HARNESS-4: Closure
+### HARNESS-4: Closure
 
 `HARNESS-4.1` through `HARNESS-4.5`; topological depth 4; 3 of 5 mechanized.
 
@@ -801,7 +817,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | HARNESS-4.4 | Reordering detection | A reordered pair changes the commitment. | HARNESS-4.2, HARNESS-4.3 | none |
 | HARNESS-4.5 | Whole-session accounting | The session is wholly accounted for under the commitment. | HARNESS-4.4 | none |
 
-### VSTD-HARNESS-5: Domain adaptation
+### HARNESS-5: Domain adaptation
 
 `HARNESS-5.1` through `HARNESS-5.6`; topological depth 5; 6 of 6 mechanized.
 
@@ -814,7 +830,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | HARNESS-5.5 | Round trip | Re-importing the mainstay export reproduces the transcript commitment. | HARNESS-5.4 | mainstay:roundtrip |
 | HARNESS-5.6 | Inference upward | The residual this object carries over the mainstay is stated. | HARNESS-5.5 | mainstay:residual |
 
-### Registered mainstays of VSTD-HARNESS
+### Registered mainstays of HARNESS
 
 | Format | Carried in | Meta-surface entities | Expresses | Residual |
 |---|---|---|---|---|
@@ -823,7 +839,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | Model Context Protocol (`model-context-protocol`) | JSON-RPC over a transport | server, tool, resource, prompt, call, result, capability | 4 coordinates | 15 coordinates |
 | HTTP Archive (`har`) | HAR log | log, entry, request, response, timing | 2 coordinates | 17 coordinates |
 
-### VSTD-HARNESS-6: Disclosure
+### HARNESS-6: Disclosure
 
 `HARNESS-6.1` through `HARNESS-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -833,13 +849,13 @@ until the mainstay representation is named, which is what the adaptation registr
 | HARNESS-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | HARNESS-6.1 | none |
 | HARNESS-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | HARNESS-6.1 | none |
 | HARNESS-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | HARNESS-6.2, HARNESS-6.3 | none |
-| HARNESS-6.5 | Composition delta | Emitting this certificate beside a VSTD-AGENT certificate discloses the session: a commitment shape and a decision inventory are each within bound while the pair reconstructs the order and content of a run, so the join is evaluated against both operands and not against either alone. | HARNESS-6.2, HARNESS-6.4 | none |
+| HARNESS-6.5 | Composition delta | Emitting this certificate beside a AGENT certificate discloses the session: a commitment shape and a decision inventory are each within bound while the pair reconstructs the order and content of a run, so the join is evaluated against both operands and not against either alone. | HARNESS-6.2, HARNESS-6.4 | none |
 | HARNESS-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | HARNESS-6.2, HARNESS-6.4, HARNESS-6.5 | none |
 
-## VSTD-AGENT  
+## AGENT  
 *On the open release branch; no behavioural adapter in this tree.*
 
-### VSTD-AGENT-1: Facets
+### AGENT-1: Facets
 
 `AGENT-1.1` through `AGENT-1.7`; topological depth 6; 3 of 7 mechanized.
 
@@ -853,7 +869,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | AGENT-1.6 | Outcome contract | The contract outcomes are read against is bound. | AGENT-1.3 | none |
 | AGENT-1.7 | Final claims | The agent's final claims are bound. | AGENT-1.5, AGENT-1.6 | none |
 
-### VSTD-AGENT-2: Dynamics
+### AGENT-2: Dynamics
 
 `AGENT-2.1` through `AGENT-2.5`; topological depth 4; 4 of 5 mechanized.
 
@@ -865,7 +881,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | AGENT-2.4 | Unwitnessed action reporting | A declared action with no witness is reported and never passed. | AGENT-2.3 | none |
 | AGENT-2.5 | Trajectory advance | The trajectory is replayed decision by decision. | AGENT-2.3 | trajectory |
 
-### VSTD-AGENT-3: Statics
+### AGENT-3: Statics
 
 `AGENT-3.1` through `AGENT-3.3`; topological depth 3; 3 of 3 mechanized.
 
@@ -875,7 +891,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | AGENT-3.2 | Unknowability | What the agent could not have known is stated regardless of what it asserts it knew. | AGENT-3.1 | statics:unknowability |
 | AGENT-3.3 | Declaration impotence | No agent declaration raises the ceiling, and perturbing its declarations moves none of the facts above. | AGENT-3.2 | statics:impotence |
 
-### VSTD-AGENT-4: Closure
+### AGENT-4: Closure
 
 `AGENT-4.1` through `AGENT-4.4`; topological depth 4; 3 of 4 mechanized.
 
@@ -886,7 +902,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | AGENT-4.3 | Claim support | Every final claim rests only on records inside the observation ceiling. | AGENT-4.2 | claims |
 | AGENT-4.4 | No unsupported claim | The agent's account of itself admits no unsupported claim. | AGENT-4.3 | none |
 
-### VSTD-AGENT-5: Domain adaptation
+### AGENT-5: Domain adaptation
 
 `AGENT-5.1` through `AGENT-5.5`; topological depth 5; 5 of 5 mechanized.
 
@@ -898,7 +914,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | AGENT-5.4 | Round trip | Replaying through the mainstay reproduces the retained trajectory. | AGENT-5.3 | mainstay:roundtrip |
 | AGENT-5.5 | Inference upward | The residual this object carries over the mainstay is stated. | AGENT-5.4 | mainstay:residual |
 
-### Registered mainstays of VSTD-AGENT
+### Registered mainstays of AGENT
 
 | Format | Carried in | Meta-surface entities | Expresses | Residual |
 |---|---|---|---|---|
@@ -907,7 +923,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | Step trajectory record (`agent-trajectory`) | trajectory JSONL | trajectory, step, thought, action, observation, terminal | 4 coordinates | 15 coordinates |
 | OpenTelemetry generative AI agent spans (`opentelemetry-genai-agent`) | agent and tool span tree | agent-span, tool-span, decision-attribute, outcome-status | 3 coordinates | 16 coordinates |
 
-### VSTD-AGENT-6: Disclosure
+### AGENT-6: Disclosure
 
 `AGENT-6.1` through `AGENT-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -917,13 +933,13 @@ until the mainstay representation is named, which is what the adaptation registr
 | AGENT-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | AGENT-6.1 | none |
 | AGENT-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | AGENT-6.1 | none |
 | AGENT-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | AGENT-6.2, AGENT-6.3 | none |
-| AGENT-6.5 | Composition delta | Emitting this certificate beside a VSTD-HARNESS certificate discloses the operator: a decision inventory and a timestamp resolution are each within bound while the pair identifies who was at the keyboard and when, so the join is evaluated against both operands and not against either alone. | AGENT-6.2, AGENT-6.4 | none |
+| AGENT-6.5 | Composition delta | Emitting this certificate beside a HARNESS certificate discloses the operator: a decision inventory and a timestamp resolution are each within bound while the pair identifies who was at the keyboard and when, so the join is evaluated against both operands and not against either alone. | AGENT-6.2, AGENT-6.4 | none |
 | AGENT-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | AGENT-6.2, AGENT-6.4, AGENT-6.5 | none |
 
-## VSTD-BOT  
+## BOT  
 *On the open release branch; no behavioural adapter in this tree.*
 
-### VSTD-BOT-1: Facets
+### BOT-1: Facets
 
 `BOT-1.1` through `BOT-1.5`; topological depth 3; 3 of 5 mechanized.
 
@@ -935,7 +951,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | BOT-1.4 | Coupling surface | The facets of the coupling itself, rather than of either side, are declared. | BOT-1.3 | none |
 | BOT-1.5 | Operand depths | Each operand's established depth is recorded for the composition ceiling. | BOT-1.3 | none |
 
-### VSTD-BOT-2: Dynamics
+### BOT-2: Dynamics
 
 `BOT-2.1` through `BOT-2.5`; topological depth 4; 4 of 5 mechanized.
 
@@ -947,7 +963,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | BOT-2.4 | One-to-one coupling | No transition lacks a record and no record lacks a transition. | BOT-2.2, BOT-2.3 | alignment |
 | BOT-2.5 | Coupling advance | The coupled run is replayed step by step. | BOT-2.4 | none |
 
-### VSTD-BOT-3: Statics
+### BOT-3: Statics
 
 `BOT-3.1` through `BOT-3.4`; topological depth 3; 4 of 4 mechanized.
 
@@ -958,7 +974,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | BOT-3.3 | Disclosure limit | The information the simulation cannot expose regardless of policy is stated. | BOT-3.1 | statics:disclosure |
 | BOT-3.4 | Policy impotence | The facts above are unchanged when either side's policy is perturbed. | BOT-3.2, BOT-3.3 | statics:impotence |
 
-### VSTD-BOT-4: Closure
+### BOT-4: Closure
 
 `BOT-4.1` through `BOT-4.4`; topological depth 3; 3 of 4 mechanized.
 
@@ -969,7 +985,7 @@ until the mainstay representation is named, which is what the adaptation registr
 | BOT-4.3 | Fused honesty | A fused declaration is honest and yields UNKNOWN, never FAIL. | BOT-4.1 | containment |
 | BOT-4.4 | Containment accounting | Containment is established or explicitly not established, and never assumed. | BOT-4.2, BOT-4.3 | none |
 
-### VSTD-BOT-5: Domain adaptation
+### BOT-5: Domain adaptation
 
 `BOT-5.1` through `BOT-5.6`; topological depth 5; 6 of 6 mechanized.
 
@@ -982,14 +998,14 @@ until the mainstay representation is named, which is what the adaptation registr
 | BOT-5.5 | Specification awareness | Which simulation specification surfaces it is aware of is recorded. | BOT-5.4 | mainstay:awareness |
 | BOT-5.6 | Awareness accounting | Disclosed and indisclosed awareness are accounted for without inferring either from the other. | BOT-5.3, BOT-5.5 | mainstay:accounting |
 
-### Registered mainstays of VSTD-BOT
+### Registered mainstays of BOT
 
 | Format | Carried in | Meta-surface entities | Expresses | Residual |
 |---|---|---|---|---|
 | Interaction graph over a bound simulation surface (`embodied-interaction-graph`) | composed agent trajectory and simulation trace | interaction-node, observation-edge, action-edge, disclosure-set, indisclosure-set, awareness-level | 4 coordinates | 14 coordinates |
 | Unified Robot Description Format (`urdf`) | URDF or SDFormat model | robot, link, joint, inertial, collision, transmission | 3 coordinates | 15 coordinates |
 
-### VSTD-BOT-6: Disclosure
+### BOT-6: Disclosure
 
 `BOT-6.1` through `BOT-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -999,43 +1015,43 @@ until the mainstay representation is named, which is what the adaptation registr
 | BOT-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | BOT-6.1 | none |
 | BOT-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | BOT-6.1 | none |
 | BOT-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | BOT-6.2, BOT-6.3 | none |
-| BOT-6.5 | Composition delta | Emitting this certificate beside the VSTD-SIM certificate it is coupled to discloses the separation: a containment accounting and a state space are each within bound while the pair reveals which boundary the separation evidence was defending, so the join is evaluated against both operands and not against either alone. | BOT-6.2, BOT-6.4 | none |
+| BOT-6.5 | Composition delta | Emitting this certificate beside the SIM certificate it is coupled to discloses the separation: a containment accounting and a state space are each within bound while the pair reveals which boundary the separation evidence was defending, so the join is evaluated against both operands and not against either alone. | BOT-6.2, BOT-6.4 | none |
 | BOT-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | BOT-6.2, BOT-6.4, BOT-6.5 | none |
 
-## VSTD-OWNER
+## OWNER
 
 A **relational** object. It does not certify a substrate of its own; it certifies a
 holding that stands *between* a bound actor and a bound object. Of the three
-relational objects -- `VSTD-GRAPH`, `VSTD-HYPER` and `VSTD-OWNER` -- only this one is
+relational objects -- `GRAPH`, `HYPER` and `OWNER` -- only this one is
 **ungrounded**: no adapter executes it, so every obligation below is specified with no
 mechanism and reports `UNKNOWN`. That is the honest report of a specified holding that
 nothing yet checks, and it is why `OWNER` is excluded from the grounded-object
 invariants that require tiers 3 and 5 to be mechanized.
 
-The holder is bound by its own `VSTD-ACTOR` certificate, so a holding names a
+The holder is bound by its own `ACTOR` certificate, so a holding names a
 certified actor rather than a string. This is the absorption the earlier text anticipated:
 the binding was carried by a wire token, `verifier-actor-binding-1`, only for as long as no
-actor object existed to carry it, and `VSTD-ACTOR` now does. A holding is therefore the
-composition `VSTD-HYPER(VSTD-ACTOR + the held object)`, which is what puts `VSTD-OWNER`
+actor object existed to carry it, and `ACTOR` now does. A holding is therefore the
+composition `HYPER(ACTOR + the held object)`, which is what puts `OWNER`
 inside the composition lattice rather than beside it. A holding never reaches a verdict:
 `OWNER-3.1` makes that normative, and it is the ownership twin of the Prime Invariant --
-now derived from `VSTD-HYPER-3` rather than declared, since the weakest operand bounds the
+now derived from `HYPER-3` rather than declared, since the weakest operand bounds the
 composition and the held object is one of the two operands.
 
-### VSTD-OWNER-1: Facets
+### OWNER-1: Facets
 
 `OWNER-1.1` through `OWNER-1.6`; topological depth 4; 0 of 6 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
-| OWNER-1.1 | Holder binding | The holder is bound by its own VSTD-ACTOR certificate at a stated coordinate, never named in free text and never by a wire token. The holding is the composition VSTD-HYPER(VSTD-ACTOR + the held object), so the holder is an operand of it rather than a string inside it. | none | none |
+| OWNER-1.1 | Holder binding | The holder is bound by its own ACTOR certificate at a stated coordinate, never named in free text and never by a wire token. The holding is the composition HYPER(ACTOR + the held object), so the holder is an operand of it rather than a string inside it. | none | none |
 | OWNER-1.2 | Held-object binding | The held object is bound by its own object certificate at a stated coordinate. | none | none |
 | OWNER-1.3 | Limb inventory | Every limb of the holding is enumerated under three kinds -- rights, discharge-duties and answering-duties -- and a limb the inventory omits is unheld rather than permitted. | OWNER-1.1, OWNER-1.2 | none |
 | OWNER-1.4 | Instrument | The instrument that establishes the holding is bound together with the authority that issued it. | OWNER-1.3 | none |
 | OWNER-1.5 | Term | The holding's start, and its end or its declared non-expiry, are stated on the instrument's own clock. | OWNER-1.4 | none |
 | OWNER-1.6 | Bearer capability | The holder's kind scopes which limbs it can bear, and a limb its kind cannot bear is unheld rather than held and unexercised. | OWNER-1.1, OWNER-1.3 | none |
 
-### VSTD-OWNER-2: Dynamics
+### OWNER-2: Dynamics
 
 `OWNER-2.1` through `OWNER-2.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -1048,7 +1064,7 @@ composition and the held object is one of the two operands.
 | OWNER-2.5 | Lapse | A holding whose term has ended lapses by the clock rather than by an event, and lapse is distinguished from revocation. | OWNER-2.1 | none |
 | OWNER-2.6 | Ordered replay | Replaying the declared events from the origin in the declared order reproduces the current holding. | OWNER-2.4, OWNER-2.5 | none |
 
-### VSTD-OWNER-3: Statics
+### OWNER-3: Statics
 
 `OWNER-3.1` through `OWNER-3.6`; topological depth 3; 0 of 6 mechanized.
 
@@ -1061,7 +1077,7 @@ composition and the held object is one of the two operands.
 | OWNER-3.5 | Non-transitivity of authority | Holding an object confers no holding over the objects it was composed from, nor over the objects composed from it. | OWNER-3.4 | none |
 | OWNER-3.6 | Person-limb typing | Where the held object is a natural person, no right is holdable and only duties are; and a holder that is not a natural person may carry discharge-duties but never an answering-duty. | OWNER-3.4, OWNER-3.5 | none |
 
-### VSTD-OWNER-4: Closure
+### OWNER-4: Closure
 
 `OWNER-4.1` through `OWNER-4.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -1074,7 +1090,7 @@ composition and the held object is one of the two operands.
 | OWNER-4.5 | Accountability floor | For every discharge-duty in the chain an answering-duty exists over the same object, at the same position in the order and throughout that discharge-duty's term, and every answering-duty chain terminates in a natural person; an answering-duty that lapses while its discharge-duty still runs leaves the chain open, and a chain that discharges without answering is not closed. | OWNER-4.1, OWNER-4.2 | none |
 | OWNER-4.6 | Closure result | The chain is closed only when origin, gaplessness, fork-freedom, admissibility at issue time and the accountability floor all hold; otherwise the result is UNKNOWN and never FAIL. | OWNER-4.2, OWNER-4.3, OWNER-4.4, OWNER-4.5 | none |
 
-### VSTD-OWNER-5: Domain adaptation
+### OWNER-5: Domain adaptation
 
 `OWNER-5.1` through `OWNER-5.6`; topological depth 3; 0 of 6 mechanized.
 
@@ -1087,15 +1103,15 @@ composition and the held object is one of the two operands.
 | OWNER-5.5 | Custody chain | Physical and cryptographic custody transfers are bound as ordered events on the custody clock. | none | none |
 | OWNER-5.6 | Adaptation accounting | Each adaptation above is reported as established or unestablished, and an absent register is unestablished rather than unheld. | OWNER-5.1, OWNER-5.2, OWNER-5.3, OWNER-5.4, OWNER-5.5 | none |
 
-### Registered mainstays of VSTD-OWNER
+### Registered mainstays of OWNER
 
 None. A mainstay is a representation a domain already publishes in, bound by an
-executing adapter; `VSTD-OWNER` has no adapter, so it registers none. The formats its
+executing adapter; `OWNER` has no adapter, so it registers none. The formats its
 tier 5 names -- licence expressions, registry maintainer records, corporate and
 beneficial-ownership registers, declared code ownership and custody chains -- are
 named as unestablished rather than registered.
 
-### VSTD-OWNER-6: Disclosure
+### OWNER-6: Disclosure
 
 `OWNER-6.1` through `OWNER-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -1105,11 +1121,11 @@ named as unestablished rather than registered.
 | OWNER-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | OWNER-6.1 | none |
 | OWNER-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | OWNER-6.1 | none |
 | OWNER-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | OWNER-6.2, OWNER-6.3 | none |
-| OWNER-6.5 | Composition delta | Emitting this certificate beside the VSTD-OWNER certificate of an adjacent holding discloses the graph: two chains each within bound reveal, at their shared positions, a structure neither states alone, so the join is evaluated against both operands and not against either alone. | OWNER-6.2, OWNER-6.4 | none |
+| OWNER-6.5 | Composition delta | Emitting this certificate beside the OWNER certificate of an adjacent holding discloses the graph: two chains each within bound reveal, at their shared positions, a structure neither states alone, so the join is evaluated against both operands and not against either alone. | OWNER-6.2, OWNER-6.4 | none |
 | OWNER-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | OWNER-6.2, OWNER-6.4, OWNER-6.5 | none |
-## VSTD-HUMAN
+## HUMAN
 
-`VSTD-HUMAN` asserts that one living person is behind a subject, and asserts
+`HUMAN` asserts that one living person is behind a subject, and asserts
 nothing further. It is **ungrounded**: no adapter executes it, so every obligation below
 reports `UNKNOWN`. It is not relational -- it stands on its own rather than between two
 certified objects -- which is what separates *ungrounded* from *relational* in this
@@ -1122,7 +1138,7 @@ reaches a person in finitely many steps. `HUMAN-3.6` is the one that cannot be a
 around -- no composition of models, agents, bots, simulations or collectives yields a
 human, at any strength, by any route.
 
-### VSTD-HUMAN-1: Facets
+### HUMAN-1: Facets
 
 `HUMAN-1.1` through `HUMAN-1.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -1135,7 +1151,7 @@ human, at any strength, by any route.
 | HUMAN-1.5 | Non-assertion boundary | What is deliberately not asserted -- name, nationality, civil identity, or any other attribute -- is enumerated, and an attribute the assertion omits is unasserted rather than unknown. | HUMAN-1.1 | none |
 | HUMAN-1.6 | Humanness versus identification | The boundary between establishing that the subject is a human and identifying which human the subject is, is stated; the two are separable, and an assertion that establishes the first never thereby establishes the second. | HUMAN-1.1, HUMAN-1.5 | none |
 
-### VSTD-HUMAN-2: Dynamics
+### HUMAN-2: Dynamics
 
 `HUMAN-2.1` through `HUMAN-2.6`; topological depth 3; 0 of 6 mechanized.
 
@@ -1148,7 +1164,7 @@ human, at any strength, by any route.
 | HUMAN-2.5 | Template irreversibility | A compromised biometric template does not rotate: revocation withdraws the binding and never restores the secrecy of the trait, so a breach is declared as permanent rather than as remediated. | HUMAN-2.4 | none |
 | HUMAN-2.6 | Death | The subject's death ends the assertion, and is declared as an event rather than inferred from inactivity. No other object on this axis carries this dynamic -- a dataset does not die. | HUMAN-2.1 | none |
 
-### VSTD-HUMAN-3: Statics
+### HUMAN-3: Statics
 
 `HUMAN-3.1` through `HUMAN-3.6`; topological depth 3; 0 of 6 mechanized.
 
@@ -1161,7 +1177,7 @@ human, at any strength, by any route.
 | HUMAN-3.5 | Relative uniqueness | Uniqueness holds only relative to an enrollment population and a deduplication mechanism. No protocol establishes global uniqueness of a person, and an assertion claiming it is malformed. | HUMAN-3.1 | none |
 | HUMAN-3.6 | No composition yields a human | No arrangement of models, agents, bots, simulations or collectives produces a human, at any strength, by any route. This is the one statics row no composition can reach. | HUMAN-3.1 | none |
 
-### VSTD-HUMAN-4: Closure
+### HUMAN-4: Closure
 
 `HUMAN-4.1` through `HUMAN-4.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -1170,11 +1186,11 @@ human, at any strength, by any route.
 | HUMAN-4.1 | Evidence declaration | Every humanness assertion declares the evidence class it rests on. | none | none |
 | HUMAN-4.2 | Error-rate declaration | Every assertion declares the error rates of that evidence class at the operating point actually used. | HUMAN-4.1 | none |
 | HUMAN-4.3 | Population declaration | Every assertion declares the exact enrollment population its uniqueness is relative to, and an undeclared population makes the uniqueness claim unestablished. | HUMAN-4.1, HUMAN-4.2 | none |
-| HUMAN-4.4 | Accountability termination | For any certified decision, following the answering-duty limb of the holdings upward reaches a VSTD-HUMAN in finitely many steps. This runs through holdings and never through occupancies. | none | none |
+| HUMAN-4.4 | Accountability termination | For any certified decision, following the answering-duty limb of the holdings upward reaches a HUMAN in finitely many steps. This runs through holdings and never through occupancies. | none | none |
 | HUMAN-4.5 | Occupancy is not termination | A bot may occupy a seat and a human still answers for it, so an occupancy never discharges 4.4. A chain that terminates in an occupancy rather than in a holding is open. | HUMAN-4.4 | none |
 | HUMAN-4.6 | Closure result | The assertion is closed only when evidence, error rates, population and accountability termination all hold; otherwise the result is UNKNOWN and never FAIL. | HUMAN-4.3, HUMAN-4.5 | none |
 
-### VSTD-HUMAN-5: Domain adaptation
+### HUMAN-5: Domain adaptation
 
 `HUMAN-5.1` through `HUMAN-5.6`; topological depth 3; 0 of 6 mechanized.
 
@@ -1187,15 +1203,15 @@ human, at any strength, by any route.
 | HUMAN-5.5 | Human-verification mapping | In-person and social-graph verification map onto the evidence class facet as declared evidence rather than as measured rates. | none | none |
 | HUMAN-5.6 | Adaptation accounting | Each adaptation above is reported as established or unestablished, and an absent mainstay is unestablished rather than unasserted. | HUMAN-5.1, HUMAN-5.2, HUMAN-5.3, HUMAN-5.4, HUMAN-5.5 | none |
 
-### Registered mainstays of VSTD-HUMAN
+### Registered mainstays of HUMAN
 
 None. A mainstay is a representation a domain already publishes in, bound by
-an executing adapter; `VSTD-HUMAN` has no adapter, so it registers none. The formats its
+an executing adapter; `HUMAN` has no adapter, so it registers none. The formats its
 tier 5 names -- biometric error-rate and presentation-attack reporting, enrollment
 schemes, and privacy-preserving personhood attestation -- are named as unestablished
 rather than registered.
 
-### VSTD-HUMAN-6: Disclosure
+### HUMAN-6: Disclosure
 
 `HUMAN-6.1` through `HUMAN-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -1205,22 +1221,22 @@ rather than registered.
 | HUMAN-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | HUMAN-6.1 | none |
 | HUMAN-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | HUMAN-6.1 | none |
 | HUMAN-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | HUMAN-6.2, HUMAN-6.3 | none |
-| HUMAN-6.5 | Composition delta | Emitting this certificate beside the VSTD-IDENTITY certificate of an occupancy the subject bears discloses the person behind the seat: a humanness assertion within bound and an occupancy within bound together identify an individual that neither states alone, so the join is evaluated against both operands and not against either alone. | HUMAN-6.2, HUMAN-6.4 | none |
+| HUMAN-6.5 | Composition delta | Emitting this certificate beside the IDENTITY certificate of an occupancy the subject bears discloses the person behind the seat: a humanness assertion within bound and an occupancy within bound together identify an individual that neither states alone, so the join is evaluated against both operands and not against either alone. | HUMAN-6.2, HUMAN-6.4 | none |
 | HUMAN-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | HUMAN-6.2, HUMAN-6.4, HUMAN-6.5 | none |
 
-## VSTD-ROLE
+## ROLE
 
-`VSTD-ROLE` is a role class: a seat with declared authority and declared
+`ROLE` is a role class: a seat with declared authority and declared
 qualifications, and *not* the person or bot occupying it. It is **ungrounded** -- no
 adapter executes it -- and it is not relational. Occupancy is a separate object,
-`VSTD-IDENTITY`; a role class that named its occupant would collapse the two.
+`IDENTITY`; a role class that named its occupant would collapse the two.
 
 The distinction earns its keep in `ROLE-3.1` and `ROLE-3.2`: authority is a property of
 the class rather than of whoever holds it, so an unoccupied seat still carries it. The
 object was named `VSTD-INDIVIDUAL` in the design notes until 2026-09-21; it was renamed
 because every line of prose describing it already called it a role.
 
-### VSTD-ROLE-1: Facets
+### ROLE-1: Facets
 
 `ROLE-1.1` through `ROLE-1.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -1233,7 +1249,7 @@ because every line of prose describing it already called it a role.
 | ROLE-1.5 | Admissible bearer classes | Which bearer classes the seat admits is declared -- humans only, or bots as well -- and this is a property of the class rather than of any occupancy of it. | ROLE-1.1, ROLE-1.4 | none |
 | ROLE-1.6 | Facet completeness | A class whose authority, qualifications, bearer limit or admissible bearer classes are unstated is unspecified rather than unconstrained. | ROLE-1.2, ROLE-1.3, ROLE-1.5 | none |
 
-### VSTD-ROLE-2: Dynamics
+### ROLE-2: Dynamics
 
 `ROLE-2.1` through `ROLE-2.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -1246,7 +1262,7 @@ because every line of prose describing it already called it a role.
 | ROLE-2.5 | In-flight decisions | What happens to a decision in flight across a hand-over is declared, and a decision that spans a hand-over is attributed rather than dropped. | ROLE-2.2, ROLE-2.3 | none |
 | ROLE-2.6 | Occupancy replay | Replaying the declared occupancy events from the first taking reproduces the current occupancy. | ROLE-2.2, ROLE-2.4, ROLE-2.5 | none |
 
-### VSTD-ROLE-3: Statics
+### ROLE-3: Statics
 
 `ROLE-3.1` through `ROLE-3.6`; topological depth 3; 0 of 6 mechanized.
 
@@ -1259,7 +1275,7 @@ because every line of prose describing it already called it a role.
 | ROLE-3.5 | Authority independence | A change of occupant never alters the class's declared authority, in either direction. | ROLE-3.1, ROLE-3.2 | none |
 | ROLE-3.6 | Class is not its occupants | The class is not its occupants: naming an occupant never names the class, and naming the class never names an occupant. | ROLE-3.3, ROLE-3.4 | none |
 
-### VSTD-ROLE-4: Closure
+### ROLE-4: Closure
 
 `ROLE-4.1` through `ROLE-4.5`; topological depth 4; 0 of 5 mechanized.
 
@@ -1271,7 +1287,7 @@ because every line of prose describing it already called it a role.
 | ROLE-4.4 | No unattributed decision | No gap exists in which an inventoried decision was taken by no one; an uncovered decision leaves the profile open. | ROLE-4.2, ROLE-4.3 | none |
 | ROLE-4.5 | Closure result | The class is closed only when the inventory, contiguity and attribution all hold; otherwise the result is UNKNOWN and never FAIL. | ROLE-4.3, ROLE-4.4 | none |
 
-### VSTD-ROLE-5: Domain adaptation
+### ROLE-5: Domain adaptation
 
 `ROLE-5.1` through `ROLE-5.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -1284,13 +1300,13 @@ because every line of prose describing it already called it a role.
 | ROLE-5.5 | Inference upward | A representation that carries less than the facets require is inferred upward and reported as partial rather than as complete. | ROLE-5.4 | none |
 | ROLE-5.6 | Adaptation accounting | Each adaptation above is reported as established or unestablished, and an absent registry is unestablished rather than unoccupied. | ROLE-5.1, ROLE-5.2, ROLE-5.3, ROLE-5.4, ROLE-5.5 | none |
 
-### Registered mainstays of VSTD-ROLE
+### Registered mainstays of ROLE
 
-None. `VSTD-ROLE` has no adapter, so it registers none. The formats its tier 5
+None. `ROLE` has no adapter, so it registers none. The formats its tier 5
 names -- engagement context role credentials, access-control role definitions and
 org-chart position records -- are named as unestablished rather than registered.
 
-### VSTD-ROLE-6: Disclosure
+### ROLE-6: Disclosure
 
 `ROLE-6.1` through `ROLE-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -1300,14 +1316,14 @@ org-chart position records -- are named as unestablished rather than registered.
 | ROLE-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | ROLE-6.1 | none |
 | ROLE-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | ROLE-6.1 | none |
 | ROLE-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | ROLE-6.2, ROLE-6.3 | none |
-| ROLE-6.5 | Composition delta | Emitting this certificate beside the VSTD-COLLECTIVE certificate that contains the class discloses the position: a class within bound and a role graph within bound together locate the seat in a structure, and a seat's neighbours narrow its occupant, so the join is evaluated against both operands and not against either alone. | ROLE-6.2, ROLE-6.4 | none |
+| ROLE-6.5 | Composition delta | Emitting this certificate beside the COLLECTIVE certificate that contains the class discloses the position: a class within bound and a role graph within bound together locate the seat in a structure, and a seat's neighbours narrow its occupant, so the join is evaluated against both operands and not against either alone. | ROLE-6.2, ROLE-6.4 | none |
 | ROLE-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | ROLE-6.2, ROLE-6.4, ROLE-6.5 | none |
 
-## VSTD-COLLECTIVE
+## COLLECTIVE
 
-`VSTD-COLLECTIVE` is a graph of role classes and the typed relations
+`COLLECTIVE` is a graph of role classes and the typed relations
 between them. It is **ungrounded** -- no adapter executes it. Its operands are declared:
-`COLLECTIVE-1.1` binds a `VSTD-GRAPH` and `COLLECTIVE-1.3` binds the `VSTD-ROLE` set it is
+`COLLECTIVE-1.1` binds a `GRAPH` and `COLLECTIVE-1.3` binds the `ROLE` set it is
 over.
 
 `COLLECTIVE-3.1` is the obligation that keeps it honest: a collective takes no decisions
@@ -1316,7 +1332,7 @@ some bearer. `COLLECTIVE-3.3` records the limit of what a graph can establish --
 separation of duty is real only where the bearers are distinct persons, which structure
 alone never shows.
 
-### VSTD-COLLECTIVE-1: Facets
+### COLLECTIVE-1: Facets
 
 `COLLECTIVE-1.1` through `COLLECTIVE-1.6`; topological depth 3; 0 of 6 mechanized.
 
@@ -1329,7 +1345,7 @@ alone never shows.
 | COLLECTIVE-1.5 | Boundary | The boundary of the collective is declared: which classes are inside it and which are outside. | COLLECTIVE-1.1 | none |
 | COLLECTIVE-1.6 | Facet completeness | A collective whose relations, role set, decision classes or boundary are unstated is unspecified rather than unbounded. | COLLECTIVE-1.2, COLLECTIVE-1.3, COLLECTIVE-1.4, COLLECTIVE-1.5 | none |
 
-### VSTD-COLLECTIVE-2: Dynamics
+### COLLECTIVE-2: Dynamics
 
 `COLLECTIVE-2.1` through `COLLECTIVE-2.6`; topological depth 3; 0 of 6 mechanized.
 
@@ -1342,7 +1358,7 @@ alone never shows.
 | COLLECTIVE-2.5 | Decision assembly | How a collective decision is assembled from the role decisions beneath it is declared and replayable. | COLLECTIVE-2.3, COLLECTIVE-2.4 | none |
 | COLLECTIVE-2.6 | Merger and split | What a merger or a split does to the graph is declared, and the resulting graph is reproduced from the declared events. | COLLECTIVE-2.1, COLLECTIVE-2.2 | none |
 
-### VSTD-COLLECTIVE-3: Statics
+### COLLECTIVE-3: Statics
 
 `COLLECTIVE-3.1` through `COLLECTIVE-3.4`; topological depth 3; 0 of 4 mechanized.
 
@@ -1353,7 +1369,7 @@ alone never shows.
 | COLLECTIVE-3.3 | Separation of duty needs persons | Separation of duty is real only where the bearers are distinct persons, which the role graph alone cannot establish. | COLLECTIVE-3.1 | none |
 | COLLECTIVE-3.4 | Graph impotence | The graph establishes structure and never establishes occupancy; who fills a seat is outside what the graph can say. | COLLECTIVE-3.1, COLLECTIVE-3.3 | none |
 
-### VSTD-COLLECTIVE-4: Closure
+### COLLECTIVE-4: Closure
 
 `COLLECTIVE-4.1` through `COLLECTIVE-4.4`; topological depth 4; 0 of 4 mechanized.
 
@@ -1364,7 +1380,7 @@ alone never shows.
 | COLLECTIVE-4.3 | Quorum recomputation | Each quorum condition is recomputed over the retained occupancy record rather than accepted as declared. | COLLECTIVE-4.2 | none |
 | COLLECTIVE-4.4 | Closure result | The collective is closed only when the graph is complete, every decision decomposes and every quorum recomputes; otherwise the result is UNKNOWN and never FAIL. | COLLECTIVE-4.2, COLLECTIVE-4.3 | none |
 
-### VSTD-COLLECTIVE-5: Domain adaptation
+### COLLECTIVE-5: Domain adaptation
 
 `COLLECTIVE-5.1` through `COLLECTIVE-5.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -1377,14 +1393,14 @@ alone never shows.
 | COLLECTIVE-5.5 | Inference upward | A representation that carries less than the facets require is inferred upward and reported as partial rather than as complete. | COLLECTIVE-5.4 | none |
 | COLLECTIVE-5.6 | Adaptation accounting | Each adaptation above is reported as established or unestablished, and an absent register is unestablished rather than unincorporated. | COLLECTIVE-5.1, COLLECTIVE-5.2, COLLECTIVE-5.3, COLLECTIVE-5.4, COLLECTIVE-5.5 | none |
 
-### Registered mainstays of VSTD-COLLECTIVE
+### Registered mainstays of COLLECTIVE
 
-None. `VSTD-COLLECTIVE` has no adapter, so it registers none. The
+None. `COLLECTIVE` has no adapter, so it registers none. The
 formats its tier 5 names -- legal-entity identifiers with organizational role
 credentials, corporate registry records and access-control policy models -- are named as
 unestablished rather than registered.
 
-### VSTD-COLLECTIVE-6: Disclosure
+### COLLECTIVE-6: Disclosure
 
 `COLLECTIVE-6.1` through `COLLECTIVE-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -1394,37 +1410,37 @@ unestablished rather than registered.
 | COLLECTIVE-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | COLLECTIVE-6.1 | none |
 | COLLECTIVE-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | COLLECTIVE-6.1 | none |
 | COLLECTIVE-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | COLLECTIVE-6.2, COLLECTIVE-6.3 | none |
-| COLLECTIVE-6.5 | Composition delta | Emitting this certificate beside the VSTD-IDENTITY certificates of occupancies inside it discloses the membership: a graph within bound and occupancies each within bound together produce a roster that neither states alone, so the join is evaluated against both operands and not against either alone. | COLLECTIVE-6.2, COLLECTIVE-6.4 | none |
+| COLLECTIVE-6.5 | Composition delta | Emitting this certificate beside the IDENTITY certificates of occupancies inside it discloses the membership: a graph within bound and occupancies each within bound together produce a roster that neither states alone, so the join is evaluated against both operands and not against either alone. | COLLECTIVE-6.2, COLLECTIVE-6.4 | none |
 | COLLECTIVE-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | COLLECTIVE-6.2, COLLECTIVE-6.4, COLLECTIVE-6.5 | none |
 
-## VSTD-IDENTITY
+## IDENTITY
 
-`VSTD-IDENTITY` is an occupancy: the binding of a bearer into a role
+`IDENTITY` is an occupancy: the binding of a bearer into a role
 class. It is **relational** -- it holds between two certified objects rather than
 certifying a substrate -- and, like the other three of this family, **ungrounded**.
 
-The bearer is a sum of exactly two branches, `VSTD-HUMAN` and `VSTD-BOT`. A bare
-`VSTD-AGENT` is not admissible, and `IDENTITY-1.1` says so: an agent is bounded only by
+The bearer is a sum of exactly two branches, `HUMAN` and `BOT`. A bare
+`AGENT` is not admissible, and `IDENTITY-1.1` says so: an agent is bounded only by
 its observation ceiling, which is an *epistemic* bound, while a role class is an
 **authority** container. A seated bare agent would carry bounded epistemics and unbounded
-authority. `VSTD-BOT` is admissible because `BOT = AGENT + SIM` carries the simulation
+authority. `BOT` is admissible because `BOT = AGENT + SIM` carries the simulation
 whose declared law bounds it as an operand, which is also why `IDENTITY-4.5` can require
 that no bot binding is presented outside that simulation.
 
-### VSTD-IDENTITY-1: Facets
+### IDENTITY-1: Facets
 
 `IDENTITY-1.1` through `IDENTITY-1.6`; topological depth 4; 0 of 6 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
-| IDENTITY-1.1 | Bearer binding | The bearer is bound by its own certificate, and the bearer class it is bound as -- VSTD-HUMAN or VSTD-BOT -- is stated. A bare VSTD-AGENT is not an admissible bearer class. | none | none |
+| IDENTITY-1.1 | Bearer binding | The bearer is bound by its own certificate, and the bearer class it is bound as -- HUMAN or BOT -- is stated. A bare AGENT is not an admissible bearer class. | none | none |
 | IDENTITY-1.2 | Role binding | The role class the occupancy is into is bound by its own certificate at a stated coordinate. | none | none |
 | IDENTITY-1.3 | Occupancy evidence | The evidence supporting the occupancy is bound, distinctly from the evidence supporting the bearer. | IDENTITY-1.1, IDENTITY-1.2 | none |
 | IDENTITY-1.4 | Assurance level | The assurance level claimed for the binding is declared together with the retained evidence it rests on. | IDENTITY-1.3 | none |
 | IDENTITY-1.5 | Inherited scope | The scope the binding inherits from its bearer class's statics is declared, since the bearer class is what bounds the occupancy. | IDENTITY-1.1 | none |
 | IDENTITY-1.6 | Validity and revocation surface | The validity interval, the revocation surface, and whether the binding is disclosed or held, are declared together. | IDENTITY-1.3, IDENTITY-1.4 | none |
 
-### VSTD-IDENTITY-2: Dynamics
+### IDENTITY-2: Dynamics
 
 `IDENTITY-2.1` through `IDENTITY-2.7`; topological depth 3; 0 of 7 mechanized.
 
@@ -1438,7 +1454,7 @@ that no bot binding is presented outside that simulation.
 | IDENTITY-2.6 | Presentation linkability | Whether two presentations of one binding are linkable to each other is declared, and unlinkability is established rather than assumed. | IDENTITY-2.5 | none |
 | IDENTITY-2.7 | Simulation end | What happens to a bot binding when its declared simulation ends or is superseded is declared; a binding whose simulation has ended is lapsed rather than portable. | IDENTITY-2.1 | none |
 
-### VSTD-IDENTITY-3: Statics
+### IDENTITY-3: Statics
 
 `IDENTITY-3.1` through `IDENTITY-3.6`; topological depth 3; 0 of 6 mechanized.
 
@@ -1451,7 +1467,7 @@ that no bot binding is presented outside that simulation.
 | IDENTITY-3.5 | The binding is not the bearer | Ending a binding ends an occupancy and nothing else. It never ends, weakens or revokes the bearer. | IDENTITY-3.4 | none |
 | IDENTITY-3.6 | Weakest operand | The binding's bound is the meet of the bearer's bound and the role class's, and never the join of them. | IDENTITY-3.1, IDENTITY-3.3 | none |
 
-### VSTD-IDENTITY-4: Closure
+### IDENTITY-4: Closure
 
 `IDENTITY-4.1` through `IDENTITY-4.7`; topological depth 3; 0 of 7 mechanized.
 
@@ -1465,7 +1481,7 @@ that no bot binding is presented outside that simulation.
 | IDENTITY-4.6 | Human exit | Where the bearer is a human, that human retains unilateral termination of the binding, and a binding that removes the exit is malformed. | IDENTITY-4.4 | none |
 | IDENTITY-4.7 | Closure result | The binding is closed only when presentation binding, assurance support, attribute exclusion, bot containment and the human exit all hold; otherwise the result is UNKNOWN and never FAIL. | IDENTITY-4.2, IDENTITY-4.3, IDENTITY-4.5, IDENTITY-4.6 | none |
 
-### VSTD-IDENTITY-5: Domain adaptation
+### IDENTITY-5: Domain adaptation
 
 `IDENTITY-5.1` through `IDENTITY-5.7`; topological depth 6; 0 of 7 mechanized.
 
@@ -1477,17 +1493,17 @@ that no bot binding is presented outside that simulation.
 | IDENTITY-5.4 | Unlinkability mapping | Per-presentation unlinkability maps onto the linkability dynamic, and is reported as established only where the cryptosuite provides it. | IDENTITY-5.3 | none |
 | IDENTITY-5.5 | Round trip | A binding expressed in a mainstay above and read back reproduces the declared facets without loss. | IDENTITY-5.1, IDENTITY-5.2, IDENTITY-5.3, IDENTITY-5.4 | none |
 | IDENTITY-5.6 | Inference upward | A representation that carries less than the facets require is inferred upward and reported as partial rather than as complete. | IDENTITY-5.5 | none |
-| IDENTITY-5.7 | Adaptation accounting | Each adaptation above is reported as established or unestablished, and an absent credential is unestablished rather than unoccupied. Proof-of-personhood mainstays are not here: they establish humanness, which is VSTD-HUMAN-5. | IDENTITY-5.1, IDENTITY-5.2, IDENTITY-5.3, IDENTITY-5.4, IDENTITY-5.5, IDENTITY-5.6 | none |
+| IDENTITY-5.7 | Adaptation accounting | Each adaptation above is reported as established or unestablished, and an absent credential is unestablished rather than unoccupied. Proof-of-personhood mainstays are not here: they establish humanness, which is HUMAN-5. | IDENTITY-5.1, IDENTITY-5.2, IDENTITY-5.3, IDENTITY-5.4, IDENTITY-5.5, IDENTITY-5.6 | none |
 
-### Registered mainstays of VSTD-IDENTITY
+### Registered mainstays of IDENTITY
 
-None. `VSTD-IDENTITY` has no adapter, so it registers none. The formats
+None. `IDENTITY` has no adapter, so it registers none. The formats
 its tier 5 names -- verifiable credential data models, decentralized identifiers and
 selective-disclosure cryptosuites -- are named as unestablished rather than registered.
 Proof-of-personhood formats are deliberately not here: they establish humanness, which is
-`VSTD-HUMAN-5`.
+`HUMAN-5`.
 
-### VSTD-IDENTITY-6: Disclosure
+### IDENTITY-6: Disclosure
 
 `IDENTITY-6.1` through `IDENTITY-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -1499,18 +1515,18 @@ Proof-of-personhood formats are deliberately not here: they establish humanness,
 | IDENTITY-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | IDENTITY-6.2, IDENTITY-6.3 | none |
 | IDENTITY-6.5 | Composition delta | Emitting this certificate beside a second presentation of the same occupancy discloses the linkage: two presentations each within bound reveal that they are the same bearer, which is the fact per-presentation unlinkability exists to withhold, so the join is evaluated against both operands and not against either alone. | IDENTITY-6.2, IDENTITY-6.4 | none |
 | IDENTITY-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | IDENTITY-6.2, IDENTITY-6.4, IDENTITY-6.5 | none |
-## VSTD-ACTOR
+## ACTOR
 
-`VSTD-ACTOR` is the party accountable for decisions, and it is the sum
-the rest of the family is assembled into: `ACTOR-1.2` binds exactly one of a `VSTD-ROLE`
-certificate or a `VSTD-COLLECTIVE` certificate, and an actor binding both is malformed
+`ACTOR` is the party accountable for decisions, and it is the sum
+the rest of the family is assembled into: `ACTOR-1.2` binds exactly one of a `ROLE`
+certificate or a `COLLECTIVE` certificate, and an actor binding both is malformed
 rather than both. It is **ungrounded** -- no adapter executes it -- and it is **not
 relational**: it is an entity rather than a relation between certified objects, which is
-what separates it from `VSTD-OWNER` and `VSTD-IDENTITY`.
+what separates it from `OWNER` and `IDENTITY`.
 
 **An agent is not an actor.** An agent decides; an actor answers for it. Those are
 different relations, and only one of them can be borne by a person or a company -- which
-is why `VSTD-ACTOR` splits into two branches and `VSTD-AGENT` splits into none. The
+is why `ACTOR` splits into two branches and `AGENT` splits into none. The
 distinction is positional: an agent's decisions are made *inside* an observation ceiling,
 and an actor's decisions are the ones that *placed* it. `ACTOR-1.6` draws that line and
 `ACTOR-3.5` keeps it -- an instrument is never a party, so attributing a decision to an
@@ -1525,21 +1541,21 @@ collective-branch actor has no bearer at all, so a bearer field here would force
 collective to declare itself human or bot. The bearer sits on the occupancy, at
 `IDENTITY-1.1`.
 
-### VSTD-ACTOR-1: Facets
+### ACTOR-1: Facets
 
 `ACTOR-1.1` through `ACTOR-1.7`; topological depth 4; 0 of 7 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
 | ACTOR-1.1 | Actor identity | The actor is named at a stated coordinate, as the party accountable for decisions rather than as any instrument that executes them. | none | none |
-| ACTOR-1.2 | Branch binding | The actor is bound by exactly one of a VSTD-ROLE certificate or a VSTD-COLLECTIVE certificate at a stated coordinate. An actor binding neither is unspecified rather than either, and an actor binding both is malformed rather than both. | ACTOR-1.1 | none |
+| ACTOR-1.2 | Branch binding | The actor is bound by exactly one of a ROLE certificate or a COLLECTIVE certificate at a stated coordinate. An actor binding neither is unspecified rather than either, and an actor binding both is malformed rather than both. | ACTOR-1.1 | none |
 | ACTOR-1.3 | Control surface | The key material the actor controls is declared; control is a property of the actor rather than of any key, and a key the declaration omits is not controlled. | ACTOR-1.1 | none |
 | ACTOR-1.4 | Decision classes | The classes of decision the actor is accountable for are declared, and a class the declaration omits is not carried. | ACTOR-1.1 | none |
 | ACTOR-1.5 | Admitted specification spaces | The specification spaces the actor is admitted to act in are declared, and admission to one is never read as admission to another. | ACTOR-1.1 | none |
 | ACTOR-1.6 | Instrument boundary | The boundary between the actor and the instruments it operates is declared. An instrument executes and the actor answers; a component on either side of that line is one or the other and never both. | ACTOR-1.3, ACTOR-1.4 | none |
 | ACTOR-1.7 | Facet completeness | An actor whose branch, control surface, decision classes, admitted spaces or instrument boundary is unstated is unspecified rather than unconstrained. | ACTOR-1.2, ACTOR-1.3, ACTOR-1.4, ACTOR-1.5, ACTOR-1.6 | none |
 
-### VSTD-ACTOR-2: Dynamics
+### ACTOR-2: Dynamics
 
 `ACTOR-2.1` through `ACTOR-2.7`; topological depth 5; 0 of 7 mechanized.
 
@@ -1553,7 +1569,7 @@ collective to declare itself human or bot. The bearer sits on the occupancy, at
 | ACTOR-2.6 | Succession | Succession when the actor is replaced in its position is declared as a paired ending and beginning at one position; accountability for decisions taken before the succession does not move. | ACTOR-2.2, ACTOR-2.3, ACTOR-2.5 | none |
 | ACTOR-2.7 | Accountability replay | Replaying the declared events from the first reproduces the current delegation, key and membership state. | ACTOR-2.2, ACTOR-2.3, ACTOR-2.4, ACTOR-2.5, ACTOR-2.6 | none |
 
-### VSTD-ACTOR-3: Statics
+### ACTOR-3: Statics
 
 `ACTOR-3.1` through `ACTOR-3.6`; topological depth 3; 0 of 6 mechanized.
 
@@ -1566,7 +1582,7 @@ collective to declare itself human or bot. The bearer sits on the occupancy, at
 | ACTOR-3.5 | Instrument is not a party | An instrument the actor operates is never a party to the decision, so attributing a decision to an instrument attributes it to no one. | none | none |
 | ACTOR-3.6 | Weakest operand | Where accountability is established through a composition it is bounded by the weakest operand, never by the strongest. | ACTOR-3.2, ACTOR-3.4 | none |
 
-### VSTD-ACTOR-4: Closure
+### ACTOR-4: Closure
 
 `ACTOR-4.1` through `ACTOR-4.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -1579,7 +1595,7 @@ collective to declare itself human or bot. The bearer sits on the occupancy, at
 | ACTOR-4.5 | Independent attribution | No attribution rests on a record the actor exclusively controls. | ACTOR-4.2 | none |
 | ACTOR-4.6 | Closure result | The inventory, the attributions and their independence are reported together; a closure missing any of the three is incomplete rather than passing. | ACTOR-4.3, ACTOR-4.4, ACTOR-4.5 | none |
 
-### VSTD-ACTOR-5: Domain adaptation
+### ACTOR-5: Domain adaptation
 
 `ACTOR-5.1` through `ACTOR-5.6`; topological depth 4; 0 of 6 mechanized.
 
@@ -1592,13 +1608,13 @@ collective to declare itself human or bot. The bearer sits on the occupancy, at
 | ACTOR-5.5 | Round trip | An actor expressed in a mainstay, mapped upward and expressed again yields the same declared control surface and decision classes. | ACTOR-5.2, ACTOR-5.3, ACTOR-5.4 | none |
 | ACTOR-5.6 | Inference upward | The mainstays are inferred upward into one accountability meta-framework, and a construct no mainstay supports is declared rather than assumed. | ACTOR-5.5 | none |
 
-### Registered mainstays of VSTD-ACTOR
+### Registered mainstays of ACTOR
 
-None. `VSTD-ACTOR` has no adapter, so it registers none. The formats its
+None. `ACTOR` has no adapter, so it registers none. The formats its
 tier 5 names -- key event receipt infrastructure, decentralized identifier controllers and
 authorization-framework principals -- are named as unestablished rather than registered.
 
-### VSTD-ACTOR-6: Disclosure
+### ACTOR-6: Disclosure
 
 `ACTOR-6.1` through `ACTOR-6.6`; topological depth 5; 0 of 6 mechanized.
 
@@ -1608,7 +1624,7 @@ authorization-framework principals -- are named as unestablished rather than reg
 | ACTOR-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | ACTOR-6.1 | none |
 | ACTOR-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | ACTOR-6.1 | none |
 | ACTOR-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | ACTOR-6.2, ACTOR-6.3 | none |
-| ACTOR-6.5 | Composition delta | Emitting this certificate beside the VSTD-OWNER certificate of a holding this actor carries discloses the relation: an actor within bound and a holding within bound together locate the party in a structure of things held, and what a party holds narrows who it is, so the join is evaluated against both operands and not against either alone. | ACTOR-6.2, ACTOR-6.4 | none |
+| ACTOR-6.5 | Composition delta | Emitting this certificate beside the OWNER certificate of a holding this actor carries discloses the relation: an actor within bound and a holding within bound together locate the party in a structure of things held, and what a party holds narrows who it is, so the join is evaluated against both operands and not against either alone. | ACTOR-6.2, ACTOR-6.4 | none |
 | ACTOR-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | ACTOR-6.2, ACTOR-6.4, ACTOR-6.5 | none |
 ## Depth, not count
 

@@ -590,7 +590,7 @@
     },
     {
       "component_id": "component:vstd-graph-assurance-rechecker",
-      "label": "VSTD-GRAPH assurance-log rechecker",
+      "label": "GRAPH assurance-log rechecker",
       "dependency_profiles": ["test"],
       "catalog_optional_dependencies": [],
       "coverage_kind": "BEHAVIOR",
@@ -605,7 +605,7 @@
     },
     {
       "component_id": "component:vstd-graph-level-rechecker",
-      "label": "Evidence-bound VSTD-GRAPH profile rechecker",
+      "label": "Evidence-bound GRAPH profile rechecker",
       "dependency_profiles": ["test"],
       "catalog_optional_dependencies": [],
       "coverage_kind": "BEHAVIOR",
@@ -620,7 +620,7 @@
     },
     {
       "component_id": "component:vstd-graph-receipt-validator",
-      "label": "VSTD-GRAPH receipt validator",
+      "label": "GRAPH receipt validator",
       "dependency_profiles": ["test"],
       "catalog_optional_dependencies": [],
       "coverage_kind": "BEHAVIOR",

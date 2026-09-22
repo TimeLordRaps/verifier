@@ -1,6 +1,6 @@
 """Terminology: Verifier Standard (VSTD).
 
-Target-neutral VSTD-DATA receipt validation and mechanism replay."""
+Target-neutral DATA receipt validation and mechanism replay."""
 
 from __future__ import annotations
 

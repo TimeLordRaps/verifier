@@ -3,7 +3,7 @@ Boolean satisfiability problem (SAT); unsatisfiable (UNSAT); Verifier Standard (
 
 ``graph_level`` -- compatibility API for the candidate Graph profile satisfied by supplied collection ratings.
 
-VSTD is verification *mechanics* over one object. VSTD-GRAPH is verification
+VSTD is verification *mechanics* over one object. GRAPH is verification
 *dynamics* over a collection. The axes remain distinct. This module computes a
 candidate Graph profile from caller-supplied ratings; that computation is not
 conformance unless a separate profile validates and binds those ratings.

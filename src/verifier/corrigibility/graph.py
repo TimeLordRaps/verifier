@@ -1,6 +1,6 @@
 """Terminology: directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
-VSTD-GRAPH: Directed acyclic graphs of computational provenance, dependencies, and causal proof lineages.
+GRAPH: Directed acyclic graphs of computational provenance, dependencies, and causal proof lineages.
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ class CausalDirection(str, Enum):
 
 
 class GraphProvenanceError(ValueError):
-    """Base error for VSTD-GRAPH operations."""
+    """Base error for GRAPH operations."""
 
 
 class AcyclicityViolationError(GraphProvenanceError):

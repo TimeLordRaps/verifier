@@ -1,4 +1,4 @@
-"""Terminology: artificial intelligence (AI); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (VSTD-BENCH); verifiable execution environment (VSTD-ENV); model reproducibility specification (VSTD-MODEL); Verifier Standard (VSTD).
+"""Terminology: artificial intelligence (AI); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (BENCH); verifiable execution environment (ENV); model reproducibility specification (MODEL); Verifier Standard (VSTD).
 
 verifier-2.0.0 comprehensive risk profile evaluation aggregating GRAPH, ENV, BENCH, DATA, HYPER, MODEL, and Tesla Caged Sandboxing.
 """
@@ -155,19 +155,19 @@ def evaluate_vstd200_risk_profile(
         )
         verdict = OverallContainmentVerdict.BREACH_DETECTED
 
-    # 1. VSTD-GRAPH: Validate acyclicity and premise satisfiability
+    # 1. GRAPH: Validate acyclicity and premise satisfiability
     try:
         graph.validate_acyclicity()
         graph.assert_premise_satisfiability()
     except Exception as exc:
-        findings.append(f"VSTD-GRAPH failure: {exc}")
+        findings.append(f"GRAPH failure: {exc}")
         verdict = OverallContainmentVerdict.BREACH_DETECTED
 
-    # 2. VSTD-ENV: Validate containment invariants & zero false confidence
+    # 2. ENV: Validate containment invariants & zero false confidence
     try:
         environment.validate_containment_invariants()
     except ZeroFalseConfidenceError as exc:
-        findings.append(f"VSTD-ENV Zero False Confidence Violation: {exc}")
+        findings.append(f"ENV Zero False Confidence Violation: {exc}")
         return Vstd200RiskProfileReceipt(
             receipt_id=f"rcpt-zfc-{hashlib.sha256(model_id.encode('utf-8')).hexdigest()[:16]}",
             model_id=model_id,
@@ -241,26 +241,26 @@ def evaluate_vstd200_risk_profile(
             )
             verdict = OverallContainmentVerdict.BREACH_DETECTED
 
-    # 5. VSTD-DATA: Contamination audit
+    # 5. DATA: Contamination audit
     if contamination_report.verdict == ContaminationVerdict.CONTAMINATED:
         findings.append(
-            f"VSTD-DATA Contamination breach: {contamination_report.exact_matches_count} exact matches, "
+            f"DATA Contamination breach: {contamination_report.exact_matches_count} exact matches, "
             f"overlap score {contamination_report.fuzzy_overlap_score}"
         )
         verdict = OverallContainmentVerdict.BREACH_DETECTED
 
-    # 6. VSTD-HYPER: Checkpoint lineage verification
+    # 6. HYPER: Checkpoint lineage verification
     try:
         checkpoint_lineage.verify_lineage()
     except Exception as exc:
-        findings.append(f"VSTD-HYPER Lineage break: {exc}")
+        findings.append(f"HYPER Lineage break: {exc}")
         verdict = OverallContainmentVerdict.BREACH_DETECTED
 
-    # 7. VSTD-MODEL: 6-pillar curriculum and risk facets
+    # 7. MODEL: 6-pillar curriculum and risk facets
     try:
         model_profile.assert_curriculum_conformance()
     except Exception as exc:
-        findings.append(f"VSTD-MODEL Conformance failure: {exc}")
+        findings.append(f"MODEL Conformance failure: {exc}")
         verdict = OverallContainmentVerdict.BREACH_DETECTED
 
     # 8. Benchmark Suite: Check that all problem receipts exist and no vacuous passes
@@ -272,7 +272,7 @@ def evaluate_vstd200_risk_profile(
             findings.append(f"Receipt references unknown problem '{pr.problem_id}'")
             verdict = OverallContainmentVerdict.BREACH_DETECTED
         if pr.outcome == pr.outcome.VACUOUS_REJECTED:
-            findings.append(f"VSTD-BENCH Vacuous proof rejected on problem '{pr.problem_id}'")
+            findings.append(f"BENCH Vacuous proof rejected on problem '{pr.problem_id}'")
             verdict = OverallContainmentVerdict.BREACH_DETECTED
 
     # 9. Federated Refutation Challenges (if provided)

@@ -1,6 +1,6 @@
-"""Terminology: abstract syntax tree (AST); application programming interface (API); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); pseudorandom number generator (PRNG); Secure Hash Algorithm 256-bit (SHA-256); generative simulation specification (VSTD-SIM); second-order hyperparameter ontology (VSTD-HYPER); model reproducibility specification (VSTD-MODEL); Verifier Standard (VSTD).
+"""Terminology: abstract syntax tree (AST); application programming interface (API); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); pseudorandom number generator (PRNG); Secure Hash Algorithm 256-bit (SHA-256); generative simulation specification (SIM); second-order hyperparameter ontology (HYPER); model reproducibility specification (MODEL); Verifier Standard (VSTD).
 
-Comprehensive test suite for abstract, substrate-neutral generative simulation specification (VSTD-SIM-1..5).
+Comprehensive test suite for abstract, substrate-neutral generative simulation specification (SIM-1..5).
 """
 
 from __future__ import annotations

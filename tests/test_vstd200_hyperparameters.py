@@ -1,6 +1,6 @@
 """Terminology: directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
-Comprehensive adversarial test suite for VSTD-HYPER hyperparameter, checkpoint lineage, and training run traceability.
+Comprehensive adversarial test suite for HYPER hyperparameter, checkpoint lineage, and training run traceability.
 """
 
 from __future__ import annotations

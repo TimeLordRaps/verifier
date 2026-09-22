@@ -1,6 +1,6 @@
 """Terminology: Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
-Executable VSTD-GRAPH artifact-state propagation.
+Executable GRAPH artifact-state propagation.
 
 ``TRUST`` is mechanism-earned forward artifact support. ``RUST`` is reverse
 diagnostic traversal from a verified descendant deviation toward recorded
@@ -1762,7 +1762,7 @@ def recheck_assurance_log(
 ) -> AssuranceLedger:
     """Rebuild and replay a portable assurance log from its embedded bytes."""
     if payload.get("schema_version") != AssuranceLedger.FORMAT:
-        raise AssuranceFlowError("not a VSTD-GRAPH assurance log")
+        raise AssuranceFlowError("not a GRAPH assurance log")
     graph_data = payload.get("historical_graph")
     events_data = payload.get("events")
     if not isinstance(graph_data, Mapping) or not isinstance(events_data, list):

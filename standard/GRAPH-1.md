@@ -6,7 +6,7 @@
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 
-**Numbered profile:** VSTD-GRAPH-1; required closure coordinate: Recorded Lineage (see `LADDER.md`)
+**Numbered profile:** GRAPH-1; required closure coordinate: Recorded Lineage (see `LADDER.md`)
 **Receipt serialization:** `schema_version = "verifier-data-1"` — frozen; see `WIRE_IDENTIFIERS.md`
 **Status:** Project Specification with Implemented Reference Subset
 **Maintainer:** TimeLordRaps
@@ -18,7 +18,7 @@
 
 > **Dataset and training provenance is the foundational substrate of computational verifiability: data sits directly upstream of training runs, checkpoints, fine-tuned adapters, evaluations, model behavior, downstream software products, licensing, and attribution.**
 
-`VSTD-GRAPH-1` establishes a content-addressed **Hypergraph Specification** for
+`GRAPH-1` establishes a content-addressed **Hypergraph Specification** for
 capturing recorded and evidenced lineage of datasets, neural weights, and computational
 outputs within a declared observation boundary. It does not infer unobserved history or
 prove that the recorded graph is complete in the real world. Transformations are
@@ -26,8 +26,8 @@ first-class **N-ary Hyperedges**, which represent many-to-many merges, sharding,
 multi-input processing without flattening those relationships into ambiguous binary
 links.
 
-This document defines the first numbered profile of the Graph axis. `VSTD-GRAPH-2.md` through
-`VSTD-GRAPH-5.md` apply progressively stronger object and transformation-edge
+This document defines the first numbered profile of the Graph axis. `GRAPH-2.md` through
+`GRAPH-5.md` apply progressively stronger object and transformation-edge
 requirements to the same closed collection. `LADDER.md` defines the computed candidate
 Graph profile and its ceiling certificate; the compatibility API
 `verifier.data.graph_level.graph_level`
@@ -90,7 +90,7 @@ rule does not let duplicates within either collection replace recorded evidence.
 - `evidence_refs` retains at least two evidence records rather than selecting a winner.
 
 A conflict record does not mutate the frozen artifact-status vocabulary. It makes the
-subject inadmissible to a clean candidate Graph profile. The VSTD-GRAPH-1 receipt has no
+subject inadmissible to a clean candidate Graph profile. The GRAPH-1 receipt has no
 conflict-resolution transition and remains immutable. The separate non-receipt
 `verifier-graph-assurance-1` overlay can record additive, mechanism-checked resolution while
 retaining the competing evidence. A selected status is projected into that overlay's current
@@ -102,7 +102,7 @@ runtime, so such a conflict remains blocking.
 
 ## 3. Provenance Completeness Dimensions
 
-`VSTD-GRAPH-1` rejects treating a monolithic score as proof. The reference subset
+`GRAPH-1` rejects treating a monolithic score as proof. The reference subset
 reports six descriptive dimensions plus a disclosed weighted summary:
 
 $$\mathbf{C} = \langle C_{\text{src}}, C_{\text{trans}}, C_{\text{integ}}, C_{\text{lic}}, C_{\text{contrib}}, C_{\text{lineage}} \rangle$$
@@ -169,7 +169,7 @@ When an upstream source $S$ is marked `REVOKED` (e.g. due to copyright claim, da
   bytes can establish whether those bytes match a recorded digest at that observation
   time. Receipt validation alone does not access unbundled upstream files.
 
-### What `VSTD-GRAPH-1` Does NOT Guarantee
+### What `GRAPH-1` Does NOT Guarantee
 - **Real-World Ground Truth**: A hash proves byte identity; it does not prove the data is empirically accurate.
 - **Legal Copyright Validity**: A declared SPDX license string records claimed provenance; it is not a judicial copyright ruling.
 - **Authenticity of declarations**: A digest binds bytes or fields; it does not prove
@@ -177,7 +177,7 @@ When an upstream source $S$ is marked `REVOKED` (e.g. due to copyright claim, da
 - **Complete real-world lineage**: Missing instrumentation, hidden inputs, pre-observation
   contamination, and out-of-band transformations remain outside the graph unless
   separately evidenced.
-- **Automatic physical-file checking**: A stored VSTD-GRAPH receipt validates its own
+- **Automatic physical-file checking**: A stored GRAPH receipt validates its own
   stable content. It flags a physical-file mismatch only when an adapter supplies and
   rehashes that file.
 - **Translation completeness**: SAT success establishes the encoded formula, not the

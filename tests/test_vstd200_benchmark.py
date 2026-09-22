@@ -1,6 +1,6 @@
-"""Terminology: Boolean satisfiability problem (SAT); identifier (ID); JavaScript Object Notation (JSON); nondeterministic polynomial time (NP); satisfiability modulo theories (SMT); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (VSTD-BENCH); Verifier Standard (VSTD).
+"""Terminology: Boolean satisfiability problem (SAT); identifier (ID); JavaScript Object Notation (JSON); nondeterministic polynomial time (NP); satisfiability modulo theories (SMT); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (BENCH); Verifier Standard (VSTD).
 
-Comprehensive adversarial test suite for VSTD-BENCH refutable benchmark specifications and non-gaming invariants.
+Comprehensive adversarial test suite for BENCH refutable benchmark specifications and non-gaming invariants.
 """
 
 from __future__ import annotations

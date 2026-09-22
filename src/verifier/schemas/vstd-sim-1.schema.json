@@ -1,5 +1,5 @@
 {
-  "$comment": "Terminology: generative simulation specification (VSTD-SIM); Verifier Standard (VSTD).",
+  "$comment": "Terminology: generative simulation specification (SIM); Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd-sim-1.schema.json",
   "title": "Verifier Standard (VSTD) v2.0.0 Generative Simulation Receipt",

@@ -2,11 +2,11 @@
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 
-**Numbered profile:** VSTD-GRAPH-2; required closure coordinate: Bounded Collection Surface (see `LADDER.md`)
+**Numbered profile:** GRAPH-2; required closure coordinate: Bounded Collection Surface (see `LADDER.md`)
 **Status:** project specification with implemented candidate and evidence-bound reference paths
 **License:** Apache-2.0
 
-VSTD-GRAPH-2 closes collection-scope leakage. A collection satisfies this candidate
+GRAPH-2 closes collection-scope leakage. A collection satisfies this candidate
 profile only when every member and provenance ancestor is rated at object profile 2 or
 higher, every reachable status is admissible, and every transformation hyperedge
 carries profile-2 edge ratings.
@@ -22,8 +22,8 @@ or claim therefore contributes rating zero. Profile zero is never established. T
 ancestor, status, or edge obligation that prevents admission under those inputs. It does
 not validate the ratings themselves.
 
-VSTD-GRAPH-2 does not establish that the evidence sources behind the collection
-are accountable. That is the blind spot closed by VSTD-GRAPH-3.
+GRAPH-2 does not establish that the evidence sources behind the collection
+are accountable. That is the blind spot closed by GRAPH-3.
 
 
 ## Grounded certification obligation coordinates

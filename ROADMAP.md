@@ -72,7 +72,7 @@ The longer-term objective is a portable, verifier-neutral way to:
   because they anticipate what will be checked.
 
 The allocation policy is itself a versioned software artifact. It can therefore be
-tested, challenged, meta-verified, and represented in VSTD-GRAPH alongside the artifacts
+tested, challenged, meta-verified, and represented in GRAPH alongside the artifacts
 and verifier actions it influences. A stable feedback loop is not automatically a true
 one: randomized challenges, counterevidence searches, dependency-aware updates, and
 explicit `UNKNOWN` outcomes remain necessary to resist self-confirming verification.
@@ -358,14 +358,14 @@ that passes every required separation and corroboration mechanism.
 - claims of corroboration are made only after another party exists and acts;
 - the project publishes limitations that remain after multiple witnesses agree.
 
-## Milestone 6 — verifiable execution environment profile (VSTD-ENV-1)
+## Milestone 6 — verifiable execution environment profile (ENV-1)
 
 Computational reproducibility requires establishing not only the command string and output
 digests, but the complete execution environment substrate.
 
 **Build**
 
-- a content-addressed execution environment profile specification (`VSTD-ENV-1`);
+- a content-addressed execution environment profile specification (`ENV-1`);
 - bindings for operating system release, kernel, architecture, glibc version, and compiler/Python runtime;
 - container rootfs digests, Nix store closures, and wheelhouse archive fingerprints;
 - hardware capability bounds: central processing unit (CPU) model, vector instruction sets (Advanced Vector Extensions 512-bit (AVX-512)), graphics processing unit (GPU) device identifiers, and compute capability levels;
@@ -377,14 +377,14 @@ digests, but the complete execution environment substrate.
 - environment drift between capture and reproduction is detected prior to command execution;
 - missing hardware capability assertions fail closed.
 
-## Milestone 7 — benchmark specification graph and basis schema (VSTD-BENCH-1)
+## Milestone 7 — benchmark specification graph and basis schema (BENCH-1)
 
 Evaluating models and autonomous agents requires moving beyond unverified leaderboards to
 proof-carrying evaluation hypergraph overlays.
 
 **Build**
 
-- a first-class benchmark specification graph profile under `verifier-data-1` and VSTD-GRAPH-1 (`verifier-benchmark-graph-1`);
+- a first-class benchmark specification graph profile under `verifier-data-1` and GRAPH-1 (`verifier-benchmark-graph-1`);
 - a multidimensional 6-tuple problem basis schema parameterizing computational complexity class, formal specification language, solution oracle mechanism, resource grain, epistemic difficulty stratum, and target capability dimension;
 - proof-carrying evaluation hypergraph overlays binding model outputs to discrete problem nodes with individual VSTD-1..4 receipts;
 - deterministic Pareto frontier calculation over verified problem receipts without score inflation or upgrading `UNKNOWN` to `PASS`.
@@ -395,14 +395,14 @@ proof-carrying evaluation hypergraph overlays.
 - an unverified or timeout execution cannot be counted as solved;
 - Pareto frontier comparisons between models are deterministically recomputed from immutable problem receipts.
 
-## Milestone 8 — federated model reproducibility and test-time refutation (VSTD-MODEL-1)
+## Milestone 8 — federated model reproducibility and test-time refutation (MODEL-1)
 
 Securing foundation models and autonomous systems requires verifiable provenance across the
 entire training and inference lifecycle.
 
 **Build**
 
-- a model reproducibility specification binding training dataset provenance (`VSTD-DATA-1`), verified environment profiles (`VSTD-ENV-1`), training procedure computational graphs, and model architecture directed acyclic graphs (DAGs);
+- a model reproducibility specification binding training dataset provenance (`DATA-1`), verified environment profiles (`ENV-1`), training procedure computational graphs, and model architecture directed acyclic graphs (DAGs);
 - a 6-pillar verifiable training curriculum kernel checking dataset poison bounds, trajectory alignment, deceptive alignment invariants, embedded control structures, difficulty strata, and dimensional capability lift;
 - test-time model refutation interfaces enabling federated verification of proprietary models without exposing private weights;
 - verification of data collation pipelines and gradient-step receipts across training checkpoints.

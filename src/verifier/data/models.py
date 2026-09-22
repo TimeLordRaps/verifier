@@ -1,6 +1,6 @@
 """Terminology: Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
-VSTD-GRAPH provenance models and algorithms.
+GRAPH provenance models and algorithms.
 
 GRAPH-1 receipts retain the frozen ``verifier-data-1`` serialized receipt identifier.
 """
@@ -489,7 +489,7 @@ class ProvenanceHypergraph:
         trans_cov = trans_covered / max(total_trans, 1)
 
         # 3. Content-digest declaration coverage.  This is syntax coverage, not a
-        # physical-byte rehash; see VSTD-GRAPH-1 section 3.
+        # physical-byte rehash; see GRAPH-1 section 3.
         digest_pattern = re.compile(r"^[0-9a-fA-F]{64}$")
         integ_covered = sum(
             1 for art in self.artifacts.values()

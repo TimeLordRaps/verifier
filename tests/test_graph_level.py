@@ -1,6 +1,6 @@
 """Terminology: Verifier Standard (VSTD).
 
-The VSTD-GRAPH axis: a candidate profile over supplied ratings, and the proof of its ceiling.
+The GRAPH axis: a candidate profile over supplied ratings, and the proof of its ceiling.
 
 The candidate profile is never declared. Each test below pins one of the four conditions --
 membership floor, provenance closure, status admissibility, edge evidence --

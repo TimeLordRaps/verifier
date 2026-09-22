@@ -319,10 +319,10 @@ def test_maturity_table_requires_each_major_surface_and_explicit_conformance() -
         "## Current maturity"
     )
 
-    combined = readme.replace("| VSTD-GRAPH-3 |", "| VSTD-GRAPH-2 |", 1)
+    combined = readme.replace("| GRAPH-3 |", "| GRAPH-2 |", 1)
     errors = module.maturity_table_violations(combined)
-    assert any("VSTD-GRAPH-2" in error and "observed 2" in error for error in errors)
-    assert any("VSTD-GRAPH-3" in error and "observed 0" in error for error in errors)
+    assert any("GRAPH-2" in error and "observed 2" in error for error in errors)
+    assert any("GRAPH-3" in error and "observed 0" in error for error in errors)
 
 
 def test_artifact_state_vocabulary_is_process_bound_and_unambiguous() -> None:

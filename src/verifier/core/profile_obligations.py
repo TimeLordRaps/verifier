@@ -8,7 +8,7 @@ their exact meanings.
 
 Level 6 rows state what composing one object with another discloses, so a domain
 obligation may name an object other than its own: the model reproducibility
-specification (VSTD-MODEL) and the generative simulation specification (VSTD-SIM)
+specification (MODEL) and the generative simulation specification (SIM)
 appear in the composition deltas of the objects they are composed with.
 """
 from __future__ import annotations
@@ -83,7 +83,7 @@ class GraphObligation:
 
 def _graph_rows(profile: int, rows: tuple[tuple[str, str, tuple[int, ...], str], ...]) -> tuple[GraphObligation, ...]:
     return tuple(GraphObligation(profile, index, name, requirement,
-        tuple(f"GRAPH-{profile}.{d}" for d in dependencies), f"VSTD-GRAPH-{profile}.md {section}")
+        tuple(f"GRAPH-{profile}.{d}" for d in dependencies), f"GRAPH-{profile}.md {section}")
         for index, (name, requirement, dependencies, section) in enumerate(rows, 1))
 
 
@@ -220,7 +220,7 @@ def graph_specification_digest() -> str:
     """Pin the installed Graph-axis normative bytes, separately from the object axis."""
     import hashlib
     names = ("GRAPH_GROUNDING.md", "LADDER.md",
-             *(f"VSTD-GRAPH-{p}.md" for p in range(1, 6)))
+             *(f"GRAPH-{p}.md" for p in range(1, 6)))
     root = files("verifier.specifications")
     return canonical_digest({name: hashlib.sha256(root.joinpath(name).read_bytes()).hexdigest()
                              for name in names})
@@ -269,7 +269,7 @@ def _domain_rows(object_name: str, profile: int,
                  ) -> tuple[DomainObligation, ...]:
     return tuple(DomainObligation(object_name, profile, index, name, requirement,
         tuple(f"{object_name}-{profile}.{d}" for d in dependencies), mechanism,
-        f"META_TIERS.md VSTD-{object_name}-{profile}")
+        f"META_TIERS.md {object_name}-{profile}")
         for index, (name, requirement, dependencies, mechanism) in enumerate(rows, 1))
 
 
@@ -320,7 +320,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside another VSTD-DATA certificate over an overlapping corpus discloses the intersection: two split memberships and two inventories can each be within bound while the pair identifies which records are shared, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside another DATA certificate over an overlapping corpus discloses the intersection: two split memberships and two inventories can each be within bound while the pair identifies which records are shared, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("ENV", 1, (
@@ -367,7 +367,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside a VSTD-TRAIN or VSTD-MODEL certificate discloses the machine: a pinned toolchain and a pinned resource ceiling are each ordinary in isolation and together name one fleet, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside a TRAIN or MODEL certificate discloses the machine: a pinned toolchain and a pinned resource ceiling are each ordinary in isolation and together name one fleet, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("BENCH", 1, (
@@ -455,7 +455,7 @@ DOMAIN_OBLIGATIONS = (
         ("Mainstay binding", "The training-loop framework is named and version-pinned.", (), "mainstay:binding"),
         ("Training-loop mapping", "The retained trace is mapped onto the mainstay's loop and callback model.", (1,), "mainstay:layout"),
         ("Checkpoint-format mapping", "The checkpoint inventory is mapped onto the mainstay's serialization format.", (1,), "mainstay:schema"),
-        ("Batch source mapping", "The batch binding is mapped onto the retained inventory a VSTD-DATA-5 object exposes.", (2,), "mainstay:upstream"),
+        ("Batch source mapping", "The batch binding is mapped onto the retained inventory a DATA-5 object exposes.", (2,), "mainstay:upstream"),
         ("Round trip", "Resuming from the mapped checkpoint reproduces the retained next step.", (3, 4), "mainstay:roundtrip"),
         ("Inference upward", "What the mainstay cannot express is stated as the residual this object carries over it.", (5,), "mainstay:residual"),
     )),
@@ -465,7 +465,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside a VSTD-DATA certificate over the training corpus discloses membership: a per-step loss trace and a split membership are each within bound while the pair reveals which records were trained on, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside a DATA certificate over the training corpus discloses membership: a per-step loss trace and a split membership are each within bound while the pair reveals which records were trained on, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("HYPER", 1, (
@@ -557,7 +557,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside a VSTD-TRAIN or VSTD-DATA certificate discloses the corpus through the model: an architecture, a metric vector and a split membership are each within bound while the three together support extraction, so the join is evaluated against all operands and not against any one alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside a TRAIN or DATA certificate discloses the corpus through the model: an architecture, a metric vector and a split membership are each within bound while the three together support extraction, so the join is evaluated against all operands and not against any one alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("SIM", 1, (
@@ -605,7 +605,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside a VSTD-BOT certificate discloses the decider: a state space and a coupling surface are each within bound while the pair localizes which decisions were taken by which actor, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside a BOT certificate discloses the decider: a state space and a coupling surface are each within bound while the pair localizes which decisions were taken by which actor, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("HARNESS", 1, (
@@ -649,7 +649,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside a VSTD-AGENT certificate discloses the session: a commitment shape and a decision inventory are each within bound while the pair reconstructs the order and content of a run, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside a AGENT certificate discloses the session: a commitment shape and a decision inventory are each within bound while the pair reconstructs the order and content of a run, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("AGENT", 1, (
@@ -692,7 +692,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside a VSTD-HARNESS certificate discloses the operator: a decision inventory and a timestamp resolution are each within bound while the pair identifies who was at the keyboard and when, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside a HARNESS certificate discloses the operator: a decision inventory and a timestamp resolution are each within bound while the pair identifies who was at the keyboard and when, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("BOT", 1, (
@@ -734,11 +734,11 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside the VSTD-SIM certificate it is coupled to discloses the separation: a containment accounting and a state space are each within bound while the pair reveals which boundary the separation evidence was defending, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside the SIM certificate it is coupled to discloses the separation: a containment accounting and a state space are each within bound while the pair reveals which boundary the separation evidence was defending, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("OWNER", 1, (
-        ("Holder binding", "The holder is bound by its own VSTD-ACTOR certificate at a stated coordinate, never named in free text and never by a wire token. The holding is the composition VSTD-HYPER(VSTD-ACTOR + the held object), so the holder is an operand of it rather than a string inside it.", (), ""),
+        ("Holder binding", "The holder is bound by its own ACTOR certificate at a stated coordinate, never named in free text and never by a wire token. The holding is the composition HYPER(ACTOR + the held object), so the holder is an operand of it rather than a string inside it.", (), ""),
         ("Held-object binding", "The held object is bound by its own object certificate at a stated coordinate.", (), ""),
         ("Limb inventory", "Every limb of the holding is enumerated under three kinds -- rights, discharge-duties and answering-duties -- and a limb the inventory omits is unheld rather than permitted.", (1, 2), ""),
         ("Instrument", "The instrument that establishes the holding is bound together with the authority that issued it.", (3,), ""),
@@ -782,7 +782,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside the VSTD-OWNER certificate of an adjacent holding discloses the graph: two chains each within bound reveal, at their shared positions, a structure neither states alone, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside the OWNER certificate of an adjacent holding discloses the graph: two chains each within bound reveal, at their shared positions, a structure neither states alone, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("HUMAN", 1, (
@@ -813,7 +813,7 @@ DOMAIN_OBLIGATIONS = (
         ("Evidence declaration", "Every humanness assertion declares the evidence class it rests on.", (), ""),
         ("Error-rate declaration", "Every assertion declares the error rates of that evidence class at the operating point actually used.", (1,), ""),
         ("Population declaration", "Every assertion declares the exact enrollment population its uniqueness is relative to, and an undeclared population makes the uniqueness claim unestablished.", (1, 2), ""),
-        ("Accountability termination", "For any certified decision, following the answering-duty limb of the holdings upward reaches a VSTD-HUMAN in finitely many steps. This runs through holdings and never through occupancies.", (), ""),
+        ("Accountability termination", "For any certified decision, following the answering-duty limb of the holdings upward reaches a HUMAN in finitely many steps. This runs through holdings and never through occupancies.", (), ""),
         ("Occupancy is not termination", "A bot may occupy a seat and a human still answers for it, so an occupancy never discharges 4.4. A chain that terminates in an occupancy rather than in a holding is open.", (4,), ""),
         ("Closure result", "The assertion is closed only when evidence, error rates, population and accountability termination all hold; otherwise the result is UNKNOWN and never FAIL.", (3, 5), ""),
     )),
@@ -830,7 +830,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside the VSTD-IDENTITY certificate of an occupancy the subject bears discloses the person behind the seat: a humanness assertion within bound and an occupancy within bound together identify an individual that neither states alone, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside the IDENTITY certificate of an occupancy the subject bears discloses the person behind the seat: a humanness assertion within bound and an occupancy within bound together identify an individual that neither states alone, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("ROLE", 1, (
@@ -877,7 +877,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside the VSTD-COLLECTIVE certificate that contains the class discloses the position: a class within bound and a role graph within bound together locate the seat in a structure, and a seat's neighbours narrow its occupant, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside the COLLECTIVE certificate that contains the class discloses the position: a class within bound and a role graph within bound together locate the seat in a structure, and a seat's neighbours narrow its occupant, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("COLLECTIVE", 1, (
@@ -921,11 +921,11 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside the VSTD-IDENTITY certificates of occupancies inside it discloses the membership: a graph within bound and occupancies each within bound together produce a roster that neither states alone, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside the IDENTITY certificates of occupancies inside it discloses the membership: a graph within bound and occupancies each within bound together produce a roster that neither states alone, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("IDENTITY", 1, (
-        ("Bearer binding", "The bearer is bound by its own certificate, and the bearer class it is bound as -- VSTD-HUMAN or VSTD-BOT -- is stated. A bare VSTD-AGENT is not an admissible bearer class.", (), ""),
+        ("Bearer binding", "The bearer is bound by its own certificate, and the bearer class it is bound as -- HUMAN or BOT -- is stated. A bare AGENT is not an admissible bearer class.", (), ""),
         ("Role binding", "The role class the occupancy is into is bound by its own certificate at a stated coordinate.", (), ""),
         ("Occupancy evidence", "The evidence supporting the occupancy is bound, distinctly from the evidence supporting the bearer.", (1, 2), ""),
         ("Assurance level", "The assurance level claimed for the binding is declared together with the retained evidence it rests on.", (3,), ""),
@@ -965,7 +965,7 @@ DOMAIN_OBLIGATIONS = (
         ("Unlinkability mapping", "Per-presentation unlinkability maps onto the linkability dynamic, and is reported as established only where the cryptosuite provides it.", (3,), ""),
         ("Round trip", "A binding expressed in a mainstay above and read back reproduces the declared facets without loss.", (1, 2, 3, 4), ""),
         ("Inference upward", "A representation that carries less than the facets require is inferred upward and reported as partial rather than as complete.", (5,), ""),
-        ("Adaptation accounting", "Each adaptation above is reported as established or unestablished, and an absent credential is unestablished rather than unoccupied. Proof-of-personhood mainstays are not here: they establish humanness, which is VSTD-HUMAN-5.", (1, 2, 3, 4, 5, 6), ""),
+        ("Adaptation accounting", "Each adaptation above is reported as established or unestablished, and an absent credential is unestablished rather than unoccupied. Proof-of-personhood mainstays are not here: they establish humanness, which is HUMAN-5.", (1, 2, 3, 4, 5, 6), ""),
     )),
     *_domain_rows("IDENTITY", 6, (
         ("Disclosure surface", "What the certificate emits about this object is enumerated -- the bearer class, the role binding, the assurance level, the validity interval and the revocation surface -- and is separated from the bearer's own identity. The occupancy is the linking field in this family: it names a bearer and a seat in one statement, so emitting it discloses a correspondence that neither endpoint discloses alone.", (), ""),
@@ -977,7 +977,7 @@ DOMAIN_OBLIGATIONS = (
     )),
     *_domain_rows("ACTOR", 1, (
         ("Actor identity", "The actor is named at a stated coordinate, as the party accountable for decisions rather than as any instrument that executes them.", (), ""),
-        ("Branch binding", "The actor is bound by exactly one of a VSTD-ROLE certificate or a VSTD-COLLECTIVE certificate at a stated coordinate. An actor binding neither is unspecified rather than either, and an actor binding both is malformed rather than both.", (1,), ""),
+        ("Branch binding", "The actor is bound by exactly one of a ROLE certificate or a COLLECTIVE certificate at a stated coordinate. An actor binding neither is unspecified rather than either, and an actor binding both is malformed rather than both.", (1,), ""),
         ("Control surface", "The key material the actor controls is declared; control is a property of the actor rather than of any key, and a key the declaration omits is not controlled.", (1,), ""),
         ("Decision classes", "The classes of decision the actor is accountable for are declared, and a class the declaration omits is not carried.", (1,), ""),
         ("Admitted specification spaces", "The specification spaces the actor is admitted to act in are declared, and admission to one is never read as admission to another.", (1,), ""),
@@ -1022,7 +1022,7 @@ DOMAIN_OBLIGATIONS = (
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside the VSTD-OWNER certificate of a holding this actor carries discloses the relation: an actor within bound and a holding within bound together locate the party in a structure of things held, and what a party holds narrows who it is, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside the OWNER certificate of a holding this actor carries discloses the relation: an actor within bound and a holding within bound together locate the party in a structure of things held, and what a party holds narrows who it is, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
 )
@@ -1047,13 +1047,27 @@ UNGROUNDED_OBJECTS = ("OWNER", "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY", "ACTOR
 GROUNDED_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in UNGROUNDED_OBJECTS)
 
 # Grounded is not the same as certifiable, and conflating the two published a false claim
-# about VSTD-TRAIN for the life of this catalogue. A *behavioural* adapter is keyed in
+# about TRAIN for the life of this catalogue. A *behavioural* adapter is keyed in
 # verifier.domains.catalog.CHECKS, and build_domain_certificate rejects any domain absent
 # from it, so only these nine can have a domain certificate built for them at all.
-# VSTD-TRAIN is catalogued and its statics and adaptation mechanisms resolve and execute,
+# TRAIN is catalogued and its statics and adaptation mechanisms resolve and execute,
 # but it has no behavioural adapter, so no certificate over it can be produced; the other
 # five carry no mechanism of any kind. Membership is asserted against CHECKS by the suite
 # rather than imported here, because verifier.domains depends on this module.
+# The catalogue is not the namespace, and the two differ in both directions. GRAPH is a
+# namespace object with no entry here, because it carries its own axis; TRAIN is an entry
+# here that is not a namespace object, because it is a composition over other entries.
+# Naming a composition does not make it a basis element -- admitting TRAIN would have
+# double-counted the six objects it is written over.
+COMPOSED_OBJECTS = ("TRAIN",)
+COMPOSITION_OF = {
+    # HYPER(operands) indexed by a graph profile. VSTD is the model and training-loop
+    # algorithms; GRAPH-1 carries the order the data was consumed in, which is the one
+    # thing none of the operands states -- DATA certifies what the corpus is, never the
+    # sequence it was read in.
+    "TRAIN": (("VSTD", "MODEL", "DATA", "ENV", "SIM", "BENCH"), "GRAPH-1"),
+}
+
 CERTIFIABLE_OBJECTS = ("DATA", "ENV", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
                        "AGENT", "BOT")
 UNCERTIFIABLE_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in CERTIFIABLE_OBJECTS)

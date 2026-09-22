@@ -33,8 +33,8 @@ shape only; a passing validator establishes only its named implemented checks.
 | VSTD-3 | `standard/VSTD-3.md` | `verifier.hardware` | `vstd3_receipt.json`, `vstd3_accelerator_profile.json` | `test_vstd3_schema.py`, hardware tests |
 | VSTD-4 | `standard/VSTD-4.md` | certificate/kernel checks plus candidate and evidence-bound paths in `verifier.core.depth` / `verifier.core.evidence` | `vstd4_certificate.json`, `vstd4_receipt.json` | `test_gdc_certificate.py`, `test_vstd4_depth.py`, `test_evidence_bound_assurance.py` |
 | VSTD-5 | `standard/VSTD-5.md` | `verifier.core.witness` evidence-bound entry, independence, corroboration, disagreement, build, and replay | `vstd5_receipt.json` | `test_evidence_bound_assurance.py`, `test_vstd_schemas.py` |
-| VSTD-GRAPH-1 | `standard/VSTD-GRAPH-1.md` | `verifier.data.models`, `verifier.data.receipt` | `vstd_graph_receipt.json` | `test_public_data.py` |
-| VSTD-GRAPH-2..5 | matching Graph documents | `verifier.data.graph_level` candidate/evidence-bound paths | `computed_graph_level` within `vstd_graph_receipt.json` | `test_graph_level.py`, `test_evidence_bound_assurance.py` |
+| GRAPH-1 | `standard/GRAPH-1.md` | `verifier.data.models`, `verifier.data.receipt` | `vstd_graph_receipt.json` | `test_public_data.py` |
+| GRAPH-2..5 | matching Graph documents | `verifier.data.graph_level` candidate/evidence-bound paths | `computed_graph_level` within `vstd_graph_receipt.json` | `test_graph_level.py`, `test_evidence_bound_assurance.py` |
 | ZIZK artifact-first TRUST/ROT/RUST | `standard/LADDER.md` section 1.1 | `verifier.data.assurance`; bounded RISC Zero example under `examples/zizk_artifact_first/` | `verifier-graph-assurance-1.schema.json`; not a numbered-profile receipt | assurance, presentation, experiment-manifest, and ZIZK mechanism tests |
 | Artifact freeze, seal, and thaw | `standard/ARTIFACT_CONTROL.md` | `verifier.artifact_control` and `vstd artifact` | `standard/schemas/artifact-control-1.schema.json`; these are mechanism objects, not receipts | `test_artifact_control.py`, public API/CLI tests |
 
@@ -105,7 +105,7 @@ native computation
   -> VSTD-3 substrate accountability
   -> VSTD-4 portable refutation
   -> VSTD-5 independently evidenced witness corroboration
-  -> VSTD-GRAPH collection assessment
+  -> GRAPH collection assessment
   -> content-addressed result artifact
   -> later bounded verification loop
 ```
@@ -263,7 +263,7 @@ checks it. Unknown object properties outside those named surfaces fail closed.
 Validation does not rehash referenced artifacts, rerun the command, resolve evidence
 references, or establish that recorded declarations are true. Those are separate
 mechanisms. `validate`, `inspect`, and `reproduce` honor `--json` for generic-run and
-VSTD-GRAPH receipts; the envelope reports command completion without upgrading the
+GRAPH receipts; the envelope reports command completion without upgrading the
 receipt's claim semantics.
 
 ### Generic-run assessment context
@@ -340,7 +340,7 @@ The smallest operational loop is:
 > multiplicity, actor reputation, or propagation. Every increase in assurance must
 > identify the verification mechanism that earned it.
 
-This is the human forward traversal of the same topology VSTD-GRAPH stores for machines.
+This is the human forward traversal of the same topology GRAPH stores for machines.
 TRUST is bounded, mechanism-earned support across an admissible recorded transformation;
 the child still discharges its new obligations. ROT is typed, time-indexed degradation of
 current admissibility while historical evidence remains immutable. RUST is inverse-TRUST
@@ -420,7 +420,7 @@ question is a new assessment over the retained graph and applicable lifecycle re
 | Evidence arrives by multiple paths or one run receipt repeats a reference | Reachability and impact sets deduplicate identifiers. Multiplicity supplies no independence or strength. |
 | A descendant deviation points toward shared ancestors | A mechanism-passing deviation emits RUST over the deduplicated historically recorded contributing ancestor set. Current revocation or conflict does not erase diagnostic history. Structural concentration counts unique deviating descendants, not paths or causal strength. Localization selects and binds one exact passing RUST event, its descendant-deviation binding digest, and an ancestor contained in that event. BLAME and GUILT bind that localization event and require separate exact mechanisms. |
 | A challenge ledger changes a claim's current status | `project_challenges` binds its complete append-only records into a current Graph overlay and embeds those records for replay. Existing TRUST remains historical, while recursively dependent events disappear from `current_trust_events`; `impacted_descendants` reports the deduplicated reassessment surface. It never mutates the historical graph. |
-| Later evidence adjudicates a conflict | The additive resolution retains the original competing evidence and its mechanism evaluation. VSTD-GRAPH-1 receipts remain immutable; the separate assurance overlay owns the resolution and current-state projection. Removing or rewriting historical evidence remains invalid. |
+| Later evidence adjudicates a conflict | The additive resolution retains the original competing evidence and its mechanism evaluation. GRAPH-1 receipts remain immutable; the separate assurance overlay owns the resolution and current-state projection. Removing or rewriting historical evidence remains invalid. |
 | Candidate calculation encounters cyclic ancestry | Rejected before candidate calculation; recursive topology cannot manufacture assurance. |
 
 The forward blast-radius query remains discovery only. `AssuranceLedger` is the distinct

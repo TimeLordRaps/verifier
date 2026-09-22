@@ -735,7 +735,7 @@ def test_schema_parsers_and_artifact_verifier_fail_closed_on_representative_inpu
     assurance_callable = _resolve(
         registry.get("component:vstd-graph-assurance-rechecker").implementation_ref
     )
-    with pytest.raises(AssuranceFlowError, match="not a VSTD-GRAPH assurance log"):
+    with pytest.raises(AssuranceFlowError, match="not a GRAPH assurance log"):
         assurance_callable({"schema_version": "NOT-ASSURANCE"}, mechanisms=())
 
     artifact_callable = _resolve(

@@ -72,14 +72,14 @@ A Lifetime Token is an ephemeral, soulbound capability lease delegated to a runn
 
 The `verifier-actor-binding-1` wire object recorded a dual-signed edge between two identities.
 It is **withdrawn in 2.0.0** and superseded by the composition
-`VSTD-HYPER(VSTD-ACTOR + the bound object)`, which is strictly stronger: the binding's
+`HYPER(ACTOR + the bound object)`, which is strictly stronger: the binding's
 `kind` was a closed enum of two, its `subject_id` was an untyped string that could not name
 a certified object, and it carried no verdict, no operands and no closure condition. The
 composition supplies all four, and it **derives** the Prime Invariant instead of asserting
-it -- `VSTD-HYPER-3` makes the weakest operand the composed ceiling, so an actor can never
+it -- `HYPER-3` makes the weakest operand the composed ceiling, so an actor can never
 be represented as possessing a stronger truth about an object than the object itself
 supports. Producers on 1.5.0 emitting this token should express the same fact as a
-`VSTD-OWNER` holding or a `VSTD-HYPER` composition.
+`OWNER` holding or a `HYPER` composition.
 
 ## 4. The 16 Prohibited Inferences
 

@@ -27,7 +27,7 @@ closed:
 | `VSTD-3.md` | `schema_version = "VSTD-3"` |
 | `VSTD-4.md` | `schema_version = "VSTD-4"` |
 | `VSTD-5.md` | `schema_version = "VSTD-5"` |
-| `VSTD-GRAPH-1.md` | `schema_version = "verifier-data-1"` |
+| `GRAPH-1.md` | `schema_version = "verifier-data-1"` |
 
 The frozen `verifier-data-1` reader preserves its original separate artifact and
 transformation identifier namespaces. New Graph construction, evidence-bound Graph

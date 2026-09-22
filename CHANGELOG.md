@@ -2,19 +2,19 @@
 
 > **Acronyms:** 64-bit Arm instruction-set architecture (ARM64); artificial intelligence (AI);
 > Advanced Micro Devices (AMD); application programming interface (API); Amazon Web Services (AWS);
-> benchmark specification graph (VSTD-BENCH); Concise Binary Object Representation (CBOR);
+> benchmark specification graph (BENCH); Concise Binary Object Representation (CBOR);
 > continuous integration (CI); command-line interface (CLI); conjunctive normal form (CNF);
-> CBOR Object Signing and Encryption (COSE); verifiable execution environment (VSTD-ENV);
+> CBOR Object Signing and Encryption (COSE); verifiable execution environment (ENV);
 > grounded decision certificate (GDC); Hypertext Transfer Protocol Secure (HTTPS);
 > Internet Engineering Task Force (IETF); Java unit test report format (JUnit);
-> JavaScript Object Notation (JSON); model reproducibility specification (VSTD-MODEL);
+> JavaScript Object Notation (JSON); model reproducibility specification (MODEL);
 > nondeterministic polynomial time (NP); Python Package Index (PyPI);
 > reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
 > Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
-> generative simulation specification (VSTD-SIM);
-> instrumented agent observation surface (VSTD-HARNESS);
-> agent trajectory bounded by one observation surface (VSTD-AGENT);
-> one agent situated in one simulation (VSTD-BOT);
+> generative simulation specification (SIM);
+> instrumented agent observation surface (HARNESS);
+> agent trajectory bounded by one observation surface (AGENT);
+> one agent situated in one simulation (BOT);
 > Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
 > Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
 > zero-identity/zero-knowledge (ZIZK).
@@ -95,22 +95,22 @@ declare the experimental mechanisms complete. See the
   which is unchanged at `sha256:b505a4a2...` -- so no domain policy bound to it is
   invalidated by this change.
 
-### VSTD-TRAIN is catalogued but not certifiable
+### TRAIN is catalogued but not certifiable
 
-- Fix 14 mechanism names on `VSTD-TRAIN` that resolved to
+- Fix 14 mechanism names on `TRAIN` that resolved to
   no check in any family. `CHECKS` and `SCOPES` are each keyed by
   9 objects and neither has a `TRAIN` entry, yet the catalogue
   gave 25 of its 35 obligations a mechanism -- several of them **another object's
   check name**, `configuration` being ENV's and `lineage` being DATA's. The 14 unresolvable
-  names are cleared, so `VSTD-TRAIN` reports 11 of 35 mechanized rather than 25,
+  names are cleared, so `TRAIN` reports 11 of 35 mechanized rather than 25,
   and the domain axis reports 163 of 512.
 - **Certifiable is not the same property as grounded**, and conflating them is what let
   this through. `build_domain_certificate` rejects any domain absent from `CHECKS`, so
-  `VSTD-TRAIN` could never be certified at all -- it was not partially grounded, it was
+  `TRAIN` could never be certified at all -- it was not partially grounded, it was
   unreachable -- while the grid published it as the most heavily mechanized object on the
   axis. New `CERTIFIABLE_OBJECTS` and `UNCERTIFIABLE_OBJECTS` name the real partition,
   which has three parts over 15 objects rather than two:
-  9 certifiable, `VSTD-TRAIN` catalogued with statics and
+  9 certifiable, `TRAIN` catalogued with statics and
   adaptation mechanisms that do execute, and five ungrounded with no mechanism anywhere.
 - **A mechanism name is a promise that something executes it.** The suite now resolves
   every name against the registered checks of that obligation's **own** object, and asserts
@@ -119,11 +119,11 @@ declare the experimental mechanisms complete. See the
   which is the exact shape this defect took. Unlike the ungrounded-object defects recorded
   above, this one was always mechanically checkable -- nothing checked it.
 - Correct three published claims that were false: that ten of the fifteen objects are
-  grounded because an adapter executes them, that `VSTD-TRAIN` has its own adapter module,
+  grounded because an adapter executes them, that `TRAIN` has its own adapter module,
   and the grid cell reading 25/35.
 - No adapter is added and no obligation is removed, so `implementation_digest()` is
   unchanged at `sha256:b505a4a2...` and no domain policy bound to it is invalidated. Until
-  a `VSTD-TRAIN` adapter exists, no certificate over the object can be produced.
+  a `TRAIN` adapter exists, no certificate over the object can be produced.
 
 ### The meta-tier grid, the relational objects and the VSTD-NAMESPACE
 
@@ -139,11 +139,11 @@ declare the experimental mechanisms complete. See the
   identifier such as the `schema_version` string `verifier-data-1` is not a coordinate in the
   grid and is not renamed to match it; pinning readers would break.
 - Partition the domain objects into **grounded** and **ungrounded**, and name the
-  **relational** ones -- `VSTD-GRAPH`, `VSTD-HYPER` and `VSTD-OWNER` -- which hold between
-  certified objects instead of certifying a substrate of their own. `VSTD-GRAPH` carries
+  **relational** ones -- `GRAPH`, `HYPER` and `OWNER` -- which hold between
+  certified objects instead of certifying a substrate of their own. `GRAPH` carries
   its own axis; the other two sit on the domain axis.
-- Add `VSTD-OWNER`, a holding between a certified actor and a certified object, typed by
-  the `VSTD-ACTOR` certificate. It is relational and **ungrounded**: no
+- Add `OWNER`, a holding between a certified actor and a certified object, typed by
+  the `ACTOR` certificate. It is relational and **ungrounded**: no
   adapter executes it, so all 30 of its obligations are specified with no
   mechanism and report `UNKNOWN` -- never absent, and never passed. Its closure profile
   carries an accountability floor, so a chain of discharge-duties that nobody answers for
@@ -162,21 +162,21 @@ declare the experimental mechanisms complete. See the
 - **Removed** `verifier-actor-binding-1`, its JSON schema (`vstd-actor-binding-1.schema.json`)
   and the `ActorBinding` model. The token shipped in 1.5.0, so this is a breaking change
   for any producer emitting it.
-- It is superseded by the composition `VSTD-HYPER(VSTD-ACTOR + the bound object)`. The
+- It is superseded by the composition `HYPER(ACTOR + the bound object)`. The
   composition is strictly stronger on every axis the token was weak on: the token's `kind`
   was a closed enum of two, its `subject_id` was an untyped string that could not name a
   certified object, and it carried no verdict, no operands and no closure condition.
 - The supersession **derives the ZIZK Prime Invariant instead of declaring it**.
-  `VSTD-HYPER-3` makes the weakest operand the composed ceiling, so an actor can never be
+  `HYPER-3` makes the weakest operand the composed ceiling, so an actor can never be
   represented as possessing a stronger truth about an object than the object itself
   supports. Prohibited inferences 13, 15 and 16 collapse into the operator the same way.
-- `OWNER-1.1` is retyped accordingly and now binds a `VSTD-ACTOR` certificate. The
+- `OWNER-1.1` is retyped accordingly and now binds a `ACTOR` certificate. The
   published text had already named it as the one line that would be retyped on absorption.
-- This puts `VSTD-OWNER` **inside** the composition lattice, so the two gated reachability
+- This puts `OWNER` **inside** the composition lattice, so the two gated reachability
   figures in `META_TIERS.md` fall: operands-positive from
   360,121,040,618,342,315,750,640 to 343,872,709,682,315,103,844,560, and operands-complete
   from 2,310,167,730,389,958 to 206,159,635,176,678. An unconstrained ladder inflated them.
-  `VSTD-HYPER` is now the only ladder outside every composition edge, because it is the
+  `HYPER` is now the only ladder outside every composition edge, because it is the
   operator rather than a composed object.
 - Section 3 of `ZIZK_TOKENS.md` is titled "The Three-Token Zero-Knowledge Lifecycle"
   and carried four subsections. Birth, aging and lifetime are one identity's lifecycle; the

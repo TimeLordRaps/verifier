@@ -19,7 +19,7 @@ boundaries and portable result semantics across domain verifiers without replaci
 native work. The distribution is `verifier-standard`, the import package is `verifier`,
 and `vstd` is the canonical command.
 
-Two independent axes: `VSTD-1..5` (object mechanics) and `VSTD-GRAPH-1..5` (collection
+Two independent axes: `VSTD-1..5` (object mechanics) and `GRAPH-1..5` (collection
 dynamics). These are cumulative **numbered profiles** over named **closure coordinates**,
 not interchangeable layers or scalar assurance levels. Implementation status is
 profile-specific: the compatibility VSTD-4 candidate-depth and Graph candidate-profile

@@ -1,6 +1,6 @@
-"""Terminology: artificial intelligence (AI); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); model reproducibility specification (VSTD-MODEL); Verifier Standard (VSTD).
+"""Terminology: artificial intelligence (AI); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); model reproducibility specification (MODEL); Verifier Standard (VSTD).
 
-VSTD-MODEL: Abstract surface of expected risk profile and facets associated with superintelligence.
+MODEL: Abstract surface of expected risk profile and facets associated with superintelligence.
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ class CurriculumPillarStatus(str, Enum):
 
 
 class ModelReproducibilityError(ValueError):
-    """Base error for VSTD-MODEL operations."""
+    """Base error for MODEL operations."""
 
 
 class DeceptiveAlignmentDetectedError(ModelReproducibilityError):

@@ -51,7 +51,7 @@ Its **object profile depth is 1**. The cumulative checklist cannot skip the miss
 not fill the `VSTD-2` gap or make profile 3 satisfied.
 
 The Graph axis applies a different cumulative checklist to a collection of artifacts and
-their recorded relations. `VSTD-3` and `VSTD-GRAPH-3` therefore ask different questions;
+their recorded relations. `VSTD-3` and `GRAPH-3` therefore ask different questions;
 the shared number does not make them equivalent.
 
 In one sentence: a **closure coordinate** is one verification question, a **numbered
@@ -65,7 +65,7 @@ The rest of the Standard uses the following terms precisely:
 | Term | Plain meaning | Important boundary |
 |---|---|---|
 | **Closure coordinate** | One named verification question and its failure class, such as Claim Mechanics or Refutability. | Closure is scoped to that question. VSTD-2 surface closure, Graph provenance closure, refutability closure, and artifact-seal structural closure are different results. |
-| **Numbered profile** | A cumulative checklist selected by `VSTD-N` or `VSTD-GRAPH-N`. Profile `N` requires its named coordinate and every earlier coordinate on the same axis. | A profile number is not a software revision, spatial layer, confidence score, or substitute for the underlying results. |
+| **Numbered profile** | A cumulative checklist selected by `VSTD-N` or `GRAPH-N`. Profile `N` requires its named coordinate and every earlier coordinate on the same axis. | A profile number is not a software revision, spatial layer, confidence score, or substitute for the underlying results. |
 | **Profile axis** | One ordered family of cumulative checklists. VSTD has an object axis and a Graph axis. | Equal numbers on different axes do not identify equivalent or interchangeable results. |
 | **Object profile depth** | For one verification object, start at `VSTD-1` and count upward only while every required coordinate remains established. The last uninterrupted number is its depth. | Depth is a compact summary of separately established results, not a new verdict, evidence-strength rating, or permission to ignore a later established coordinate after an earlier gap. |
 | **Candidate Graph profile** | The greatest Graph checklist position satisfied by the current caller-supplied ratings. | The current calculation is `NOT_ESTABLISHED` because those ratings are not evidence-bound. It is not a verified Graph profile. |
@@ -74,7 +74,7 @@ The rest of the Standard uses the following terms precisely:
 | **VSTD-4 rung** | One of the fourteen ordered refutability obligations `4.1` through `4.14`. | “Rung” names only this internal sequence, never a top-level VSTD profile. |
 | **Verification order** | One adjacent meta-verification order in the VSTD-2 geometry model. | The compatibility names `VerificationLayer` and `verification_layers` do not denote numbered VSTD profiles. |
 | **Level** | A retained word in an explicitly named external taxonomy or compatibility identifier, including `ReproducibilityLevel`, `AvailabilityLevel`, `graph_level`, and serialized Graph `level` fields. | In Graph compatibility identifiers, the value is the candidate Graph profile number; “level” is not the governing name for a VSTD profile. |
-| **Layer** | An implementation, protocol, or physical stack whose parts are ordered by containment. | It does not name `VSTD-N` or `VSTD-GRAPH-N`; historical paths such as `verifier.layer4` remain compatibility identifiers only. |
+| **Layer** | An implementation, protocol, or physical stack whose parts are ordered by containment. | It does not name `VSTD-N` or `GRAPH-N`; historical paths such as `verifier.layer4` remain compatibility identifiers only. |
 | **Tier** | A declared checker-cost class in `VSTD4-GDC-1`. | It is not a VSTD profile, evidence-strength rating, or actor rating. |
 
 “Profile” must also be qualified when confusion is possible: **numbered profile**, **receipt
@@ -293,7 +293,7 @@ Preparing to be checked is not being checked.
 
 ## 3. The Graph axis
 
-VSTD-GRAPH governs the verification of a **collection** of objects. Call this
+GRAPH governs the verification of a **collection** of objects. Call this
 verification *dynamics*.
 
 The two axes are parallel but coupled: a collection's dynamics are constrained by its
@@ -467,7 +467,7 @@ closed. It never means the prerequisite coordinates became unnecessary.
 ## 7. Numbering
 
 - **Grounded certification obligations use `X.M` coordinates** within each object numbered profile; see [the obligation catalogue](GROUNDED_CERTIFICATION.md).
-- **Numbered profiles use integers**: VSTD-1 … VSTD-5, VSTD-GRAPH-1 … VSTD-GRAPH-5.
+- **Numbered profiles use integers**: VSTD-1 … VSTD-5, GRAPH-1 … GRAPH-5.
 - **Repository releases use [semantic versioning](https://semver.org/)** and are independent
   of profile numbers.
 
@@ -492,7 +492,7 @@ sources, and explicit non-equivalences.
 | Separate failure surfaces and fail-closed defaults | Saltzer and Schroeder, [*The Protection of Information in Computer Systems*](https://web.mit.edu/Saltzer/www/publications/pubs.html) | Classic principles include fail-safe defaults, complete mediation, separation of privilege, and least common mechanism. They motivate separation; they do not derive VSTD's coordinate count. |
 | Named assurance components | Common Criteria, [Part 3: Security assurance components](https://www.commoncriteriaportal.org/files/ccfiles/CC2022PART3R1.pdf) | Demonstrates established componentized assurance and assurance packages. VSTD is not a Common Criteria evaluation or an Evaluation Assurance Level. |
 | Stable cryptographic representations | [RFC 8785: JSON Canonicalization Scheme](https://www.rfc-editor.org/rfc/rfc8785.html) | Shows why JSON used as cryptographic input needs invariant representation. VSTD formats retain their own declared canonicalization rules. |
-| Recorded entities, activities, and agents | W3C [PROV-DM](https://www.w3.org/TR/prov-dm/) | Supplies an interoperable provenance model adjacent to the Graph axis. VSTD-GRAPH is not a PROV implementation and does not infer complete history. |
+| Recorded entities, activities, and agents | W3C [PROV-DM](https://www.w3.org/TR/prov-dm/) | Supplies an interoperable provenance model adjacent to the Graph axis. GRAPH is not a PROV implementation and does not infer complete history. |
 | Software materials, builders, steps, and products | [in-toto specification v1.0](https://in-toto.io/docs/specs/) and [SLSA v1.2](https://slsa.dev/spec/v1.2/) | Establish supply-chain provenance and attestation precedents. VSTD may bind their evidence but cannot manufacture their authorization or assurance level. |
 | Preserved release and provenance evidence | NIST [Special Publication (SP) 800-218 SSDF 1.1](https://doi.org/10.6028/NIST.SP.800-218) | Protect the Software practices PS.3.1 and PS.3.2 call for preserving releases and provenance and enabling integrity verification. They do not certify a VSTD receipt. |
 | Independent recreation | Reproducible Builds, [formal definition](https://reproducible-builds.org/docs/definition/) | Grounds the special case where another party recreates specified artifacts from declared inputs and instructions. Reproducibility does not establish every semantic claim. |

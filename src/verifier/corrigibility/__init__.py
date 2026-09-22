@@ -1,6 +1,6 @@
-"""Terminology: directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (VSTD-BENCH); verifiable execution environment (VSTD-ENV); model reproducibility specification (VSTD-MODEL); generative simulation specification (VSTD-SIM); software self-assembly (verifier-ssa); software self-improvement (verifier-ssi); candidate self-replication (verifier-ssr); Verifier Standard (VSTD).
+"""Terminology: directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (BENCH); verifiable execution environment (ENV); model reproducibility specification (MODEL); generative simulation specification (SIM); software self-assembly (verifier-ssa); software self-improvement (verifier-ssi); candidate self-replication (verifier-ssr); Verifier Standard (VSTD).
 
-verifier-2.0.0: Incorrigible Tesla caged sandboxing, VSTD-GRAPH, VSTD-ENV, VSTD-BENCH, VSTD-DATA, VSTD-HYPER, VSTD-MODEL, and VSTD-SIM risk profile and simulation representation.
+verifier-2.0.0: Incorrigible Tesla caged sandboxing, GRAPH, ENV, BENCH, DATA, HYPER, MODEL, and SIM risk profile and simulation representation.
 
 Experimental, non-normative declarations and local consistency checks. These
 draft identifiers do not establish the existing numbered profiles. No physical
@@ -196,7 +196,7 @@ __all__ = [
     "Vstd200RiskProfileReceipt",
     "evaluate_vstd160_risk_profile",
     "evaluate_vstd200_risk_profile",
-    # Simulation (VSTD-SIM-1..5)
+    # Simulation (SIM-1..5)
     "AbstractSimulationManifest",
     "AgentParityContainmentError",
     "BisimulationAbstractionError",

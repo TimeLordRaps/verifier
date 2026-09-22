@@ -331,7 +331,7 @@ class ExternalEvaluationEvidence:
 
 @dataclass(frozen=True)
 class ProvenanceLinkage:
-    """Link from this run to a VSTD-GRAPH provenance hypergraph artifact.
+    """Link from this run to a GRAPH provenance hypergraph artifact.
 
     Answers "which exact source artifacts and transformations are recorded as
     upstream of this run" by reusing the existing Dataset Provenance Hypergraph

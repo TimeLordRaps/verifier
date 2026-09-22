@@ -1,6 +1,6 @@
 """Terminology: identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
-Comprehensive adversarial test suite for VSTD-DATA dataset provenance and contamination boundaries.
+Comprehensive adversarial test suite for DATA dataset provenance and contamination boundaries.
 """
 
 from __future__ import annotations

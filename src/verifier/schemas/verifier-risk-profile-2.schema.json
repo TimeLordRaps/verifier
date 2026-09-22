@@ -1,5 +1,5 @@
 {
-  "$comment": "Terminology: benchmark specification graph (VSTD-BENCH); verifiable execution environment (VSTD-ENV); model reproducibility specification (VSTD-MODEL); Verifier Standard (VSTD).",
+  "$comment": "Terminology: benchmark specification graph (BENCH); verifiable execution environment (ENV); model reproducibility specification (MODEL); Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/verifier-risk-profile-2.schema.json",
   "title": "Verifier Standard (VSTD) v2.0.0 Multi-Facet Superintelligence Risk Profile Receipt",

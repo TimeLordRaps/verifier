@@ -17,7 +17,7 @@ only its emulator-scoped claims.
 
 - `VSTD-1` claim-mechanics and generic-run receipts retain their separate required
   `receipt_kind` values.
-- `verifier-data-1` hypergraphs remain readable as historical VSTD-GRAPH-1 receipts, including
+- `verifier-data-1` hypergraphs remain readable as historical GRAPH-1 receipts, including
   their original separate artifact and transformation identifier namespaces. Direct new
   construction, evidence-bound Graph establishment, and current Graph assurance require
   global cross-kind disjointness.
@@ -38,7 +38,7 @@ hardware nodes. Earlier graphs containing only earlier values round-trip unchang
 ## Attaching hardware evidence to a run
 
 1. Validate the VSTD-3 receipt with all required key resolvers.
-2. Identify pre-existing output artifact IDs in the VSTD-DATA graph.
+2. Identify pre-existing output artifact IDs in the DATA graph.
 3. Call `attach_vstd3_receipt` with those IDs or record them in
    `provenance_artifact_ids`.
 4. Validate graph structure and acyclicity.

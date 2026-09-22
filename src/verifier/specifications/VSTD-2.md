@@ -16,12 +16,12 @@
 ## 1. Relationship to adjacent profiles
 
 VSTD-2 adds a verification-geometry ontology beside VSTD-1 claim mechanics and
-VSTD-GRAPH collection dynamics. A document conforms to this extension only when it
+GRAPH collection dynamics. A document conforms to this extension only when it
 declares `schema_version = "VSTD-2"`; a result on one coordinate does not supply a
 result on either adjacent surface.
 
 VSTD-1 answers how a bounded claim carries evidence, provenance, a checker judgment,
-an explicitly evidenced independence basis, and reproducibility information. VSTD-GRAPH-1 answers how artifacts and
+an explicitly evidenced independence basis, and reproducibility information. GRAPH-1 answers how artifacts and
 transformations compose into a provenance hypergraph. VSTD-2 answers a different
 question: **what geometry was selected for verification, what did reconstruction
 expose that the geometry missed, and has the sufficiency of the declared closure

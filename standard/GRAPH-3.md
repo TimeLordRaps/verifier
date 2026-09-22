@@ -2,11 +2,11 @@
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 
-**Numbered profile:** VSTD-GRAPH-3; required closure coordinate: Accountable Provenance Closure (see `LADDER.md`)
+**Numbered profile:** GRAPH-3; required closure coordinate: Accountable Provenance Closure (see `LADDER.md`)
 **Status:** project specification with implemented candidate and evidence-bound reference paths
 **License:** Apache-2.0
 
-VSTD-GRAPH-3 closes unaccountable substrate across a collection. A collection
+GRAPH-3 closes unaccountable substrate across a collection. A collection
 satisfies this candidate profile only when every member and reachable ancestor is rated at
 object profile 3 or higher, every reachable status is admissible, and every transformation
 hyperedge carries profile-3 edge ratings.
@@ -22,8 +22,8 @@ rating; missing, failed, uncertain, neighboring, or out-of-closure bindings cont
 zero and prevent conformance. Every proposition also binds the exact Graph bytes,
 deduplicated member set, collection identifier, and claim binding.
 
-VSTD-GRAPH-3 cannot establish that an outside party could refute the composed
-collection. That blind spot is closed by VSTD-GRAPH-4.
+GRAPH-3 cannot establish that an outside party could refute the composed
+collection. That blind spot is closed by GRAPH-4.
 
 
 ## Grounded certification obligation coordinates

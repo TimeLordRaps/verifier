@@ -46,11 +46,16 @@ def _gate():
     return module
 
 
-def test_repository_holds_no_name_outside_the_namespace() -> None:
-    """Every VSTD- identifier on disk names something the namespace contains."""
+def test_the_catalogue_carries_no_object_outside_the_sixteen() -> None:
+    """The load-bearing check: the object set, not prose about it."""
 
-    found = _gate().offenders()
-    assert not found, "names outside the closed VSTD-NAMESPACE:\n" + "\n".join(
+    found = _gate().catalogue_offenders()
+    assert not found, "objects outside the closed VSTD-NAMESPACE: " + ", ".join(found)
+
+
+def test_no_object_still_carries_the_prefix() -> None:
+    found = _gate().residue_offenders()
+    assert not found, "VSTD- prefixes that should be bare:\n" + "\n".join(
         f"  {relative}:{number}: {token}" for relative, number, token in found
     )
 
@@ -58,28 +63,49 @@ def test_repository_holds_no_name_outside_the_namespace() -> None:
 def test_the_namespace_is_the_base_abstract_and_sixteen_objects() -> None:
     gate = _gate()
     assert len(gate.OBJECTS) == 16
-    assert len(set(gate.OBJECTS)) == 16
-    assert set(gate.OBJECTS) == {
+    assert gate.OBJECTS == {
         "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
         "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
     }
 
 
+def test_the_gate_reads_the_live_catalogue_not_a_copy_of_it() -> None:
+    """The object set is checked against the catalogue that actually ships.
+
+    A gate holding its own second copy of the object set would agree with itself
+    while the catalogue drifted, which is the failure mode this whole exercise
+    exists to prevent.
+    """
+
+    sys.path.insert(0, str(ROOT / "src"))
+    from verifier.core.profile_obligations import DOMAIN_OBJECTS
+
+    gate = _gate()
+    assert set(DOMAIN_OBJECTS) - gate.OBJECTS == set(gate.COMPOSITIONS)
+
+
 @pytest.mark.parametrize(
     "tail",
-    [
-        "1", "5", "3.2",
-        "DATA", "DATA-1", "OWNER-6", "GRAPH-2.3",
-        "BENCH-5.m", "ENV-N", "SIM-1..5",
-        "conformant-lowercase-prose",
-    ],
+    ["1", "5", "6", "3.2", "N", "1..5", "1..VSTD-6"],
 )
-def test_admits_the_legal_forms(tail: str) -> None:
+def test_admits_the_base_abstract_tiers_and_ranges(tail: str) -> None:
+    """The prefix survives exactly here: a bare `3` would name nothing."""
+
     assert _gate().admissible(named(tail))
 
 
 def test_admits_the_base_abstract_bare() -> None:
     assert _gate().admissible("VSTD")
+
+
+@pytest.mark.parametrize(
+    "tail",
+    ["DATA", "GRAPH", "OWNER", "SIM", "DATA-1", "OWNER-6", "GRAPH-2.3"],
+)
+def test_an_object_may_no_longer_carry_the_prefix(tail: str) -> None:
+    """ALL-CAPS is the marker, so the prefixed spelling of an object is retired."""
+
+    assert not _gate().admissible(named(tail))
 
 
 @pytest.mark.parametrize(
@@ -108,21 +134,71 @@ def test_no_zero_is_admissible_in_either_position() -> None:
     """
 
     gate = _gate()
-    for tail in (
-        "0.1", "DATA-0.1", "GRAPH-0.3", "SIM-0.1",     # no zero tier
-        "3.0", "DATA-1.0", "SIM-2.0", "GRAPH-4.0",     # no zero module
-    ):
+    for tail in ("0.1", "0.3", "3.0", "1.0", "2.0", "4.0"):
         assert not gate.admissible(named(tail)), tail
 
 
-def test_every_exception_and_pending_head_carries_its_reason() -> None:
+def test_the_one_composition_is_declared_the_same_way_in_all_three_places() -> None:
+    """A name carried in one place and not the others is exactly how TRAIN drifted.
+
+    It is in the domain catalogue and not in the namespace, which is a real asymmetry
+    and not a defect -- the mirror of GRAPH, which is in the namespace and carries its
+    own axis instead of a catalogue entry. An asymmetry has to be stated as one
+    everywhere it is stated at all: the gate's object set, the runtime partition, and
+    the normative document. Every operand must itself be a namespace object, or the
+    composition would be written over something that does not exist.
+    """
+
+    sys.path.insert(0, str(ROOT / "src"))
+    from verifier.core.profile_obligations import (
+        COMPOSED_OBJECTS,
+        COMPOSITION_OF,
+        DOMAIN_OBJECTS,
+    )
+
+    gate = _gate()
+    assert set(COMPOSED_OBJECTS) == set(gate.COMPOSITIONS)
+    assert set(COMPOSED_OBJECTS).isdisjoint(gate.OBJECTS), "a composition is not a basis element"
+    assert set(COMPOSED_OBJECTS) <= set(DOMAIN_OBJECTS), "and it is still catalogued"
+
+    for name in COMPOSED_OBJECTS:
+        operands, index = COMPOSITION_OF[name]
+        assert len(set(operands)) == len(operands), name
+        assert set(operands) - {"VSTD"} <= gate.OBJECTS, "an operand must be an object"
+        assert index.split("-")[0] in gate.OBJECTS, "and so must the axis it is indexed by"
+
+        published = " ".join(
+            (ROOT / "src/verifier/specifications/DOMAIN_OBLIGATIONS.md")
+            .read_text(encoding="utf-8").split()
+        )
+        assert (
+            f"`HYPER({', '.join(operands)})` indexed by a `{index}` recorded lineage"
+            in published
+        ), f"{name} is declared in the runtime but not in the document"
+
+
+def test_every_exception_and_composition_head_carries_its_reason() -> None:
     """A name is admitted by an argument, never by an empty slot."""
 
     gate = _gate()
-    for table in (gate.EXCEPTIONS, gate.PENDING):
+    for table in (gate.EXCEPTIONS, gate.COMPOSITIONS):
         for name, reason in table.items():
             assert reason.strip(), f"{name} was admitted without a reason"
             assert len(reason) > 20, f"{name} carries no real reason: {reason!r}"
+
+
+def test_the_acceptance_keyword_survives_the_prefix_drop() -> None:
+    """It is a keyword a human types, not an identifier.
+
+    scripts/check_pr_policy.py parses this exact string; shortening it with the
+    objects would silently change what Tyler must write to accept a release.
+    """
+
+    gate = _gate()
+    keyword = named("HUMAN-ACCEPTANCE")
+    assert gate.admissible(keyword)
+    assert keyword in gate.EXCEPTIONS
+    assert keyword in (ROOT / "scripts" / "check_pr_policy.py").read_text(encoding="utf-8")
 
 
 def test_the_gate_runs_as_a_script() -> None:

@@ -15,7 +15,7 @@ on the composition itself. A challenger reading it knows what to attack.
 This rung is simultaneously three things, which is why it sits at the top:
 
 * the structural top of the current VSTD-4 candidate;
-* a candidate input to VSTD-GRAPH condition 4 -- edges need evidence, not just
+* a candidate input to GRAPH condition 4 -- edges need evidence, not just
   nodes, because a graph is only as verified as its edges.
 
 The depths and certificate references accepted here are caller-supplied and are not
@@ -223,7 +223,7 @@ def cap_output_depth(closure: RefutabilityClosure, claimed_depth: int) -> Closur
     """Refuse an output claiming more candidate depth than its closure supports.
 
     This is rung 4.13 acting across a transformation rather than across time,
-    and it is the specific check VSTD-GRAPH condition 4 calls into.
+    and it is the specific check GRAPH condition 4 calls into.
     """
     check = closure.validate()
     if not check.accepted:

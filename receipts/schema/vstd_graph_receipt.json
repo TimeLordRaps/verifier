@@ -2,8 +2,8 @@
   "$comment": "Terminology: Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd_graph_receipt.json",
-  "title": "VSTD-GRAPH Provenance Hypergraph Receipt",
-  "description": "VSTD-GRAPH receipt. The verifier-data-1 serialized receipt identifier is frozen for historical GRAPH-1 receipts; computed_graph_level and its level field are compatibility names for a candidate Graph profile number over caller-supplied ratings and do not establish conformance. Historical blocks without rating_basis or conformance_status have the same unestablished interpretation.",
+  "title": "GRAPH Provenance Hypergraph Receipt",
+  "description": "GRAPH receipt. The verifier-data-1 serialized receipt identifier is frozen for historical GRAPH-1 receipts; computed_graph_level and its level field are compatibility names for a candidate Graph profile number over caller-supplied ratings and do not establish conformance. Historical blocks without rating_basis or conformance_status have the same unestablished interpretation.",
   "type": "object",
   "required": [
     "schema_version",

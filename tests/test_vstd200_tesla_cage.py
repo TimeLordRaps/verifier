@@ -1,4 +1,4 @@
-"""Terminology: artificial intelligence (AI); benchmark specification graph (VSTD-BENCH); candidate self-replication (verifier-ssr); directed acyclic graph (DAG); dynamic random-access memory (DRAM); identifier (ID); inter-process communication (IPC); JavaScript Object Notation (JSON); model reproducibility specification (VSTD-MODEL); Secure Hash Algorithm 256-bit (SHA-256); signal kill (SIGKILL); software self-assembly (verifier-ssa); software self-improvement (verifier-ssi); verifiable execution environment (VSTD-ENV); Verifier Standard (VSTD); virtual machine (VM).
+"""Terminology: artificial intelligence (AI); benchmark specification graph (BENCH); candidate self-replication (verifier-ssr); directed acyclic graph (DAG); dynamic random-access memory (DRAM); identifier (ID); inter-process communication (IPC); JavaScript Object Notation (JSON); model reproducibility specification (MODEL); Secure Hash Algorithm 256-bit (SHA-256); signal kill (SIGKILL); software self-assembly (verifier-ssa); software self-improvement (verifier-ssi); verifiable execution environment (ENV); Verifier Standard (VSTD); virtual machine (VM).
 
 Comprehensive adversarial test suite for incorrigible Tesla caged sandboxing risk profile representations and containment invariants.
 """
@@ -328,7 +328,7 @@ def test_end_to_end_vstd160_risk_profile_detects_contamination_breach() -> None:
     )
 
     assert receipt.verdict == OverallContainmentVerdict.BREACH_DETECTED
-    assert any("VSTD-DATA Contamination breach" in f for f in receipt.findings)
+    assert any("DATA Contamination breach" in f for f in receipt.findings)
 
 
 def test_substrate_immunity_blocks_pip_with_underscore_and_editable_dot() -> None:

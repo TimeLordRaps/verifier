@@ -1,6 +1,6 @@
-"""Terminology: Advanced Micro Devices (AMD); Advanced Vector Extensions (AVX); Advanced Vector Extensions 512-bit (AVX-512); central processing unit (CPU); graphics processing unit (GPU); identifier (ID); inter-process communication (IPC); JavaScript Object Notation (JSON); operating system (OS); Request for Comments (RFC); Secure Hash Algorithm 256-bit (SHA-256); tensor processing unit (TPU); verifiable execution environment (VSTD-ENV); Verifier Standard (VSTD); video random-access memory (VRAM); virtual machine (VM).
+"""Terminology: Advanced Micro Devices (AMD); Advanced Vector Extensions (AVX); Advanced Vector Extensions 512-bit (AVX-512); central processing unit (CPU); graphics processing unit (GPU); identifier (ID); inter-process communication (IPC); JavaScript Object Notation (JSON); operating system (OS); Request for Comments (RFC); Secure Hash Algorithm 256-bit (SHA-256); tensor processing unit (TPU); verifiable execution environment (ENV); Verifier Standard (VSTD); video random-access memory (VRAM); virtual machine (VM).
 
-Comprehensive adversarial test suite for VSTD-ENV environment accountability and execution isolation.
+Comprehensive adversarial test suite for ENV environment accountability and execution isolation.
 """
 
 from __future__ import annotations

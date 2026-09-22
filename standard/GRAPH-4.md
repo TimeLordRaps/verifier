@@ -4,16 +4,16 @@
 
 > Reader aid: [concept glossary and primary precedents](https://github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md).
 
-**Numbered profile:** VSTD-GRAPH-4; required closure coordinate: Refutable Transformation Closure (see `LADDER.md`)
+**Numbered profile:** GRAPH-4; required closure coordinate: Refutable Transformation Closure (see `LADDER.md`)
 **Status:** project specification with implemented candidate and evidence-bound reference paths
 **License:** Apache-2.0
 
-VSTD-GRAPH-4 closes non-compositional refutability. A collection satisfies this candidate
+GRAPH-4 closes non-compositional refutability. A collection satisfies this candidate
 profile only when every member and reachable ancestor is rated at object profile 4 or
 higher, statuses are admissible, and every transformation hyperedge carries
 profile-4 ratings including a valid `RefutabilityClosure`.
 
-Two VSTD-4 nodes connected by an unevidenced edge do not make a VSTD-GRAPH-4
+Two VSTD-4 nodes connected by an unevidenced edge do not make a GRAPH-4
 collection. A challenge to the collection output must localize to a member,
 ancestor, transformation, or the composition itself.
 

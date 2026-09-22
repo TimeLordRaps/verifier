@@ -1,6 +1,6 @@
-"""Terminology: artificial intelligence (AI); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); model reproducibility specification (VSTD-MODEL); Verifier Standard (VSTD).
+"""Terminology: artificial intelligence (AI); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); model reproducibility specification (MODEL); Verifier Standard (VSTD).
 
-Comprehensive adversarial test suite for VSTD-MODEL superintelligence risk facets and 6-pillar curriculum verification.
+Comprehensive adversarial test suite for MODEL superintelligence risk facets and 6-pillar curriculum verification.
 """
 
 from __future__ import annotations

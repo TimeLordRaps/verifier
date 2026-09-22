@@ -1,6 +1,6 @@
 """Terminology: directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
-Comprehensive adversarial test suite for VSTD-GRAPH directed acyclic graph provenance and causal proof lineages.
+Comprehensive adversarial test suite for GRAPH directed acyclic graph provenance and causal proof lineages.
 """
 
 from __future__ import annotations

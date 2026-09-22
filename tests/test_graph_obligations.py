@@ -59,7 +59,7 @@ def test_extending_the_graph_axis_does_not_move_the_object_catalogue() -> None:
 def test_every_numbered_graph_layer_names_its_obligation_coordinates() -> None:
     for profile in range(1, 6):
         count = len([o for o in GRAPH_OBLIGATIONS if o.profile == profile])
-        text = (REPO_ROOT / f"src/verifier/specifications/VSTD-GRAPH-{profile}.md").read_text(encoding="utf-8")
+        text = (REPO_ROOT / f"src/verifier/specifications/GRAPH-{profile}.md").read_text(encoding="utf-8")
         assert "## Grounded certification obligation coordinates" in text, profile
         assert f"`GRAPH-{profile}.1` through `GRAPH-{profile}.{count}`" in text, profile
 
@@ -72,7 +72,7 @@ def test_normative_graph_catalogue_and_runtime_rows_agree() -> None:
                f"| {dependencies} | {obligation.source} |")
         assert row in text, obligation.id
     for profile, name in GRAPH_PROFILE_NAMES.items():
-        assert f"### VSTD-GRAPH-{profile}: {name}" in text
+        assert f"### GRAPH-{profile}: {name}" in text
 
 
 def test_graph_specification_digest_pins_the_graph_bytes_only() -> None:

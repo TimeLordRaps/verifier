@@ -80,7 +80,7 @@
 <tr><td><code>vstd inspect</code></td><td>Prints the claim coordinate, digest, and verdict surface of a stored receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_inspection.py"><code>verifier.core.run_inspection:inspect_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/receipt.py"><code>verifier.hardware.receipt:load_vstd3_receipt</code></a></td></tr>
 <tr><td><code>vstd reproduce</code></td><td>Replays only the mechanisms a stored receipt actually carries; physical hardware execution is refused rather than simulated.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_reproduction.py"><code>verifier.core.run_reproduction:reproduce_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:reproduce_data_receipt</code></a></td></tr>
 <tr><td><code>vstd impact</code></td><td>Finds stored run receipts whose recorded ancestry reaches a revoked provenance artifact.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_impact.py"><code>verifier.core.run_impact:find_run_receipts_impacted_by_revocation</code></a></td></tr>
-<tr><td><code>vstd data</code></td><td>Traces, renders, or exports the provenance hypergraph carried by a VSTD-GRAPH receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/models.py"><code>verifier.data.models:ProvenanceHypergraph</code></a></td></tr>
+<tr><td><code>vstd data</code></td><td>Traces, renders, or exports the provenance hypergraph carried by a GRAPH receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/models.py"><code>verifier.data.models:ProvenanceHypergraph</code></a></td></tr>
 <tr><td><code>vstd artifact</code></td><td>Freezes exact regular-file bytes, adds or verifies finite self-closing seals, and creates observable copy-on-write thaw descendants.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:freeze_artifact</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:seal_artifact</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:verify_frozen_artifact</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:thaw_artifact</code></a></td></tr>
 <tr><td><code>vstd experiment</code></td><td>Validates experimental workflow manifests or maps normalized GitHub snapshots without granting a VSTD verdict.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/experimental_workflow_cli.py"><code>verifier.runtime.experimental_workflow_cli:handle_experiment_command</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/experimental_workflow/profile.py"><code>verifier.experimental_workflow.profile:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/experimental_workflow/github.py"><code>verifier.experimental_workflow.github:github_snapshot_to_events</code></a></td></tr>
 <tr><td><code>vstd hardware / continuity / fleet / evidence / claims</code></td><td>Evaluates VSTD-3 substrate-accountability receipts, their continuity and fleet evidence, and their declared claims.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/hardware_cli.py"><code>verifier.runtime.hardware_cli:handle_vstd3_command</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
@@ -282,7 +282,7 @@
 </article>
 <article class="ref-item" id="cli-vstd-inspect">
 <h3><code>vstd inspect</code></h3>
-<p class="ref-help">Inspect a generic-run or VSTD-GRAPH receipt; validate and report VSTD-3.</p>
+<p class="ref-help">Inspect a generic-run or GRAPH receipt; validate and report VSTD-3.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>receipt</code></td><td>positional</td><td>Receipt directory or receipt.json.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
@@ -309,7 +309,7 @@
 </article>
 <article class="ref-item" id="cli-vstd-data">
 <h3><code>vstd data</code></h3>
-<p class="ref-help">Inspect a stored VSTD-GRAPH hypergraph.</p>
+<p class="ref-help">Inspect a stored GRAPH hypergraph.</p>
 <p class="ref-none">No arguments; this command only groups subcommands.</p>
 </article>
 <article class="ref-item" id="cli-vstd-data-trace">

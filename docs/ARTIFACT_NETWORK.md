@@ -108,7 +108,7 @@ No canonical serialized call contract for the path-pair sequence is established.
 ## Authority axiom agency
 
 Authority axiom agency is the set of actions always allowable across publisher
-silos and VSTD-GRAPH compositions. It is a ground invariant, not an intersection
+silos and GRAPH compositions. It is a ground invariant, not an intersection
 of local permission lists. A restrictive silo that omits an action makes the
 composition `NOT_ADMISSIBLE`; it does not erase the action from the ground set.
 

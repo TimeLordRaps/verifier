@@ -104,7 +104,7 @@ Encoded in the model and each guarded by a test:
 18. A delegation may carry a scope its ancestor did not hold.
 
 Inferences 15 and 16 mirror the recorded-lineage discipline of
-[`../../../standard/VSTD-GRAPH-1.md`](../../../standard/VSTD-GRAPH-1.md): an edge records
+[`../../../standard/GRAPH-1.md`](../../../standard/GRAPH-1.md): an edge records
 ancestry, and a clean-ancestor policy must require validity explicitly rather than reading
 it out of the absence of a revocation mark.
 

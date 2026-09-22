@@ -105,7 +105,7 @@ def _standard_sort(path: Path) -> tuple[int, int, str]:
     object_match = re.fullmatch(r"VSTD-(\d+)", name)
     if object_match:
         return (1, int(object_match.group(1)), name)
-    graph_match = re.fullmatch(r"VSTD-GRAPH-(\d+)", name)
+    graph_match = re.fullmatch(r"GRAPH-(\d+)", name)
     if graph_match:
         return (2, int(graph_match.group(1)), name)
     if name == "ARTIFACT_CONTROL":

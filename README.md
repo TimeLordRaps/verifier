@@ -279,20 +279,20 @@ Worked examples, one per level:
 
 | Identifier | What it names |
 |---|---|
-| `VSTD-BENCH-1` | A bench as a meta-structure: a set of problems, some form from which a solution is deducible, a sampling procedure, baseline mechanics, feature representational spaces or categories, and a domain or set of domains. |
-| `VSTD-SIM-2` | The dynamics a simulation represents: responsiveness, internal state changes, computational spaces, and perspective shifts. |
-| `VSTD-MODEL-3` | What is static around a model: weights, hardware requirements, quantization specifications and configurations, and training data as a `VSTD-DATA-5` specified object. |
-| `VSTD-HYPER-4` | Closure for hyperparameters and training lineage: boundary saturation, an open-ended collapsable meta-language, and fractal re-representations. |
-| `VSTD-BOT-5` | The adaptation surface of a situated agent: an interaction graph over the `VSTD-SIM-5` specified interaction surface, together with disclosable and undisclosed self-awareness — including awareness of being inside a simulation, and of which simulation specification surfaces it is aware of. |
+| `BENCH-1` | A bench as a meta-structure: a set of problems, some form from which a solution is deducible, a sampling procedure, baseline mechanics, feature representational spaces or categories, and a domain or set of domains. |
+| `SIM-2` | The dynamics a simulation represents: responsiveness, internal state changes, computational spaces, and perspective shifts. |
+| `MODEL-3` | What is static around a model: weights, hardware requirements, quantization specifications and configurations, and training data as a `DATA-5` specified object. |
+| `HYPER-4` | Closure for hyperparameters and training lineage: boundary saturation, an open-ended collapsable meta-language, and fractal re-representations. |
+| `BOT-5` | The adaptation surface of a situated agent: an interaction graph over the `SIM-5` specified interaction surface, together with disclosable and undisclosed self-awareness — including awareness of being inside a simulation, and of which simulation specification surfaces it is aware of. |
 
 Four rules prevent the usual misreadings:
 
 1. **A level is not a version.** A semantic-version-shaped string such as `verifier-sim-2`
    is a malformed identifier, not a release of a level: it destroys the level and module
    reading and detaches the surface from the shared graph.
-2. **A name does not imply composition.** `VSTD-BOT-5` refers to the adaptation surface of
-   `BOT`. Where one surface is specified in terms of another, as `VSTD-MODEL-3` is in terms
-   of `VSTD-DATA-5`, that reference is written out.
+2. **A name does not imply composition.** `BOT-5` refers to the adaptation surface of
+   `BOT`. Where one surface is specified in terms of another, as `MODEL-3` is in terms
+   of `DATA-5`, that reference is written out.
 3. **An identifier names a coordinate, not a verdict.** Naming a surface establishes
    nothing about it. What a result means is separate, and stays tied to one exact
    proposition, mechanism, evidence set and bound.
@@ -304,12 +304,12 @@ Rule 4 is the one that costs people time, in two directions.
 
 A **domain check coordinate** numbers a position in that adapter's prerequisite graph, not
 a level. `DATA.1` is the check the other `DATA` checks depend on; it is not the
-`VSTD-DATA-1` surface, and check index *n* does not mean level *n*.
+`DATA-1` surface, and check index *n* does not mean level *n*.
 
 A **serialized receipt identifier** selects the reader and schema for a stored receipt, so
 it is governed by its own registry and changes only in ways that keep already-written
 receipts readable. Some carry a `-0.<n>` form inherited from earlier releases;
-`verifier-data-1` is the serialized identifier for `VSTD-GRAPH-1` receipts, not a level-zero
+`verifier-data-1` is the serialized identifier for `GRAPH-1` receipts, not a level-zero
 surface. Read a receipt identifier as naming a stored contract, never as a surface at that
 level. The registry is [WIRE_IDENTIFIERS.md](standard/WIRE_IDENTIFIERS.md).
 
@@ -376,11 +376,11 @@ external interoperability, certification, or a second implementation.
 | VSTD-3 | Implemented project specification | Typed accelerator model, strict validator, emulator, offline adapters, continuity, fleet, and claim evaluation | Conditional on source-specific signatures, nonces, reference values, topology, events, and trust roots; host inventory remains weak evidence | Implemented reference surface | Vendor firmware integration, production trust roots, and complete-mediation evidence outside the emulator boundary |
 | VSTD-4 | Project specification with implemented reference paths | grounded decision certificate (GDC) parser/kernel, compatibility candidate depth, and evidence-bound establishment/recheck | Exact VSTD-1/2/3 and fourteen-rung propositions, content-addressed evidence bytes, mechanism implementation digests, trust roots, and bounds | Candidate path `NOT_ESTABLISHED`; evidence-bound path can establish conformance | Independent implementation, external interoperability, and deployment-specific rung mechanisms/evidence |
 | VSTD-5 | Project specification with implemented reference mechanism | Evidence-bound entry gate, seven separation dimensions, exact admitted-certificate binding, corroboration checks, duplicate refusal, disagreement preservation, receipt build/recheck | Witness coordinate, exact negative separation propositions, VSTD-4 commitment/certificate, checker, observations, mechanisms, trust roots, bounds, and embedded evidence | Mechanism can establish a bounded result; a positive observation with unresolved independence remains overall `UNKNOWN`; no repository claim of a real independent witness | Real independent witnesses, second implementation, external attack, and operational interoperability |
-| VSTD-GRAPH-1 | Project specification with implemented reference subset | Content-addressed artifacts, transformations, conflicts, policy queries, receipts, and recorded reachability | Binds recorded objects and edges; it does not establish real-world completeness or causality | Implemented reference subset | Independent implementation and external provenance-profile interoperability |
-| VSTD-GRAPH-2 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Bounded Collection Surface computation/recheck | Registered mechanisms rerun exact member, ancestor, and edge ratings bound to the Graph bytes, deduplicated members, collection, and claim | Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot | External rating mechanisms, independent implementation, and interoperability |
-| VSTD-GRAPH-3 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Accountable Provenance Closure computation/recheck | Same complete closure binding, including VSTD-3 rating propositions | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Production VSTD-3 rating evidence across a real collection |
-| VSTD-GRAPH-4 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Refutable Transformation Closure computation/recheck | Same complete closure binding; an edge mechanism must actually check its refutability closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | External closure mechanisms and independent replay |
-| VSTD-GRAPH-5 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Corroborated Verification Network computation/recheck | Exact VSTD-5 object and transformation rating mechanisms across the complete closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Real independently corroborated collection, second implementation, and interoperability |
+| GRAPH-1 | Project specification with implemented reference subset | Content-addressed artifacts, transformations, conflicts, policy queries, receipts, and recorded reachability | Binds recorded objects and edges; it does not establish real-world completeness or causality | Implemented reference subset | Independent implementation and external provenance-profile interoperability |
+| GRAPH-2 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Bounded Collection Surface computation/recheck | Registered mechanisms rerun exact member, ancestor, and edge ratings bound to the Graph bytes, deduplicated members, collection, and claim | Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot | External rating mechanisms, independent implementation, and interoperability |
+| GRAPH-3 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Accountable Provenance Closure computation/recheck | Same complete closure binding, including VSTD-3 rating propositions | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Production VSTD-3 rating evidence across a real collection |
+| GRAPH-4 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Refutable Transformation Closure computation/recheck | Same complete closure binding; an edge mechanism must actually check its refutability closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | External closure mechanisms and independent replay |
+| GRAPH-5 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Corroborated Verification Network computation/recheck | Exact VSTD-5 object and transformation rating mechanisms across the complete closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Real independently corroborated collection, second implementation, and interoperability |
 | Generic run | VSTD-1 generic-computation profile | Plan, execute, capture, inspect, strict shape/digest validation, declared-output rerun, and bounded cross-platform result comparison | Captures command, source state, outputs, environment, and manifest declarations; platform comparison requires complete declared coverage and matching non-platform bindings; generic validation is not native claim verification or VSTD-4 conformance | Implemented VSTD-1 profile plus an additive diagnostic comparator | Sandbox, generic external-evidence resolver, native-execution attestation, and actor/execution binder |
 | Artifact freeze, seal, and thaw | Normative artifact-control mechanism; not a numbered VSTD or receipt profile | Exact regular-file byte preservation, dual-digest artifact identity, read-only guards, finite self-closing Ed25519 seals, external anchor checks, and copy-on-write thaw status | Binds artifact bytes, paths, media type, freeze manifest, carried key, signature, and optional expected artifact/key coordinates | Implemented mechanism version 1 | Durable external archive, privileged-write prevention, trusted time, encryption, semantic correctness, and realm/continuity verification |
 | Experimental workflow | Non-normative experimental profile 0.1 | Strict validator, verdict-neutral GitHub event projector, allocation records, and command-line interface (CLI) | Preserves native platform results and explicit horizons with `verification_effect = NONE` | No VSTD conformance claim | Independent consumer, additional platform adapter, and evidence for allocation optimality |
@@ -432,7 +432,7 @@ A later-profile result does **not** supply, imply, upgrade, or repair a prerequi
 coordinate. Object profile depth `N` requires separate passing evidence for every required
 coordinate from 1 through `N`.
 
-VSTD-GRAPH is orthogonal. It records artifacts, transformations, conflicts, lifecycle
+GRAPH is orthogonal. It records artifacts, transformations, conflicts, lifecycle
 changes, and deduplicated reachability across a bounded collection. The compatibility
 `graph_level` calculation remains a `NOT_ESTABLISHED` candidate. Evidence-bound Graph
 establishment must rerun every required rating mechanism over evidence bound to the exact
@@ -608,7 +608,7 @@ or inspect `vstd certification domain-catalog --json`.
 
 - [VSTD-1 receipts](standard/VSTD-1.md) carry claim coordinates, evidence,
   checker results, trust boundaries, and reproducibility information.
-- [VSTD-GRAPH-1](standard/VSTD-GRAPH-1.md) records content-addressed artifacts,
+- [GRAPH-1](standard/GRAPH-1.md) records content-addressed artifacts,
   many-to-many transformations, conflicts, and bounded downstream reachability. Its frozen
   reader preserves separate historical artifact/transformation namespaces; new construction
   plus evidence-bound establishment and assurance propagation require global cross-kind
