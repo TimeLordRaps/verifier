@@ -95,6 +95,36 @@ declare the experimental mechanisms complete. See the
   which is unchanged at `sha256:b505a4a2...` -- so no domain policy bound to it is
   invalidated by this change.
 
+### VSTD-TRAIN is catalogued but not certifiable
+
+- Fix 14 mechanism names on `VSTD-TRAIN` that resolved to
+  no check in any family. `CHECKS` and `SCOPES` are each keyed by
+  9 objects and neither has a `TRAIN` entry, yet the catalogue
+  gave 25 of its 35 obligations a mechanism -- several of them **another object's
+  check name**, `configuration` being ENV's and `lineage` being DATA's. The 14 unresolvable
+  names are cleared, so `VSTD-TRAIN` reports 11 of 35 mechanized rather than 25,
+  and the domain axis reports 163 of 512.
+- **Certifiable is not the same property as grounded**, and conflating them is what let
+  this through. `build_domain_certificate` rejects any domain absent from `CHECKS`, so
+  `VSTD-TRAIN` could never be certified at all -- it was not partially grounded, it was
+  unreachable -- while the grid published it as the most heavily mechanized object on the
+  axis. New `CERTIFIABLE_OBJECTS` and `UNCERTIFIABLE_OBJECTS` name the real partition,
+  which has three parts over 15 objects rather than two:
+  9 certifiable, `VSTD-TRAIN` catalogued with statics and
+  adaptation mechanisms that do execute, and five ungrounded with no mechanism anywhere.
+- **A mechanism name is a promise that something executes it.** The suite now resolves
+  every name against the registered checks of that obligation's **own** object, and asserts
+  `CERTIFIABLE_OBJECTS` against both `CHECKS` and `SCOPES`. Resolution is object-scoped
+  deliberately: a name that resolves under a different object resolves to the wrong check,
+  which is the exact shape this defect took. Unlike the ungrounded-object defects recorded
+  above, this one was always mechanically checkable -- nothing checked it.
+- Correct three published claims that were false: that ten of the fifteen objects are
+  grounded because an adapter executes them, that `VSTD-TRAIN` has its own adapter module,
+  and the grid cell reading 25/35.
+- No adapter is added and no obligation is removed, so `implementation_digest()` is
+  unchanged at `sha256:b505a4a2...` and no domain policy bound to it is invalidated. Until
+  a `VSTD-TRAIN` adapter exists, no certificate over the object can be produced.
+
 ### The meta-tier grid, the relational objects and the VSTD-NAMESPACE
 
 - Publish the meta-tier grid in [`standard/META_TIERS.md`](standard/META_TIERS.md): every

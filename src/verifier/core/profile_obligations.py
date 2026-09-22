@@ -421,19 +421,19 @@ DOMAIN_OBLIGATIONS = (
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("TRAIN", 1, (
-        ("Optimizer contract", "The optimizer, schedule, accumulation and precision contract is bound.", (), "configuration"),
-        ("Numerical semantics", "The declared floating-point format and accumulation order are bound.", (1,), "configuration"),
-        ("Checkpoint inventory", "Every retained weight and optimizer state is rehashed.", (), "checkpoints"),
-        ("Step index", "A contiguous step index is bound over the retained trace.", (3,), "checkpoints"),
-        ("Batch binding", "Each step is bound to the batch it consumed.", (4,), "checkpoints"),
+        ("Optimizer contract", "The optimizer, schedule, accumulation and precision contract is bound.", (), ""),
+        ("Numerical semantics", "The declared floating-point format and accumulation order are bound.", (1,), ""),
+        ("Checkpoint inventory", "Every retained weight and optimizer state is rehashed.", (), ""),
+        ("Step index", "A contiguous step index is bound over the retained trace.", (3,), ""),
+        ("Batch binding", "Each step is bound to the batch it consumed.", (4,), ""),
         ("Retention boundary", "Which steps and states are retained, and which were discarded, is declared.", (1, 5), ""),
     )),
     *_domain_rows("TRAIN", 2, (
-        ("Loss replay", "Dense-network losses are recomputed from the bound batches.", (), "training"),
-        ("Gradient replay", "Analytic gradients are recomputed and compared with the retained ones.", (1,), "training"),
-        ("Optimizer update", "Every supported optimizer update is recomputed from retained gradients and state.", (2,), "updates"),
-        ("State advance", "Applying the recomputed update reproduces the next retained state.", (3,), "updates"),
-        ("Step-by-step advance", "The run is replayed step by step across the retained trace.", (4,), "training"),
+        ("Loss replay", "Dense-network losses are recomputed from the bound batches.", (), ""),
+        ("Gradient replay", "Analytic gradients are recomputed and compared with the retained ones.", (1,), ""),
+        ("Optimizer update", "Every supported optimizer update is recomputed from retained gradients and state.", (2,), ""),
+        ("State advance", "Applying the recomputed update reproduces the next retained state.", (3,), ""),
+        ("Step-by-step advance", "The run is replayed step by step across the retained trace.", (4,), ""),
         ("Unsupported update reporting", "An unsupported optimizer is reported UNKNOWN and never passed.", (3,), ""),
     )),
     *_domain_rows("TRAIN", 3, (
@@ -444,10 +444,10 @@ DOMAIN_OBLIGATIONS = (
         ("Choice independence", "The facts above are unchanged when the run's configuration is perturbed.", (2, 4), "statics:independence"),
     )),
     *_domain_rows("TRAIN", 4, (
-        ("Contiguity", "The retained steps form an uninterrupted sequence with no gap.", (), "lineage"),
-        ("Parent binding", "Each step binds to its exact parent state.", (1,), "lineage"),
-        ("Batch and hyperparameter binding", "Each step binds its exact batch and hyperparameter values.", (2,), "lineage"),
-        ("Result binding", "Each step binds its exact result.", (3,), "lineage"),
+        ("Contiguity", "The retained steps form an uninterrupted sequence with no gap.", (), ""),
+        ("Parent binding", "Each step binds to its exact parent state.", (1,), ""),
+        ("Batch and hyperparameter binding", "Each step binds its exact batch and hyperparameter values.", (2,), ""),
+        ("Result binding", "Each step binds its exact result.", (3,), ""),
         ("No reordering", "The retained order is the executed order, and a reordered pair is detectable.", (4,), ""),
         ("Whole-run accounting", "The trace accounts for the whole run rather than a selected prefix of it.", (5,), ""),
     )),
@@ -785,19 +785,228 @@ DOMAIN_OBLIGATIONS = (
         ("Composition delta", "Emitting this certificate beside the VSTD-OWNER certificate of an adjacent holding discloses the graph: two chains each within bound reveal, at their shared positions, a structure neither states alone, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
+    *_domain_rows("HUMAN", 1, (
+        ("Assertion subject", "The assertion states that one living human is behind the subject, and states nothing beyond that.", (), ""),
+        ("Evidence class", "The evidence class establishing humanness is declared -- biometric, hardware-attested, in-person or social-graph -- together with the capture pipeline it was obtained through.", (1,), ""),
+        ("Liveness and uniqueness claims", "The liveness and uniqueness properties being claimed are stated separately, since an assertion may carry either without the other.", (2,), ""),
+        ("Enrollment population", "The population the uniqueness claim is relative to is declared, together with the deduplication mechanism that establishes it within that population.", (3,), ""),
+        ("Non-assertion boundary", "What is deliberately not asserted -- name, nationality, civil identity, or any other attribute -- is enumerated, and an attribute the assertion omits is unasserted rather than unknown.", (1,), ""),
+        ("Humanness versus identification", "The boundary between establishing that the subject is a human and identifying which human the subject is, is stated; the two are separable, and an assertion that establishes the first never thereby establishes the second.", (1, 5), ""),
+    )),
+    *_domain_rows("HUMAN", 2, (
+        ("Enrollment", "Enrollment into the humanness assertion is declared as an event with its evidence class and its instrument.", (), ""),
+        ("Re-verification", "Re-verification is declared as its own event, and never as a continuation of the original enrollment.", (1,), ""),
+        ("Evidence aging", "The evidence's age at the point of use is carried, and an assertion whose evidence has aged past its declared validity is unestablished rather than established and stale.", (2,), ""),
+        ("Revocation on compromise", "Revocation on compromise withdraws the assertion from the position in the order at which it takes effect.", (1,), ""),
+        ("Template irreversibility", "A compromised biometric template does not rotate: revocation withdraws the binding and never restores the secrecy of the trait, so a breach is declared as permanent rather than as remediated.", (4,), ""),
+        ("Death", "The subject's death ends the assertion, and is declared as an event rather than inferred from inactivity. No other object on this axis carries this dynamic -- a dataset does not die.", (1,), ""),
+    )),
+    *_domain_rows("HUMAN", 3, (
+        ("Singularity", "A human is singular and non-copyable and cannot be manufactured on demand. This is what makes Sybil resistance mean anything, and no declaration or adaptation changes it.", (), ""),
+        ("Irreducible biometric error", "False-match and false-non-match rates are decision-theoretic facts of the operating point rather than implementation defects, and no operating point has both at zero.", (), ""),
+        ("Presentation attack surface", "Presentation attack detection is a separate error surface from matching, with its own rates, and a matching rate never bounds it.", (2,), ""),
+        ("Injection attack surface", "Injection attacks target the capture pipeline, which sits outside the biometric's own error model; the gap is a property of where the instrument was placed rather than of what it recorded.", (2, 3), ""),
+        ("Relative uniqueness", "Uniqueness holds only relative to an enrollment population and a deduplication mechanism. No protocol establishes global uniqueness of a person, and an assertion claiming it is malformed.", (1,), ""),
+        ("No composition yields a human", "No arrangement of models, agents, bots, simulations or collectives produces a human, at any strength, by any route. This is the one statics row no composition can reach.", (1,), ""),
+    )),
+    *_domain_rows("HUMAN", 4, (
+        ("Evidence declaration", "Every humanness assertion declares the evidence class it rests on.", (), ""),
+        ("Error-rate declaration", "Every assertion declares the error rates of that evidence class at the operating point actually used.", (1,), ""),
+        ("Population declaration", "Every assertion declares the exact enrollment population its uniqueness is relative to, and an undeclared population makes the uniqueness claim unestablished.", (1, 2), ""),
+        ("Accountability termination", "For any certified decision, following the answering-duty limb of the holdings upward reaches a VSTD-HUMAN in finitely many steps. This runs through holdings and never through occupancies.", (), ""),
+        ("Occupancy is not termination", "A bot may occupy a seat and a human still answers for it, so an occupancy never discharges 4.4. A chain that terminates in an occupancy rather than in a holding is open.", (4,), ""),
+        ("Closure result", "The assertion is closed only when evidence, error rates, population and accountability termination all hold; otherwise the result is UNKNOWN and never FAIL.", (3, 5), ""),
+    )),
+    *_domain_rows("HUMAN", 5, (
+        ("Error-rate reporting mainstay", "Biometric performance testing and reporting is bound as the mainstay for error-rate declaration, and an assertion that reports no operating point registers none.", (), ""),
+        ("Presentation attack detection mainstay", "Presentation attack detection reporting is bound as a separate mainstay from matching performance, with its own rates.", (), ""),
+        ("Enrollment scheme mapping", "Iris, hardware-attested and comparable enrollment schemes map onto the enrollment population and deduplication facets.", (1, 2), ""),
+        ("Attestation mapping", "Rate-limited attestation tokens and comparable privacy-preserving personhood attestations map onto the humanness assertion without carrying an identification.", (), ""),
+        ("Human-verification mapping", "In-person and social-graph verification map onto the evidence class facet as declared evidence rather than as measured rates.", (), ""),
+        ("Adaptation accounting", "Each adaptation above is reported as established or unestablished, and an absent mainstay is unestablished rather than unasserted.", (1, 2, 3, 4, 5), ""),
+    )),
+    *_domain_rows("HUMAN", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the evidence class, the liveness and uniqueness claims, the enrollment population, and the assertion's validity -- and is separated from the biometric template, the capture record, and any attribute the assertion declares it does not carry. This is the disclosure floor of a person, and it is the one surface in the grid that no declaration waives.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside the VSTD-IDENTITY certificate of an occupancy the subject bears discloses the person behind the seat: a humanness assertion within bound and an occupancy within bound together identify an individual that neither states alone, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
+    *_domain_rows("ROLE", 1, (
+        ("Class identity", "The role class is named at a stated coordinate, as a class rather than as any person occupying it.", (), ""),
+        ("Decision authority", "The decision authority the class carries is declared, and an authority the declaration omits is not carried.", (1,), ""),
+        ("Qualifications", "The qualifications required of a bearer are declared as properties of the class.", (1,), ""),
+        ("Simultaneous bearer limit", "How many bearers may occupy the class at once is declared, and a class that declares no limit is unspecified rather than unlimited.", (1,), ""),
+        ("Admissible bearer classes", "Which bearer classes the seat admits is declared -- humans only, or bots as well -- and this is a property of the class rather than of any occupancy of it.", (1, 4), ""),
+        ("Facet completeness", "A class whose authority, qualifications, bearer limit or admissible bearer classes are unstated is unspecified rather than unconstrained.", (2, 3, 5), ""),
+    )),
+    *_domain_rows("ROLE", 2, (
+        ("Occupancy events", "A bearer taking the class and a bearer leaving it are declared as events with their positions in the order.", (), ""),
+        ("Hand-over", "A hand-over is declared as a paired leaving and taking at one position, and never as two independent events.", (1,), ""),
+        ("Acting in role", "Acting in the role is distinguished from the bearer acting personally, and an act that declares neither is attributed to neither.", (1,), ""),
+        ("Temporary delegation", "A temporary delegation conveys a subset of the class's authority for a stated interval and leaves the class's own authority intact.", (1,), ""),
+        ("In-flight decisions", "What happens to a decision in flight across a hand-over is declared, and a decision that spans a hand-over is attributed rather than dropped.", (2, 3), ""),
+        ("Occupancy replay", "Replaying the declared occupancy events from the first taking reproduces the current occupancy.", (2, 4, 5), ""),
+    )),
+    *_domain_rows("ROLE", 3, (
+        ("Declared authority", "The class's authority is declared rather than derived from whoever holds it.", (), ""),
+        ("Vacancy retention", "An unoccupied seat still carries its declared authority; vacancy suspends exercise and never reduces the class.", (1,), ""),
+        ("Occupancy factuality", "The occupancy fact exists whether or not it is disclosed, and non-disclosure never makes a seat vacant.", (), ""),
+        ("Cross-role correlation", "One bearer occupies several classes, so correlation across them is a fact about the bearer and never a fact about the classes.", (3,), ""),
+        ("Authority independence", "A change of occupant never alters the class's declared authority, in either direction.", (1, 2), ""),
+        ("Class is not its occupants", "The class is not its occupants: naming an occupant never names the class, and naming the class never names an occupant.", (3, 4), ""),
+    )),
+    *_domain_rows("ROLE", 4, (
+        ("Decision inventory", "Every decision falling within the class's declared authority is inventoried.", (), ""),
+        ("Contiguous occupancy", "The occupancy intervals are contiguous across the period the inventory covers.", (), ""),
+        ("Bearer attribution", "Each inventoried decision is attributed to the bearer during whose occupancy it fell.", (1, 2), ""),
+        ("No unattributed decision", "No gap exists in which an inventoried decision was taken by no one; an uncovered decision leaves the profile open.", (2, 3), ""),
+        ("Closure result", "The class is closed only when the inventory, contiguity and attribution all hold; otherwise the result is UNKNOWN and never FAIL.", (3, 4), ""),
+    )),
+    *_domain_rows("ROLE", 5, (
+        ("Engagement context role mainstay", "Engagement context role credentials are bound as the mainstay for a declared role class.", (), ""),
+        ("Access control role mapping", "Role-based access control role definitions map onto the authority and qualification facets.", (), ""),
+        ("Org-chart position mapping", "Org-chart position records map onto the class identity and bearer-limit facets.", (), ""),
+        ("Round trip", "A class expressed in a mainstay above and read back reproduces the declared facets without loss.", (1, 2, 3), ""),
+        ("Inference upward", "A representation that carries less than the facets require is inferred upward and reported as partial rather than as complete.", (4,), ""),
+        ("Adaptation accounting", "Each adaptation above is reported as established or unestablished, and an absent registry is unestablished rather than unoccupied.", (1, 2, 3, 4, 5), ""),
+    )),
+    *_domain_rows("ROLE", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the class identity, the declared authority, the qualifications, the bearer limit and the admissible bearer classes -- and is separated from the identity of any occupant. An unoccupied seat still discloses: a class whose qualifications are narrow enough to admit one person names that person without naming them.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside the VSTD-COLLECTIVE certificate that contains the class discloses the position: a class within bound and a role graph within bound together locate the seat in a structure, and a seat's neighbours narrow its occupant, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
+    *_domain_rows("COLLECTIVE", 1, (
+        ("Role graph", "The collective is declared as a graph of role classes at a stated coordinate.", (), ""),
+        ("Relation types", "The relations the graph carries are declared and typed -- reports-to, delegates-to, must-countersign -- and an untyped edge is unspecified rather than generic.", (1,), ""),
+        ("Role set", "The set of role classes the graph is over is enumerated, each bound by its own certificate.", (1,), ""),
+        ("Accountable decision classes", "The decision classes the collective is accountable for as a whole are declared.", (1,), ""),
+        ("Boundary", "The boundary of the collective is declared: which classes are inside it and which are outside.", (1,), ""),
+        ("Facet completeness", "A collective whose relations, role set, decision classes or boundary are unstated is unspecified rather than unbounded.", (2, 3, 4, 5), ""),
+    )),
+    *_domain_rows("COLLECTIVE", 2, (
+        ("Reorganization", "A reorganization is declared as an ordered event over the graph, with the edges it adds and the edges it removes.", (), ""),
+        ("Role lifecycle", "Role creation and retirement are declared as events, and a retired class remains in the record rather than being removed from it.", (1,), ""),
+        ("Quorum and countersignature", "Quorum thresholds and countersignature requirements are declared against the decision classes they gate.", (), ""),
+        ("Escalation", "Escalation paths are declared as edges, and an escalation that follows no declared edge is undeclared rather than implicit.", (3,), ""),
+        ("Decision assembly", "How a collective decision is assembled from the role decisions beneath it is declared and replayable.", (3, 4), ""),
+        ("Merger and split", "What a merger or a split does to the graph is declared, and the resulting graph is reproduced from the declared events.", (1, 2), ""),
+    )),
+    *_domain_rows("COLLECTIVE", 3, (
+        ("No decisions of its own", "The collective takes no decisions of its own: every decision it is accountable for was taken through some role class by some bearer.", (), ""),
+        ("External legal existence", "The legal entity exists or does not exist under some registry, whatever the collective declares about itself; a declaration never constitutes one.", (), ""),
+        ("Separation of duty needs persons", "Separation of duty is real only where the bearers are distinct persons, which the role graph alone cannot establish.", (1,), ""),
+        ("Graph impotence", "The graph establishes structure and never establishes occupancy; who fills a seat is outside what the graph can say.", (1, 3), ""),
+    )),
+    *_domain_rows("COLLECTIVE", 4, (
+        ("Complete role graph", "The role graph is complete: no class in the declared set is unattached to it.", (), ""),
+        ("Decision decomposition", "Every collective-level decision is decomposed into role decisions that actually occurred.", (1,), ""),
+        ("Quorum recomputation", "Each quorum condition is recomputed over the retained occupancy record rather than accepted as declared.", (2,), ""),
+        ("Closure result", "The collective is closed only when the graph is complete, every decision decomposes and every quorum recomputes; otherwise the result is UNKNOWN and never FAIL.", (2, 3), ""),
+    )),
+    *_domain_rows("COLLECTIVE", 5, (
+        ("Organizational role mainstay", "Legal-entity identifiers together with official organizational role and engagement context role credentials are bound as the mainstay for a declared collective.", (), ""),
+        ("Corporate registry mapping", "Corporate registry records map onto the boundary and legal-existence facets.", (), ""),
+        ("Access control policy mapping", "Role- and attribute-based access control policy models map onto the graph's relation types.", (), ""),
+        ("Round trip", "A collective expressed in a mainstay above and read back reproduces the declared graph without loss.", (1, 2, 3), ""),
+        ("Inference upward", "A representation that carries less than the facets require is inferred upward and reported as partial rather than as complete.", (4,), ""),
+        ("Adaptation accounting", "Each adaptation above is reported as established or unestablished, and an absent register is unestablished rather than unincorporated.", (1, 2, 3, 4, 5), ""),
+    )),
+    *_domain_rows("COLLECTIVE", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the role graph, the relation types, the role set, the accountable decision classes and the boundary -- and is separated from the occupancy record. Structure discloses on its own: the shape of a reporting graph infers headcount, seniority and function without naming anyone in it.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside the VSTD-IDENTITY certificates of occupancies inside it discloses the membership: a graph within bound and occupancies each within bound together produce a roster that neither states alone, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
+    *_domain_rows("IDENTITY", 1, (
+        ("Bearer binding", "The bearer is bound by its own certificate, and the bearer class it is bound as -- VSTD-HUMAN or VSTD-BOT -- is stated. A bare VSTD-AGENT is not an admissible bearer class.", (), ""),
+        ("Role binding", "The role class the occupancy is into is bound by its own certificate at a stated coordinate.", (), ""),
+        ("Occupancy evidence", "The evidence supporting the occupancy is bound, distinctly from the evidence supporting the bearer.", (1, 2), ""),
+        ("Assurance level", "The assurance level claimed for the binding is declared together with the retained evidence it rests on.", (3,), ""),
+        ("Inherited scope", "The scope the binding inherits from its bearer class's statics is declared, since the bearer class is what bounds the occupancy.", (1,), ""),
+        ("Validity and revocation surface", "The validity interval, the revocation surface, and whether the binding is disclosed or held, are declared together.", (3, 4), ""),
+    )),
+    *_domain_rows("IDENTITY", 2, (
+        ("Enrollment", "Enrollment of a bearer into the seat is declared as an event with its position in the order.", (), ""),
+        ("Re-verification and renewal", "Re-verification and renewal are declared as their own events, and never as continuations of the original enrollment.", (1,), ""),
+        ("Hand-over", "A hand-over of the seat ends one binding and begins another, and never transfers a binding between bearers.", (1,), ""),
+        ("Revocation", "Revocation withdraws the binding from the position at which it takes effect, and is distinguished from expiry by the clock.", (1,), ""),
+        ("Presentation", "What a presentation of the binding conveys is declared, together with how many presentations were made.", (1,), ""),
+        ("Presentation linkability", "Whether two presentations of one binding are linkable to each other is declared, and unlinkability is established rather than assumed.", (5,), ""),
+        ("Simulation end", "What happens to a bot binding when its declared simulation ends or is superseded is declared; a binding whose simulation has ended is lapsed rather than portable.", (1,), ""),
+    )),
+    *_domain_rows("IDENTITY", 3, (
+        ("Bearer-bounded", "A binding never has wider bounds than its bearer class's statics allow. This is the weakest-operand shape of the Prime Invariant, one relation over.", (), ""),
+        ("Multiple occupancy", "One bearer occupies several role classes at once, and no protocol makes those occupancies independent of one another.", (), ""),
+        ("Evidence ceiling", "A binding is never stronger than the bearer evidence it rests on, whatever assurance level it declares.", (1,), ""),
+        ("Revocation does not un-happen", "A revoked binding does not un-happen: what was decided in the seat stays decided, and revocation is prospective only.", (), ""),
+        ("The binding is not the bearer", "Ending a binding ends an occupancy and nothing else. It never ends, weakens or revokes the bearer.", (4,), ""),
+        ("Weakest operand", "The binding's bound is the meet of the bearer's bound and the role class's, and never the join of them.", (1, 3), ""),
+    )),
+    *_domain_rows("IDENTITY", 4, (
+        ("Presentation binding", "Every presentation is bound to an enrollment that was not revoked at presentation time.", (), ""),
+        ("Assurance support", "The declared assurance level is supported by evidence actually retained, rather than by evidence once seen.", (1,), ""),
+        ("No self-asserted attribute", "No binding rests on a self-asserted attribute of the bearer.", (1,), ""),
+        ("Bearer class declared", "Every binding declares its bearer class, and a binding that declares none is malformed rather than defaulted.", (), ""),
+        ("Bot containment", "No bot binding is presented outside its declared simulation; a bot identity exists within its simulation and nowhere else.", (4,), ""),
+        ("Human exit", "Where the bearer is a human, that human retains unilateral termination of the binding, and a binding that removes the exit is malformed.", (4,), ""),
+        ("Closure result", "The binding is closed only when presentation binding, assurance support, attribute exclusion, bot containment and the human exit all hold; otherwise the result is UNKNOWN and never FAIL.", (2, 3, 5, 6), ""),
+    )),
+    *_domain_rows("IDENTITY", 5, (
+        ("Verifiable credential mainstay", "Verifiable credential data models are bound as the mainstay for a presented occupancy.", (), ""),
+        ("Decentralized identifier mapping", "Decentralized identifier syntax and resolution map onto the bearer and role bindings.", (), ""),
+        ("Selective disclosure mapping", "Selective-disclosure cryptosuites map onto the disclosure surface of the binding.", (1,), ""),
+        ("Unlinkability mapping", "Per-presentation unlinkability maps onto the linkability dynamic, and is reported as established only where the cryptosuite provides it.", (3,), ""),
+        ("Round trip", "A binding expressed in a mainstay above and read back reproduces the declared facets without loss.", (1, 2, 3, 4), ""),
+        ("Inference upward", "A representation that carries less than the facets require is inferred upward and reported as partial rather than as complete.", (5,), ""),
+        ("Adaptation accounting", "Each adaptation above is reported as established or unestablished, and an absent credential is unestablished rather than unoccupied. Proof-of-personhood mainstays are not here: they establish humanness, which is VSTD-HUMAN-5.", (1, 2, 3, 4, 5, 6), ""),
+    )),
+    *_domain_rows("IDENTITY", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the bearer class, the role binding, the assurance level, the validity interval and the revocation surface -- and is separated from the bearer's own identity. The occupancy is the linking field in this family: it names a bearer and a seat in one statement, so emitting it discloses a correspondence that neither endpoint discloses alone.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside a second presentation of the same occupancy discloses the linkage: two presentations each within bound reveal that they are the same bearer, which is the fact per-presentation unlinkability exists to withhold, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
 )
 
 DOMAIN_BY_ID = {o.id: o for o in DOMAIN_OBLIGATIONS}
 DOMAIN_OBJECTS = ("DATA", "ENV", "BENCH", "TRAIN", "HYPER", "MODEL", "SIM",
-                  "HARNESS", "AGENT", "BOT", "OWNER")
+                  "HARNESS", "AGENT", "BOT", "OWNER",
+                  "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY")
 
 # A relational object holds *between* certified objects instead of certifying a
-# substrate of its own. GRAPH carries its own axis; HYPER and OWNER sit on the
-# domain axis. Of the three only OWNER is ungrounded -- no adapter executes it,
-# so every OWNER obligation is specified with no mechanism and reports UNKNOWN.
-RELATIONAL_OBJECTS = ("GRAPH", "HYPER", "OWNER")
-UNGROUNDED_OBJECTS = ("OWNER",)
+# substrate of its own. GRAPH carries its own axis; HYPER, OWNER and IDENTITY sit
+# on the domain axis -- IDENTITY holds between a bearer and a role class.
+#
+# Ungrounded means no adapter executes the object, so every one of its obligations
+# is specified with no mechanism and reports UNKNOWN. The two properties are
+# independent, and until the identity family landed the catalogue could not show
+# it: OWNER was the only ungrounded object and it was also relational, so the
+# containment held by coincidence of n=1. HUMAN, ROLE and COLLECTIVE are
+# ungrounded and not relational -- a person is not a relation between objects.
+RELATIONAL_OBJECTS = ("GRAPH", "HYPER", "OWNER", "IDENTITY")
+UNGROUNDED_OBJECTS = ("OWNER", "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY")
 GROUNDED_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in UNGROUNDED_OBJECTS)
+
+# Grounded is not the same as certifiable, and conflating the two published a false claim
+# about VSTD-TRAIN for the life of this catalogue. A *behavioural* adapter is keyed in
+# verifier.domains.catalog.CHECKS, and build_domain_certificate rejects any domain absent
+# from it, so only these nine can have a domain certificate built for them at all.
+# VSTD-TRAIN is catalogued and its statics and adaptation mechanisms resolve and execute,
+# but it has no behavioural adapter, so no certificate over it can be produced; the other
+# five carry no mechanism of any kind. Membership is asserted against CHECKS by the suite
+# rather than imported here, because verifier.domains depends on this module.
+CERTIFIABLE_OBJECTS = ("DATA", "ENV", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
+                       "AGENT", "BOT")
+UNCERTIFIABLE_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in CERTIFIABLE_OBJECTS)
 TIER_NAMES = {1: "Facets", 2: "Dynamics", 3: "Statics", 4: "Closure",
               5: "Domain adaptation", 6: "Disclosure"}
 # Tiers 1..5 are the corroboration ladder: each rung is evidence that raises what the

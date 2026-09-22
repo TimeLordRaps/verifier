@@ -12,6 +12,7 @@ import pytest
 
 from verifier.core.profile_obligations import (
     BY_ID,
+    CERTIFIABLE_OBJECTS,
     DISCLOSURE_TIER,
     DOMAIN_BY_ID,
     DOMAIN_OBJECTS,
@@ -21,6 +22,7 @@ from verifier.core.profile_obligations import (
     DOMAIN_OBLIGATIONS,
     GRAPH_BY_ID,
     TIER_NAMES,
+    UNCERTIFIABLE_OBJECTS,
     catalog_digest,
     domain_catalog_digest,
     domain_obligation_catalog,
@@ -28,7 +30,7 @@ from verifier.core.profile_obligations import (
     graph_catalog_digest,
     tier_depth,
 )
-from verifier.domains.catalog import CHECKS
+from verifier.domains.catalog import CHECKS, SCOPES
 from verifier.domains.mainstays import CHECKS as ADAPTATION_CHECKS
 from verifier.domains.mainstays import PREFIX as MAINSTAY_PREFIX
 from verifier.domains.statics import BY_NAME as STATICS_BY_NAME
@@ -140,9 +142,19 @@ def test_an_ungrounded_object_mechanizes_nothing_at_any_tier() -> None:
 
 
 def test_the_relational_partition_is_exact() -> None:
-    """GRAPH carries its own axis; HYPER and OWNER sit on the domain axis."""
-    assert set(UNGROUNDED_OBJECTS) <= set(RELATIONAL_OBJECTS)
+    """GRAPH carries its own axis; HYPER, OWNER and IDENTITY sit on the domain axis.
+
+    Relational and ungrounded are independent. Until the identity family was
+    catalogued OWNER was the only ungrounded object and it was relational too, so
+    the containment held by coincidence of there being one. A person is not a
+    relation between certified objects, and asserting the containment again would
+    force HUMAN, ROLE and COLLECTIVE to be mislabelled as relations to keep it.
+    """
     assert set(UNGROUNDED_OBJECTS) <= set(DOMAIN_OBJECTS)
+    assert set(UNGROUNDED_OBJECTS) - set(RELATIONAL_OBJECTS), (
+        "ungrounded must not collapse back into a subset of relational")
+    assert set(RELATIONAL_OBJECTS) - set(UNGROUNDED_OBJECTS) - {"GRAPH"}, (
+        "a relational object may be grounded")
     assert set(GROUNDED_OBJECTS) | set(UNGROUNDED_OBJECTS) == set(DOMAIN_OBJECTS)
     assert not set(GROUNDED_OBJECTS) & set(UNGROUNDED_OBJECTS)
     assert "GRAPH" in RELATIONAL_OBJECTS and "GRAPH" not in DOMAIN_OBJECTS
@@ -228,3 +240,54 @@ def test_the_disclosure_level_adds_no_adapter_module() -> None:
     for obligation in DOMAIN_OBLIGATIONS:
         if obligation.profile == DISCLOSURE_TIER:
             assert obligation.mechanism not in behavioural | statics | adaptation
+
+
+def test_every_mechanism_name_resolves_to_a_registered_check() -> None:
+    """A mechanism is a promise that something executes it. An unresolvable name is not.
+
+    The four VSTD-OWNER defects found on landing day were all unmechanized prose, where
+    adversarial reading was the only possible gate. This class is the opposite: it was
+    always mechanically checkable, and nothing checked it, so a mechanism could name a
+    check belonging to a different object -- or to none -- and the suite stayed green.
+    Resolution is scoped to the obligation's OWN object for the two object-keyed families,
+    because a name that resolves under another object resolves to the wrong check.
+    """
+    adaptation = {MAINSTAY_PREFIX + n for n in ADAPTATION_CHECKS}
+    unresolved = []
+    for obligation in DOMAIN_OBLIGATIONS:
+        if not obligation.mechanized:
+            continue
+        behavioural = {c[0] for c in CHECKS.get(obligation.object_name, ())}
+        statics = {STATICS_PREFIX + n
+                   for n in STATICS_BY_NAME.get(obligation.object_name, ())}
+        if obligation.mechanism not in behavioural | statics | adaptation:
+            unresolved.append((obligation.id, obligation.mechanism))
+    assert unresolved == [], unresolved
+
+
+def test_certifiable_is_not_the_same_property_as_grounded() -> None:
+    """Conflating the two published a false claim about VSTD-TRAIN for this catalogue's life.
+
+    `build_domain_certificate` rejects any domain absent from CHECKS, so CERTIFIABLE_OBJECTS
+    is the set of objects a domain certificate can be built for at all. It is asserted
+    against both registries here rather than imported into the catalogue -- which
+    verifier.domains depends on -- and that assertion is what keeps the published partition
+    and the executable one the same.
+    """
+    assert set(CERTIFIABLE_OBJECTS) == set(CHECKS) == set(SCOPES)
+    assert set(CERTIFIABLE_OBJECTS).isdisjoint(UNCERTIFIABLE_OBJECTS)
+    assert set(CERTIFIABLE_OBJECTS) | set(UNCERTIFIABLE_OBJECTS) == set(DOMAIN_OBJECTS)
+
+    # VSTD-TRAIN is the case a two-part partition could not express: grounded, because
+    # statics and adaptation checks do execute over it, and certifiable not at all.
+    assert set(UNCERTIFIABLE_OBJECTS) - set(UNGROUNDED_OBJECTS) == {"TRAIN"}
+    assert "TRAIN" in GROUNDED_OBJECTS and "TRAIN" not in CERTIFIABLE_OBJECTS
+    train = [o for o in DOMAIN_OBLIGATIONS if o.object_name == "TRAIN"]
+    assert any(o.mechanized for o in train), "its statics and adaptation rows do resolve"
+    assert not any(o.mechanized for o in train if o.profile in (1, 2, 4)), (
+        "with no behavioural adapter, no facets, dynamics or closure row may name a check")
+
+    # An ungrounded object carries no mechanism in any family, which is the stronger claim.
+    for name in UNGROUNDED_OBJECTS:
+        rows = [o for o in DOMAIN_OBLIGATIONS if o.object_name == name]
+        assert rows and not any(o.mechanized for o in rows), name
