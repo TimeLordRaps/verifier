@@ -873,7 +873,7 @@ normative, and it is the ownership twin of the Prime Invariant.
 | OWNER-4.2 | Gapless chain | Every position in the order between the origin and the head is covered by exactly one holding. | OWNER-4.1 | none |
 | OWNER-4.3 | Fork detection | No two holdings claim the same limb over the same object at the same position, and a fork is reported rather than resolved. | OWNER-4.2 | none |
 | OWNER-4.4 | Admissibility at issue time | Each instrument is admissible under the authority in force when it issued, not under the authority in force now. | OWNER-4.1 | none |
-| OWNER-4.5 | Accountability floor | For every discharge-duty in the chain an answering-duty exists over the same object at the same position, and every answering-duty chain terminates in a natural person; a chain that discharges without answering is not closed. | OWNER-4.1, OWNER-4.2 | none |
+| OWNER-4.5 | Accountability floor | For every discharge-duty in the chain an answering-duty exists over the same object, at the same position in the order and throughout that discharge-duty's term, and every answering-duty chain terminates in a natural person; an answering-duty that lapses while its discharge-duty still runs leaves the chain open, and a chain that discharges without answering is not closed. | OWNER-4.1, OWNER-4.2 | none |
 | OWNER-4.6 | Closure result | The chain is closed only when origin, gaplessness, fork-freedom, admissibility at issue time and the accountability floor all hold; otherwise the result is UNKNOWN and never FAIL. | OWNER-4.2, OWNER-4.3, OWNER-4.4, OWNER-4.5 | none |
 
 ### VSTD-OWNER-5: Domain adaptation

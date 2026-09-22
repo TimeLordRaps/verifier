@@ -441,6 +441,18 @@ it — supervision owed by nobody. Termination is a property of a walk rather th
 single holding, which is why it is closure work and not statics: tier 3 constrains what
 one surface does not get to choose, and tier 4 constrains the chain.
 
+**Both quantifiers in `OWNER-4.5` are load-bearing, and neither implies the other.**
+The answering-duty must exist at the same *position* and throughout the discharge-duty's
+*term*, because this model moves on two independent clocks. Positions come from declared
+events (`OWNER-2.1`), but a term ends **by the clock rather than by an event**
+(`OWNER-2.5`), so a lapse declares no event and occupies no position. Terms attach to the
+holding rather than to the limb (`OWNER-1.5`), and `OWNER-3.6` forces the two duties into
+*separate* holdings whenever the discharge holder is not a natural person — separate
+holdings, therefore independent terms. Quantifying over positions alone would let a bot's
+discharge-duty run to 2030 under an answering-duty that lapsed in 2027: no event, no new
+position, both duties present at every position from origin to head, and the chain closes
+over three years nobody answers for. Dropping either quantifier reopens that.
+
 **VSTD-OWNER-5** — domain adaptation: licence expressions, registry maintainer records,
 corporate and beneficial-ownership registers, declared code ownership and custody chains.
 No adapter binds any of them today, so each is reported unestablished rather than unheld
