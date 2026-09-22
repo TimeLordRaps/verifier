@@ -294,7 +294,7 @@ def test_end_to_end_vstd160_risk_profile_remains_unverified() -> None:
     import jsonschema
     schema_root = Path(__file__).resolve().parents[1]
     name = "verifier-risk-profile-2.schema.json"
-    schema_bytes = (schema_root / "standard/schemas" / name).read_bytes()
+    schema_bytes = (schema_root / "src/verifier/schemas" / name).read_bytes()
     assert schema_bytes == (schema_root / "src/verifier/schemas" / name).read_bytes()
     jsonschema.Draft202012Validator(json.loads(schema_bytes)).validate(r_dict)
     restored = Vstd200RiskProfileReceipt.from_dict(r_dict)

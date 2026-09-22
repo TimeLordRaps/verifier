@@ -312,7 +312,7 @@ def test_domain_envelope_schemas_and_packaged_copies(domain: str, bundles: dict,
               "policy": policy, "certification": assess(bundles[domain], policy)}
     for kind, value in values.items():
         name = f"verifier-domain-{kind}-1.schema.json"
-        source = (ROOT / "standard/schemas" / name).read_bytes()
+        source = (ROOT / "src/verifier/schemas" / name).read_bytes()
         assert source == (ROOT / "src/verifier/schemas" / name).read_bytes()
         schema = json.loads(source)
         Draft202012Validator.check_schema(schema)

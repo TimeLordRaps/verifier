@@ -326,7 +326,7 @@ def test_maturity_table_requires_each_major_surface_and_explicit_conformance() -
 
 
 def test_artifact_state_vocabulary_is_process_bound_and_unambiguous() -> None:
-    ladder = (ROOT / "standard" / "LADDER.md").read_text(encoding="utf-8")
+    ladder = (ROOT / "src/verifier/standard" / "LADDER.md").read_text(encoding="utf-8")
     humans = (ROOT / "HUMANS.md").read_text(encoding="utf-8")
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     architecture = (ROOT / "docs" / "ARCHITECTURE.md").read_text(encoding="utf-8")
@@ -344,7 +344,7 @@ def test_artifact_state_vocabulary_is_process_bound_and_unambiguous() -> None:
 
 
 def test_standard_orients_readers_before_formal_terminology() -> None:
-    ladder = (ROOT / "standard" / "LADDER.md").read_text(encoding="utf-8")
+    ladder = (ROOT / "src/verifier/standard" / "LADDER.md").read_text(encoding="utf-8")
     orientation = ladder.index("### Read this first:")
     terminology = ladder.index("### Terminology contract")
     assert orientation < terminology
@@ -449,7 +449,7 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     sources = sorted(
         (
             *ROOT.joinpath("receipts/schema").glob("*.json"),
-            *ROOT.joinpath("standard/schemas").glob("*.json"),
+            *ROOT.joinpath("src/verifier/schemas").glob("*.json"),
         ),
         key=lambda path: path.name,
     )
@@ -509,7 +509,7 @@ def test_every_declared_document_is_rendered_with_source_aware_navigation(
         "github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md"
         not in ladder
     )
-    assert "/blob/test-commit/standard/LADDER.md" in ladder
+    assert "/blob/test-commit/src/verifier/standard/LADDER.md" in ladder
     assert "without changing its status" in ladder
     assert "Evidence for one closure coordinate never supplies evidence for another." in ladder
     assert "An <code>UNKNOWN</code> is never a pass" in ladder
@@ -609,6 +609,9 @@ def test_guides_keep_repository_documentation_inside_the_site() -> None:
     assert 'href="project/ROADMAP.html"' in guides
     assert "github.com/TimeLordRaps/verifier/blob/main/docs/" not in guides
     assert "github.com/TimeLordRaps/verifier/blob/main/standard/" not in guides
+    assert (
+        "github.com/TimeLordRaps/verifier/blob/main/src/verifier/standard/" not in guides
+    )
 
 
 def test_pages_output_does_not_invalidate_exact_checkout_binding() -> None:

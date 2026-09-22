@@ -20,7 +20,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
-SCHEMA_SOURCES = (ROOT / "receipts/schema", ROOT / "standard/schemas")
+SCHEMA_SOURCES = (ROOT / "receipts/schema", ROOT / "src/verifier/schemas")
 PUBLIC_SCHEMA_PREFIX = "https://timelordraps.github.io/verifier/schemas/"
 CANONICAL_BASE_URL = "https://timelordraps.github.io/verifier/"
 DEPLOYMENT_MANIFEST_PATH = "deployment-manifest.json"

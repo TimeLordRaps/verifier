@@ -33,7 +33,7 @@ from verifier.interoperability.reference_catalog import reference_component_regi
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA_PATH = ROOT / "standard" / "schemas" / "verifier-component-package-1.schema.json"
+SCHEMA_PATH = ROOT / "src" / "verifier" / "schemas" / "verifier-component-package-1.schema.json"
 SCHEMA = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
 VALIDATOR = Draft202012Validator(SCHEMA)
 

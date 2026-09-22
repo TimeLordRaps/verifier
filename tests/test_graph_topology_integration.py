@@ -172,7 +172,7 @@ def test_topology_contract_schema_and_runtime_agree_on_fixture(tmp_path) -> None
 
     _, contract = _documents(tmp_path)
     payload = json.loads(contract.read_text(encoding="utf-8"))
-    schema = json.loads((ROOT / "standard/schemas/graph-topology.schema.json").read_text())
+    schema = json.loads((ROOT / "src/verifier/schemas/graph-topology.schema.json").read_text())
     Draft202012Validator.check_schema(schema)
     Draft202012Validator(schema).validate(payload)
     assert GraphTopologyContract.from_dict(payload).to_dict() == payload

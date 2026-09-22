@@ -119,7 +119,7 @@ def documents() -> tuple[Document, ...]:
     """Return every Markdown source that is intentionally rendered on the site."""
 
     found: list[Document] = []
-    standards = sorted((ROOT / "standard").glob("*.md"), key=_standard_sort)
+    standards = sorted((ROOT / "src/verifier/standard").glob("*.md"), key=_standard_sort)
     for source in standards:
         route = (
             PurePosixPath("standard/index.html")

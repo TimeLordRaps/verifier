@@ -693,7 +693,7 @@ def _find_protected_substrate_paths() -> tuple[Path, ...]:
     repo_root = here.parents[3]
     if (repo_root / "pyproject.toml").is_file() and (repo_root / "src" / "verifier").is_dir():
         for candidate in (
-            repo_root / "standard",
+            repo_root / "src" / "verifier" / "standard",
             repo_root / "receipts" / "schema",
             repo_root / "scripts",
             repo_root / "pyproject.toml",

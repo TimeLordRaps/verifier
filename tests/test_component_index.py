@@ -38,7 +38,7 @@ from verifier.interoperability.storage import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA_PATH = ROOT / "standard" / "schemas" / "verifier-component-index-1.schema.json"
+SCHEMA_PATH = ROOT / "src" / "verifier" / "schemas" / "verifier-component-index-1.schema.json"
 SCHEMA = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
 VALIDATOR = Draft202012Validator(SCHEMA)
 

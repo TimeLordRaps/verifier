@@ -48,7 +48,7 @@ def _subject() -> dict[str, Any]:
 
 
 def _validator() -> Draft202012Validator:
-    data = (ROOT / "standard/schemas/verifier-typed-formation-1.schema.json").read_bytes()
+    data = (ROOT / "src/verifier/schemas/verifier-typed-formation-1.schema.json").read_bytes()
     schema = json.loads(data)
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)

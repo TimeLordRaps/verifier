@@ -102,6 +102,6 @@ def test_failure_receipt_with_unbounded_distance_remains_serializable() -> None:
     assert receipt.to_dict()["canonical_digest"].startswith("sha256:")
     import jsonschema
     root = Path(__file__).resolve().parents[1]
-    schema_bytes = (root / "standard/schemas/vstd-sim-1.schema.json").read_bytes()
+    schema_bytes = (root / "src/verifier/schemas/vstd-sim-1.schema.json").read_bytes()
     assert schema_bytes == (root / "src/verifier/schemas/vstd-sim-1.schema.json").read_bytes()
     jsonschema.Draft202012Validator(json.loads(schema_bytes)).validate(receipt.to_dict())

@@ -150,7 +150,7 @@ def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path)
 
 
 def test_schema_bytes_and_existing_identifier_origin_are_preserved(site: Path) -> None:
-    for folder in (ROOT / "receipts/schema", ROOT / "standard/schemas"):
+    for folder in (ROOT / "receipts/schema", ROOT / "src/verifier/schemas"):
         for source in folder.glob("*.json"):
             assert (site / "schemas" / source.name).read_bytes() == source.read_bytes()
             payload = json.loads(source.read_text(encoding="utf-8"))

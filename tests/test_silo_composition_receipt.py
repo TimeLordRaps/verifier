@@ -224,7 +224,7 @@ def test_published_composition_schemas_validate_runtime_records(tmp_path: Path) 
     first, second, _ = _members(tmp_path)
     declaration = SiloComposition((first[0].canonical_digest(), second[0].canonical_digest()))
     receipt = build_silo_composition_assessment_receipt(declaration, (first, second))
-    schema_dir = Path("standard/schemas")
+    schema_dir = Path("src/verifier/schemas")
     schemas = {
         path.name: json.loads(path.read_text(encoding="utf-8"))
         for path in (

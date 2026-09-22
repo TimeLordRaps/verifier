@@ -408,7 +408,7 @@ def transient_time_status_violations(text: str) -> list[str]:
 def check_claim_boundaries(errors: list[str]) -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     roadmap = (ROOT / "ROADMAP.md").read_text(encoding="utf-8")
-    wire = (ROOT / "standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
+    wire = (ROOT / "src/verifier/standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
     reference = (ROOT / "docs/reference.html").read_text(encoding="utf-8")
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     scitt_demo = (ROOT / "examples/scitt_interop/demo.py").read_text(encoding="utf-8")
@@ -687,8 +687,12 @@ def check_generated_documentation(errors: list[str]) -> None:
     guides = pages["docs/guides.html"]
     if "github.com/TimeLordRaps/verifier/blob/main/docs/" in guides:
         errors.append("docs/guides.html sends maintained guides to the GitHub file viewer")
-    if "github.com/TimeLordRaps/verifier/blob/main/standard/" in guides:
-        errors.append("docs/guides.html sends specifications to the GitHub file viewer")
+    for viewer in (
+        "github.com/TimeLordRaps/verifier/blob/main/standard/",
+        "github.com/TimeLordRaps/verifier/blob/main/src/verifier/standard/",
+    ):
+        if viewer in guides:
+            errors.append("docs/guides.html sends specifications to the GitHub file viewer")
 
 
 def check_experiment_index(errors: list[str]) -> None:

@@ -1504,18 +1504,18 @@ def test_published_schema_accepts_canonical_record_variants(tmp_path: Path) -> N
         (DirectoryEntry(publisher.publisher_id, head.canonical_digest(), "https://publisher.invalid/silo/", "LISTED"),),
         key, 0, None, "2026-09-08T00:00:00Z",
     )
-    schema = json.loads(Path("standard/schemas/verifier-artifact-network-1.schema.json").read_text(encoding="utf-8"))
+    schema = json.loads(Path("src/verifier/schemas/verifier-artifact-network-1.schema.json").read_text(encoding="utf-8"))
     validator = jsonschema.Draft202012Validator(schema)
     receipt = build_silo_assessment_receipt(commit, store)
     authority_model = network_module._load_authority_model(commit, store)
     assert authority_model is not None
     for record in (commit.census[0].object_record, authority_model, commit, head, publisher, continuity, directory, receipt):
         validator.validate(record.to_dict())
-    for schema_path in Path("standard/schemas").glob("vstd-*0.1.schema.json"):
+    for schema_path in Path("src/verifier/schemas").glob("vstd-*0.1.schema.json"):
         jsonschema.Draft202012Validator.check_schema(json.loads(schema_path.read_text(encoding="utf-8")))
-    mechanism_schema = json.loads(Path("standard/schemas/verifier-self-derivation-mechanism-1.schema.json").read_text(encoding="utf-8"))
+    mechanism_schema = json.loads(Path("src/verifier/schemas/verifier-self-derivation-mechanism-1.schema.json").read_text(encoding="utf-8"))
     jsonschema.Draft202012Validator(mechanism_schema).validate(json.loads(self_derivation_mechanism_bytes()))
-    transfer_schema = json.loads(Path("standard/schemas/verifier-silo-transfer-1.schema.json").read_text(encoding="utf-8"))
+    transfer_schema = json.loads(Path("src/verifier/schemas/verifier-silo-transfer-1.schema.json").read_text(encoding="utf-8"))
     registry = referencing.Registry().with_resource(
         schema["$id"], referencing.Resource.from_contents(schema)
     )

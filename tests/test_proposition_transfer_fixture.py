@@ -46,7 +46,7 @@ def test_shared_fixture_has_hand_specified_semantic_oracles_and_is_fresh() -> No
 
 
 def test_new_wire_schema_copies_and_release_inventory_cover_every_fixture_record() -> None:
-    source = ROOT / "standard/schemas" / SCHEMA_NAME
+    source = ROOT / "src/verifier/schemas" / SCHEMA_NAME
     installed = ROOT / "src/verifier/schemas" / SCHEMA_NAME
     assert source.read_bytes() == installed.read_bytes()
     assert SCHEMA_NAME in PACKAGED_SCHEMA_NAMES

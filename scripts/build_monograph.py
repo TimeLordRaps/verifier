@@ -22,8 +22,8 @@ PAPER = ROOT / "paper"
 
 CHAPTER_SOURCES = [
     ("Orientation, Seven Domain Lenses, and First Principles", ROOT / "docs" / "NEWCOMER_GUIDE.md"),
-    ("The Two-Axis Profile Taxonomy (LADDER)", ROOT / "standard" / "LADDER.md"),
-    ("Grounded Certification Contracts and Mechanism Boundaries", ROOT / "standard" / "GROUNDED_CERTIFICATION.md"),
+    ("The Two-Axis Profile Taxonomy (LADDER)", ROOT / "src/verifier/standard" / "LADDER.md"),
+    ("Grounded Certification Contracts and Mechanism Boundaries", ROOT / "src/verifier/standard" / "GROUNDED_CERTIFICATION.md"),
     ("Version 2 Candidate Scope and Release Boundaries", ROOT / "docs" / "V2_CANDIDATE.md"),
     ("Formal System Architecture and Kernel Isolation", ROOT / "docs" / "ARCHITECTURE.md"),
     ("Claims, Limits, Boundaries, and Refutation Mechanics", ROOT / "docs" / "CLAIMS_AND_LIMITS.md"),

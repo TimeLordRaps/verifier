@@ -485,7 +485,7 @@ def _passing_payload():
 def test_schema_and_replay_accept_exact_component_log():
     _, _, _, payload = _passing_payload()
     root = Path(__file__).resolve().parents[1]
-    schema = json.loads((root / "standard/schemas/verifier-graph-assurance-1.schema.json").read_text())
+    schema = json.loads((root / "src/verifier/schemas/verifier-graph-assurance-1.schema.json").read_text())
     graph_schema = json.loads((root / "receipts/schema/vstd_graph_receipt.json").read_text())
     registry = Registry().with_resource(graph_schema["$id"], Resource.from_contents(graph_schema))
     Draft202012Validator(schema, registry=registry).validate(payload)

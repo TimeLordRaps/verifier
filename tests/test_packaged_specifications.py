@@ -33,7 +33,7 @@ def test_packaged_schema_bytes_match_public_schema_sources() -> None:
 
 
 def test_ladder_fixes_causal_provenance_directions_without_actor_trust() -> None:
-    ladder = (REPO_ROOT / "standard" / "LADDER.md").read_text(encoding="utf-8")
+    ladder = (REPO_ROOT / "src" / "verifier" / "standard" / "LADDER.md").read_text(encoding="utf-8")
     assert "ancestor artifact --TRUST through a checked transformation--> descendant" in ladder
     assert "recorded TRUST    --ROT under typed current-state evidence--> reassessment" in ladder
     assert "descendant deviation --RUST memetic causal backtrace--> ancestor candidates" in ladder

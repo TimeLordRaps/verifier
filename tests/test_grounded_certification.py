@@ -196,7 +196,7 @@ def test_serialized_pass_and_unknown_fields_are_not_admission_inputs():
 
 def test_published_schemas_match_requests_policies_and_all_verdicts():
     from jsonschema import Draft202012Validator
-    root = Path(__file__).resolve().parents[1] / "standard" / "schemas"
+    root = Path(__file__).resolve().parents[1] / "src" / "verifier" / "schemas"
     validators = {kind: Draft202012Validator(json.loads((root/f"verifier-grounded-{kind}-1.schema.json").read_text()))
                   for kind in ("request", "policy", "certification")}
     for validator in validators.values():
@@ -291,7 +291,7 @@ def test_missing_independence_dimension_blocks_profile_five_with_lower_evidence_
 
 
 def test_normative_catalogue_and_runtime_rows_agree():
-    text = (Path(__file__).resolve().parents[1]/"standard/GROUNDED_CERTIFICATION.md").read_text(encoding="utf-8")
+    text = (Path(__file__).resolve().parents[1]/"src/verifier/standard/GROUNDED_CERTIFICATION.md").read_text(encoding="utf-8")
     for o in OBLIGATIONS:
         row = f"| {o.id} | {o.name} | {o.requirement} | {', '.join(o.depends_on) or 'none'} | {o.source} |"
         assert row in text

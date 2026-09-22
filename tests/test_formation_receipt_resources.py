@@ -39,7 +39,7 @@ def _inputs(case: dict[str, Any]) -> tuple[bytes, bytes, dict[str, bytes]]:
 
 
 def _validator() -> Draft202012Validator:
-    schema = json.loads((ROOT / "standard/schemas" / NAME).read_bytes())
+    schema = json.loads((ROOT / "src/verifier/schemas" / NAME).read_bytes())
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)
 
@@ -89,7 +89,7 @@ def test_formation_receipt_resources_are_packaged_registered_and_experimental() 
     assert NAME in PACKAGED_SCHEMA_NAMES
     assert (ROOT / "standard/schemas" / NAME).read_bytes() == (ROOT / "src/verifier/schemas" / NAME).read_bytes()
     assert (ROOT / "standard/FORMATION_RECEIPT.md").read_bytes() == (ROOT / "src/verifier/standard/FORMATION_RECEIPT.md").read_bytes()
-    identifiers = (ROOT / "standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
+    identifiers = (ROOT / "src/verifier/standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
     assert "verifier-silo-formation-selection-1" in identifiers
     assert "verifier-silo-formation-receipt-1" in identifiers
     for path in ("src/verifier/interoperability/formation_receipt.py",
