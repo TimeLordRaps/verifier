@@ -38,9 +38,9 @@ from verifier.data.models import ProvenanceHypergraph
 from verifier.interoperability.graph_topology import graph_topology_binding_digest
 
 
-UNTRAVERSABLE_SCHEMA_VERSION = "VSTD-UNTRAVERSABLE-EXPERIMENTAL-0.1"
+UNTRAVERSABLE_SCHEMA_VERSION = "verifier-untraversable-experimental-1"
 UNTRAVERSABLE_REPORT_SCHEMA_VERSION = (
-    "VSTD-UNTRAVERSABLE-REPORT-EXPERIMENTAL-0.1"
+    "verifier-untraversable-report-experimental-1"
 )
 SUPPORTED_SEMANTICS = "finite-monotone-knowledge-hypergraph-v1"
 TRAVERSAL_SCHEDULE = "goal-distance-then-depth-then-hyperedge-id-v1"

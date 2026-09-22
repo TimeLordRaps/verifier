@@ -11,7 +11,7 @@ TRUST is mechanism-earned forward artifact support; ROT is typed, time-indexed
 degradation of current admissibility; and RUST is the inverse-TRUST diagnostic backtrace
 toward recorded ancestors. These are formal semantic names, not acronyms, actor ratings,
 receipt verdicts, scalar scores, or references to the Rust programming language. They
-serialize as typed events in `VSTD-GRAPH-ASSURANCE-1`, not self-authenticating status words.
+serialize as typed events in `verifier-graph-assurance-1`, not self-authenticating status words.
 
 ## Implemented bounded mechanisms
 

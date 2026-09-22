@@ -1,6 +1,6 @@
-"""Terminology: directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (VSTD-BENCH); verifiable execution environment (VSTD-ENV); model reproducibility specification (VSTD-MODEL); generative simulation specification (VSTD-SIM); software self-assembly (VSTD-SSA); software self-improvement (VSTD-SSI); candidate self-replication (VSTD-SSR); Verifier Standard (VSTD).
+"""Terminology: directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (VSTD-BENCH); verifiable execution environment (VSTD-ENV); model reproducibility specification (VSTD-MODEL); generative simulation specification (VSTD-SIM); software self-assembly (verifier-ssa); software self-improvement (verifier-ssi); candidate self-replication (verifier-ssr); Verifier Standard (VSTD).
 
-VSTD-2.0.0: Incorrigible Tesla caged sandboxing, VSTD-GRAPH, VSTD-ENV, VSTD-BENCH, VSTD-DATA, VSTD-HYPER, VSTD-MODEL, and VSTD-SIM risk profile and simulation representation.
+verifier-2.0.0: Incorrigible Tesla caged sandboxing, VSTD-GRAPH, VSTD-ENV, VSTD-BENCH, VSTD-DATA, VSTD-HYPER, VSTD-MODEL, and VSTD-SIM risk profile and simulation representation.
 
 Experimental, non-normative declarations and local consistency checks. These
 draft identifiers do not establish the existing numbered profiles. No physical

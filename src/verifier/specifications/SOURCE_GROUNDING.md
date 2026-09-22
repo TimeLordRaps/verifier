@@ -17,7 +17,7 @@ duplicate keys, no extra whitespace, and no unsupported values. A decoder
 rejects a reserialization mismatch. Source and certificate evidence are selected
 by lowercase `sha256:` digest and exact byte size.
 
-`VSTD-SOURCE-GROUNDING-0.1` declares exactly:
+`verifier-source-grounding-1` declares exactly:
 
 - a source byte reference;
 - a semantic frame with frame ID, proposition language, vocabulary digest, and
@@ -30,19 +30,19 @@ by lowercase `sha256:` digest and exact byte size.
 - sorted assumptions and a declarer coordinate.
 
 The only registered interpretation is
-`VSTD-CANONICAL-JSON-INTERPRETATION-0.1` with mechanism
+`verifier-canonical-json-interpretation-1` with mechanism
 `canonical-json-pointer-equality-v1`, frame
 `CANONICAL-JSON-OBJECT-0.1`, language `CANONICAL_JSON_OBJECT`, and the inert
 profile retained as
-`verifier/profiles/source-grounding-mechanism-0.1.json`.
+`verifier/profiles/source-grounding-mechanism-1.json`.
 
-`VSTD-SOURCE-GROUNDING-CERTIFICATE-0.1` retains the exact source, semantic
+`verifier-source-grounding-certificate-1` retains the exact source, semantic
 frame, interpretation, proposition, producer, and checker coordinates plus the
 observed path/value and `ESTABLISHED` or `REFUTED` result. Its
 `evidence_origin` is `MECHANISM_EXECUTION`. That label is replayed, not trusted
 as historical proof of execution.
 
-`VSTD-SOURCE-GROUNDING-RECEIPT-0.1` retains all checked digests, checker
+`verifier-source-grounding-receipt-1` retains all checked digests, checker
 coordinate, assumptions, exact check map, sorted reason codes, result, and
 residual obligations. The public JSON Schema is structural only; canonical-byte
 identity, profile support, facet equality, evidence binding, certificate replay,

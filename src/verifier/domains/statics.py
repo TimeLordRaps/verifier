@@ -538,7 +538,7 @@ def evaluate(object_name: str, check: str, artifact: dict, inputs: dict,
 
 def statics_catalog() -> dict:
     """Describe the tier-3 statics mechanism; no dependency chain is implied."""
-    return {"schema_version": "VSTD-STATICS-CATALOG-1", "tier": 3, "objects": {
+    return {"schema_version": "verifier-statics-catalog-1", "tier": 3, "objects": {
         object_name: [{"mechanism": static.mechanism, "kind": static.kind,
                        "proposition": static.proposition} for static in rows]
         for object_name, rows in STATICS.items()}}

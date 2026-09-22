@@ -30,7 +30,7 @@
         "format_fragment": "UP,WIDTH-K,RES",
         "implementation_hash": "sha256:a7d3c7b3123e9932395eff82f231c53e5b701888abbd203a47f155644cd10a64",
         "parser_hash": "sha256:c657e7777a850e584b7c010f8f7ff778b5269507db3eb0b2ac362a7cdac4cd67",
-        "specification_hash": "sha256:9c47296bd789741290bb5ada2bcb1683d6e1e30173d95cfa1ab2244c796c848b"
+        "specification_hash": "sha256:44d114aead8ee2f6030746766fc0bf0d7af8ab972ce95404c268d1aa59b830eb"
       }
     },
     "certificate": {
@@ -157,7 +157,7 @@
         ]
       },
       "header": {
-        "binding": "5ba3fcc985270403b0f2441759bf9744fd6bf9cde4e36414b2e66cbd2ca4f0a7",
+        "binding": "a399451a38aa9860c8280f6f934ee1ba423ae1c668636959f4498983d360499e",
         "clause_count": 3,
         "format": "VSTD4-GDC-1",
         "literal_count": 4,

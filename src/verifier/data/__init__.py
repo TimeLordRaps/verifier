@@ -1,6 +1,6 @@
 """Terminology: Verifier Standard (VSTD).
 
-Target-neutral VSTD-Graph reference types and receipt mechanisms."""
+Target-neutral VSTD-GRAPH reference types and receipt mechanisms."""
 
 from verifier.data.graph_level import (
     EvidenceBoundGraphLevelResult,

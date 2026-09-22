@@ -38,7 +38,7 @@ from verifier.interoperability.storage import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA_PATH = ROOT / "standard" / "schemas" / "vstd-component-index-1.schema.json"
+SCHEMA_PATH = ROOT / "standard" / "schemas" / "verifier-component-index-1.schema.json"
 SCHEMA = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
 VALIDATOR = Draft202012Validator(SCHEMA)
 
@@ -51,7 +51,7 @@ def _package(package_id: str = "package:fixture", version: str = "1") -> StoredC
         lifecycle=ComponentLifecycle.EXPERIMENTAL,
         implementation_ref="fixture:check",
         accepted_schema_ids=(),
-        planning_surface_schema_ids=("VSTD-FIXTURE-1",),
+        planning_surface_schema_ids=("verifier-fixture-1",),
         supported_relations=("relation:equal",),
         mechanism_ids=("mechanism:fixture",),
         interaction_modes=(InteractionMode.STATIC,),
@@ -164,7 +164,7 @@ def test_inspection_preserves_claim_boundaries() -> None:
 def test_exact_search_binds_query_package_registry_and_component() -> None:
     index = _index()
     result = index.search_exact(
-        schema_id="VSTD-FIXTURE-1",
+        schema_id="verifier-fixture-1",
         interaction_mode=InteractionMode.STATIC,
         relation_id="relation:equal",
         mechanism_id="mechanism:fixture",
@@ -184,9 +184,9 @@ def test_exact_search_binds_query_package_registry_and_component() -> None:
 def test_search_requires_semantic_coordinate_and_never_uses_domain_tags() -> None:
     index = _index()
     with pytest.raises(ComponentIndexError, match="requires relation_id or mechanism_id"):
-        index.search_exact(schema_id="VSTD-FIXTURE-1", interaction_mode=InteractionMode.STATIC)
+        index.search_exact(schema_id="verifier-fixture-1", interaction_mode=InteractionMode.STATIC)
     result = index.search_exact(
-        schema_id="VSTD-FIXTURE-1",
+        schema_id="verifier-fixture-1",
         interaction_mode=InteractionMode.STATIC,
         mechanism_id="discovery-only",
     )
@@ -198,7 +198,7 @@ def test_search_requires_semantic_coordinate_and_never_uses_domain_tags() -> Non
 
 def test_package_filters_are_exact_and_do_not_imply_ecosystem_absence() -> None:
     result = _index().search_exact(
-        schema_id="VSTD-FIXTURE-1",
+        schema_id="verifier-fixture-1",
         interaction_mode=InteractionMode.STATIC,
         mechanism_id="mechanism:fixture",
         package_id="package:absent",
@@ -239,7 +239,7 @@ def test_schema_valid_documents_still_require_runtime_mechanisms(fault: str) -> 
         del document["packages"][0]["publisher"]
         assert not VALIDATOR.is_valid(document)
     elif fault == "route":
-        document["schema_version"] = "VSTD-COMPONENT-INDEX-2"
+        document["schema_version"] = "verifier-component-index-2"
         assert not VALIDATOR.is_valid(document)
     elif fault == "registry_order":
         descriptor = document["packages"][0]["registry"]["components"][0]
@@ -289,7 +289,7 @@ def test_index_loader_never_reads_or_executes_package_path(tmp_path: Path) -> No
     assert loaded.packages[0].package_path.startswith("packages/sha256/")
     assert not (tmp_path / loaded.packages[0].package_path).exists()
     result = loaded.search_exact(
-        schema_id="VSTD-FIXTURE-1",
+        schema_id="verifier-fixture-1",
         interaction_mode=InteractionMode.STATIC,
         mechanism_id="mechanism:fixture",
     )
@@ -298,5 +298,5 @@ def test_index_loader_never_reads_or_executes_package_path(tmp_path: Path) -> No
 
 
 def test_schema_identifier_and_package_format_remain_separate() -> None:
-    assert COMPONENT_INDEX_SCHEMA_VERSION == "VSTD-COMPONENT-INDEX-1"
-    assert COMPONENT_INDEX_SCHEMA_VERSION != "VSTD-COMPONENT-PACKAGE-1"
+    assert COMPONENT_INDEX_SCHEMA_VERSION == "verifier-component-index-1"
+    assert COMPONENT_INDEX_SCHEMA_VERSION != "verifier-component-package-1"

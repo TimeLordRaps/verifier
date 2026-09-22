@@ -121,12 +121,12 @@ class DataShard:
 
 @dataclass(frozen=True)
 class DatasetManifest:
-    """Verifiable dataset provenance and shard inventory (VSTD-DATA-2.0.0)."""
+    """Verifiable dataset provenance and shard inventory (verifier-data-2)."""
 
     dataset_id: str
     shards: tuple[DataShard, ...]
     transformations: tuple[str, ...] = field(default_factory=tuple)
-    schema_version: str = "VSTD-DATA-2.0.0"
+    schema_version: str = "verifier-data-2"
 
     def canonical_digest(self) -> str:
         payload = {
@@ -153,7 +153,7 @@ class DatasetManifest:
             dataset_id=str(data["dataset_id"]),
             shards=tuple(DataShard.from_dict(s) for s in data.get("shards", ())),
             transformations=tuple(str(t) for t in data.get("transformations", ())),
-            schema_version=str(data.get("schema_version", "VSTD-DATA-2.0.0")),
+            schema_version=str(data.get("schema_version", "verifier-data-2")),
         )
 
 

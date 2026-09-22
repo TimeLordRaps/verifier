@@ -385,7 +385,7 @@ def test_evaluate_vstd_sim_receipt_roundtrip() -> None:
 
     assert receipt.verdict == SimulationVerdict.VERIFIED
     assert receipt.tier == SimulationTier.SIM_2_INVARIANT_SAFETY
-    assert receipt.schema_version == "VSTD-SIM-2.0.0"
+    assert receipt.schema_version == "verifier-sim-2"
     assert receipt.canonical_digest().startswith("sha256:")
 
     # Serialization roundtrip

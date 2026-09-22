@@ -1,7 +1,7 @@
 # Verifier Standard (VSTD) grounded certification
 
 **Status:** project specification for the additive version 1 certification contract.
-**Certificate identifier:** `VSTD-GROUNDED-CERTIFICATION-1`.
+**Certificate identifier:** `verifier-grounded-certification-1`.
 
 ## 1. Coordinates and meaning
 
@@ -24,14 +24,14 @@ does not discharge a substantive obligation about the record's meaning.
 
 ## 2. Admission and grounding
 
-The checker MUST supply an external `VSTD-GROUNDED-POLICY-1` admission policy.
+The checker MUST supply an external `verifier-grounded-policy-1` admission policy.
 For each admitted obligation it selects an exact mechanism identifier, implementation
 digest and trust-root set. The policy pins the obligation catalogue and normative
 specification bytes. Registration and policy admission declare a trust boundary;
 they do not establish that a mechanism is correct or independent. Domain-specific
 mechanism qualification remains necessary before relying on its conclusions.
 
-Each `VSTD-GROUNDED-REQUEST-1` binds a claim identifier, complete claim commitment,
+Each `verifier-grounded-request-1` binds a claim identifier, complete claim commitment,
 target numbered profile and an individually bound proposition for each supplied
 obligation. The claim's policy root MUST equal the external policy digest. Its
 evidence root MUST commit to the sorted unique set of all referenced evidence

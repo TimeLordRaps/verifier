@@ -46,7 +46,7 @@ stronger gate. See the [CLI contract](https://github.com/TimeLordRaps/verifier/b
 The declaration has exactly these fields:
 
 ```text
-schema_version: "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1"
+schema_version: "verifier-finite-authority-composition-1"
 profile_digest: canonical SHA-256 digest
 members: [selection, ...]
 composite: selection
@@ -65,7 +65,7 @@ state tuples are invalid. Identifiers follow the native model text rule with a
 There are no additional or optional fields.
 
 The compiled inert rule record is
-`VSTD-FINITE-AUTHORITY-COMPOSITION-PROFILE-0.1`. Its bytes are returned by the
+`verifier-finite-authority-composition-profile-1`. Its bytes are returned by the
 profile function, not loaded dynamically. Its digest identifies the rule
 declaration, not the checker source or complete dependency set. A different
 well-formed rule digest is unsupported; it cannot authorize new inference rules.
@@ -91,7 +91,7 @@ For each selected member and composite, independently rehash commit and authorit
 model bytes and strictly decode the existing native record types. Require the
 selected path to equal the commit's authority-model path and a census entry with
 the selected digest, exact byte size, artifact kind `authority-model`, declared
-schema `VSTD-AUTHORITY-MODEL-0.1` and media type `application/json`.
+schema `verifier-authority-model-1` and media type `application/json`.
 An observed digest, path, size or role mismatch is INVALID even when other bytes
 are missing or the model schema is unsupported. The commit must declare the exact
 canonical authority action tuple and version; a self-consistent replacement tuple
@@ -163,7 +163,7 @@ is not itself proof that an action floor was violated.
 The result has exactly these fields:
 
 ```text
-schema_version: "VSTD-FINITE-AUTHORITY-COMPOSITION-RESULT-0.1"
+schema_version: "verifier-finite-authority-composition-result-1"
 declaration_digest: digest or null before successful declaration admission
 profile_digest: compiled rule digest
 coordinates: {members, composite} or null before successful declaration admission

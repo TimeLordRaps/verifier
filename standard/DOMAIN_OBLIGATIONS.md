@@ -23,12 +23,12 @@
 **License:** Apache-2.0
 **Date:** 2026-09-21
 
-The object axis carries `1.1`-`5.11` and the Graph axis carries `Graph-1.1`-`Graph-5.6`;
+The object axis carries `1.1`-`5.11` and the Graph axis carries `GRAPH-1.1`-`GRAPH-5.6`;
 neither carries a level 6, because both are corroboration ladders and disclosure has no
 rungs. Level 6 exists on the domain objects only.
 This file carries the third namespace: the sixteen domain objects, coordinate
 `<object>-<tier>.<index>`, 550 obligations. The three namespaces are disjoint.
-`DATA-4.2` never aliases `4.2` or `Graph-4.2`, no catalogue admits another's identifiers,
+`DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, no catalogue admits another's identifiers,
 and each carries its own digest, so extending one cannot move another.
 
 **Nine of the sixteen are certifiable, and the partition has three parts rather than
@@ -1014,7 +1014,7 @@ invariants that require tiers 3 and 5 to be mechanized.
 
 The holder is bound by its own `VSTD-ACTOR` certificate, so a holding names a
 certified actor rather than a string. This is the absorption the earlier text anticipated:
-the binding was carried by a wire token, `VSTD-ACTOR-BINDING-1`, only for as long as no
+the binding was carried by a wire token, `verifier-actor-binding-1`, only for as long as no
 actor object existed to carry it, and `VSTD-ACTOR` now does. A holding is therefore the
 composition `VSTD-HYPER(VSTD-ACTOR + the held object)`, which is what puts `VSTD-OWNER`
 inside the composition lattice rather than beside it. A holding never reaches a verdict:

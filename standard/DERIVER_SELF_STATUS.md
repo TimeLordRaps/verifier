@@ -13,7 +13,7 @@ dimensionless.
 
 ## 1. Declaration and runtime coordinate
 
-`VSTD-DERIVER-SELF-STATUS-0.1` binds the deriver ID, subject digest, exact
+`verifier-deriver-self-status-1` binds the deriver ID, subject digest, exact
 executable and runtime coordinate, ordered arguments, sorted public environment,
 base64url-encoded standard input and digest, expected standard-output and
 standard-error digests, expected exit code, timeout, and output bound.
@@ -32,7 +32,7 @@ environment. It is not a sandbox and does not bound processor or memory use.
 
 ## 2. Invocation receipt and recheck
 
-`VSTD-DERIVER-SELF-STATUS-RECEIPT-0.1` retains the declaration and runtime
+`verifier-deriver-self-status-receipt-1` retains the declaration and runtime
 coordinate, invocation state, exact standard-output and standard-error bytes and
 digests, process exit or termination signal, elapsed time, declared bounds,
 checker-profile digest, and sorted reason codes. Invocation states distinguish
@@ -40,7 +40,7 @@ checker-profile digest, and sorted reason codes. Invocation states distinguish
 and `CAPTURE_FAILED`.
 
 The checker profile is retained as
-`verifier/profiles/deriver-self-status-checker-0.1.json`. A receipt is an
+`verifier/profiles/deriver-self-status-checker-1.json`. A receipt is an
 observation record, not the final self-status. The rechecker:
 
 1. strictly decodes and binds declaration, receipt, profile, runtime, and exact

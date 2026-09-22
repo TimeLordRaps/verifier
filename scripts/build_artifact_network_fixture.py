@@ -66,7 +66,7 @@ def build_fixture() -> dict[str, object]:
         )
         store = ContentAddressedStore(temporary_root / "silo")
         ground = store.add_object(b"ground", "text/plain", "ground", "GROUND-1")
-        mechanism = store.add_object(self_derivation_mechanism_bytes(), "application/json", "derivation-mechanism", "VSTD-SELF-DERIVATION-MECHANISM-0.1")
+        mechanism = store.add_object(self_derivation_mechanism_bytes(), "application/json", "derivation-mechanism", "verifier-self-derivation-mechanism-1")
         status = store.add_object(b"self-derived", "text/plain", "self-derivation-status", "STATUS-1")
         evidence_paths = (
             "evidence/ground-self.json", "evidence/derivation-reflexivity.json",
@@ -74,10 +74,10 @@ def build_fixture() -> dict[str, object]:
         )
         predicates = ("ground_self", "derivation_reflexivity", "reflexion_identity", "deriver_cycle_closed")
         evidence = tuple(store.add_object(canonical_bytes({
-            "schema_version": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "schema_version": "verifier-self-derivation-evidence-1",
             "predicate": predicate, "subject_path": "status.txt",
             "mechanism_digest": mechanism.object_digest,
-        }), "application/json", "self-derivation-evidence", "VSTD-SELF-DERIVATION-EVIDENCE-0.1") for predicate in predicates)
+        }), "application/json", "self-derivation-evidence", "verifier-self-derivation-evidence-1") for predicate in predicates)
         census = (
             CensusEntry("ground.txt", ground, "NECESSARY"),
             CensusEntry("mechanism.bin", mechanism, "NECESSARY"),
@@ -146,7 +146,7 @@ def build_fixture() -> dict[str, object]:
         }
         records["silo_transfer"] = build_silo_transfer(commit, head, publisher, store)
         return {
-            "schema_version": "VSTD-ARTIFACT-NETWORK-WIRE-FIXTURE-0.1",
+            "schema_version": "verifier-artifact-network-wire-fixture-1",
             "encoding": {
                 "json": "UTF-8; lowercase ASCII snake_case keys; sorted keys; no whitespace; NFC strings; nonnegative integers <= 2^53-1; no floats",
                 "binary": "unpadded RFC 4648 base64url",

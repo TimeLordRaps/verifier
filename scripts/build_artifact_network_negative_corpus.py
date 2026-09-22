@@ -23,7 +23,7 @@ from verifier.interoperability.network import canonical_bytes, digest_bytes
 
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / "examples" / "artifact-network" / "canonical-wire-negative-corpus.json"
-SCHEMA = "VSTD-ARTIFACT-NETWORK-WIRE-NEGATIVE-CORPUS-0.1"
+SCHEMA = "verifier-artifact-network-wire-negative-corpus-1"
 MAX_CASES = 32
 MAX_CORPUS_BYTES = 2 * 1024 * 1024
 CASE_FIELDS = {"case_id", "target", "record", "expected_result", "claim_boundary"}

@@ -14,7 +14,7 @@ nanoseconds, a duration unit equal to one billionth of a second.
 
 ## 1. Exact relation inputs
 
-`VSTD-GLOBAL-CYCLE-ASSESSMENT-0.1` contains one to 512 relation entries, sorted
+`verifier-global-cycle-assessment-1` contains one to 512 relation entries, sorted
 by relation ID. Each entry binds a distinct relation-boundary receipt, its
 declaration, a separate semantic-source object, and the source-grounding
 declaration and receipt for that semantic source.
@@ -41,7 +41,7 @@ without changing and regrounding the semantic source.
 
 ## 2. Assessment facets
 
-The receipt `VSTD-GLOBAL-CYCLE-ASSESSMENT-RECEIPT-0.1` retains its declaration
+The receipt `verifier-global-cycle-assessment-receipt-1` retains its declaration
 digest, local checker-source coordinate, exact limits, per-relation replay
 results, semantics, residual obligations, and three independent facets:
 

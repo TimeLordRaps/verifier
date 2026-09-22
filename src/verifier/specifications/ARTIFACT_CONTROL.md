@@ -31,8 +31,8 @@ A bundle contains:
 ```text
 bundle/
   payload                 exact file, or directory of exact files and paths
-  freeze.json             VSTD-ARTIFACT-FREEZE-1 manifest
-  seals/*.json            zero or more VSTD-ARTIFACT-SEAL-1 envelopes
+  freeze.json             verifier-artifact-freeze-1 manifest
+  seals/*.json            zero or more verifier-artifact-seal-1 envelopes
 ```
 
 The mechanism accepts regular files, directories, and empty directories. Symbolic links
@@ -94,7 +94,7 @@ MUST NOT rewrite the old manifest or claim that a digest alone retained the byte
 
 ## 4. Finite self-closing seal
 
-A `VSTD-ARTIFACT-SEAL-1` envelope contains the complete seal payload, raw public key,
+A `verifier-artifact-seal-1` envelope contains the complete seal payload, raw public key,
 signature, and seal identifier. The seal payload closes the artifact, content, freeze,
 exact freeze-manifest digests, key identifier, signature algorithm, and closure rule.
 
@@ -125,7 +125,7 @@ evidence.
 ## 5. Thaw and lineage
 
 Thaw requires a cleanly verified seal. It copies the parent payload to a new writable
-path and emits a `VSTD-ARTIFACT-THAW-1` sidecar beside the descendant. The sidecar records
+path and emits a `verifier-artifact-thaw-1` sidecar beside the descendant. The sidecar records
 the parent artifact, content, freeze, and seal identifiers. It is lineage metadata, not a
 seal. The requested descendant and sidecar paths must both be lexically absent; thaw never
 uses a preexisting symbolic link as permission to create or label its target. The parent

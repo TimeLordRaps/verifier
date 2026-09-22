@@ -16,7 +16,7 @@ from verifier.core.run_validation import is_generic_run_receipt
 def compute_blast_radius_impacted_artifacts(dataset_receipt_file: Path, revoked_artifact_id: str) -> set[str]:
     """Forward blast radius of a revoked/invalidated artifact, plus the artifact itself.
 
-    Reuses ``ProvenanceHypergraph.blast_radius`` from the existing VSTD-Graph-1
+    Reuses ``ProvenanceHypergraph.blast_radius`` from the existing VSTD-GRAPH-1
     runtime rather than reimplementing graph traversal here.
     """
     from verifier.data.models import ProvenanceHypergraph

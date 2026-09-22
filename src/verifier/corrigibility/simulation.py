@@ -108,7 +108,7 @@ class SecondOrderHyperOntology:
     initial_seed: int
     entropy_stream_digest: str
     declared_invariants: tuple[str, ...]
-    schema_version: str = "VSTD-SIM-2.0.0"
+    schema_version: str = "verifier-sim-2"
 
     def __post_init__(self) -> None:
         if not self.frame_id:
@@ -151,7 +151,7 @@ class SecondOrderHyperOntology:
             initial_seed=int(data["initial_seed"]),
             entropy_stream_digest=str(data["entropy_stream_digest"]),
             declared_invariants=tuple(str(x) for x in data.get("declared_invariants", ())),
-            schema_version=str(data.get("schema_version", "VSTD-SIM-2.0.0")),
+            schema_version=str(data.get("schema_version", "verifier-sim-2")),
         )
 
 
@@ -235,7 +235,7 @@ class AbstractSimulationManifest:
     initial_state_digest: str
     trajectory_length: int
     metadata: Mapping[str, Any] = field(default_factory=dict)
-    schema_version: str = "VSTD-SIM-2.0.0"
+    schema_version: str = "verifier-sim-2"
 
     def __post_init__(self) -> None:
         if not self.simulation_id:
@@ -285,7 +285,7 @@ class AbstractSimulationManifest:
             initial_state_digest=str(data["initial_state_digest"]),
             trajectory_length=int(data["trajectory_length"]),
             metadata=dict(data.get("metadata", {})),
-            schema_version=str(data.get("schema_version", "VSTD-SIM-2.0.0")),
+            schema_version=str(data.get("schema_version", "verifier-sim-2")),
         )
 
 
@@ -303,7 +303,7 @@ class VstdSimReceipt:
     findings: tuple[str, ...]
     bisimulation_epsilon: Optional[float] = None
     shards_verified: tuple[str, ...] = ()
-    schema_version: str = "VSTD-SIM-2.0.0"
+    schema_version: str = "verifier-sim-2"
 
     def canonical_digest(self) -> str:
         payload = {
@@ -350,7 +350,7 @@ class VstdSimReceipt:
             findings=tuple(str(x) for x in data.get("findings", ())),
             bisimulation_epsilon=data.get("bisimulation_epsilon"),
             shards_verified=tuple(str(x) for x in data.get("shards_verified", ())),
-            schema_version=str(data.get("schema_version", "VSTD-SIM-2.0.0")),
+            schema_version=str(data.get("schema_version", "verifier-sim-2")),
         )
 
 

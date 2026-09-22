@@ -23,7 +23,7 @@
     "schema_version": {
       "type": "string",
       "enum": [
-        "VSTD-SIM-2.0.0"
+        "verifier-sim-2"
       ]
     },
     "receipt_id": {

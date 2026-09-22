@@ -93,15 +93,15 @@ def _read_receipt(path_or_dir: Path) -> dict[str, Any] | None:
 
 
 def _is_data_receipt(payload: dict[str, Any]) -> bool:
-    return payload.get("schema_version") == "VSTD-DATA-0.1" and "hypergraph" in payload
+    return payload.get("schema_version") == "verifier-data-1" and "hypergraph" in payload
 
 
 def _load_hypergraph(path_or_dir: Path) -> tuple[dict[str, Any], ProvenanceHypergraph]:
     payload = _read_receipt(path_or_dir)
     if payload is None or not _is_data_receipt(payload):
         raise ValueError(
-            "not a readable VSTD-Graph-1 receipt with serialized schema_version identifier "
-            f"VSTD-DATA-0.1: {_receipt_file(path_or_dir)}"
+            "not a readable VSTD-GRAPH-1 receipt with serialized schema_version identifier "
+            f"verifier-data-1: {_receipt_file(path_or_dir)}"
         )
     return payload, ProvenanceHypergraph.from_dict(payload["hypergraph"])
 
@@ -376,7 +376,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     for command, help_text in (
         ("validate", "Run implemented receipt checks; Graph candidate validation is not conformance."),
-        ("inspect", "Inspect a generic-run or VSTD-Graph receipt; validate and report VSTD-3."),
+        ("inspect", "Inspect a generic-run or VSTD-GRAPH receipt; validate and report VSTD-3."),
         ("reproduce", "Replay the mechanisms available in a stored receipt."),
     ):
         command_parser = subparsers.add_parser(command, help=help_text)
@@ -400,7 +400,7 @@ def build_parser() -> argparse.ArgumentParser:
     impact_parser.add_argument("artifact_id")
     impact_parser.add_argument("--search-root", default="receipts")
 
-    data_parser = subparsers.add_parser("data", help="Inspect a stored VSTD-Graph hypergraph.")
+    data_parser = subparsers.add_parser("data", help="Inspect a stored VSTD-GRAPH hypergraph.")
     data_commands = data_parser.add_subparsers(dest="data_command", required=True)
 
     trace_parser = data_commands.add_parser("trace")
@@ -568,7 +568,7 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
         elif args.rerun:
             handler = lambda: _receipt_command_failure(
                 argparse.Namespace(command=args.command, json=False),
-                "--rerun is not defined for stored VSTD-Graph receipts",
+                "--rerun is not defined for stored VSTD-GRAPH receipts",
             )
         else:
             handler = lambda: reproduce_data_receipt(receipt_path)

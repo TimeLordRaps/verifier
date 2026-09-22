@@ -11,7 +11,7 @@ Facet counts, byte sizes, digests, and IDs are dimensionless.
 
 ## 1. Records and topology
 
-`VSTD-RELATION-BOUNDARY-0.1` declares source and target proposition endpoints,
+`verifier-relation-boundary-1` declares source and target proposition endpoints,
 their exact artifact references and semantic frames, the registered translation
 coordinate, exact execution-evidence reference, consumed facets, one-to-one
 preservation map, loss map, and assumptions. Arrays are unique and in UTF-8 byte
@@ -25,18 +25,18 @@ The declared topology is valid only when:
 3. preserved target facets equal every target-frame facet.
 
 The registered mechanism is `canonical-json-facet-map-v1`, bound to the inert
-profile retained as `verifier/profiles/relation-boundary-mechanism-0.1.json`.
+profile retained as `verifier/profiles/relation-boundary-mechanism-1.json`.
 Both endpoints must use frame `CANONICAL-JSON-OBJECT-0.1`, language
 `CANONICAL_JSON_OBJECT`, and the same vocabulary digest.
 
-`VSTD-RELATION-BOUNDARY-EVIDENCE-0.1` retains the source and target identities,
+`verifier-relation-boundary-evidence-1` retains the source and target identities,
 frame and translation identities, exact facet maps, producer and checker
 coordinates, per-preserved-facet value digests and equality result, explicit
 information-loss state, and overall `ESTABLISHED` or `REFUTED` result. Its
 `MECHANISM_EXECUTION` label is replayed rather than accepted as proof of a
 historical execution.
 
-`VSTD-RELATION-BOUNDARY-RECEIPT-0.1` retains exact evidence coordinates,
+`verifier-relation-boundary-receipt-1` retains exact evidence coordinates,
 mapping, losses, checks, result, reason codes, assumptions, and residual
 obligations. Public JSON Schema validation is structural only. Canonical byte
 identity, digest and size binding, frame equality, topology, per-facet replay,

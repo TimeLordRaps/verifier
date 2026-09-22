@@ -19,13 +19,13 @@ their meaning. The additive formats below do not upgrade earlier receipts.
 
 JavaScript Object Notation (JSON) values are retained with exact canonical bytes;
 Secure Hash Algorithm 256-bit (SHA-256) references use `sha256:` and 64 lowercase
-hexadecimal digits. A `VSTD-DOMAIN-EVIDENCE-1` object contains exactly `domain`,
+hexadecimal digits. A `verifier-domain-evidence-1` object contains exactly `domain`,
 `subject_id`, `artifact`, `inputs`, and `schema_version`. The artifact is the contract;
-inputs supply its retained evidence. The consumer selects a `VSTD-DOMAIN-REQUEST-1`
+inputs supply its retained evidence. The consumer selects a `verifier-domain-request-1`
 binding domain, subject, artifact digest, complete evidence reference and target depth.
 Omitting or replacing evidence changes that request, even if a new digest is valid.
 
-A separately selected `VSTD-DOMAIN-POLICY-1` pins the executable mechanism digest,
+A separately selected `verifier-domain-policy-1` pins the executable mechanism digest,
 explicit trust roots, witness public keys and resource bounds. The mechanism digest
 covers all adapter sources, shared evidence/canonicalization code, specification bytes,
 Python implementation and major/minor version, and the optional signature backend
@@ -36,7 +36,7 @@ The checker MUST rehash the complete bundle and execute every requested prerequi
 through the evidence-bound session. `PASS` establishes only the named computation
 and scope. Contradictory evidence produces `FAIL`; missing evidence, unsupported
 mechanisms or exhausted bounds produce `UNKNOWN`. Later checks cannot repair earlier
-prerequisites. A `VSTD-DOMAIN-CERTIFICATION-1` retains the request, evidence, result and
+prerequisites. A `verifier-domain-certification-1` retains the request, evidence, result and
 mechanism/specification/policy digests. Replay MUST compare the complete regenerated
 certificate under the external request and policy. Substitution or forged output is
 `REJECTED`, even when its certificate digest was recomputed.

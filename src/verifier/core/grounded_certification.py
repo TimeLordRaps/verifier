@@ -25,9 +25,9 @@ from .profile_obligations import (
 )
 from .receipt import strict_json_loads
 
-REQUEST_FORMAT = "VSTD-GROUNDED-REQUEST-1"
-POLICY_FORMAT = "VSTD-GROUNDED-POLICY-1"
-CERTIFICATE_FORMAT = "VSTD-GROUNDED-CERTIFICATION-1"
+REQUEST_FORMAT = "verifier-grounded-request-1"
+POLICY_FORMAT = "verifier-grounded-policy-1"
+CERTIFICATE_FORMAT = "verifier-grounded-certification-1"
 MAX_DOCUMENT_BYTES = 32 * 1024 * 1024
 _HASH = re.compile(r"^[0-9a-f]{64}$")
 

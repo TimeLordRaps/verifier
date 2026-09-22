@@ -45,7 +45,7 @@ def _documents(tmp_path: Path, *, contradict: bool = False) -> tuple[Path, Path]
         software_provenance={}, parameters={}, execution_environment={},
     ))
     contract = {
-        "schema_version": "VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1",
+        "schema_version": "verifier-graph-topology-experimental-1",
         "graph_digest": graph_topology_binding_digest(graph),
         "bindings": [
             {"variable_id": name, "artifact_id": name, "transformation_id": "switch",
@@ -72,7 +72,7 @@ def _documents(tmp_path: Path, *, contradict: bool = False) -> tuple[Path, Path]
     receipt_path, contract_path = tmp_path / "receipt.json", tmp_path / "contract.json"
     # A graph inspection envelope, deliberately not a fully validated receipt.
     receipt_path.write_text(json.dumps({
-        "schema_version": "VSTD-DATA-0.1", "hypergraph": graph.to_dict(),
+        "schema_version": "verifier-data-1", "hypergraph": graph.to_dict(),
     }), encoding="utf-8")
     contract_path.write_text(json.dumps(contract), encoding="utf-8")
     return receipt_path, contract_path

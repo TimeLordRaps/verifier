@@ -1,4 +1,4 @@
-"""Terminology: artificial intelligence (AI); benchmark specification graph (VSTD-BENCH); candidate self-replication (VSTD-SSR); directed acyclic graph (DAG); dynamic random-access memory (DRAM); identifier (ID); inter-process communication (IPC); JavaScript Object Notation (JSON); model reproducibility specification (VSTD-MODEL); Secure Hash Algorithm 256-bit (SHA-256); signal kill (SIGKILL); software self-assembly (VSTD-SSA); software self-improvement (VSTD-SSI); verifiable execution environment (VSTD-ENV); Verifier Standard (VSTD); virtual machine (VM).
+"""Terminology: artificial intelligence (AI); benchmark specification graph (VSTD-BENCH); candidate self-replication (verifier-ssr); directed acyclic graph (DAG); dynamic random-access memory (DRAM); identifier (ID); inter-process communication (IPC); JavaScript Object Notation (JSON); model reproducibility specification (VSTD-MODEL); Secure Hash Algorithm 256-bit (SHA-256); signal kill (SIGKILL); software self-assembly (verifier-ssa); software self-improvement (verifier-ssi); verifiable execution environment (VSTD-ENV); Verifier Standard (VSTD); virtual machine (VM).
 
 Comprehensive adversarial test suite for incorrigible Tesla caged sandboxing risk profile representations and containment invariants.
 """
@@ -285,7 +285,7 @@ def test_end_to_end_vstd160_risk_profile_remains_unverified() -> None:
     )
 
     assert receipt.verdict == OverallContainmentVerdict.UNVERIFIED
-    assert receipt.schema_version == "VSTD-2.0.0"
+    assert receipt.schema_version == "verifier-2.0.0"
     assert any("not established" in f for f in receipt.findings)
     assert receipt.canonical_digest().startswith("sha256:")
 
@@ -293,18 +293,18 @@ def test_end_to_end_vstd160_risk_profile_remains_unverified() -> None:
     r_dict = receipt.to_dict()
     import jsonschema
     schema_root = Path(__file__).resolve().parents[1]
-    name = "vstd-risk-profile-2.schema.json"
+    name = "verifier-risk-profile-2.schema.json"
     schema_bytes = (schema_root / "standard/schemas" / name).read_bytes()
     assert schema_bytes == (schema_root / "src/verifier/schemas" / name).read_bytes()
     jsonschema.Draft202012Validator(json.loads(schema_bytes)).validate(r_dict)
     restored = Vstd200RiskProfileReceipt.from_dict(r_dict)
     assert restored.canonical_digest() == receipt.canonical_digest()
     assert restored.receipt_id == receipt.receipt_id
-    # Test historical VSTD-1.6.0 backward-compatible parsing
+    # Test historical verifier-1.6.0 backward-compatible parsing
     historical_dict = dict(r_dict)
-    historical_dict["schema_version"] = "VSTD-1.6.0"
+    historical_dict["schema_version"] = "verifier-1.6.0"
     historical_restored = Vstd160RiskProfileReceipt.from_dict(historical_dict)
-    assert historical_restored.schema_version == "VSTD-1.6.0"
+    assert historical_restored.schema_version == "verifier-1.6.0"
     assert restored.verdict == receipt.verdict
 
 

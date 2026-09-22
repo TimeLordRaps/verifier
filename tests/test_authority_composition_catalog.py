@@ -37,7 +37,7 @@ def test_authority_composition_descriptor_preserves_exact_scope() -> None:
     assert component.kind is ComponentKind.CHECKER
     assert component.lifecycle is ComponentLifecycle.EXPERIMENTAL
     assert component.implementation_ref == "verifier.interoperability.authority_composition:assess_authority_composition"
-    assert component.accepted_schema_ids == ("VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",)
+    assert component.accepted_schema_ids == ("verifier-finite-authority-composition-1",)
     assert component.planning_surface_schema_ids == ("VSTD-2",)
     assert component.interaction_modes == (InteractionMode.OFFLINE_REPLAY,)
     mechanism = import_module("verifier.interoperability.authority_composition")

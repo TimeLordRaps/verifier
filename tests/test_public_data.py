@@ -78,7 +78,7 @@ def _receipt() -> VstdDataReceipt:
         source_file_hashes={},
     )
     return VstdDataReceipt(
-        schema_version="VSTD-DATA-0.1",
+        schema_version="verifier-data-1",
         receipt_id="VFY-DATA-PUBLIC-TEST",
         dataset_spec=DatasetSpec(
             dataset_id="dataset:test",

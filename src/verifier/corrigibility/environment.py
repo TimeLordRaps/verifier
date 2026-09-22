@@ -163,7 +163,7 @@ def _canonical_json_bytes(data: Any) -> bytes:
 
 @dataclass(frozen=True)
 class EnvironmentProfile:
-    """Verifiable execution environment profile (VSTD-ENV-2.0.0)."""
+    """Verifiable execution environment profile (verifier-env-2)."""
 
     profile_id: str
     isolation_tier: EnvironmentIsolationTier
@@ -171,7 +171,7 @@ class EnvironmentProfile:
     hardware: HardwareSubstrate
     software: SoftwareSubstrate
     bounds: ExecutionBounds
-    schema_version: str = "VSTD-ENV-2.0.0"
+    schema_version: str = "verifier-env-2"
 
     def __post_init__(self) -> None:
         if not self.profile_id:
@@ -293,5 +293,5 @@ class EnvironmentProfile:
             hardware=HardwareSubstrate.from_dict(data["hardware"]),
             software=SoftwareSubstrate.from_dict(data["software"]),
             bounds=ExecutionBounds.from_dict(data["bounds"]),
-            schema_version=str(data.get("schema_version", "VSTD-ENV-2.0.0")),
+            schema_version=str(data.get("schema_version", "verifier-env-2")),
         )

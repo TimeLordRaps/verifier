@@ -1,0 +1,1 @@
+{"accepted_frame_id":"CANONICAL-JSON-OBJECT-0.1","accepted_language":"CANONICAL_JSON_OBJECT","canonical_records_required":true,"evidence_replay_required":true,"explicit_loss_required":true,"max_facets":64,"max_relation_artifact_bytes":1048576,"mechanism_id":"canonical-json-facet-map-v1","schema_version":"verifier-relation-boundary-mechanism-profile-1"}

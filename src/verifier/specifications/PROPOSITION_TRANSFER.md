@@ -20,7 +20,7 @@ All objects below have exactly their defined fields.
 
 A transfer declaration has:
 
-- `schema_version`: `VSTD-PROPOSITION-TRANSFER-0.1`.
+- `schema_version`: `verifier-proposition-transfer-1`.
 - `rule_id`: a nonempty string.
 - `rule_profile_digest`: a lowercase `sha256:` digest.
 - `premises`: one to sixteen proposition objects, sorted by their canonical
@@ -60,7 +60,7 @@ Only `canonical_finite_set_union_v1` is currently registered. Its exact rule
 profile is the canonical encoding of this object:
 
 ```json
-{"artifact_schema":"VSTD-CANONICAL-FINITE-SET-0.1","context_policy":"EXACT","facet":"items","max_evidence_bytes":4194304,"max_items":256,"max_json_depth":32,"max_json_nodes":20000,"max_objects":34,"max_premises":16,"max_record_bytes":262144,"max_string_bytes":256,"predicate_id":"canonical_finite_set_subset_v1","rule_id":"canonical_finite_set_union_v1","schema_version":"VSTD-PROPOSITION-TRANSFER-RULE-0.1"}
+{"artifact_schema":"verifier-canonical-finite-set-1","context_policy":"EXACT","facet":"items","max_evidence_bytes":4194304,"max_items":256,"max_json_depth":32,"max_json_nodes":20000,"max_objects":34,"max_premises":16,"max_record_bytes":262144,"max_string_bytes":256,"predicate_id":"canonical_finite_set_subset_v1","rule_id":"canonical_finite_set_union_v1","schema_version":"verifier-proposition-transfer-rule-1"}
 ```
 
 The profile is a mathematical rule/version identity, NOT an implementation
@@ -73,7 +73,7 @@ parameters as an opaque canonical object under record byte/depth/node bounds;
 only the selected predicate checks its parameter grammar. The default text-field
 limit does not interpret unknown parameter contents. Allowed items are sorted
 unique strings, at most 256. Its artifact is exactly
-`{"schema_version":"VSTD-CANONICAL-FINITE-SET-0.1","items":[...]}`, with the
+`{"schema_version":"verifier-canonical-finite-set-1","items":[...]}`, with the
 same item grammar and limit. Empty sets are allowed.
 
 For source item sets S_i, declared source bounds A_i, actual target set T,
@@ -154,7 +154,7 @@ IDs or facets produce predicate UNKNOWN. Never interpret unsupported parameters.
 
 An assessment has exactly:
 
-- `schema_version`: `VSTD-PROPOSITION-TRANSFER-ASSESSMENT-0.1`.
+- `schema_version`: `verifier-proposition-transfer-assessment-1`.
 - `premises`: one result per declared premise in the same order.
 - `conclusion`: a proposition result.
 - `context_preservation`, `artifact_relation`, `upper_bound_preservation`,
@@ -202,7 +202,7 @@ deduplicate, and sort. Residual UNKNOWN uses RESIDUAL_OBLIGATIONS.
 No positive result needs a reason code.
 
 A receipt has exactly `schema_version` =
-`VSTD-PROPOSITION-TRANSFER-RECEIPT-0.1`, `declaration_digest`,
+`verifier-proposition-transfer-receipt-1`, `declaration_digest`,
 `rule_profile_digest` (copied from the declaration), and `assessment`.
 It is an unsigned, deterministic portable semantic record, not an assertion of
 producer execution, authorship, independent implementation, or trusted identity.

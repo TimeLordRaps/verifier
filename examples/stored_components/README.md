@@ -79,16 +79,16 @@ not close a verification surface hole merely because a candidate was found. Use
 `--expected-package-sha256` with the separately checked digest to bind the intended package.
 Cross-platform storage does not establish cross-platform native execution support.
 
-The transfer assessor and rechecker accept exact native `VSTD-PROPOSITION-TRANSFER-0.1`
-declaration bytes; rechecking additionally accepts `VSTD-PROPOSITION-TRANSFER-RECEIPT-0.1`
+The transfer assessor and rechecker accept exact native `verifier-proposition-transfer-1`
+declaration bytes; rechecking additionally accepts `verifier-proposition-transfer-receipt-1`
 receipt bytes. Their `VSTD-2` schema is a planning surface, not a native input. Both need
 separately supplied exact commit and artifact evidence bytes. Their compiled rule profile
 has an inert, byte-identical package mirror at
-`src/verifier/profiles/proposition-transfer-rule-0.1.json`, separate from schemas.
+`src/verifier/profiles/proposition-transfer-rule-1.json`, separate from schemas.
 The source of truth is `rule_profile_bytes()` in `proposition_transfer.py`; the mirror is
 not dynamically loaded as code or used to select arbitrary rules. Its Secure Hash
 Algorithm 256-bit (SHA-256) digest is
-`sha256:0d26f06addc32e61e0ba68a466b4721db6a8ad2a46021c96f226da7d91b410bd`.
+`sha256:b4cf102904ff248c048d947b093ae3d89deb4ca16582a8f3744ac7f7f3d1a58c`.
 
 An exact mechanism match does not establish rule-profile compatibility. The package-bound
 plan retains an unresolved exact-profile prerequisite alongside evidence, runtime,
@@ -98,13 +98,13 @@ closes a hole. A true target can coexist with a failed transfer, and receipt equ
 may reproduce negative or unknown components. These results do not upgrade the six silo
 axes or establish authority, general graph-wide deduction, or an execution attestation.
 
-The experimental typed-formation producer accepts exact `VSTD-TYPED-FORMATION-0.1`
-subject bytes and emits `VSTD-TYPED-FORMATION-CERTIFICATE-0.1` certificate bytes.
+The experimental typed-formation producer accepts exact `verifier-typed-formation-1`
+subject bytes and emits `verifier-typed-formation-certificate-1` certificate bytes.
 The independent checker accepts both and returns an unversioned report. The session
 adapter instead accepts a typed `BoundProposition` and an ordered subject/certificate
 byte pair; it does not advertise a serialized wrapper schema. All three retain the
-exact inert `src/verifier/profiles/typed-formation-0.1.json` rule declaration, with
-digest `sha256:271760d604e1ade55cba4974c658b92263bd3ee8ae343677dd91d0e713fb677f`.
+exact inert `src/verifier/profiles/typed-formation-1.json` rule declaration, with
+digest `sha256:770f948d29900a63a6ba55f2bbc61bdd18fec1a73769c8e1e524d664c40f6e06`.
 The `VSTD-2` planning schema is not their native input. Discovery and readiness never
 execute stored source or validate a claimed proof; supplied readiness declarations
 are not verification evidence. A subsequent formation result covers only the finite
@@ -112,8 +112,8 @@ constructor calculus, not source self-derivation, completeness, grounding or aut
 axiom agency preservation. See the [exact contract](../../standard/TYPED_FORMATION.md).
 
 The separate experimental formation receipt rechecker accepts canonical
-`VSTD-SILO-FORMATION-SELECTION-0.1` selection bytes, exact commit bytes,
-`VSTD-SILO-FORMATION-RECEIPT-0.1` receipt bytes and a bounded ordinary evidence
+`verifier-silo-formation-selection-1` selection bytes, exact commit bytes,
+`verifier-silo-formation-receipt-1` receipt bytes and a bounded ordinary evidence
 dictionary. It captures actual census observations, rebuilds the entire receipt
 and returns the fresh unversioned inspection only on exact equality. Negative,
 incomplete and unknown fields remain unchanged by reproduction. Its stored

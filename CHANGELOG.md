@@ -136,7 +136,7 @@ declare the experimental mechanisms complete. See the
   and unreachable as an `<m>`, and a certificate naming one of them is malformed.
 - Title the namespace of these objects the **VSTD-NAMESPACE**. `NAMESPACE` is deliberately
   not itself a member of the `<NAME>` set, so `VSTD-NAMESPACE-1.1` does not parse. A wire
-  identifier such as the `schema_version` string `VSTD-DATA-0.1` is not a coordinate in the
+  identifier such as the `schema_version` string `verifier-data-1` is not a coordinate in the
   grid and is not renamed to match it; pinning readers would break.
 - Partition the domain objects into **grounded** and **ungrounded**, and name the
   **relational** ones -- `VSTD-GRAPH`, `VSTD-HYPER` and `VSTD-OWNER` -- which hold between
@@ -150,16 +150,16 @@ declare the experimental mechanisms complete. See the
   is not closed.
 - The three obligation namespaces stay disjoint and separately digested:
   47 object, 28 Graph and 304 domain coordinates,
-  379 in all. `DATA-4.2` never aliases `4.2` or `Graph-4.2`, and extending one
+  379 in all. `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, and extending one
   catalogue provably cannot move another.
 - Every numeral the grid publishes -- depths, rung totals, obligation counts, the
   unreachable remainder and both composition-lattice figures -- is re-derived from the
   catalogued dependencies by `tests/test_meta_tier_cardinality.py`, so a figure that stops
   being true fails the suite instead of standing as prose.
 
-### Breaking: the VSTD-ACTOR-BINDING-1 wire object is withdrawn
+### Breaking: the verifier-actor-binding-1 wire object is withdrawn
 
-- **Removed** `VSTD-ACTOR-BINDING-1`, its JSON schema (`vstd-actor-binding-1.schema.json`)
+- **Removed** `verifier-actor-binding-1`, its JSON schema (`vstd-actor-binding-1.schema.json`)
   and the `ActorBinding` model. The token shipped in 1.5.0, so this is a breaking change
   for any producer emitting it.
 - It is superseded by the composition `VSTD-HYPER(VSTD-ACTOR + the bound object)`. The
@@ -178,7 +178,7 @@ declare the experimental mechanisms complete. See the
   from 2,310,167,730,389,958 to 206,159,635,176,678. An unconstrained ladder inflated them.
   `VSTD-HYPER` is now the only ladder outside every composition edge, because it is the
   operator rather than a composed object.
-- Section 3 of `VSTD-ZIZK-TOKENS.md` is titled "The Three-Token Zero-Knowledge Lifecycle"
+- Section 3 of `ZIZK_TOKENS.md` is titled "The Three-Token Zero-Knowledge Lifecycle"
   and carried four subsections. Birth, aging and lifetime are one identity's lifecycle; the
   binding was the dyadic one bolted onto them. The heading is now true.
 
@@ -763,7 +763,7 @@ The finite mechanisms below retain their declared bounds and `UNKNOWN` results.
 ## 1.0.0 - 2026-08-22
 
 - Redesign specification numbers as cumulative numbered profiles: VSTD-1 through
-  VSTD-5 on the object axis and VSTD-Graph-1 through VSTD-Graph-5 on the
+  VSTD-5 on the object axis and VSTD-GRAPH-1 through VSTD-GRAPH-5 on the
   collection axis.
 - Establish integer numbered-profile specification paths while release history remains available in
   the corresponding Git tags.

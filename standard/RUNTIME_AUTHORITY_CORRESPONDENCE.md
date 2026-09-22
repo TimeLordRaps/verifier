@@ -12,7 +12,7 @@ and dimensionless events respectively. Other IDs and digests are dimensionless.
 
 ## 1. Declaration, trace, and execution binding
 
-`VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-0.1` binds:
+`verifier-runtime-authority-correspondence-1` binds:
 
 - the inert runtime-authority profile digest;
 - exact authority-model, executable-artifact, deployed-artifact, and trace
@@ -25,11 +25,11 @@ and dimensionless events respectively. Other IDs and digests are dimensionless.
 - a one-to-one event-signature-to-authority-transition mapping; and
 - a sorted finite coverage denominator equal to the mapped transition IDs.
 
-The supported runtime kind is `VSTD-RETAINED-EVENT-TRACE-REPLAY-0.1`. The inert
+The supported runtime kind is `verifier-retained-event-trace-replay-1`. The inert
 rules and bounds are retained as
-`verifier/profiles/runtime-authority-correspondence-profile-0.1.json`.
+`verifier/profiles/runtime-authority-correspondence-profile-1.json`.
 
-`VSTD-RUNTIME-AUTHORITY-TRACE-0.1` binds the authority model, executable,
+`verifier-runtime-authority-trace-1` binds the authority model, executable,
 deployed artifact, and runtime-coordinate digest. It retains a gap-free sequence
 of unique events. Each event declares event ID, type, actor scope, and action.
 These fields select an exact transition mapping; they do not prove actor identity
@@ -60,7 +60,7 @@ impossible transition is `REFUTED`; missing or bounded evidence is `UNKNOWN`;
 malformed or substituted evidence is `INVALID`. `COMPLETE` coverage does not
 upgrade a non-established correspondence result.
 
-`VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-RECEIPT-0.1` retains the exact
+`verifier-runtime-authority-correspondence-receipt-1` retains the exact
 declaration and selected evidence bytes, all three results, event and transition
 coverage, reconstructed states, reason codes, claim boundary, and a body digest.
 Recheck validates its body digest and deterministically rebuilds the receipt from

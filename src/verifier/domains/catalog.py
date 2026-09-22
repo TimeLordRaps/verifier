@@ -99,7 +99,7 @@ SCOPES = {
 
 def domain_catalog() -> dict:
     """Describe all native domain propositions, scopes and cumulative prerequisites."""
-    return {"schema_version": "VSTD-DOMAIN-CATALOG-1", "domains": {
+    return {"schema_version": "verifier-domain-catalog-1", "domains": {
         domain: {"scope": SCOPES[domain], "checks": [
             {"id": f"{domain}.{i}", "name": name, "proposition": statement,
              "depends_on": [f"{domain}.{d}" for d in depends]}

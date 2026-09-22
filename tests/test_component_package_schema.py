@@ -33,7 +33,7 @@ from verifier.interoperability.reference_catalog import reference_component_regi
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA_PATH = ROOT / "standard" / "schemas" / "vstd-component-package-1.schema.json"
+SCHEMA_PATH = ROOT / "standard" / "schemas" / "verifier-component-package-1.schema.json"
 SCHEMA = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
 VALIDATOR = Draft202012Validator(SCHEMA)
 
@@ -136,8 +136,8 @@ def test_package_schema_requires_exact_nested_keys(
     ("path", "value"),
     (
         (("schema_version",), "VSTD-1"),
-        (("schema_version",), "VSTD-COMPONENT-PACKAGE-2"),
-        (("registry", "schema_version"), "VSTD-INTEROPERABILITY-CATALOG-1.0"),
+        (("schema_version",), "verifier-component-package-2"),
+        (("registry", "schema_version"), "verifier-interoperability-catalog-1"),
         (("registry", "components", 0, "kind"), "NATIVE_MAGIC"),
         (("registry", "components", 0, "lifecycle"), "RELEASED"),
         (("registry", "components", 0, "availability"), "VERIFIED"),

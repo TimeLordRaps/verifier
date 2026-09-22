@@ -34,17 +34,17 @@ from verifier.interoperability.storage import load_component_package
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PROFILE_DIGEST = "sha256:271760d604e1ade55cba4974c658b92263bd3ee8ae343677dd91d0e713fb677f"
-PROFILE_PATH = "src/verifier/profiles/typed-formation-0.1.json"
-SUBJECT_SCHEMA = "VSTD-TYPED-FORMATION-0.1"
-CERTIFICATE_SCHEMA = "VSTD-TYPED-FORMATION-CERTIFICATE-0.1"
+PROFILE_DIGEST = "sha256:770f948d29900a63a6ba55f2bbc61bdd18fec1a73769c8e1e524d664c40f6e06"
+PROFILE_PATH = "src/verifier/profiles/typed-formation-1.json"
+SUBJECT_SCHEMA = "verifier-typed-formation-1"
+CERTIFICATE_SCHEMA = "verifier-typed-formation-certificate-1"
 COMPONENTS = (
     ("producer", "formation_producer:produce_formation_certificate", ComponentKind.PROVER,
      InteractionMode.STATIC, (SUBJECT_SCHEMA,), (CERTIFICATE_SCHEMA,)),
     ("checker", "formation_checker:check_formation", ComponentKind.CHECKER,
      InteractionMode.OFFLINE_REPLAY, tuple(sorted((SUBJECT_SCHEMA, CERTIFICATE_SCHEMA))), ()),
     ("receipt-rechecker", "formation_receipt:recheck_formation_receipt", ComponentKind.CHECKER,
-     InteractionMode.OFFLINE_REPLAY, ("VSTD-SILO-COMMIT-0.1", "VSTD-SILO-FORMATION-RECEIPT-0.1", "VSTD-SILO-FORMATION-SELECTION-0.1"), ()),
+     InteractionMode.OFFLINE_REPLAY, ("verifier-silo-commit-1", "verifier-silo-formation-receipt-1", "verifier-silo-formation-selection-1"), ()),
     ("session-mechanism", "formation_mechanism:FormationPathCertificateMechanism.evaluate", ComponentKind.ADAPTER,
      InteractionMode.OFFLINE_REPLAY, (), ()),
 )
@@ -110,12 +110,12 @@ def test_formation_catalog_names_exact_native_roles_and_profile(
 
 def test_formation_profile_and_packaged_contract_are_exact_inert_resources() -> None:
     wire = import_module("verifier.interoperability.formation_wire")
-    artifact = importlib.resources.files("verifier").joinpath("profiles/typed-formation-0.1.json")
+    artifact = importlib.resources.files("verifier").joinpath("profiles/typed-formation-1.json")
     assert artifact.read_bytes() == wire.profile_bytes()
     assert digest_bytes(artifact.read_bytes()) == PROFILE_DIGEST
     for source, packaged in (
         ("standard/TYPED_FORMATION.md", "specifications/TYPED_FORMATION.md"),
-        ("standard/schemas/vstd-typed-formation-0.1.schema.json", "schemas/vstd-typed-formation-0.1.schema.json"),
+        ("standard/schemas/verifier-typed-formation-1.schema.json", "schemas/verifier-typed-formation-1.schema.json"),
     ):
         assert (ROOT / source).read_bytes() == importlib.resources.files("verifier").joinpath(packaged).read_bytes()
 
@@ -184,11 +184,11 @@ def test_formation_package_index_detection_plan_and_readiness_remain_nonexecutin
     assert component == reference_component_registry().get(component.component_id)
     artifacts = {artifact.path: artifact for artifact in package.artifacts}
     required = {PROFILE_PATH, "src/verifier/specifications/TYPED_FORMATION.md",
-                "src/verifier/schemas/vstd-typed-formation-0.1.schema.json",
+                "src/verifier/schemas/verifier-typed-formation-1.schema.json",
                 "src/verifier/interoperability/" + reference.split(":")[0] + ".py"}
     if role == "receipt-rechecker":
         required.update({"src/verifier/specifications/FORMATION_RECEIPT.md",
-                         "src/verifier/schemas/vstd-silo-formation-receipt-0.1.schema.json"})
+                         "src/verifier/schemas/verifier-silo-formation-receipt-1.schema.json"})
     implementation = next(item for item in package.implementations if item.component_id == component.component_id)
     assert required <= set(implementation.artifact_paths)
     for path in required:

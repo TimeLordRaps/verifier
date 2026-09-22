@@ -235,7 +235,7 @@
       ],
       "never": "SUPPORTED",
       "default_when_absent": "UNKNOWN",
-      "reason": "The chain records ancestry. It does not by itself establish that authority survived every hop, mirroring the recorded-lineage discipline of VSTD-Graph-1."
+      "reason": "The chain records ancestry. It does not by itself establish that authority survived every hop, mirroring the recorded-lineage discipline of VSTD-GRAPH-1."
     }
   },
   "rules": [

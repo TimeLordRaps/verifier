@@ -71,14 +71,14 @@ own `publisher_id` and the four `object_digest` values printed in step 2:
 
 ```json
 {
-  "schema_version": "VSTD-SILO-COMMIT-0.1",
+  "schema_version": "verifier-silo-commit-1",
   "publisher_id": "publisher:sha256:c18e5b101b7a60244015ffdd1d920cd45c503106cb11cc90804859d30066b48c",
   "parents": [],
   "census": [
     {
       "path": "METHOD.md",
       "object": {
-        "schema_version": "VSTD-OBJECT-0.1",
+        "schema_version": "verifier-object-1",
         "object_digest": "sha256:2a0bb64a6e676489cd2ede85dbffe895790659601d5cb4064d89d262bba52be1",
         "size_bytes": 61,
         "media_type": "text/markdown",
@@ -90,7 +90,7 @@ own `publisher_id` and the four `object_digest` values printed in step 2:
     {
       "path": "measurements.csv",
       "object": {
-        "schema_version": "VSTD-OBJECT-0.1",
+        "schema_version": "verifier-object-1",
         "object_digest": "sha256:c5c79de27e13422d4a115dba9df0be2feb80aa8d17ceef78e9596f1218df2d29",
         "size_bytes": 27,
         "media_type": "text/csv",
@@ -102,7 +102,7 @@ own `publisher_id` and the four `object_digest` values printed in step 2:
     {
       "path": "recompute.py",
       "object": {
-        "schema_version": "VSTD-OBJECT-0.1",
+        "schema_version": "verifier-object-1",
         "object_digest": "sha256:f17c3e63be1bea698e4f149b3fcfd2323f9563a5b3489c776053cb45afde5763",
         "size_bytes": 43,
         "media_type": "text/x-python",
@@ -114,7 +114,7 @@ own `publisher_id` and the four `object_digest` values printed in step 2:
     {
       "path": "summary.json",
       "object": {
-        "schema_version": "VSTD-OBJECT-0.1",
+        "schema_version": "verifier-object-1",
         "object_digest": "sha256:4dcf92930e4421a9f9cbf3ce5073ccf26272d8426875ec590c1f7700b96acb60",
         "size_bytes": 36,
         "media_type": "application/json",
@@ -152,7 +152,7 @@ own `publisher_id` and the four `object_digest` values printed in step 2:
     "SELECT_TRUST_ROOTS",
     "WITHDRAW_OWN_AUTHORIZATION"
   ],
-  "authority_axiom_agency_version": "VSTD-AUTHORITY-AXIOM-AGENCY-0.1",
+  "authority_axiom_agency_version": "verifier-authority-axiom-agency-1",
   "authority_axiom_agency_digest": "sha256:41e3a27c8322874bb5634890d33cff2a9170f2906c83d45d9c7968836d7e482c",
   "authority_model_path": null,
   "self_derivation_record": {
@@ -263,7 +263,7 @@ vstd network export silo "$COMMIT" "$HEAD" export
 vstd network rebuild export rebuilt
 ```
 
-Both print the same four digests and `schema_version: VSTD-SILO-EXPORT-0.1`. The export
+Both print the same four digests and `schema_version: verifier-silo-export-1`. The export
 directory holds `export.json`, the retained objects under `objects/sha256/`, and the commit,
 head, assessment, and publisher records. `clone` does the same from a local export or a
 bounded Hypertext Transfer Protocol Secure (HTTPS) endpoint:

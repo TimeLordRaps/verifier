@@ -104,7 +104,7 @@
       "id": "artifact-zi-report",
       "role": "round-1-zero-identity-report",
       "media_type": "text/markdown",
-      "digest": "sha256:f303cf6a2e047c09517187a74a9bc850214b1971ca98f51997e5898ec04765ae",
+      "digest": "sha256:3810b2139b5f266b078d4654f6d29db91974ac7db7d4cb5d095405c9e8816c9f",
       "locator": "repo:examples/zizk_artifact_first/zero_identity/ROUND1_ZERO_IDENTITY_REPORT.md"
     },
     {
@@ -335,7 +335,7 @@
         "observation-zk-proof",
         "observation-identity-boundary"
       ],
-      "decision": "Treat standard/LADDER.md section 1.1 and VSTD-GRAPH-ASSURANCE-1 as the controlling semantic and implemented reference boundaries; confine Round 2 to domain-specific TRUST transfer, ROT derivation/propagation, RUST backtrace/concentration and localization mechanisms, independent cross-implementation replay, and remaining proof research.",
+      "decision": "Treat standard/LADDER.md section 1.1 and verifier-graph-assurance-1 as the controlling semantic and implemented reference boundaries; confine Round 2 to domain-specific TRUST transfer, ROT derivation/propagation, RUST backtrace/concentration and localization mechanisms, independent cross-implementation replay, and remaining proof research.",
       "reason": "The architecture and bounded reference event/dispatch mechanisms are implemented; the complete domain-independent transfer algebra, complete trichotomy derivation, external independent replay, and specific unfinished optional proof backends remain experimental.",
       "action_ids": [
         "action-reverification-synthesis"
@@ -432,5 +432,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:81ce95f54a1ca98cd9fb897cf0568329aff03d5cb7334ffd367c915c2f6835dc"
+  "manifest_digest": "sha256:a661454c6b33d90b26799e8198bea9ea9582a86b03baa29e4403d0fe14d71ec3"
 }

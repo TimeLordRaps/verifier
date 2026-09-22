@@ -36,7 +36,7 @@ path into complete census coverage. A finite census cannot silently stand in
 for derivational, semantic, or logical completeness.
 
 The alpha self-derivation mechanism is exact canonical JSON identified by
-`VSTD-SELF-DERIVATION-MECHANISM-0.1`. The assessor interprets its fixed rules
+`verifier-self-derivation-mechanism-1`. The assessor interprets its fixed rules
 over the retained graph; arbitrary mechanism bytes or evidence substitutions
 cannot establish the axis. This remains a bounded structural result. It does
 not prove HyperMath's stronger self-return proposition or import mathematical
@@ -56,15 +56,15 @@ residual, or mismatched declared authority surface is `INCOMPLETE`. A completely
 enumerated reachable state may still make authority agency `VIOLATED`; completeness
 and authority grounding therefore remain independent axes.
 
-`VSTD-SILO-ASSESSMENT-RECEIPT-0.1` binds a computed six-axis result
+`verifier-silo-assessment-receipt-1` binds a computed six-axis result
 to the exact commit digest and retained checking-mechanism digest without
 putting a circular assessment inside the commit it assesses.
 
-`VSTD-SILO-COMPOSITION-0.1` separately declares a canonical, nonempty,
+`verifier-silo-composition-1` separately declares a canonical, nonempty,
 sorted, unique set of exact member commit digests and either one exact
 composite commit digest or `null`. The declaration is only a coordinate; it is
 not evidence that the members are available, valid, compatible, or admissible.
-`VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1` binds the declaration digest,
+`verifier-silo-composition-assessment-receipt-1` binds the declaration digest,
 the exact canonical reference-composition mechanism digest, commit-sorted
 member assessment receipts, an optional composite assessment receipt, and the
 typed composition result. Rechecking resolves the declared commits and stores,
@@ -72,12 +72,12 @@ recomputes every nested receipt and the complete composition assessment, and
 requires canonical equality with the supplied receipt. It does not trust
 serialized result fields. A declaration without a composite remains
 `NOT_ADMISSIBLE`, with composite coverage and binding axes `UNKNOWN`.
-The reference `VSTD-SILO-COMPOSITION-MECHANISM-0.1` recomputes each member's
+The reference `verifier-silo-composition-mechanism-1` recomputes each member's
 six-axis receipt, recomputes the optional composite receipt, and invokes the
 same fail-closed composition assessment used by the legacy application
-programming interface. `VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1` binds
+programming interface. `verifier-silo-composition-assessment-receipt-1` binds
 the declaration digest, mechanism digest, ordered nested receipts, and typed
-`VSTD-SILO-COMPOSITION-ASSESSMENT-0.1` result. Rechecking compares the entire
+`verifier-silo-composition-assessment-1` result. Rechecking compares the entire
 canonical receipt with independent recomputation; it does not trust serialized
 result fields. A member-only declaration therefore remains `NOT_ADMISSIBLE`
 with unknown composite completeness, member binding, local-addition
@@ -108,13 +108,13 @@ No canonical serialized call contract for the path-pair sequence is established.
 ## Authority axiom agency
 
 Authority axiom agency is the set of actions always allowable across publisher
-silos and VSTD-Graph compositions. It is a ground invariant, not an intersection
+silos and VSTD-GRAPH compositions. It is a ground invariant, not an intersection
 of local permission lists. A restrictive silo that omits an action makes the
 composition `NOT_ADMISSIBLE`; it does not erase the action from the ground set.
 
 Exact static version, digest, and action-set identity is necessary but not
 sufficient for `PRESERVED`. A necessary census artifact identified by
-`VSTD-AUTHORITY-MODEL-0.1` declares a finite state universe, transition
+`verifier-authority-model-1` declares a finite state universe, transition
 universe, initial states, actor-scope vocabulary, and closure status. The
 registered interpreter enumerates the reachable states through validated
 transitions. A bound reachable state that removes a canonical ground action
@@ -154,43 +154,43 @@ artifact does not supply decryption material or make unavailable bytes present.
 
 ## Stored records
 
-- `VSTD-OBJECT-0.1` binds an exact byte digest, size, media type, artifact kind,
+- `verifier-object-1` binds an exact byte digest, size, media type, artifact kind,
   and declared schema. The latter three remain declarations.
-- `VSTD-SILO-COMMIT-0.1` is a complete snapshot with ground, census,
+- `verifier-silo-commit-1` is a complete snapshot with ground, census,
   necessity/dispensability, derivations, residual obligations, completeness
   kind, coverage universe, self-derivation record, and authority axiom agency.
   Typed `EVIDENCES`, `CHECKS`, `REFUTES`, `CHALLENGES`, `SUPERSEDES`,
   and `REVOKES` relations retain exact source, target, mechanism, and optional
   semantic coordinates; text difference alone never establishes contradiction.
-- `VSTD-SIGNED-HEAD-0.1` binds a sequence and commit to an Ed25519 signing key.
-- `VSTD-PUBLISHER-0.1` derives publisher identity from a genesis key. It proves
+- `verifier-signed-head-1` binds a sequence and commit to an Ed25519 signing key.
+- `verifier-publisher-1` derives publisher identity from a genesis key. It proves
   no real-world identity, authorship, independence, correctness, or reputation.
-- `VSTD-KEY-CONTINUITY-0.1` requires old-key and new-key signatures. Lost-key
+- `verifier-key-continuity-1` requires old-key and new-key signatures. Lost-key
   recovery creates a new cryptographic publisher identity.
-- `VSTD-DIRECTORY-SNAPSHOT-0.1` is signed discovery metadata. Listing or
+- `verifier-directory-snapshot-1` is signed discovery metadata. Listing or
   delisting cannot modify a publisher's artifact history or verifier results.
-- `VSTD-SILO-TRANSFER-0.1` carries exactly one selected publisher, continuity
+- `verifier-silo-transfer-1` carries exactly one selected publisher, continuity
   chain, signed head, commit, computed assessment receipt, and object closure.
   Every transported object must belong to the selected commit; unrelated
   history and unselected bytes are rejected.
 
 The strict combined schema is
-[`vstd-artifact-network-0.1.schema.json`](../standard/schemas/vstd-artifact-network-0.1.schema.json).
+[`verifier-artifact-network-1.schema.json`](../standard/schemas/verifier-artifact-network-1.schema.json).
 The exact interpreted mechanism has its own schema:
-[`vstd-self-derivation-mechanism-0.1.schema.json`](../standard/schemas/vstd-self-derivation-mechanism-0.1.schema.json).
+[`verifier-self-derivation-mechanism-1.schema.json`](../standard/schemas/verifier-self-derivation-mechanism-1.schema.json).
 The finite authority-model schema is
-[`vstd-authority-model-0.1.schema.json`](../standard/schemas/vstd-authority-model-0.1.schema.json).
+[`verifier-authority-model-1.schema.json`](../standard/schemas/verifier-authority-model-1.schema.json).
 The computed result, non-circular binding, and host-neutral client contract also
 have independently consumable schemas:
-[`vstd-silo-assessment-0.1.schema.json`](../standard/schemas/vstd-silo-assessment-0.1.schema.json),
-[`vstd-silo-assessment-receipt-0.1.schema.json`](../standard/schemas/vstd-silo-assessment-receipt-0.1.schema.json),
-and [`vstd-push-request-0.1.schema.json`](../standard/schemas/vstd-push-request-0.1.schema.json).
+[`verifier-silo-assessment-1.schema.json`](../standard/schemas/verifier-silo-assessment-1.schema.json),
+[`verifier-silo-assessment-receipt-1.schema.json`](../standard/schemas/verifier-silo-assessment-receipt-1.schema.json),
+and [`verifier-push-request-1.schema.json`](../standard/schemas/verifier-push-request-1.schema.json).
 The composition declaration, typed result, and receipt schemas are
-[`vstd-silo-composition-0.1.schema.json`](../standard/schemas/vstd-silo-composition-0.1.schema.json),
-[`vstd-silo-composition-assessment-0.1.schema.json`](../standard/schemas/vstd-silo-composition-assessment-0.1.schema.json),
-and [`vstd-silo-composition-assessment-receipt-0.1.schema.json`](../standard/schemas/vstd-silo-composition-assessment-receipt-0.1.schema.json).
+[`verifier-silo-composition-1.schema.json`](../standard/schemas/verifier-silo-composition-1.schema.json),
+[`verifier-silo-composition-assessment-1.schema.json`](../standard/schemas/verifier-silo-composition-assessment-1.schema.json),
+and [`verifier-silo-composition-assessment-receipt-1.schema.json`](../standard/schemas/verifier-silo-composition-assessment-receipt-1.schema.json).
 The bounded download envelope is
-[`vstd-silo-transfer-0.1.schema.json`](../standard/schemas/vstd-silo-transfer-0.1.schema.json).
+[`verifier-silo-transfer-1.schema.json`](../standard/schemas/verifier-silo-transfer-1.schema.json).
 
 ## CLI surface
 
@@ -241,7 +241,7 @@ arguments declare public silo locations; registration does not establish
 publication.
 
 `network push` remains non-transmitting by default: it emits the existing
-host-neutral `VSTD-PUSH-REQUEST-0.1` document. Authenticated submission requires
+host-neutral `verifier-push-request-1` document. Authenticated submission requires
 the literal `--transmit` switch, a `--credential-file` path, and exactly one of
 `--genesis` or `--expected-head sha256:...`. In transmitting mode `--endpoint`
 must be a credential-free HTTPS origin rather than a path. The native client

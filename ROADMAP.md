@@ -72,7 +72,7 @@ The longer-term objective is a portable, verifier-neutral way to:
   because they anticipate what will be checked.
 
 The allocation policy is itself a versioned software artifact. It can therefore be
-tested, challenged, meta-verified, and represented in VSTD-Graph alongside the artifacts
+tested, challenged, meta-verified, and represented in VSTD-GRAPH alongside the artifacts
 and verifier actions it influences. A stable feedback loop is not automatically a true
 one: randomized challenges, counterevidence searches, dependency-aware updates, and
 explicit `UNKNOWN` outcomes remain necessary to resist self-confirming verification.
@@ -252,7 +252,7 @@ for implemented mechanism maturity, see the
 | Interoperability catalog and surface planning | [`examples/interoperability_planning/`](examples/interoperability_planning/) | Strict VSTD-2 loading plus stable modeled-hole analysis and command-line diagnostics; first-party inventory of 17 exact entry points across 12 organizational implementation-family labels—not 12 independent/native implementations or interoperability results; experimental immutable descriptors, exact candidate matching, registry-bound nonexecuting plans, declaration-bound structural conflict witnesses, and execution-readiness preflight; no checker execution or new closure result. | Add Boolean satisfiability analysis only over explicit geometry constraints with a checkable unsatisfiable witness, execute separately authorized components, bind their results, perform post-execution reanalysis, and obtain independent interoperability specimens. |
 | Stored interoperability components | [`examples/stored_components/`](examples/stored_components/) | Experimental v1.3.0 stored-format foundation: exact retained bytes, catalog and implementation bindings, dependency declarations, deterministic storage, strict inspection, and package-selected nonexecuting hole planning. The seed exporter captures 17 first-party entries, not 17 independent native integrations. | Hosted discovery and distribution; separately qualified native execution and dependency resolution. Storage integrity does not imply native correctness or authorization. |
 | SCITT interoperability | [`docs/standards/VSTD_SCITT_CROSSWALK.md`](docs/standards/VSTD_SCITT_CROSSWALK.md) | Experimental adapter, rerunnable real-COSE specimen with ephemeral keys, and adversarial tests; no IETF review or external interoperability result. | Independent implementation and interoperability result. |
-| Artifact-first mechanism completion | [`standard/schemas/vstd-graph-assurance-1.schema.json`](standard/schemas/vstd-graph-assurance-1.schema.json) | Event serialization, evidence-bound TRUST/ROT/RUST dispatch, challenge projection, conflict resolution, structural concentration, explicit localization, and bounded diagnostic attribution are implemented and adversarially tested. The complete domain-independent transfer algebra, complete trichotomy derivation, cross-implementation replay, and specific optional proof backends remain open. | Supply and falsify real domain mechanisms without creating actor-tied trust or topology-derived assurance. |
+| Artifact-first mechanism completion | [`standard/schemas/verifier-graph-assurance-1.schema.json`](standard/schemas/verifier-graph-assurance-1.schema.json) | Event serialization, evidence-bound TRUST/ROT/RUST dispatch, challenge projection, conflict resolution, structural concentration, explicit localization, and bounded diagnostic attribution are implemented and adversarially tested. The complete domain-independent transfer algebra, complete trichotomy derivation, cross-implementation replay, and specific optional proof backends remain open. | Supply and falsify real domain mechanisms without creating actor-tied trust or topology-derived assurance. |
 | Workflow and allocation | [`docs/profiles/experimental-workflow.md`](docs/profiles/experimental-workflow.md) | Strict validator, verdict-neutral GitHub adapter, generated index, and allocation records; no optimality claim or independent consumer. | A second observable adapter and independent consumer. |
 
 ## Milestone 1 — make refutation the front door
@@ -326,7 +326,7 @@ for implemented mechanism maturity, see the
 - transitive, deduplicated descendant impact discovery;
 - strictly degrading ROT status propositions without historical mutation;
 - current TRUST invalidation when a required ancestor becomes inadmissible;
-- portable `VSTD-GRAPH-ASSURANCE-1` logs with embedded evidence and exact offline
+- portable `verifier-graph-assurance-1` logs with embedded evidence and exact offline
   mechanism replay; and
 - additive conflict resolution, RUST reachability/concentration, explicit localization,
   and bounded artifact-relative diagnostic attribution.
@@ -384,7 +384,7 @@ proof-carrying evaluation hypergraph overlays.
 
 **Build**
 
-- a first-class benchmark specification graph profile under `VSTD-DATA-0.1` and VSTD-Graph-1 (`VSTD-BENCHMARK-GRAPH-1.0`);
+- a first-class benchmark specification graph profile under `verifier-data-1` and VSTD-GRAPH-1 (`verifier-benchmark-graph-1`);
 - a multidimensional 6-tuple problem basis schema parameterizing computational complexity class, formal specification language, solution oracle mechanism, resource grain, epistemic difficulty stratum, and target capability dimension;
 - proof-carrying evaluation hypergraph overlays binding model outputs to discrete problem nodes with individual VSTD-1..4 receipts;
 - deterministic Pareto frontier calculation over verified problem receipts without score inflation or upgrading `UNKNOWN` to `PASS`.
@@ -415,8 +415,8 @@ entire training and inference lifecycle.
 
 ## Milestone 9 — verifiable corrigibility and substrate containment
 
-As autonomous systems advance from tool execution to software self-assembly (VSTD-SSA),
-software self-improvement (VSTD-SSI), and candidate self-replication (VSTD-SSR),
+As autonomous systems advance from tool execution to software self-assembly (verifier-ssa),
+software self-improvement (verifier-ssi), and candidate self-replication (verifier-ssr),
 conventional operating-system sandboxing (namespaces, control groups (cgroups), virtual machines (VMs)) is
 necessary but fundamentally insufficient. It protects host operating systems against binary
 exploitation; it cannot detect or prevent **wireheading** (oracle tampering, metric
@@ -443,14 +443,14 @@ surfaces. VSTD formalizes a tiered containment model calibrated to risk severity
   receipts, scrubbed environments, and substrate self-defense. Local streams are honestly
   disclosed as shared-kernel process pipes (`STANDARD_PROCESS_STREAM`); physical diode or
   air-gap properties are explicitly disclaimed.
-- **Tier 2 (Stateless tool systems and autonomous software assembly — VSTD-SSA):** Models
+- **Tier 2 (Stateless tool systems and autonomous software assembly — verifier-ssa):** Models
   operate as pure, stateless mathematical morphisms mapping problems to proof witnesses with
   untrusted prover separation and out-of-band immutable oracles. Unboxing requires mathematical
   proof of bounded behavior: knowledge-hypergraph composed untraversability proving zero
   information reachability to self-identity or sandbox existence, mechanistic residual-stream
   probing establishing zero first-person agency or deception representations, and verified
   blindness to emergent capabilities across corrigibility-critical domains.
-- **Tier 3 (Superintelligence containment and recursive corrigibility — VSTD-SSI and VSTD-SSR):**
+- **Tier 3 (Superintelligence containment and recursive corrigibility — verifier-ssi and verifier-ssr):**
   Against a quality and hacking-speed superintelligence, software-only containment is recognized
   as non-viable. High-severity containment requires verifiable physical hardware attestation:
   physical unidirectional optical data diodes with severed return paths, out-of-band analog
@@ -529,7 +529,7 @@ can satisfy any one of them while failing the others:
   `REJECTED` rather than a warning.
 
 The hinge is the tenth prohibited inference in
-[`standard/VSTD-ZIZK-TOKENS.md`](standard/VSTD-ZIZK-TOKENS.md): *disclosure minimization
+[`standard/ZIZK_TOKENS.md`](standard/ZIZK_TOKENS.md): *disclosure minimization
 preserves the original claim boundary.* VSTD forbids that inference and currently offers
 nothing in its place, so a minimized record is simply worth less than an unminimized one,
 and an actor that protects a subject pays for it in evidential weight. A privacy
@@ -546,14 +546,14 @@ the Prime Invariant forbids.
 
 **Build**
 
-- a privacy declaration (`VSTD-PRIVACY-DECLARATION-1`) binding an actor identity, a
+- a privacy declaration (`verifier-privacy-declaration-1`) binding an actor identity, a
   decision class, the disclosed and withheld coordinates, and the exact boundary delta that
   minimization produces;
-- a federation admission policy (`VSTD-PRIVACY-POLICY-1`) stating what a member requires
+- a federation admission policy (`verifier-privacy-policy-1`) stating what a member requires
   before acting on a minimized record, under which no member can widen another member's
   declared boundary;
-- offline assessment and evidence-bound result objects (`VSTD-PRIVACY-ASSESSMENT-1`,
-  `VSTD-PRIVACY-ASSESSMENT-RECEIPT-1`) reporting satisfaction as `ACCEPTED_BOUNDED`,
+- offline assessment and evidence-bound result objects (`verifier-privacy-assessment-1`,
+  `verifier-privacy-assessment-receipt-1`) reporting satisfaction as `ACCEPTED_BOUNDED`,
   `UNKNOWN`, `CONFLICTED`, or `REJECTED`;
 - an extension of the prohibited-inference list to federation-scale errors: that
   member-by-member satisfaction composes into federation-wide unlinkability, that a

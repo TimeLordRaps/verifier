@@ -19,7 +19,7 @@ boundaries and portable result semantics across domain verifiers without replaci
 native work. The distribution is `verifier-standard`, the import package is `verifier`,
 and `vstd` is the canonical command.
 
-Two independent axes: `VSTD-1..5` (object mechanics) and `VSTD-Graph-1..5` (collection
+Two independent axes: `VSTD-1..5` (object mechanics) and `VSTD-GRAPH-1..5` (collection
 dynamics). These are cumulative **numbered profiles** over named **closure coordinates**,
 not interchangeable layers or scalar assurance levels. Implementation status is
 profile-specific: the compatibility VSTD-4 candidate-depth and Graph candidate-profile
@@ -89,7 +89,7 @@ reason, not a pass. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 `TRUST`, `RUST`, and `ROT` are formal semantic names, not acronyms, scalar scores,
 numbered-profile verdicts, or references to the Rust programming language. They serialize
-only as typed events in `VSTD-GRAPH-ASSURANCE-1`. `TRUST` is mechanism-earned
+only as typed events in `verifier-graph-assurance-1`. `TRUST` is mechanism-earned
 forward artifact support; `RUST` is inverse-direction diagnostic traversal from a
 descendant deviation toward recorded ancestors; `ROT` is typed, time-indexed degradation
 of current admissibility without rewriting historical evidence. Define the terms at first

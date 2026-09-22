@@ -151,7 +151,7 @@ def bind_certificate(inputs: dict, artifact: dict, key: str, domain: str,
     what the binding certificate may establish, never a floor beneath it.
     """
     certificate = obj(need(inputs, key + "_certificate"), CERTIFICATE_FIELDS)
-    same(certificate["schema_version"], "VSTD-DOMAIN-CERTIFICATION-1", "unsupported bound certificate")
+    same(certificate["schema_version"], "verifier-domain-certification-1", "unsupported bound certificate")
     body = {k: v for k, v in certificate.items() if k != "certificate_digest"}
     same(digest(body), certificate["certificate_digest"], "bound certificate digest differs")
     same(digest(certificate), need(artifact, key + "_certificate_digest"),

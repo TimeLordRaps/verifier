@@ -155,7 +155,7 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     (
         "vstd data",
         "Traces, renders, or exports the provenance hypergraph carried by a "
-        "VSTD-Graph receipt.",
+        "VSTD-GRAPH receipt.",
         ("verifier.data.models:ProvenanceHypergraph",),
     ),
     (

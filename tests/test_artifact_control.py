@@ -1468,7 +1468,7 @@ def test_fabricated_thaw_sidecar_without_parent_never_establishes_lineage(
     record_path.write_text(
         json.dumps(
             {
-                "schema_version": "VSTD-ARTIFACT-THAW-1",
+                "schema_version": "verifier-artifact-thaw-1",
                 "parent_artifact_id": manifest["artifact_id"],
                 "parent_content_id": _fake_dual_id("content"),
                 "parent_freeze_id": _fake_dual_id("freeze"),

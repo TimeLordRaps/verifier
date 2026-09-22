@@ -1,7 +1,7 @@
 """Verifier Standard (VSTD) object-profile grounded certification obligations.
 
 An X.M identifier selects obligation M within numbered object profile X, and a
-Graph-X.M identifier selects obligation M within numbered Graph profile X. Both are
+GRAPH-X.M identifier selects obligation M within numbered Graph profile X. Both are
 dimensionless and are neither software versions nor confidence scores. The two
 namespaces are disjoint; existing VSTD-4 rung identifiers and dependencies retain
 their exact meanings.
@@ -57,7 +57,7 @@ def _rows(profile: int, rows: tuple[tuple[str, str, tuple[int, ...], str], ...])
 class GraphObligation:
     """A separately checked Graph-axis proposition with explicit prerequisites.
 
-    Graph coordinates are disjoint from object coordinates. `Graph-X.M` never
+    Graph coordinates are disjoint from object coordinates. `GRAPH-X.M` never
     aliases `X.M`, and neither catalogue admits the other's identifiers.
     """
 
@@ -70,7 +70,7 @@ class GraphObligation:
 
     @property
     def id(self) -> str:
-        return f"Graph-{self.profile}.{self.index}"
+        return f"GRAPH-{self.profile}.{self.index}"
 
     @property
     def predicate(self) -> str:
@@ -83,7 +83,7 @@ class GraphObligation:
 
 def _graph_rows(profile: int, rows: tuple[tuple[str, str, tuple[int, ...], str], ...]) -> tuple[GraphObligation, ...]:
     return tuple(GraphObligation(profile, index, name, requirement,
-        tuple(f"Graph-{profile}.{d}" for d in dependencies), f"VSTD-Graph-{profile}.md {section}")
+        tuple(f"GRAPH-{profile}.{d}" for d in dependencies), f"VSTD-GRAPH-{profile}.md {section}")
         for index, (name, requirement, dependencies, section) in enumerate(rows, 1))
 
 
@@ -186,7 +186,7 @@ GRAPH_PROFILE_NAMES = {1: "Recorded Lineage", 2: "Bounded Collection Surface",
 
 def obligation_catalog() -> dict[str, Any]:
     """Return the fixed object-axis catalogue; no supplied ratings or verdicts."""
-    return {"schema_version": "VSTD-OBLIGATIONS-1", "axis": "OBJECT",
+    return {"schema_version": "verifier-obligations-1", "axis": "OBJECT",
             "profiles": {str(p): name for p, name in PROFILE_NAMES.items()},
             "obligations": [o.to_dict() for o in OBLIGATIONS]}
 
@@ -197,7 +197,7 @@ def catalog_digest() -> str:
 
 def graph_obligation_catalog() -> dict[str, Any]:
     """Return the fixed Graph-axis catalogue; no supplied ratings or verdicts."""
-    return {"schema_version": "VSTD-GRAPH-OBLIGATIONS-1", "axis": "GRAPH",
+    return {"schema_version": "verifier-graph-obligations-1", "axis": "GRAPH",
             "profiles": {str(p): name for p, name in GRAPH_PROFILE_NAMES.items()},
             "obligations": [o.to_dict() for o in GRAPH_OBLIGATIONS]}
 
@@ -220,7 +220,7 @@ def graph_specification_digest() -> str:
     """Pin the installed Graph-axis normative bytes, separately from the object axis."""
     import hashlib
     names = ("GRAPH_GROUNDING.md", "LADDER.md",
-             *(f"VSTD-Graph-{p}.md" for p in range(1, 6)))
+             *(f"VSTD-GRAPH-{p}.md" for p in range(1, 6)))
     root = files("verifier.specifications")
     return canonical_digest({name: hashlib.sha256(root.joinpath(name).read_bytes()).hexdigest()
                              for name in names})
@@ -231,7 +231,7 @@ class DomainObligation:
     """A separately checked domain-object proposition with explicit prerequisites.
 
     Domain coordinates are disjoint from both the object axis and the Graph axis.
-    `DATA-4.2` never aliases `4.2` or `Graph-4.2`, and no catalogue admits another's
+    `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, and no catalogue admits another's
     identifiers. `mechanism` names the adapter check that establishes the obligation,
     or is empty when the obligation is specified with no mechanism: such an obligation
     is reported `UNKNOWN`, never absent and never passed.
@@ -1071,7 +1071,7 @@ DISCLOSURE_TIER = 6
 
 def domain_obligation_catalog() -> dict[str, Any]:
     """Return the fixed domain-object catalogue; no supplied ratings or verdicts."""
-    return {"schema_version": "VSTD-DOMAIN-OBLIGATIONS-1", "axis": "DOMAIN",
+    return {"schema_version": "verifier-domain-obligations-1", "axis": "DOMAIN",
             "objects": list(DOMAIN_OBJECTS),
             "relational": list(RELATIONAL_OBJECTS),
             "ungrounded": list(UNGROUNDED_OBJECTS),

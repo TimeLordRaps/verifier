@@ -59,7 +59,7 @@ def test_artifact_first_experiment_distinguishes_implemented_mechanisms_from_hor
     assert "## Implemented bounded mechanisms" in document
     assert "## Remaining experimental work" in document
     implemented, remaining = document.split("## Remaining experimental work", 1)
-    for binding in ("VSTD-GRAPH-ASSURANCE-1", "recheck_assurance_log", "record_trust"):
+    for binding in ("verifier-graph-assurance-1", "recheck_assurance_log", "record_trust"):
         assert binding in implemented
     for horizon in ("domain-independent", "independent", "hidden-witness", "proof backends"):
         assert horizon in remaining
@@ -319,10 +319,10 @@ def test_maturity_table_requires_each_major_surface_and_explicit_conformance() -
         "## Current maturity"
     )
 
-    combined = readme.replace("| VSTD-Graph-3 |", "| VSTD-Graph-2 |", 1)
+    combined = readme.replace("| VSTD-GRAPH-3 |", "| VSTD-GRAPH-2 |", 1)
     errors = module.maturity_table_violations(combined)
-    assert any("VSTD-Graph-2" in error and "observed 2" in error for error in errors)
-    assert any("VSTD-Graph-3" in error and "observed 0" in error for error in errors)
+    assert any("VSTD-GRAPH-2" in error and "observed 2" in error for error in errors)
+    assert any("VSTD-GRAPH-3" in error and "observed 0" in error for error in errors)
 
 
 def test_artifact_state_vocabulary_is_process_bound_and_unambiguous() -> None:

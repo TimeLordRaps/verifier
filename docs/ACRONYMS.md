@@ -147,9 +147,9 @@ normative definitions are in [`standard/LADDER.md`](../standard/LADDER.md).
 | `VSTD-ENV` | verifiable execution environment | Verifiable execution environment profile. |
 | `VSTD-MODEL` | model reproducibility specification | Model reproducibility and test-time refutation profile. |
 | `VSTD-SIM` | generative simulation specification | Abstract generative simulation specification. |
-| `VSTD-SSA` | software self-assembly | Autonomous software self-assembly profile. |
-| `VSTD-SSI` | software self-improvement | Recursive software self-improvement profile. |
-| `VSTD-SSR` | candidate self-replication | Candidate software self-replication profile. |
+| `verifier-ssa` | software self-assembly | Autonomous software self-assembly profile. |
+| `verifier-ssi` | software self-improvement | Recursive software self-improvement profile. |
+| `verifier-ssr` | candidate self-replication | Candidate software self-replication profile. |
 | `W3C` | World Wide Web Consortium | Web standards organization. |
 | `WG` | working group | Standards-development group. |
 | `WSL2` | Windows Subsystem for Linux 2 | Windows-hosted Linux environment. |

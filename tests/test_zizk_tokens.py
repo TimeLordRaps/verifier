@@ -28,7 +28,7 @@ def test_birth_token_commitment_and_canonical_bytes() -> None:
     assert len(commitment) == 71
 
     token = BirthToken(
-        schema_version="VSTD-BIRTH-TOKEN-1",
+        schema_version="verifier-birth-token-1",
         token_id="birth:001",
         genesis_key_digest=genesis_key,
         birth_epoch=100,
@@ -39,7 +39,7 @@ def test_birth_token_commitment_and_canonical_bytes() -> None:
     )
     raw_bytes = token.canonical_bytes()
     data = json.loads(raw_bytes.decode("utf-8"))
-    assert data["schema_version"] == "VSTD-BIRTH-TOKEN-1"
+    assert data["schema_version"] == "verifier-birth-token-1"
     assert "signature_base64url" not in data  # signature stripped for canonical representation
     assert data["commitment"] == commitment
 
@@ -53,7 +53,7 @@ def test_aging_token_progression() -> None:
     assert acc2 != acc1
 
     token = AgingToken(
-        schema_version="VSTD-AGING-TOKEN-1",
+        schema_version="verifier-aging-token-1",
         token_id="aging:001",
         birth_token_id="birth:001",
         genesis_key_digest=genesis_key,
@@ -74,7 +74,7 @@ def test_aging_token_progression() -> None:
 
 def test_lifetime_token_lease_and_bounds() -> None:
     token = LifetimeToken(
-        schema_version="VSTD-LIFETIME-TOKEN-1",
+        schema_version="verifier-lifetime-token-1",
         token_id="lease:001",
         actor_id="actor:sha256:3333333333333333333333333333333333333333333333333333333333333333",
         delegate_key_id="runner:worker_01",

@@ -29,7 +29,7 @@ def specimens() -> dict:
     """Produce actual retained inputs with independently calculable expected results."""
     result = {}
     def add(domain: str, artifact: dict, inputs: dict) -> None:
-        result[domain] = {"schema_version": "VSTD-DOMAIN-EVIDENCE-1", "domain": domain,
+        result[domain] = {"schema_version": "verifier-domain-evidence-1", "domain": domain,
             "subject_id": "example:"+domain.lower(), "artifact": artifact, "inputs": inputs}
     train = [{"id": "a", "text": "red apple"}, {"id": "b", "text": "green pear"}]
     test = [{"id": "c", "text": "blue ocean"}]
@@ -189,7 +189,7 @@ def specimens() -> dict:
     from verifier.domains.certification import build_domain_certificate, domain_policy, domain_request
     loop_policy = domain_policy(trust_roots=["example:retained-inputs", "example:local-checker"])
     def _evidence(domain: str, subject: str, artifact: dict, inputs: dict) -> dict:
-        return {"schema_version": "VSTD-DOMAIN-EVIDENCE-1", "domain": domain,
+        return {"schema_version": "verifier-domain-evidence-1", "domain": domain,
                 "subject_id": subject, "artifact": artifact, "inputs": inputs}
     def _certificate(domain: str, subject: str, artifact: dict, inputs: dict, depth: int) -> dict:
         evidence = _evidence(domain, subject, artifact, inputs)

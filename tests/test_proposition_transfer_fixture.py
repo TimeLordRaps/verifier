@@ -20,7 +20,7 @@ from verifier.interoperability.proposition_transfer import (
     recheck_transfer_receipt, rule_profile_bytes,
 )
 
-SCHEMA_NAME = "vstd-proposition-transfer-0.1.schema.json"
+SCHEMA_NAME = "verifier-proposition-transfer-1.schema.json"
 
 
 def test_shared_fixture_has_hand_specified_semantic_oracles_and_is_fresh() -> None:

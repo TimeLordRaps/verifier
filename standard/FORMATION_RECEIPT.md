@@ -15,7 +15,7 @@ dimensionless; size limits measure bytes.
 The selection has exactly:
 
 ```text
-schema_version: VSTD-SILO-FORMATION-SELECTION-0.1
+schema_version: verifier-silo-formation-selection-1
 commit_digest: digest
 subject_path: portable path
 certificate_path: portable path
@@ -33,7 +33,7 @@ deduplicated; the inspector checks each role.
 The receipt has exactly:
 
 ```text
-schema_version: VSTD-SILO-FORMATION-RECEIPT-0.1
+schema_version: verifier-silo-formation-receipt-1
 selection: complete selection object
 selection_digest: digest of exact canonical selection bytes
 rule_profile_digest: compiled formation rule-profile digest

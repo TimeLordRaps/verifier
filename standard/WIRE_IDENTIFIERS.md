@@ -27,13 +27,13 @@ closed:
 | `VSTD-3.md` | `schema_version = "VSTD-3.0"` |
 | `VSTD-4.md` | `schema_version = "VSTD-4"` |
 | `VSTD-5.md` | `schema_version = "VSTD-5"` |
-| `VSTD-Graph-1.md` | `schema_version = "VSTD-DATA-0.1"` |
+| `VSTD-GRAPH-1.md` | `schema_version = "verifier-data-1"` |
 
-The frozen `VSTD-DATA-0.1` reader preserves its original separate artifact and
+The frozen `verifier-data-1` reader preserves its original separate artifact and
 transformation identifier namespaces. New Graph construction, evidence-bound Graph
-establishment, and the separate `VSTD-GRAPH-ASSURANCE-1` mechanism require global
+establishment, and the separate `verifier-graph-assurance-1` mechanism require global
 cross-kind disjointness; that stricter admission rule does not retroactively narrow which
-historical `VSTD-DATA-0.1` bytes can be decoded and replayed.
+historical `verifier-data-1` bytes can be decoded and replayed.
 
 VSTD-1 has two current receipt profiles:
 
@@ -51,7 +51,7 @@ VSTD-4 object and carries no VSTD-4 conformance field. The container and its sel
 fields participate in the canonical digest.
 
 When the refutation surface declares platform comparability, new captures add the
-capture-owned binding version `VSTD-PLATFORM-COMPARISON-ENVIRONMENT-1` plus the observed
+capture-owned binding version `verifier-platform-comparison-environment-1` plus the observed
 Python implementation and machine identity. This is an additive comparison binding, not
 a new receipt profile or numbered VSTD profile. Historical generic-run receipts retain
 their original canonical bytes and remain readable, but absence of the binding cannot
@@ -72,17 +72,17 @@ receipts, or new numbered profiles. They dispatch independently by:
 
 | Object | `schema_version` |
 |---|---|
-| Grounded certification request | `VSTD-GROUNDED-REQUEST-1` |
-| Grounded certification admission policy | `VSTD-GROUNDED-POLICY-1` |
-| Grounded certification certificate | `VSTD-GROUNDED-CERTIFICATION-1` |
-| Grounded domain request | `VSTD-DOMAIN-REQUEST-1` |
-| Grounded domain policy | `VSTD-DOMAIN-POLICY-1` |
-| Grounded domain retained evidence | `VSTD-DOMAIN-EVIDENCE-1` |
-| Grounded domain certificate | `VSTD-DOMAIN-CERTIFICATION-1` |
-| Freeze manifest | `VSTD-ARTIFACT-FREEZE-1` |
-| Self-closing seal envelope | `VSTD-ARTIFACT-SEAL-1` |
-| Seal closure payload | `VSTD-ARTIFACT-SEAL-CLOSURE-1` |
-| Thaw lineage sidecar | `VSTD-ARTIFACT-THAW-1` |
+| Grounded certification request | `verifier-grounded-request-1` |
+| Grounded certification admission policy | `verifier-grounded-policy-1` |
+| Grounded certification certificate | `verifier-grounded-certification-1` |
+| Grounded domain request | `verifier-domain-request-1` |
+| Grounded domain policy | `verifier-domain-policy-1` |
+| Grounded domain retained evidence | `verifier-domain-evidence-1` |
+| Grounded domain certificate | `verifier-domain-certification-1` |
+| Freeze manifest | `verifier-artifact-freeze-1` |
+| Self-closing seal envelope | `verifier-artifact-seal-1` |
+| Seal closure payload | `verifier-artifact-seal-closure-1` |
+| Thaw lineage sidecar | `verifier-artifact-thaw-1` |
 
 The three grounded certification objects follow
 [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md). The artifact-control objects
@@ -92,46 +92,46 @@ combined schema is published as
 These identifiers do not imply a network protocol or VSTD conformance result.
 
 The Graph assurance event log dispatches separately as
-`schema_version = "VSTD-GRAPH-ASSURANCE-1"`. Its governing behavior is
+`schema_version = "verifier-graph-assurance-1"`. Its governing behavior is
 [`LADDER.md` section 1.1](LADDER.md#11-artifact-first-causal-provenance-orientation),
 and its strict schema is
-[`vstd-graph-assurance-1.schema.json`](https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json).
+[`verifier-graph-assurance-1.schema.json`](https://timelordraps.github.io/verifier/schemas/verifier-graph-assurance-1.schema.json).
 It is not an artifact-control object or a numbered-profile receipt.
 
 Experimental verification-artifact network records dispatch independently as:
 
 | Object | `schema_version` |
 |---|---|
-| Exact retained object declaration | `VSTD-OBJECT-0.1` |
-| Complete-snapshot publisher commit | `VSTD-SILO-COMMIT-0.1` |
-| Interpreted structural self-derivation mechanism | `VSTD-SELF-DERIVATION-MECHANISM-0.1` |
-| Finite authority-transition model | `VSTD-AUTHORITY-MODEL-0.1` |
-| Finite authority-composition declaration | `VSTD-FINITE-AUTHORITY-COMPOSITION-0.1` |
-| Finite authority-composition rule profile | `VSTD-FINITE-AUTHORITY-COMPOSITION-PROFILE-0.1` |
-| Finite authority-composition result | `VSTD-FINITE-AUTHORITY-COMPOSITION-RESULT-0.1` |
-| Signed selected head | `VSTD-SIGNED-HEAD-0.1` |
-| Key-derived publisher declaration | `VSTD-PUBLISHER-0.1` |
-| Dual-signed key continuity | `VSTD-KEY-CONTINUITY-0.1` |
-| Signed discovery directory | `VSTD-DIRECTORY-SNAPSHOT-0.1` |
-| Six-axis silo assessment | `VSTD-SILO-ASSESSMENT-0.1` |
-| Commit/mechanism-bound assessment receipt | `VSTD-SILO-ASSESSMENT-RECEIPT-0.1` |
-| Exact silo-composition declaration | `VSTD-SILO-COMPOSITION-0.1` |
-| Reference silo-composition mechanism | `VSTD-SILO-COMPOSITION-MECHANISM-0.1` |
-| Typed silo-composition assessment | `VSTD-SILO-COMPOSITION-ASSESSMENT-0.1` |
-| Declaration/mechanism/evidence-bound composition receipt | `VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1` |
-| Deterministic silo export manifest | `VSTD-SILO-EXPORT-0.1` |
-| Bounded single-snapshot transport envelope | `VSTD-SILO-TRANSFER-0.1` |
-| Host-neutral push request | `VSTD-PUSH-REQUEST-0.1` |
-| Exact proposition-transfer declaration | `VSTD-PROPOSITION-TRANSFER-0.1` |
-| Compiled mathematical transfer rule profile | `VSTD-PROPOSITION-TRANSFER-RULE-0.1` |
-| Rule-specific portable assessment | `VSTD-PROPOSITION-TRANSFER-ASSESSMENT-0.1` |
-| Recomputable semantic transfer receipt (not execution identity) | `VSTD-PROPOSITION-TRANSFER-RECEIPT-0.1` |
-| Inert canonical finite-set specimen | `VSTD-CANONICAL-FINITE-SET-0.1` |
-| Finite typed-formation subject | `VSTD-TYPED-FORMATION-0.1` |
-| Independently checked formation certificate | `VSTD-TYPED-FORMATION-CERTIFICATE-0.1` |
-| Inert compiled formation rule profile | `VSTD-TYPED-FORMATION-PROFILE-0.1` |
-| Exact commit and census-path formation selection | `VSTD-SILO-FORMATION-SELECTION-0.1` |
-| Observed-evidence-bound portable formation inspection receipt | `VSTD-SILO-FORMATION-RECEIPT-0.1` |
+| Exact retained object declaration | `verifier-object-1` |
+| Complete-snapshot publisher commit | `verifier-silo-commit-1` |
+| Interpreted structural self-derivation mechanism | `verifier-self-derivation-mechanism-1` |
+| Finite authority-transition model | `verifier-authority-model-1` |
+| Finite authority-composition declaration | `verifier-finite-authority-composition-1` |
+| Finite authority-composition rule profile | `verifier-finite-authority-composition-profile-1` |
+| Finite authority-composition result | `verifier-finite-authority-composition-result-1` |
+| Signed selected head | `verifier-signed-head-1` |
+| Key-derived publisher declaration | `verifier-publisher-1` |
+| Dual-signed key continuity | `verifier-key-continuity-1` |
+| Signed discovery directory | `verifier-directory-snapshot-1` |
+| Six-axis silo assessment | `verifier-silo-assessment-1` |
+| Commit/mechanism-bound assessment receipt | `verifier-silo-assessment-receipt-1` |
+| Exact silo-composition declaration | `verifier-silo-composition-1` |
+| Reference silo-composition mechanism | `verifier-silo-composition-mechanism-1` |
+| Typed silo-composition assessment | `verifier-silo-composition-assessment-1` |
+| Declaration/mechanism/evidence-bound composition receipt | `verifier-silo-composition-assessment-receipt-1` |
+| Deterministic silo export manifest | `verifier-silo-export-1` |
+| Bounded single-snapshot transport envelope | `verifier-silo-transfer-1` |
+| Host-neutral push request | `verifier-push-request-1` |
+| Exact proposition-transfer declaration | `verifier-proposition-transfer-1` |
+| Compiled mathematical transfer rule profile | `verifier-proposition-transfer-rule-1` |
+| Rule-specific portable assessment | `verifier-proposition-transfer-assessment-1` |
+| Recomputable semantic transfer receipt (not execution identity) | `verifier-proposition-transfer-receipt-1` |
+| Inert canonical finite-set specimen | `verifier-canonical-finite-set-1` |
+| Finite typed-formation subject | `verifier-typed-formation-1` |
+| Independently checked formation certificate | `verifier-typed-formation-certificate-1` |
+| Inert compiled formation rule profile | `verifier-typed-formation-profile-1` |
+| Exact commit and census-path formation selection | `verifier-silo-formation-selection-1` |
+| Observed-evidence-bound portable formation inspection receipt | `verifier-silo-formation-receipt-1` |
 
 These alpha identifiers are stored non-receipt mechanism objects. They do not
 claim numbered-profile conformance, publisher identity beyond key control,
@@ -147,7 +147,7 @@ and actually observed census bytes. Fresh reproduction can reproduce a negative
 or unknown report; it does not establish execution, complete source derivation,
 stronger completeness, grounding or authority axiom agency preservation.
 
-`VSTD-AUTHORITY-MODEL-0.1` binds a finite declared state and transition
+`verifier-authority-model-1` binds a finite declared state and transition
 universe, the canonical actor-scope vocabulary, and additive local authority
 records. Only the registered interpreter may return `PRESERVED`, and only over
 the exact reachable declared graph. Static action metadata, an open model, or

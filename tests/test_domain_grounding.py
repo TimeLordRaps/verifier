@@ -311,7 +311,7 @@ def test_domain_envelope_schemas_and_packaged_copies(domain: str, bundles: dict,
     values = {"evidence": bundles[domain], "request": domain_request(bundles[domain]),
               "policy": policy, "certification": assess(bundles[domain], policy)}
     for kind, value in values.items():
-        name = f"vstd-domain-{kind}-1.schema.json"
+        name = f"verifier-domain-{kind}-1.schema.json"
         source = (ROOT / "standard/schemas" / name).read_bytes()
         assert source == (ROOT / "src/verifier/schemas" / name).read_bytes()
         schema = json.loads(source)

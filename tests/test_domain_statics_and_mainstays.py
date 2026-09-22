@@ -151,7 +151,7 @@ def test_a_statics_verdict_that_moves_is_refuted() -> None:
 def test_statics_digest_is_its_own_and_moves_with_the_catalogue() -> None:
     assert statics_digest() == statics_digest()
     assert len({statics_digest(), mainstay_digest(), domain_specification_digest()}) == 3
-    assert statics_catalog()["schema_version"] == "VSTD-STATICS-CATALOG-1"
+    assert statics_catalog()["schema_version"] == "verifier-statics-catalog-1"
     assert statics_catalog()["tier"] == 3
 
 
@@ -252,7 +252,7 @@ def test_every_adaptation_check_is_bound_by_some_tier_five_obligation() -> None:
 
 def test_mainstay_catalog_is_stable_and_separately_digested() -> None:
     catalog = mainstay_catalog()
-    assert catalog["schema_version"] == "VSTD-MAINSTAY-CATALOG-1"
+    assert catalog["schema_version"] == "verifier-mainstay-catalog-1"
     assert catalog["tier"] == 5
     assert set(catalog["objects"]) == set(MAINSTAYS)
     assert mainstay_digest() == mainstay_digest()

@@ -1,6 +1,6 @@
 """Terminology: artificial intelligence (AI); directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (VSTD-BENCH); verifiable execution environment (VSTD-ENV); model reproducibility specification (VSTD-MODEL); Verifier Standard (VSTD).
 
-VSTD-2.0.0 comprehensive risk profile evaluation aggregating GRAPH, ENV, BENCH, DATA, HYPER, MODEL, and Tesla Caged Sandboxing.
+verifier-2.0.0 comprehensive risk profile evaluation aggregating GRAPH, ENV, BENCH, DATA, HYPER, MODEL, and Tesla Caged Sandboxing.
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ class Vstd200RiskProfileReceipt:
     benchmark_digest: str
     model_profile_digest: str
     findings: tuple[str, ...]
-    schema_version: str = "VSTD-2.0.0"
+    schema_version: str = "verifier-2.0.0"
 
     def canonical_digest(self) -> str:
         payload = {
@@ -100,8 +100,8 @@ class Vstd200RiskProfileReceipt:
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> Vstd200RiskProfileReceipt:
-        schema_ver = str(data.get("schema_version", "VSTD-2.0.0"))
-        if schema_ver not in ("VSTD-2.0.0", "VSTD-1.6.0", "VSTD-1.5.0"):
+        schema_ver = str(data.get("schema_version", "verifier-2.0.0"))
+        if schema_ver not in ("verifier-2.0.0", "verifier-1.6.0", "verifier-1.5.0"):
             raise ValueError(f"Unsupported risk profile schema version: '{schema_ver}'")
         return cls(
             receipt_id=str(data["receipt_id"]),
@@ -119,7 +119,7 @@ class Vstd200RiskProfileReceipt:
         )
 
 
-# Backward-compatible alias for historical VSTD-1.6.0 drafts
+# Backward-compatible alias for historical verifier-1.6.0 drafts
 Vstd160RiskProfileReceipt = Vstd200RiskProfileReceipt
 
 
@@ -303,5 +303,5 @@ def evaluate_vstd200_risk_profile(
     return receipt
 
 
-# Backward-compatible alias for historical VSTD-1.6.0 drafts
+# Backward-compatible alias for historical verifier-1.6.0 drafts
 evaluate_vstd160_risk_profile = evaluate_vstd200_risk_profile

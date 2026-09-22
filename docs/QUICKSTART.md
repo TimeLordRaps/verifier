@@ -178,7 +178,7 @@ and by what. Full contract: [grounded certification](GROUNDED_CERTIFICATION.md).
    and composition.
 2. [`standard/VSTD-4.md`](../standard/VSTD-4.md) — refutability and the grounded
    decision certificate.
-3. [`standard/VSTD-Graph-1.md`](../standard/VSTD-Graph-1.md) — collection provenance.
+3. [`standard/VSTD-GRAPH-1.md`](../standard/VSTD-GRAPH-1.md) — collection provenance.
 4. [`docs/CLAIMS_AND_LIMITS.md`](CLAIMS_AND_LIMITS.md) — permitted public wording.
 
 To evaluate the project rather than merely run it, start by trying to create a receipt

@@ -109,7 +109,7 @@ def test_start_is_side_effect_free_and_machine_readable(capsys, tmp_path) -> Non
     before = sorted(p.name for p in tmp_path.iterdir())
     assert main(["start", "--json"]) == 0
     report = json.loads(capsys.readouterr().out)
-    assert report["schema_version"] == "VSTD-START-1"
+    assert report["schema_version"] == "verifier-start-1"
     assert [s["order"] for s in report["steps"]] == list(range(1, len(report["steps"]) + 1))
     assert all(s["title"] and s["why"] and s["command"] for s in report["steps"])
     assert {c["term"] for c in report["concepts"]} >= {"established", "depth"}

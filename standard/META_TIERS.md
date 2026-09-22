@@ -34,7 +34,7 @@ The word is already carrying two other loads in this corpus, and neither is this
 this file; *package* namespaces are Python import paths. The titled sense is always
 written `VSTD-NAMESPACE`, capitalised and prefixed, and never bare.
 
-A **wire identifier** is not a coordinate in it. `VSTD-DATA-0.1` is the string a receipt
+A **wire identifier** is not a coordinate in it. `verifier-data-1` is the string a receipt
 carries in `schema_version`, pinned by the code that parses it; `VSTD-DATA-1.1` is a
 coordinate in this grid. They are different namespaces that happen to share a prefix, and
 the identifier convention below governs only the second. Renaming a wire identifier to
@@ -84,10 +84,10 @@ specification meta-framework, rather than a new notation invented downward.
 
 ## Ground truth: this is not new — it is `LADDER.md` made total
 
-The object axis `VSTD-1..5` and the graph axis `VSTD-Graph-1..5` already instantiate these
+The object axis `VSTD-1..5` and the graph axis `VSTD-GRAPH-1..5` already instantiate these
 five tiers exactly, and predate the generalization:
 
-| Tier | `VSTD-N` closure coordinate | `VSTD-Graph-N` closure coordinate | Tier meaning |
+| Tier | `VSTD-N` closure coordinate | `VSTD-GRAPH-N` closure coordinate | Tier meaning |
 |---|---|---|---|
 | 1 | Claim Mechanics | Recorded Lineage | facets |
 | 2 | Verification Surface | Bounded Collection Surface | dynamics |
@@ -702,7 +702,7 @@ obligation rather than a rung in its own right:
 | Object | 1 facets | 2 dynamics | 3 statics | 4 closure | 5 adaptation | 6 disclosure |
 |---|---|---|---|---|---|---|
 | VSTD | `1.1`-`1.7` | `2.1`-`2.7` | `3.1`-`3.8` | `4.1`-`4.14` | `5.1`-`5.11` | — |
-| GRAPH | `Graph-1.1`-`1.6` | `Graph-2.1`-`2.5` | `Graph-3.1`-`3.5` | `Graph-4.1`-`4.6` | `Graph-5.1`-`5.6` | — |
+| GRAPH | `GRAPH-1.1`-`1.6` | `GRAPH-2.1`-`2.5` | `GRAPH-3.1`-`3.5` | `GRAPH-4.1`-`4.6` | `GRAPH-5.1`-`5.6` | — |
 | DATA | `DATA-1.1`-`1.6` | `DATA-2.1`-`2.6` | `DATA-3.1`-`3.6` | `DATA-4.1`-`4.6` | `DATA-5.1`-`5.6` | `DATA-6.1`-`6.6` |
 | ENV | `ENV-1.1`-`1.6` | `ENV-2.1`-`2.6` | `ENV-3.1`-`3.5` | `ENV-4.1`-`4.5` | `ENV-5.1`-`5.6` | `ENV-6.1`-`6.6` |
 | BENCH | `BENCH-1.1`-`1.7` | `BENCH-2.1`-`2.6` | `BENCH-3.1`-`3.7` | `BENCH-4.1`-`4.5` | `BENCH-5.1`-`5.6` | `BENCH-6.1`-`6.6` |
@@ -724,7 +724,7 @@ Every cell is a coordinate range into a catalogued obligation set: the object ax
 [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md), the Graph axis in
 [`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md), the sixteen domain objects in
 [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 625 obligations across the three
-namespaces, which are disjoint: `DATA-4.2` never aliases `4.2` or `Graph-4.2`, and each
+namespaces, which are disjoint: `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, and each
 catalogue carries its own digest. † marks the three objects whose adapters live on the open
 release branch rather than in this tree; § marks `VSTD-TRAIN`, which is catalogued but
 not certifiable; ‡ marks the six objects with no adapter anywhere: `VSTD-OWNER` and
@@ -742,7 +742,7 @@ need not be the one whose index is `m`.
 | Certificate stem | 1 | 2 | 3 | 4 | 5 | rungs |
 |---|---|---|---|---|---|---|
 | `VSTD-` | [1.1–1.5](GROUNDED_CERTIFICATION.md ".1 Claim coordinate; .2 Evidence binding; .3 Checker and trust boundary, Provenance; .4 Decision replay; .5 Reproduction fidelity, Challenge and correction") | [2.1–2.5](GROUNDED_CERTIFICATION.md ".1 Subject and surface; .2 Geometry consistency; .3 Translation and reconstruction, Evidence-earned judgments; .4 Residuals and horizons, Adjacent verification orders; .5 Bounded surface closure") | [3.1–3.6](GROUNDED_CERTIFICATION.md ".1 Subject and capability boundary; .2 Attestation binding; .3 Firmware accountability, Execution binding; .4 Accounting and topology, Continuity and anchors; .5 Provider and fleet scope; .6 Derived substrate outcome") | [4.1–4.8](GROUNDED_CERTIFICATION.md ".1 Decision certification; .2 Semantic binding; .3 Anti-equivocation, Explicit refutation surface; .4 Portable verification, Prior commitment, Challenge handling; .5 Bounded verification, Re-derivability; .6 Minimal trusted checker, Availability; .7 Disclosure-safe checkability, Monotonic degradation; .8 Compositionality") | [5.1–5.5](GROUNDED_CERTIFICATION.md ".1 Exact refutability entry; .2 Witness identity binding; .3 Operational separation, Implementation separation, Trust-root separation, Evidence-source separation, Infrastructure separation, Financial separation, Compulsion separation; .4 Executed corroboration; .5 Disagreement preservation") | **29** |
-| `VSTD-Graph-` | [1.1–1.3](GRAPH_GROUNDING.md ".1 Collection coordinate; .2 Recorded structure, Status admissibility; .3 Coverage recomputation, Conflict retention, Blast radius closure") | [2.1–2.4](GRAPH_GROUNDING.md ".1 Member rating re-execution; .2 Ancestor reachability closure, Edge rating re-execution; .3 Scope binding; .4 Bounded admission") | [3.1–3.3](GRAPH_GROUNDING.md ".1 Substrate rating re-execution; .2 Weakest reachable cap, Out-of-closure contribution, Accountable actor binding; .3 Accountable closure result") | [4.1–4.4](GRAPH_GROUNDING.md ".1 Member refutability entry; .2 Edge refutability closure, Candidate ceiling explanation; .3 Unevidenced edge rejection, Challenge localization; .4 Offline replay") | [5.1–5.4](GRAPH_GROUNDING.md ".1 Exact network entry; .2 Witness member rating, Witness transformation rating; .3 Network scope binding, Conflict inadmissibility; .4 Declared rating rejection") | **18** |
+| `VSTD-GRAPH-` | [1.1–1.3](GRAPH_GROUNDING.md ".1 Collection coordinate; .2 Recorded structure, Status admissibility; .3 Coverage recomputation, Conflict retention, Blast radius closure") | [2.1–2.4](GRAPH_GROUNDING.md ".1 Member rating re-execution; .2 Ancestor reachability closure, Edge rating re-execution; .3 Scope binding; .4 Bounded admission") | [3.1–3.3](GRAPH_GROUNDING.md ".1 Substrate rating re-execution; .2 Weakest reachable cap, Out-of-closure contribution, Accountable actor binding; .3 Accountable closure result") | [4.1–4.4](GRAPH_GROUNDING.md ".1 Member refutability entry; .2 Edge refutability closure, Candidate ceiling explanation; .3 Unevidenced edge rejection, Challenge localization; .4 Offline replay") | [5.1–5.4](GRAPH_GROUNDING.md ".1 Exact network entry; .2 Witness member rating, Witness transformation rating; .3 Network scope binding, Conflict inadmissibility; .4 Declared rating rejection") | **18** |
 | `VSTD-DATA-` | [1.1–1.4](DOMAIN_OBLIGATIONS.md#vstd-data-1-facets ".1 Retention boundary; .2 Shard and record inventory, Field contract; .3 Record identity, Digest tree commitment; .4 Schema conformance") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-data-2-dynamics ".1 Transformation declaration; .2 Exact re-execution; .3 Pipeline ordering, Raw-to-retained path; .4 Idempotence, Rebuild drift") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-data-3-statics ".1 Sampling frame, Measurement instrument, Origin rights; .2 Censoring and truncation, Distribution statics; .3 Pipeline independence") | [4.1–4.5](DOMAIN_OBLIGATIONS.md#vstd-data-4-closure ".1 Split declaration; .2 Complete membership; .3 Identity separation, Exact overlap; .4 Lexical overlap; .5 No unaccounted record") | [5.1–5.4](DOMAIN_OBLIGATIONS.md#vstd-data-5-domain-adaptation ".1 Mainstay binding; .2 Columnar shard mapping, Schema mapping, Dataset card mapping; .3 Round trip; .4 Inference upward") | **20** |
 | `VSTD-ENV-` | [1.1–1.4](DOMAIN_OBLIGATIONS.md#vstd-env-1-facets ".1 Environment boundary; .2 Software inventory, Configuration surface; .3 Executable coordinates, Observed configuration; .4 Unpinned residue") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-env-2-dynamics ".1 Nondeterminism declaration, Execution pair; .2 Scheduling surface, Input agreement; .3 Result agreement; .4 Divergence attribution") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#vstd-env-3-statics ".1 Instruction set, Resource ceilings; .2 Floating-point semantics, Physical envelope; .3 Envelope independence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-env-4-closure ".1 Pin completeness; .2 Host isolation, Network closure; .3 Standup sufficiency; .4 Standup evidence") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#vstd-env-5-domain-adaptation ".1 Mainstay binding; .2 Image closure mapping, Derivation mapping; .3 Build provenance mapping; .4 Round trip; .5 Inference upward") | **20** |
 | `VSTD-BENCH-` | [1.1–1.5](DOMAIN_OBLIGATIONS.md#vstd-bench-1-facets ".1 Domain declaration; .2 Problem set, Feature representation; .3 Solution deducibility, Sampling procedure; .4 Oracle binding; .5 Baseline mechanics") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#vstd-bench-2-dynamics ".1 Attempt policy, Contamination accumulation; .2 Attempt inventory; .3 Sequential adaptivity, Response curve; .4 Measurement feedback") | [3.1–3.4](DOMAIN_OBLIGATIONS.md#vstd-bench-3-statics ".1 Chance floor, Oracle ceiling, Budget ceilings; .2 Label noise, Hardness classes; .3 Natural distribution; .4 Harness independence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#vstd-bench-4-closure ".1 Run inventory; .2 No missing run, No duplicate or substituted run; .3 Weighted score; .4 Surface completeness") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#vstd-bench-5-domain-adaptation ".1 Mainstay binding; .2 Task specification mapping, Scoring contract mapping; .3 Budget mapping; .4 Round trip; .5 Inference upward") | **22** |
@@ -989,11 +989,11 @@ profile, and an admission policy. Three disjoint namespaces hold them.
 | Namespace | Coordinates | Obligations | Where |
 |---|---|---|---|
 | Object `VSTD-1..5` | `1.1`-`5.11` | 47 | [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md) |
-| Graph `VSTD-Graph-1..5` | `Graph-1.1`-`Graph-5.6` | 28 | [`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) |
+| Graph `VSTD-GRAPH-1..5` | `GRAPH-1.1`-`GRAPH-5.6` | 28 | [`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) |
 | The sixteen domain objects | `<object>-1.1`-`<object>-6.6` | 550 | [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) |
 
 The namespaces do not overlap and no catalogue admits another's identifiers, so `DATA-4.2`
-never aliases `4.2` or `Graph-4.2`. Each computes its own digest, which is what makes them
+never aliases `4.2` or `GRAPH-4.2`. Each computes its own digest, which is what makes them
 separable: extending one provably cannot move another's.
 
 What differs between them is not the form of the obligations but how many carry a

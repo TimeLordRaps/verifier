@@ -451,7 +451,7 @@ def evaluate(object_name: str, check: str, artifact: dict, inputs: dict,
 
 def mainstay_catalog() -> dict:
     """Describe every registered mainstay and the coordinates it can express."""
-    return {"schema_version": "VSTD-MAINSTAY-CATALOG-1", "tier": 5,
+    return {"schema_version": "verifier-mainstay-catalog-1", "tier": 5,
             "checks": {PREFIX + name: statement for name, statement in CHECKS.items()},
             "objects": {object_name: [
                 {"format_id": m.format_id, "display": m.display, "carrier": m.carrier,

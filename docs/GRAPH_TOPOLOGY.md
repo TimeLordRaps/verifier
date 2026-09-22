@@ -54,8 +54,8 @@ graph_topology_binding_digest(graph)
 analyze_graph_topology(graph, contract, max_assignments=4096)
 ```
 
-The contract identifier is `VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1`; the report identifier
-is `VSTD-GRAPH-TOPOLOGY-REPORT-EXPERIMENTAL-0.1`. Top-level keys are `schema_version`,
+The contract identifier is `verifier-graph-topology-experimental-1`; the report identifier
+is `verifier-graph-topology-report-experimental-1`. Top-level keys are `schema_version`,
 `graph_digest`, `bindings`, `constraint_logic`, `equations`, `temporal_relations`, and
 `paradox_candidates`. Each binding supplies `variable_id`, `artifact_id`,
 `transformation_id`, `port_direction` (`input` or `output`), and `role`, identifying an

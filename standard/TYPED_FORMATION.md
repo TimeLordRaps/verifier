@@ -13,13 +13,13 @@ are dimensionless; input size is measured in bytes.
 
 ## 1. Admitted records
 
-The [structural schema](https://timelordraps.github.io/verifier/schemas/vstd-typed-formation-0.1.schema.json) covers two
+The [structural schema](https://timelordraps.github.io/verifier/schemas/verifier-typed-formation-1.schema.json) covers two
 records. The network canonical codec applies: UTF-8, Unicode Normalization Form
 C, sorted lowercase snake_case keys, no duplicates, no extra whitespace,
 no surrogate code points and only nonnegative JavaScript-safe integers.
 Booleans are not indices. A reserialization mismatch is invalid.
 
-Every subject has exactly `schema_version: VSTD-TYPED-FORMATION-0.1`,
+Every subject has exactly `schema_version: verifier-typed-formation-1`,
 `profile_digest`, `context`, `nodes`, and `root`.
 Context has exactly `ground_artifact_digest` and
 `authority_axiom_agency_digest`. Digests are lowercase `sha256:` plus
@@ -47,7 +47,7 @@ converted into a Hypermath form. READ does not prove that the deriver read its
 own entry; it reads a prior checked quotation in this acyclic subject.
 
 A certificate has exactly
-`schema_version: VSTD-TYPED-FORMATION-CERTIFICATE-0.1`,
+`schema_version: verifier-typed-formation-certificate-1`,
 `subject_digest`, `profile_digest`, `steps`, and `root`.
 Each step has exactly `node`, `rule`, and `premises`. There is one step for
 every subject node, in its construction order; rule equals the constructor tag,
@@ -57,7 +57,7 @@ type, observation, FORM verdict, CHECKED flag or self-status for the checker to
 trust.
 
 The inert compiled declaration is returned by `formation_wire.profile_bytes()`
-and retained byte-identically as `verifier/profiles/typed-formation-0.1.json`.
+and retained byte-identically as `verifier/profiles/typed-formation-1.json`.
 Its digest identifies that rule declaration, not the implementation. Unknown
 schema or profile is unsupported, never loaded as code. Unknown constructors
 under the known subject schema are invalid.

@@ -41,7 +41,7 @@ reparse-point aliases. This does not change the accepted read-only alias behavio
 outer parent-bundle or explicit thaw-record argument. Ordinary hard links remain regular
 file byte-and-path semantics rather than an exclusive-inode claim.
 
-`thawed_artifact_status` treats a `VSTD-ARTIFACT-THAW-1` sidecar as unkeyed lineage
+`thawed_artifact_status` treats a `verifier-artifact-thaw-1` sidecar as unkeyed lineage
 metadata. Without `parent_bundle`, it returns `NOT_ESTABLISHED` even when descendant bytes
 agree with the sidecar's recorded identifier. `THAWED_CLEAN` or `THAWED_DIRTY` requires an
 actual supplied parent that verifies as cleanly sealed and matches every recorded parent
@@ -95,7 +95,7 @@ the complete carried VSTD-4 entry, requires the bundle `claim_id` to equal the a
 VSTD-4 claim identifier, and mechanism-checks `corroboration_class`; schema-valid field
 relabeling cannot retain an established replay result.
 
-`ProvenanceHypergraph.from_dict` retains the frozen `VSTD-DATA-0.1` two-namespace reader:
+`ProvenanceHypergraph.from_dict` retains the frozen `verifier-data-1` two-namespace reader:
 one identifier may occur once as an artifact and once as a transformation. Direct `add_*`
 construction and default structural validation are stricter and globally disjoint. Such a
 historical overlap remains readable but cannot enter evidence-bound Graph establishment or
@@ -185,7 +185,7 @@ executing a component. The facade provides no component executor, evidence colle
 post-execution reanalysis implementation, Boolean satisfiability geometry analyzer, or new
 closure result.
 
-The experimental stored-component format `VSTD-COMPONENT-PACKAGE-1` adds
+The experimental stored-component format `verifier-component-package-1` adds
 `PackageArtifact`, `ImplementationBinding`, `PackageDependency`, `StoredComponentPackage`,
 `load_component_package` and `save_component_package` through
 `verifier.interoperability.storage` and the interoperability facade. It retains exact

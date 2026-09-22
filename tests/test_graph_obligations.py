@@ -29,7 +29,7 @@ def test_every_graph_profile_has_contiguous_obligations() -> None:
         rows = [o for o in GRAPH_OBLIGATIONS if o.profile == profile]
         assert [o.index for o in rows] == list(range(1, len(rows) + 1))
         assert rows[0].depends_on == ()
-    assert graph_obligation_catalog()["schema_version"] == "VSTD-GRAPH-OBLIGATIONS-1"
+    assert graph_obligation_catalog()["schema_version"] == "verifier-graph-obligations-1"
     assert graph_obligation_catalog()["axis"] == "GRAPH"
     assert set(GRAPH_BY_ID) == {o.id for o in GRAPH_OBLIGATIONS}
 
@@ -47,7 +47,7 @@ def test_graph_and_object_coordinates_never_alias() -> None:
     assert not set(GRAPH_BY_ID) & set(BY_ID)
     assert not {o.predicate for o in GRAPH_OBLIGATIONS} & {o.predicate for o in BY_ID.values()}
     for obligation in GRAPH_OBLIGATIONS:
-        assert obligation.id.startswith("Graph-")
+        assert obligation.id.startswith("GRAPH-")
         assert obligation.predicate.startswith("vstd.graph.obligation.")
 
 
@@ -59,9 +59,9 @@ def test_extending_the_graph_axis_does_not_move_the_object_catalogue() -> None:
 def test_every_numbered_graph_layer_names_its_obligation_coordinates() -> None:
     for profile in range(1, 6):
         count = len([o for o in GRAPH_OBLIGATIONS if o.profile == profile])
-        text = (REPO_ROOT / f"src/verifier/specifications/VSTD-Graph-{profile}.md").read_text(encoding="utf-8")
+        text = (REPO_ROOT / f"src/verifier/specifications/VSTD-GRAPH-{profile}.md").read_text(encoding="utf-8")
         assert "## Grounded certification obligation coordinates" in text, profile
-        assert f"`Graph-{profile}.1` through `Graph-{profile}.{count}`" in text, profile
+        assert f"`GRAPH-{profile}.1` through `GRAPH-{profile}.{count}`" in text, profile
 
 
 def test_normative_graph_catalogue_and_runtime_rows_agree() -> None:
@@ -72,7 +72,7 @@ def test_normative_graph_catalogue_and_runtime_rows_agree() -> None:
                f"| {dependencies} | {obligation.source} |")
         assert row in text, obligation.id
     for profile, name in GRAPH_PROFILE_NAMES.items():
-        assert f"### VSTD-Graph-{profile}: {name}" in text
+        assert f"### VSTD-GRAPH-{profile}: {name}" in text
 
 
 def test_graph_specification_digest_pins_the_graph_bytes_only() -> None:

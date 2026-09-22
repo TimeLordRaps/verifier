@@ -2,8 +2,8 @@
   "$comment": "Terminology: Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelordraps.github.io/verifier/schemas/vstd_graph_receipt.json",
-  "title": "VSTD-Graph Provenance Hypergraph Receipt",
-  "description": "VSTD-Graph receipt. The VSTD-DATA-0.1 serialized receipt identifier is frozen for historical Graph-1 receipts; computed_graph_level and its level field are compatibility names for a candidate Graph profile number over caller-supplied ratings and do not establish conformance. Historical blocks without rating_basis or conformance_status have the same unestablished interpretation.",
+  "title": "VSTD-GRAPH Provenance Hypergraph Receipt",
+  "description": "VSTD-GRAPH receipt. The verifier-data-1 serialized receipt identifier is frozen for historical GRAPH-1 receipts; computed_graph_level and its level field are compatibility names for a candidate Graph profile number over caller-supplied ratings and do not establish conformance. Historical blocks without rating_basis or conformance_status have the same unestablished interpretation.",
   "type": "object",
   "required": [
     "schema_version",
@@ -19,7 +19,7 @@
   "properties": {
     "schema_version": {
       "type": "string",
-      "enum": ["VSTD-DATA-0.1"]
+      "enum": ["verifier-data-1"]
     },
     "receipt_id": {
       "type": "string",
@@ -176,11 +176,11 @@
         "binding": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd4_receipt.json#/$defs/binding"},
         "object_evaluations": {
           "type": "object",
-          "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json#/$defs/evaluation"}
+          "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/verifier-graph-assurance-1.schema.json#/$defs/evaluation"}
         },
         "edge_evaluations": {
           "type": "object",
-          "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json#/$defs/evaluation"}
+          "additionalProperties": {"$ref": "https://timelordraps.github.io/verifier/schemas/verifier-graph-assurance-1.schema.json#/$defs/evaluation"}
         },
         "binding_errors": {"type": "array", "items": {"type": "string"}},
         "evidence_bindings": {

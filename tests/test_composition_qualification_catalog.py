@@ -50,7 +50,7 @@ RAW_COMPONENT = "component:artifact-network-authority-composition-assessor"
 RELATION = "relation:qualifies-selected-finite-silo-composition"
 MECHANISM = "mechanism:artifact-network-finite-composition-qualification"
 NATIVE_INPUTS = tuple(sorted((
-    "local path to VSTD-FINITE-AUTHORITY-COMPOSITION-0.1 canonical bytes",
+    "local path to verifier-finite-authority-composition-1 canonical bytes",
     "ordered local (ContentAddressedStore root, silo-commit path) member pairs",
     "local composite ContentAddressedStore root",
     "local composite silo-commit path",
@@ -100,8 +100,8 @@ def test_qualifier_descriptor_matches_the_native_callable_and_real_result(
         "verifier.interoperability.composition_qualification:qualify_silo_composition"
     )
     assert component.accepted_schema_ids == (
-        "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
-        "VSTD-SILO-COMMIT-0.1",
+        "verifier-finite-authority-composition-1",
+        "verifier-silo-commit-1",
     )
     assert component.planning_surface_schema_ids == ("VSTD-2",)
     assert component.native_inputs == NATIVE_INPUTS

@@ -386,7 +386,7 @@ def _vstd5_schema_validator() -> Draft202012Validator:
         (root / "receipts/schema/vstd4_receipt.json").read_text()
     )
     assurance_schema = json.loads(
-        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+        (root / "standard/schemas/verifier-graph-assurance-1.schema.json").read_text()
     )
     registry = Registry().with_resource(
         vstd4_schema["$id"], Resource.from_contents(vstd4_schema)
@@ -614,7 +614,7 @@ def test_graph_profile_can_be_established_from_mechanism_evaluated_ratings() -> 
     )
     vstd4_schema = json.loads((root / "receipts/schema/vstd4_receipt.json").read_text())
     assurance_schema = json.loads(
-        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+        (root / "standard/schemas/verifier-graph-assurance-1.schema.json").read_text()
     )
     registry = Registry()
     registry = registry.with_resource(vstd4_schema["$id"], Resource.from_contents(vstd4_schema))
@@ -1089,7 +1089,7 @@ def test_non_status_resolution_does_not_manufacture_current_trust(
         )
     root = Path(__file__).resolve().parents[1]
     schema = json.loads(
-        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+        (root / "standard/schemas/verifier-graph-assurance-1.schema.json").read_text()
     )
     graph_schema = json.loads(
         (root / "receipts/schema/vstd_graph_receipt.json").read_text()
@@ -1490,7 +1490,7 @@ def test_assurance_event_log_is_portable_strict_and_evidence_complete() -> None:
 
     root = Path(__file__).resolve().parents[1]
     schema = json.loads(
-        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+        (root / "standard/schemas/verifier-graph-assurance-1.schema.json").read_text()
     )
     graph_schema = json.loads(
         (root / "receipts/schema/vstd_graph_receipt.json").read_text()

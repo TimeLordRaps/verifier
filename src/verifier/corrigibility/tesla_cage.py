@@ -1,4 +1,4 @@
-"""Terminology: artificial intelligence (AI); dynamic random-access memory (DRAM); identifier (ID); inter-process communication (IPC); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); signal kill (SIGKILL); software self-assembly (VSTD-SSA); software self-improvement (VSTD-SSI); candidate self-replication (VSTD-SSR); Verifier Standard (VSTD); virtual machine (VM).
+"""Terminology: artificial intelligence (AI); dynamic random-access memory (DRAM); identifier (ID); inter-process communication (IPC); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); signal kill (SIGKILL); software self-assembly (verifier-ssa); software self-improvement (verifier-ssi); candidate self-replication (verifier-ssr); Verifier Standard (VSTD); virtual machine (VM).
 
 Incorrigible Tesla caged sandboxing risk profile representations and containment invariants.
 """

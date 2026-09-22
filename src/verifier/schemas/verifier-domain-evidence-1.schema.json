@@ -1,0 +1,387 @@
+{
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-domain-evidence-1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "DATA"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "fields": {},
+              "final_shards": {},
+              "identity_field": {},
+              "overlap": {},
+              "shard_fields": {},
+              "shards": {},
+              "source_shards": {},
+              "splits": {},
+              "transforms": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "shards": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "ENV"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "ceilings": {},
+              "configuration": {},
+              "execution": {},
+              "execution_ids": {},
+              "files": {},
+              "scope": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "configuration": {},
+              "executions": {},
+              "files": {},
+              "measurements": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "BENCH"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "minimum_score": {},
+              "problems": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "runs": {},
+              "score": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "HYPER"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "architecture": {},
+              "checkpoint_digests": {},
+              "configuration": {},
+              "start_step": {},
+              "steps_digest": {},
+              "tolerance": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "batches": {},
+              "checkpoints": {},
+              "steps": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "MODEL"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "architecture_digest": {},
+              "challenges": {},
+              "dependencies": {},
+              "metric": {},
+              "metric_bounds": {},
+              "samples_digest": {},
+              "tolerance": {},
+              "weights_digest": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "architecture": {},
+              "dependencies": {},
+              "metric_value": {},
+              "samples": {},
+              "weights": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "SIM"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "action_bounds": {},
+              "entropy_digest": {},
+              "finite_entropy_set": {},
+              "finite_state_set": {},
+              "initial_state": {},
+              "invariants": {},
+              "macro_digest": {},
+              "observation": {},
+              "projection": {},
+              "shards": {},
+              "times_digest": {},
+              "tolerance": {},
+              "trajectory_digest": {},
+              "transition": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "actions": {},
+              "entropy": {},
+              "macro_states": {},
+              "observations": {},
+              "shards": {},
+              "states": {},
+              "times": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "HARNESS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "effects": {},
+              "record_count": {},
+              "surface": {},
+              "tools": {},
+              "transcript_digest": {},
+              "transcript_root": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "effects": {},
+              "invocations": {},
+              "records": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "AGENT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "actions_digest": {},
+              "claims": {},
+              "harness_certificate_digest": {},
+              "harness_subject_id": {},
+              "outcomes": {},
+              "required_channels": {},
+              "steps_digest": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "actions": {},
+              "harness_certificate": {},
+              "outcomes": {},
+              "steps": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "BOT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "agent_certificate_digest": {},
+              "agent_environment_certificate_digest": {},
+              "exogenous_transitions": {},
+              "initial_observation_record": {},
+              "separation": {},
+              "sim_certificate_digest": {},
+              "sim_environment_certificate_digest": {},
+              "step_map": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "agent_certificate": {},
+              "agent_environment_certificate": {},
+              "sim_certificate": {},
+              "sim_environment_certificate": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    }
+  ],
+  "description": "Structural envelope only. Domain evaluators check retained contract semantics; certificate replay requires external intent and policy.",
+  "properties": {
+    "artifact": {
+      "type": "object"
+    },
+    "domain": {
+      "enum": [
+        "DATA",
+        "ENV",
+        "BENCH",
+        "HYPER",
+        "MODEL",
+        "SIM",
+        "HARNESS",
+        "AGENT",
+        "BOT"
+      ]
+    },
+    "inputs": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "verifier-domain-evidence-1"
+    },
+    "subject_id": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "domain",
+    "subject_id",
+    "artifact",
+    "inputs"
+  ],
+  "title": "Verifier Standard domain evidence version 1",
+  "type": "object"
+}

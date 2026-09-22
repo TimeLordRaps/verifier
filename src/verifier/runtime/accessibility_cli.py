@@ -127,7 +127,7 @@ _GUIDES = ("docs/QUICKSTART.md", "docs/NEWCOMER_GUIDE.md")
 def start_report() -> dict[str, Any]:
     """Return the guided path. Pure data, so prose and JSON cannot disagree."""
     return {
-        "schema_version": "VSTD-START-1",
+        "schema_version": "verifier-start-1",
         "purpose": "Ordered path from an installed package to a checked result.",
         "steps": [dict(step, order=i) for i, step in enumerate(_STEPS, 1)],
         "concepts": [{"term": t, "meaning": m} for t, m in _CONCEPTS],
@@ -452,15 +452,15 @@ def explain_report(path: Path) -> dict[str, Any]:
     if not isinstance(document, dict):
         raise ValueError(f"{path} does not contain a JSON object")
     version = document.get("schema_version")
-    if version == "VSTD-DOMAIN-CERTIFICATION-1":
+    if version == "verifier-domain-certification-1":
         report = _explain_domain(document)
-    elif version == "VSTD-GROUNDED-CERTIFICATION-1":
+    elif version == "verifier-grounded-certification-1":
         report = _explain_grounded(document)
     elif version == "VSTD-1" and document.get("receipt_kind"):
         report = _explain_receipt(document, path)
     else:
         report = _explain_other(document, path)
-    report["schema_version"] = "VSTD-EXPLANATION-1"
+    report["schema_version"] = "verifier-explanation-1"
     # A document with no `schema_version` is not a VSTD artifact at all. That is
     # the same class of mistake as pointing at a missing file, so the caller
     # reports it the same way rather than as a successful read of nothing.

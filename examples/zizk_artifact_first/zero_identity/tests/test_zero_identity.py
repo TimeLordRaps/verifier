@@ -306,5 +306,5 @@ def test_model_never_lists_unlinkability_as_supported() -> None:
 def test_reference_surface_declares_no_new_serialized_receipt_identifier() -> None:
     for path in (REFERENCE_SURFACE / "fixtures").glob("*.json"):
         text = path.read_text(encoding="utf-8")
-        for identifier in ("VSTD-1", "VSTD-2", "VSTD-3.0", "VSTD-DATA-0.1"):
+        for identifier in ("VSTD-1", "VSTD-2", "VSTD-3.0", "verifier-data-1"):
             assert identifier not in text, f"{path.name} must not bind a VSTD serialized receipt identifier"

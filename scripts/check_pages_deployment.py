@@ -31,7 +31,7 @@ class PagesDeploymentError(ValueError):
 
 
 MANIFEST_PATH = "deployment-manifest.json"
-MANIFEST_SCHEMA = "VSTD-PAGES-DEPLOYMENT-MANIFEST-1"
+MANIFEST_SCHEMA = "verifier-pages-deployment-manifest-1"
 REPOSITORY_CHECKS_WORKFLOW_PATH = ".github/workflows/ci.yml"
 MAX_MANIFEST_BYTES = 4 * 1024 * 1024
 MAX_RESPONSE_BYTES = 8 * 1024 * 1024

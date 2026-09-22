@@ -686,7 +686,7 @@ def test_malformed_declarations_are_rejected_without_coercion(mutation: str) -> 
 
 
 @pytest.mark.parametrize("document", [
-    b'{"schema_version":"VSTD-GLOBAL-CYCLE-ASSESSMENT-0.1","relations":[],"relations":[]}',
+    b'{"schema_version":"verifier-global-cycle-assessment-1","relations":[],"relations":[]}',
     b"null",
     b"{",
     b" " * (cycle.MAX_DECLARATION_BYTES + 1),

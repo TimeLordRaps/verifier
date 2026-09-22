@@ -76,7 +76,7 @@ def main() -> int:
     report = analyze_graph_topology(graph, contract).to_dict()
     if args.output_dir is not None:
         documents = {
-            "receipt.json": {"schema_version": "VSTD-DATA-0.1", "hypergraph": graph.to_dict()},
+            "receipt.json": {"schema_version": "verifier-data-1", "hypergraph": graph.to_dict()},
             "contract.json": contract.to_dict(),
         }
         try:

@@ -37,7 +37,7 @@ def _strip_depths(stem: str) -> tuple[int, ...]:
     return tuple(int(end) for _, _, end in _STRIP.findall(line))
 
 
-SPEC_AXES = {"VSTD": _strip_depths("VSTD-"), "GRAPH": _strip_depths("VSTD-Graph-")}
+SPEC_AXES = {"VSTD": _strip_depths("VSTD-"), "GRAPH": _strip_depths("VSTD-GRAPH-")}
 DOMAIN_DEPTHS = {o: tuple(tier_depth(o, t) for t in range(1, 6)) for o in DOMAIN_OBJECTS}
 ALL_DEPTHS = {**SPEC_AXES, **DOMAIN_DEPTHS}
 

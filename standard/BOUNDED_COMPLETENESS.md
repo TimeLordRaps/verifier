@@ -11,13 +11,13 @@ Byte limits are measured in bytes; member counts and IDs are dimensionless.
 
 ## 1. Denominator and observations
 
-`VSTD-BOUNDED-COMPLETENESS-0.1` binds an inert profile ID, exact denominator
+`verifier-bounded-completeness-1` binds an inert profile ID, exact denominator
 and observations byte references, one denominator-grounding declaration/receipt
 and proposition, and a declarer coordinate. The supported profile is
 `source-grounded-finite-disposition-coverage-v1`, retained as
-`verifier/profiles/bounded-completeness-mechanism-0.1.json`.
+`verifier/profiles/bounded-completeness-mechanism-1.json`.
 
-`VSTD-BOUNDED-COMPLETENESS-DENOMINATOR-0.1` contains a subject ID and one to
+`verifier-bounded-completeness-denominator-1` contains a subject ID and one to
 256 members sorted by UTF-8 member-ID bytes. Each member binds a unique source-
 grounding declaration and unique ground-proposition digest. The denominator is
 not authoritative merely because this list is finite.
@@ -28,7 +28,7 @@ equal the SHA-256 digest of canonical `{members, subject_id}` bytes. This closes
 only the census proposition supplied by that independent source; it does not
 establish that the source enumerates the real world completely.
 
-`VSTD-BOUNDED-COMPLETENESS-OBSERVATIONS-0.1` binds the exact denominator digest,
+`verifier-bounded-completeness-observations-1` binds the exact denominator digest,
 same profile, procedure `source-grounding-replay-v1`, and a sorted unique list of
 member IDs with grounding declarations and receipts. Missing denominator members
 remain incomplete. An observation outside the denominator is invalid, not
@@ -42,7 +42,7 @@ each member source-grounding receipt. A member is `DISPOSED` only when its
 grounding result is decisively `ESTABLISHED` or `REFUTED`; `UNKNOWN` remains
 `NOT_CHECKED`, and malformed evidence remains `INVALID`.
 
-The portable `VSTD-BOUNDED-COMPLETENESS-RECEIPT-0.1` retains six separate check
+The portable `verifier-bounded-completeness-receipt-1` retains six separate check
 states, one assessment for every denominator member, exact resource accounting,
 the checker and profile coordinate, sorted reasons, and residual obligations.
 Its result is:

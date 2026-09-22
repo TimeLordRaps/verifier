@@ -80,7 +80,7 @@ def test_every_profile_has_contiguous_obligations_and_existing_rungs_are_preserv
         rows = [o for o in OBLIGATIONS if o.profile == profile]
         assert [o.id for o in rows] == [f"{profile}.{i}" for i in range(1, len(rows)+1)]
     assert [(o.id, o.name) for o in OBLIGATIONS if o.profile == 4] == [(r.id, r.name) for r in RUNGS]
-    assert obligation_catalog()["schema_version"] == "VSTD-OBLIGATIONS-1"
+    assert obligation_catalog()["schema_version"] == "verifier-obligations-1"
 
 
 @pytest.mark.parametrize("target", range(1, 6))
@@ -197,7 +197,7 @@ def test_serialized_pass_and_unknown_fields_are_not_admission_inputs():
 def test_published_schemas_match_requests_policies_and_all_verdicts():
     from jsonschema import Draft202012Validator
     root = Path(__file__).resolve().parents[1] / "standard" / "schemas"
-    validators = {kind: Draft202012Validator(json.loads((root/f"vstd-grounded-{kind}-1.schema.json").read_text()))
+    validators = {kind: Draft202012Validator(json.loads((root/f"verifier-grounded-{kind}-1.schema.json").read_text()))
                   for kind in ("request", "policy", "certification")}
     for validator in validators.values():
         validator.check_schema(validator.schema)

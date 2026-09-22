@@ -154,7 +154,7 @@ def verify_refutation_challenges(
 
 @dataclass(frozen=True)
 class ModelReproducibilityProfile:
-    """Verifiable model reproducibility and curriculum profile (VSTD-MODEL-2.0.0)."""
+    """Verifiable model reproducibility and curriculum profile (verifier-model-2)."""
 
     model_id: str
     checkpoint_digest: str
@@ -165,7 +165,7 @@ class ModelReproducibilityProfile:
     benchmark_suite_digest: str
     curriculum_pillars: Mapping[str, CurriculumPillarStatus]
     risk_facets: SuperintelligenceRiskFacets
-    schema_version: str = "VSTD-MODEL-2.0.0"
+    schema_version: str = "verifier-model-2"
 
     def __post_init__(self) -> None:
         if not self.model_id:
@@ -279,5 +279,5 @@ class ModelReproducibilityProfile:
             benchmark_suite_digest=str(data["benchmark_suite_digest"]),
             curriculum_pillars=pillars,
             risk_facets=SuperintelligenceRiskFacets.from_dict(data["risk_facets"]),
-            schema_version=str(data.get("schema_version", "VSTD-MODEL-2.0.0")),
+            schema_version=str(data.get("schema_version", "verifier-model-2")),
         )

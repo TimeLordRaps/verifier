@@ -92,7 +92,7 @@ def domain_policy(*, trust_roots: list[str], witness_keys: dict | None = None,
                   max_operations: int = 1000000, max_items: int = 4096,
                   max_evidence_bytes: int = 4*1024*1024, max_tolerance: float = 1e-8) -> dict:
     """Create a checker-selected policy; never derive roots from a certificate."""
-    return _policy({"schema_version": "VSTD-DOMAIN-POLICY-1", "mechanism_digest": implementation_digest(),
+    return _policy({"schema_version": "verifier-domain-policy-1", "mechanism_digest": implementation_digest(),
         "trust_roots": trust_roots, "witness_keys": {} if witness_keys is None else witness_keys, "max_operations": max_operations,
         "max_items": max_items, "max_evidence_bytes": max_evidence_bytes, "max_tolerance": max_tolerance})
 
@@ -100,7 +100,7 @@ def domain_policy(*, trust_roots: list[str], witness_keys: dict | None = None,
 def _policy(value: Any) -> dict:
     value = obj(_snapshot(value), {"schema_version", "mechanism_digest", "trust_roots", "witness_keys",
                                   "max_operations", "max_items", "max_evidence_bytes", "max_tolerance"})
-    same(value["schema_version"], "VSTD-DOMAIN-POLICY-1", "unsupported domain policy")
+    same(value["schema_version"], "verifier-domain-policy-1", "unsupported domain policy")
     _hash(value["mechanism_digest"])
     roots = value["trust_roots"]
     if type(roots) is not list or not roots or any(not isinstance(r,str) or not r.strip() for r in roots) or len(set(roots)) != len(roots):
@@ -121,14 +121,14 @@ def domain_request(evidence: dict, *, target_depth: int | None = None) -> dict:
     """Bind a consumer-selected subject, artifact and complete evidence inventory."""
     bundle = _bundle(evidence)
     domain = bundle["domain"]
-    return _request({"schema_version": "VSTD-DOMAIN-REQUEST-1", "domain": domain,
+    return _request({"schema_version": "verifier-domain-request-1", "domain": domain,
         "subject_id": bundle["subject_id"], "artifact_digest": digest(bundle["artifact"]),
         "evidence_ref": digest(bundle), "target_depth": len(CHECKS[domain]) if target_depth is None else target_depth})
 
 
 def _request(value: Any) -> dict:
     value = obj(_snapshot(value), {"schema_version", "domain", "subject_id", "artifact_digest", "evidence_ref", "target_depth"})
-    same(value["schema_version"], "VSTD-DOMAIN-REQUEST-1", "unsupported domain request")
+    same(value["schema_version"], "verifier-domain-request-1", "unsupported domain request")
     if value["domain"] not in CHECKS:
         raise ValueError("unknown domain")
     text(value["subject_id"])
@@ -140,7 +140,7 @@ def _request(value: Any) -> dict:
 
 def _bundle(value: Any) -> dict:
     value = obj(_snapshot(value), {"schema_version", "domain", "subject_id", "artifact", "inputs"})
-    same(value["schema_version"], "VSTD-DOMAIN-EVIDENCE-1", "unsupported domain evidence")
+    same(value["schema_version"], "verifier-domain-evidence-1", "unsupported domain evidence")
     if value["domain"] not in CHECKS:
         raise ValueError("unknown domain")
     text(value["subject_id"])
@@ -233,7 +233,7 @@ def build_domain_certificate(request: dict, evidence: dict, *, policy: dict) -> 
     status = "FAIL" if "FAIL" in outcomes else "UNKNOWN" if "UNKNOWN" in outcomes else "PASS"
     result = {"status": status, "domain_depth": depth, "scope": SCOPES[request["domain"]],
               "object_profile_conformance": "NOT_ESTABLISHED", "checks": rows}
-    certificate = {"schema_version": "VSTD-DOMAIN-CERTIFICATION-1", "request": request, "evidence": bundle,
+    certificate = {"schema_version": "verifier-domain-certification-1", "request": request, "evidence": bundle,
                    "policy_digest": digest(policy), "mechanism_digest": adapter.mechanism_digest,
                    "specification_digest": "sha256:"+domain_specification_digest(), "result": result}
     certificate["certificate_digest"] = digest(certificate)

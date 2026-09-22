@@ -48,7 +48,7 @@ def test_every_domain_profile_has_contiguous_obligations() -> None:
             assert rows, (object_name, profile)
             assert [o.index for o in rows] == list(range(1, len(rows) + 1))
             assert rows[0].depends_on == ()
-    assert domain_obligation_catalog()["schema_version"] == "VSTD-DOMAIN-OBLIGATIONS-1"
+    assert domain_obligation_catalog()["schema_version"] == "verifier-domain-obligations-1"
     assert domain_obligation_catalog()["axis"] == "DOMAIN"
     assert set(DOMAIN_BY_ID) == {o.id for o in DOMAIN_OBLIGATIONS}
 

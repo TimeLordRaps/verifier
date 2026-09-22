@@ -1,8 +1,8 @@
 """Terminology: Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
-VSTD-Graph provenance models and algorithms.
+VSTD-GRAPH provenance models and algorithms.
 
-Graph-1 receipts retain the frozen ``VSTD-DATA-0.1`` serialized receipt identifier.
+GRAPH-1 receipts retain the frozen ``verifier-data-1`` serialized receipt identifier.
 """
 
 from __future__ import annotations
@@ -362,7 +362,7 @@ class ProvenanceHypergraph:
 
         This validates the stored representation.  It does not prove that the graph
         captures every real-world input or transformation.  The compatibility flag
-        preserves the two identifier namespaces of frozen ``VSTD-DATA-0.1`` bytes;
+        preserves the two identifier namespaces of frozen ``verifier-data-1`` bytes;
         new construction and assurance mechanisms keep the stricter default.
         """
         errors: list[str] = []
@@ -489,7 +489,7 @@ class ProvenanceHypergraph:
         trans_cov = trans_covered / max(total_trans, 1)
 
         # 3. Content-digest declaration coverage.  This is syntax coverage, not a
-        # physical-byte rehash; see VSTD-Graph-1 section 3.
+        # physical-byte rehash; see VSTD-GRAPH-1 section 3.
         digest_pattern = re.compile(r"^[0-9a-fA-F]{64}$")
         integ_covered = sum(
             1 for art in self.artifacts.values()
@@ -558,7 +558,7 @@ class ProvenanceHypergraph:
     ) -> "ProvenanceHypergraph":
         """Decode stored Graph bytes without rewriting their identifier semantics.
 
-        Frozen ``VSTD-DATA-0.1`` used separate artifact and transformation
+        Frozen ``verifier-data-1`` used separate artifact and transformation
         namespaces.  The default therefore retains cross-kind overlap while still
         refusing duplicates inside either collection.  Pass ``False`` for a strict
         new-mechanism decoder; direct ``add_*`` construction is always strict.
