@@ -60,6 +60,38 @@ declare the experimental mechanisms complete. See the
   Other obligations require explicitly admitted domain mechanisms; a registered
   mechanism or complete catalogue is not evidence that those obligations hold.
 
+### The meta-tier grid, the relational objects and the VSTD-NAMESPACE
+
+- Publish the meta-tier grid in [`standard/META_TIERS.md`](standard/META_TIERS.md): every
+  verifiable object carries the same five tiers -- facets, dynamics, statics, closure and
+  domain adaptation -- at the coordinate `VSTD-<NAME>-<tier>.<m>`. `<m>` is a **depth**,
+  not a count: it is the longest prerequisite chain inside one profile, so independent
+  obligations are cleared at one rung rather than at several. 270 rungs over
+  sixty-five profiles; the remaining 109 catalogued obligations are nameable
+  and unreachable as an `<m>`, and a certificate naming one of them is malformed.
+- Title the namespace of these objects the **VSTD-NAMESPACE**. `NAMESPACE` is deliberately
+  not itself a member of the `<NAME>` set, so `VSTD-NAMESPACE-1.1` does not parse. A wire
+  identifier such as the `schema_version` string `VSTD-DATA-0.1` is not a coordinate in the
+  grid and is not renamed to match it; pinning readers would break.
+- Partition the domain objects into **grounded** and **ungrounded**, and name the
+  **relational** ones -- `VSTD-GRAPH`, `VSTD-HYPER` and `VSTD-OWNER` -- which hold between
+  certified objects instead of certifying a substrate of their own. `VSTD-GRAPH` carries
+  its own axis; the other two sit on the domain axis.
+- Add `VSTD-OWNER`, a holding between a bound actor and a bound object, typed by the
+  existing `VSTD-ACTOR-BINDING-1` wire object. It is relational and **ungrounded**: no
+  adapter executes it, so all 30 of its obligations are specified with no
+  mechanism and report `UNKNOWN` -- never absent, and never passed. Its closure profile
+  carries an accountability floor, so a chain of discharge-duties that nobody answers for
+  is not closed.
+- The three obligation namespaces stay disjoint and separately digested:
+  47 object, 28 Graph and 304 domain coordinates,
+  379 in all. `DATA-4.2` never aliases `4.2` or `Graph-4.2`, and extending one
+  catalogue provably cannot move another.
+- Every numeral the grid publishes -- depths, rung totals, obligation counts, the
+  unreachable remainder and both composition-lattice figures -- is re-derived from the
+  catalogued dependencies by `tests/test_meta_tier_cardinality.py`, so a figure that stops
+  being true fails the suite instead of standing as prose.
+
 ### Experimental component declarations and bounded local checks
 
 - Add draft environment, benchmark, dataset, graph, training-lineage, model-risk,
