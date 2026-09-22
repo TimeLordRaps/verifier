@@ -583,8 +583,10 @@ ungrounded and therefore shows none either.
 mechanism, so the only executable checks over it are that its catalogue is well-formed and
 that the figures derived from it are correct — both of which hold no matter what its
 obligations say. Its normative text is the whole artifact, and adversarial reading is its
-only gate. Three authoring defects were found in `VSTD-OWNER` this way on the day it
-landed, with the suite green for every one of them.
+only gate. Every authoring defect found in `VSTD-OWNER` so far was found that way, with
+the suite green each time: an over-broad predicate, a missing existence rule, an existence
+rule that bound one axis of the two this object moves on, and a paragraph that
+contradicted another paragraph thirty-five lines below it.
 
 ### Almost none of that product is reachable
 
