@@ -13,6 +13,7 @@
 > Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
 > generative simulation specification (SIM);
 > dataset integrity and lineage (DATA);
+> hyperparameters and training lineage (HYPER);
 > instrumented agent observation surface (HARNESS);
 > agent trajectory bounded by one observation surface (AGENT);
 > one agent situated in one simulation (BOT);

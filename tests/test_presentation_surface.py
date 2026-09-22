@@ -117,6 +117,26 @@ def test_professional_presentation_surface_has_no_drift() -> None:
     assert module.run() == []
 
 
+def test_changelog_acronym_block_glosses_every_domain_mainstay() -> None:
+    """The changelog's acronym block is hand-maintained and no gate could see it.
+
+    ``scripts/check_acronyms.py`` only requires first-use expansion for terms that
+    are already registered in ``docs/ACRONYMS.md``, and that glossary registers no
+    domain name at all, so a mainstay missing from the block was invisible. Read
+    the roster from the catalogue at runtime rather than restating it here, so a
+    new domain cannot be added without its gloss.
+    """
+
+    from itertools import takewhile
+
+    from verifier.domains.catalog import CHECKS
+
+    lines = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").splitlines()
+    block = " ".join(takewhile(lambda line: not line.startswith("## "), lines))
+    missing = sorted(name for name in CHECKS if f"({name})" not in block)
+    assert not missing, f"changelog acronym block does not gloss {missing}"
+
+
 def test_acronym_gate_rejects_missing_and_late_first_use(tmp_path: Path) -> None:
     path = ROOT / "scripts/check_acronyms.py"
     spec = importlib.util.spec_from_file_location("check_acronyms_fixture", path)
