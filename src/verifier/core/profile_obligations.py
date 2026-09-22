@@ -975,12 +975,62 @@ DOMAIN_OBLIGATIONS = (
         ("Composition delta", "Emitting this certificate beside a second presentation of the same occupancy discloses the linkage: two presentations each within bound reveal that they are the same bearer, which is the fact per-presentation unlinkability exists to withhold, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
+    *_domain_rows("ACTOR", 1, (
+        ("Actor identity", "The actor is named at a stated coordinate, as the party accountable for decisions rather than as any instrument that executes them.", (), ""),
+        ("Branch binding", "The actor is bound by exactly one of a VSTD-ROLE certificate or a VSTD-COLLECTIVE certificate at a stated coordinate. An actor binding neither is unspecified rather than either, and an actor binding both is malformed rather than both.", (1,), ""),
+        ("Control surface", "The key material the actor controls is declared; control is a property of the actor rather than of any key, and a key the declaration omits is not controlled.", (1,), ""),
+        ("Decision classes", "The classes of decision the actor is accountable for are declared, and a class the declaration omits is not carried.", (1,), ""),
+        ("Admitted specification spaces", "The specification spaces the actor is admitted to act in are declared, and admission to one is never read as admission to another.", (1,), ""),
+        ("Instrument boundary", "The boundary between the actor and the instruments it operates is declared. An instrument executes and the actor answers; a component on either side of that line is one or the other and never both.", (3, 4), ""),
+        ("Facet completeness", "An actor whose branch, control surface, decision classes, admitted spaces or instrument boundary is unstated is unspecified rather than unconstrained.", (2, 3, 4, 5, 6), ""),
+    )),
+    *_domain_rows("ACTOR", 2, (
+        ("Delegation", "A delegation conveying a subset of the actor's decision authority to another actor is declared as an event at a stated position, with the subset and the interval named.", (), ""),
+        ("Revocation", "Revoking a delegation is declared as an event; revocation ends the conveyance forward and never reaches decisions already taken under it.", (1,), ""),
+        ("Key rotation", "Rotating key material preserves the actor's continuity: the actor after rotation is the same actor, and the rotation is declared as an event rather than as a new actor.", (), ""),
+        ("Collective membership", "A role-branch actor entering or leaving a collective's graph is declared as an event; membership is a relation the actor enters rather than a property it carries.", (1,), ""),
+        ("Dissolution", "Dissolution is declared as an event: a collective that is wound up and a role class that is retired each end the actor's capacity to decide from that position forward, and neither ends what it already decided.", (1, 4), ""),
+        ("Succession", "Succession when the actor is replaced in its position is declared as a paired ending and beginning at one position; accountability for decisions taken before the succession does not move.", (2, 3, 5), ""),
+        ("Accountability replay", "Replaying the declared events from the first reproduces the current delegation, key and membership state.", (2, 3, 4, 5, 6), ""),
+    )),
+    *_domain_rows("ACTOR", 3, (
+        ("Decisions are factual", "A decision once taken was taken, and no later event makes an actual decision not have happened.", (), ""),
+        ("Non-transferable accountability", "Accountability for a decision cannot be retroactively transferred; a later delegation never moves an earlier decision's accountability.", (1,), ""),
+        ("Revocation does not un-decide", "Past decisions remain the actor's own after revocation, rotation or dissolution. Ending an actor's capacity to decide never ends its record of having decided.", (1, 2), ""),
+        ("No sole witness", "An actor cannot be the sole witness of its own accountability: an attribution resting only on a record the actor exclusively controls establishes nothing.", (), ""),
+        ("Instrument is not a party", "An instrument the actor operates is never a party to the decision, so attributing a decision to an instrument attributes it to no one.", (), ""),
+        ("Weakest operand", "Where accountability is established through a composition it is bounded by the weakest operand, never by the strongest.", (2, 4), ""),
+    )),
+    *_domain_rows("ACTOR", 4, (
+        ("Decision inventory", "The decisions the certificate accounts for are enumerated and contiguous over the declared interval, each at a stated position.", (), ""),
+        ("Exactly one actor", "Every decision in the declared classes is attributable to exactly one actor.", (1,), ""),
+        ("None unattributed", "No decision in the declared classes is left unattributed.", (1, 2), ""),
+        ("None doubly attributed", "No decision in the declared classes is attributed to two actors; joint accountability is declared as a collective rather than as duplicate attribution.", (1, 2), ""),
+        ("Independent attribution", "No attribution rests on a record the actor exclusively controls.", (2,), ""),
+        ("Closure result", "The inventory, the attributions and their independence are reported together; a closure missing any of the three is incomplete rather than passing.", (3, 4, 5), ""),
+    )),
+    *_domain_rows("ACTOR", 5, (
+        ("Mainstay binding", "The accountability mainstays the actor is expressed in are declared.", (), ""),
+        ("Key event mapping", "The key event receipt infrastructure control-and-rotation model maps onto the control surface and the rotation event, and a rotation the mapping cannot express is reported rather than dropped.", (1,), ""),
+        ("Controller mapping", "The decentralized identifier controller and verification-relationship model maps onto the control surface and the declared decision classes.", (1,), ""),
+        ("Principal mapping", "The authorization-framework principal maps onto the actor, and the distinction between a principal and the client acting for it maps onto the instrument boundary.", (1,), ""),
+        ("Round trip", "An actor expressed in a mainstay, mapped upward and expressed again yields the same declared control surface and decision classes.", (2, 3, 4), ""),
+        ("Inference upward", "The mainstays are inferred upward into one accountability meta-framework, and a construct no mainstay supports is declared rather than assumed.", (5,), ""),
+    )),
+    *_domain_rows("ACTOR", 6, (
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the actor identity, the bound branch, the control surface, the declared decision classes and the admitted specification spaces -- and is separated from the content of any decision taken. An actor discloses through its decision classes alone: a class narrow enough to be exercised by one party names that party without naming them.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Emitting this certificate beside the VSTD-OWNER certificate of a holding this actor carries discloses the relation: an actor within bound and a holding within bound together locate the party in a structure of things held, and what a party holds narrows who it is, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
 )
 
 DOMAIN_BY_ID = {o.id: o for o in DOMAIN_OBLIGATIONS}
 DOMAIN_OBJECTS = ("DATA", "ENV", "BENCH", "TRAIN", "HYPER", "MODEL", "SIM",
                   "HARNESS", "AGENT", "BOT", "OWNER",
-                  "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY")
+                  "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY", "ACTOR")
 
 # A relational object holds *between* certified objects instead of certifying a
 # substrate of its own. GRAPH carries its own axis; HYPER, OWNER and IDENTITY sit
@@ -993,7 +1043,7 @@ DOMAIN_OBJECTS = ("DATA", "ENV", "BENCH", "TRAIN", "HYPER", "MODEL", "SIM",
 # containment held by coincidence of n=1. HUMAN, ROLE and COLLECTIVE are
 # ungrounded and not relational -- a person is not a relation between objects.
 RELATIONAL_OBJECTS = ("GRAPH", "HYPER", "OWNER", "IDENTITY")
-UNGROUNDED_OBJECTS = ("OWNER", "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY")
+UNGROUNDED_OBJECTS = ("OWNER", "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY", "ACTOR")
 GROUNDED_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in UNGROUNDED_OBJECTS)
 
 # Grounded is not the same as certifiable, and conflating the two published a false claim

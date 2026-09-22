@@ -1,4 +1,4 @@
-# Grounded certification obligations of the seventeen certified objects
+# Grounded certification obligations of the eighteen certified objects
 
 > **Acronyms:** artificial intelligence (AI);
 > benchmark specification graph (VSTD-BENCH);
@@ -18,7 +18,7 @@
 > verifiable execution environment (VSTD-ENV);
 > YAML Ain't Markup Language (YAML).
 
-**Status:** project specification (normative for the fifteen domain objects' obligations)
+**Status:** project specification (normative for the sixteen domain objects' obligations)
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
 **Date:** 2026-09-21
@@ -26,12 +26,12 @@
 The object axis carries `1.1`-`5.11` and the Graph axis carries `Graph-1.1`-`Graph-5.6`;
 neither carries a level 6, because both are corroboration ladders and disclosure has no
 rungs. Level 6 exists on the domain objects only.
-This file carries the third namespace: the fifteen domain objects, coordinate
-`<object>-<tier>.<index>`, 512 obligations. The three namespaces are disjoint.
+This file carries the third namespace: the sixteen domain objects, coordinate
+`<object>-<tier>.<index>`, 550 obligations. The three namespaces are disjoint.
 `DATA-4.2` never aliases `4.2` or `Graph-4.2`, no catalogue admits another's identifiers,
 and each carries its own digest, so extending one cannot move another.
 
-**Nine of the fifteen are certifiable, and the partition has three parts rather than
+**Nine of the sixteen are certifiable, and the partition has three parts rather than
 two.** A *behavioural* adapter is keyed in `verifier.domains.catalog.CHECKS`, and
 `build_domain_certificate` rejects any domain absent from it, so those nine -- `VSTD-DATA`,
 `VSTD-ENV`, `VSTD-BENCH`, `VSTD-HYPER`, `VSTD-MODEL`, `VSTD-SIM`, `VSTD-HARNESS`,
@@ -46,9 +46,9 @@ at all, and its facets, dynamics and closure obligations are specified with no m
 partition, which is how 14 `VSTD-TRAIN` obligations came to name checks belonging to no
 family -- several of them another object's check name -- and be published as mechanized.
 
-The other five -- `VSTD-OWNER` and the four identity objects `VSTD-HUMAN`, `VSTD-ROLE`,
-`VSTD-COLLECTIVE` and `VSTD-IDENTITY` -- are **ungrounded**: no adapter executes them in
-any family, so all 178 of their obligations report `UNKNOWN`.
+The other six -- `VSTD-OWNER` and the five identity objects `VSTD-HUMAN`, `VSTD-ROLE`,
+`VSTD-COLLECTIVE`, `VSTD-IDENTITY` and `VSTD-ACTOR` -- are **ungrounded**: no adapter
+executes them in any family, so all 216 of their obligations report `UNKNOWN`.
 
 **A mechanism name is a promise that something executes it.** Every name in the
 **mechanism** column is resolved against the registered checks of that obligation's own
@@ -59,8 +59,9 @@ object resolves to the wrong check.
 *between* certified objects instead of certifying a substrate of its own; the relational
 objects are `VSTD-GRAPH`, `VSTD-HYPER`, `VSTD-OWNER` and `VSTD-IDENTITY`, of which the
 first carries its own axis and the other three sit on this one. `VSTD-HYPER` is
-relational and grounded; `VSTD-HUMAN`, `VSTD-ROLE` and `VSTD-COLLECTIVE` are ungrounded
-and not relational. Until the identity family was catalogued the two properties could not
+relational and grounded; `VSTD-HUMAN`, `VSTD-ROLE`, `VSTD-COLLECTIVE` and `VSTD-ACTOR`
+are ungrounded and not relational -- an actor is a party, not a relation between
+certified objects, even though it is the operand `VSTD-OWNER` holds against. Until the identity family was catalogued the two properties could not
 be distinguished here, because `VSTD-OWNER` was the only ungrounded object and it was
 relational too -- a containment that held by coincidence of there being one.
 
@@ -97,9 +98,9 @@ establishes. Three things follow, and each is a row below:
 
 Four of the six rows -- `6.2`, `6.3`, `6.4` and `6.6` -- are the **same proposition at
 every object**, and that uniformity is the argument that disclosure is a level rather
-than a twelfth object: an object contributes rows that differ, a level contributes the
+than an object of its own: an object contributes rows that differ, a level contributes the
 same row everywhere. Only `6.1` (what this object emits) and `6.5` (what composing it
-reveals) are object-specific. All 66 rows are specified with no mechanism and
+reveals) are object-specific. All 96 rows are specified with no mechanism and
 report `UNKNOWN`: no adapter runs at emission time, and no observer model is
 established anywhere in the implementation, so a `PASS` here would be a claim nothing
 supports. Level 6 therefore adds no module to `verifier.domains` and **does not move**
@@ -1495,6 +1496,117 @@ Proof-of-personhood formats are deliberately not here: they establish humanness,
 | IDENTITY-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | IDENTITY-6.2, IDENTITY-6.3 | none |
 | IDENTITY-6.5 | Composition delta | Emitting this certificate beside a second presentation of the same occupancy discloses the linkage: two presentations each within bound reveal that they are the same bearer, which is the fact per-presentation unlinkability exists to withhold, so the join is evaluated against both operands and not against either alone. | IDENTITY-6.2, IDENTITY-6.4 | none |
 | IDENTITY-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | IDENTITY-6.2, IDENTITY-6.4, IDENTITY-6.5 | none |
+## VSTD-ACTOR
+
+`VSTD-ACTOR` is the party accountable for decisions, and it is the sum
+the rest of the family is assembled into: `ACTOR-1.2` binds exactly one of a `VSTD-ROLE`
+certificate or a `VSTD-COLLECTIVE` certificate, and an actor binding both is malformed
+rather than both. It is **ungrounded** -- no adapter executes it -- and it is **not
+relational**: it is an entity rather than a relation between certified objects, which is
+what separates it from `VSTD-OWNER` and `VSTD-IDENTITY`.
+
+**An agent is not an actor.** An agent decides; an actor answers for it. Those are
+different relations, and only one of them can be borne by a person or a company -- which
+is why `VSTD-ACTOR` splits into two branches and `VSTD-AGENT` splits into none. The
+distinction is positional: an agent's decisions are made *inside* an observation ceiling,
+and an actor's decisions are the ones that *placed* it. `ACTOR-1.6` draws that line and
+`ACTOR-3.5` keeps it -- an instrument is never a party, so attributing a decision to an
+instrument attributes it to no one.
+
+`ACTOR-3.4` is what keeps the object honest: an actor cannot be the sole witness of its
+own accountability, so an attribution resting only on a record the actor exclusively
+controls establishes nothing, and `ACTOR-4.5` carries that into closure.
+
+The bearer is deliberately absent. A role-branch actor admits bearer classes and a
+collective-branch actor has no bearer at all, so a bearer field here would force a
+collective to declare itself human or bot. The bearer sits on the occupancy, at
+`IDENTITY-1.1`.
+
+### VSTD-ACTOR-1: Facets
+
+`ACTOR-1.1` through `ACTOR-1.7`; topological depth 4; 0 of 7 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| ACTOR-1.1 | Actor identity | The actor is named at a stated coordinate, as the party accountable for decisions rather than as any instrument that executes them. | none | none |
+| ACTOR-1.2 | Branch binding | The actor is bound by exactly one of a VSTD-ROLE certificate or a VSTD-COLLECTIVE certificate at a stated coordinate. An actor binding neither is unspecified rather than either, and an actor binding both is malformed rather than both. | ACTOR-1.1 | none |
+| ACTOR-1.3 | Control surface | The key material the actor controls is declared; control is a property of the actor rather than of any key, and a key the declaration omits is not controlled. | ACTOR-1.1 | none |
+| ACTOR-1.4 | Decision classes | The classes of decision the actor is accountable for are declared, and a class the declaration omits is not carried. | ACTOR-1.1 | none |
+| ACTOR-1.5 | Admitted specification spaces | The specification spaces the actor is admitted to act in are declared, and admission to one is never read as admission to another. | ACTOR-1.1 | none |
+| ACTOR-1.6 | Instrument boundary | The boundary between the actor and the instruments it operates is declared. An instrument executes and the actor answers; a component on either side of that line is one or the other and never both. | ACTOR-1.3, ACTOR-1.4 | none |
+| ACTOR-1.7 | Facet completeness | An actor whose branch, control surface, decision classes, admitted spaces or instrument boundary is unstated is unspecified rather than unconstrained. | ACTOR-1.2, ACTOR-1.3, ACTOR-1.4, ACTOR-1.5, ACTOR-1.6 | none |
+
+### VSTD-ACTOR-2: Dynamics
+
+`ACTOR-2.1` through `ACTOR-2.7`; topological depth 5; 0 of 7 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| ACTOR-2.1 | Delegation | A delegation conveying a subset of the actor's decision authority to another actor is declared as an event at a stated position, with the subset and the interval named. | none | none |
+| ACTOR-2.2 | Revocation | Revoking a delegation is declared as an event; revocation ends the conveyance forward and never reaches decisions already taken under it. | ACTOR-2.1 | none |
+| ACTOR-2.3 | Key rotation | Rotating key material preserves the actor's continuity: the actor after rotation is the same actor, and the rotation is declared as an event rather than as a new actor. | none | none |
+| ACTOR-2.4 | Collective membership | A role-branch actor entering or leaving a collective's graph is declared as an event; membership is a relation the actor enters rather than a property it carries. | ACTOR-2.1 | none |
+| ACTOR-2.5 | Dissolution | Dissolution is declared as an event: a collective that is wound up and a role class that is retired each end the actor's capacity to decide from that position forward, and neither ends what it already decided. | ACTOR-2.1, ACTOR-2.4 | none |
+| ACTOR-2.6 | Succession | Succession when the actor is replaced in its position is declared as a paired ending and beginning at one position; accountability for decisions taken before the succession does not move. | ACTOR-2.2, ACTOR-2.3, ACTOR-2.5 | none |
+| ACTOR-2.7 | Accountability replay | Replaying the declared events from the first reproduces the current delegation, key and membership state. | ACTOR-2.2, ACTOR-2.3, ACTOR-2.4, ACTOR-2.5, ACTOR-2.6 | none |
+
+### VSTD-ACTOR-3: Statics
+
+`ACTOR-3.1` through `ACTOR-3.6`; topological depth 3; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| ACTOR-3.1 | Decisions are factual | A decision once taken was taken, and no later event makes an actual decision not have happened. | none | none |
+| ACTOR-3.2 | Non-transferable accountability | Accountability for a decision cannot be retroactively transferred; a later delegation never moves an earlier decision's accountability. | ACTOR-3.1 | none |
+| ACTOR-3.3 | Revocation does not un-decide | Past decisions remain the actor's own after revocation, rotation or dissolution. Ending an actor's capacity to decide never ends its record of having decided. | ACTOR-3.1, ACTOR-3.2 | none |
+| ACTOR-3.4 | No sole witness | An actor cannot be the sole witness of its own accountability: an attribution resting only on a record the actor exclusively controls establishes nothing. | none | none |
+| ACTOR-3.5 | Instrument is not a party | An instrument the actor operates is never a party to the decision, so attributing a decision to an instrument attributes it to no one. | none | none |
+| ACTOR-3.6 | Weakest operand | Where accountability is established through a composition it is bounded by the weakest operand, never by the strongest. | ACTOR-3.2, ACTOR-3.4 | none |
+
+### VSTD-ACTOR-4: Closure
+
+`ACTOR-4.1` through `ACTOR-4.6`; topological depth 4; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| ACTOR-4.1 | Decision inventory | The decisions the certificate accounts for are enumerated and contiguous over the declared interval, each at a stated position. | none | none |
+| ACTOR-4.2 | Exactly one actor | Every decision in the declared classes is attributable to exactly one actor. | ACTOR-4.1 | none |
+| ACTOR-4.3 | None unattributed | No decision in the declared classes is left unattributed. | ACTOR-4.1, ACTOR-4.2 | none |
+| ACTOR-4.4 | None doubly attributed | No decision in the declared classes is attributed to two actors; joint accountability is declared as a collective rather than as duplicate attribution. | ACTOR-4.1, ACTOR-4.2 | none |
+| ACTOR-4.5 | Independent attribution | No attribution rests on a record the actor exclusively controls. | ACTOR-4.2 | none |
+| ACTOR-4.6 | Closure result | The inventory, the attributions and their independence are reported together; a closure missing any of the three is incomplete rather than passing. | ACTOR-4.3, ACTOR-4.4, ACTOR-4.5 | none |
+
+### VSTD-ACTOR-5: Domain adaptation
+
+`ACTOR-5.1` through `ACTOR-5.6`; topological depth 4; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| ACTOR-5.1 | Mainstay binding | The accountability mainstays the actor is expressed in are declared. | none | none |
+| ACTOR-5.2 | Key event mapping | The key event receipt infrastructure control-and-rotation model maps onto the control surface and the rotation event, and a rotation the mapping cannot express is reported rather than dropped. | ACTOR-5.1 | none |
+| ACTOR-5.3 | Controller mapping | The decentralized identifier controller and verification-relationship model maps onto the control surface and the declared decision classes. | ACTOR-5.1 | none |
+| ACTOR-5.4 | Principal mapping | The authorization-framework principal maps onto the actor, and the distinction between a principal and the client acting for it maps onto the instrument boundary. | ACTOR-5.1 | none |
+| ACTOR-5.5 | Round trip | An actor expressed in a mainstay, mapped upward and expressed again yields the same declared control surface and decision classes. | ACTOR-5.2, ACTOR-5.3, ACTOR-5.4 | none |
+| ACTOR-5.6 | Inference upward | The mainstays are inferred upward into one accountability meta-framework, and a construct no mainstay supports is declared rather than assumed. | ACTOR-5.5 | none |
+
+### Registered mainstays of VSTD-ACTOR
+
+None. `VSTD-ACTOR` has no adapter, so it registers none. The formats its
+tier 5 names -- key event receipt infrastructure, decentralized identifier controllers and
+authorization-framework principals -- are named as unestablished rather than registered.
+
+### VSTD-ACTOR-6: Disclosure
+
+`ACTOR-6.1` through `ACTOR-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Obligation | Requirement | Depends on | Mechanism |
+|---|---|---|---|---|
+| ACTOR-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the actor identity, the bound branch, the control surface, the declared decision classes and the admitted specification spaces -- and is separated from the content of any decision taken. An actor discloses through its decision classes alone: a class narrow enough to be exercised by one party names that party without naming them. | none | none |
+| ACTOR-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | ACTOR-6.1 | none |
+| ACTOR-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | ACTOR-6.1 | none |
+| ACTOR-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | ACTOR-6.2, ACTOR-6.3 | none |
+| ACTOR-6.5 | Composition delta | Emitting this certificate beside the VSTD-OWNER certificate of a holding this actor carries discloses the relation: an actor within bound and a holding within bound together locate the party in a structure of things held, and what a party holds narrows who it is, so the join is evaluated against both operands and not against either alone. | ACTOR-6.2, ACTOR-6.4 | none |
+| ACTOR-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | ACTOR-6.2, ACTOR-6.4, ACTOR-6.5 | none |
 ## Depth, not count
 
 `m` in `VSTD-<object>-<tier>.<m>` is the depth of complete modules represented, so the

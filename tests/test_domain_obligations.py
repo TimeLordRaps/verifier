@@ -204,7 +204,7 @@ def test_the_disclosure_level_is_a_level_and_not_an_object() -> None:
     """Level 6 is the same six rows everywhere; an object would contribute rows that differ.
 
     Four of the six are the same proposition at every object, which is the whole argument
-    that disclosure is a level rather than a twelfth domain object. Only 6.1 (what this
+    that disclosure is a level rather than an object of its own. Only 6.1 (what this
     object emits) and 6.5 (what composing it reveals) are object-specific.
     """
     shapes = set()
