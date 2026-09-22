@@ -1,7 +1,0 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-authority-model-1.schema.json",
-  "title": "Experimental Verifier Standard (VSTD) finite authority model",
-  "description": "A finite declared authority transition model. Conformance establishes only the checked declared graph, not actual runtime behavior, access, capability, awareness, or knowledge.",
-  "$ref": "verifier-artifact-network-1.schema.json#/$defs/authorityModel"
-}

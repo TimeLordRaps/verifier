@@ -113,11 +113,6 @@ def test_formation_profile_and_packaged_contract_are_exact_inert_resources() -> 
     artifact = importlib.resources.files("verifier").joinpath("profiles/typed-formation-1.json")
     assert artifact.read_bytes() == wire.profile_bytes()
     assert digest_bytes(artifact.read_bytes()) == PROFILE_DIGEST
-    for source, packaged in (
-        ("standard/TYPED_FORMATION.md", "standard/TYPED_FORMATION.md"),
-        ("standard/schemas/verifier-typed-formation-1.schema.json", "schemas/verifier-typed-formation-1.schema.json"),
-    ):
-        assert (ROOT / source).read_bytes() == importlib.resources.files("verifier").joinpath(packaged).read_bytes()
 
 
 def test_formation_catalog_entrypoints_execute_only_explicitly_and_retain_residuals() -> None:

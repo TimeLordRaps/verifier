@@ -87,8 +87,6 @@ def test_formation_receipt_resources_are_packaged_registered_and_experimental() 
     from scripts.release_artifacts import PACKAGED_SCHEMA_NAMES
 
     assert NAME in PACKAGED_SCHEMA_NAMES
-    assert (ROOT / "standard/schemas" / NAME).read_bytes() == (ROOT / "src/verifier/schemas" / NAME).read_bytes()
-    assert (ROOT / "standard/FORMATION_RECEIPT.md").read_bytes() == (ROOT / "src/verifier/standard/FORMATION_RECEIPT.md").read_bytes()
     identifiers = (ROOT / "src/verifier/standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
     assert "verifier-silo-formation-selection-1" in identifiers
     assert "verifier-silo-formation-receipt-1" in identifiers

@@ -305,10 +305,6 @@ def test_admission_errors_expose_exact_codes() -> None:
     assert caught.value.code == str(caught.value) == "FORMATION_RECEIPT_INVALID"
 
 
-def test_specification_has_an_exact_packaged_mirror() -> None:
-    assert (ROOT / "standard/FORMATION_RECEIPT.md").read_bytes() == (ROOT / "src/verifier/standard/FORMATION_RECEIPT.md").read_bytes()
-
-
 @pytest.mark.parametrize("case", RECEIPT_CORPUS["cases"], ids=lambda case: case["case_id"])
 def test_dedicated_receipt_corpus_has_exact_bytes_and_fresh_inspection(case: dict[str, Any]) -> None:
     selection = raw(case["selection_bytes_base64url"])

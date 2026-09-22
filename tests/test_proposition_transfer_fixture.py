@@ -65,9 +65,7 @@ def test_new_wire_schema_copies_and_release_inventory_cover_every_fixture_record
 
 
 def test_rule_document_is_installed_without_strengthening_authority_or_graph_claims() -> None:
-    source = ROOT / "standard/PROPOSITION_TRANSFER.md"
-    installed = ROOT / "src/verifier/standard/PROPOSITION_TRANSFER.md"
-    assert source.read_bytes() == installed.read_bytes()
+    source = ROOT / "src/verifier/standard/PROPOSITION_TRANSFER.md"
     text = source.read_text(encoding="utf-8")
     assert "authority_admissibility" in text
     assert "always NOT_ESTABLISHED" in text

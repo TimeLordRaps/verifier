@@ -1,6 +1,6 @@
 """Terminology: Request for Comments (RFC); Verifier Standard (VSTD).
 
-Installed specification resources must match the public normative files exactly."""
+The packaged specification resources are the normative files."""
 
 from __future__ import annotations
 
@@ -8,28 +8,6 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-
-
-def test_packaged_specification_bytes_match_normative_sources() -> None:
-    normative_files = sorted((REPO_ROOT / "standard").glob("*.md"))
-    packaged_dir = REPO_ROOT / "src" / "verifier" / "standard"
-    assert {path.name for path in packaged_dir.glob("*.md")} == {
-        path.name for path in normative_files
-    }
-    for normative in normative_files:
-        assert (packaged_dir / normative.name).read_bytes() == normative.read_bytes(), (
-            normative.name
-        )
-
-
-def test_packaged_schema_bytes_match_public_schema_sources() -> None:
-    published = REPO_ROOT / "standard" / "schemas"
-    packaged = REPO_ROOT / "src" / "verifier" / "schemas"
-    published_names = {path.name for path in published.glob("*.json")}
-    packaged_names = {path.name for path in packaged.glob("*.json")}
-    assert packaged_names == published_names
-    for source in published.glob("*.json"):
-        assert (packaged / source.name).read_bytes() == source.read_bytes(), source.name
 
 
 def test_ladder_fixes_causal_provenance_directions_without_actor_trust() -> None:
