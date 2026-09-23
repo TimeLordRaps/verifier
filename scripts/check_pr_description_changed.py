@@ -14,8 +14,16 @@ was made, and the first pull-request workflow run on a head marks the moment tha
 head was pushed. Later runs on the same head come from edits, so the first is the
 push. The revision in force at that moment is the reference.
 
-A revised description is not thereby a correct one. `check_pr_description.py` checks
-what the description says against the tree; this check establishes only that the
+Before a push, the check judges the live description against the current head's
+push. After one, `--pushed HEAD` judges the push that made HEAD the head: the
+description in force at that push against the one in force at the push before it.
+That verdict is fixed once both pushes are made, so it comes out the same on every
+later event, and an edit made afterwards cannot clear it. Only another push, with a
+revised description, can. The push before is the latest one recorded among the pull
+request's runs; a head no pull-request run ever saw is not recorded.
+
+A revised description is not thereby a correct one. The `describes-head` check holds
+what the description says to the head; this check establishes only that the
 description was revised since the last push.
 """
 
@@ -27,6 +35,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from urllib.parse import quote
 
 PULL_REQUEST_EVENTS = frozenset({"pull_request", "pull_request_target"})
 REVISIONS_QUERY = """
@@ -66,6 +75,24 @@ def pushed_at(runs: list[dict], number: int) -> str | None:
     return min(moments, key=_instant) if moments else None
 
 
+def pushes(runs: list[dict], number: int, head_repository: str) -> dict[str, str]:
+    """Each head of pull request `number` with the moment it was pushed.
+
+    `runs` are the runs on the pull request's head branch. A branch of the same name
+    in another repository is another branch, so runs from it are not pushes here.
+    """
+
+    moments: dict[str, str] = {}
+    for run in runs:
+        if run.get("head_repository") != head_repository:
+            continue
+        moment = pushed_at([run], number)
+        head = run["head_sha"]
+        if moment and (head not in moments or _instant(moment) < _instant(moments[head])):
+            moments[head] = moment
+    return moments
+
+
 def in_force(revisions: list[dict], moment: str) -> dict | None:
     """The revision in force at `moment`: the latest one made at or before it."""
 
@@ -93,10 +120,30 @@ def fetch_pull(repository: str, number: int) -> tuple[str, str]:
     return data.get("body") or "", data["headRefOid"]
 
 
+def fetch_branch(repository: str, number: int) -> tuple[str, str]:
+    """The head branch of a pull request and the repository that holds it."""
+
+    data = json.loads(_gh(["pr", "view", str(number), "--repo", repository, "--json",
+                           "headRefName,headRepository,headRepositoryOwner"]))
+    return (data["headRefName"],
+            f"{data['headRepositoryOwner']['login']}/{data['headRepository']['name']}")
+
+
 def fetch_runs(repository: str, head: str) -> list[dict]:
     output = _gh([
         "api", "--paginate", f"repos/{repository}/actions/runs?head_sha={head}&per_page=100",
         "--jq", ".workflow_runs[] | {created_at, event, "
+                "pull_requests: [.pull_requests[].number]} | @json",
+    ])
+    return [json.loads(line) for line in output.splitlines() if line.strip()]
+
+
+def fetch_branch_runs(repository: str, branch: str) -> list[dict]:
+    output = _gh([
+        "api", "--paginate",
+        f"repos/{repository}/actions/runs?branch={quote(branch, safe='')}&per_page=100",
+        "--jq", ".workflow_runs[] | {head_sha, created_at, event, "
+                "head_repository: .head_repository.full_name, "
                 "pull_requests: [.pull_requests[].number]} | @json",
     ])
     return [json.loads(line) for line in output.splitlines() if line.strip()]
@@ -143,19 +190,60 @@ def check(repository: str, number: int, head: str | None = None,
         # Never edited: every copy of the description is the one it was opened with.
         return False, (f"pull request #{number}'s description has never been edited, so it is "
                        f"word for word the one in force when {head[:12]} was pushed ({moment}).")
-    reference = in_force(revisions, moment)
-    if reference is None:
-        raise Unanswered(f"no revision of pull request #{number}'s description is as old as the "
-                         f"push of {head[:12]} ({moment}).")
-    if reference.get("deletedAt") or reference.get("diff") is None:
-        raise Unanswered(f"the revision of pull request #{number}'s description in force when "
-                         f"{head[:12]} was pushed has been deleted from its history.")
+    reference = _in_force_at_push(revisions, moment, number, head)
     if words(body) == words(reference["diff"]):
         return False, (f"pull request #{number}'s description is word for word the one in force "
                        f"when {head[:12]} was pushed ({moment}; revision of "
                        f"{reference['editedAt']}).")
     return True, (f"pull request #{number}'s description has been revised since {head[:12]} "
                   f"was pushed ({moment}).")
+
+
+def _in_force_at_push(revisions: list[dict], moment: str, number: int, head: str) -> dict:
+    revision = in_force(revisions, moment)
+    if revision is None:
+        raise Unanswered(f"no revision of pull request #{number}'s description is as old as the "
+                         f"push of {head[:12]} ({moment}).")
+    if revision.get("deletedAt") or revision.get("diff") is None:
+        raise Unanswered(f"the revision of pull request #{number}'s description in force when "
+                         f"{head[:12]} was pushed has been deleted from its history.")
+    return revision
+
+
+def check_push(repository: str, number: int, head: str) -> tuple[bool, str]:
+    """Return (revised, message) for the push that made `head` pull request `number`'s head.
+
+    Both descriptions compared are the ones in force at a push, never the live one, so
+    no edit made after the push of `head` changes the verdict.
+    """
+
+    branch, head_repository = fetch_branch(repository, number)
+    moments = pushes(fetch_branch_runs(repository, branch), number, head_repository)
+    if head not in moments:
+        raise Unanswered(
+            f"no pull-request workflow run on {head[:12]} records when it was pushed to pull "
+            f"request #{number}."
+        )
+    moment = moments[head]
+    earlier = {other: at for other, at in moments.items() if _instant(at) < _instant(moment)}
+    if not earlier:
+        return True, (f"no push to pull request #{number} is recorded before {head[:12]} "
+                      f"({moment}), so there is no earlier description to compare with.")
+    previous = max(earlier, key=lambda other: _instant(earlier[other]))
+    revisions = fetch_revisions(repository, number)
+    if not revisions:
+        return False, (f"pull request #{number}'s description has never been edited, so the "
+                       f"push of {head[:12]} ({moment}) carried word for word the one in force "
+                       f"when {previous[:12]} was pushed ({earlier[previous]}).")
+    carried = _in_force_at_push(revisions, moment, number, head)
+    reference = _in_force_at_push(revisions, earlier[previous], number, previous)
+    if words(carried["diff"]) == words(reference["diff"]):
+        return False, (f"the push of {head[:12]} to pull request #{number} ({moment}) carried a "
+                       f"description word for word the one in force when {previous[:12]} was "
+                       f"pushed ({earlier[previous]}). An edit made since cannot revise a push "
+                       f"already made.")
+    return True, (f"the push of {head[:12]} to pull request #{number} ({moment}) carried a "
+                  f"description revised since {previous[:12]} was pushed ({earlier[previous]}).")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -167,11 +255,19 @@ def main(argv: list[str] | None = None) -> int:
                                        "the pull request's current head")
     parser.add_argument("--body", type=Path, help="judge the description in this file; "
                                                   "defaults to the live description")
+    parser.add_argument("--pushed", metavar="HEAD",
+                        help="judge the push that made HEAD the head, as it was made; "
+                             "excludes --head and --body")
     args = parser.parse_args(argv)
+    if args.pushed and (args.head or args.body):
+        parser.error("--pushed judges a push already made; --head and --body judge the next one")
 
-    body = None if args.body is None else args.body.read_text(encoding="utf-8")
     try:
-        revised, message = check(args.repo, args.pr, args.head, body)
+        if args.pushed:
+            revised, message = check_push(args.repo, args.pr, args.pushed)
+        else:
+            body = None if args.body is None else args.body.read_text(encoding="utf-8")
+            revised, message = check(args.repo, args.pr, args.head, body)
     except (Unanswered, KeyError, TypeError, ValueError) as error:
         print(f"[PR DESCRIPTION CHANGE] FAIL: {error}")
         return 1

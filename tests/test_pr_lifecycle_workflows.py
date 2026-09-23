@@ -443,20 +443,24 @@ def _assert_runs_the_pull_requests_own_tree_safely(job: dict) -> None:
 
 def test_a_push_with_an_unrevised_description_fails_even_without_the_local_hook() -> None:
     """The pre-push gate stops such a push only where it is installed. This job is
-    where a push that skipped it still fails. It judges the description as the push
-    event carried it, against the one in force at the previous head's push, and no
-    later edit may cancel that verdict.
+    where a push that skipped it still fails, and no later edit may clear that.
+
+    A job skipped on an edit reports success, and a required check reads the latest
+    report on the head, so the job runs on every event. Each run judges the push of
+    the head it carries, as that push was made, never the live description.
     """
     workflow = yaml.safe_load(
         (ROOT / ".github/workflows/pr-description.yml").read_text(encoding="utf-8"))
     job = workflow["jobs"]["changed-since-last-push"]
-    assert job["if"] == "github.event.action == 'synchronize'"
-    assert "concurrency" not in job and "concurrency" not in workflow
+    assert "if" not in job
+    assert "concurrency" not in workflow
+    assert job["concurrency"]["group"] != workflow["jobs"]["describes-head"]["concurrency"]["group"]
+    assert "github.event.pull_request.number" in job["concurrency"]["group"]
     assert job["permissions"] == {"contents": "read", "actions": "read", "pull-requests": "read"}
     (check,) = [step for step in job["steps"]
                 if "check_pr_description_changed.py" in str(step.get("run", ""))]
-    assert check["env"]["DESCRIPTION"] == "${{ github.event.pull_request.body }}"
-    assert check["env"]["BEFORE"] == "${{ github.event.before }}"
+    assert check["env"]["HEAD_SHA"] == "${{ github.event.pull_request.head.sha }}"
     assert check["env"]["GH_TOKEN"] == "${{ github.token }}"
-    assert '--head "$BEFORE"' in check["run"]
-    assert '--body "$RUNNER_TEMP/description.md"' in check["run"]
+    assert "DESCRIPTION" not in check["env"]
+    assert '--pushed "$HEAD_SHA"' in check["run"]
+    assert "--head" not in check["run"] and "--body" not in check["run"]
