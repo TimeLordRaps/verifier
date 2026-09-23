@@ -6,6 +6,8 @@ namespace disjoint from both the object axis and the Graph axis.
 
 from __future__ import annotations
 
+import importlib.util
+import re
 from pathlib import Path
 
 import pytest
@@ -39,6 +41,32 @@ from verifier.domains.statics import BY_NAME as STATICS_BY_NAME
 from verifier.domains.statics import PREFIX as STATICS_PREFIX
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+SPEC = (REPO_ROOT / "src/verifier/standard/DOMAIN_OBLIGATIONS.md").read_text(encoding="utf-8")
+# Prose wraps wherever the line runs out, so sentences are matched with whitespace folded.
+FLAT = " ".join(SPEC.split())
+
+
+def _number_words() -> dict[str, int]:
+    """The pull-request gate's vocabulary, so the spec and the description read numbers alike."""
+    spec = importlib.util.spec_from_file_location(
+        "check_pr_description", REPO_ROOT / "scripts" / "check_pr_description.py")
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return {word: value for value, word in module.NUMBER_WORDS.items()}
+
+
+NUMBER_WORDS = _number_words()
+
+
+def _count(token: str) -> int:
+    return int(token) if token[0].isdigit() else NUMBER_WORDS[token.lower()]
+
+
+def _stated(pattern: str) -> re.Match:
+    found = re.search(pattern, FLAT)
+    assert found, pattern
+    return found
 
 
 def test_every_domain_profile_has_contiguous_obligations() -> None:
@@ -317,3 +345,58 @@ def test_certifiable_is_not_the_same_property_as_grounded() -> None:
     for name in UNGROUNDED_OBJECTS:
         rows = [o for o in DOMAIN_OBLIGATIONS if o.object_name == name]
         assert rows and not any(o.mechanized for o in rows), name
+
+
+def test_every_profile_header_states_its_measured_depth_and_mechanization() -> None:
+    """One header per profile, and each figure in it recomputed from the catalogue."""
+    headers = re.findall(r"^`[A-Z]+-\d\.1` through `[A-Z]+-\d\.\d+`; topological depth \d+; "
+                         r"\d+ of \d+ mechanized\.$", SPEC, re.MULTILINE)
+    assert len(headers) == len(set(headers)) == 6 * len(DOMAIN_OBJECTS)
+    for object_name in DOMAIN_OBJECTS:
+        for profile in range(1, 7):
+            rows = [o for o in DOMAIN_OBLIGATIONS
+                    if o.object_name == object_name and o.profile == profile]
+            header = (f"`{object_name}-{profile}.1` through `{object_name}-{profile}.{len(rows)}`; "
+                      f"topological depth {tier_depth(object_name, profile)}; "
+                      f"{sum(o.mechanized for o in rows)} of {len(rows)} mechanized.")
+            assert header in headers, (object_name, profile)
+
+
+def test_the_families_table_states_each_measured_bound() -> None:
+    mechanized = [o for o in DOMAIN_OBLIGATIONS if o.mechanized]
+    statics = sum(o.mechanism.startswith(STATICS_PREFIX) for o in mechanized)
+    adaptation = sum(o.mechanism.startswith(MAINSTAY_PREFIX) for o in mechanized)
+    bounds = dict(re.findall(r"^\| (Behavioural|Statics|Adaptation) \|.*\| (\d+) \|$", SPEC, re.MULTILINE))
+    assert bounds == {"Behavioural": str(len(mechanized) - statics - adaptation),
+                      "Statics": str(statics), "Adaptation": str(adaptation)}
+
+
+def test_the_published_partition_is_measured() -> None:
+    """The certifiable, operator and ungrounded sentences, each against the constants."""
+    for pattern in (r"^# Grounded certification obligations of the (\w+) domain objects$",
+                    r"\(normative for the (\w+) domain objects' obligations\)"):
+        found = re.search(pattern, SPEC, re.MULTILINE)
+        assert found and _count(found.group(1)) == len(DOMAIN_OBJECTS), pattern
+    found = _stated(r"the (\w+) domain objects, coordinate `<object>-<tier>\.<index>`, (\d+) obligations")
+    assert (_count(found.group(1)), _count(found.group(2))) == (len(DOMAIN_OBJECTS), len(DOMAIN_OBLIGATIONS))
+
+    found = _stated(r"\*\*(\w+) of the (\w+) are certifiable")
+    assert (_count(found.group(1)), _count(found.group(2))) == (len(CERTIFIABLE_OBJECTS), len(DOMAIN_OBJECTS))
+    found = _stated(r"so those (\w+) -- (.+?) -- are the objects a domain certificate can be built for")
+    assert _count(found.group(1)) == len(CERTIFIABLE_OBJECTS)
+    assert re.findall(r"`([A-Z]+)`", found.group(2)) == list(CERTIFIABLE_OBJECTS)
+
+    assert OPERATOR_OBJECTS == ("HYPER",), "the operator sentence names HYPER"
+    hyper = [o for o in DOMAIN_OBLIGATIONS if o.object_name == "HYPER"]
+    found = _stated(r"`HYPER` is \*\*catalogued but not certifiable\*\*\. Its statics and adaptation "
+                    r"mechanisms resolve and execute, so (\d+) of its (\d+) obligations are mechanized")
+    assert (int(found.group(1)), int(found.group(2))) == (sum(o.mechanized for o in hyper), len(hyper))
+
+    found = _stated(r"The other (\w+) -- `OWNER` and the (\w+) identity objects (.+?) -- are "
+                    r"\*\*ungrounded\*\*: no adapter executes them in any family, so all (\d+) of "
+                    r"their obligations report `UNKNOWN`")
+    named = ["OWNER", *re.findall(r"`([A-Z]+)`", found.group(3))]
+    assert _count(found.group(1)) == len(UNGROUNDED_OBJECTS)
+    assert _count(found.group(2)) == len(UNGROUNDED_OBJECTS) - 1
+    assert sorted(named) == sorted(UNGROUNDED_OBJECTS)
+    assert int(found.group(4)) == len([o for o in DOMAIN_OBLIGATIONS if o.object_name in UNGROUNDED_OBJECTS])

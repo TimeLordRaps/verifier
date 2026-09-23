@@ -10,6 +10,7 @@ from copy import deepcopy
 import importlib.util
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 from types import ModuleType
@@ -671,3 +672,83 @@ def test_token_readings_that_narrow_or_reach_outside_still_hold(example: ModuleT
     assert [checks[c]["evaluation"]["outcome"] for c in ("TOKEN.1", "TOKEN.3", "TOKEN.5")] == ["PASS"] * 3
     assert checks["TOKEN.1"]["evaluation"]["observations"]["unaddressed"] == ["tenure"]
     assert checks["TOKEN.5"]["evaluation"]["observations"]["reaching_outside"] == ["lease", "tenure"]
+
+
+def _number_words() -> dict[str, int]:
+    """The pull-request gate's vocabulary, so these surfaces and the description read numbers alike."""
+    spec = importlib.util.spec_from_file_location(
+        "check_pr_description", ROOT / "scripts" / "check_pr_description.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return {word: value for value, word in module.NUMBER_WORDS.items()}
+
+
+NUMBER_WORDS = _number_words()
+ADAPTER_COUNT = re.compile(r"\b(\w+) (?:(?:executable|grounded|native) )*domain adapters\b", re.IGNORECASE)
+CHECK_COUNT = re.compile(r"\b(\d+) (?:(?:cumulative|separate) )*domain checks\b", re.IGNORECASE)
+NAME_LIST = re.compile(r"\bDATA, ENV(?:, [A-Z]+)*,? and [A-Z]+\b")
+COUNT_SURFACES = sorted({ROOT / "README.md", ROOT / "CHANGELOG.md", ROOT / "docs/reference.html",
+                         *ROOT.glob("docs/**/*.md"), *ROOT.glob("src/verifier/standard/*.md"),
+                         *ROOT.glob("src/verifier/runtime/*.py")})
+
+
+def _current_prose(path: Path) -> str:
+    text = path.read_text(encoding="utf-8")
+    if path.name == "CHANGELOG.md":
+        # A released section records what was true when it shipped; only an unreleased
+        # one has to be true now.
+        text = "\n".join(section for section in re.split(r"(?m)^## ", text)[1:]
+                         if "unreleased" in section.split("\n", 1)[0].lower())
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
+    return " ".join(text.split())
+
+
+def test_every_published_adapter_and_check_count_is_measured() -> None:
+    """A count of the adapters, their checks or their names is read back from CHECKS.
+
+    The scan is generic, so a surface nobody remembers is covered too; the reach
+    assertions stop it from passing vacuously when a phrasing changes.
+    """
+    names = list(CHECKS)
+    enumeration = ", ".join(names[:-1]) + " and " + names[-1]
+    total = sum(len(checks) for checks in CHECKS.values())
+    counted, totalled, listed = set(), set(), set()
+    for path in COUNT_SURFACES:
+        prose, where = _current_prose(path), path.relative_to(ROOT).as_posix()
+        for found in ADAPTER_COUNT.finditer(prose):
+            word = found.group(1).lower()
+            if word.isdigit() or word in NUMBER_WORDS:
+                assert (int(word) if word.isdigit() else NUMBER_WORDS[word]) == len(CHECKS), (
+                    where, found.group(0))
+                counted.add(where)
+        for found in CHECK_COUNT.finditer(prose):
+            assert int(found.group(1)) == total, (where, found.group(0))
+            totalled.add(where)
+        for found in NAME_LIST.finditer(prose):
+            assert found.group(0) == enumeration, (where, found.group(0))
+            listed.add(where)
+    assert {"README.md", "CHANGELOG.md", "docs/GROUNDED_CERTIFICATION.md", "docs/QUICKSTART.md",
+            "src/verifier/runtime/accessibility_cli.py"} <= counted, counted
+    assert {"README.md", "CHANGELOG.md", "docs/GROUNDED_CERTIFICATION.md"} <= totalled, totalled
+    assert {"docs/QUICKSTART.md", "docs/reference.html", "src/verifier/runtime/accessibility_cli.py",
+            "src/verifier/runtime/certification_cli.py"} <= listed, listed
+
+
+def test_the_release_note_counts_are_measured(bundles: dict) -> None:
+    prose = _current_prose(ROOT / "CHANGELOG.md")
+    assert set(bundles) == set(CHECKS), "one runnable specimen per adapter"
+    found = re.search(r"\b(\w+) runnable specimens\b", prose)
+    assert found and NUMBER_WORDS[found.group(1).lower()] == len(bundles)
+    schemas = sorted((ROOT / "src/verifier/schemas").glob("verifier-domain-*.schema.json"))
+    found = re.search(r"\b(\w+) additive schemas\b", prose)
+    assert found and NUMBER_WORDS[found.group(1).lower()] == len(schemas), [s.name for s in schemas]
+
+
+def test_every_adapter_table_has_one_measured_row_per_adapter() -> None:
+    guide = (ROOT / "docs/GROUNDED_CERTIFICATION.md").read_text(encoding="utf-8")
+    depths = dict(re.findall(r"^\| ([A-Z]+) \| [^|]+ \| (\d+) \|$", guide, re.MULTILINE))
+    assert depths == {domain: str(len(checks)) for domain, checks in CHECKS.items()}
+    contract = (ROOT / "src/verifier/standard/DOMAIN_GROUNDING.md").read_text(encoding="utf-8")
+    consecutive = {domain: len(cells.split(";")) for domain, cells
+                   in re.findall(r"^\| ([A-Z]+) \| ([^|]+) \|", contract, re.MULTILINE)}
+    assert consecutive == {domain: len(checks) for domain, checks in CHECKS.items()}
