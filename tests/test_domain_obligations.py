@@ -429,3 +429,49 @@ def test_the_architecture_operand_is_stated_against_the_vocabulary_it_was_read_a
             "layer or an operator.") in FLAT
     assert {member.value for member in ArtifactType} == READ_ARTIFACT_TYPES
     assert {member.value for member in TransformationType} == READ_TRANSFORMATION_TYPES
+
+
+def test_every_relational_enumeration_is_the_constant() -> None:
+    """A count or a list of the relational objects is read back from the catalogue.
+
+    The count was stated as three after the identity family made it four, and nothing
+    noticed, because no test read the prose.
+    """
+    relational = list(RELATIONAL_OBJECTS)
+    both = [name for name in relational if name in UNGROUNDED_OBJECTS]
+    meta = " ".join((REPO_ROOT / "src/verifier/standard/META_TIERS.md").read_text(encoding="utf-8").split())
+    counted = listed = 0
+    for prose in (FLAT, meta):
+        for found in re.finditer(r"\b(\w+) relational objects\b", prose):
+            if found.group(1).lower() in NUMBER_WORDS:
+                assert _count(found.group(1)) == len(relational), found.group(0)
+                counted += 1
+        for found in re.finditer(r"relational objects (?:are|--) ((?:`[A-Z]+`,? )+and `[A-Z]+`)", prose):
+            assert re.findall(r"`([A-Z]+)`", found.group(1)) == relational, found.group(0)
+            listed += 1
+    assert (counted, listed) == (1, 2), "the enumerations moved; re-point this guard"
+
+    found = _stated(r"-- the last (\w+) are \*\*ungrounded\*\*")
+    assert relational[-_count(found.group(1)):] == both, "the ungrounded relational objects end the list"
+    found = re.search(r"((?:`[A-Z]+` relates [^,.]+, )+and `[A-Z]+` relates [^.]+)\. None of the (\w+) "
+                      r"certifies a substrate of its own", meta)
+    assert found, "the relational paragraph of META_TIERS.md"
+    assert re.findall(r"`([A-Z]+)` relates", found.group(1)) == relational
+    assert _count(found.group(2)) == len(relational)
+
+
+def test_every_coordinate_the_prose_says_binds_is_a_binding_row() -> None:
+    """A sentence saying an obligation binds something names a row that binds by certificate.
+
+    The collective's facet row declares the collective to be a graph and binds nothing, while
+    two summaries and the lattice section said it bound a `GRAPH`. The check is general:
+    every coordinate a summary says binds must be a row whose requirement is "bound by".
+    """
+    meta = " ".join((REPO_ROOT / "src/verifier/standard/META_TIERS.md").read_text(encoding="utf-8").split())
+    named = []
+    for prose in (FLAT, meta):
+        for found in re.finditer(r"((?:`[A-Z]+-\d\.\d+`(?:,? and |, ))*`[A-Z]+-\d\.\d+`) binds?\b", prose):
+            named += re.findall(r"`([A-Z]+-\d\.\d+)`", found.group(1))
+    assert len(set(named)) >= 4, named
+    for coordinate in named:
+        assert re.search(r"\bbound by\b", DOMAIN_BY_ID[coordinate].requirement), coordinate

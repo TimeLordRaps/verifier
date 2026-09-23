@@ -411,9 +411,10 @@ if we can keep it in sims.*
 
 ## OWNER — a holding between a bound actor and a bound object
 
-The third **relational** object, and the only ungrounded one. `GRAPH` relates
-artifacts to one another, `HYPER` relates operands to the object composed from them,
-and `OWNER` relates an actor to an object it holds. None of the three certifies a
+The third **relational** object, and the first ungrounded one; `IDENTITY` below is the
+fourth, and is ungrounded too. `GRAPH` relates artifacts to one another, `HYPER` relates
+operands to the object composed from them, `OWNER` relates an actor to an object it
+holds, and `IDENTITY` relates a bearer to a role class. None of the four certifies a
 substrate of its own, which is why none of them is a domain in the adapter sense.
 
 The holder is bound by its own `ACTOR` certificate, so a holding names a certified
@@ -565,9 +566,10 @@ role definitions and org-chart position records, inferred upward.
 
 ## COLLECTIVE — a graph of role classes
 
-The second branch of the actor sum. Its operands are declared rather than implied:
-`COLLECTIVE-1.1` binds a `GRAPH` and `COLLECTIVE-1.3` binds the `ROLE` set the
-graph is over.
+The second branch of the actor sum. Its operand is declared rather than implied:
+`COLLECTIVE-1.3` binds the `ROLE` set the graph is over. `COLLECTIVE-1.1` declares the
+collective to be that graph rather than binding a `GRAPH` certificate, so the graph is the
+object itself, not an operand of it.
 
 **COLLECTIVE-1** — facets: the graph, the typed relations it carries — reports-to,
 delegates-to, must-countersign — the role set, the decision classes the collective is
@@ -905,7 +907,8 @@ was added rather than rising: an unconstrained ladder inflates a count, it never
 one.
 
 The identity family **is** inside the lattice, and its edges are declared rather than
-assumed. `COLLECTIVE-1.1` and `COLLECTIVE-1.3` bind a graph and a role set;
+assumed. `COLLECTIVE-1.3` binds a role set, and the graph over it is the collective
+itself rather than a bound `GRAPH`;
 `IDENTITY-1.1` and `IDENTITY-1.2` bind a bearer and a role class, and the bearer is a
 **sum**, so that operand is a disjunction — a binding needs its role class and *either* a
 human *or* a bot, never both. `ACTOR-1.2` is the family's second disjunction and its only

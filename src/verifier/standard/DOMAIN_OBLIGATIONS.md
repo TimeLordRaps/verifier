@@ -1045,10 +1045,10 @@ uncertifiable entry is ungrounded and carries no mechanism in any family at all.
 ## OWNER
 
 A **relational** object. It does not certify a substrate of its own; it certifies a
-holding that stands *between* a bound actor and a bound object. Of the three
-relational objects -- `GRAPH`, `HYPER` and `OWNER` -- only this one is
-**ungrounded**: no adapter executes it, so every obligation below is specified with no
-mechanism and reports `UNKNOWN`. That is the honest report of a specified holding that
+holding that stands *between* a bound actor and a bound object. Of the four
+relational objects -- `GRAPH`, `HYPER`, `OWNER` and `IDENTITY` -- the last two are
+**ungrounded**, this one among them: no adapter executes it, so every obligation below is
+specified with no mechanism and reports `UNKNOWN`. That is the honest report of a specified holding that
 nothing yet checks, and it is why `OWNER` is excluded from the grounded-object
 invariants that require tiers 3 and 5 to be mechanized.
 
@@ -1346,9 +1346,10 @@ org-chart position records -- are named as unestablished rather than registered.
 ## COLLECTIVE
 
 `COLLECTIVE` is a graph of role classes and the typed relations
-between them. It is **ungrounded** -- no adapter executes it. Its operands are declared:
-`COLLECTIVE-1.1` binds a `GRAPH` and `COLLECTIVE-1.3` binds the `ROLE` set it is
-over.
+between them. It is **ungrounded** -- no adapter executes it. Its operand is declared:
+`COLLECTIVE-1.3` binds the `ROLE` set it is over, each class by its own certificate.
+`COLLECTIVE-1.1` declares the collective to be that graph rather than binding a `GRAPH`
+certificate, so the graph is the object itself and not an operand of it.
 
 `COLLECTIVE-3.1` is the obligation that keeps it honest: a collective takes no decisions
 of its own, and every decision it is accountable for was taken through some role class by
@@ -1441,7 +1442,7 @@ unestablished rather than registered.
 
 `IDENTITY` is an occupancy: the binding of a bearer into a role
 class. It is **relational** -- it holds between two certified objects rather than
-certifying a substrate -- and, like the other three of this family, **ungrounded**.
+certifying a substrate -- and, like every other object of this family, **ungrounded**.
 
 The bearer is a sum of exactly two branches, `HUMAN` and `BOT`. A bare
 `AGENT` is not admissible, and `IDENTITY-1.1` says so: an agent is bounded only by
