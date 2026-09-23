@@ -36,6 +36,33 @@ SOURCE_BASE = "https://github.com/TimeLordRaps/verifier/blob/main/"
 # silently publishing a stale pipeline map.
 PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     (
+        "vstd start",
+        "Prints the ordered, copy-pasteable path from an installed package to a "
+        "checked result; runs nothing and writes nothing.",
+        ("verifier.runtime.accessibility_cli:start_report",),
+    ),
+    (
+        "vstd explain",
+        "Restates a stored receipt or certificate in plain language, naming what "
+        "was established, what was not and why; never re-evaluates evidence.",
+        ("verifier.runtime.accessibility_cli:explain_report",),
+    ),
+    (
+        "vstd certification catalog",
+        "Lists the object-profile obligation catalogue and bounded native checker coverage.",
+        ("verifier.core.profile_obligations:obligation_catalog",),
+    ),
+    (
+        "vstd certification assess",
+        "Executes externally admitted native obligation mechanisms and emits a new grounded certificate.",
+        ("verifier.core.grounded_certification:build_grounded_certificate",),
+    ),
+    (
+        "vstd certification check",
+        "Rehashes and reruns a certificate against the consumer's expected request and admission policy.",
+        ("verifier.core.grounded_certification:recheck_grounded_certificate",),
+    ),
+    (
         "vstd demo",
         "Runs the four adversarial specimens in-process and reports whether each "
         "defensive outcome matched its declared invariant.",
@@ -128,7 +155,7 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     (
         "vstd data",
         "Traces, renders, or exports the provenance hypergraph carried by a "
-        "VSTD-Graph receipt.",
+        "GRAPH receipt.",
         ("verifier.data.models:ProvenanceHypergraph",),
     ),
     (
@@ -160,6 +187,11 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
             "verifier.runtime.hardware_cli:handle_vstd3_command",
             "verifier.hardware.validation:validate_vstd3_receipt",
         ),
+    ),
+    (
+        "vstd publish",
+        "Checks local inputs and submits a claim and receipt for authenticated storage pending human review.",
+        ("verifier.interoperability.claim_garden:publish_claim",),
     ),
 )
 

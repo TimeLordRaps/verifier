@@ -104,7 +104,7 @@ Encoded in the model and each guarded by a test:
 18. A delegation may carry a scope its ancestor did not hold.
 
 Inferences 15 and 16 mirror the recorded-lineage discipline of
-[`../../../standard/VSTD-Graph-1.md`](../../../standard/VSTD-Graph-1.md): an edge records
+[`../../../standard/GRAPH-1.md`](../../../src/verifier/standard/GRAPH-1.md): an edge records
 ancestry, and a clean-ancestor policy must require validity explicitly rather than reading
 it out of the absence of a revocation mark.
 
@@ -120,5 +120,5 @@ Nothing in this reference evaluator substitutes for that.
 ## 6. Relationship to VSTD
 
 Nothing here changes a serialized receipt identifier, a schema `$id`, a console alias, a lifecycle
-token, or any conformance behavior. See [`../../../standard/WIRE_IDENTIFIERS.md`](../../../standard/WIRE_IDENTIFIERS.md).
+token, or any conformance behavior. See [`../../../standard/WIRE_IDENTIFIERS.md`](../../../src/verifier/standard/WIRE_IDENTIFIERS.md).
 The profile adds no dependency: `evaluate.py` is standard library only.

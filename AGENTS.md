@@ -1,12 +1,13 @@
 # AGENTS.md
 
-> **Acronyms:** application programming interface (API); Concise Binary Object Representation (CBOR);
-> CBOR Object Signing and Encryption (COSE); continuous integration (CI); command-line interface (CLI);
+> **Acronyms:** application programming interface (API); central processing unit (CPU);
+> Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
+> continuous integration (CI); command-line interface (CLI);
 > carriage return and line feed (CRLF); GNU Privacy Guard (GPG); hash-based message authentication code (HMAC);
 > Hypertext Markup Language (HTML); Internet Engineering Task Force (IETF);
 > International Organization for Standardization (ISO); JavaScript Object Notation (JSON); line feed (LF);
-> Supply Chain Integrity, Transparency, and Trust (SCITT); Verifier Standard (VSTD);
-> World Wide Web Consortium (W3C).
+> operating system (OS); Supply Chain Integrity, Transparency, and Trust (SCITT);
+> uniform resource locator (URL); Verifier Standard (VSTD); World Wide Web Consortium (W3C).
 
 Working rules for automated contributors to VSTD. Read this before editing anything.
 
@@ -18,7 +19,7 @@ boundaries and portable result semantics across domain verifiers without replaci
 native work. The distribution is `verifier-standard`, the import package is `verifier`,
 and `vstd` is the canonical command.
 
-Two independent axes: `VSTD-1..5` (object mechanics) and `VSTD-Graph-1..5` (collection
+Two independent axes: `VSTD-1..5` (object mechanics) and `GRAPH-1..5` (collection
 dynamics). These are cumulative **numbered profiles** over named **closure coordinates**,
 not interchangeable layers or scalar assurance levels. Implementation status is
 profile-specific: the compatibility VSTD-4 candidate-depth and Graph candidate-profile
@@ -31,7 +32,7 @@ distinct evidence passes every required coordinate in profiles 1 through `N`. A
 later-profile result never supplies, implies, upgrades, or repairs a prerequisite
 coordinate.
 
-Follow the terminology contract in [`standard/LADDER.md`](standard/LADDER.md#terminology-contract).
+Follow the terminology contract in [`standard/LADDER.md`](src/verifier/standard/LADDER.md#terminology-contract).
 Use **layer** only for a literal implementation, protocol, or physical stack; use **level**
 only for an explicitly named external taxonomy or retained compatibility identifier. In
 new prose, qualify **profile** as numbered, receipt, application, or geometry profile;
@@ -44,7 +45,7 @@ preference; explain their compatibility meaning adjacent to them.
 This is maintainer-led alpha project work. It is **not** an accredited, consensus,
 IETF, ISO, or W3C standard, and it has no demonstrated external adoption. Do not write
 text implying otherwise. Orientation: [`README.md`](README.md),
-[`standard/LADDER.md`](standard/LADDER.md),
+[`standard/LADDER.md`](src/verifier/standard/LADDER.md),
 [`docs/CLAIMS_AND_LIMITS.md`](docs/CLAIMS_AND_LIMITS.md), [`GOVERNANCE.md`](GOVERNANCE.md).
 
 ### 1.1 Operating control surfaces
@@ -88,12 +89,12 @@ reason, not a pass. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 `TRUST`, `RUST`, and `ROT` are formal semantic names, not acronyms, scalar scores,
 numbered-profile verdicts, or references to the Rust programming language. They serialize
-only as typed events in `VSTD-GRAPH-ASSURANCE-1`. `TRUST` is mechanism-earned
+only as typed events in `verifier-graph-assurance-1`. `TRUST` is mechanism-earned
 forward artifact support; `RUST` is inverse-direction diagnostic traversal from a
 descendant deviation toward recorded ancestors; `ROT` is typed, time-indexed degradation
 of current admissibility without rewriting historical evidence. Define the terms at first
 use in every independently readable surface and preserve their normative meaning from
-[`standard/LADDER.md`](standard/LADDER.md).
+[`standard/LADDER.md`](src/verifier/standard/LADDER.md).
 
 Assurance events are not self-authenticating status words. Portable reliance requires
 `recheck_assurance_log` to reconstruct the historical Graph, rehash embedded evidence,
@@ -211,7 +212,7 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 - `src/verifier/constraints/`, `hardware/`, `layer4/`, `data/` — profile-specific runtime
   surfaces, including additive Graph assurance propagation; `layer4/` is a retained module path.
 - `src/verifier/runtime/` — `public_cli.py` (every CLI entry point) and `demo.py`.
-- `src/verifier/specifications/` — byte-identical copies of normative spec files.
+- `src/verifier/standard/` — byte-identical copies of normative spec files.
 - `receipts/schema/` — receipt JSON Schemas. `standard/schemas/` — strict non-receipt
   mechanism schemas. `examples/` — supported runnable specimens.
 - `experiments/` — non-normative roadmap-steering studies with profile manifests, explicit horizons,
@@ -250,14 +251,14 @@ instructions, so removing it would render already-published refutation steps unr
 The evidence is the published releases, not a file in the current checkout.
 
 **Wire identifiers.** Current readers dispatch on the exact identifiers and required
-profile discriminators in [`standard/WIRE_IDENTIFIERS.md`](standard/WIRE_IDENTIFIERS.md),
+profile discriminators in [`standard/WIRE_IDENTIFIERS.md`](src/verifier/standard/WIRE_IDENTIFIERS.md),
 not on filenames or field resemblance. VSTD-1 and VSTD-2 use their full numbered-profile identifiers;
 do not restore retired partial-profile object identifiers or compatibility reads. Published
 release bytes remain historical facts in their tags and Git history, not active current
 profiles.
 
 **Packaged specification bytes.** Every `standard/*.md` file has a byte-identical
-installed copy under `src/verifier/specifications/` so verifier descriptors do not depend
+installed copy under `src/verifier/standard/` so verifier descriptors do not depend
 on a source checkout. `tests/test_packaged_specifications.py` enforces the complete set.
 
 **Schema `$id` is a live route.** Every `receipts/schema/*.json` and
@@ -288,11 +289,11 @@ CRLF/LF equivalence as byte identity. This matters when working on Windows.
 - a stale generated CLI/API reference or experiment index.
 
 The protected repository-check aggregate (the `conformance-gate` job identifier) requires `coordinate`, `base`,
-`coverage`, `stdlib-smoke`, `scitt-crypto`, `artifact-seal`, `release-integrity`, `release-reproducibility`,
+`coverage`, `stdlib-smoke`, `scitt-crypto`, `artifact-seal`, `logits-constraints`, `release-integrity`, `release-reproducibility`,
 `installed-wheel-smoke`, and `presentation` to all succeed. The dedicated SCITT/COSE job
-installs `.[test,scitt]`; the normal test matrix may skip that optional cryptographic
-integration module. The artifact-seal job installs `.[test,seal]` and must execute the
-complete freeze/seal/thaw adversarial suite.
+installs `.[test,scitt]`; the artifact-seal job installs `.[test,seal]` and must execute the
+complete freeze/seal/thaw adversarial suite; the dedicated logits-constraints job installs `.[test,constraints]`
+(plus transformers) and executes the constraint-kernel suite; the normal test matrix may skip those optional integrations.
 
 ## 7. Conventions
 
@@ -341,7 +342,7 @@ marker on its own work:
 3. after every new commit, refresh the promotion record, all affected checks, every skip
    or omitted-check reason, and the resulting claim limits;
 4. obtain a trusted participant's acceptance bound to the current head through an approving
-   review or a comment containing `VSTD-HUMAN-ACCEPTANCE: <full-head-commit-identifier>
+   review or a comment containing `acceptance-clearance: <full-head-commit-identifier>
    <promotion-record-sha256>`; the record proves
    an authenticated repository action, not comprehension, independence, or correctness;
 5. do not merge without separate explicit merge authority, and never treat approval or
@@ -381,6 +382,32 @@ The live observation occurs after GitHub Pages has deployed. A failed live obser
 detects incomplete or stale promotion and supports bounded retry; it does not automatically
 roll back the deployment. Use the separately recorded prior deployment for an explicitly
 authorized rollback.
+
+### 9.2 Mandatory test skip disclosure and rubric classification
+
+Automated agents MUST NOT permit unmonitored "skip slippage". Skipping tests without
+rigorous, rubric-categorized justification is non-conforming. Every test skip in local runs
+and pull requests must be justified against the formal definitional rubric in
+[`docs/TEST_SKIP_RUBRIC.md`](docs/TEST_SKIP_RUBRIC.md):
+
+1. `OS_CAPABILITY_GUARD`: Platform capability, kernel privilege, or filesystem primitive
+   unavailable on runner (e.g. unprivileged Windows symlink creation, POSIX `os.mkfifo`).
+2. `OPTIONAL_DEPENDENCY_ABSENT`: Documented package extra or binding not installed in the
+   minimal base environment (e.g. `scitt`, `seal`).
+3. `EXTERNAL_SERVICE_BOUNDARY`: Live external network service or endpoint excluded in
+   offline test execution.
+4. `ARCHITECTURAL_PLATFORM_UNSUPPORTED`: Hardware central processing unit (CPU) architecture
+   or endianness variant unsupported on runner.
+5. `HARDWARE_DEVICE_UNAVAILABLE`: Physical hardware, hardware security module, or accelerator unavailable.
+6. `PRIVILEGE_OR_CREDENTIAL_BOUNDARY`: Administrative/root rights or production secrets
+   intentionally withheld.
+7. `PERFORMANCE_OR_DURATION_EXCLUSION`: Long-duration stress, soak, or benchmark suite
+   excluded from rapid gates.
+8. `QUARANTINED_DEFECT`: Confirmed upstream or tracked defect with an active issue uniform resource locator (URL).
+
+Pull requests MUST include the completed rubric checklist and itemized skip inventory in
+`## Test skip rubric disclosure`. An unclassified skip or missing technical rationale will
+cause the pull-request policy check to fail closed.
 
 ## 10. Safety
 

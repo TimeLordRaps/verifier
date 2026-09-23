@@ -9,10 +9,9 @@ import hashlib
 import json
 from typing import Any, Final, Literal
 
-BIRTH_TOKEN_SCHEMA: Final[str] = "VSTD-BIRTH-TOKEN-1"
-AGING_TOKEN_SCHEMA: Final[str] = "VSTD-AGING-TOKEN-1"
-LIFETIME_TOKEN_SCHEMA: Final[str] = "VSTD-LIFETIME-TOKEN-1"
-ACTOR_BINDING_SCHEMA: Final[str] = "VSTD-ACTOR-BINDING-1"
+BIRTH_TOKEN_SCHEMA: Final[str] = "verifier-birth-token-1"
+AGING_TOKEN_SCHEMA: Final[str] = "verifier-aging-token-1"
+LIFETIME_TOKEN_SCHEMA: Final[str] = "verifier-lifetime-token-1"
 
 
 def canonical_token_bytes(payload: dict[str, Any]) -> bytes:
@@ -35,7 +34,7 @@ def advance_aging_accumulator(prior_accumulator_digest: str, epoch: int, status:
 
 @dataclass(frozen=True)
 class BirthToken:
-    schema_version: Literal["VSTD-BIRTH-TOKEN-1"]
+    schema_version: Literal["verifier-birth-token-1"]
     token_id: str
     genesis_key_digest: str
     birth_epoch: int
@@ -50,7 +49,7 @@ class BirthToken:
 
 @dataclass(frozen=True)
 class AgingToken:
-    schema_version: Literal["VSTD-AGING-TOKEN-1"]
+    schema_version: Literal["verifier-aging-token-1"]
     token_id: str
     birth_token_id: str
     genesis_key_digest: str
@@ -69,7 +68,7 @@ class AgingToken:
 
 @dataclass(frozen=True)
 class LifetimeToken:
-    schema_version: Literal["VSTD-LIFETIME-TOKEN-1"]
+    schema_version: Literal["verifier-lifetime-token-1"]
     token_id: str
     actor_id: str
     delegate_key_id: str
@@ -82,24 +81,6 @@ class LifetimeToken:
     signature_base64url: str
     max_invocations: int | None = None
     parent_grant_id: str | None = None
-
-    def canonical_bytes(self) -> bytes:
-        return canonical_token_bytes(asdict(self))
-
-
-@dataclass(frozen=True)
-class ActorBinding:
-    schema_version: Literal["VSTD-ACTOR-BINDING-1"]
-    binding_id: str
-    kind: Literal["PUBLISHER_CONTROL", "PIPELINE_OPERATION"]
-    actor_id: str
-    subject_id: str
-    bound_proposition: str
-    actor_key_id: str
-    subject_key_id: str
-    issued_at: str
-    actor_signature_base64url: str
-    subject_signature_base64url: str
 
     def canonical_bytes(self) -> bytes:
         return canonical_token_bytes(asdict(self))

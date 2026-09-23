@@ -37,7 +37,7 @@ def test_authority_composition_descriptor_preserves_exact_scope() -> None:
     assert component.kind is ComponentKind.CHECKER
     assert component.lifecycle is ComponentLifecycle.EXPERIMENTAL
     assert component.implementation_ref == "verifier.interoperability.authority_composition:assess_authority_composition"
-    assert component.accepted_schema_ids == ("VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",)
+    assert component.accepted_schema_ids == ("verifier-finite-authority-composition-1",)
     assert component.planning_surface_schema_ids == ("VSTD-2",)
     assert component.interaction_modes == (InteractionMode.OFFLINE_REPLAY,)
     mechanism = import_module("verifier.interoperability.authority_composition")
@@ -68,7 +68,7 @@ def test_authority_composition_package_detection_planning_and_readiness_are_iner
     binding = next(item for item in package.implementations if item.component_id == COMPONENT)
     required = {
         "src/verifier/interoperability/authority_composition.py",
-        "src/verifier/specifications/FINITE_AUTHORITY_COMPOSITION.md",
+        "src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md",
     }
     assert required <= set(binding.artifact_paths)
     artifacts = {item.path: item for item in package.artifacts}

@@ -40,7 +40,7 @@ except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
     from classify_release_version import classify_release_version
 
 
-SCHEMA_VERSION = "VSTD-PUBLIC-RELEASE-1.1"
+SCHEMA_VERSION = "verifier-public-release-1"
 CYCLONEDX_SPEC_VERSION = "1.6"
 # Archive stem for releases built from this tree. Releases up to and including v1.1.1
 # were published as `verifiable-standard-<release>.zip`; their manifests carry that
@@ -57,31 +57,39 @@ PACKAGED_SCHEMA_NAMES = frozenset(
     {
         "artifact-control-1.schema.json",
         "graph-topology.schema.json",
-        "vstd-actor-binding-1.schema.json",
-        "vstd-aging-token-1.schema.json",
-        "vstd-artifact-network-0.1.schema.json",
-        "vstd-authority-model-0.1.schema.json",
-        "vstd-birth-token-1.schema.json",
-        "vstd-bounded-completeness-0.1.schema.json",
-        "vstd-component-index-1.schema.json",
-        "vstd-component-package-1.schema.json",
-        "vstd-deriver-self-status-0.1.schema.json",
-        "vstd-global-cycle-assessment-0.1.schema.json",
-        "vstd-graph-assurance-1.schema.json",
-        "vstd-lifetime-token-1.schema.json",
-        "vstd-proposition-transfer-0.1.schema.json",
-        "vstd-push-request-0.1.schema.json",
-        "vstd-relation-boundary-0.1.schema.json",
-        "vstd-self-derivation-mechanism-0.1.schema.json",
-        "vstd-silo-assessment-0.1.schema.json",
-        "vstd-silo-assessment-receipt-0.1.schema.json",
-        "vstd-silo-composition-0.1.schema.json",
-        "vstd-silo-composition-assessment-0.1.schema.json",
-        "vstd-silo-composition-assessment-receipt-0.1.schema.json",
-        "vstd-silo-formation-receipt-0.1.schema.json",
-        "vstd-silo-transfer-0.1.schema.json",
-        "vstd-source-grounding-0.1.schema.json",
-        "vstd-typed-formation-0.1.schema.json",
+        "verifier-aging-token-1.schema.json",
+        "verifier-artifact-network-1.schema.json",
+        "verifier-authority-model-1.schema.json",
+        "verifier-birth-token-1.schema.json",
+        "verifier-bounded-completeness-1.schema.json",
+        "verifier-component-index-1.schema.json",
+        "verifier-component-package-1.schema.json",
+        "verifier-deriver-self-status-1.schema.json",
+        "verifier-global-cycle-assessment-1.schema.json",
+        "verifier-graph-assurance-1.schema.json",
+        "verifier-lifetime-token-1.schema.json",
+        "verifier-proposition-transfer-1.schema.json",
+        "verifier-push-request-1.schema.json",
+        "verifier-relation-boundary-1.schema.json",
+        "verifier-risk-profile-2.schema.json",
+        "verifier-self-derivation-mechanism-1.schema.json",
+        "verifier-silo-assessment-1.schema.json",
+        "verifier-silo-assessment-receipt-1.schema.json",
+        "verifier-silo-composition-1.schema.json",
+        "verifier-silo-composition-assessment-1.schema.json",
+        "verifier-silo-composition-assessment-receipt-1.schema.json",
+        "verifier-silo-formation-receipt-1.schema.json",
+        "verifier-silo-transfer-1.schema.json",
+        "vstd-sim-1.schema.json",
+        "verifier-grounded-request-1.schema.json",
+        "verifier-grounded-policy-1.schema.json",
+        "verifier-grounded-certification-1.schema.json",
+        "verifier-domain-request-1.schema.json",
+        "verifier-domain-policy-1.schema.json",
+        "verifier-domain-evidence-1.schema.json",
+        "verifier-domain-certification-1.schema.json",
+        "verifier-source-grounding-1.schema.json",
+        "verifier-typed-formation-1.schema.json",
     }
 )
 
@@ -114,7 +122,7 @@ def _schema_inventory_error(surface: str, observed: set[str]) -> str:
         parts.append(f"declared but absent: {', '.join(missing)}")
     parts.append(
         "reconcile scripts/release_artifacts.py PACKAGED_SCHEMA_NAMES with "
-        "standard/schemas/ and src/verifier/schemas/"
+        "src/verifier/schemas/"
     )
     return "; ".join(parts)
 

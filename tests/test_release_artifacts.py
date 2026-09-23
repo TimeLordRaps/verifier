@@ -972,19 +972,16 @@ def test_release_notes_reject_missing_or_empty_exact_section() -> None:
         release_notes.extract_release_notes("## 1.3.0 - 2026-09-08\n", "1.3.0")
 
 
-def test_declared_release_schema_set_matches_the_packaged_and_normative_trees() -> None:
+def test_declared_release_schema_set_matches_the_packaged_tree() -> None:
     """Bind the declared release inventory to the files that are actually shipped.
 
-    ``tests/test_packaged_specifications.py`` already binds ``standard/schemas``
-    to ``src/verifier/schemas`` byte for byte. Packaging selects those files by
+    Packaging selects the shipped schemas by
     glob, while ``PACKAGED_SCHEMA_NAMES`` names them by hand, so a new schema
     reaches the wheel without reaching the declaration and release-integrity
     fails on every platform at once with nothing local to reproduce it. Binding
     the third surface here moves that failure to one named assertion.
     """
-    normative = {path.name for path in (REPO_ROOT / "standard" / "schemas").glob("*.json")}
     packaged = {path.name for path in (REPO_ROOT / "src" / "verifier" / "schemas").glob("*.json")}
-    assert normative == packaged
     assert set(release_artifacts.PACKAGED_SCHEMA_NAMES) == packaged
 
 

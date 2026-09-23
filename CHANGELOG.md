@@ -2,18 +2,323 @@
 
 > **Acronyms:** 64-bit Arm instruction-set architecture (ARM64); artificial intelligence (AI);
 > Advanced Micro Devices (AMD); application programming interface (API); Amazon Web Services (AWS);
-> Concise Binary Object Representation (CBOR); continuous integration (CI); command-line interface (CLI);
-> conjunctive normal form (CNF); CBOR Object Signing and Encryption (COSE);
+> benchmark specification graph (BENCH); Concise Binary Object Representation (CBOR);
+> continuous integration (CI); command-line interface (CLI); conjunctive normal form (CNF);
+> CBOR Object Signing and Encryption (COSE); verifiable execution environment (ENV);
 > grounded decision certificate (GDC); Hypertext Transfer Protocol Secure (HTTPS);
 > Internet Engineering Task Force (IETF); Java unit test report format (JUnit);
-> JavaScript Object Notation (JSON); nondeterministic polynomial time (NP);
-> Python Package Index (PyPI); reduced instruction set computer (RISC);
-> Boolean satisfiability problem (SAT); Secure Hash Algorithm 256-bit (SHA-256);
-> Secure Hash Algorithm 3 256-bit (SHA3-256); Supply Chain Integrity, Transparency, and Trust (SCITT);
-> Secure Shell (SSH); Coordinated Universal Time (UTC); Verifier Standard (VSTD);
-> ZIP archive format (ZIP); zero-identity/zero-knowledge (ZIZK).
+> JavaScript Object Notation (JSON); model reproducibility specification (MODEL);
+> nondeterministic polynomial time (NP); Python Package Index (PyPI);
+> reduced instruction set computer (RISC); Boolean satisfiability problem (SAT);
+> Secure Hash Algorithm 256-bit (SHA-256); Secure Hash Algorithm 3 256-bit (SHA3-256);
+> generative simulation specification (SIM);
+> dataset integrity and lineage (DATA);
+> training run specification (TRAIN);
+> certificate composition operator (HYPER);
+> instrumented agent observation surface (HARNESS);
+> agent trajectory bounded by one observation surface (AGENT);
+> one agent situated in one simulation (BOT);
+> zero-identity zero-knowledge token (TOKEN);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
+> Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
+> zero-identity/zero-knowledge (ZIZK).
 
 ## Unreleased
+
+## 2.0.0 - UNRELEASED
+
+**Release name: The grounded certification release.**
+
+- Add ten executable grounded domain adapters: dataset integrity and lineage (DATA),
+  execution environments (ENV), benchmark specification graphs (BENCH), training run
+  specifications (TRAIN), model reproducibility specifications (MODEL),
+  generative simulations (SIM), instrumented agent observation surfaces (HARNESS),
+  agent trajectories bounded by one such surface (AGENT), one agent situated in one
+  simulation (BOT), and one zero-identity zero-knowledge token holding descending from
+  one birth token (TOKEN). An AGENT certificate cannot establish more than its bound
+  HARNESS declared observable; a claim resting on a declared gap or an undeclared channel
+  is `UNKNOWN`. A BOT certificate establishes the correspondence its parts cannot: that
+  each retained observation is the simulation's own projection and each replayed action
+  is the agent's own invocation. A TOKEN certificate establishes that one retained
+  holding is internally consistent and was issued under keys the checker admitted, and
+  nothing about who holds it. Their 48 cumulative domain checks replay retained
+  computations with external request/policy binding, strict certificate replay,
+  bounded work, and preserved `UNKNOWN`. Add `certification domain-catalog`,
+  `domain-assess`, and `domain-check`, four additive schemas and ten runnable specimens.
+  Domain depth remains separate from object and Graph numbered-profile conformance;
+  see [native coverage and exclusions](src/verifier/standard/DOMAIN_GROUNDING.md).
+
+The release name centers exact claim/evidence binding, bounded certificate checking,
+and evidence-bound assessment. It does not establish conformance for an artifact or
+declare the experimental mechanisms complete. See the
+[release framing and profile distinctions](docs/V2_CANDIDATE.md#release-name-and-grounded-certification).
+
+### Grounded certification across object profiles
+
+- Define 47 obligation coordinates across all five object numbered profiles,
+  preserving the existing fourteen VSTD-4 rungs and receipt identifiers.
+- Execute exact obligation bindings under a checker-selected mechanism admission
+  policy; derive per-obligation, per-profile and cumulative results without
+  suppressing missing prerequisites, `UNKNOWN` or refutation.
+- Add strict request, policy and certificate formats with bounded embedded evidence,
+  specification/implementation commitments and offline replay against an external
+  expected request. Add `vstd certification catalog`, `assess` and `check`.
+- Provide six bounded native adapters and a runnable partial-certification example.
+  Other obligations require explicitly admitted domain mechanisms; a registered
+  mechanism or complete catalogue is not evidence that those obligations hold.
+
+### Level 6 -- disclosure bounds on every domain object
+
+- Add a sixth level to each of the seventeen domain objects, coordinate
+  `<object>-6.1`-`6.6`: 102 new obligations bounding what a
+  certificate of that object may **emit**, and to whom. The object axis and the Graph axis
+  do not receive one -- both are corroboration ladders, and disclosure has no rungs.
+- **Level 6 is a level, not a twelfth object.** Four of its six rows state the same
+  proposition at every object; only `6.1` (what this object emits) and `6.5` (what
+  composing it reveals) are object-specific. An object contributes rows that differ; a
+  level contributes the same row everywhere, and `tests/test_domain_obligations.py`
+  asserts exactly that partition.
+- Three properties separate it from every other level, and each is a row. It is decided at
+  **every emission** rather than once at certification (`6.4`), so a certificate can stop
+  being admissible without the object changing. It is the only level that is **not
+  monotone under composition** (`6.5`): disclosure is the **join** of the operands rather
+  than bounded by them, so two certificates each strictly within bound can compose to one
+  that is not -- stated in general at `HYPER-6.5`, where it is the exact converse of the
+  non-increase property `HYPER-2.2` establishes for strength. And it **cannot move a
+  verdict** (`6.6`): a disclosure bound never changes a computational verdict, neither
+  upward nor downward, and a redaction that moves one makes the certificate malformed
+  rather than more private.
+- Because `6.6` holds, level 6 is **excluded from the rung totals and the composition
+  lattice**, which count reachable evidence states: a level that by its own statement
+  cannot change what is established is not evidence, and counting its 5 positions per
+  object as rungs would inflate every reachability figure the grid publishes. The ladder
+  strip stays five wide -- it is what a certificate *climbs*, and a disclosure bound is not
+  climbed. 599 corroboration obligations and 102 disclosure obligations now make
+  701 in all, and the suite re-derives both halves separately.
+- All 102 rows are specified with **no mechanism** and report `UNKNOWN`, never
+  `PASS`: no adapter runs at emission time and no observer model is established anywhere in
+  the implementation, so a pass here would be a claim nothing supports. Level 6 therefore
+  adds no module to `verifier.domains` and **does not move** `implementation_digest()`,
+  which reaches the adapter sources, the registered checks and `DOMAIN_GROUNDING.md` and
+  none of the three -- so no domain policy bound to it is invalidated by this change. The
+  digest is not published as a literal here: it moves with every adapter edit, so a value
+  written into a changelog is stale before the release it describes.
+
+### TRAIN's adapter was misfiled under HYPER
+
+- **`TRAIN`'s behavioural adapter was misfiled under `HYPER`, and the catalogue was
+  corrected to match the misfiling instead of the other way round.** `CHECKS` and `SCOPES`
+  were each keyed by 9 objects with no `TRAIN` entry, so object-scoped resolution read all
+  14 of `TRAIN`'s behavioural mechanism names as naming a check in no family, and they were
+  cleared. The checks existed: `configuration`, `checkpoints`, `lineage`, `updates` and
+  `training` were keyed under `HYPER` because the module implementing them was still called
+  `hyper.py`, left over from before `HYPER` was formalized as the composition operator.
+  `verifier.domains.hyper` is renamed to `verifier.domains.train` and `CHECKS["HYPER"]` to
+  `CHECKS["TRAIN"]`, and all 14 names are restored verbatim -- each one's requirement is the
+  description of the check it names. `TRAIN` reports 25 of 35 mechanized, and the rename
+  brought the domain axis to 205 of 626. Two of the five names are also check names on
+  other objects -- `configuration` is ENV's and `lineage` is DATA's -- so resolution stays
+  scoped to the obligation's own object, which is what made the misfiling visible rather
+  than what caused it.
+- **Certifiable is not the same property as grounded**, and conflating them is what let
+  this through. `build_domain_certificate` rejects any domain absent from `CHECKS`, so
+  `HYPER` could never be certified at all -- it was not partially grounded, it was
+  unreachable -- while the grid published it as the most heavily mechanized object on the
+  axis. New `CERTIFIABLE_OBJECTS` and `UNCERTIFIABLE_OBJECTS` name the real partition,
+  which has three parts over 17 objects rather than two: the certifiable objects,
+  `HYPER` catalogued with statics and adaptation mechanisms that do execute, and six
+  ungrounded with no mechanism anywhere.
+- **A mechanism name is a promise that something executes it.** The suite now resolves
+  every name against the registered checks of that obligation's **own** object, and asserts
+  `CERTIFIABLE_OBJECTS` against both `CHECKS` and `SCOPES`. Resolution is object-scoped
+  deliberately: a name that resolves under a different object resolves to the wrong check,
+  which is the exact shape this defect took. Unlike the ungrounded-object defects recorded
+  above, this one was always mechanically checkable -- nothing checked it.
+- No obligation is removed. The rename moves `implementation_digest()`, which keys every
+  adapter source by its module name and hashes the catalogue, so every domain policy
+  issued before it must be readmitted.
+- **A training run's architecture is a `GRAPH` operand.** `TRAIN` is
+  `HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH, GRAPH)` indexed by a `GRAPH-1` recorded
+  lineage, so `GRAPH` holds two roles: the index is the order the data was consumed in, and
+  the operand is the architecture of the model or algorithm being trained. `TRAIN-6.1` now
+  enumerates the architecture, which the certificate already emitted, and `TRAIN-6.5` adds
+  the join the architecture makes with the optimizer contract -- the whole recipe, which
+  supports membership inference without the corpus. The Graph axis has no vocabulary for an
+  architecture yet, so it still travels in `TRAIN`'s own evidence and no `GRAPH` certificate
+  over one can be built. `implementation_digest()` does not cover the obligation catalogue,
+  so it does not move; `domain_obligation_digest()` does.
+
+### The actor-identity family: HUMAN, ROLE, COLLECTIVE, IDENTITY and ACTOR
+
+- Catalogue five objects for the parties a claim can be about, each carrying the same six
+  levels every domain object carries: `HUMAN` (36 obligations), `ROLE` (35),
+  `COLLECTIVE` (32), `IDENTITY` (39) and `ACTOR` (38) -- 180 in all. `IDENTITY` is
+  **relational**: it binds a bearer to a role rather than certifying a substrate of its own.
+- **The bearer of a role is a sum of exactly two classes, `HUMAN` or `BOT`**, declared at
+  `ROLE-1.5` as a property of the seat and not of any occupancy of it. `AGENT` is not
+  admissible as a bearer: it certifies a trajectory bounded by one harness, which is not a
+  party that can answer for a decision, so admitting it would have made every
+  accountability floor dischargeable by a program.
+- Three statics rows exist to stop the family being read as more than it is. `HUMAN-3.6`
+  states that no composition yields a human; `ROLE-3.6` that a class is not its occupants;
+  `COLLECTIVE-3.1` that a collective has no decisions of its own. A graph of roles is not
+  a party, and the catalogue says so rather than leaving it to be inferred.
+- All five are **ungrounded**. No adapter executes any of their 180 obligations, so every
+  one is specified with no mechanism and reports `UNKNOWN` -- never absent, and never
+  passed. They are specification surfaces, and this release does not claim otherwise.
+
+### TOKEN, the zero-identity zero-knowledge token
+
+- Catalogue `TOKEN`, normative in [`standard/ZIZK_TOKENS.md`](src/verifier/standard/ZIZK_TOKENS.md):
+  76 obligations over six levels and 24 rungs, the deepest ladder on the domain axis. A
+  token is exactly one of three kinds -- birth, aging or lifetime -- which are one
+  identity's lifecycle rather than three independent formats.
+- Add 14 `statics:` checks at tier 3 and 14 adaptation checks at tier 5, so both of
+  those tiers execute in full. Each statics check was exercised on both paths: it
+  passes on a constructed evidence fixture and refutes on a tampered one. The
+  preimage check **records** a search that found no preimage rather than passing on it.
+- **Add `TOKEN`'s behavioural adapter, so `TOKEN` is certifiable.**
+  `verifier.domains.token` replays a retained holding in the cumulative checks
+  `inventory`, `tenure`, `leases`, `signatures` and `closure`, from evidence of its own:
+  the tokens, the epoch trace and the status observations. It refolds tenure from the
+  birth commitment without opening it, resolves every lease to its parent grant and
+  refuses any step that widens scope, window, invocations or caveats, verifies Ed25519
+  signatures only under issuing keys whose bytes the checker policy admits, and reports a
+  status observation that is absent, stale or within the clock skew of the schedule as
+  `UNKNOWN`. Rows that need evidence it does not retain -- the commitment's opening,
+  withheld fields, consumed invocations, attenuation without the issuer, third-party
+  discharge, presentation and reissuance -- stay unmechanized. Without the `seal` extra
+  the signature check reports `UNKNOWN`.
+- `ADAPTER_PENDING_OBJECTS` named the reason `TOKEN` was grounded without being
+  certifiable, separately from `OPERATOR_OBJECTS`, because the two are not the same
+  residue: the composition operator `HYPER` has no substrate of its own and can never
+  have an adapter, while `TOKEN`'s residue was dischargeable by writing one. It is now
+  discharged, and the constant stays, empty. The new module joins the `verifier.domains`
+  tuple, so `implementation_digest()` moves and every domain policy issued before it
+  must be readmitted.
+- The ZIZK Prime Invariant governs it: an actor identity never upgrades a computational
+  verdict. `TOKEN-3.5` states it -- elapsed tenure is a quantity of time and confers no
+  scope -- and the `authority` statics check executes it; `TOKEN-3.9` separates holding a
+  token from being the party it was issued to.
+
+### The meta-tier grid, the relational objects and the VSTD-NAMESPACE
+
+- Publish the meta-tier grid in [`standard/META_TIERS.md`](src/verifier/standard/META_TIERS.md): every
+  verifiable object carries the same five tiers -- facets, dynamics, statics, closure and
+  domain adaptation -- at the coordinate `<NAME>-<tier>.<m>`. `<m>` is a **depth**,
+  not a count: it is the longest prerequisite chain inside one profile, so independent
+  obligations are cleared at one rung rather than at several. 386 rungs over
+  ninety-five profiles; the remaining 213 of 599 catalogued obligations are nameable
+  and unreachable as an `<m>`, and a certificate naming one of them is malformed.
+- Title the namespace of these objects the **VSTD-NAMESPACE**. `NAMESPACE` is deliberately
+  not itself a member of the `<NAME>` set, so `VSTD-NAMESPACE-1.1` does not parse. A wire
+  identifier such as the `schema_version` string `verifier-data-1` is not a coordinate in the
+  grid and is not renamed to match it; pinning readers would break.
+- Partition the domain objects into **grounded** and **ungrounded**, and name the
+  **relational** ones -- `GRAPH`, `HYPER`, `OWNER` and `IDENTITY` -- which hold between
+  certified objects instead of certifying a substrate of their own. `GRAPH` carries
+  its own axis; the other three sit on the domain axis.
+- Add `OWNER`, a holding between a certified actor and a certified object, typed by
+  the `ACTOR` certificate. It is relational and **ungrounded**: no
+  adapter executes it, so all 36 of its obligations are specified with no
+  mechanism and report `UNKNOWN` -- never absent, and never passed. Its closure profile
+  carries an accountability floor, so a chain of discharge-duties that nobody answers for
+  is not closed.
+- The three obligation namespaces stay disjoint and separately digested:
+  47 object, 28 Graph and 626 domain coordinates,
+  701 in all. `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, and extending one
+  catalogue provably cannot move another.
+- The `.m` ordinals are a **topological order**, and `tests/test_obligation_topological_order.py`
+  now holds them to it: every prerequisite resolves, no dependency edge crosses a rung
+  boundary, no edge runs from a higher ordinal to a lower one, and the numbering is dense
+  from 1. Measured over all 701 obligations and 847 edges, and the guard checks that it
+  still sees every axis rather than passing on an empty scan.
+- Every numeral the grid publishes -- depths, rung totals, obligation counts, the
+  unreachable remainder and both composition-lattice figures -- is re-derived from the
+  catalogued dependencies by `tests/test_meta_tier_cardinality.py`, so a figure that stops
+  being true fails the suite instead of standing as prose.
+
+### Breaking: object coordinates are spelled bare
+
+- **Removed the `VSTD-` prefix from every object coordinate.** A coordinate is now its bare
+  object name and nothing else -- `DATA-1.1`, `OWNER-4.5`, `GRAPH-3.2` -- where each was
+  previously written with the prefix in front of it. 1,286 occurrences across 101 files.
+  ALL-CAPS is the namespace marker, so the prefix was carrying no information the name did
+  not already carry.
+- Ten specification files are renamed with it: the five Graph specifications in each of the
+  two mirrors lose the prefix and become `GRAPH-1.md` through `GRAPH-5.md`. Any link or
+  path pinning the old filenames breaks. Packaging globs `specifications/*.md`, so the
+  renames carry into the wheel with no manifest edit.
+- The prefix survives in exactly two places, both where a bare spelling would say less:
+  `VSTD-1` through `VSTD-6`, the base abstract object's own tiers, where a bare numeral
+  names nothing; and the title **VSTD-NAMESPACE**, where a bare `NAMESPACE` collides with
+  the two other things that word already means in this repository.
+- **Wire identifiers are untouched.** The lowercase `schema_version` strings -- `verifier-data-1`
+  and its siblings -- are a different namespace that happens to share a prefix. Renaming one
+  to match the convention would break every reader that pins the string.
+- Add `scripts/check_namespace_closure.py`, which closes the namespace at eighteen objects
+  and fails on any surviving prefix outside those two cases. It reads the object set rather
+  than prose, so a new name cannot enter by being written down somewhere. Four of the
+  renamed coordinates were **built at runtime** from an f-string over the object name and
+  so were invisible to a byte sweep; the gate resolves names the same way. `TRAIN` is
+  one of the eighteen: it is a composition and a member both, and what it is composed of is
+  recorded in `COMPOSITION_OF`. Being written over other objects is a property an object
+  has, not a reason it is not one.
+- Rename the release acceptance keyword to **`acceptance-clearance`**. The previous spelling
+  was minted inside the object namespace without ever being declared an object, and it rode
+  a head that genuinely is one -- so every sweep shaped around invented names went straight
+  past it, and it had never once been used on a pull request. Only the spelling moved; the
+  mechanism is unchanged, and it remains the sole thing binding a human's approval to the
+  promotion-record digest, since GitHub stamps a review with a commit but knows nothing of
+  the record. `scripts/check_pr_policy.py` parses the new keyword verbatim, so this changes
+  what a maintainer types to accept a release.
+
+### Breaking: the verifier-actor-binding-1 wire object is withdrawn
+
+- **Removed** `verifier-actor-binding-1`, its JSON schema (`vstd-actor-binding-1.schema.json`)
+  and the `ActorBinding` model. The token shipped in 1.5.0, so this is a breaking change
+  for any producer emitting it.
+- It is superseded by the composition `HYPER(ACTOR + the bound object)`. The
+  composition is strictly stronger on every axis the token was weak on: the token's `kind`
+  was a closed enum of two, its `subject_id` was an untyped string that could not name a
+  certified object, and it carried no verdict, no operands and no closure condition.
+- The supersession **derives the ZIZK Prime Invariant instead of declaring it**.
+  `HYPER-3` makes the weakest operand the composed ceiling, so an actor can never be
+  represented as possessing a stronger truth about an object than the object itself
+  supports. Prohibited inferences 13, 15 and 16 collapse into the operator the same way.
+- `OWNER-1.1` is retyped accordingly and now binds a `ACTOR` certificate. The
+  published text had already named it as the one line that would be retyped on absorption.
+- This puts `OWNER` **inside** the composition lattice, so the two gated reachability
+  figures in `META_TIERS.md` fall: operands-positive from
+  360,121,040,618,342,315,750,640 to 343,872,709,682,315,103,844,560, and operands-complete
+  from 2,310,167,730,389,958 to 206,159,635,176,678. An unconstrained ladder inflated them.
+  `HYPER` is now the only ladder outside every composition edge, because it is the
+  operator rather than a composed object.
+- Section 3 of `ZIZK_TOKENS.md` is titled "The Three-Token Zero-Knowledge Lifecycle"
+  and carried four subsections. Birth, aging and lifetime are one identity's lifecycle; the
+  binding was the dyadic one bolted onto them. The heading is now true.
+
+### Experimental component declarations and bounded local checks
+
+- Add draft environment, benchmark, dataset, graph, training-lineage, model-risk,
+  and generative simulation representations under `verifier.corrigibility`.
+  These are non-normative candidates; their names do not establish conformance to
+  existing numbered profiles. See [candidate boundaries](docs/V2_CANDIDATE.md).
+- Check supplied trace replay, predicates on finite traces, projected trace
+  distance, and supplied agent observation/action bounds. Missing prerequisites
+  preserve `NOT_ESTABLISHED`; these checks are not inductive proofs, universal
+  bisimulation, physical containment, or authenticated distributed consensus.
+- Preserve `UNVERIFIED` for containment declarations. Physical attestation,
+  preemption, and unboxing proof mechanisms remain unimplemented. Benchmark
+  witnesses cannot obtain `SOLVED` from a self-reported validity flag.
+- Add `vstd publish` with local and remote Claim Garden transports from the
+  pending publish-command branch, plus a required optional grammar-constraint
+  test job. Neither is evidence of package publication or hosted candidate checks.
+- Require the submitting publisher identity and credential before claim transport;
+  bind storage responses to the exact claim and retained receipt, accept consistent
+  new or deduplicated storage, and preserve the human-review publication boundary.
+- Preserve zero required runtime dependencies and existing command aliases.
+  The draft compatibility identifiers and migration limits are documented.
 
 ## 1.5.0 - 2026-09-18
 
@@ -574,7 +879,7 @@ The finite mechanisms below retain their declared bounds and `UNKNOWN` results.
 ## 1.0.0 - 2026-08-22
 
 - Redesign specification numbers as cumulative numbered profiles: VSTD-1 through
-  VSTD-5 on the object axis and VSTD-Graph-1 through VSTD-Graph-5 on the
+  VSTD-5 on the object axis and VSTD-GRAPH-1 through VSTD-GRAPH-5 on the
   collection axis.
 - Establish integer numbered-profile specification paths while release history remains available in
   the corresponding Git tags.

@@ -1,5 +1,5 @@
 {
-  "schema_version": "VSTD-PLATFORM-COMPONENT-CONTRACTS-1",
+  "schema_version": "verifier-platform-component-contracts-1",
   "claim_boundary": "This source manifest records configured test intent only. CONFIGURED_UNRUN is not execution evidence or a support claim. A component remains unestablished on a coordinate until a later exact run emits bounded evidence for the catalog and manifest digests named by that run.",
   "status_vocabulary": {
     "CONFIGURED_UNRUN": "The repository configures the mapped tests for this coordinate, but this manifest records no execution result.",
@@ -122,7 +122,7 @@
       "catalog_optional_dependencies": [],
       "coverage_kind": "BEHAVIOR",
       "test_modules": ["tests/test_silo_composition_fixture.py", "tests/test_silo_composition_receipt.py"],
-      "test_scope": "Exercise exact VSTD-SILO-COMPOSITION-0.1 declaration decoding, including canonical member ordering, unique bounded commit digests, strict fields, and optional composite binding. Passing does not resolve commit bytes, check general graph edges, establish TypeScript support, or grant composition admissibility.",
+      "test_scope": "Exercise exact verifier-silo-composition-1 declaration decoding, including canonical member ordering, unique bounded commit digests, strict fields, and optional composite binding. Passing does not resolve commit bytes, check general graph edges, establish TypeScript support, or grant composition admissibility.",
       "coordinate_intent": {
         "linux-x64": "CONFIGURED_UNRUN",
         "windows-x64": "CONFIGURED_UNRUN",
@@ -137,7 +137,7 @@
       "catalog_optional_dependencies": [],
       "coverage_kind": "BEHAVIOR",
       "test_modules": ["tests/test_silo_composition_fixture.py", "tests/test_silo_composition_receipt.py"],
-      "test_scope": "Exercise construction of a declaration-, mechanism-, member-receipt-, optional-composite-, and assessment-bound VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1 record from current local stores. Passing does not provide an independently implemented checker, check general graph edges, establish TypeScript support, or prove artifact truth.",
+      "test_scope": "Exercise construction of a declaration-, mechanism-, member-receipt-, optional-composite-, and assessment-bound verifier-silo-composition-assessment-receipt-1 record from current local stores. Passing does not provide an independently implemented checker, check general graph edges, establish TypeScript support, or prove artifact truth.",
       "coordinate_intent": {
         "linux-x64": "CONFIGURED_UNRUN",
         "windows-x64": "CONFIGURED_UNRUN",
@@ -590,7 +590,7 @@
     },
     {
       "component_id": "component:vstd-graph-assurance-rechecker",
-      "label": "VSTD-Graph assurance-log rechecker",
+      "label": "GRAPH assurance-log rechecker",
       "dependency_profiles": ["test"],
       "catalog_optional_dependencies": [],
       "coverage_kind": "BEHAVIOR",
@@ -605,7 +605,7 @@
     },
     {
       "component_id": "component:vstd-graph-level-rechecker",
-      "label": "Evidence-bound VSTD-Graph profile rechecker",
+      "label": "Evidence-bound GRAPH profile rechecker",
       "dependency_profiles": ["test"],
       "catalog_optional_dependencies": [],
       "coverage_kind": "BEHAVIOR",
@@ -620,7 +620,7 @@
     },
     {
       "component_id": "component:vstd-graph-receipt-validator",
-      "label": "VSTD-Graph receipt validator",
+      "label": "GRAPH receipt validator",
       "dependency_profiles": ["test"],
       "catalog_optional_dependencies": [],
       "coverage_kind": "BEHAVIOR",

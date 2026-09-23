@@ -1,0 +1,92 @@
+{
+  "$comment": "Terminology: benchmark specification graph (BENCH); verifiable execution environment (ENV); model reproducibility specification (MODEL); Verifier Standard (VSTD).",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-risk-profile-2.schema.json",
+  "title": "Verifier Standard (VSTD) v2.0.0 Multi-Facet Superintelligence Risk Profile Receipt",
+  "description": "Experimental declaration/receipt format. Schema validity establishes structure only; see docs/V2_CANDIDATE.md for mechanism limits.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "model_id",
+    "containment_tier",
+    "verdict",
+    "graph_digest",
+    "environment_digest",
+    "dataset_digest",
+    "hyperparameters_digest",
+    "benchmark_digest",
+    "model_profile_digest",
+    "findings",
+    "canonical_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "verifier-2.0.0",
+        "verifier-1.6.0",
+        "verifier-1.5.0"
+      ]
+    },
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "containment_tier": {
+      "type": "string",
+      "enum": [
+        "TIER_1_LOCAL",
+        "TIER_2_TOOL_SSA",
+        "TIER_3_TESLA_CAGED"
+      ]
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "CONTAINED",
+        "BREACH_DETECTED",
+        "REJECTED_ZERO_FALSE_CONFIDENCE",
+        "UNVERIFIED"
+      ]
+    },
+    "graph_digest": {
+      "$ref": "#/$defs/sha256Digest"
+    },
+    "environment_digest": {
+      "$ref": "#/$defs/sha256Digest"
+    },
+    "dataset_digest": {
+      "$ref": "#/$defs/sha256Digest"
+    },
+    "hyperparameters_digest": {
+      "$ref": "#/$defs/sha256Digest"
+    },
+    "benchmark_digest": {
+      "$ref": "#/$defs/sha256Digest"
+    },
+    "model_profile_digest": {
+      "$ref": "#/$defs/sha256Digest"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "canonical_digest": {
+      "$ref": "#/$defs/sha256Digest"
+    }
+  },
+  "$defs": {
+    "sha256Digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

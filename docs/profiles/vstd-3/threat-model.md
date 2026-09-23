@@ -6,7 +6,7 @@
 
 > Reader aid: [concept glossary and primary precedents](../../CONCEPTS_AND_PRECEDENTS.md).
 
-**Numbered profile:** VSTD-3; required closure coordinate: Substrate Accountability; serialized receipt identifier `VSTD-3.0`
+**Numbered profile:** VSTD-3; required closure coordinate: Substrate Accountability; serialized receipt identifier `VSTD-3`
 **Purpose:** defensive verification and conformance; not offensive exploit guidance
 
 ## Boundary

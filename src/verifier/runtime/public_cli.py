@@ -1,7 +1,7 @@
 """Terminology: application programming interface (API); command-line interface (CLI);
-identifier (ID); JavaScript Object Notation (JSON);
-Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD);
-YAML Ain't Markup Language (YAML).
+Hypertext Transfer Protocol Secure (HTTPS); identifier (ID);
+JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256);
+Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
 
 Public, target-neutral CLI for the VSTD reference implementation.
 
@@ -93,15 +93,15 @@ def _read_receipt(path_or_dir: Path) -> dict[str, Any] | None:
 
 
 def _is_data_receipt(payload: dict[str, Any]) -> bool:
-    return payload.get("schema_version") == "VSTD-DATA-0.1" and "hypergraph" in payload
+    return payload.get("schema_version") == "verifier-data-1" and "hypergraph" in payload
 
 
 def _load_hypergraph(path_or_dir: Path) -> tuple[dict[str, Any], ProvenanceHypergraph]:
     payload = _read_receipt(path_or_dir)
     if payload is None or not _is_data_receipt(payload):
         raise ValueError(
-            "not a readable VSTD-Graph-1 receipt with serialized schema_version identifier "
-            f"VSTD-DATA-0.1: {_receipt_file(path_or_dir)}"
+            "not a readable GRAPH-1 receipt with serialized schema_version identifier "
+            f"verifier-data-1: {_receipt_file(path_or_dir)}"
         )
     return payload, ProvenanceHypergraph.from_dict(payload["hypergraph"])
 
@@ -151,7 +151,7 @@ def _inspect_data_receipt(path_or_dir: Path) -> int:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 1
     print("=" * 70)
-    print(f"VSTD-GRAPH RECEIPT: {payload.get('receipt_id')}")
+    print(f"GRAPH RECEIPT: {payload.get('receipt_id')}")
     print("=" * 70)
     print(f"Canonical Digest: {payload.get('canonical_digest')}")
     print(f"Target Artifact:  {payload.get('dataset_spec', {}).get('target_artifact_id')}")
@@ -225,8 +225,28 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="vstd",
         description="Target-neutral VSTD receipt and provenance reference runtime.",
+        epilog="\n".join((
+            "new here?          run `vstd start` for the ordered path from "
+            "nothing to a checked result.",
+            "holding a result?  run `vstd explain <file.json>` to read it in "
+            "plain language.",
+            "most commands take --json for programmatic use.",
+        )),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    from verifier import __version__
+
+    parser.add_argument(
+        "--version", action="version", version=f"vstd {__version__}",
+        help="Show the installed verifier-standard version and exit.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    from verifier.runtime.accessibility_cli import add_accessibility_parsers
+    add_accessibility_parsers(subparsers)
+
+    from verifier.runtime.certification_cli import add_certification_parser
+    add_certification_parser(subparsers)
 
     demo_parser = subparsers.add_parser(
         "demo",
@@ -356,7 +376,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     for command, help_text in (
         ("validate", "Run implemented receipt checks; Graph candidate validation is not conformance."),
-        ("inspect", "Inspect a generic-run or VSTD-Graph receipt; validate and report VSTD-3."),
+        ("inspect", "Inspect a generic-run or GRAPH receipt; validate and report VSTD-3."),
         ("reproduce", "Replay the mechanisms available in a stored receipt."),
     ):
         command_parser = subparsers.add_parser(command, help=help_text)
@@ -380,7 +400,7 @@ def build_parser() -> argparse.ArgumentParser:
     impact_parser.add_argument("artifact_id")
     impact_parser.add_argument("--search-root", default="receipts")
 
-    data_parser = subparsers.add_parser("data", help="Inspect a stored VSTD-Graph hypergraph.")
+    data_parser = subparsers.add_parser("data", help="Inspect a stored GRAPH hypergraph.")
     data_commands = data_parser.add_subparsers(dest="data_command", required=True)
 
     trace_parser = data_commands.add_parser("trace")
@@ -474,6 +494,48 @@ def build_parser() -> argparse.ArgumentParser:
     add_experiment_parsers(subparsers)
     add_vstd3_parsers(subparsers)
     add_network_parsers(subparsers)
+
+    publish_parser = subparsers.add_parser(
+        "publish",
+        help="Submit a preflighted claim and receipt for authenticated storage and human review.",
+    )
+    publish_parser.add_argument(
+        "receipt",
+        help="Path to receipt.json, claim packet JSON, or directory containing receipt and claim.",
+    )
+    publish_parser.add_argument(
+        "--claim",
+        help="Optional path to separate claim JSON if not bundled or co-located with receipt.",
+    )
+    publish_parser.add_argument(
+        "--endpoint",
+        default="https://claimgarden.com",
+        help="Target Claim Garden HTTPS origin (default: https://claimgarden.com).",
+    )
+    publish_parser.add_argument(
+        "--publisher-id",
+        required=True,
+        help="Registered publisher:sha256 identity submitting this claim (not the receipt notary).",
+    )
+    publish_parser.add_argument(
+        "--credential-file",
+        required=True,
+        help="Publisher credential file containing the required bearer access token.",
+    )
+    publish_parser.add_argument(
+        "--expected-head",
+        help="Reserved silo-lineage option; rejected for claim storage.",
+    )
+    publish_parser.add_argument(
+        "--genesis",
+        action="store_true",
+        help="Reserved silo-lineage option; rejected for claim storage.",
+    )
+    publish_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Emit canonical JSON result instead of formatted text.",
+    )
     return parser
 
 
@@ -506,7 +568,7 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
         elif args.rerun:
             handler = lambda: _receipt_command_failure(
                 argparse.Namespace(command=args.command, json=False),
-                "--rerun is not defined for stored VSTD-Graph receipts",
+                "--rerun is not defined for stored GRAPH receipts",
             )
         else:
             handler = lambda: reproduce_data_receipt(receipt_path)
@@ -793,8 +855,21 @@ def _handle_artifact_command(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    # A bare `vstd` is the first thing most people type. argparse's own answer
+    # is a usage error on stderr listing every subcommand and naming none of
+    # them as the place to begin, which is the least useful moment in the tool.
+    if not (sys.argv[1:] if argv is None else argv):
+        parser.print_help()
+        return 2
+    args = parser.parse_args(argv)
     try:
+        if args.command in ("start", "explain"):
+            from verifier.runtime.accessibility_cli import handle_accessibility_command
+            return handle_accessibility_command(args)
+        if args.command == "certification":
+            from verifier.runtime.certification_cli import handle_certification_command
+            return handle_certification_command(args)
         if args.command == "demo":
             results = run_demo(args.scenario)
             report = demo_report(results)
@@ -913,6 +988,59 @@ def main(argv: list[str] | None = None) -> int:
             return handle_experiment_command(args)
         if args.command == "network":
             return handle_network_command(args)
+        if args.command == "publish":
+            from verifier.interoperability.claim_garden import (
+                ClaimGardenClientError,
+                publish_claim,
+            )
+
+            try:
+                result = publish_claim(
+                    args.receipt,
+                    claim=args.claim,
+                    endpoint=args.endpoint,
+                    publisher_id=args.publisher_id,
+                    credential_file=args.credential_file,
+                    expected_head=args.expected_head,
+                    genesis=args.genesis,
+                )
+            except ClaimGardenClientError as exc:
+                if args.json:
+                    print(
+                        json.dumps(
+                            {"error": str(exc), "result": "REJECTED"},
+                            indent=2,
+                            sort_keys=True,
+                        )
+                    )
+                else:
+                    print(f"[FAIL] {exc}", file=sys.stderr)
+                return 1
+
+            if args.json:
+                print(json.dumps(result, indent=2, sort_keys=True))
+            else:
+                status_label = (
+                    result.get("status") or result.get("result") or "SUBMITTED"
+                )
+                claim_id = result.get("claim_id") or args.receipt
+                print(f"[{status_label}] {claim_id}")
+                if "receipt_id" in result:
+                    print(f"  Receipt ID:       {result['receipt_id']}")
+                if "claim_digest" in result:
+                    print(f"  Claim Digest:     {result['claim_digest']}")
+                if "state" in result:
+                    print(f"  State:            {result['state']}")
+                if "publication_gate" in result:
+                    print(f"  Publication Gate: {result['publication_gate']}")
+                if "publication" in result:
+                    print(f"  Publication:      {result['publication']}")
+            return (
+                0
+                if result.get("status") == "ADMITTED"
+                or result.get("result") == "SUBMITTED"
+                else 1
+            )
         if args.command in {"hardware", "continuity", "fleet", "evidence", "claims"}:
             return handle_vstd3_command(args)
     except (OSError, RunError, ValueError, KeyError) as exc:

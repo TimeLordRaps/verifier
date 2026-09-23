@@ -71,7 +71,7 @@ def test_public_cli_flagship_demo_is_side_effect_free_and_machine_readable(
 ) -> None:
     assert main(["demo", "--json"]) == 0
     report = json.loads(capsys.readouterr().out)
-    assert report["demo"] == "VSTD-FLAGSHIP-1"
+    assert report["demo"] == "verifier-flagship-1"
     assert report["status"] == "OK"
     assert report["scenario_count"] == 4
     assert report["successful_scenarios"] == 4

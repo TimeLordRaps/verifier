@@ -23,6 +23,14 @@ PORTAL = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(PORTAL)
 
 
+def test_repository_checks_fetch_the_pinned_documentation_release() -> None:
+    workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    fetches = re.findall(r"git fetch --no-tags --depth=1 origin (\S+)", workflow)
+    assert fetches, "Shallow hosted checkouts need the pinned documentation release"
+    expected = f"refs/tags/{PORTAL.RELEASE_TAG}:refs/tags/{PORTAL.RELEASE_TAG}"
+    assert all(refspec == expected for refspec in fetches)
+
+
 class Page(HTMLParser):
     def __init__(self, content: str) -> None:
         super().__init__()
@@ -85,7 +93,7 @@ def test_release_and_repository_editions_remain_distinct(site: Path) -> None:
     assert f"package version {PORTAL.RELEASE}" in released
     assert "UNRELEASED SOURCE" not in released
     coordinate = json.loads((site / "portal-coordinate.json").read_text(encoding="utf-8"))
-    assert coordinate["release_version"] == "1.4.0"
+    assert coordinate["release_version"] == "1.5.0"
     assert coordinate["release_commit"] in released
     assert PORTAL.REPOSITORY + "/blob/main/" not in released
     for prefix in ("", PORTAL.RELEASE_PATH):
@@ -109,9 +117,8 @@ def test_search_results_bind_to_real_sections_and_correct_edition(site: Path) ->
 def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path) -> None:
     """Bind the onboarding guides to real routes and to the correct edition.
 
-    The pinned release predates these pages, so the release edition must send a
-    reader back to the repository edition rather than advertise a route its own
-    commit never contained.
+    The pinned 1.5.0 release includes these pages. Its navigation must retain
+    the release coordinate rather than silently routing to newer source.
     """
 
     guides = (
@@ -122,7 +129,7 @@ def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path)
     )
     for route in guides:
         assert (site / route).is_file()
-        assert not (site / PORTAL.RELEASE_PATH / route).exists()
+        assert (site / PORTAL.RELEASE_PATH / route).is_file()
 
     groups = dict(PORTAL.navigation("", site))
     assert [target for _, target in groups["Tutorials"]] == [
@@ -134,7 +141,7 @@ def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path)
 
     released = dict(PORTAL.navigation(PORTAL.RELEASE_PATH, site))
     for _, target in released["Tutorials"] + [released["Start here"][-1]]:
-        assert not target.startswith(PORTAL.RELEASE_PATH)
+        assert target.startswith(PORTAL.RELEASE_PATH)
 
     entries = json.loads((site / "search-index.json").read_text(encoding="utf-8"))
     titles = {item["title"] for item in entries if item["edition"] == "repository"}
@@ -143,7 +150,7 @@ def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path)
 
 
 def test_schema_bytes_and_existing_identifier_origin_are_preserved(site: Path) -> None:
-    for folder in (ROOT / "receipts/schema", ROOT / "standard/schemas"):
+    for folder in (ROOT / "receipts/schema", ROOT / "src/verifier/schemas"):
         for source in folder.glob("*.json"):
             assert (site / "schemas" / source.name).read_bytes() == source.read_bytes()
             payload = json.loads(source.read_text(encoding="utf-8"))

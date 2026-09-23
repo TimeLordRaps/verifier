@@ -59,7 +59,7 @@ def test_artifact_first_experiment_distinguishes_implemented_mechanisms_from_hor
     assert "## Implemented bounded mechanisms" in document
     assert "## Remaining experimental work" in document
     implemented, remaining = document.split("## Remaining experimental work", 1)
-    for binding in ("VSTD-GRAPH-ASSURANCE-1", "recheck_assurance_log", "record_trust"):
+    for binding in ("verifier-graph-assurance-1", "recheck_assurance_log", "record_trust"):
         assert binding in implemented
     for horizon in ("domain-independent", "independent", "hidden-witness", "proof backends"):
         assert horizon in remaining
@@ -107,6 +107,7 @@ class _BuiltPageLinks(HTMLParser):
                 self.links.append(attributes[name])
 
 
+@pytest.mark.timeout(180)
 def test_professional_presentation_surface_has_no_drift() -> None:
     path = ROOT / "scripts/check_presentation.py"
     spec = importlib.util.spec_from_file_location("check_presentation", path)
@@ -114,6 +115,26 @@ def test_professional_presentation_surface_has_no_drift() -> None:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert module.run() == []
+
+
+def test_changelog_acronym_block_glosses_every_domain_mainstay() -> None:
+    """The changelog's acronym block is hand-maintained and no gate could see it.
+
+    ``scripts/check_acronyms.py`` only requires first-use expansion for terms that
+    are already registered in ``docs/ACRONYMS.md``, and that glossary registers no
+    domain name at all, so a mainstay missing from the block was invisible. Read
+    the roster from the catalogue at runtime rather than restating it here, so a
+    new domain cannot be added without its gloss.
+    """
+
+    from itertools import takewhile
+
+    from verifier.domains.catalog import CHECKS
+
+    lines = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").splitlines()
+    block = " ".join(takewhile(lambda line: not line.startswith("## "), lines))
+    missing = sorted(name for name in CHECKS if f"({name})" not in block)
+    assert not missing, f"changelog acronym block does not gloss {missing}"
 
 
 def test_acronym_gate_rejects_missing_and_late_first_use(tmp_path: Path) -> None:
@@ -318,14 +339,14 @@ def test_maturity_table_requires_each_major_surface_and_explicit_conformance() -
         "## Current maturity"
     )
 
-    combined = readme.replace("| VSTD-Graph-3 |", "| VSTD-Graph-2 |", 1)
+    combined = readme.replace("| GRAPH-3 |", "| GRAPH-2 |", 1)
     errors = module.maturity_table_violations(combined)
-    assert any("VSTD-Graph-2" in error and "observed 2" in error for error in errors)
-    assert any("VSTD-Graph-3" in error and "observed 0" in error for error in errors)
+    assert any("GRAPH-2" in error and "observed 2" in error for error in errors)
+    assert any("GRAPH-3" in error and "observed 0" in error for error in errors)
 
 
 def test_artifact_state_vocabulary_is_process_bound_and_unambiguous() -> None:
-    ladder = (ROOT / "standard" / "LADDER.md").read_text(encoding="utf-8")
+    ladder = (ROOT / "src/verifier/standard" / "LADDER.md").read_text(encoding="utf-8")
     humans = (ROOT / "HUMANS.md").read_text(encoding="utf-8")
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     architecture = (ROOT / "docs" / "ARCHITECTURE.md").read_text(encoding="utf-8")
@@ -343,7 +364,7 @@ def test_artifact_state_vocabulary_is_process_bound_and_unambiguous() -> None:
 
 
 def test_standard_orients_readers_before_formal_terminology() -> None:
-    ladder = (ROOT / "standard" / "LADDER.md").read_text(encoding="utf-8")
+    ladder = (ROOT / "src/verifier/standard" / "LADDER.md").read_text(encoding="utf-8")
     orientation = ladder.index("### Read this first:")
     terminology = ladder.index("### Terminology contract")
     assert orientation < terminology
@@ -435,9 +456,9 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     )
     assert coordinate == {
         "canonical_base_url": "https://timelordraps.github.io/verifier/",
-        "documentation_version": "1.5.0",
+        "documentation_version": "2.0.0",
         "normative_source": "standard/",
-        "release_state": "RELEASED",
+        "release_state": "UNRELEASED_CANDIDATE",
         "schema_version": 1,
         "source_ref": "test-commit",
     }
@@ -448,7 +469,7 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     sources = sorted(
         (
             *ROOT.joinpath("receipts/schema").glob("*.json"),
-            *ROOT.joinpath("standard/schemas").glob("*.json"),
+            *ROOT.joinpath("src/verifier/schemas").glob("*.json"),
         ),
         key=lambda path: path.name,
     )
@@ -508,7 +529,7 @@ def test_every_declared_document_is_rendered_with_source_aware_navigation(
         "github.com/TimeLordRaps/verifier/blob/main/docs/CONCEPTS_AND_PRECEDENTS.md"
         not in ladder
     )
-    assert "/blob/test-commit/standard/LADDER.md" in ladder
+    assert "/blob/test-commit/src/verifier/standard/LADDER.md" in ladder
     assert "without changing its status" in ladder
     assert "Evidence for one closure coordinate never supplies evidence for another." in ladder
     assert "An <code>UNKNOWN</code> is never a pass" in ladder
@@ -608,6 +629,9 @@ def test_guides_keep_repository_documentation_inside_the_site() -> None:
     assert 'href="project/ROADMAP.html"' in guides
     assert "github.com/TimeLordRaps/verifier/blob/main/docs/" not in guides
     assert "github.com/TimeLordRaps/verifier/blob/main/standard/" not in guides
+    assert (
+        "github.com/TimeLordRaps/verifier/blob/main/src/verifier/standard/" not in guides
+    )
 
 
 def test_pages_output_does_not_invalidate_exact_checkout_binding() -> None:
@@ -655,6 +679,19 @@ def test_conformance_gate_requires_real_scitt_cose_integration() -> None:
     assert "import cbor2, cryptography, scitt_cose" in steps
     assert "tests/test_scitt_crypto_example.py" in steps
     assert "scitt-crypto" in jobs["conformance-gate"]["needs"]
+
+
+def test_conformance_gate_requires_real_logits_constraints_integration() -> None:
+    workflow = yaml.safe_load(
+        (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    )
+    jobs = workflow["jobs"]
+    logits_job = jobs["logits-constraints"]
+    steps = "\n".join(str(step.get("run", "")) for step in logits_job["steps"])
+    assert 'pip install --extra-index-url https://download.pytorch.org/whl/cpu ".[test,constraints]" transformers' in steps
+    assert "import llguidance, torch, transformers" in steps
+    assert "tests/test_logits_constraint_kernel.py" in steps
+    assert "logits-constraints" in jobs["conformance-gate"]["needs"]
 
 
 def test_installed_wheel_smoke_exercises_supported_surface_analysis() -> None:

@@ -4,7 +4,7 @@
 > zero-identity/zero-knowledge (ZIZK).
 
 VSTD's governing ZIZK artifact-first architecture is normative in
-[`standard/LADDER.md` section 1.1](../../standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
+[`standard/LADDER.md` section 1.1](../../src/verifier/standard/LADDER.md#11-artifact-first-causal-provenance-orientation).
 It gives actor identity and reputation no assurance weight and evaluates bounded process
 claims represented by software and artifacts. Its formal semantic names are TRUST for
 mechanism-earned forward support, ROT for typed time-indexed loss of current admissibility,

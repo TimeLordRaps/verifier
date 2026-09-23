@@ -9,7 +9,7 @@ repository was on that list: ``ArtifactStatus.CHALLENGED`` has existed in
 ``verifier.data.models`` with **no producer anywhere in the tree**. This module
 produces challenge-ledger claim state. The separate
 ``verifier.data.assurance.AssuranceLedger.project_challenges`` mechanism now binds
-the complete serialized record set into an additive VSTD-Graph current-state view;
+the complete serialized record set into an additive GRAPH current-state view;
 this module still never mutates a historical Graph artifact.
 
 The state machine::
@@ -25,7 +25,7 @@ say-so never degraded at all.
 **The implementation constraint the diagram hides.** Status is a *function over
 an append-only record set*, never a mutable field. Anything else makes 4.12
 contradict 4.3 -- you cannot mutate a status that is sealed inside the committed
-digest ``C``. The house pattern already exists: VSTD-Graph-1 §5 blast radius "does
+digest ``C``. The house pattern already exists: GRAPH-1 §5 blast radius "does
 not silently mutate historical artifact nodes," it creates additive records.
 :class:`ChallengeLedger` follows it, and :meth:`ChallengeLedger.status` recomputes
 from the records every time.

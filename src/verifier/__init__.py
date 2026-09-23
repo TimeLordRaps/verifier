@@ -8,13 +8,29 @@ from importlib import import_module
 import warnings
 from typing import TYPE_CHECKING, Any
 
-__version__ = "1.5.0"
+__version__ = "2.0.0"
 # This names the highest project-specification coordinate exposed by the package;
 # it is not a conformance claim. Keep the adjacent status when presenting it.
 __standard__ = "VSTD-5"
 __standard_status__ = "PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM"
 
 _LAZY_EXPORTS = {
+    "NativeDomainAdapter": ("verifier.domains.certification", "NativeDomainAdapter"),
+    "domain_catalog": ("verifier.domains.catalog", "domain_catalog"),
+    "domain_policy": ("verifier.domains.certification", "domain_policy"),
+    "domain_request": ("verifier.domains.certification", "domain_request"),
+    "build_domain_certificate": ("verifier.domains.certification", "build_domain_certificate"),
+    "recheck_domain_certificate": ("verifier.domains.certification", "recheck_domain_certificate"),
+    "CertificationError": ("verifier.core.grounded_certification", "CertificationError"),
+    "CertificationPolicy": ("verifier.core.grounded_certification", "CertificationPolicy"),
+    "CertificationRequest": ("verifier.core.grounded_certification", "CertificationRequest"),
+    "MechanismAdmission": ("verifier.core.grounded_certification", "MechanismAdmission"),
+    "ProfileObligation": ("verifier.core.profile_obligations", "ProfileObligation"),
+    "obligation_catalog": ("verifier.core.profile_obligations", "obligation_catalog"),
+    "NativeCertificationMechanism": ("verifier.core.certification_mechanisms", "NativeCertificationMechanism"),
+    "assess_grounded_certification": ("verifier.core.grounded_certification", "assess_grounded_certification"),
+    "build_grounded_certificate": ("verifier.core.grounded_certification", "build_grounded_certificate"),
+    "recheck_grounded_certificate": ("verifier.core.grounded_certification", "recheck_grounded_certificate"),
     "ArtifactControlError": ("verifier.artifact_control", "ArtifactControlError"),
     "ArtifactVerification": ("verifier.artifact_control", "ArtifactVerification"),
     "freeze_artifact": ("verifier.artifact_control", "freeze_artifact"),
@@ -160,6 +176,30 @@ def __dir__() -> list[str]:
 
 
 if TYPE_CHECKING:
+    from verifier.domains.catalog import domain_catalog as domain_catalog
+    from verifier.domains.certification import (
+        NativeDomainAdapter as NativeDomainAdapter,
+        domain_policy as domain_policy,
+        domain_request as domain_request,
+        build_domain_certificate as build_domain_certificate,
+        recheck_domain_certificate as recheck_domain_certificate,
+    )
+    from verifier.core.grounded_certification import (
+        CertificationError as CertificationError,
+        CertificationPolicy as CertificationPolicy,
+        CertificationRequest as CertificationRequest,
+        MechanismAdmission as MechanismAdmission,
+        assess_grounded_certification as assess_grounded_certification,
+        build_grounded_certificate as build_grounded_certificate,
+        recheck_grounded_certificate as recheck_grounded_certificate,
+    )
+    from verifier.core.profile_obligations import (
+        ProfileObligation as ProfileObligation,
+        obligation_catalog as obligation_catalog,
+    )
+    from verifier.core.certification_mechanisms import (
+        NativeCertificationMechanism as NativeCertificationMechanism,
+    )
     from verifier.artifact_control import (
         ArtifactControlError as ArtifactControlError,
         ArtifactVerification as ArtifactVerification,

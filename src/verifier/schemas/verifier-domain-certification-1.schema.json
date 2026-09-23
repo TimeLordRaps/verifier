@@ -1,0 +1,810 @@
+{
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-domain-certification-1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Structural envelope only. Domain evaluators check retained contract semantics; certificate replay requires external intent and policy.",
+  "properties": {
+    "certificate_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "evidence": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "DATA"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "fields": {},
+                  "final_shards": {},
+                  "identity_field": {},
+                  "overlap": {},
+                  "shard_fields": {},
+                  "shards": {},
+                  "source_shards": {},
+                  "splits": {},
+                  "transforms": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "shards": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "ENV"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "ceilings": {},
+                  "configuration": {},
+                  "execution": {},
+                  "execution_ids": {},
+                  "files": {},
+                  "scope": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "configuration": {},
+                  "executions": {},
+                  "files": {},
+                  "measurements": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "BENCH"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "minimum_score": {},
+                  "problems": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "runs": {},
+                  "score": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "TRAIN"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "architecture": {},
+                  "checkpoint_digests": {},
+                  "configuration": {},
+                  "start_step": {},
+                  "steps_digest": {},
+                  "tolerance": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "batches": {},
+                  "checkpoints": {},
+                  "steps": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "MODEL"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "architecture_digest": {},
+                  "challenges": {},
+                  "dependencies": {},
+                  "metric": {},
+                  "metric_bounds": {},
+                  "samples_digest": {},
+                  "tolerance": {},
+                  "weights_digest": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "architecture": {},
+                  "dependencies": {},
+                  "metric_value": {},
+                  "samples": {},
+                  "weights": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "SIM"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "action_bounds": {},
+                  "entropy_digest": {},
+                  "finite_entropy_set": {},
+                  "finite_state_set": {},
+                  "initial_state": {},
+                  "invariants": {},
+                  "macro_digest": {},
+                  "observation": {},
+                  "projection": {},
+                  "shards": {},
+                  "times_digest": {},
+                  "tolerance": {},
+                  "trajectory_digest": {},
+                  "transition": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "actions": {},
+                  "entropy": {},
+                  "macro_states": {},
+                  "observations": {},
+                  "shards": {},
+                  "states": {},
+                  "times": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "HARNESS"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "effects": {},
+                  "record_count": {},
+                  "surface": {},
+                  "tools": {},
+                  "transcript_digest": {},
+                  "transcript_root": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "effects": {},
+                  "invocations": {},
+                  "records": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "AGENT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "actions_digest": {},
+                  "claims": {},
+                  "harness_certificate_digest": {},
+                  "harness_subject_id": {},
+                  "outcomes": {},
+                  "required_channels": {},
+                  "steps_digest": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "actions": {},
+                  "harness_certificate": {},
+                  "outcomes": {},
+                  "steps": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "BOT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "agent_certificate_digest": {},
+                  "agent_environment_certificate_digest": {},
+                  "exogenous_transitions": {},
+                  "initial_observation_record": {},
+                  "separation": {},
+                  "sim_certificate_digest": {},
+                  "sim_environment_certificate_digest": {},
+                  "step_map": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "agent_certificate": {},
+                  "agent_environment_certificate": {},
+                  "sim_certificate": {},
+                  "sim_environment_certificate": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "TOKEN"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "accepted_algorithms": {},
+                  "audience": {},
+                  "clock": {},
+                  "clock_skew": {},
+                  "epochs_digest": {},
+                  "issuing_keys": {},
+                  "key_retirements": {},
+                  "observed_at": {},
+                  "period": {},
+                  "root_scopes": {},
+                  "status_schedule": {},
+                  "statuses_digest": {},
+                  "tokens_digest": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "epochs": {},
+                  "statuses": {},
+                  "tokens": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "artifact": {
+          "type": "object"
+        },
+        "domain": {
+          "enum": [
+            "DATA",
+            "ENV",
+            "BENCH",
+            "TRAIN",
+            "MODEL",
+            "SIM",
+            "HARNESS",
+            "AGENT",
+            "BOT",
+            "TOKEN"
+          ]
+        },
+        "inputs": {
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "verifier-domain-evidence-1"
+        },
+        "subject_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "domain",
+        "subject_id",
+        "artifact",
+        "inputs"
+      ],
+      "type": "object"
+    },
+    "mechanism_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "policy_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "request": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "DATA"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "ENV"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 4
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "BENCH"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 4
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "TRAIN"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "MODEL"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "SIM"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "HARNESS"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "AGENT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "BOT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "TOKEN"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 5
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "artifact_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "domain": {
+          "enum": [
+            "DATA",
+            "ENV",
+            "BENCH",
+            "TRAIN",
+            "MODEL",
+            "SIM",
+            "HARNESS",
+            "AGENT",
+            "BOT",
+            "TOKEN"
+          ]
+        },
+        "evidence_ref": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "verifier-domain-request-1"
+        },
+        "subject_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "target_depth": {
+          "maximum": 5,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "domain",
+        "subject_id",
+        "artifact_digest",
+        "evidence_ref",
+        "target_depth"
+      ],
+      "type": "object"
+    },
+    "result": {
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "additionalProperties": false,
+          "minProperties": 1,
+          "patternProperties": {
+            "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT|TOKEN)\\.[1-5]$": {
+              "additionalProperties": false,
+              "properties": {
+                "blocked_by": {
+                  "items": {
+                    "pattern": "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT|TOKEN)\\.[1-5]$",
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "established": {
+                  "type": "boolean"
+                },
+                "evaluation": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "binding_digest": {
+                      "pattern": "^[0-9a-f]{64}$",
+                      "type": "string"
+                    },
+                    "details": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "evidence_refs": {
+                      "items": {
+                        "pattern": "^sha256:[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "type": "array"
+                    },
+                    "mechanism_digest": {
+                      "pattern": "^sha256:[0-9a-f]{64}$",
+                      "type": "string"
+                    },
+                    "mechanism_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "observations": {
+                      "type": "object"
+                    },
+                    "observed_evidence_bytes": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "outcome": {
+                      "enum": [
+                        "PASS",
+                        "FAIL",
+                        "UNKNOWN"
+                      ]
+                    },
+                    "trust_roots": {
+                      "items": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "binding_digest",
+                    "outcome",
+                    "mechanism_id",
+                    "mechanism_digest",
+                    "evidence_refs",
+                    "trust_roots",
+                    "observed_evidence_bytes",
+                    "details",
+                    "observations"
+                  ],
+                  "type": "object"
+                },
+                "name": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "proposition": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "proposition",
+                "established",
+                "blocked_by",
+                "evaluation"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "domain_depth": {
+          "maximum": 5,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "object_profile_conformance": {
+          "const": "NOT_ESTABLISHED"
+        },
+        "scope": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "domain_depth",
+        "scope",
+        "object_profile_conformance",
+        "checks"
+      ],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "verifier-domain-certification-1"
+    },
+    "specification_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "request",
+    "evidence",
+    "policy_digest",
+    "mechanism_digest",
+    "specification_digest",
+    "result",
+    "certificate_digest"
+  ],
+  "title": "Verifier Standard domain certification version 1",
+  "type": "object"
+}

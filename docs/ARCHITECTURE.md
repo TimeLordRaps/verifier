@@ -33,9 +33,9 @@ shape only; a passing validator establishes only its named implemented checks.
 | VSTD-3 | `standard/VSTD-3.md` | `verifier.hardware` | `vstd3_receipt.json`, `vstd3_accelerator_profile.json` | `test_vstd3_schema.py`, hardware tests |
 | VSTD-4 | `standard/VSTD-4.md` | certificate/kernel checks plus candidate and evidence-bound paths in `verifier.core.depth` / `verifier.core.evidence` | `vstd4_certificate.json`, `vstd4_receipt.json` | `test_gdc_certificate.py`, `test_vstd4_depth.py`, `test_evidence_bound_assurance.py` |
 | VSTD-5 | `standard/VSTD-5.md` | `verifier.core.witness` evidence-bound entry, independence, corroboration, disagreement, build, and replay | `vstd5_receipt.json` | `test_evidence_bound_assurance.py`, `test_vstd_schemas.py` |
-| VSTD-Graph-1 | `standard/VSTD-Graph-1.md` | `verifier.data.models`, `verifier.data.receipt` | `vstd_graph_receipt.json` | `test_public_data.py` |
-| VSTD-Graph-2..5 | matching Graph documents | `verifier.data.graph_level` candidate/evidence-bound paths | `computed_graph_level` within `vstd_graph_receipt.json` | `test_graph_level.py`, `test_evidence_bound_assurance.py` |
-| ZIZK artifact-first TRUST/ROT/RUST | `standard/LADDER.md` section 1.1 | `verifier.data.assurance`; bounded RISC Zero example under `examples/zizk_artifact_first/` | `vstd-graph-assurance-1.schema.json`; not a numbered-profile receipt | assurance, presentation, experiment-manifest, and ZIZK mechanism tests |
+| GRAPH-1 | `standard/GRAPH-1.md` | `verifier.data.models`, `verifier.data.receipt` | `vstd_graph_receipt.json` | `test_public_data.py` |
+| GRAPH-2..5 | matching Graph documents | `verifier.data.graph_level` candidate/evidence-bound paths | `computed_graph_level` within `vstd_graph_receipt.json` | `test_graph_level.py`, `test_evidence_bound_assurance.py` |
+| ZIZK artifact-first TRUST/ROT/RUST | `standard/LADDER.md` section 1.1 | `verifier.data.assurance`; bounded RISC Zero example under `examples/zizk_artifact_first/` | `verifier-graph-assurance-1.schema.json`; not a numbered-profile receipt | assurance, presentation, experiment-manifest, and ZIZK mechanism tests |
 | Artifact freeze, seal, and thaw | `standard/ARTIFACT_CONTROL.md` | `verifier.artifact_control` and `vstd artifact` | `standard/schemas/artifact-control-1.schema.json`; these are mechanism objects, not receipts | `test_artifact_control.py`, public API/CLI tests |
 
 Compatibility VSTD-4 and Graph paths still compute candidates from caller-supplied
@@ -91,7 +91,7 @@ evidence by the mechanism that earned it.
 refutability closure, and artifact-seal structural closure are distinct propositions.
 “Profile” is likewise qualified as a numbered, receipt, application, or geometry profile
 when context does not make the category unique. The exact compatibility names and
-exceptions are normative in [`standard/LADDER.md`](../standard/LADDER.md#terminology-contract).
+exceptions are normative in [`standard/LADDER.md`](../src/verifier/standard/LADDER.md#terminology-contract).
 
 ## Operational traversal and recursive Graph materialization
 
@@ -105,7 +105,7 @@ native computation
   -> VSTD-3 substrate accountability
   -> VSTD-4 portable refutation
   -> VSTD-5 independently evidenced witness corroboration
-  -> VSTD-Graph collection assessment
+  -> GRAPH collection assessment
   -> content-addressed result artifact
   -> later bounded verification loop
 ```
@@ -167,7 +167,7 @@ itself. Geometry profiles constrain reusable selections of VSTD-2 geometry; they
 by explicit shared coordinates, seams, mappings, and evidence-bearing transformations.
 The current `VSTD-2` receipt has no geometry-profile or profile-composition field, so this
 relationship is conceptual rather than a new serialized contract. See
-[`VSTD-2` section 8.1](../standard/VSTD-2.md#81-profiles-and-profiler-adapters).
+[`VSTD-2` section 8.1](../src/verifier/standard/VSTD-2.md#81-profiles-and-profiler-adapters).
 
 The complete apparatus that constructs or assesses a Graph is a verifying process. In a
 later order it may become the subject of a new VSTD-2 surface, while an adjacent adapter
@@ -223,7 +223,7 @@ Maturity attaches to mechanisms beneath that architecture:
 |---|---|---|
 | RISC Zero hidden-witness predicate | Bounded reference mechanism with tracked public proof artifacts and a governed tracked-source-build/image-ID equality gate | `examples/zizk_artifact_first/risc0/`; native verification only, no VSTD receipt mapping or independent build host |
 | Bounded identity-disclosure evaluator | Bounded non-normative reference mechanism | `examples/zizk_artifact_first/zero_identity/`; no identity-derived trust |
-| Assurance event serialization and replay | Implemented bounded reference mechanism | `VSTD-GRAPH-ASSURANCE-1` embeds the historical Graph, exact bindings, evidence bytes, a hash chain, and a current-view digest; `recheck_assurance_log` reruns every event mechanism |
+| Assurance event serialization and replay | Implemented bounded reference mechanism | `verifier-graph-assurance-1` embeds the historical Graph, exact bindings, evidence bytes, a hash chain, and a current-view digest; `recheck_assurance_log` reruns every event mechanism |
 | TRUST transfer | Implemented edge-local proposition-dispatch reference mechanism | `record_trust` binds one exact transformation, its complete inputs and output, the historical Graph digest, and the prerequisite TRUST event for every derived input. Recursive current-admissibility checking excludes the route if any required event, artifact, or transformation degrades or conflicts, without deleting history. No universal scalar support algebra exists. |
 | ROT derivation and cross-surface propagation | Implemented bounded reference mechanisms | Strictly degrading status propositions and complete challenge-ledger projections produce additive current-state overlays; the deduplicated descendant impact set is discovery, and a descendant status change still needs its own mechanism |
 | RUST concentration, localization, and diagnostic attribution | Implemented bounded reference mechanisms | A passing descendant-deviation proposition produces deduplicated reverse reachability; concentration counts unique descendants; localization and BLAME require separate passing propositions. GUILT additionally composes exact responsibility, obligation-applicability, and obligation-violation components; an opaque obligation label cannot establish it. |
@@ -241,7 +241,7 @@ retired pre-current-profile field arrangements.
 ## Installed specification ownership
 
 Every `standard/*.md` file has a byte-identical installed resource under
-`src/verifier/specifications/`. Verifier descriptors use those resources when no source
+`src/verifier/standard/`. Verifier descriptors use those resources when no source
 checkout is present. The installed-wheel gate runs outside the checkout and rejects an
 unavailable specification digest.
 
@@ -263,7 +263,7 @@ checks it. Unknown object properties outside those named surfaces fail closed.
 Validation does not rehash referenced artifacts, rerun the command, resolve evidence
 references, or establish that recorded declarations are true. Those are separate
 mechanisms. `validate`, `inspect`, and `reproduce` honor `--json` for generic-run and
-VSTD-Graph receipts; the envelope reports command completion without upgrading the
+GRAPH receipts; the envelope reports command completion without upgrading the
 receipt's claim semantics.
 
 ### Generic-run assessment context
@@ -317,7 +317,7 @@ score. No receipt or schema format is defined here.
 | `ATTRIBUTION` | The explicit relation from evidence to the exact subject/predicate it supports, including the mapping, extraction, or transformation, scope, bounds, provenance, and information loss. | Generic-run bound-output extraction and recorded external references; Graph transformation hyperedges; VSTD-4 `ClaimCoordinate`, `ClaimBinding`, and `Grounding`; loss-sensitive SCITT coordinates. | Mapping and loss declarations remain profile-specific; a reference alone is not a checked mapping. |
 | `ASSIGNMENT` | The most precise evidenced execution coordinate available: computation, execution instance, software/runtime, machine/substrate, then optional actor/operator bindings. Missing coordinates remain partial or `UNKNOWN`. | Generic-run execution and source-state records; VSTD-3 `WorkloadIdentity`, `ExecutionIdentity`, topology, device, runtime, and evidence-source records; VSTD-1 `independence_basis` for the separate independence question; generic `BoundProposition` mechanism dispatch for an exact assignment proposition. | The legacy generic-run declaration does not self-promote into an evidenced Assignment. A deployment supplies the mechanism and observations; Assignment alone establishes no trust, authorization, independence, or responsibility. |
 | `ASSESSMENT` | An identified verifier or mechanism evaluates one bounded proposition under the applicable input Assurance, Attribution, Assignment, specification/profile, trust roots, and bounds. It earns only the predicates it checks. | Generic validation, artifact rehash, and rerun mechanisms; VSTD-3 recomputed `ClaimEvaluation`; Graph validation and candidate-profile certificates; the VSTD-4 grounded certificate kernel; native VSTD plus native SCITT composition. | No one verifier covers every profile; mechanism results remain adjacent rather than silently merged. |
-| `ASSURANCE_1` | The assessment output recorded as new evidence with complete lineage to its inputs, mechanism, proposition, and limits. It may be `PASS`, `FAIL`, `UNKNOWN`, `CONFLICTED`, or a profile-specific equivalent. | Receipts, claim evaluations, kernel results, certificates, artifact digests, Graph artifacts/hyperedges, prior commitments, and the replayable `VSTD-GRAPH-ASSURANCE-1` event envelope preserve and reference the output. | The Graph envelope is not a universal scalar or an automatic cross-profile cast; each later loop still names and reruns its mechanism. |
+| `ASSURANCE_1` | The assessment output recorded as new evidence with complete lineage to its inputs, mechanism, proposition, and limits. It may be `PASS`, `FAIL`, `UNKNOWN`, `CONFLICTED`, or a profile-specific equivalent. | Receipts, claim evaluations, kernel results, certificates, artifact digests, Graph artifacts/hyperedges, prior commitments, and the replayable `verifier-graph-assurance-1` event envelope preserve and reference the output. | The Graph envelope is not a universal scalar or an automatic cross-profile cast; each later loop still names and reruns its mechanism. |
 
 First-hand and second-hand describe **provenance**, not strength. A first-hand
 self-observation may be weak; a second-hand certificate may be strongly bound to a narrow
@@ -340,7 +340,7 @@ The smallest operational loop is:
 > multiplicity, actor reputation, or propagation. Every increase in assurance must
 > identify the verification mechanism that earned it.
 
-This is the human forward traversal of the same topology VSTD-Graph stores for machines.
+This is the human forward traversal of the same topology GRAPH stores for machines.
 TRUST is bounded, mechanism-earned support across an admissible recorded transformation;
 the child still discharges its new obligations. ROT is typed, time-indexed degradation of
 current admissibility while historical evidence remains immutable. RUST is inverse-TRUST
@@ -401,7 +401,7 @@ cannot retain an established result. This path does not upgrade the legacy gener
 
 Graph conflict records retain incompatible values and their evidence references without
 adding a scalar score or changing the frozen artifact-status vocabulary. A conflict makes
-the subject inadmissible to a clean candidate Graph profile. The frozen `VSTD-DATA-0.1`
+the subject inadmissible to a clean candidate Graph profile. The frozen `verifier-data-1`
 reader retains its historical separate artifact/transformation namespaces. Direct new
 construction, evidence-bound Graph establishment, and the assurance overlay require global
 cross-kind disjointness, so an untyped `subject_id` cannot ambiguously name both kinds of
@@ -420,7 +420,7 @@ question is a new assessment over the retained graph and applicable lifecycle re
 | Evidence arrives by multiple paths or one run receipt repeats a reference | Reachability and impact sets deduplicate identifiers. Multiplicity supplies no independence or strength. |
 | A descendant deviation points toward shared ancestors | A mechanism-passing deviation emits RUST over the deduplicated historically recorded contributing ancestor set. Current revocation or conflict does not erase diagnostic history. Structural concentration counts unique deviating descendants, not paths or causal strength. Localization selects and binds one exact passing RUST event, its descendant-deviation binding digest, and an ancestor contained in that event. BLAME and GUILT bind that localization event and require separate exact mechanisms. |
 | A challenge ledger changes a claim's current status | `project_challenges` binds its complete append-only records into a current Graph overlay and embeds those records for replay. Existing TRUST remains historical, while recursively dependent events disappear from `current_trust_events`; `impacted_descendants` reports the deduplicated reassessment surface. It never mutates the historical graph. |
-| Later evidence adjudicates a conflict | The additive resolution retains the original competing evidence and its mechanism evaluation. VSTD-Graph-1 receipts remain immutable; the separate assurance overlay owns the resolution and current-state projection. Removing or rewriting historical evidence remains invalid. |
+| Later evidence adjudicates a conflict | The additive resolution retains the original competing evidence and its mechanism evaluation. GRAPH-1 receipts remain immutable; the separate assurance overlay owns the resolution and current-state projection. Removing or rewriting historical evidence remains invalid. |
 | Candidate calculation encounters cyclic ancestry | Rejected before candidate calculation; recursive topology cannot manufacture assurance. |
 
 The forward blast-radius query remains discovery only. `AssuranceLedger` is the distinct

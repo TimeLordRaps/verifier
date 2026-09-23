@@ -27,9 +27,9 @@ import re
 from typing import Any, Mapping
 
 
-DECLARATION_SCHEMA = "VSTD-GLOBAL-CYCLE-ASSESSMENT-0.1"
-RECEIPT_SCHEMA = "VSTD-GLOBAL-CYCLE-ASSESSMENT-RECEIPT-0.1"
-SEMANTICS_SCHEMA = "VSTD-CYCLE-RELATION-SEMANTICS-0.1"
+DECLARATION_SCHEMA = "verifier-global-cycle-assessment-1"
+RECEIPT_SCHEMA = "verifier-global-cycle-assessment-receipt-1"
+SEMANTICS_SCHEMA = "verifier-cycle-relation-semantics-1"
 CHECKER_IMPLEMENTATION = "verifier.interoperability.global_cycle_assessment"
 CHECKER_VERSION = "0.1"
 MAX_DECLARATION_BYTES = 2 * 1024 * 1024

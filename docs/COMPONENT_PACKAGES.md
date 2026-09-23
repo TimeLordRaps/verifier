@@ -1,11 +1,11 @@
 # Stored interoperability components
 
 Verifier Standard (VSTD) version 1.3.0 introduces an **experimental stored component
-format**, `VSTD-COMPONENT-PACKAGE-1`. It is a local, self-contained JavaScript Object
+format**, `verifier-component-package-1`. It is a local, self-contained JavaScript Object
 Notation (JSON) document, not a receipt, installation archive, or conformance result.
 It retains component descriptions and exact artifact bytes so a catalog can be shared,
 inspected and used for verification-surface-hole planning without executing its contents.
-The [stored-document schema](../standard/schemas/vstd-component-package-1.schema.json)
+The [stored-document schema](../src/verifier/schemas/verifier-component-package-1.schema.json)
 describes its structural contract; runtime checks additionally enforce byte digests,
 canonical catalog form and reference bindings.
 
@@ -52,7 +52,7 @@ the checked assertion are distinct propositions.
 
 The current closed `kind` vocabulary has no `CERTIFIER` member or filter. Use the existing
 kind that accurately describes the algorithm role; do not silently map certifier to
-`PROVER`. Catalog 1.1 and `VSTD-COMPONENT-PACKAGE-1` already retain the capability:
+`PROVER`. Catalog 1.1 and `verifier-component-package-1` already retain the capability:
 
 | Existing descriptor fields | Explicit serialization meaning |
 |---|---|

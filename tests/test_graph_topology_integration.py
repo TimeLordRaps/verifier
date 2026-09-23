@@ -45,7 +45,7 @@ def _documents(tmp_path: Path, *, contradict: bool = False) -> tuple[Path, Path]
         software_provenance={}, parameters={}, execution_environment={},
     ))
     contract = {
-        "schema_version": "VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1",
+        "schema_version": "verifier-graph-topology-experimental-1",
         "graph_digest": graph_topology_binding_digest(graph),
         "bindings": [
             {"variable_id": name, "artifact_id": name, "transformation_id": "switch",
@@ -72,7 +72,7 @@ def _documents(tmp_path: Path, *, contradict: bool = False) -> tuple[Path, Path]
     receipt_path, contract_path = tmp_path / "receipt.json", tmp_path / "contract.json"
     # A graph inspection envelope, deliberately not a fully validated receipt.
     receipt_path.write_text(json.dumps({
-        "schema_version": "VSTD-DATA-0.1", "hypergraph": graph.to_dict(),
+        "schema_version": "verifier-data-1", "hypergraph": graph.to_dict(),
     }), encoding="utf-8")
     contract_path.write_text(json.dumps(contract), encoding="utf-8")
     return receipt_path, contract_path
@@ -172,7 +172,7 @@ def test_topology_contract_schema_and_runtime_agree_on_fixture(tmp_path) -> None
 
     _, contract = _documents(tmp_path)
     payload = json.loads(contract.read_text(encoding="utf-8"))
-    schema = json.loads((ROOT / "standard/schemas/graph-topology.schema.json").read_text())
+    schema = json.loads((ROOT / "src/verifier/schemas/graph-topology.schema.json").read_text())
     Draft202012Validator.check_schema(schema)
     Draft202012Validator(schema).validate(payload)
     assert GraphTopologyContract.from_dict(payload).to_dict() == payload

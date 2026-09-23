@@ -105,7 +105,7 @@ def _standard_sort(path: Path) -> tuple[int, int, str]:
     object_match = re.fullmatch(r"VSTD-(\d+)", name)
     if object_match:
         return (1, int(object_match.group(1)), name)
-    graph_match = re.fullmatch(r"VSTD-Graph-(\d+)", name)
+    graph_match = re.fullmatch(r"GRAPH-(\d+)", name)
     if graph_match:
         return (2, int(graph_match.group(1)), name)
     if name == "ARTIFACT_CONTROL":
@@ -119,7 +119,7 @@ def documents() -> tuple[Document, ...]:
     """Return every Markdown source that is intentionally rendered on the site."""
 
     found: list[Document] = []
-    standards = sorted((ROOT / "standard").glob("*.md"), key=_standard_sort)
+    standards = sorted((ROOT / "src/verifier/standard").glob("*.md"), key=_standard_sort)
     for source in standards:
         route = (
             PurePosixPath("standard/index.html")
@@ -257,7 +257,12 @@ class MarkdownRenderer:
                 asset_route = PurePosixPath(*parts[1:])
                 rewritten = _relative_link(self.route, asset_route)
             elif (
-                parts[:2] in {("receipts", "schema"), ("standard", "schemas")}
+                parts[:-1]
+                in {
+                    ("receipts", "schema"),
+                    ("standard", "schemas"),
+                    ("src", "verifier", "schemas"),
+                }
                 and resolved.is_file()
             ):
                 rewritten = _relative_link(

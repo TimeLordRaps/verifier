@@ -224,15 +224,15 @@ def test_published_composition_schemas_validate_runtime_records(tmp_path: Path) 
     first, second, _ = _members(tmp_path)
     declaration = SiloComposition((first[0].canonical_digest(), second[0].canonical_digest()))
     receipt = build_silo_composition_assessment_receipt(declaration, (first, second))
-    schema_dir = Path("standard/schemas")
+    schema_dir = Path("src/verifier/schemas")
     schemas = {
         path.name: json.loads(path.read_text(encoding="utf-8"))
         for path in (
-            schema_dir / "vstd-silo-assessment-0.1.schema.json",
-            schema_dir / "vstd-silo-assessment-receipt-0.1.schema.json",
-            schema_dir / "vstd-silo-composition-0.1.schema.json",
-            schema_dir / "vstd-silo-composition-assessment-0.1.schema.json",
-            schema_dir / "vstd-silo-composition-assessment-receipt-0.1.schema.json",
+            schema_dir / "verifier-silo-assessment-1.schema.json",
+            schema_dir / "verifier-silo-assessment-receipt-1.schema.json",
+            schema_dir / "verifier-silo-composition-1.schema.json",
+            schema_dir / "verifier-silo-composition-assessment-1.schema.json",
+            schema_dir / "verifier-silo-composition-assessment-receipt-1.schema.json",
         )
     }
     registry = referencing.Registry().with_resources(
@@ -240,10 +240,10 @@ def test_published_composition_schemas_validate_runtime_records(tmp_path: Path) 
         for schema in schemas.values()
     )
     jsonschema.Draft202012Validator(
-        schemas["vstd-silo-composition-0.1.schema.json"],
+        schemas["verifier-silo-composition-1.schema.json"],
         registry=registry,
     ).validate(declaration.to_dict())
     jsonschema.Draft202012Validator(
-        schemas["vstd-silo-composition-assessment-receipt-0.1.schema.json"],
+        schemas["verifier-silo-composition-assessment-receipt-1.schema.json"],
         registry=registry,
     ).validate(receipt.to_dict())

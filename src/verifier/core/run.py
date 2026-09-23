@@ -159,7 +159,7 @@ def _assessment_context(
         )
     )
     specification = here.parents[3] / "standard" / "VSTD-1.md"
-    packaged_specification = here.parents[1] / "specifications" / "VSTD-1.md"
+    packaged_specification = here.parents[1] / "standard" / "VSTD-1.md"
     verifier = {
         "specification_hash": _digest_if_available(
             specification, "standard/VSTD-1.md", packaged_specification
@@ -331,7 +331,7 @@ class ExternalEvaluationEvidence:
 
 @dataclass(frozen=True)
 class ProvenanceLinkage:
-    """Link from this run to a VSTD-Graph provenance hypergraph artifact.
+    """Link from this run to a GRAPH provenance hypergraph artifact.
 
     Answers "which exact source artifacts and transformations are recorded as
     upstream of this run" by reusing the existing Dataset Provenance Hypergraph
@@ -693,7 +693,7 @@ def _find_protected_substrate_paths() -> tuple[Path, ...]:
     repo_root = here.parents[3]
     if (repo_root / "pyproject.toml").is_file() and (repo_root / "src" / "verifier").is_dir():
         for candidate in (
-            repo_root / "standard",
+            repo_root / "src" / "verifier" / "standard",
             repo_root / "receipts" / "schema",
             repo_root / "scripts",
             repo_root / "pyproject.toml",
@@ -726,13 +726,23 @@ def _assert_substrate_safety(
                         f"targets protected verifier-standard path '{prot}'"
                     )
 
-    for arg in command_tuple:
-        lower_arg = arg.lower()
-        if "pip" in lower_arg and any(action in command_tuple for action in ("uninstall", "install")):
-            if any(term in command_tuple for term in ("verifier", "verifier-standard", "vstd")):
+    lower_args = [a.lower() for a in command_tuple]
+    has_pip = any("pip" in a for a in lower_args)
+    has_mutation_action = any(
+        act in lower_args for act in ("uninstall", "install", "upgrade", "remove")
+    )
+    if has_pip and has_mutation_action:
+        for arg in lower_args:
+            norm = arg.replace("_", "-")
+            if any(term in norm for term in ("verifier-standard", "verifier", "vstd")):
                 raise RunError(
                     "Substrate protection violation: command targets verifier-standard modification"
                 )
+            if norm in (".", "-e", "--editable"):
+                if any(manifest_dir.resolve() == prot or prot in manifest_dir.resolve().parents for prot in protected_paths):
+                    raise RunError(
+                        "Substrate protection violation: command targets local protected repository installation"
+                    )
 
 
 def capture_run(

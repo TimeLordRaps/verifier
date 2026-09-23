@@ -610,7 +610,7 @@ def test_provenance_linkage_uses_public_graph_fixture(tmp_path):
 
 
 def test_blast_radius_revocation_flags_dependent_run_receipts(tmp_path):
-    """Revoking an upstream VSTD-DATA artifact must surface which recorded runs
+    """Revoking an upstream DATA artifact must surface which recorded runs
     consumed it (directly or via a downstream derivative) — composing dataset
     provenance into run-receipt impact analysis rather than a parallel system.
     """

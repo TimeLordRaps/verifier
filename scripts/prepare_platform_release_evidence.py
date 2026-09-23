@@ -39,7 +39,7 @@ report_builder = importlib.util.module_from_spec(_REPORT_SPEC)
 _REPORT_SPEC.loader.exec_module(report_builder)
 
 
-BUNDLE_SCHEMA_VERSION = "VSTD-PLATFORM-RELEASE-EVIDENCE-1"
+BUNDLE_SCHEMA_VERSION = "verifier-platform-release-evidence-1"
 BUNDLE_CLAIM_BOUNDARY = (
     "This bundle preserves the exact raw environment records, JUnit documents, "
     "and reconstructed component reports from one successful hosted run at the "

@@ -50,13 +50,17 @@ sealing, reproduction, and evidence-bound assessment. Some compatibility paths r
 or external adoption is claimed. See [current maturity](#current-maturity) and
 [claims and limits](docs/CLAIMS_AND_LIMITS.md) for the exact surface-by-surface boundary.
 
-[Normative specifications](standard/LADDER.md) ·
+[Normative specifications](src/verifier/standard/LADDER.md) ·
 [60-second quickstart](docs/QUICKSTART.md) ·
 [Implementation reference](https://timelordraps.github.io/verifier/reference.html) ·
 [Report an ambiguity or counterexample](https://github.com/TimeLordRaps/verifier/issues/new/choose) ·
 [Report a vulnerability privately](SECURITY.md)
 
 ## 30–60 second demonstration
+
+**Source candidate:** 2.0.0 is unreleased. Its experimental declarations and local
+checks are described in [candidate boundaries and migration](docs/V2_CANDIDATE.md).
+The published package installation below remains at 1.5.0.
 
 ### Option 1: Instant Python inspection (from PyPI)
 
@@ -78,6 +82,7 @@ print(verifier.__standard_status__)# 'PROJECT SPECIFICATION; EVIDENCE-BOUND REFE
 git clone https://github.com/TimeLordRaps/verifier.git
 cd verifier
 python -m pip install .
+vstd start   # the ordered path; runs nothing and writes nothing
 vstd demo
 ```
 
@@ -178,7 +183,7 @@ When building optimizing compilers, linkers, or reproducible build systems, a tr
 
 When analyzing self-referential systems, ordinal bounds, non-well-founded belief graphs, or transfinite induction, claims operate at high levels of abstraction where subtle circular reasoning or silent domain upgrades can invalidate safety bounds. VSTD enforces strict stratified profiles (Profiles 1–5): a higher-profile result never supplies or repairs missing lower-profile evidence, self-attestation is never promoted to independent verification, and ungrounded induction steps fail closed.
 
-**Tutorial & example:** [Normative ladder](standard/LADDER.md) and runnable adversarial suite [`examples/flagship_demo/`](examples/flagship_demo/README.md).
+**Tutorial & example:** [Normative ladder](src/verifier/standard/LADDER.md) and runnable adversarial suite [`examples/flagship_demo/`](examples/flagship_demo/README.md).
 </details>
 
 <details>
@@ -194,7 +199,7 @@ Automated agent evaluations and language model leaderboards are vulnerable to pr
 
 In formal mathematical ecosystems—such as `hypermath` (algebraic kernel, Lean 4 bridge), `ordinatics` (ordinal arithmetic, Veblen hierarchies), `grounded-hyperset-theory` (Aczel's Anti-Foundation Axiom (AFA), accessible pointed graphs (APGs)), and `grounded-hypercalculi` (stratified semantic reflection)—mathematical claims span multiple formal representations. VSTD provides the meta-verification envelope: it explicitly enumerates axioms (refusing ungrounded axioms or `sorry` escapes), binds the exact prover kernel binary digest, and composes heterogeneous formal proofs into a single refutation graph.
 
-**Tutorial & example:** [Grounded decision certificates](docs/PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc) and [Normative VSTD-4 specification](standard/VSTD-4.md).
+**Foundations, tutorial & example:** [Mathematical foundations and interoperability](docs/MATHEMATICAL_FOUNDATIONS.md), [Grounded decision certificates](docs/PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc), and [Normative VSTD-4 specification](src/verifier/standard/VSTD-4.md).
 </details>
 
 <details>
@@ -227,16 +232,106 @@ Three rules prevent most misreadings:
 2. A later-profile result cannot repair missing evidence for an earlier profile.
 3. `UNKNOWN` is a correct result when the mechanism, evidence, or bound is insufficient.
 
+### How VSTD identifiers are named
+
+VSTD is an object-oriented representation meta-language, and its nomenclature is meant to
+be followed rather than looked up. Every specification surface has one identifier shape:
+
+```
+<NAME>-<level>.<module>
+```
+
+- **`<NAME>`** is the surface. It is one of the eighteen objects admitted to the
+  VSTD-NAMESPACE -- `ACTOR`, `AGENT`, `BENCH`, `BOT`, `COLLECTIVE`, `DATA`, `ENV`,
+  `GRAPH`, `HARNESS`, `HUMAN`, `HYPER`, `IDENTITY`, `MODEL`, `OWNER`, `ROLE`, `SIM`,
+  `TOKEN`, `TRAIN` -- or omitted entirely. Every name other than the
+  empty one makes a claim about something particular. Omitting it names the claim surface
+  itself — the basic, lowest-level foundational computational claim meta-surface — which is
+  why it carries no object segment: `VSTD-1` through `VSTD-5`.
+- **`<level>`** is `1`, `2`, `3`, `4` or `5`. It is a topological stepping stone toward
+  verification, never a version.
+- **`<module>`** numbers the modules inside that level, from `1`.
+
+The five levels mean the same kind of thing for every `NAME`. That shared reading is the
+whole point: it is what keeps the topology small enough to navigate by name instead of by
+index.
+
+This is not a new numbering laid over the standard. Both axes of the
+[normative ladder](src/verifier/standard/LADDER.md) already instantiate these five levels. Claim
+mechanics, verification surface, substrate accountability, refutability and witness
+corroboration are facets, dynamics, statics, closure and adaptation; so are recorded
+lineage, bounded collection surface, accountable provenance closure, refutable
+transformation closure and corroborated verification network. The convention is that
+ladder made total over the object set.
+
+| Level | For any surface, it represents |
+|---:|---|
+| 1 | A meta-structure abstraction of the facets of the surface. |
+| 2 | The dynamics of the structures the surface can and does represent. |
+| 3 | The static, unchanging natural phenomena around the surface. |
+| 4 | The closure conditions the specification can be completed around. |
+| 5 | The domain adaptation surfaces that levels 1 through 4 let form naturally, usually inferring structure from a domain's mainstay representation. |
+
+Level 5 is where a specification meets an existing ecosystem rather than replacing it. A
+modular neural-network framework, for example, already abstracts networks into composable
+units; a level-5 surface takes that as the domain's mainstay representation and generalizes
+it into the meta-framework rather than restating it.
+
+Worked examples, one per level:
+
+| Identifier | What it names |
+|---|---|
+| `BENCH-1` | A bench as a meta-structure: a set of problems, some form from which a solution is deducible, a sampling procedure, baseline mechanics, feature representational spaces or categories, and a domain or set of domains. |
+| `SIM-2` | The dynamics a simulation represents: responsiveness, internal state changes, computational spaces, and perspective shifts. |
+| `MODEL-3` | What is static around a model: weights, hardware requirements, quantization specifications and configurations, and training data as a `DATA-5` specified object. |
+| `TRAIN-4` | Closure for hyperparameters and training lineage: boundary saturation, an open-ended collapsable meta-language, and fractal re-representations. |
+| `BOT-5` | The adaptation surface of a situated agent: an interaction graph over the `SIM-5` specified interaction surface, together with disclosable and undisclosed self-awareness — including awareness of being inside a simulation, and of which simulation specification surfaces it is aware of. |
+
+Four rules prevent the usual misreadings:
+
+1. **A level is not a version.** A semantic-version-shaped string such as `verifier-sim-2`
+   is a malformed identifier, not a release of a level: it destroys the level and module
+   reading and detaches the surface from the shared graph.
+2. **A name does not imply composition.** `BOT-5` refers to the adaptation surface of
+   `BOT`. Where one surface is specified in terms of another, as `MODEL-3` is in terms
+   of `DATA-5`, that reference is written out.
+3. **An identifier names a coordinate, not a verdict.** Naming a surface establishes
+   nothing about it. What a result means is separate, and stays tied to one exact
+   proposition, mechanism, evidence set and bound.
+4. **These are not the other coordinate systems.** Domain check coordinates such as
+   `DATA.1`, serialized receipt identifiers such as `verifier-data-1`, and repository
+   releases are each a different coordinate, and one is never inferred from another.
+
+Rule 4 is the one that costs people time, in two directions.
+
+A **domain check coordinate** numbers a position in that adapter's prerequisite graph, not
+a level. `DATA.1` is the check the other `DATA` checks depend on; it is not the
+`DATA-1` surface, and check index *n* does not mean level *n*.
+
+A **serialized receipt identifier** selects the reader and schema for a stored receipt, so
+it is governed by its own registry and changes only in ways that keep already-written
+receipts readable. Some carry a `-0.<n>` form inherited from earlier releases;
+`verifier-data-1` is the serialized identifier for `GRAPH-1` receipts, not a level-zero
+surface. Read a receipt identifier as naming a stored contract, never as a surface at that
+level. The registry is [WIRE_IDENTIFIERS.md](src/verifier/standard/WIRE_IDENTIFIERS.md).
+
+Finally, the convention names surfaces; it does not assert that an implementation exists at
+every coordinate it can spell. Which surfaces are implemented, and to what depth, is
+reported by the tool and by
+[current maturity](#current-maturity) — never by an identifier being well-formed.
+
 Choose the smallest useful starting point:
 
 | Goal | Start here |
 |---|---|
+| Be told what to run, in order, by the tool itself | Run `vstd start` |
+| Understand a receipt or certificate you already have | Run `vstd explain <file.json>` |
 | Start from scratch with a beginner walkthrough | [Newcomer guide](docs/NEWCOMER_GUIDE.md) |
 | See defensive behavior immediately | Run [`vstd demo`](#30-60-second-demonstration) |
 | Capture and reproduce one command | [Generic computation](#capture-a-generic-computation) |
 | Preserve and seal exact artifact bytes | [Artifact control](#freeze-seal-verify-and-thaw-an-artifact) |
 | Browse exact stored component declarations | [Component hub](docs/COMPONENT_HUB.md) |
-| Understand the formal profile composition | [Normative Ladder](standard/LADDER.md) |
+| Understand the formal profile composition | [Normative Ladder](src/verifier/standard/LADDER.md) |
 | Integrate or independently review the code | [Architecture map](docs/ARCHITECTURE.md) |
 | Challenge an overclaim or ambiguous rule | [Issue forms](https://github.com/TimeLordRaps/verifier/issues/new/choose) |
 
@@ -283,11 +378,11 @@ external interoperability, certification, or a second implementation.
 | VSTD-3 | Implemented project specification | Typed accelerator model, strict validator, emulator, offline adapters, continuity, fleet, and claim evaluation | Conditional on source-specific signatures, nonces, reference values, topology, events, and trust roots; host inventory remains weak evidence | Implemented reference surface | Vendor firmware integration, production trust roots, and complete-mediation evidence outside the emulator boundary |
 | VSTD-4 | Project specification with implemented reference paths | grounded decision certificate (GDC) parser/kernel, compatibility candidate depth, and evidence-bound establishment/recheck | Exact VSTD-1/2/3 and fourteen-rung propositions, content-addressed evidence bytes, mechanism implementation digests, trust roots, and bounds | Candidate path `NOT_ESTABLISHED`; evidence-bound path can establish conformance | Independent implementation, external interoperability, and deployment-specific rung mechanisms/evidence |
 | VSTD-5 | Project specification with implemented reference mechanism | Evidence-bound entry gate, seven separation dimensions, exact admitted-certificate binding, corroboration checks, duplicate refusal, disagreement preservation, receipt build/recheck | Witness coordinate, exact negative separation propositions, VSTD-4 commitment/certificate, checker, observations, mechanisms, trust roots, bounds, and embedded evidence | Mechanism can establish a bounded result; a positive observation with unresolved independence remains overall `UNKNOWN`; no repository claim of a real independent witness | Real independent witnesses, second implementation, external attack, and operational interoperability |
-| VSTD-Graph-1 | Project specification with implemented reference subset | Content-addressed artifacts, transformations, conflicts, policy queries, receipts, and recorded reachability | Binds recorded objects and edges; it does not establish real-world completeness or causality | Implemented reference subset | Independent implementation and external provenance-profile interoperability |
-| VSTD-Graph-2 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Bounded Collection Surface computation/recheck | Registered mechanisms rerun exact member, ancestor, and edge ratings bound to the Graph bytes, deduplicated members, collection, and claim | Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot | External rating mechanisms, independent implementation, and interoperability |
-| VSTD-Graph-3 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Accountable Provenance Closure computation/recheck | Same complete closure binding, including VSTD-3 rating propositions | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Production VSTD-3 rating evidence across a real collection |
-| VSTD-Graph-4 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Refutable Transformation Closure computation/recheck | Same complete closure binding; an edge mechanism must actually check its refutability closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | External closure mechanisms and independent replay |
-| VSTD-Graph-5 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Corroborated Verification Network computation/recheck | Exact VSTD-5 object and transformation rating mechanisms across the complete closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Real independently corroborated collection, second implementation, and interoperability |
+| GRAPH-1 | Project specification with implemented reference subset | Content-addressed artifacts, transformations, conflicts, policy queries, receipts, and recorded reachability | Binds recorded objects and edges; it does not establish real-world completeness or causality | Implemented reference subset | Independent implementation and external provenance-profile interoperability |
+| GRAPH-2 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Bounded Collection Surface computation/recheck | Registered mechanisms rerun exact member, ancestor, and edge ratings bound to the Graph bytes, deduplicated members, collection, and claim | Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot | External rating mechanisms, independent implementation, and interoperability |
+| GRAPH-3 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Accountable Provenance Closure computation/recheck | Same complete closure binding, including VSTD-3 rating propositions | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Production VSTD-3 rating evidence across a real collection |
+| GRAPH-4 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Refutable Transformation Closure computation/recheck | Same complete closure binding; an edge mechanism must actually check its refutability closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | External closure mechanisms and independent replay |
+| GRAPH-5 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Corroborated Verification Network computation/recheck | Exact VSTD-5 object and transformation rating mechanisms across the complete closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Real independently corroborated collection, second implementation, and interoperability |
 | Generic run | VSTD-1 generic-computation profile | Plan, execute, capture, inspect, strict shape/digest validation, declared-output rerun, and bounded cross-platform result comparison | Captures command, source state, outputs, environment, and manifest declarations; platform comparison requires complete declared coverage and matching non-platform bindings; generic validation is not native claim verification or VSTD-4 conformance | Implemented VSTD-1 profile plus an additive diagnostic comparator | Sandbox, generic external-evidence resolver, native-execution attestation, and actor/execution binder |
 | Artifact freeze, seal, and thaw | Normative artifact-control mechanism; not a numbered VSTD or receipt profile | Exact regular-file byte preservation, dual-digest artifact identity, read-only guards, finite self-closing Ed25519 seals, external anchor checks, and copy-on-write thaw status | Binds artifact bytes, paths, media type, freeze manifest, carried key, signature, and optional expected artifact/key coordinates | Implemented mechanism version 1 | Durable external archive, privileged-write prevention, trusted time, encryption, semantic correctness, and realm/continuity verification |
 | Experimental workflow | Non-normative experimental profile 0.1 | Strict validator, verdict-neutral GitHub event projector, allocation records, and command-line interface (CLI) | Preserves native platform results and explicit horizons with `verification_effect = NONE` | No VSTD conformance claim | Independent consumer, additional platform adapter, and evidence for allocation optimality |
@@ -299,7 +394,7 @@ external interoperability, certification, or a second implementation.
 
 The authoritative implementation-to-specification map is
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Normative meaning remains under
-[standard/](standard/).
+[standard/](src/verifier/standard/).
 
 ## Why VSTD exists
 
@@ -339,7 +434,7 @@ A later-profile result does **not** supply, imply, upgrade, or repair a prerequi
 coordinate. Object profile depth `N` requires separate passing evidence for every required
 coordinate from 1 through `N`.
 
-VSTD-Graph is orthogonal. It records artifacts, transformations, conflicts, lifecycle
+GRAPH is orthogonal. It records artifacts, transformations, conflicts, lifecycle
 changes, and deduplicated reachability across a bounded collection. The compatibility
 `graph_level` calculation remains a `NOT_ESTABLISHED` candidate. Evidence-bound Graph
 establishment must rerun every required rating mechanism over evidence bound to the exact
@@ -361,7 +456,7 @@ language:
 RUST identifies where reassessment should look; it does not by itself establish falsehood,
 causal localization, responsibility, BLAME, or GUILT. A separately registered localization
 mechanism must earn BLAME, and GUILT additionally requires an exact violated obligation.
-Neither result evaluates actor character. The replayable `VSTD-GRAPH-ASSURANCE-1` event log
+Neither result evaluates actor character. The replayable `verifier-graph-assurance-1` event log
 binds its historical Graph, evidence, mechanisms, event chain, and derived current view.
 
 ### Zero identity and zero unevidenced knowledge
@@ -380,7 +475,7 @@ backend under this governing architecture.
 
 For exact ownership, dispatch paths, schemas, compatibility surfaces, and unimplemented
 horizons, use the [architecture map](docs/ARCHITECTURE.md) and
-[normative Ladder](standard/LADDER.md).
+[normative Ladder](src/verifier/standard/LADDER.md).
 
 ## Install and use
 
@@ -394,6 +489,7 @@ python -m pip install ".[yaml]"          # YAML Ain't Markup Language (YAML) man
 python -m pip install ".[jsonschema]"    # JSON Schema validation
 python -m pip install ".[seal]"          # optional Ed25519 artifact sealing
 python -m pip install ".[scitt]"         # optional SCITT/COSE experiment
+python -m pip install ".[constraints]"   # optional logits-level grammar constraints
 ```
 
 `vstd` is the canonical cross-platform CLI name. `verifier` remains a compatibility
@@ -435,7 +531,7 @@ the parent, sidecar agreement remains `NOT_ESTABLISHED`. The sidecar's unkeyed h
 prove that the historical copy occurred. A supplied parent establishes only internal
 consistency unless an expected artifact/key identifier or separately verified external log
 also supplies continuity. See the normative
-[artifact-control mechanism](standard/ARTIFACT_CONTROL.md) and the architectural
+[artifact-control mechanism](src/verifier/standard/ARTIFACT_CONTROL.md) and the architectural
 [realm/time-capsule model](docs/REALMS_AND_TIME_CAPSULES.md).
 
 ### Capture a generic computation
@@ -497,14 +593,30 @@ reference](https://timelordraps.github.io/verifier/reference.html).
 
 ## Receipts, Graphs, and grounded certificates
 
-- [VSTD-1 receipts](standard/VSTD-1.md) carry claim coordinates, evidence,
+The unreleased 2.0.0 candidate adds [grounded certification across object profiles](docs/GROUNDED_CERTIFICATION.md):
+47 explicit `X.M` obligations, externally selected mechanism policies and portable
+replay. The guide separates native checker coverage from required domain mechanisms.
+
+Ten [grounded domain adapters](src/verifier/standard/DOMAIN_GROUNDING.md) also execute retained
+dataset transformations, environment observation checks, benchmark oracles, training
+updates and gradients, model inference/evaluation, simulation transitions and
+relations, declared agent observation surfaces, agent trajectories bounded by one such
+surface, the closed loop between one bound agent and one bound simulation, and a
+zero-identity token holding replayed from its birth commitment. Their 48
+cumulative domain checks produce replayable certificates under
+an external request and policy. Domain depth does not confer object or Graph
+numbered-profile conformance. Run `PYTHONPATH=src python examples/domain_grounding.py`
+or inspect `vstd certification domain-catalog --json`.
+
+
+- [VSTD-1 receipts](src/verifier/standard/VSTD-1.md) carry claim coordinates, evidence,
   checker results, trust boundaries, and reproducibility information.
-- [VSTD-Graph-1](standard/VSTD-Graph-1.md) records content-addressed artifacts,
+- [GRAPH-1](src/verifier/standard/GRAPH-1.md) records content-addressed artifacts,
   many-to-many transformations, conflicts, and bounded downstream reachability. Its frozen
   reader preserves separate historical artifact/transformation namespaces; new construction
   plus evidence-bound establishment and assurance propagation require global cross-kind
   disjointness.
-- [`VSTD4-GDC-1`](standard/VSTD-4.md) binds a decision certificate to a formula,
+- [`VSTD4-GDC-1`](src/verifier/standard/VSTD-4.md) binds a decision certificate to a formula,
   grounding, claim coordinate, verifier descriptor, roots, and resource bounds.
 
 The grounded-certificate checker rejects over-budget headers before proof work, rejects
@@ -625,9 +737,9 @@ adoption.
 
 Read authoritative material in this order:
 
-1. [Verification complex, terminology, and profile composition](standard/LADDER.md)
-2. [Object and Graph numbered-profile documents](standard/)
-3. [Serialized receipt identifiers](standard/WIRE_IDENTIFIERS.md)
+1. [Verification complex, terminology, and profile composition](src/verifier/standard/LADDER.md)
+2. [Object and Graph numbered-profile documents](src/verifier/standard/)
+3. [Serialized receipt identifiers](src/verifier/standard/WIRE_IDENTIFIERS.md)
 4. [Published schemas](receipts/schema/)
 5. [Implementation ownership](docs/ARCHITECTURE.md)
 6. [Claims and limits](docs/CLAIMS_AND_LIMITS.md)
@@ -651,7 +763,7 @@ Additional entry points:
 
 A release contains a canonical artifact set: ZIP archive format (ZIP), wheel, source
 distribution, and external manifest bound to the exact public Git commit and file
-members. At the version 1.5.0 source coordinate, the continuous integration (CI)
+members. At the version 2.0.0 source coordinate, the continuous integration (CI)
 workflow builds the artifact set on Linux, Windows, and macOS and rejects cross-platform
 byte differences. It also captures and reruns the portable generic example on three
 GitHub-hosted operating-system virtual machines, then requires a bounded `PASS` over the

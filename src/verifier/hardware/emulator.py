@@ -505,7 +505,7 @@ class VirtualVSTDAccelerator:
             )
         self._remember_topology(created_at)
         receipt = VSTD3Receipt(
-            schema_version="VSTD-3.0",
+            schema_version="VSTD-3",
             receipt_id=receipt_id,
             created_at=created_at,
             descriptors=(self.descriptor,),

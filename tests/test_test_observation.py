@@ -142,6 +142,7 @@ def test_every_repository_check_pytest_invocation_retains_skip_evidence() -> Non
         "base",
         "coverage",
         "installed-wheel-smoke",
+        "logits-constraints",
         "platform-python-contracts",
         "scitt-crypto",
     }
@@ -161,9 +162,14 @@ def test_contributor_instructions_never_prescribe_quiet_unbounded_tests(
             assert "-q" not in shlex.split(line), line
 
 
-@pytest.mark.parametrize(
-    "filename", ["ci.yml", "release.yml", "pages.yml", "external-links.yml", "pr-policy.yml"]
-)
+WORKFLOWS = sorted(path.name for path in (ROOT / ".github" / "workflows").glob("*.yml"))
+
+
+def test_the_workflow_list_is_discovered_not_written_down() -> None:
+    assert "ci.yml" in WORKFLOWS and "pr-description.yml" in WORKFLOWS
+
+
+@pytest.mark.parametrize("filename", WORKFLOWS)
 def test_every_hosted_job_has_a_finite_timeout(filename: str) -> None:
     workflow = yaml.safe_load(
         (ROOT / ".github" / "workflows" / filename).read_text(encoding="utf-8")

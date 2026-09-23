@@ -4,7 +4,7 @@
 > command-line interface (CLI); JavaScript Object Notation (JSON); Boolean satisfiability problem (SAT);
 > Secure Hash Algorithm 256-bit (SHA-256); Unicode Transformation Format, 8-bit (UTF-8); Verifier Standard (VSTD).
 
-**Status:** experimental, non-normative VSTD-1/VSTD-Graph integration profile
+**Status:** experimental, non-normative VSTD-1/GRAPH integration profile
 **Profile identifier:** `vstd.experimental-workflow`
 **Version:** `0.1`
 **Date:** 2026-08-24

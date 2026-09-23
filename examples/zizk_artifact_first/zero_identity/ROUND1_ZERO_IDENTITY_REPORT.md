@@ -114,7 +114,7 @@ Each is encoded in `model/zero_identity_model.json` and guarded by at least one 
 19. a delegation may carry a scope its ancestor did not hold.
 
 Inferences 16 and 17 are the credential-side form of the recorded-lineage discipline
-already normative in `standard/VSTD-Graph-1.md`, which states that an edge records ancestry
+already normative in `standard/GRAPH-1.md`, which states that an edge records ancestry
 without establishing influence, and that no ancestor being marked revoked does not
 establish that every ancestor is valid.
 
