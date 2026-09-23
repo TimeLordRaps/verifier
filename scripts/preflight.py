@@ -407,19 +407,23 @@ def open_pull_requests(repository: str, branch: str) -> list[int]:
 
 def check_pr_descriptions_for_push(pushes: list[tuple[str, str, str, str]],
                                    hook_args: list[str]) -> bool:
-    """Refuse a push that would leave an open pull request describing another tree.
+    """Refuse a push that would leave an open pull request's description behind it.
 
     Pull requests are looked up by the branch being written on the remote, not the
     local branch. `git push origin work:feature` moves the pull request whose head is
     `feature`, and asking about `work` finds nothing. Until 2026-09-23 this gate asked
     about the local branch and passed on exactly that push.
 
-    Each description is checked against the pushed commit's own tree, so a push from
-    a checkout at another commit, or with uncommitted changes, is judged on what is
-    published. The description therefore has to bind the new head before the push:
-    update it first, then push. A pull request that lives in another repository (one
-    opened from this repository into an upstream) is not found here; the hosted
-    pr-description workflow checks it on every push and every edit.
+    Two checks run on each pull request the push moves. The first refuses the push
+    when the description is word for word the one in force when the pull request's
+    current head was pushed: every push must come with a revised description, so
+    whoever pushes, person or model, is stopped until they revise it. The second
+    checks what the description says, against the pushed commit's own tree, so a push
+    from a checkout at another commit, or with uncommitted changes, is judged on what
+    is published. The description therefore has to be revised, and bind the new head,
+    before the push: update it first, then push. A pull request that lives in another
+    repository (one opened from this repository into an upstream) is not found here;
+    the hosted pr-description workflow runs both checks on it.
 
     Anything that cannot be answered fails the push. A question gh could not answer
     is not a no.
@@ -449,6 +453,7 @@ def check_pr_descriptions_for_push(pushes: list[tuple[str, str, str, str]],
         return True
 
     script = ROOT / "scripts" / "check_pr_description.py"
+    changed = ROOT / "scripts" / "check_pr_description_changed.py"
     success = True
     for branch, oid in branches:
         try:
@@ -464,6 +469,17 @@ def check_pr_descriptions_for_push(pushes: list[tuple[str, str, str, str]],
                   f"has head branch {branch}.")
             continue
         for number in numbers:
+            code, stdout, stderr = _run_command([
+                sys.executable, str(changed), "--pr", str(number), "--repo", repository,
+            ])
+            output = (stdout or stderr).strip()
+            if output:
+                print(output)
+            if code != 0:
+                print(f"[PR DESCRIPTION GATE] FAIL: it is not established that pull request "
+                      f"#{number}'s description was revised since its current head was pushed. "
+                      f"Revise it to describe {oid[:12]}, then push again.")
+                success = False
             code, stdout, stderr = _run_command([
                 sys.executable, str(script), "--pr", str(number), "--repo", repository,
                 "--commit", oid, "--require-pull-request",

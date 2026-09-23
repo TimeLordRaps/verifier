@@ -1,14 +1,20 @@
 name: pull-request-description
 
-# A description is what a reviewer reads instead of the tree, so it is checked on
-# every event that can make the two disagree: a push moves the tree, an edit moves
-# the description. The repository checks in ci.yml also run this gate, but only on
-# pushes; an edit was never re-checked. The local pre-push gate stops a push that
-# would leave a description stale, but only on a machine that has it installed,
-# and a --no-verify push, a web edit or a fork skips it. This workflow runs for all
-# of them.
+# A description is what a reviewer reads instead of the tree, so it is held to the
+# tree on every event that can separate them.
 #
-# pull_request, not pull_request_target: the gate and the tree are the pull
+# changed-since-last-push: every push must come with a revised description. A push
+# whose description is word for word the one in force when the previous head was
+# pushed fails here. The local pre-push gate refuses such a push before it happens,
+# but only on a machine that has it installed; a --no-verify push, a push from
+# another machine or a commit made in the web editor still lands, and fails here.
+# A workflow runs after the push it judges, so it cannot stop one; it can only fail.
+#
+# describes-head: what the description says must match the head's own tree. A push
+# moves the tree and an edit moves the description, so it runs on both. The
+# repository checks in ci.yml also run this gate, but on pushes only.
+#
+# pull_request, not pull_request_target: the gates and the tree are the pull
 # request's own, run with a read-only token and no secrets.
 
 on:
@@ -18,14 +24,45 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: pull-request-description-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
-
 jobs:
+  changed-since-last-push:
+    # Only a push has a previous head to compare with. No concurrency group: an
+    # edit made just after a push must not cancel the verdict on that push.
+    if: github.event.action == 'synchronize'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Refuse a push whose description is word for word unchanged
+        env:
+          # The description as it stood when this push landed. Passed through the
+          # environment, never interpolated into the script.
+          DESCRIPTION: ${{ github.event.pull_request.body }}
+          BEFORE: ${{ github.event.before }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          printf '%s' "$DESCRIPTION" > "$RUNNER_TEMP/description.md"
+          python scripts/check_pr_description_changed.py --repo "$REPOSITORY" \
+            --pr "$NUMBER" --head "$BEFORE" --body "$RUNNER_TEMP/description.md"
+
   describes-head:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    concurrency:
+      group: pull-request-description-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

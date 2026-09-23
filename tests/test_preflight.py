@@ -170,13 +170,14 @@ def _pull(number: int, owner: str = "Owner", name: str = "verifier") -> dict:
 
 
 def _fake_github(monkeypatch: pytest.MonkeyPatch, pulls_by_branch: dict[str, list[dict]], *,
-                 described: tuple[str, str] | None = None, gh_status: int = 0) -> list[list[str]]:
-    """Stand in for gh and for the description check.
+                 described: tuple[str, str] | None = None, gh_status: int = 0,
+                 unrevised: frozenset[str] = frozenset()) -> list[list[str]]:
+    """Stand in for gh and for both description checks.
 
     The description check passes only for `described` (number, commit) and fails for
     any other pull request and commit. Asked with no arguments, as the gate asked before
     2026-09-23, it answers the way the real script did for a local branch without a pull
-    request: a pass.
+    request: a pass. The revision check fails for the pull requests in `unrevised`.
     """
     calls: list[list[str]] = []
 
@@ -188,6 +189,9 @@ def _fake_github(monkeypatch: pytest.MonkeyPatch, pulls_by_branch: dict[str, lis
             if gh_status:
                 return gh_status, "", "gh: Bad credentials (401)"
             return 0, json.dumps(pulls_by_branch.get(cmd[cmd.index("--head") + 1], [])), ""
+        if str(cmd[1]).endswith("check_pr_description_changed.py"):
+            number = cmd[cmd.index("--pr") + 1]
+            return (1 if number in unrevised else 0), "[PR DESCRIPTION CHANGE] stub", ""
         if str(cmd[1]).endswith("check_pr_description.py"):
             if len(cmd) == 2:
                 return 0, "[PR DESCRIPTION] PASS: no pull request is attached to this branch.", ""
@@ -230,6 +234,23 @@ def test_a_description_that_binds_the_pushed_commit_passes(monkeypatch: pytest.M
     _fake_github(monkeypatch, {"feature": [_pull(7)]}, described=("7", PUSHED))
     assert preflight.check_pr_descriptions_for_push(
         [("refs/heads/work", PUSHED, "refs/heads/feature", BEFORE)], ["origin", PUSH_URL])
+
+
+def test_a_push_whose_description_was_not_revised_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every push must come with a revised description, even one that still reads true.
+
+    Here the description already describes the pushed commit, so only the revision
+    rule can refuse the push. The accuracy check still runs, so both verdicts are
+    reported rather than the first masking the second.
+    """
+    calls = _fake_github(monkeypatch, {"feature": [_pull(7)]}, described=("7", PUSHED),
+                         unrevised=frozenset({"7"}))
+    assert not preflight.check_pr_descriptions_for_push(
+        [("refs/heads/feature", PUSHED, "refs/heads/feature", BEFORE)], ["origin", PUSH_URL])
+    (revision,) = [cmd for cmd in calls if str(cmd[1]).endswith("check_pr_description_changed.py")]
+    assert {"--pr", "7", "--repo", OWNER_REPOSITORY} <= set(revision)
+    assert "--head" not in revision and "--body" not in revision  # the live description, current head
+    assert any(str(cmd[1]).endswith("check_pr_description.py") for cmd in calls)
 
 
 @pytest.mark.parametrize("failure", ["status", "missing"])

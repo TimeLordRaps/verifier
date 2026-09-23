@@ -418,17 +418,45 @@ def test_the_description_is_rechecked_on_every_push_and_every_edit() -> None:
     assert set(triggers) == {"pull_request"}
     assert {"synchronize", "edited", "opened", "reopened"} <= set(triggers["pull_request"]["types"])
     assert workflow["permissions"] == {"contents": "read"}
+    assert set(workflow["jobs"]) == {"describes-head", "changed-since-last-push"}
+    for job in workflow["jobs"].values():
+        _assert_runs_the_pull_requests_own_tree_safely(job)
 
-    (job,) = workflow["jobs"].values()
+    job = workflow["jobs"]["describes-head"]
+    assert "if" not in job
+    (check,) = [step for step in job["steps"] if "check_pr_description.py" in str(step.get("run", ""))]
+    assert check["env"]["DESCRIPTION"] == "${{ github.event.pull_request.body }}"
+    assert check["env"]["HEAD_SHA"] == "${{ github.event.pull_request.head.sha }}"
+    assert '--commit "$HEAD_SHA"' in check["run"]
+
+
+def _assert_runs_the_pull_requests_own_tree_safely(job: dict) -> None:
     checkout = next(step for step in job["steps"] if "actions/checkout@" in step.get("uses", ""))
     assert checkout["with"]["ref"] == "${{ github.event.pull_request.head.sha }}"
     assert checkout["with"]["persist-credentials"] is False
+    assert all(level == "read" for level in job.get("permissions", {}).values()), job
     for step in job["steps"]:
         if "uses" in step:
             assert "@" in step["uses"] and len(step["uses"].split("@", 1)[1]) == 40, step["uses"]
         assert "${{" not in str(step.get("run", "")), step
 
-    (check,) = [step for step in job["steps"] if "check_pr_description.py" in str(step.get("run", ""))]
+
+def test_a_push_with_an_unrevised_description_fails_even_without_the_local_hook() -> None:
+    """The pre-push gate stops such a push only where it is installed. This job is
+    where a push that skipped it still fails. It judges the description as the push
+    event carried it, against the one in force at the previous head's push, and no
+    later edit may cancel that verdict.
+    """
+    workflow = yaml.safe_load(
+        (ROOT / ".github/workflows/pr-description.yml").read_text(encoding="utf-8"))
+    job = workflow["jobs"]["changed-since-last-push"]
+    assert job["if"] == "github.event.action == 'synchronize'"
+    assert "concurrency" not in job and "concurrency" not in workflow
+    assert job["permissions"] == {"contents": "read", "actions": "read", "pull-requests": "read"}
+    (check,) = [step for step in job["steps"]
+                if "check_pr_description_changed.py" in str(step.get("run", ""))]
     assert check["env"]["DESCRIPTION"] == "${{ github.event.pull_request.body }}"
-    assert check["env"]["HEAD_SHA"] == "${{ github.event.pull_request.head.sha }}"
-    assert '--commit "$HEAD_SHA"' in check["run"]
+    assert check["env"]["BEFORE"] == "${{ github.event.before }}"
+    assert check["env"]["GH_TOKEN"] == "${{ github.token }}"
+    assert '--head "$BEFORE"' in check["run"]
+    assert '--body "$RUNNER_TEMP/description.md"' in check["run"]
