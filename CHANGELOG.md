@@ -18,6 +18,7 @@
 > instrumented agent observation surface (HARNESS);
 > agent trajectory bounded by one observation surface (AGENT);
 > one agent situated in one simulation (BOT);
+> zero-identity zero-knowledge token (TOKEN);
 > Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
 > Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
 > zero-identity/zero-knowledge (ZIZK).
@@ -28,19 +29,22 @@
 
 **Release name: The grounded certification release.**
 
-- Add nine executable grounded domain adapters: dataset integrity and lineage (DATA),
+- Add ten executable grounded domain adapters: dataset integrity and lineage (DATA),
   execution environments (ENV), benchmark specification graphs (BENCH), training run
   specifications (TRAIN), model reproducibility specifications (MODEL),
   generative simulations (SIM), instrumented agent observation surfaces (HARNESS),
-  agent trajectories bounded by one such surface (AGENT), and one agent situated in one
-  simulation (BOT). An AGENT certificate cannot establish more than its bound HARNESS
-  declared observable; a claim resting on a declared gap or an undeclared channel is
-  `UNKNOWN`. A BOT certificate establishes the correspondence its parts cannot: that each
-  retained observation is the simulation's own projection and each replayed action is the
-  agent's own invocation. Their 43 cumulative domain checks replay retained
+  agent trajectories bounded by one such surface (AGENT), one agent situated in one
+  simulation (BOT), and one zero-identity zero-knowledge token holding descending from
+  one birth token (TOKEN). An AGENT certificate cannot establish more than its bound
+  HARNESS declared observable; a claim resting on a declared gap or an undeclared channel
+  is `UNKNOWN`. A BOT certificate establishes the correspondence its parts cannot: that
+  each retained observation is the simulation's own projection and each replayed action
+  is the agent's own invocation. A TOKEN certificate establishes that one retained
+  holding is internally consistent and was issued under keys the checker admitted, and
+  nothing about who holds it. Their 48 cumulative domain checks replay retained
   computations with external request/policy binding, strict certificate replay,
   bounded work, and preserved `UNKNOWN`. Add `certification domain-catalog`,
-  `domain-assess`, and `domain-check`, four additive schemas and nine runnable specimens.
+  `domain-assess`, and `domain-check`, four additive schemas and ten runnable specimens.
   Domain depth remains separate from object and Graph numbered-profile conformance;
   see [native coverage and exclusions](src/verifier/standard/DOMAIN_GROUNDING.md).
 
@@ -111,18 +115,19 @@ declare the experimental mechanisms complete. See the
   `hyper.py`, left over from before `HYPER` was formalized as the composition operator.
   `verifier.domains.hyper` is renamed to `verifier.domains.train` and `CHECKS["HYPER"]` to
   `CHECKS["TRAIN"]`, and all 14 names are restored verbatim -- each one's requirement is the
-  description of the check it names. `TRAIN` reports 25 of 35 mechanized and the domain axis
-  205 of 626. Two of the five names are also check names on other objects -- `configuration`
-  is ENV's and `lineage` is DATA's -- so resolution stays scoped to the obligation's own
-  object, which is what made the misfiling visible rather than what caused it.
+  description of the check it names. `TRAIN` reports 25 of 35 mechanized, and the rename
+  brought the domain axis to 205 of 626. Two of the five names are also check names on
+  other objects -- `configuration` is ENV's and `lineage` is DATA's -- so resolution stays
+  scoped to the obligation's own object, which is what made the misfiling visible rather
+  than what caused it.
 - **Certifiable is not the same property as grounded**, and conflating them is what let
   this through. `build_domain_certificate` rejects any domain absent from `CHECKS`, so
   `HYPER` could never be certified at all -- it was not partially grounded, it was
   unreachable -- while the grid published it as the most heavily mechanized object on the
   axis. New `CERTIFIABLE_OBJECTS` and `UNCERTIFIABLE_OBJECTS` name the real partition,
-  which has three parts over 17 objects rather than two:
-  9 certifiable, `HYPER` and `TOKEN` catalogued with statics and
-  adaptation mechanisms that do execute, and six ungrounded with no mechanism anywhere.
+  which has three parts over 17 objects rather than two: the certifiable objects,
+  `HYPER` catalogued with statics and adaptation mechanisms that do execute, and six
+  ungrounded with no mechanism anywhere.
 - **A mechanism name is a promise that something executes it.** The suite now resolves
   every name against the registered checks of that obligation's **own** object, and asserts
   `CERTIFIABLE_OBJECTS` against both `CHECKS` and `SCOPES`. Resolution is object-scoped
@@ -161,17 +166,29 @@ declare the experimental mechanisms complete. See the
   76 obligations over six levels and 24 rungs, the deepest ladder on the domain axis. A
   token is exactly one of three kinds -- birth, aging or lifetime -- which are one
   identity's lifecycle rather than three independent formats.
-- Add 14 `statics:` checks at tier 3 and 14 adaptation checks at tier 5, so 28 of its
-  76 obligations execute today. Each statics check was exercised on both paths: it
+- Add 14 `statics:` checks at tier 3 and 14 adaptation checks at tier 5, so both of
+  those tiers execute in full. Each statics check was exercised on both paths: it
   passes on a constructed evidence fixture and refutes on a tampered one. The
   preimage check **records** a search that found no preimage rather than passing on it.
-- **`TOKEN` is grounded without being certifiable, and for a different reason than
-  `TRAIN`.** It has a substrate of its own and working mechanics over it, but they live in
-  `verifier.identity` rather than `verifier.domains`, so there is no `CHECKS` entry and
-  `build_domain_certificate` rejects it. `COMPOSED_OBJECTS` and `ADAPTER_PENDING_OBJECTS`
-  name the two reasons separately because they are not the same residue: `TRAIN` inherits
-  its substrate from its operands and can never have an adapter, while `TOKEN`'s residue
-  is dischargeable by writing one. Collapsing them into a single set would have hidden that.
+- **Add `TOKEN`'s behavioural adapter, so `TOKEN` is certifiable.**
+  `verifier.domains.token` replays a retained holding in the cumulative checks
+  `inventory`, `tenure`, `leases`, `signatures` and `closure`, from evidence of its own:
+  the tokens, the epoch trace and the status observations. It refolds tenure from the
+  birth commitment without opening it, resolves every lease to its parent grant and
+  refuses any step that widens scope, window, invocations or caveats, verifies Ed25519
+  signatures only under issuing keys whose bytes the checker policy admits, and reports a
+  status observation that is absent, stale or within the clock skew of the schedule as
+  `UNKNOWN`. Rows that need evidence it does not retain -- the commitment's opening,
+  withheld fields, consumed invocations, attenuation without the issuer, third-party
+  discharge, presentation and reissuance -- stay unmechanized. Without the `seal` extra
+  the signature check reports `UNKNOWN`.
+- `ADAPTER_PENDING_OBJECTS` named the reason `TOKEN` was grounded without being
+  certifiable, separately from `OPERATOR_OBJECTS`, because the two are not the same
+  residue: the composition operator `HYPER` has no substrate of its own and can never
+  have an adapter, while `TOKEN`'s residue was dischargeable by writing one. It is now
+  discharged, and the constant stays, empty. The new module joins the `verifier.domains`
+  tuple, so `implementation_digest()` moves and every domain policy issued before it
+  must be readmitted.
 - The ZIZK Prime Invariant governs it: an actor identity never upgrades a computational
   verdict. `TOKEN-3.5` states it -- elapsed tenure is a quantity of time and confers no
   scope -- and the `authority` statics check executes it; `TOKEN-3.9` separates holding a

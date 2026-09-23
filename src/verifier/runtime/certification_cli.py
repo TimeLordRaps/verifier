@@ -24,7 +24,7 @@ from verifier.core.receipt import strict_json_loads
 def add_certification_parser(subparsers: Any) -> None:
     parser = subparsers.add_parser("certification", help="Inspect and replay grounded object-profile obligations.")
     commands = parser.add_subparsers(dest="certification_command", required=True)
-    domain_catalog = commands.add_parser("domain-catalog", help="List native DATA, ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT and BOT checks.")
+    domain_catalog = commands.add_parser("domain-catalog", help="List native DATA, ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT, BOT and TOKEN checks.")
     domain_catalog.add_argument("--json", action="store_true")
     for name in ("domain-assess", "domain-check"):
         domain = commands.add_parser(name, help="Execute or replay grounded domain computations under external policy.")

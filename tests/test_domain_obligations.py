@@ -282,14 +282,19 @@ def test_certifiable_is_not_the_same_property_as_grounded() -> None:
 
     # HYPER is the case a two-part partition could not express: grounded, because
     # statics and adaptation checks do execute over it, and certifiable not at all.
-    # There are exactly two reasons, which is why the residue is named by two constants
+    # There are two possible reasons, which is why the residue is named by two constants
     # rather than by a literal. HYPER is the composition *operator*: it holds between
     # certified objects and carries no substrate of its own for an adapter to bind, so
-    # its residue is permanent -- the shape every relational entry would have. TOKEN has
-    # a substrate and working mechanics, but they live outside verifier.domains, so its
-    # residue is a pending wiring decision with a price attached, not a property of the
-    # object. Enumerating them separately is the point: collapsing them would hide that
-    # one of the two can be discharged and the other never can.
+    # its residue is permanent -- the shape every relational entry would have. The other
+    # reason is an object with a substrate whose behavioural adapter is not written yet:
+    # a pending wiring decision with a price attached, not a property of the object.
+    # Enumerating them separately is the point: collapsing them would hide that one kind
+    # can be discharged and the other never can.
+    #
+    # TOKEN held the pending position until 2026-09-22, when verifier.domains.token
+    # discharged it. The constant is kept and asserted empty, so an object that loses or
+    # awaits its adapter has to be named in it -- and this test edited -- rather than
+    # dropping out of the certifiable set unremarked.
     #
     # TRAIN sat in HYPER's slot here until 2026-09-22, and that was the false claim. A
     # training run has a substrate -- the checkpoint inventory and the step trace -- and
@@ -298,10 +303,12 @@ def test_certifiable_is_not_the_same_property_as_grounded() -> None:
     residue = set(UNCERTIFIABLE_OBJECTS) - set(UNGROUNDED_OBJECTS)
     assert residue == set(OPERATOR_OBJECTS) | set(ADAPTER_PENDING_OBJECTS)
     assert set(OPERATOR_OBJECTS) == {"HYPER"}
-    assert set(ADAPTER_PENDING_OBJECTS) == {"TOKEN"}
+    assert ADAPTER_PENDING_OBJECTS == ()
+    assert residue == {"HYPER"}
     assert not set(OPERATOR_OBJECTS) & set(ADAPTER_PENDING_OBJECTS), "the reasons are distinct"
     assert "HYPER" in GROUNDED_OBJECTS and "HYPER" not in CERTIFIABLE_OBJECTS
     assert "TRAIN" in CERTIFIABLE_OBJECTS, "the object that owns the adapter is certifiable"
+    assert "TOKEN" in CERTIFIABLE_OBJECTS, "its pending adapter was written"
     hyper = [o for o in DOMAIN_OBLIGATIONS if o.object_name == "HYPER"]
     assert any(o.mechanized for o in hyper), "its statics and adaptation rows do resolve"
     assert not any(o.mechanized for o in hyper if o.profile in (1, 2, 4)), (

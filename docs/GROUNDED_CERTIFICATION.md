@@ -6,7 +6,7 @@
 **Verifier / `verifier-standard` v2.0.0 — The grounded certification release.**
 The candidate implements one evidence-bound certification contract across the five
 object numbered profiles. It is unreleased.
-It also supplies nine executable domain adapters with 43 separate domain checks.
+It also supplies ten executable domain adapters with 48 separate domain checks.
 
 ## What X.M means
 
@@ -67,7 +67,7 @@ The native mechanism executes bounded checks for six obligations:
 | 4.5 | Kernel enforces positive declared cost, memory and certificate-size ceilings | Unsupported checking remains `UNKNOWN` |
 
 The other 41 object obligations have executable orchestration contracts and require
-mechanisms that actually evaluate those exact propositions. The nine domain adapters
+mechanisms that actually evaluate those exact propositions. The ten domain adapters
 below supply native domain computations; their results do not automatically discharge
 all object obligations. The CLI does not
 import plugins named by an input file. Integrators use the Python interface to

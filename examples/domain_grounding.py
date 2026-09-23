@@ -25,6 +25,31 @@ def _task(value: list) -> list:
     return sorted(value)
 
 
+def token_issuer() -> tuple:
+    """Return the example issuing key's public hex and a signer over canonical bytes.
+
+    The key is derived from a public label, so its signatures authenticate nothing
+    outside this example. Without the seal extra no signature can be made: a stand-in
+    key and placeholder signatures keep every other TOKEN check runnable, and TOKEN.4
+    reports UNKNOWN because no signature backend is available to check them.
+    """
+    seed = hashlib.sha256(b"example:token-issuer").digest()
+    try:
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+    except ImportError:
+        placeholder = base64.b64encode(bytes(64)).decode()
+        return hashlib.sha256(seed).hexdigest(), lambda body: placeholder
+    key = Ed25519PrivateKey.from_private_bytes(seed)
+    public = key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw).hex()
+    return public, lambda body: base64.b64encode(key.sign(canonical_bytes(body))).decode()
+
+
+def token_witness_keys() -> dict:
+    """The checker's admission of the example issuing key, derived here and never read from a bundle."""
+    return {"example:token-issuer": token_issuer()[0]}
+
+
 def specimens() -> dict:
     """Produce actual retained inputs with independently calculable expected results."""
     result = {}
@@ -223,16 +248,62 @@ def specimens() -> dict:
          "agent_environment_certificate": agent_env_certificate,
          "sim_environment_certificate": world_env_certificate})
 
+    # TOKEN: one holding descending from one birth token. The commitment's opening --
+    # the genesis key digest, the birth epoch and the salt -- is used here to make the
+    # commitment and never enters the retained evidence.
+    issuer_public, sign = token_issuer()
+    issuer = digest(issuer_public)
+    birth_epoch = 10
+    commitment = digest(["sha256:" + hashlib.sha256(b"example:genesis-key").hexdigest(), birth_epoch, "example-salt"])
+    epochs, accumulator = [], commitment
+    for epoch, status in zip(range(birth_epoch + 1, birth_epoch + 6), ("ACTIVE", "ACTIVE", "SUSPENDED", "ACTIVE", "ACTIVE")):
+        accumulator = digest([accumulator, epoch, status])
+        epochs.append({"epoch": epoch, "status": status, "digest": accumulator})
+    def _token(kind: str, token_id: str, issued_at: int, fields: dict) -> dict:
+        body = dict({"kind": kind, "token_id": token_id, "issuing_key_id": issuer, "issued_at": issued_at,
+                     "algorithm": "Ed25519", "replay_id": "replay:" + token_id, "audience": ["example:verifier"]}, **fields)
+        return dict(body, signature=sign(body))
+    audit = {"condition": "audit-log-retained", "discharge": "example:auditor"}
+    tokens = [
+        _token("birth", "birth", 900, {"birth_epoch": birth_epoch, "commitment": commitment}),
+        _token("aging", "tenure", 950, {"birth_token_id": "birth", "epoch_start": birth_epoch + 1,
+               "epoch_end": birth_epoch + 5, "accumulated_epochs": 4, "accumulator_digest": accumulator,
+               "revocation_status": "ACTIVE"}),
+        _token("lifetime", "lease", 1000, {"parent_grant_id": "birth", "delegate_key_id": digest("example:delegate"),
+               "permitted_scopes": ["read", "write"], "not_before": 1000, "not_after": 5000, "max_invocations": 100,
+               "soulbound": False, "confirmation_key_id": digest("example:holder"), "caveats": [audit]}),
+        # The holder narrows its own lease: fewer scopes, a shorter window, fewer
+        # invocations, one more caveat, and soulbound from here on.
+        _token("lifetime", "attenuated", 1400, {"parent_grant_id": "lease", "delegate_key_id": digest("example:delegate"),
+               "permitted_scopes": ["read"], "not_before": 1500, "not_after": 4000, "max_invocations": 10,
+               "soulbound": True, "confirmation_key_id": None,
+               "caveats": [audit, {"condition": "read-only-mirror", "discharge": None}]}),
+    ]
+    token_statuses = [{"token_id": t["token_id"], "published_at": 1800, "verdict": "ACTIVE"} for t in tokens]
+    add("TOKEN", {"tokens_digest": digest(tokens), "epochs_digest": digest(epochs),
+        "statuses_digest": digest(token_statuses), "clock": "example:issuer-clock", "clock_skew": 5,
+        "issuing_keys": [{"key_id": issuer, "key_bytes": issuer_public}], "key_retirements": {issuer: 9000},
+        "accepted_algorithms": ["Ed25519"], "root_scopes": ["read", "write", "admin"],
+        "audience": ["example:verifier", "example:auditor"], "period": {"start": 0, "end": 6000},
+        "status_schedule": 500, "observed_at": 2000},
+        {"tokens": tokens, "epochs": epochs, "statuses": token_statuses})
+
     return result
 
 
 if __name__ == "__main__":
     from verifier.domains.certification import build_domain_certificate, domain_policy, domain_request, recheck_domain_certificate
-    policy = domain_policy(trust_roots=["example:retained-inputs", "example:local-checker"])
+    policy = domain_policy(trust_roots=["example:retained-inputs", "example:local-checker"],
+                           witness_keys=token_witness_keys())
     for domain, evidence in specimens().items():
         request = domain_request(evidence)
         certificate = build_domain_certificate(request, evidence, policy=policy)
         result = recheck_domain_certificate(certificate, expected_request=request, policy=policy)
         print(domain, result["status"], result["domain_depth"], flush=True)
-        if result["status"] != "PASS":
+        # Without the seal extra TOKEN.4 cannot check a signature and reports UNKNOWN;
+        # every other TOKEN check still has to replay.
+        unsigned = (domain == "TOKEN" and result["status"] == "UNKNOWN"
+                    and result["checks"]["TOKEN.4"]["evaluation"]["details"] == "signature backend unavailable"
+                    and all(row["established"] for key, row in result["checks"].items() if key != "TOKEN.4"))
+        if result["status"] != "PASS" and not unsigned:
             raise SystemExit(json.dumps(result, indent=2))

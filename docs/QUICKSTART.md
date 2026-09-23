@@ -154,9 +154,9 @@ vstd certification domain-catalog
 ```
 
 The first lists the 47 object-profile obligations (`X.M`) and which have a
-built-in checker. The second lists the nine executable domain adapters — DATA,
-ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT and BOT — and their per-check dependency
-graphs.
+built-in checker. The second lists the ten executable domain adapters — DATA,
+ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT, BOT and TOKEN — and their per-check
+dependency graphs.
 
 Run the two shipped, complete examples:
 

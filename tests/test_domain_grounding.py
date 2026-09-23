@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from types import ModuleType
 
 import pytest
 
@@ -25,16 +26,23 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture(scope="module")
-def bundles() -> dict:
+def example() -> ModuleType:
     spec = importlib.util.spec_from_file_location("domain_example", ROOT / "examples/domain_grounding.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return module.specimens()
+    return module
 
 
 @pytest.fixture(scope="module")
-def policy() -> dict:
-    return domain_policy(trust_roots=["test:retained-inputs", "test:checker"])
+def bundles(example: ModuleType) -> dict:
+    return example.specimens()
+
+
+@pytest.fixture(scope="module")
+def policy(example: ModuleType) -> dict:
+    # The checker admits the example token issuing key; no bundle can admit it.
+    return domain_policy(trust_roots=["test:retained-inputs", "test:checker"],
+                         witness_keys=example.token_witness_keys())
 
 
 def assess(bundle: dict, policy: dict) -> dict:
@@ -43,6 +51,9 @@ def assess(bundle: dict, policy: dict) -> dict:
 
 @pytest.mark.parametrize("domain,depth", [(d,i) for d,checks in CHECKS.items() for i in range(1,len(checks)+1)])
 def test_every_native_domain_prerequisite_replays(domain: str, depth: int, bundles: dict, policy: dict) -> None:
+    if domain == "TOKEN" and depth >= 4:
+        # OPTIONAL_DEPENDENCY_ABSENT: TOKEN.4 checks signatures with the documented seal extra.
+        pytest.importorskip("cryptography.hazmat.primitives.asymmetric.ed25519", reason="OPTIONAL_DEPENDENCY_ABSENT: seal signature backend")
     request = domain_request(bundles[domain], target_depth=depth)
     certificate = build_domain_certificate(request, bundles[domain], policy=policy)
     result = recheck_domain_certificate(certificate, expected_request=request, policy=policy)
@@ -471,3 +482,192 @@ def test_declared_dependencies_match_established_blocking(bundles: dict, policy:
         for coordinate, row in assess(bundles[domain], policy)["result"]["checks"].items():
             assert set(row["blocked_by"]) <= declared[coordinate]
             assert coordinate not in declared[coordinate], "check cannot depend on itself"
+
+
+def _resign(example: ModuleType, bundle: dict) -> dict:
+    """Re-sign every token under the example key and rebind all three retained digests.
+
+    A mutated token that kept its old signature would fail TOKEN.4 as well as the
+    check under test. Re-signing confines a counterexample to the property it
+    changed, and shows that a valid issuer signature does not make that property hold.
+    """
+    sign = example.token_issuer()[1]
+    inputs = bundle["inputs"]
+    tokens = []
+    for token in inputs["tokens"]:
+        body = {field: value for field, value in token.items() if field != "signature"}
+        tokens.append(dict(body, signature=sign(body)))
+    inputs["tokens"] = tokens
+    bundle["artifact"].update(tokens_digest=digest(tokens), epochs_digest=digest(inputs["epochs"]),
+                              statuses_digest=digest(inputs["statuses"]))
+    return bundle
+
+
+def _refold(bundle: dict, statuses: list) -> None:
+    """Replace the retained epochs with a correctly folded chain carrying these statuses."""
+    birth = bundle["inputs"]["tokens"][0]
+    accumulator, epochs = birth["commitment"], []
+    for offset, status in enumerate(statuses, 1):
+        epoch = birth["birth_epoch"] + offset
+        accumulator = digest([accumulator, epoch, status])
+        epochs.append({"epoch": epoch, "status": status, "digest": accumulator})
+    bundle["inputs"]["epochs"] = epochs
+
+
+TOKEN_COUNTEREXAMPLES = [
+    ("duplicate-replay", "TOKEN.1", "FAIL", "share a replay identifier: birth and lease"),
+    ("second-birth", "TOKEN.1", "UNKNOWN", "exactly one birth token"),
+    ("unbound-issuer", "TOKEN.1", "UNKNOWN", "unspecified rather than self-issued: lease"),
+    ("empty-window", "TOKEN.1", "FAIL", "ends at or before it starts: attenuated"),
+    ("unnamed-clock", "TOKEN.1", "UNKNOWN", "required evidence absent: clock"),
+    ("broken-fold", "TOKEN.2", "FAIL", "not the fold of the epoch before it: epoch 13"),
+    ("resumed-after-revocation", "TOKEN.2", "FAIL", "resumes after its revocation: epoch 15"),
+    ("overstated-accrual", "TOKEN.2", "FAIL", "count of active epochs it spans: tenure"),
+    ("unreported-revocation", "TOKEN.2", "FAIL", "misreports its revocation status: tenure"),
+    ("widened-scope", "TOKEN.3", "FAIL", "scope its parent grant lacks: attenuated: admin"),
+    ("widened-window", "TOKEN.3", "FAIL", "outside its parent grant's window: attenuated"),
+    ("more-invocations", "TOKEN.3", "FAIL", "more invocations than its parent grant: attenuated"),
+    ("dropped-caveat", "TOKEN.3", "FAIL", "drops a caveat its parent grant imposed: attenuated"),
+    ("rewritten-discharge", "TOKEN.3", "FAIL", "rewrites how an inherited caveat is discharged: attenuated"),
+    ("redelegated-soulbound", "TOKEN.3", "FAIL", "soulbound lease is re-delegated: attenuated"),
+    ("delegation-cycle", "TOKEN.3", "FAIL", "returns to a lease it already left"),
+    ("issued-after-retirement", "TOKEN.4", "FAIL", "at or after that key's retirement: attenuated"),
+    ("accepts-none", "TOKEN.4", "FAIL", "accepts unsigned tokens"),
+    ("mixed-algorithms", "TOKEN.4", "FAIL", "both a symmetric and an asymmetric algorithm: HS256"),
+    ("disjoint-audience", "TOKEN.5", "FAIL", "wholly outside the bound audience set: lease"),
+    ("missing-status", "TOKEN.5", "UNKNOWN", "unobserved rather than clear: attenuated"),
+    ("stale-status", "TOKEN.5", "UNKNOWN", "older than the published schedule, so it is stale: attenuated"),
+    ("undetermined-status", "TOKEN.5", "UNKNOWN", "within the clock skew of the schedule, so it is undetermined: attenuated"),
+    ("status-after-observation", "TOKEN.5", "FAIL", "published after it was observed: attenuated"),
+]
+
+
+@pytest.mark.parametrize("mutation,coordinate,outcome,finding", TOKEN_COUNTEREXAMPLES)
+def test_token_counterexamples_are_found_at_their_own_check(mutation: str, coordinate: str, outcome: str, finding: str,
+                                                            example: ModuleType, bundles: dict, policy: dict) -> None:
+    bundle = deepcopy(bundles["TOKEN"])
+    artifact, inputs = bundle["artifact"], bundle["inputs"]
+    held = {token["token_id"]: token for token in inputs["tokens"]}
+    lease, attenuated = held["lease"], held["attenuated"]
+    status = next(record for record in inputs["statuses"] if record["token_id"] == "attenuated")
+    if mutation == "duplicate-replay":
+        lease["replay_id"] = held["birth"]["replay_id"]
+    elif mutation == "second-birth":
+        inputs["tokens"].append(dict(held["birth"], token_id="rebirth", replay_id="replay:rebirth"))
+        inputs["statuses"].append(dict(status, token_id="rebirth"))
+    elif mutation == "unbound-issuer":
+        lease["issuing_key_id"] = None
+    elif mutation == "empty-window":
+        attenuated["not_after"] = attenuated["not_before"]
+    elif mutation == "unnamed-clock":
+        del artifact["clock"]
+    elif mutation == "broken-fold":
+        inputs["epochs"][2]["digest"] = inputs["epochs"][1]["digest"]
+    elif mutation == "resumed-after-revocation":
+        _refold(bundle, ["ACTIVE", "ACTIVE", "SUSPENDED", "REVOKED", "ACTIVE"])
+    elif mutation == "overstated-accrual":
+        held["tenure"]["accumulated_epochs"] += 1
+    elif mutation == "unreported-revocation":
+        # Revoked at the last epoch the aging token spans, which it still reports ACTIVE.
+        _refold(bundle, ["ACTIVE", "ACTIVE", "SUSPENDED", "ACTIVE", "REVOKED"])
+        held["tenure"].update(accumulator_digest=inputs["epochs"][-1]["digest"], accumulated_epochs=3)
+    elif mutation == "widened-scope":
+        attenuated["permitted_scopes"] = ["read", "admin"]
+    elif mutation == "widened-window":
+        attenuated["not_after"] = lease["not_after"] + 1
+    elif mutation == "more-invocations":
+        attenuated["max_invocations"] = lease["max_invocations"] + 1
+    elif mutation == "dropped-caveat":
+        attenuated["caveats"] = attenuated["caveats"][1:]
+    elif mutation == "rewritten-discharge":
+        attenuated["caveats"][0] = dict(attenuated["caveats"][0], discharge="example:other-auditor")
+    elif mutation == "redelegated-soulbound":
+        lease["soulbound"] = True
+        attenuated["delegate_key_id"] = digest("example:other-delegate")
+    elif mutation == "delegation-cycle":
+        lease["parent_grant_id"] = "attenuated"
+    elif mutation == "issued-after-retirement":
+        artifact["key_retirements"] = {attenuated["issuing_key_id"]: attenuated["issued_at"]}
+    elif mutation == "accepts-none":
+        artifact["accepted_algorithms"] = ["Ed25519", "none"]
+    elif mutation == "mixed-algorithms":
+        artifact["accepted_algorithms"] = ["Ed25519", "HS256"]
+    elif mutation == "disjoint-audience":
+        lease["audience"] = ["example:elsewhere"]
+    elif mutation == "missing-status":
+        inputs["statuses"].remove(status)
+    elif mutation == "stale-status":
+        status["published_at"] = artifact["observed_at"] - artifact["clock_skew"] - artifact["status_schedule"] - 1
+    elif mutation == "undetermined-status":
+        status["published_at"] = artifact["observed_at"] - artifact["status_schedule"]
+    else:
+        status["published_at"] = artifact["observed_at"] + artifact["clock_skew"] + 1
+    checks = assess(_resign(example, bundle), policy)["result"]["checks"]
+    assert checks[coordinate]["evaluation"]["outcome"] == outcome
+    assert finding in checks[coordinate]["evaluation"]["details"]
+    assert checks[coordinate]["established"] is False
+    # The inventory is every check's prologue, so its findings reach all five. Any
+    # other counterexample is found at its own check and moves no other outcome.
+    others = {c: row["evaluation"]["outcome"] for c, row in checks.items() if c != coordinate}
+    if coordinate == "TOKEN.1":
+        assert set(others.values()) == {outcome}
+    else:
+        baseline = assess(bundles["TOKEN"], policy)["result"]["checks"]
+        assert others == {c: row["evaluation"]["outcome"] for c, row in baseline.items() if c != coordinate}
+
+
+def test_token_without_a_signature_backend_is_a_gap_not_a_refutation(
+        bundles: dict, policy: dict, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Runs with or without the seal extra: the backend is withdrawn either way. Having
+    # nothing to verify with is UNKNOWN, never FAIL, and it stops no other token check.
+    monkeypatch.setitem(sys.modules, "cryptography.hazmat.primitives.asymmetric.ed25519", None)
+    result = assess(bundles["TOKEN"], policy)["result"]
+    checks = result["checks"]
+    assert checks["TOKEN.4"]["evaluation"]["outcome"] == "UNKNOWN"
+    assert "signature backend unavailable" in checks["TOKEN.4"]["evaluation"]["details"]
+    assert all(checks[c]["established"] for c in ("TOKEN.1", "TOKEN.2", "TOKEN.3", "TOKEN.5"))
+    assert (result["status"], result["domain_depth"]) == ("UNKNOWN", 3)
+
+
+def test_token_signature_binds_each_token_to_its_exact_preimage(bundles: dict, policy: dict) -> None:
+    # OPTIONAL_DEPENDENCY_ABSENT: TOKEN.4 checks signatures with the documented seal extra.
+    pytest.importorskip("cryptography.hazmat.primitives.asymmetric.ed25519", reason="OPTIONAL_DEPENDENCY_ABSENT: seal signature backend")
+    for mutation in ("swapped", "rebound-holder"):
+        bundle = deepcopy(bundles["TOKEN"])
+        tokens = bundle["inputs"]["tokens"]
+        if mutation == "swapped":
+            tokens[2]["signature"] = tokens[3]["signature"]
+        else:
+            tokens[2]["confirmation_key_id"] = digest("example:other-holder")
+        bundle["artifact"]["tokens_digest"] = digest(tokens)
+        checks = assess(bundle, policy)["result"]["checks"]
+        assert checks["TOKEN.4"]["evaluation"]["outcome"] == "FAIL"
+        assert "does not verify over its canonical preimage: lease" in checks["TOKEN.4"]["evaluation"]["details"]
+        assert [checks[c]["evaluation"]["outcome"] for c in ("TOKEN.1", "TOKEN.2", "TOKEN.3", "TOKEN.5")] == ["PASS"] * 4
+
+
+def test_a_token_bundle_cannot_admit_its_own_issuing_key(bundles: dict) -> None:
+    """The bundle carries the issuing key's bytes; only the checker policy admits them, by those bytes."""
+    roots = ["test:retained-inputs", "test:checker"]
+    carried = bundles["TOKEN"]["artifact"]["issuing_keys"][0]["key_bytes"]
+    for witness_keys in (None, {"example:token-issuer": "0" * 64}):
+        result = assess(bundles["TOKEN"], domain_policy(trust_roots=roots, witness_keys=witness_keys))["result"]
+        assert result["checks"]["TOKEN.4"]["evaluation"]["outcome"] == "UNKNOWN"
+        assert "not admitted by the checker policy" in result["checks"]["TOKEN.4"]["evaluation"]["details"]
+        assert result["status"] == "UNKNOWN" and result["domain_depth"] == 3
+    assert carried != "0" * 64
+
+
+def test_token_readings_that_narrow_or_reach_outside_still_hold(example: ModuleType, bundles: dict, policy: dict) -> None:
+    bundle = deepcopy(bundles["TOKEN"])
+    held = {token["token_id"]: token for token in bundle["inputs"]["tokens"]}
+    # Removing an inherited caveat's discharge makes it permanent, which narrows it.
+    held["attenuated"]["caveats"][0] = dict(held["attenuated"]["caveats"][0], discharge=None)
+    # A token naming a verifier inside the set resolves even when it names one outside
+    # it too, and a token naming none is addressed to every verifier; both reach outside.
+    held["lease"]["audience"] = ["example:verifier", "example:elsewhere"]
+    held["tenure"]["audience"] = []
+    checks = assess(_resign(example, bundle), policy)["result"]["checks"]
+    assert [checks[c]["evaluation"]["outcome"] for c in ("TOKEN.1", "TOKEN.3", "TOKEN.5")] == ["PASS"] * 3
+    assert checks["TOKEN.1"]["evaluation"]["observations"]["unaddressed"] == ["tenure"]
+    assert checks["TOKEN.5"]["evaluation"]["observations"]["reaching_outside"] == ["lease", "tenure"]

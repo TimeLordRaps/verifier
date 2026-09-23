@@ -146,6 +146,22 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "TOKEN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "target_depth": {
+            "maximum": 5
+          }
+        }
+      }
     }
   ],
   "description": "Structural envelope only. Domain evaluators check retained contract semantics; certificate replay requires external intent and policy.",
@@ -164,7 +180,8 @@
         "SIM",
         "HARNESS",
         "AGENT",
-        "BOT"
+        "BOT",
+        "TOKEN"
       ]
     },
     "evidence_ref": {

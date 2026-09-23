@@ -39,11 +39,11 @@ This file carries the third namespace: the seventeen domain objects, coordinate
 `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, no catalogue admits another's identifiers,
 and each carries its own digest, so extending one cannot move another.
 
-**Nine of the seventeen are certifiable, and the partition has three parts rather than
+**Ten of the seventeen are certifiable, and the partition has three parts rather than
 two.** A *behavioural* adapter is keyed in `verifier.domains.catalog.CHECKS`, and
-`build_domain_certificate` rejects any domain absent from it, so those nine -- `DATA`,
+`build_domain_certificate` rejects any domain absent from it, so those ten -- `DATA`,
 `ENV`, `BENCH`, `TRAIN`, `MODEL`, `SIM`, `HARNESS`,
-`AGENT` and `BOT` -- are the objects a domain certificate can be built for at
+`AGENT`, `BOT` and `TOKEN` -- are the objects a domain certificate can be built for at
 all.
 
 `HYPER` is **catalogued but not certifiable**. Its statics and adaptation
@@ -121,7 +121,7 @@ disjoint. They differ in what kind of evidence can establish an obligation at al
 
 | Family | Prefix | What establishes an obligation | Where | Bound |
 |---|---|---|---|---|
-| Behavioural | *(none)* | Re-executing what the subject declared: rehash, replay, recompute | [`DOMAIN_GROUNDING.md`](DOMAIN_GROUNDING.md) | 78 |
+| Behavioural | *(none)* | Re-executing what the subject declared: rehash, replay, recompute | [`DOMAIN_GROUNDING.md`](DOMAIN_GROUNDING.md) | 123 |
 | Statics | `statics:` | A witness probe, a recomputation over the retained inventory, or invariance under perturbation of the subject's own choices | this file, tier 3 | 41 |
 | Adaptation | `mainstay:` | Binding, mapping, round trip and residual against a named mainstay representation of the domain | this file, tier 5 | 72 |
 
@@ -427,12 +427,14 @@ whole life of this catalogue under the name `hyper`, left over from before `HYPE
 formalized as the composition operator, which is why the partition recorded TRAIN in
 `HYPER`'s place. `HYPER` is the entry that is grounded without being certifiable: the
 operator holds *between* certified objects and has no substrate of its own for an
-adapter to bind to. `TOKEN` is the only other entry in that position and it is there for
-the opposite reason -- a substrate of its own whose mechanics are not yet wired into
-`verifier.domains` -- which is why the two are enumerated as `OPERATOR_OBJECTS` and
-`ADAPTER_PENDING_OBJECTS` rather than as one residue. HYPER's is the permanent one: an
-adapter can be written for TOKEN and never for an operator. Every other uncertifiable
-entry is ungrounded and carries no mechanism in any family at all. Ruled 2026-09-22.
+adapter to bind to. `TOKEN` held the only other position in that residue, for the
+opposite reason -- a substrate of its own whose mechanics were not yet wired into
+`verifier.domains` -- which is why the two reasons are enumerated as `OPERATOR_OBJECTS`
+and `ADAPTER_PENDING_OBJECTS` rather than as one residue. HYPER's is the permanent one:
+an adapter could be written for TOKEN and never for an operator. Every other
+uncertifiable entry is ungrounded and carries no mechanism in any family at all. Ruled
+2026-09-22. `TOKEN`'s adapter was written on 2026-09-22, which left
+`ADAPTER_PENDING_OBJECTS` empty; see [`TOKEN`](#token).
 
 ### TRAIN-1: Facets
 
@@ -1662,58 +1664,72 @@ outside the root grant however long its holder has been accruing epochs. This is
 same rule level 6 states for disclosure, at a different tier and about a different
 quantity.
 
-`TOKEN` is **grounded but not certifiable, and for a different reason than `HYPER`.**
-`HYPER` has no substrate of its own, because it is the operator that holds *between*
-objects rather than over one. `TOKEN` has a substrate -- the commitment, the accumulator
-and the lease algebra -- and working mechanics over it, but those mechanics live in
-`verifier.identity` rather than in `verifier.domains`, so it has no entry in
-`verifier.domains.catalog.CHECKS`. The two reasons are enumerated separately in
-`profile_obligations` as `OPERATOR_OBJECTS` and `ADAPTER_PENDING_OBJECTS`, because only
-one of them can ever be discharged: wiring a behavioural adapter for `TOKEN` is a
-release decision rather than a catalogue edit, since a new module joining the
-`verifier.domains` tuple moves `implementation_digest()` and invalidates every domain
-policy already issued.
+`TOKEN` is **grounded and certifiable**, which `HYPER` can never be: `HYPER` has no
+substrate of its own, because it is the operator that holds *between* objects rather
+than over one, while `TOKEN` has a substrate -- the commitment, the accumulator and the
+lease algebra. Until 2026-09-22 the working mechanics over it lived only in
+`verifier.identity`, outside `verifier.domains`, so `TOKEN` had no entry in
+`verifier.domains.catalog.CHECKS` and `profile_obligations` listed it in
+`ADAPTER_PENDING_OBJECTS`, separately from `OPERATOR_OBJECTS`, because only that reason
+could ever be discharged. `verifier.domains.token` now replays the holding under
+`CHECKS["TOKEN"]` from retained evidence of its own -- the tokens, the epoch trace and
+the status observations -- rather than by wrapping `verifier.identity`. A new module
+joining the `verifier.domains` tuple moves `implementation_digest()`, so every domain
+policy issued before it has to be readmitted.
+
+The adapter mechanizes each row one of its checks establishes as written and leaves the
+rest `UNKNOWN`, each for want of evidence it does not retain: the opening of the genesis
+commitment (`TOKEN-1.3`), withheld fields (`TOKEN-1.14`, `TOKEN-4.13`), consumed
+invocations (`TOKEN-2.5`), an attenuation made without returning to the issuer, where
+every token it replays is issuer-signed (`TOKEN-2.6`), a third party's discharge
+(`TOKEN-2.7`, `TOKEN-4.10`), a presentation event (`TOKEN-2.8`) and a replacement
+relation (`TOKEN-2.10`). `TOKEN-2.14` and `TOKEN-4.14` depend on rows among those, so
+they stay `UNKNOWN` with them. Two rows are mechanized under a stated reading.
+`TOKEN-2.9` takes a key's retirement as an instant on the named clock, the only reading
+under which it is comparable with an issuance instant, and `TOKEN-4.4` takes the
+contract's root scopes as the scopes the birth token held, since a birth token binds
+none.
 
 ### TOKEN-1: Facets
 
-`TOKEN-1.1` through `TOKEN-1.14`; topological depth 5; 0 of 14 mechanized.
+`TOKEN-1.1` through `TOKEN-1.14`; topological depth 5; 12 of 14 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
-| TOKEN-1.1 | Token kind | The token is exactly one of birth, aging or lifetime, declared at a stated coordinate. A token of no declared kind is malformed, and a token of two is malformed rather than both. | none | none |
-| TOKEN-1.2 | Canonical bytes | The canonical byte serialization is bound, and it excludes the signature field, so the signed preimage is recomputable from the token rather than trusted alongside it. | TOKEN-1.1 | none |
+| TOKEN-1.1 | Token kind | The token is exactly one of birth, aging or lifetime, declared at a stated coordinate. A token of no declared kind is malformed, and a token of two is malformed rather than both. | none | inventory |
+| TOKEN-1.2 | Canonical bytes | The canonical byte serialization is bound, and it excludes the signature field, so the signed preimage is recomputable from the token rather than trusted alongside it. | TOKEN-1.1 | signatures |
 | TOKEN-1.3 | Genesis commitment | A birth token binds a commitment over the genesis key digest, the birth epoch and a salt. The commitment is the token's whole claim about origin: it establishes that the controlling key existed at or before the epoch, and nothing else. | TOKEN-1.1 | none |
-| TOKEN-1.4 | Tenure accumulator | An aging token binds an accumulator digest and the epoch interval it spans, each step folding its predecessor, so tenure is carried as a chain rather than as a stated number. | TOKEN-1.1 | none |
-| TOKEN-1.5 | Lease scope | A lifetime token binds the permitted scopes, the validity window and, where one is declared, the invocation bound. A scope the declaration omits is not conveyed. | TOKEN-1.1 | none |
-| TOKEN-1.6 | Issuance binding | Every token binds the key that issued it and the instant it was issued, and an unbound issuer makes the token unspecified rather than self-issued. | TOKEN-1.2, TOKEN-1.3, TOKEN-1.4, TOKEN-1.5 | none |
-| TOKEN-1.7 | Algorithm binding | The signature algorithm is bound inside the signed preimage, and the algorithms a verifier will accept are declared separately from the token. An algorithm a token names for itself is a request rather than a fact about it. | TOKEN-1.2, TOKEN-1.6 | none |
-| TOKEN-1.8 | Key identification | The issuing key is identified by a digest of the key itself. An identifier that has to be resolved through a directory the token points at identifies whatever that directory returns, which is not the same thing. | TOKEN-1.6 | none |
-| TOKEN-1.9 | Audience | The verifiers the token is addressed to are bound. A token that names none is addressed to every verifier, which is a scope the certificate states rather than a field it omits. | TOKEN-1.5 | none |
-| TOKEN-1.10 | Validity window | Not-before and expiry are bound as instants on a named clock. A token binding no expiry declares an unbounded window, and the certificate reports it as unbounded rather than as unstated. | TOKEN-1.5 | none |
-| TOKEN-1.11 | Replay identifier | Each issuance binds an identifier unique to it, so a token presented twice is distinguishable from two tokens issued alike. | TOKEN-1.6 | none |
-| TOKEN-1.12 | Confirmation key | A token that is not a bearer token binds the key its presenter must prove possession of. A token binding none is a bearer token and is declared as one. | TOKEN-1.5, TOKEN-1.8 | none |
-| TOKEN-1.13 | Caveat set | The conditions attached to a lease are bound as an ordered set, each carrying what would discharge it. A condition with no stated discharge restricts the lease permanently rather than conditionally. | TOKEN-1.5 | none |
+| TOKEN-1.4 | Tenure accumulator | An aging token binds an accumulator digest and the epoch interval it spans, each step folding its predecessor, so tenure is carried as a chain rather than as a stated number. | TOKEN-1.1 | tenure |
+| TOKEN-1.5 | Lease scope | A lifetime token binds the permitted scopes, the validity window and, where one is declared, the invocation bound. A scope the declaration omits is not conveyed. | TOKEN-1.1 | inventory |
+| TOKEN-1.6 | Issuance binding | Every token binds the key that issued it and the instant it was issued, and an unbound issuer makes the token unspecified rather than self-issued. | TOKEN-1.2, TOKEN-1.3, TOKEN-1.4, TOKEN-1.5 | inventory |
+| TOKEN-1.7 | Algorithm binding | The signature algorithm is bound inside the signed preimage, and the algorithms a verifier will accept are declared separately from the token. An algorithm a token names for itself is a request rather than a fact about it. | TOKEN-1.2, TOKEN-1.6 | signatures |
+| TOKEN-1.8 | Key identification | The issuing key is identified by a digest of the key itself. An identifier that has to be resolved through a directory the token points at identifies whatever that directory returns, which is not the same thing. | TOKEN-1.6 | signatures |
+| TOKEN-1.9 | Audience | The verifiers the token is addressed to are bound. A token that names none is addressed to every verifier, which is a scope the certificate states rather than a field it omits. | TOKEN-1.5 | inventory |
+| TOKEN-1.10 | Validity window | Not-before and expiry are bound as instants on a named clock. A token binding no expiry declares an unbounded window, and the certificate reports it as unbounded rather than as unstated. | TOKEN-1.5 | inventory |
+| TOKEN-1.11 | Replay identifier | Each issuance binds an identifier unique to it, so a token presented twice is distinguishable from two tokens issued alike. | TOKEN-1.6 | inventory |
+| TOKEN-1.12 | Confirmation key | A token that is not a bearer token binds the key its presenter must prove possession of. A token binding none is a bearer token and is declared as one. | TOKEN-1.5, TOKEN-1.8 | inventory |
+| TOKEN-1.13 | Caveat set | The conditions attached to a lease are bound as an ordered set, each carrying what would discharge it. A condition with no stated discharge restricts the lease permanently rather than conditionally. | TOKEN-1.5 | inventory |
 | TOKEN-1.14 | Disclosure digests | Where a field may be withheld, the token binds a digest of the field rather than the field. A withheld field is then absent from the token and accounted for by its digest, rather than present and hidden. | TOKEN-1.2 | none |
 
 ### TOKEN-2: Dynamics
 
-`TOKEN-2.1` through `TOKEN-2.14`; topological depth 5; 0 of 14 mechanized.
+`TOKEN-2.1` through `TOKEN-2.14`; topological depth 5; 8 of 14 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
-| TOKEN-2.1 | Genesis | Birth is an event at a stated epoch, and no token of any kind is valid before the birth it descends from. | none | none |
-| TOKEN-2.2 | Epoch advance | Tenure advances one accumulator step per epoch, each step binding the digest of the step before it and the status recorded at that epoch. | TOKEN-2.1 | none |
-| TOKEN-2.3 | Revocation | Revocation is an event that ends tenure from that epoch forward. It never reaches epochs already accumulated, and it is not an erasure of them. | TOKEN-2.2 | none |
-| TOKEN-2.4 | Lease grant | A lease is granted from a parent grant and conveys a subset of the parent's scopes. A grant conveying a scope its parent lacks is malformed rather than an extension. | TOKEN-2.1 | none |
+| TOKEN-2.1 | Genesis | Birth is an event at a stated epoch, and no token of any kind is valid before the birth it descends from. | none | tenure |
+| TOKEN-2.2 | Epoch advance | Tenure advances one accumulator step per epoch, each step binding the digest of the step before it and the status recorded at that epoch. | TOKEN-2.1 | tenure |
+| TOKEN-2.3 | Revocation | Revocation is an event that ends tenure from that epoch forward. It never reaches epochs already accumulated, and it is not an erasure of them. | TOKEN-2.2 | tenure |
+| TOKEN-2.4 | Lease grant | A lease is granted from a parent grant and conveys a subset of the parent's scopes. A grant conveying a scope its parent lacks is malformed rather than an extension. | TOKEN-2.1 | leases |
 | TOKEN-2.5 | Lease expiry | A lease ends at its stated instant or at its invocation bound, whichever is reached first. Expiry is not revocation, and a certificate that reports one as the other is wrong about which event occurred. | TOKEN-2.4 | none |
 | TOKEN-2.6 | Attenuation | A holder narrows a lease it already holds without returning to the issuer. The narrowed lease descends from the one it attenuates and can never re-widen, so attenuation is an event with a direction. | TOKEN-2.4 | none |
 | TOKEN-2.7 | Discharge | A condition owed to a third party is satisfied by that party, not by the holder asserting it. An undischarged condition leaves the lease unusable rather than unconditional. | TOKEN-2.6 | none |
 | TOKEN-2.8 | Presentation | Presenting a token is an event distinct from holding it. Where a confirmation key is bound, possession is proved at presentation and the proof binds the instant it was made. | TOKEN-2.5 | none |
-| TOKEN-2.9 | Key rotation | An issuing key is retired at a stated epoch. Tokens issued before that epoch stay verifiable under the retired key, and a token issued under it afterwards is invalid rather than merely suspect. | TOKEN-2.1 | none |
+| TOKEN-2.9 | Key rotation | An issuing key is retired at a stated epoch. Tokens issued before that epoch stay verifiable under the retired key, and a token issued under it afterwards is invalid rather than merely suspect. | TOKEN-2.1 | signatures |
 | TOKEN-2.10 | Reissuance | Reissuance mints a token descending from the same genesis. It never extends the token it replaces, and the replaced token ends on its own terms rather than on the new one's. | TOKEN-2.1, TOKEN-2.4 | none |
-| TOKEN-2.11 | Suspension | Suspension halts tenure accrual without ending it. Resumption continues the accumulator rather than restarting it, so a suspended interval is visible in the chain rather than missing from it. | TOKEN-2.2, TOKEN-2.3 | none |
-| TOKEN-2.12 | Status publication | Revocation status is published on a schedule the certificate states. A status older than that schedule is stale, and an absent status is unobserved rather than clear. | TOKEN-2.3 | none |
-| TOKEN-2.13 | Clock disagreement | The issuing clock and the verifying clock are separate. A window evaluated across them carries the stated skew, and an event falling inside the skew is undetermined rather than resolved in either direction. | TOKEN-2.5 | none |
+| TOKEN-2.11 | Suspension | Suspension halts tenure accrual without ending it. Resumption continues the accumulator rather than restarting it, so a suspended interval is visible in the chain rather than missing from it. | TOKEN-2.2, TOKEN-2.3 | tenure |
+| TOKEN-2.12 | Status publication | Revocation status is published on a schedule the certificate states. A status older than that schedule is stale, and an absent status is unobserved rather than clear. | TOKEN-2.3 | closure |
+| TOKEN-2.13 | Clock disagreement | The issuing clock and the verifying clock are separate. A window evaluated across them carries the stated skew, and an event falling inside the skew is undetermined rather than resolved in either direction. | TOKEN-2.5 | closure |
 | TOKEN-2.14 | Chain replay | Replaying the events from genesis reproduces the current accumulator digest, the revocation status, the suspended intervals, the attenuations and the set of outstanding leases. | TOKEN-2.2, TOKEN-2.3, TOKEN-2.5, TOKEN-2.6, TOKEN-2.11, TOKEN-2.12 | none |
 
 ### TOKEN-3: Statics
@@ -1739,22 +1755,22 @@ policy already issued.
 
 ### TOKEN-4: Closure
 
-`TOKEN-4.1` through `TOKEN-4.14`; topological depth 4; 0 of 14 mechanized.
+`TOKEN-4.1` through `TOKEN-4.14`; topological depth 4; 11 of 14 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
-| TOKEN-4.1 | Inventory | The tokens the certificate accounts for are enumerated, each at a stated coordinate, and the enumeration is the whole holding rather than a selected part of it. | none | none |
-| TOKEN-4.2 | Epoch contiguity | The accumulated epochs form an uninterrupted interval with no gap, and a gap is reported as a gap rather than closed by restating the endpoints. | TOKEN-4.1 | none |
-| TOKEN-4.3 | Parent binding | Every lease binds its exact parent grant, and a lease with no parent binds the birth token directly. A lease whose parent is absent from the inventory resolves to nothing. | TOKEN-4.1 | none |
-| TOKEN-4.4 | Scope monotonicity | Scope is non-increasing along every path of the delegation tree, so no reachable lease conveys a scope the birth token never held. | TOKEN-4.3 | none |
-| TOKEN-4.5 | Signature closure | Every token in the inventory verifies under the issuing key it binds, against the canonical preimage rather than against a re-serialization of it. | TOKEN-4.1 | none |
-| TOKEN-4.6 | Algorithm closure | Every token in the inventory verifies under exactly one algorithm, and the accepted set contains no algorithm the inventory never uses. An unused accepted algorithm is surface the closure reports rather than ignores. | TOKEN-4.1 | none |
-| TOKEN-4.7 | Key closure | Every issuing key the inventory refers to is present in the bound key set, and every key in the set is referred to. A key present but unused is reported as unused. | TOKEN-4.1 | none |
-| TOKEN-4.8 | Audience closure | Every token resolves to a verifier in the bound audience set. A token addressed outside it is reported at its coordinate rather than dropped from the count. | TOKEN-4.1 | none |
-| TOKEN-4.9 | Window coverage | The validity windows are reported as an interval set over the certificate period. A token whose window lies wholly outside that period is reported as out of period rather than omitted. | TOKEN-4.1 | none |
+| TOKEN-4.1 | Inventory | The tokens the certificate accounts for are enumerated, each at a stated coordinate, and the enumeration is the whole holding rather than a selected part of it. | none | inventory |
+| TOKEN-4.2 | Epoch contiguity | The accumulated epochs form an uninterrupted interval with no gap, and a gap is reported as a gap rather than closed by restating the endpoints. | TOKEN-4.1 | tenure |
+| TOKEN-4.3 | Parent binding | Every lease binds its exact parent grant, and a lease with no parent binds the birth token directly. A lease whose parent is absent from the inventory resolves to nothing. | TOKEN-4.1 | leases |
+| TOKEN-4.4 | Scope monotonicity | Scope is non-increasing along every path of the delegation tree, so no reachable lease conveys a scope the birth token never held. | TOKEN-4.3 | leases |
+| TOKEN-4.5 | Signature closure | Every token in the inventory verifies under the issuing key it binds, against the canonical preimage rather than against a re-serialization of it. | TOKEN-4.1 | signatures |
+| TOKEN-4.6 | Algorithm closure | Every token in the inventory verifies under exactly one algorithm, and the accepted set contains no algorithm the inventory never uses. An unused accepted algorithm is surface the closure reports rather than ignores. | TOKEN-4.1 | signatures |
+| TOKEN-4.7 | Key closure | Every issuing key the inventory refers to is present in the bound key set, and every key in the set is referred to. A key present but unused is reported as unused. | TOKEN-4.1 | signatures |
+| TOKEN-4.8 | Audience closure | Every token resolves to a verifier in the bound audience set. A token addressed outside it is reported at its coordinate rather than dropped from the count. | TOKEN-4.1 | closure |
+| TOKEN-4.9 | Window coverage | The validity windows are reported as an interval set over the certificate period. A token whose window lies wholly outside that period is reported as out of period rather than omitted. | TOKEN-4.1 | closure |
 | TOKEN-4.10 | Discharge closure | Every condition owed to a third party has a discharge in the inventory, and an undischarged condition is reported as undischarged rather than as satisfied by absence. | TOKEN-4.1, TOKEN-4.3 | none |
-| TOKEN-4.11 | Replay closure | The issuance identifiers over the inventory are distinct. A repetition is reported with both coordinates, because which two collided is the finding. | TOKEN-4.1 | none |
-| TOKEN-4.12 | Status coverage | Every token carries a status observation no older than the published schedule. A token with none is reported as unobserved, which is not the same result as active. | TOKEN-4.1 | none |
+| TOKEN-4.11 | Replay closure | The issuance identifiers over the inventory are distinct. A repetition is reported with both coordinates, because which two collided is the finding. | TOKEN-4.1 | inventory |
+| TOKEN-4.12 | Status coverage | Every token carries a status observation no older than the published schedule. A token with none is reported as unobserved, which is not the same result as active. | TOKEN-4.1 | closure |
 | TOKEN-4.13 | Disclosure closure | The disclosed and the withheld fields together account for every bound digest exactly once, with neither side inferred from the other. | TOKEN-4.1 | none |
 | TOKEN-4.14 | Closure result | The inventory, the contiguity, the scope monotonicity, the signature closure and every closure above are reported together. A closure that omits any of them is incomplete rather than passing. | TOKEN-4.2, TOKEN-4.4, TOKEN-4.5, TOKEN-4.6, TOKEN-4.7, TOKEN-4.8, TOKEN-4.9, TOKEN-4.10, TOKEN-4.11, TOKEN-4.12, TOKEN-4.13 | none |
 

@@ -5,7 +5,8 @@ BENCH means benchmark specification graph; TRAIN means training run
 specification; MODEL means model reproducibility specification; SIM means generative
 simulation specification; HARNESS means an instrumented agent observation surface;
 AGENT means an agent trajectory bounded by that surface; BOT means one agent situated
-in one simulation. Domain depths are dimensionless
+in one simulation; TOKEN means one zero-identity zero-knowledge token holding descending
+from one birth token. Domain depths are dimensionless
 prerequisite counts, separate from the VSTD object and Graph numbered profiles.
 
 Each check carries the exact set of lower checks its own evaluation re-executes or
@@ -82,6 +83,13 @@ CHECKS = {
         ("actuation", "Check that every replayed simulation action is an action the agent actually invoked.", (1, 2, 3)),
         ("containment", "Check the declared separation of the agent and simulator execution environments.", (1,)),
     ),
+    "TOKEN": (
+        ("inventory", "Rehash the complete token inventory; check each token's kind, bound fields, unique identifiers and single birth token, and the named clock its instants are on.", ()),
+        ("tenure", "Refold every retained epoch from the birth commitment and check each aging token's interval, accrual and revocation status.", (1,)),
+        ("leases", "Resolve every lease to its parent grant and check that no delegation step widens scope, window, invocations or caveats.", (1,)),
+        ("signatures", "Verify every token signature over its canonical preimage under a bound, unretired, checker-admitted issuing key.", (1,)),
+        ("closure", "Check audience closure, report window coverage and clock-undetermined leases, and require a fresh status for every token.", (1,)),
+    ),
 }
 
 SCOPES = {
@@ -94,6 +102,7 @@ SCOPES = {
     "HARNESS": "declared instrumented observation surface and its retained transcript",
     "AGENT": "retained trajectory inside the observation ceiling of one bound harness certificate",
     "BOT": "closed loop between one bound agent certificate and one bound simulation certificate",
+    "TOKEN": "complete retained token holding descending from one birth token under checker-admitted issuing keys",
 }
 
 

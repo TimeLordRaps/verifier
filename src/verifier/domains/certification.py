@@ -31,6 +31,7 @@ _ARTIFACT_FIELDS = {
     "AGENT": "harness_certificate_digest harness_subject_id required_channels steps_digest actions_digest outcomes claims",
     "BOT": "agent_certificate_digest sim_certificate_digest agent_environment_certificate_digest sim_environment_certificate_digest step_map exogenous_transitions initial_observation_record separation",
     "SIM": "transition trajectory_digest entropy_digest times_digest initial_state invariants finite_state_set finite_entropy_set projection macro_digest tolerance observation action_bounds shards",
+    "TOKEN": "tokens_digest epochs_digest statuses_digest clock clock_skew issuing_keys key_retirements accepted_algorithms root_scopes audience period status_schedule observed_at",
 }
 _INPUT_FIELDS = {
     "DATA": "shards", "ENV": "files configuration measurements executions",
@@ -40,6 +41,7 @@ _INPUT_FIELDS = {
     "HARNESS": "records invocations effects",
     "AGENT": "harness_certificate steps actions outcomes",
     "BOT": "agent_certificate sim_certificate agent_environment_certificate sim_environment_certificate",
+    "TOKEN": "tokens epochs statuses",
 }
 
 
@@ -76,7 +78,7 @@ def _hash(value: Any) -> str:
 
 def implementation_digest() -> str:
     dependencies = {}
-    for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "data", "env", "bench", "numerical", "train", "model", "sim", "harness", "agent", "bot")),
+    for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "data", "env", "bench", "numerical", "train", "model", "sim", "harness", "agent", "bot", "token")),
                            ("verifier.core", ("certificate", "evidence", "receipt"))):
         for name in names:
             dependencies[package+"."+name] = hashlib.sha256(resources.files(package).joinpath(name+".py").read_bytes()).hexdigest()
@@ -190,7 +192,7 @@ class NativeDomainAdapter:
                     if tolerance > self.policy["max_tolerance"]:
                         raise Unavailable("requested numerical tolerance exceeds checker policy")
             module = import_module("verifier.domains."+self.domain.lower())
-            kwargs = {"witness_keys": self.policy["witness_keys"]} if self.domain == "SIM" else {}
+            kwargs = {"witness_keys": self.policy["witness_keys"]} if self.domain in ("SIM", "TOKEN") else {}
             if self.domain in ("AGENT", "BOT"):
                 kwargs = {"mechanism_digest": self.mechanism_digest}
             observed = module.evaluate(names[binding.predicate], artifact, bundle["inputs"], budget, **kwargs)

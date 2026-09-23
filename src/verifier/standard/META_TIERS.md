@@ -770,15 +770,15 @@ certificate that names one of them is malformed.
 An obligation is either **mechanized** — an adapter check establishes it today — or
 specified without a mechanism, in which case it is reported `UNKNOWN`, never absent and
 never passed. Only 11 of the seventeen domain objects have an adapter in any family, and only
-nine have a behavioural adapter, which is what a domain certificate requires; the parenthesised
+ten have a behavioural adapter, which is what a domain certificate requires; the parenthesised
 count in each cell of the depth grid below is how many of that profile's obligations
 one of the three families establishes today.
 
-Of the 626 domain obligations, 205 are mechanized, across three disjoint families: 92
+Of the 626 domain obligations, 236 are mechanized, across three disjoint families: 123
 behavioural adapter checks, 41 tier-3 statics checks and 72 tier-5 adaptation checks.
 Tier 5 is fully mechanized on the 11 grounded objects and tier 3 on seven of them; on the
 six ungrounded objects no tier is mechanized at all, and level 6 is mechanized nowhere.
-What remains bare is 81 at tier 1, 81 at tier 2, 51 at tier 3, 69 at tier 4, 37 at tier 5,
+What remains bare is 69 at tier 1, 73 at tier 2, 51 at tier 3, 58 at tier 4, 37 at tier 5,
 and the whole of level 6. The two specification axes are unmechanized by construction —
 they are checked against retained evidence rather than by any domain adapter.
 [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) sets out the three families and why a
@@ -822,7 +822,7 @@ depth is strictly below the count somewhere.
 | COLLECTIVE ‡ | **3** of 6 (0) | **3** of 6 (0) | **3** of 4 (0) | **4** (0) | **4** of 6 (0) | **5** of 6 (0) | 17 | 18 | 0/32 |
 | IDENTITY ‡ | **4** of 6 (0) | **3** of 7 (0) | **3** of 6 (0) | **3** of 7 (0) | **6** of 7 (0) | **5** of 6 (0) | 19 | 20 | 0/39 |
 | ACTOR ‡ | **4** of 7 (0) | **5** of 7 (0) | **3** of 6 (0) | **4** of 6 (0) | **4** of 6 (0) | **5** of 6 (0) | 20 | 21 | 0/38 |
-| TOKEN | **5** of 14 (0) | **5** of 14 (0) | **5** of 14 (14) | **4** of 14 (0) | **5** of 14 (14) | **5** of 6 (0) | 24 | 25 | 28/76 |
+| TOKEN | **5** of 14 (12) | **5** of 14 (8) | **5** of 14 (14) | **4** of 14 (11) | **5** of 14 (14) | **5** of 6 (0) | 24 | 25 | 59/76 |
 
 **Bold is `i`.** The `6` column is shown for completeness and is **excluded from `sum i`
 and from `states`**, which count corroboration rungs only; level 6 carries no rungs.
@@ -849,10 +849,10 @@ named `configuration`, `checkpoints`, `lineage`, `updates` or `training`; `CHECK
 2026-09-21. The checks existed -- keyed under `HYPER`, because the adapter module was
 still called `hyper.py`. Renaming it to `train.py` on 2026-09-22 restored all fourteen
 verbatim, and each one's requirement is the description of the check it names. `TRAIN`
-reports 25 of 35 and the axis 205 of 626. Two of those names are also check names on
-other objects -- `configuration` is ENV's and `lineage` is DATA's -- which is why
-resolution stays object-scoped: the collision is real and it is the resolver, not the
-name, that keeps it harmless.
+reports 25 of 35, and the rename brought the axis to 205 of 626. Two of those names are
+also check names on other objects -- `configuration` is ENV's and `lineage` is DATA's --
+which is why resolution stays object-scoped: the collision is real and it is the
+resolver, not the name, that keeps it harmless.
 
 **A passing test suite is not evidence about a ‡ row.** An ungrounded object has no
 mechanism, so the only executable checks over it are that its catalogue is well-formed and
@@ -938,12 +938,11 @@ carrying fewer rungs than it has tiers.
 Both numbers still move. Cataloguing an object raises its obligation count and lowers its
 `i`, because declared dependencies turn a default total order into a DAG; the domain
 objects were catalogued with their dependencies declared from the start, so their `i` is
-already a depth rather than a count. What remains provisional is mechanization: 205 of
-626 domain obligations have a check behind them, and every one of the remaining 421 is
-a coordinate a certificate can name but not yet clear. 216 of those 421 are the whole of the
-six ungrounded objects, which have no adapter at all, and 71 are the unmechanized
-obligations of HYPER and TOKEN, neither of which has a behavioural adapter and so
-neither can be certified.
+already a depth rather than a count. What remains provisional is mechanization: 236 of
+626 domain obligations have a check behind them, and every one of the remaining 390 is
+a coordinate a certificate can name but not yet clear. 216 of those 390 are the whole of the
+six ungrounded objects, which have no adapter at all, and 23 are the unmechanized
+obligations of HYPER, which has no behavioural adapter and so cannot be certified.
 
 ## What follows mechanically
 
@@ -1011,13 +1010,13 @@ separable: extending one provably cannot move another's.
 
 What differs between them is not the form of the obligations but how many carry a
 mechanism. The two specification axes are checked against retained evidence rather than by
-a domain adapter. Of the seventeen domain objects, 205 of 626 obligations name a check in one
+a domain adapter. Of the seventeen domain objects, 236 of 626 obligations name a check in one
 of the three families — behavioural in [`DOMAIN_GROUNDING.md`](DOMAIN_GROUNDING.md), statics and
-adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 421 are
+adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 390 are
 specified without a mechanism and are reported `UNKNOWN` — never absent, and never passed;
-216 of them are the whole of the six objects with no adapter at all, 71 more are the
-unmechanized obligations of `HYPER` and `TOKEN`, which have no behavioural adapter, and the
-remaining 134 are the bare tiers of the nine certifiable objects.
+216 of them are the whole of the six objects with no adapter at all, 23 more are the
+unmechanized obligations of `HYPER`, which has no behavioural adapter, and the
+remaining 151 are the bare tiers of the ten certifiable objects.
 
 `HYPER` no longer names two objects. The combination operator keeps the name; the
 training-run certifier that used to share it is now `TRAIN`, with its own row above.
