@@ -137,6 +137,16 @@ declare the experimental mechanisms complete. See the
 - No obligation is removed. The rename moves `implementation_digest()`, which keys every
   adapter source by its module name and hashes the catalogue, so every domain policy
   issued before it must be readmitted.
+- **A training run's architecture is a `GRAPH` operand.** `TRAIN` is
+  `HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH, GRAPH)` indexed by a `GRAPH-1` recorded
+  lineage, so `GRAPH` holds two roles: the index is the order the data was consumed in, and
+  the operand is the architecture of the model or algorithm being trained. `TRAIN-6.1` now
+  enumerates the architecture, which the certificate already emitted, and `TRAIN-6.5` adds
+  the join the architecture makes with the optimizer contract -- the whole recipe, which
+  supports membership inference without the corpus. The Graph axis has no vocabulary for an
+  architecture yet, so it still travels in `TRAIN`'s own evidence and no `GRAPH` certificate
+  over one can be built. `implementation_digest()` does not cover the obligation catalogue,
+  so it does not move; `domain_obligation_digest()` does.
 
 ### The actor-identity family: HUMAN, ROLE, COLLECTIVE, IDENTITY and ACTOR
 
@@ -251,9 +261,9 @@ declare the experimental mechanisms complete. See the
   than prose, so a new name cannot enter by being written down somewhere. Four of the
   renamed coordinates were **built at runtime** from an f-string over the object name and
   so were invisible to a byte sweep; the gate resolves names the same way. `TRAIN` is
-  carried as a named composition rather than an object, with its decomposition recorded
-  beside it, because a composition is written *over* the namespace rather than being a
-  member of it.
+  one of the eighteen: it is a composition and a member both, and what it is composed of is
+  recorded in `COMPOSITION_OF`. Being written over other objects is a property an object
+  has, not a reason it is not one.
 - Rename the release acceptance keyword to **`acceptance-clearance`**. The previous spelling
   was minted inside the object namespace without ever being declared an object, and it rode
   a head that genuinely is one -- so every sweep shaped around invented names went straight

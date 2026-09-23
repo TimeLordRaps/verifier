@@ -400,3 +400,32 @@ def test_the_published_partition_is_measured() -> None:
     assert _count(found.group(2)) == len(UNGROUNDED_OBJECTS) - 1
     assert sorted(named) == sorted(UNGROUNDED_OBJECTS)
     assert int(found.group(4)) == len([o for o in DOMAIN_OBLIGATIONS if o.object_name in UNGROUNDED_OBJECTS])
+
+
+# The two vocabularies the training-run section was read against when it said neither can
+# name a layer or an operator. That is a reading, not a computation, so what is pinned is the
+# event that could falsify it: widening either vocabulary turns this red until the section is
+# read again and the pin is moved with it.
+READ_ARTIFACT_TYPES = {
+    "ACCOUNTING_EVIDENCE", "ADAPTER", "CHECKPOINT", "CONFIG", "CONTINUITY_EVIDENCE", "CORPUS",
+    "DATASET_SPLIT", "DEVICE_IDENTITY", "EVALUATION_REPORT", "EXECUTION_EVIDENCE",
+    "FIRMWARE_MEASUREMENT", "HARDWARE_EVIDENCE", "HARDWARE_RECEIPT", "MODEL", "PROVIDER_EVIDENCE",
+    "RAW_SOURCE_FILE", "RUNTIME_MEASUREMENT", "SHARD", "SUBMISSION_ARTIFACT", "TOKENIZED_CORPUS",
+    "TOPOLOGY_SNAPSHOT",
+}
+READ_TRANSFORMATION_TYPES = {
+    "AUGMENTATION", "COLLECTION", "COMPUTE_ACCOUNTING", "CONTINUITY_ANCHORING", "DEDUPLICATION",
+    "DISTILLATION", "EVALUATION", "EVIDENCE_BINDING", "EXTRACTION", "FILTERING", "FINE_TUNING",
+    "HARDWARE_ATTESTATION", "HARDWARE_DISCOVERY", "NORMALIZATION", "QUANTIZATION",
+    "SYNTHETIC_GENERATION", "TOKENIZATION", "TRAINING", "WORKLOAD_EXECUTION",
+}
+
+
+def test_the_architecture_operand_is_stated_against_the_vocabulary_it_was_read_against() -> None:
+    from verifier.data.models import ArtifactType, TransformationType
+
+    assert ("The Graph axis has no vocabulary for the second role yet: the artifact and "
+            "transformation types of `GRAPH-1` are provenance kinds, and none of them names a "
+            "layer or an operator.") in FLAT
+    assert {member.value for member in ArtifactType} == READ_ARTIFACT_TYPES
+    assert {member.value for member in TransformationType} == READ_TRANSFORMATION_TYPES

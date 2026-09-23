@@ -412,11 +412,20 @@ until the mainstay representation is named, which is what the adaptation registr
 
 **TRAIN is a composition, and it is a member of the VSTD-NAMESPACE.** The namespace is
 `VSTD` plus eighteen objects, and TRAIN is one of them -- admitted 2026-09-22. A
-training run is `HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH)` indexed by a
+training run is `HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH, GRAPH)` indexed by a
 `GRAPH-1` recorded lineage, where `VSTD` is the model and training-loop algorithms and
 `GRAPH-1` carries the order the data was consumed in -- the one fact no operand states,
-since `DATA` certifies what the corpus is and never the sequence it was read in. The
-obligations below are what that composition must satisfy. Being written over other
+since `DATA` certifies what the corpus is and never the sequence it was read in.
+
+`GRAPH` is there twice, in two roles. As the index it is the data order; as an operand it
+is the architecture of the model or algorithm being trained, with its layers as members
+and its operators as the relation between them. The Graph axis has no vocabulary for the
+second role yet: the artifact and transformation types of `GRAPH-1` are provenance kinds,
+and none of them names a layer or an operator. Until one does, the architecture travels in
+TRAIN's own evidence as the `architecture` field every checkpoint is checked against, and
+no `GRAPH` certificate over an architecture can be built.
+
+The obligations below are what that composition must satisfy. Being written over other
 objects is a property TRAIN has, not a reason it is not one.
 
 This is also why TRAIN is certifiable, which it was not recorded as being until
@@ -516,11 +525,11 @@ uncertifiable entry is ungrounded and carries no mechanism in any family at all.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
-| TRAIN-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the checkpoint inventory, step index, optimizer contract, batch binding and loss trace -- and is separated from the batch contents and the gradient values each step was computed from. | none | none |
+| TRAIN-6.1 | Disclosure surface | What the certificate emits about this object is enumerated -- the architecture, checkpoint inventory, step index, optimizer contract, batch binding and loss trace -- and is separated from the batch contents and the gradient values each step was computed from. | none | none |
 | TRAIN-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | TRAIN-6.1 | none |
 | TRAIN-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | TRAIN-6.1 | none |
 | TRAIN-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | TRAIN-6.2, TRAIN-6.3 | none |
-| TRAIN-6.5 | Composition delta | Emitting this certificate beside a DATA certificate over the training corpus discloses membership: a per-step loss trace and a split membership are each within bound while the pair reveals which records were trained on, so the join is evaluated against both operands and not against either alone. | TRAIN-6.2, TRAIN-6.4 | none |
+| TRAIN-6.5 | Composition delta | Emitting this certificate beside a DATA certificate over the training corpus discloses membership: a per-step loss trace and a split membership are each within bound while the pair reveals which records were trained on. The architecture `GRAPH` operand makes a second join, and it needs no corpus: an architecture and an optimizer contract are each within bound while the pair is the whole recipe, enough to train shadow models on other data and infer from the trained model's outputs which records it saw. Each join is evaluated against all of its operands and not against any one alone. | TRAIN-6.2, TRAIN-6.4 | none |
 | TRAIN-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | TRAIN-6.2, TRAIN-6.4, TRAIN-6.5 | none |
 
 ## HYPER

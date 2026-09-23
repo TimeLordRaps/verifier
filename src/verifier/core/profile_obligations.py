@@ -461,11 +461,11 @@ DOMAIN_OBLIGATIONS = (
     )),
 
     *_domain_rows("TRAIN", 6, (
-        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the checkpoint inventory, step index, optimizer contract, batch binding and loss trace -- and is separated from the batch contents and the gradient values each step was computed from.", (), ""),
+        ("Disclosure surface", "What the certificate emits about this object is enumerated -- the architecture, checkpoint inventory, step index, optimizer contract, batch binding and loss trace -- and is separated from the batch contents and the gradient values each step was computed from.", (), ""),
         ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
         ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
         ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
-        ("Composition delta", "Emitting this certificate beside a DATA certificate over the training corpus discloses membership: a per-step loss trace and a split membership are each within bound while the pair reveals which records were trained on, so the join is evaluated against both operands and not against either alone.", (2, 4), ""),
+        ("Composition delta", "Emitting this certificate beside a DATA certificate over the training corpus discloses membership: a per-step loss trace and a split membership are each within bound while the pair reveals which records were trained on. The architecture `GRAPH` operand makes a second join, and it needs no corpus: an architecture and an optimizer contract are each within bound while the pair is the whole recipe, enough to train shadow models on other data and infer from the trained model's outputs which records it saw. Each join is evaluated against all of its operands and not against any one alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
     *_domain_rows("HYPER", 1, (
@@ -1163,8 +1163,14 @@ COMPOSITION_OF = {
     # HYPER(operands) indexed by a graph profile. VSTD is the model and training-loop
     # algorithms; GRAPH-1 carries the order the data was consumed in, which is the one
     # thing none of the operands states -- DATA certifies what the corpus is, never the
-    # sequence it was read in.
-    "TRAIN": (("VSTD", "MODEL", "DATA", "ENV", "SIM", "BENCH"), "GRAPH-1"),
+    # sequence it was read in. GRAPH is also an operand, in a second role, ruled
+    # 2026-09-22: the architecture of the model or algorithm being trained, its layers
+    # as members and its operators as the relation between them. The Graph axis has no
+    # vocabulary for that yet -- GRAPH-1's artifact and transformation types are
+    # provenance kinds and none names a layer or an operator -- so the architecture
+    # still travels in TRAIN's own evidence, as the `architecture` field every
+    # checkpoint is checked against.
+    "TRAIN": (("VSTD", "MODEL", "DATA", "ENV", "SIM", "BENCH", "GRAPH"), "GRAPH-1"),
 }
 
 # The second reason, and it is not the same reason as HYPER carries: an object with a
