@@ -785,8 +785,7 @@ uncertifiable entry is ungrounded and carries no mechanism in any family at all.
 | SIM-6.5 | Composition delta | Emitting this certificate beside a BOT certificate discloses the decider: a state space and a coupling surface are each within bound while the pair localizes which decisions were taken by which actor, so the join is evaluated against both operands and not against either alone. | SIM-6.2, SIM-6.4 | none |
 | SIM-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | SIM-6.2, SIM-6.4, SIM-6.5 | none |
 
-## HARNESS  
-*On the open release branch; no behavioural adapter in this tree.*
+## HARNESS
 
 ### HARNESS-1: Facets
 
@@ -870,8 +869,7 @@ uncertifiable entry is ungrounded and carries no mechanism in any family at all.
 | HARNESS-6.5 | Composition delta | Emitting this certificate beside a AGENT certificate discloses the session: a commitment shape and a decision inventory are each within bound while the pair reconstructs the order and content of a run, so the join is evaluated against both operands and not against either alone. | HARNESS-6.2, HARNESS-6.4 | none |
 | HARNESS-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | HARNESS-6.2, HARNESS-6.4, HARNESS-6.5 | none |
 
-## AGENT  
-*On the open release branch; no behavioural adapter in this tree.*
+## AGENT
 
 ### AGENT-1: Facets
 
@@ -954,8 +952,7 @@ uncertifiable entry is ungrounded and carries no mechanism in any family at all.
 | AGENT-6.5 | Composition delta | Emitting this certificate beside a HARNESS certificate discloses the operator: a decision inventory and a timestamp resolution are each within bound while the pair identifies who was at the keyboard and when, so the join is evaluated against both operands and not against either alone. | AGENT-6.2, AGENT-6.4 | none |
 | AGENT-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | AGENT-6.2, AGENT-6.4, AGENT-6.5 | none |
 
-## BOT  
-*On the open release branch; no behavioural adapter in this tree.*
+## BOT
 
 ### BOT-1: Facets
 

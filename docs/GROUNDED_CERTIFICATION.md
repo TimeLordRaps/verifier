@@ -92,13 +92,16 @@ Geometry checks require a `geometry_digest` in the bound coordinate parameters.
 Decision checks require `decision_binding_digest` there. This keeps a valid proof
 for a neighboring claim from satisfying the selected obligation.
 
-## Six executable domain adapters
+## Executable domain adapters
 
 Dataset integrity and lineage (DATA), execution environments (ENV), benchmark
 specification graphs (BENCH), training run specification (TRAIN), model
-reproducibility specifications (MODEL), and generative simulations (SIM) have their
-own grounded paths. These execute retained computations rather than promoting the
-older declaration-based records. The [normative domain contract](../src/verifier/standard/DOMAIN_GROUNDING.md)
+reproducibility specifications (MODEL), generative simulations (SIM), instrumented
+agent observation surfaces (HARNESS), agent trajectories bounded by one such surface
+(AGENT), one agent situated in one simulation (BOT), and zero-identity zero-knowledge
+token holdings (TOKEN) have their own grounded paths. These execute retained
+computations rather than promoting the older declaration-based records. The
+[normative domain contract](../src/verifier/standard/DOMAIN_GROUNDING.md)
 lists supported mainstays, numerical semantics, trust boundaries and exclusions.
 
 | Domain | Native domain checks | Complete native domain depth |
@@ -109,6 +112,10 @@ lists supported mainstays, numerical semantics, trust boundaries and exclusions.
 | TRAIN | Optimizer contract, checkpoints, contiguous lineage, numerical updates, recomputed loss/gradients | 5 |
 | MODEL | Artifact dependencies, tensor shapes, inference, full-set metrics, finite challenges | 5 |
 | SIM | Transition replay, invariants, macro projection, observation/action channels, shard relations/signatures | 5 |
+| HARNESS | Channel partition, contiguous messages, registered tool invocations, declared side effects, transcript commitment | 5 |
+| AGENT | Observation ceiling from the bound harness, witnessed decisions, witnessed actions, outcome contract, claims inside the ceiling | 5 |
+| BOT | Bound agent, simulation and environment certificates, transition alignment, observation projection, actuation, environment separation | 5 |
+| TOKEN | Token inventory and clock, tenure refolded from the birth commitment, non-widening leases, admitted-key signatures, audience and status closure | 5 |
 
 These are cumulative domain check coordinates such as `MODEL.3`, separate from
 object `3.1` or the existing experimental simulation tier identifiers. They are not
@@ -134,8 +141,11 @@ structure only; the adapter validates and computes the domain-specific content.
 The environment adapter authenticates no external observation by itself. Numerical
 adapters support a finite dense-network arithmetic contract, not every model format.
 Simulation signatures, when requested, use checker-selected keys and the optional
-`seal` extra; signatures do not prove independent observation. None of these limits
-is converted into a successful broader claim.
+`seal` extra; signatures do not prove independent observation. Token signatures need
+the same extra, and without it the token signature check is `UNKNOWN`; a verified
+token signature says which admitted key issued the token, never who holds it or that
+any scope it conveys is authorized. None of these limits is converted into a
+successful broader claim.
 
 ## Limits and compatibility
 

@@ -104,7 +104,7 @@ declare the experimental mechanisms complete. See the
   digest is not published as a literal here: it moves with every adapter edit, so a value
   written into a changelog is stale before the release it describes.
 
-### TRAIN is catalogued but not certifiable
+### TRAIN's adapter was misfiled under HYPER
 
 - **`TRAIN`'s behavioural adapter was misfiled under `HYPER`, and the catalogue was
   corrected to match the misfiling instead of the other way round.** `CHECKS` and `SCOPES`
@@ -134,12 +134,9 @@ declare the experimental mechanisms complete. See the
   deliberately: a name that resolves under a different object resolves to the wrong check,
   which is the exact shape this defect took. Unlike the ungrounded-object defects recorded
   above, this one was always mechanically checkable -- nothing checked it.
-- Correct three published claims that were false: that ten of the fifteen objects are
-  grounded because an adapter executes them, that `TRAIN` has its own adapter module,
-  and the grid cell reading 25/35.
-- No adapter is added and no obligation is removed, so `implementation_digest()` is
-  unmoved and no domain policy bound to it is invalidated. Until
-  a `TRAIN` adapter exists, no certificate over the object can be produced.
+- No obligation is removed. The rename moves `implementation_digest()`, which keys every
+  adapter source by its module name and hashes the catalogue, so every domain policy
+  issued before it must be readmitted.
 
 ### The actor-identity family: HUMAN, ROLE, COLLECTIVE, IDENTITY and ACTOR
 

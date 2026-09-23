@@ -710,9 +710,9 @@ obligation rather than a rung in its own right:
 | HYPER § | `HYPER-1.1`-`1.6` | `HYPER-2.1`-`2.6` | `HYPER-3.1`-`3.5` | `HYPER-4.1`-`4.5` | `HYPER-5.1`-`5.5` | `HYPER-6.1`-`6.6` |
 | MODEL | `MODEL-1.1`-`1.5` | `MODEL-2.1`-`2.5` | `MODEL-3.1`-`3.6` | `MODEL-4.1`-`4.5` | `MODEL-5.1`-`5.6` | `MODEL-6.1`-`6.6` |
 | SIM | `SIM-1.1`-`1.7` | `SIM-2.1`-`2.6` | `SIM-3.1`-`3.5` | `SIM-4.1`-`4.5` | `SIM-5.1`-`5.6` | `SIM-6.1`-`6.6` |
-| HARNESS † | `HARNESS-1.1`-`1.5` | `HARNESS-2.1`-`2.5` | `HARNESS-3.1`-`3.4` | `HARNESS-4.1`-`4.5` | `HARNESS-5.1`-`5.6` | `HARNESS-6.1`-`6.6` |
-| AGENT † | `AGENT-1.1`-`1.7` | `AGENT-2.1`-`2.5` | `AGENT-3.1`-`3.3` | `AGENT-4.1`-`4.4` | `AGENT-5.1`-`5.5` | `AGENT-6.1`-`6.6` |
-| BOT † | `BOT-1.1`-`1.5` | `BOT-2.1`-`2.5` | `BOT-3.1`-`3.4` | `BOT-4.1`-`4.4` | `BOT-5.1`-`5.6` | `BOT-6.1`-`6.6` |
+| HARNESS | `HARNESS-1.1`-`1.5` | `HARNESS-2.1`-`2.5` | `HARNESS-3.1`-`3.4` | `HARNESS-4.1`-`4.5` | `HARNESS-5.1`-`5.6` | `HARNESS-6.1`-`6.6` |
+| AGENT | `AGENT-1.1`-`1.7` | `AGENT-2.1`-`2.5` | `AGENT-3.1`-`3.3` | `AGENT-4.1`-`4.4` | `AGENT-5.1`-`5.5` | `AGENT-6.1`-`6.6` |
+| BOT | `BOT-1.1`-`1.5` | `BOT-2.1`-`2.5` | `BOT-3.1`-`3.4` | `BOT-4.1`-`4.4` | `BOT-5.1`-`5.6` | `BOT-6.1`-`6.6` |
 | OWNER ‡ | `OWNER-1.1`-`1.6` | `OWNER-2.1`-`2.6` | `OWNER-3.1`-`3.6` | `OWNER-4.1`-`4.6` | `OWNER-5.1`-`5.6` | `OWNER-6.1`-`6.6` |
 | HUMAN ‡ | `HUMAN-1.1`-`1.6` | `HUMAN-2.1`-`2.6` | `HUMAN-3.1`-`3.6` | `HUMAN-4.1`-`4.6` | `HUMAN-5.1`-`5.6` | `HUMAN-6.1`-`6.6` |
 | ROLE ‡ | `ROLE-1.1`-`1.6` | `ROLE-2.1`-`2.6` | `ROLE-3.1`-`3.6` | `ROLE-4.1`-`4.5` | `ROLE-5.1`-`5.6` | `ROLE-6.1`-`6.6` |
@@ -726,10 +726,9 @@ Every cell is a coordinate range into a catalogued obligation set: the object ax
 [`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md), the seventeen domain objects in
 [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 701 obligations across the three
 namespaces, which are disjoint: `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, and each
-catalogue carries its own digest. † marks the three objects whose adapters live on the open
-release branch rather than in this tree; § marks `HYPER`, which is catalogued but
-not certifiable; ‡ marks the six objects with no adapter anywhere: `OWNER` and
-the five identity objects.
+catalogue carries its own digest. § marks `HYPER`, which is catalogued but not
+certifiable; ‡ marks the six objects with no adapter anywhere: `OWNER` and the five
+identity objects.
 
 ## The ladder strip — what a certificate actually climbs
 
@@ -751,10 +750,10 @@ need not be the one whose index is `m`.
 | `HYPER-` § | [1.1–1.5](DOMAIN_OBLIGATIONS.md#hyper-1-facets ".1 Operand set; .2 Slot schema, Substrate presence; .3 Slot versus operand; .4 Composed identity; .5 Operand admissibility") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#hyper-2-dynamics ".1 Strength ordering, Recomposition; .2 Non-increase, Associativity; .3 UNKNOWN absorption; .4 Depth propagation") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#hyper-3-statics ".1 Composed ceiling, Substrate recurrence, Decider exteriority; .2 Manufacture impossibility; .3 Level independence") | [4.1–4.5](DOMAIN_OBLIGATIONS.md#hyper-4-closure ".1 Saturation; .2 Collapse; .3 Expansion fidelity; .4 Fractal re-representation; .5 Boundary completeness") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#hyper-5-domain-adaptation ".1 Mainstay binding; .2 Layout mapping; .3 Authorization mapping; .4 Round trip; .5 Inference upward") | **22** |
 | `MODEL-` | [1.1–1.3](DOMAIN_OBLIGATIONS.md#model-1-facets ".1 Tensor inventory, Dependency artifacts; .2 Architecture compatibility; .3 Module decomposition, Input and output surface") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#model-2-dynamics ".1 Forward execution; .2 Output agreement; .3 Batching behaviour, Precision behaviour; .4 Sampling and decoding") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#model-3-statics ".1 Weight bytes, Training-data citation; .2 Hardware requirements, Quantization specification, Provenance citation; .3 Artifact immutability") | [4.1–4.3](DOMAIN_OBLIGATIONS.md#model-4-closure ".1 Evaluation set, Probe inventory; .2 Metric recomputation, Probe execution; .3 Refutability") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#model-5-domain-adaptation ".1 Mainstay binding; .2 Module-graph mapping, Serialized-weights mapping; .3 Operator coverage; .4 Round trip; .5 Inference upward") | **18** |
 | `SIM-` | [1.1–1.3](DOMAIN_OBLIGATIONS.md#sim-1-facets ".1 State space; .2 Transition expressions, Observation channels, Shard decomposition; .3 Entropy stream, Action channels, Macro and micro projection") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#sim-2-dynamics ".1 Trajectory replay; .2 Responsiveness, Internal state change, Computational space; .3 Perspective shift; .4 Perspective agreement") | [3.1–3.4](DOMAIN_OBLIGATIONS.md#sim-3-statics ".1 Invariant expressions, Modelled law; .2 Per-state holding; .3 Closed state set; .4 Law independence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#sim-4-closure ".1 Shard coverage; .2 Cross-shard relations, No unattributed transition; .3 Signatures; .4 Whole-surface accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#sim-5-domain-adaptation ".1 Mainstay binding; .2 Interaction-surface mapping, Physical-backend mapping; .3 Stepping contract; .4 Round trip; .5 Inference upward") | **20** |
-| `HARNESS-` † | [1.1–1.4](DOMAIN_OBLIGATIONS.md#harness-1-facets ".1 Channel partition; .2 Record types; .3 Tool registry, Transcript commitment shape; .4 Side-effect channels") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#harness-2-dynamics ".1 Record contiguity; .2 Invocation pairing, Session advance; .3 Side-effect interleaving; .4 Retry and resumption") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#harness-3-statics ".1 Gap boundary, Timestamp resolution; .2 Channel capacity; .3 Instrument fixity") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#harness-4-closure ".1 Commitment recomputation; .2 Omission detection, Substitution detection; .3 Reordering detection; .4 Whole-session accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#harness-5-domain-adaptation ".1 Mainstay binding; .2 Trace-span mapping, Tool-protocol mapping; .3 Gap representation; .4 Round trip; .5 Inference upward") | **20** |
-| `AGENT-` † | [1.1–1.6](DOMAIN_OBLIGATIONS.md#agent-1-facets ".1 Harness binding; .2 Required channels; .3 Observation ceiling; .4 Decision inventory, Outcome contract; .5 Declared actions; .6 Final claims") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#agent-2-dynamics ".1 Trajectory contiguity; .2 Decision witnessing; .3 Action witnessing; .4 Unwitnessed action reporting, Trajectory advance") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#agent-3-statics ".1 Ceiling fixity; .2 Unknowability; .3 Declaration impotence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#agent-4-closure ".1 Outcome inventory; .2 Contract comparison; .3 Claim support; .4 No unsupported claim") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#agent-5-domain-adaptation ".1 Mainstay binding; .2 Decision-loop mapping; .3 Slot mapping; .4 Round trip; .5 Inference upward") | **22** |
+| `HARNESS-` | [1.1–1.4](DOMAIN_OBLIGATIONS.md#harness-1-facets ".1 Channel partition; .2 Record types; .3 Tool registry, Transcript commitment shape; .4 Side-effect channels") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#harness-2-dynamics ".1 Record contiguity; .2 Invocation pairing, Session advance; .3 Side-effect interleaving; .4 Retry and resumption") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#harness-3-statics ".1 Gap boundary, Timestamp resolution; .2 Channel capacity; .3 Instrument fixity") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#harness-4-closure ".1 Commitment recomputation; .2 Omission detection, Substitution detection; .3 Reordering detection; .4 Whole-session accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#harness-5-domain-adaptation ".1 Mainstay binding; .2 Trace-span mapping, Tool-protocol mapping; .3 Gap representation; .4 Round trip; .5 Inference upward") | **20** |
+| `AGENT-` | [1.1–1.6](DOMAIN_OBLIGATIONS.md#agent-1-facets ".1 Harness binding; .2 Required channels; .3 Observation ceiling; .4 Decision inventory, Outcome contract; .5 Declared actions; .6 Final claims") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#agent-2-dynamics ".1 Trajectory contiguity; .2 Decision witnessing; .3 Action witnessing; .4 Unwitnessed action reporting, Trajectory advance") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#agent-3-statics ".1 Ceiling fixity; .2 Unknowability; .3 Declaration impotence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#agent-4-closure ".1 Outcome inventory; .2 Contract comparison; .3 Claim support; .4 No unsupported claim") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#agent-5-domain-adaptation ".1 Mainstay binding; .2 Decision-loop mapping; .3 Slot mapping; .4 Round trip; .5 Inference upward") | **22** |
 | `OWNER-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#owner-1-facets ".1 Holder binding, Held-object binding; .2 Instrument, Bearer capability; .3 Limb inventory; .4 Term") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#owner-2-dynamics ".1 Event declaration; .2 Transfer conveyance, Delegation bound, Lapse; .3 Revocation effect; .4 Ordered replay") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#owner-3-statics ".1 Verdict independence, Asymmetry; .2 Evidence immutability, Ancestry immutability, Non-transitivity of authority; .3 Person-limb typing") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#owner-4-closure ".1 Chain origin; .2 Gapless chain, Admissibility at issue time; .3 Fork detection, Accountability floor; .4 Closure result") | [5.1–5.3](DOMAIN_OBLIGATIONS.md#owner-5-domain-adaptation ".1 Licence holding, Registry maintainer record, Register entry, Custody chain; .2 Declared code ownership; .3 Adaptation accounting") | **18** |
-| `BOT-` † | [1.1–1.3](DOMAIN_OBLIGATIONS.md#bot-1-facets ".1 Agent binding, Simulation binding; .2 Environment bindings; .3 Coupling surface, Operand depths") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#bot-2-dynamics ".1 Transition binding; .2 Observation projection, Action authenticity; .3 One-to-one coupling; .4 Coupling advance") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#bot-3-statics ".1 Inherited ceiling, Coupling latency; .2 Disclosure limit; .3 Policy impotence") | [4.1–4.3](DOMAIN_OBLIGATIONS.md#bot-4-closure ".1 Separation declaration; .2 Separation evidence, Fused honesty; .3 Containment accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#bot-5-domain-adaptation ".1 Interaction-graph binding; .2 Disclosure inventory; .3 Indisclosure inventory, Inclusion awareness; .4 Specification awareness; .5 Awareness accounting") | **18** |
+| `BOT-` | [1.1–1.3](DOMAIN_OBLIGATIONS.md#bot-1-facets ".1 Agent binding, Simulation binding; .2 Environment bindings; .3 Coupling surface, Operand depths") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#bot-2-dynamics ".1 Transition binding; .2 Observation projection, Action authenticity; .3 One-to-one coupling; .4 Coupling advance") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#bot-3-statics ".1 Inherited ceiling, Coupling latency; .2 Disclosure limit; .3 Policy impotence") | [4.1–4.3](DOMAIN_OBLIGATIONS.md#bot-4-closure ".1 Separation declaration; .2 Separation evidence, Fused honesty; .3 Containment accounting") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#bot-5-domain-adaptation ".1 Interaction-graph binding; .2 Disclosure inventory; .3 Indisclosure inventory, Inclusion awareness; .4 Specification awareness; .5 Awareness accounting") | **18** |
 | `HUMAN-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#human-1-facets ".1 Assertion subject; .2 Evidence class, Non-assertion boundary; .3 Liveness and uniqueness claims, Humanness versus identification; .4 Enrollment population") | [2.1–2.3](DOMAIN_OBLIGATIONS.md#human-2-dynamics ".1 Enrollment; .2 Re-verification, Revocation on compromise, Death; .3 Evidence aging, Template irreversibility") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#human-3-statics ".1 Singularity, Irreducible biometric error; .2 Presentation attack surface, Relative uniqueness, No composition yields a human; .3 Injection attack surface") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#human-4-closure ".1 Evidence declaration, Accountability termination; .2 Error-rate declaration, Occupancy is not termination; .3 Population declaration; .4 Closure result") | [5.1–5.3](DOMAIN_OBLIGATIONS.md#human-5-domain-adaptation ".1 Error-rate reporting mainstay, Presentation attack detection mainstay, Attestation mapping, Human-verification mapping; .2 Enrollment scheme mapping; .3 Adaptation accounting") | **17** |
 | `ROLE-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#role-1-facets ".1 Class identity; .2 Decision authority, Qualifications, Simultaneous bearer limit; .3 Admissible bearer classes; .4 Facet completeness") | [2.1–2.4](DOMAIN_OBLIGATIONS.md#role-2-dynamics ".1 Occupancy events; .2 Hand-over, Acting in role, Temporary delegation; .3 In-flight decisions; .4 Occupancy replay") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#role-3-statics ".1 Declared authority, Occupancy factuality; .2 Vacancy retention, Cross-role correlation; .3 Authority independence, Class is not its occupants") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#role-4-closure ".1 Decision inventory, Contiguous occupancy; .2 Bearer attribution; .3 No unattributed decision; .4 Closure result") | [5.1–5.4](DOMAIN_OBLIGATIONS.md#role-5-domain-adaptation ".1 Engagement context role mainstay, Access control role mapping, Org-chart position mapping; .2 Round trip; .3 Inference upward; .4 Adaptation accounting") | **19** |
 | `COLLECTIVE-` ‡ | [1.1–1.3](DOMAIN_OBLIGATIONS.md#collective-1-facets ".1 Role graph; .2 Relation types, Role set, Accountable decision classes, Boundary; .3 Facet completeness") | [2.1–2.3](DOMAIN_OBLIGATIONS.md#collective-2-dynamics ".1 Reorganization, Quorum and countersignature; .2 Role lifecycle, Escalation; .3 Decision assembly, Merger and split") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#collective-3-statics ".1 No decisions of its own, External legal existence; .2 Separation of duty needs persons; .3 Graph impotence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#collective-4-closure ".1 Complete role graph; .2 Decision decomposition; .3 Quorum recomputation; .4 Closure result") | [5.1–5.4](DOMAIN_OBLIGATIONS.md#collective-5-domain-adaptation ".1 Organizational role mainstay, Corporate registry mapping, Access control policy mapping; .2 Round trip; .3 Inference upward; .4 Adaptation accounting") | **17** |
@@ -813,9 +812,9 @@ depth is strictly below the count somewhere.
 | HYPER § | **5** of 6 (0) | **4** of 6 (0) | **3** of 5 (5) | **5** (0) | **5** (5) | **5** of 6 (0) | 22 | 23 | 10/33 |
 | MODEL | **3** of 5 (3) | **4** of 5 (2) | **3** of 6 (1) | **3** of 5 (4) | **5** of 6 (6) | **5** of 6 (0) | 18 | 19 | 16/33 |
 | SIM | **3** of 7 (2) | **4** of 6 (2) | **4** of 5 (3) | **4** of 5 (3) | **5** of 6 (6) | **5** of 6 (0) | 20 | 21 | 16/35 |
-| HARNESS † | **4** of 5 (2) | **4** of 5 (4) | **3** of 4 (4) | **4** of 5 (3) | **5** of 6 (6) | **5** of 6 (0) | 20 | 21 | 19/31 |
-| AGENT † | **6** of 7 (3) | **4** of 5 (4) | **3** (3) | **4** (3) | **5** (5) | **5** of 6 (0) | 22 | 23 | 18/30 |
-| BOT † | **3** of 5 (3) | **4** of 5 (4) | **3** of 4 (4) | **3** of 4 (3) | **5** of 6 (6) | **5** of 6 (0) | 18 | 19 | 20/30 |
+| HARNESS | **4** of 5 (2) | **4** of 5 (4) | **3** of 4 (4) | **4** of 5 (3) | **5** of 6 (6) | **5** of 6 (0) | 20 | 21 | 19/31 |
+| AGENT | **6** of 7 (3) | **4** of 5 (4) | **3** (3) | **4** (3) | **5** (5) | **5** of 6 (0) | 22 | 23 | 18/30 |
+| BOT | **3** of 5 (3) | **4** of 5 (4) | **3** of 4 (4) | **3** of 4 (3) | **5** of 6 (6) | **5** of 6 (0) | 18 | 19 | 20/30 |
 | OWNER ‡ | **4** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | **5** of 6 (0) | 18 | 19 | 0/36 |
 | HUMAN ‡ | **4** of 6 (0) | **3** of 6 (0) | **3** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | **5** of 6 (0) | 17 | 18 | 0/36 |
 | ROLE ‡ | **4** of 6 (0) | **4** of 6 (0) | **3** of 6 (0) | **4** of 5 (0) | **4** of 6 (0) | **5** of 6 (0) | 19 | 20 | 0/35 |
@@ -829,9 +828,8 @@ and from `states`**, which count corroboration rungs only; level 6 carries no ru
 Where `i` is smaller than the module count, both are shown: `8` of
 `14` reads *eight is the depth of a profile holding fourteen modules*. A parenthesised
 count is how many of that profile's obligations a mechanism establishes today; the two
-specification axes carry no domain adapter by construction and show none. † marks the
-three adapters on the open release branch. § marks `HYPER`, which is **catalogued but
-not certifiable**: its statics and adaptation mechanisms resolve and execute, but it has
+specification axes carry no domain adapter by construction and show none. § marks
+`HYPER`, which is **catalogued but not certifiable**: its statics and adaptation mechanisms resolve and execute, but it has
 no behavioural adapter and no `CHECKS` entry, so `build_domain_certificate` rejects it
 and no certificate over it can be built at all. ‡ marks the six ungrounded objects --
 `OWNER` and the five identity objects -- which have no adapter anywhere and
@@ -948,21 +946,23 @@ obligations of HYPER, which has no behavioural adapter and so cannot be certifie
 
 Six consequences:
 
-1. **Tier 5 is mechanized on every object, and it took a different kind of adapter.** All
-   58 adaptation coordinates now have a check, because the mainstay representations each
-   domain publishes in were named first: reverse-engineering 45 formats into meta-surfaces
-   turned "adapt to the domain" into binding, mapping, round trip and residual. Reducing
-   them also produced a finding — **mainstay formats encode facets and dynamics, and almost
-   never statics or closure.** The residual a tier-5 certificate reports is therefore
-   computed from the meta-surface, not declared, and it is consistently large.
-2. **Tier 3 is 33 of 50, and what closed it was a third mechanism kind.** Statics are the
-   facts an object does not choose, which is exactly the class that re-executing a
-   declaration cannot establish. The six objects with no statics mechanism now have one:
-   a witness probe, a recomputation over the retained inventory, or **invariance under
-   perturbation of the subject's own choices** — re-decide the earlier statics with the
-   object's declarations replaced, and refute if a verdict moves. The remaining 17 bare
-   coordinates are on ENV, BENCH, MODEL and SIM, whose statics profiles were never empty
-   and so were never in that sweep.
+1. **Tier 5 is mechanized on every grounded object, and it took a different kind of
+   adapter.** Every tier-5 coordinate of a grounded object has a check, because the
+   mainstay representations each domain publishes in were named first: reverse-engineering
+   those formats into meta-surfaces turned "adapt to the domain" into binding, mapping,
+   round trip and residual. Reducing them also produced a finding — **mainstay formats
+   encode facets and dynamics, and almost never statics or closure.** The residual a
+   tier-5 certificate reports is therefore computed from the meta-surface, not declared,
+   and it is consistently large.
+2. **Tier 3 is complete on every object with a statics check, and what closed it was a
+   third mechanism kind.** Statics are the facts an object does not choose, which is
+   exactly the class that re-executing a declaration cannot establish. The grounded
+   objects whose statics profile had no mechanism at all now have one: a witness probe,
+   a recomputation over the retained inventory, or **invariance under perturbation of
+   the subject's own choices** — re-decide the earlier statics with the object's
+   declarations replaced, and refute if a verdict moves. The bare tier-3 coordinates
+   that remain on grounded objects are all on ENV, BENCH, MODEL and SIM, whose statics
+   profiles were never empty and so were never in that sweep.
 3. **`grounded_identifier` only half expresses the grid.** It used to guard
    `1 <= tier <= len(CHECKS[domain])`, so with ENV and BENCH at four checks each,
    `ENV-5.m` and `BENCH-5.m` raised `ValueError`; the tier bound is now the
@@ -984,7 +984,8 @@ Six consequences:
    chain of prerequisites in that profile reaches. The code bounds `m` by the count and so
    admits them. Closing that is a validator change against the catalogued dependencies, not
    a change to any specification, and it can now be done uniformly: every object's
-   dependencies are declared, and `tier_depth` computes the bound for any of the ninety.
+   dependencies are declared, and `tier_depth` computes the bound for any profile of any
+   domain object.
 6. **No validator enforces the composition gate.** The reachable count above assumes a
    composed object cannot advance past its operands, which is what non-increasing strength
    requires; nothing in the adapters checks it. `BOT.1` re-derives its bound agent,

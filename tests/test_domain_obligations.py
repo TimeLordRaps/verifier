@@ -1,6 +1,6 @@
 """Terminology: Verifier Standard (VSTD).
 
-The ten domain objects carry grounding coordinates of their own, in a third
+The domain objects carry grounding coordinates of their own, in a third
 namespace disjoint from both the object axis and the Graph axis.
 """
 
@@ -98,9 +98,8 @@ def test_every_mechanism_names_a_real_check_in_its_own_family() -> None:
             assert obligation.profile == 5, obligation.id
             assert name[len(MAINSTAY_PREFIX):] in ADAPTATION_CHECKS, obligation.id
         else:
-            # HARNESS, AGENT and BOT behavioural adapters ship on the release branch.
-            if obligation.object_name not in CHECKS:
-                continue
+            # A behavioural name needs a behavioural adapter on its own object.
+            assert obligation.object_name in CHECKS, obligation.id
             assert name in {check[0] for check in CHECKS[obligation.object_name]}, obligation.id
 
 
