@@ -7,6 +7,7 @@ Preflight flight check: prevent all preventable CI failures locally before git p
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from pathlib import Path
 import re
@@ -368,6 +369,118 @@ def check_pr_description() -> bool:
     return True
 
 
+ZERO_OID = "0000000000000000000000000000000000000000"
+
+GITHUB_REMOTE = re.compile(
+    r"^(?:https://(?:[^@/\s]+@)?github\.com/|ssh://git@github\.com/|git@github\.com:)"
+    r"(?P<repository>[^/\s]+/[^/\s]+?)(?:\.git)?/?$"
+)
+
+
+def github_repository(url: str) -> str | None:
+    """`OWNER/NAME` of a GitHub remote URL, or None for any other remote."""
+    match = GITHUB_REMOTE.match(url.strip())
+    return match.group("repository") if match else None
+
+
+def open_pull_requests(repository: str, branch: str) -> list[int]:
+    """Open pull requests in `repository` whose head is `branch` of that same repository.
+
+    A pull request from a fork can carry the same branch name; pushing here does not
+    move it, so it is filtered out. Raises RuntimeError when gh cannot answer.
+    """
+    code, stdout, stderr = _run_command([
+        "gh", "pr", "list", "--repo", repository, "--head", branch, "--state", "open",
+        "--json", "number,headRepository,headRepositoryOwner",
+    ])
+    if code != 0:
+        raise RuntimeError(stderr or stdout or f"gh exited with status {code}")
+    owner, name = repository.lower().split("/", 1)
+    numbers = []
+    for pull in json.loads(stdout or "[]"):
+        head_owner = ((pull.get("headRepositoryOwner") or {}).get("login") or "").lower()
+        head_name = ((pull.get("headRepository") or {}).get("name") or "").lower()
+        if (head_owner, head_name) == (owner, name):
+            numbers.append(int(pull["number"]))
+    return sorted(numbers)
+
+
+def check_pr_descriptions_for_push(pushes: list[tuple[str, str, str, str]],
+                                   hook_args: list[str]) -> bool:
+    """Refuse a push that would leave an open pull request describing another tree.
+
+    Pull requests are looked up by the branch being written on the remote, not the
+    local branch. `git push origin work:feature` moves the pull request whose head is
+    `feature`, and asking about `work` finds nothing. Until 2026-09-23 this gate asked
+    about the local branch and passed on exactly that push.
+
+    Each description is checked against the pushed commit's own tree, so a push from
+    a checkout at another commit, or with uncommitted changes, is judged on what is
+    published. The description therefore has to bind the new head before the push:
+    update it first, then push. A pull request that lives in another repository (one
+    opened from this repository into an upstream) is not found here; the hosted
+    pr-description workflow checks it on every push and every edit.
+
+    Anything that cannot be answered fails the push. A question gh could not answer
+    is not a no.
+    """
+    branches = [
+        (remote_ref[len("refs/heads/"):], local_oid)
+        for _local_ref, local_oid, remote_ref, _remote_oid in pushes
+        if local_oid != ZERO_OID and remote_ref.startswith("refs/heads/")
+    ]
+    if not branches:
+        print("[PR DESCRIPTION GATE] PASS: this push moves no branch head.")
+        return True
+
+    url = hook_args[1] if len(hook_args) > 1 else ""
+    if not url and hook_args:
+        code, stdout, _ = _run_command(["git", "remote", "get-url", "--push", hook_args[0]])
+        url = stdout if code == 0 else ""
+    if not url:
+        print("[PR DESCRIPTION GATE] FAIL: cannot tell which repository this push writes to, "
+              "so cannot tell which pull requests it moves.")
+        return False
+    repository = github_repository(url)
+    if repository is None:
+        # The URL is not printed: a remote URL can carry a credential.
+        print("[PR DESCRIPTION GATE] PASS: the push goes to a remote that is not on GitHub, "
+              "where no pull request can track a branch.")
+        return True
+
+    script = ROOT / "scripts" / "check_pr_description.py"
+    success = True
+    for branch, oid in branches:
+        try:
+            numbers = open_pull_requests(repository, branch)
+        except (RuntimeError, OSError, subprocess.SubprocessError, ValueError) as error:
+            print(f"[PR DESCRIPTION GATE] FAIL: could not ask GitHub whether {repository} has an "
+                  f"open pull request on {branch}: {error}")
+            print("  Authenticate gh (gh auth login), or push with --no-verify deliberately.")
+            success = False
+            continue
+        if not numbers:
+            print(f"[PR DESCRIPTION GATE] PASS: no open pull request in {repository} "
+                  f"has head branch {branch}.")
+            continue
+        for number in numbers:
+            code, stdout, stderr = _run_command([
+                sys.executable, str(script), "--pr", str(number), "--repo", repository,
+                "--commit", oid, "--require-pull-request",
+            ])
+            output = (stdout or stderr).strip()
+            if output:
+                print(output)
+            if code != 0:
+                print(f"[PR DESCRIPTION GATE] FAIL: after this push, pull request #{number} "
+                      f"would describe a tree other than {oid[:12]}. Update its description "
+                      "to describe that commit, then push again.")
+                success = False
+            else:
+                print(f"[PR DESCRIPTION GATE] PASS: pull request #{number} describes {oid[:12]}.")
+    return success
+
+
 def check_test_skips(output: str | None = None) -> bool:
     """Run skip audit and print classified skip rationale or unclassified slippage."""
     if output is None:
@@ -459,14 +572,16 @@ exit 0
 
 def handle_pre_push(args: list[str]) -> int:
     """Handle invocation from git pre-push hook, parsing stdin ref updates."""
-    ZERO = "0000000000000000000000000000000000000000"
+    ZERO = ZERO_OID
     rev_ranges: list[str] = []
+    pushes: list[tuple[str, str, str, str]] = []
 
     if not sys.stdin.isatty():
         for line in sys.stdin:
             parts = line.strip().split()
             if len(parts) == 4:
                 local_ref, local_oid, remote_ref, remote_oid = parts
+                pushes.append((local_ref, local_oid, remote_ref, remote_oid))
                 if local_oid == ZERO:
                     continue
                 # For PR commits, verify what is new relative to origin/main
@@ -497,7 +612,7 @@ def handle_pre_push(args: list[str]) -> int:
         success = False
     if not check_schema_inventory():
         success = False
-    if not check_pr_description():
+    if not check_pr_descriptions_for_push(pushes, args):
         success = False
 
     return 0 if success else 1

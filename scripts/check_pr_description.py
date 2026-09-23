@@ -23,14 +23,23 @@ that the described work was reviewed, or that a human understood it.
 from __future__ import annotations
 
 import argparse
+import io
 import json
 from pathlib import Path
 import re
 import subprocess
 import sys
+import tarfile
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# Where tree facts are read from: the working tree, unless `use_commit` repoints
+# them at a commit's own tree.
+SOURCE = ROOT / "src"
+COMMIT: str | None = None
+TREE = "working tree"
 
 # The description states counts in words, as prose does.
 NUMBER_WORDS = {
@@ -56,7 +65,7 @@ def _fail(findings: list[str], message: str) -> None:
 
 def domain_inventory() -> dict[str, int]:
     """Read the executable domain catalogue as the source of truth."""
-    sys.path.insert(0, str(ROOT / "src"))
+    sys.path.insert(0, str(SOURCE))
     from verifier.domains.catalog import CHECKS  # noqa: PLC0415
 
     return {domain: len(checks) for domain, checks in CHECKS.items()}
@@ -64,7 +73,7 @@ def domain_inventory() -> dict[str, int]:
 
 def adapter_modules() -> set[str]:
     """Name every adapter module that is not shared support code."""
-    directory = ROOT / "src" / "verifier" / "domains"
+    directory = SOURCE / "verifier" / "domains"
     return {
         path.stem.upper()
         for path in sorted(directory.glob("*.py"))
@@ -73,14 +82,49 @@ def adapter_modules() -> set[str]:
 
 
 def tracked_file_count() -> int:
+    command = ["git", "ls-tree", "-r", "--name-only", COMMIT] if COMMIT else ["git", "ls-files"]
     result = subprocess.run(
-        ["git", "ls-files"], cwd=str(ROOT), capture_output=True, text=True, timeout=120,
+        command, cwd=str(ROOT), capture_output=True, text=True, timeout=120,
     )
     result.check_returncode()
     return len([line for line in result.stdout.splitlines() if line.strip()])
 
 
+def use_commit(commit: str, into: Path) -> str:
+    """Read every tree fact from `commit` instead of the working tree.
+
+    A push publishes a commit, not a working tree. The checkout may sit at another
+    commit, or carry changes the pushed commit does not, and either would let a
+    stale description pass. So the commit's `src` is extracted from the object
+    database into `into` and its catalogue is the one imported, the inventory is
+    its tree's, and the head is the commit itself.
+    """
+    global SOURCE, COMMIT, TREE
+    resolved = subprocess.run(
+        ["git", "rev-parse", "--verify", "--end-of-options", f"{commit}^{{commit}}"],
+        cwd=str(ROOT), capture_output=True, text=True, timeout=60,
+    )
+    resolved.check_returncode()
+    oid = resolved.stdout.strip()
+    archive = subprocess.run(
+        ["git", "archive", "--format=tar", oid, "src"],
+        cwd=str(ROOT), capture_output=True, timeout=120,
+    )
+    archive.check_returncode()
+    with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as bundle:
+        # The data filter is absent before 3.10.12; the archive is our own object
+        # database, not an untrusted download, so its absence is not a hazard.
+        if hasattr(tarfile, "data_filter"):
+            bundle.extractall(into, filter="data")
+        else:  # pragma: no cover
+            bundle.extractall(into)
+    SOURCE, COMMIT, TREE = into / "src", oid, f"commit {oid[:12]}"
+    return oid
+
+
 def head_commit() -> str:
+    if COMMIT:
+        return COMMIT
     result = subprocess.run(
         ["git", "rev-parse", "HEAD"], cwd=str(ROOT), capture_output=True, text=True, timeout=60,
     )
@@ -164,7 +208,7 @@ def check_head_is_bound(body: str, findings: list[str], head: str | None = None)
     for value in stated:
         if value != head:
             _fail(findings, (
-                f"the description binds head {value[:12]}, but the working tree head is "
+                f"the description binds head {value[:12]}, but the head being checked is "
                 f"{head[:12]}. Refresh the evidence and the promotion record; a "
                 "validation record does not carry forward to a new head."
             ))
@@ -181,7 +225,7 @@ def check_inventory_is_bound(body: str, findings: list[str]) -> None:
         if int(value.replace(",", "")) != actual:
             _fail(findings, (
                 f"the description states a tracked inventory of {value} files; the "
-                f"working tree tracks {actual}."
+                f"{TREE} tracks {actual}."
             ))
 
 
@@ -212,6 +256,8 @@ def resolve_body(args: argparse.Namespace) -> str | None:
         return args.body.read_text(encoding="utf-8")
 
     command = ["gh", "pr", "view", "--json", "body", "--jq", ".body"]
+    if args.repo:
+        command[3:3] = ["--repo", args.repo]
     if args.pr:
         command.insert(3, str(args.pr))
     try:
@@ -233,10 +279,17 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--body", type=Path, help="read the description from this file")
     parser.add_argument("--pr", help="pull request number; defaults to the current branch")
-    parser.add_argument(
+    parser.add_argument("--repo", help="OWNER/NAME holding the pull request; defaults to gh's choice")
+    bound = parser.add_mutually_exclusive_group()
+    bound.add_argument(
         "--head",
         help="commit the description must bind; defaults to the checked-out head. "
              "Supply the pull-request head when running on a merge ref.",
+    )
+    bound.add_argument(
+        "--commit",
+        help="check against this commit's own tree instead of the working tree: its "
+             "catalogue, its inventory, and itself as the head. Used before a push.",
     )
     parser.add_argument("--json", action="store_true", help="emit findings as JSON")
     parser.add_argument(
@@ -250,12 +303,21 @@ def main(argv: list[str] | None = None) -> int:
     if body is None:
         return 1 if args.require_pull_request else 0
 
-    findings: list[str] = []
-    check_domains_are_described(body, findings)
-    check_counts_are_described(body, findings)
-    check_head_is_bound(body, findings, args.head)
-    check_inventory_is_bound(body, findings)
-    check_machine_read_fields_are_parseable(body, findings)
+    with tempfile.TemporaryDirectory(prefix="vstd-pr-description-",
+                                     ignore_cleanup_errors=True) as scratch:
+        if args.commit:
+            sys.dont_write_bytecode = True
+            try:
+                use_commit(args.commit, Path(scratch))
+            except (OSError, subprocess.SubprocessError, tarfile.TarError) as error:
+                print(f"[PR DESCRIPTION] FAIL: could not read the tree of {args.commit}: {error}")
+                return 1
+        findings: list[str] = []
+        check_domains_are_described(body, findings)
+        check_counts_are_described(body, findings)
+        check_head_is_bound(body, findings, args.head)
+        check_inventory_is_bound(body, findings)
+        check_machine_read_fields_are_parseable(body, findings)
 
     if args.json:
         print(json.dumps({"findings": findings, "status": "FAIL" if findings else "PASS"}, indent=2))
@@ -268,7 +330,7 @@ def main(argv: list[str] | None = None) -> int:
             "or the tree, until they agree."
         )
     else:
-        print("[PR DESCRIPTION] PASS: described domains, counts, head and inventory match the tree.")
+        print(f"[PR DESCRIPTION] PASS: described domains, counts, head and inventory match the {TREE}.")
     return 1 if findings else 0
 
 

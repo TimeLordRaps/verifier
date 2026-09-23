@@ -402,3 +402,33 @@ def test_contributor_surfaces_require_refresh_acceptance_and_aftercare() -> None
     assert "Mandatory test skip disclosure and rubric classification" in agents
     assert "docs/TEST_SKIP_RUBRIC.md" in agents
     assert "docs/TEST_SKIP_RUBRIC.md" in contributing
+
+
+def test_the_description_is_rechecked_on_every_push_and_every_edit() -> None:
+    """A push moves the tree and an edit moves the description; either can end agreement.
+
+    The repository checks run the description gate on pushes only, so this workflow
+    exists for the edit. It runs the pull request's own gate on the pull request's own
+    tree, which is safe only without privileges, and it must never splice the
+    description into a script.
+    """
+    text = (ROOT / ".github/workflows/pr-description.yml").read_text(encoding="utf-8")
+    workflow = yaml.safe_load(text)
+    triggers = workflow[True]  # the loader reads the bare key `on` as the boolean True
+    assert set(triggers) == {"pull_request"}
+    assert {"synchronize", "edited", "opened", "reopened"} <= set(triggers["pull_request"]["types"])
+    assert workflow["permissions"] == {"contents": "read"}
+
+    (job,) = workflow["jobs"].values()
+    checkout = next(step for step in job["steps"] if "actions/checkout@" in step.get("uses", ""))
+    assert checkout["with"]["ref"] == "${{ github.event.pull_request.head.sha }}"
+    assert checkout["with"]["persist-credentials"] is False
+    for step in job["steps"]:
+        if "uses" in step:
+            assert "@" in step["uses"] and len(step["uses"].split("@", 1)[1]) == 40, step["uses"]
+        assert "${{" not in str(step.get("run", "")), step
+
+    (check,) = [step for step in job["steps"] if "check_pr_description.py" in str(step.get("run", ""))]
+    assert check["env"]["DESCRIPTION"] == "${{ github.event.pull_request.body }}"
+    assert check["env"]["HEAD_SHA"] == "${{ github.event.pull_request.head.sha }}"
+    assert '--commit "$HEAD_SHA"' in check["run"]

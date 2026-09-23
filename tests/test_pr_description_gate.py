@@ -11,6 +11,7 @@ mismatches it exists to catch.
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import sys
 
@@ -220,3 +221,69 @@ def test_a_missing_run_field_fails() -> None:
     findings: list[str] = []
     GATE.check_machine_read_fields_are_parseable("no record here", findings)
     assert findings and "no `Repository-check run:`" in findings[0]
+
+
+def _git(root: Path, *args: str) -> str:
+    import subprocess
+
+    return subprocess.run(["git", *args], cwd=str(root), capture_output=True, text=True,
+                          check=True, timeout=60).stdout.strip()
+
+
+def test_a_commit_is_judged_on_its_own_tree_not_the_working_tree(tmp_path: Path) -> None:
+    """Before a push, the pushed commit is what gets published, not the checkout.
+
+    The fixture commits one domain, then stages a second without committing it. A
+    description of the commit must pass against the commit and fail against the
+    working tree, which names the staged domain and counts the staged files. If
+    commit mode read the working tree, both runs would agree.
+    """
+    import shutil
+    import subprocess
+
+    repo = tmp_path / "repo"
+    domains = repo / "src" / "verifier" / "domains"
+    domains.mkdir(parents=True)
+    (repo / "scripts").mkdir()
+    shutil.copyfile(ROOT / "scripts" / "check_pr_description.py",
+                    repo / "scripts" / "check_pr_description.py")
+    (repo / "src" / "verifier" / "__init__.py").write_text("", encoding="utf-8")
+    (domains / "__init__.py").write_text("", encoding="utf-8")
+    (domains / "alpha.py").write_text("", encoding="utf-8")
+    (domains / "catalog.py").write_text('CHECKS = {"ALPHA": ("a", "b")}\n', encoding="utf-8")
+    _git(repo, "init", "--quiet", ".")
+    _git(repo, "config", "user.email", "fixture" + "@" + "example.invalid")
+    _git(repo, "config", "user.name", "Fixture")
+    _git(repo, "add", ".")
+    _git(repo, "commit", "--quiet", "-m", "one domain")
+    commit = _git(repo, "rev-parse", "HEAD")
+    files = len(_git(repo, "ls-tree", "-r", "--name-only", commit).splitlines())
+
+    (domains / "beta.py").write_text("", encoding="utf-8")
+    (domains / "catalog.py").write_text(
+        'CHECKS = {"ALPHA": ("a", "b"), "BETA": ("a", "b", "c")}\n', encoding="utf-8")
+    _git(repo, "add", ".")
+
+    body = tmp_path / "body.md"
+    body.write_text(
+        "This candidate adds one grounded domain adapters with 2 computational checks.\n\n"
+        "ALPHA.1–ALPHA.2\n\n"
+        f"Current signed head: `{commit}`. The tracked inventory is {files} files.\n\n"
+        "- Repository-check run: 1\n",
+        encoding="utf-8",
+    )
+
+    def run(*mode: str) -> dict:
+        result = subprocess.run(
+            [sys.executable, str(repo / "scripts" / "check_pr_description.py"),
+             "--body", str(body), "--json", *mode],
+            cwd=str(repo), capture_output=True, text=True, timeout=120,
+        )
+        assert result.stdout, result.stderr
+        return json.loads(result.stdout)
+
+    assert run("--commit", commit) == {"findings": [], "status": "PASS"}
+    working_tree = run("--head", commit)["findings"]
+    assert any("BETA" in finding and "never names it" in finding for finding in working_tree)
+    assert any(f"states a tracked inventory of {files} files" in finding
+               for finding in working_tree)

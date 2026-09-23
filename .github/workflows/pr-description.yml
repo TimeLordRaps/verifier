@@ -1,0 +1,46 @@
+name: pull-request-description
+
+# A description is what a reviewer reads instead of the tree, so it is checked on
+# every event that can make the two disagree: a push moves the tree, an edit moves
+# the description. The repository checks in ci.yml also run this gate, but only on
+# pushes; an edit was never re-checked. The local pre-push gate stops a push that
+# would leave a description stale, but only on a machine that has it installed,
+# and a --no-verify push, a web edit or a fork skips it. This workflow runs for all
+# of them.
+#
+# pull_request, not pull_request_target: the gate and the tree are the pull
+# request's own, run with a read-only token and no secrets.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pull-request-description-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  describes-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Check the description this event carries against the head's own tree
+        env:
+          # Passed through the environment, never interpolated into the script:
+          # the description is text anyone who can edit it controls.
+          DESCRIPTION: ${{ github.event.pull_request.body }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          printf '%s' "$DESCRIPTION" > "$RUNNER_TEMP/description.md"
+          python scripts/check_pr_description.py \
+            --body "$RUNNER_TEMP/description.md" --commit "$HEAD_SHA"
