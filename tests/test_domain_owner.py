@@ -125,3 +125,35 @@ def test_owner_accountability_floor_terminates_in_natural_person() -> None:
     bad_inputs = dict(inputs, answering_duties={"responsibility": "bot:automated-agent-42"})
     with pytest.raises(Refuted, match="does not terminate in a natural person"):
         evaluate("accountability", artifact, bad_inputs, budget)
+
+
+def test_owner_domain_certificate_build_and_recheck() -> None:
+    import json
+    from pathlib import Path
+    from jsonschema import Draft202012Validator
+    from verifier.domains.certification import (
+        build_domain_certificate, domain_policy, domain_request, recheck_domain_certificate
+    )
+    artifact, inputs = _sample_owner_bundle()
+    evidence = {
+        "schema_version": "verifier-domain-evidence-1",
+        "domain": "OWNER",
+        "subject_id": artifact["holder_actor_id"],
+        "artifact": artifact,
+        "inputs": inputs,
+    }
+    policy = domain_policy(trust_roots=["test:trust"])
+    request = domain_request(evidence, target_depth=4)
+    certificate = build_domain_certificate(request, evidence, policy=policy)
+
+    schema_dir = Path("src/verifier/schemas")
+    ev_schema = json.loads((schema_dir / "verifier-domain-evidence-1.schema.json").read_text(encoding="utf-8"))
+    cert_schema = json.loads((schema_dir / "verifier-domain-certification-1.schema.json").read_text(encoding="utf-8"))
+    Draft202012Validator(ev_schema).validate(evidence)
+    Draft202012Validator(cert_schema).validate(certificate)
+
+    result = recheck_domain_certificate(certificate, expected_request=request, policy=policy)
+    assert result["status"] == "PASS"
+    assert result["domain_depth"] == 4
+    assert list(result["checks"].keys()) == ["OWNER-1.3", "OWNER-2.1", "OWNER-3.1", "OWNER-4.5"]
+    assert all(row["established"] for row in result["checks"].values())

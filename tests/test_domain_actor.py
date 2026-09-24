@@ -64,8 +64,6 @@ def _sample_actor_bundle() -> tuple[dict, dict]:
 
     artifact = {
         "actor_id": actor_id,
-        "branch": "ROLE",
-        "branch_certificate_digest": digest("role:cert:maintainer"),
         "control_surface": control_keys,
         "decision_classes": decision_classes,
         "admitted_spaces": admitted_spaces,
@@ -154,3 +152,35 @@ def test_actor_attribution_checks_uniqueness_and_continuity() -> None:
     dup_artifact = dict(artifact, decisions_digest=digest(dup_decisions))
     with pytest.raises(Refuted, match="duplicate attribution"):
         evaluate("attribution", dup_artifact, dup_inputs, budget)
+
+
+def test_actor_domain_certificate_build_and_recheck() -> None:
+    import json
+    from pathlib import Path
+    from jsonschema import Draft202012Validator
+    from verifier.domains.certification import (
+        build_domain_certificate, domain_policy, domain_request, recheck_domain_certificate
+    )
+    artifact, inputs = _sample_actor_bundle()
+    evidence = {
+        "schema_version": "verifier-domain-evidence-1",
+        "domain": "ACTOR",
+        "subject_id": artifact["actor_id"],
+        "artifact": artifact,
+        "inputs": inputs,
+    }
+    policy = domain_policy(trust_roots=["test:trust"])
+    request = domain_request(evidence, target_depth=4)
+    certificate = build_domain_certificate(request, evidence, policy=policy)
+
+    schema_dir = Path("src/verifier/schemas")
+    ev_schema = json.loads((schema_dir / "verifier-domain-evidence-1.schema.json").read_text(encoding="utf-8"))
+    cert_schema = json.loads((schema_dir / "verifier-domain-certification-1.schema.json").read_text(encoding="utf-8"))
+    Draft202012Validator(ev_schema).validate(evidence)
+    Draft202012Validator(cert_schema).validate(certificate)
+
+    result = recheck_domain_certificate(certificate, expected_request=request, policy=policy)
+    assert result["status"] == "PASS"
+    assert result["domain_depth"] == 4
+    assert list(result["checks"].keys()) == ["ACTOR-1.1", "ACTOR-2.1", "ACTOR-3.2", "ACTOR-4.2"]
+    assert all(row["established"] for row in result["checks"].values())

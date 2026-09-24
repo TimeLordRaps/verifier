@@ -775,12 +775,12 @@
           "additionalProperties": false,
           "minProperties": 1,
           "patternProperties": {
-            "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT|TOKEN|ACTOR|OWNER)(-[1-6]\\.\\d+|\\.[1-5])$": {
+            "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT|TOKEN|ACTOR|OWNER)-[1-6]\\.\\d+$": {
               "additionalProperties": false,
               "properties": {
                 "blocked_by": {
                   "items": {
-                    "pattern": "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT|TOKEN|ACTOR|OWNER)(-[1-6]\\.\\d+|\\.[1-5])$",
+                    "pattern": "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT|TOKEN|ACTOR|OWNER)-[1-6]\\.\\d+$",
                     "type": "string"
                   },
                   "type": "array",

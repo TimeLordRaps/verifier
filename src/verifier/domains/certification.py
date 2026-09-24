@@ -16,7 +16,7 @@ from verifier.core.certificate import canonical_bytes
 from verifier.core.evidence import (BoundProposition, EvidenceBounds, EvidenceStore,
     MechanismDecision, MechanismOutcome, VerificationSession)
 from verifier.core.receipt import strict_json_loads
-from .catalog import ALL_CHECKS, CHECKS, COORDINATES, SCOPES, domain_specification_digest
+from .catalog import ALL_CHECKS, ALL_SCOPES, CHECKS, COORDINATES, SCOPES, domain_specification_digest
 from .common import Budget, Refuted, Unavailable, digest, inspect_structure, integer, need, number, obj, same, text
 
 MAX_BYTES = 16 * 1024 * 1024
@@ -241,7 +241,7 @@ def build_domain_certificate(request: dict, evidence: dict, *, policy: dict) -> 
                             "blocked_by": blocked, "evaluation": evaluated}
     outcomes = [r["evaluation"]["outcome"] for r in rows.values()]
     status = "FAIL" if "FAIL" in outcomes else "UNKNOWN" if "UNKNOWN" in outcomes else "PASS"
-    result = {"status": status, "domain_depth": depth, "scope": SCOPES[request["domain"]],
+    result = {"status": status, "domain_depth": depth, "scope": ALL_SCOPES[request["domain"]],
               "object_profile_conformance": "NOT_ESTABLISHED", "checks": rows}
     certificate = {"schema_version": "verifier-domain-certification-1", "request": request, "evidence": bundle,
                    "policy_digest": digest(policy), "mechanism_digest": adapter.mechanism_digest,
