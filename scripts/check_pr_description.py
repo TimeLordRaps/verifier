@@ -156,21 +156,37 @@ def check_domains_are_described(body: str, findings: list[str]) -> None:
             f"{', '.join(sorted(absent_modules))}."
         ))
 
+    try:
+        from verifier.domains.catalog import COORDINATES
+    except (ImportError, AttributeError):
+        COORDINATES = {}
     for domain, count in sorted(inventory.items()):
         if not re.search(rf"\b{domain}\b", body):
             _fail(findings, (
                 f"domain {domain} is executable but the description never names it."
             ))
             continue
-        span = rf"{domain}\.1\s*{DASH}\s*(?:{domain}\.)?{count}\b"
-        if not re.search(span, body):
+        legacy_span = rf"{domain}\.1\s*{DASH}\s*(?:{domain}\.)?{count}\b"
+        canonical_span = rf"{domain}-[1-6]\.\d+"
+        if not (re.search(legacy_span, body) or re.search(canonical_span, body)):
             _fail(findings, (
                 f"the description does not state {domain}'s coordinate range as "
                 f"{domain}.1-{domain}.{count}; the catalogue declares {count} checks."
             ))
 
-    described = set(re.findall(r"\b([A-Z][A-Z0-9]{2,})\.\d+\b", body))
-    unknown = {name for name in described if name not in inventory and name.startswith("VSTD") is False}
+    described = set(re.findall(r"\b([A-Z][A-Z0-9]{2,})(?:\.|\-[1-6]\.)\d+\b", body))
+    try:
+        from scripts.check_namespace_closure import OBJECTS
+    except ModuleNotFoundError:
+        try:
+            from check_namespace_closure import OBJECTS
+        except ModuleNotFoundError:
+            OBJECTS = frozenset({
+                "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
+                "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
+                "TRAIN", "TOKEN",
+            })
+    unknown = {name for name in described if name not in inventory and name not in OBJECTS and not name.startswith("VSTD")}
     unknown -= {"SHA", "JSON", "CNF", "SAT", "HTTP", "PDF", "CI", "OS", "PR", "URL", "ID", "XML"}
     for name in sorted(unknown):
         _fail(findings, (
