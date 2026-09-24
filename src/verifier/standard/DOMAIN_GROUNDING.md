@@ -10,7 +10,7 @@ certificate; BOT denotes one agent situated in one simulation; TOKEN denotes one
 zero-identity zero-knowledge token holding descending from one birth token.
 
 These ten application receipt families supplement object and Graph numbered profiles.
-`DATA.1` through `DATA.5`, for example, are domain check coordinates. Domain depth is
+`DATA-1.2` through `DATA-4.4`, for example, are domain check coordinates. Domain depth is
 the dimensionless count of consecutive established domain prerequisites. It MUST NOT
 be represented as object profile depth, Graph conformance, or discharge of the 47
 object obligations. Existing domain declarations and serialized identifiers retain

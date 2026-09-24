@@ -380,7 +380,12 @@ GITHUB_REMOTE = re.compile(
 def github_repository(url: str) -> str | None:
     """`OWNER/NAME` of a GitHub remote URL, or None for any other remote."""
     match = GITHUB_REMOTE.match(url.strip())
-    return match.group("repository") if match else None
+    if not match:
+        return None
+    repo = match.group("repository")
+    if not re.match(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", repo):
+        return None
+    return repo
 
 
 def open_pull_requests(repository: str, branch: str) -> list[int]:
@@ -451,6 +456,9 @@ def check_pr_descriptions_for_push(pushes: list[tuple[str, str, str, str]],
         print("[PR DESCRIPTION GATE] PASS: the push goes to a remote that is not on GitHub, "
               "where no pull request can track a branch.")
         return True
+    if not re.match(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", repository):
+        print("[PR DESCRIPTION GATE] FAIL: invalid GitHub repository name format.")
+        return False
 
     script = ROOT / "scripts" / "check_pr_description.py"
     changed = ROOT / "scripts" / "check_pr_description_changed.py"

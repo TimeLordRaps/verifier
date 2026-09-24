@@ -299,13 +299,13 @@ Four rules prevent the usual misreadings:
    nothing about it. What a result means is separate, and stays tied to one exact
    proposition, mechanism, evidence set and bound.
 4. **These are not the other coordinate systems.** Domain check coordinates such as
-   `DATA.1`, serialized receipt identifiers such as `verifier-data-1`, and repository
+   `DATA-1.2`, serialized receipt identifiers such as `verifier-data-1`, and repository
    releases are each a different coordinate, and one is never inferred from another.
 
 Rule 4 is the one that costs people time, in two directions.
 
 A **domain check coordinate** numbers a position in that adapter's prerequisite graph, not
-a level. `DATA.1` is the check the other `DATA` checks depend on; it is not the
+a level. `DATA-1.2` is the check the other `DATA` checks depend on; it is not the
 `DATA-1` surface, and check index *n* does not mean level *n*.
 
 A **serialized receipt identifier** selects the reader and schema for a stored receipt, so

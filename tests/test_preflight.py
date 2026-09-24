@@ -316,6 +316,17 @@ AT = "@"
     ("https://example.invalid/github.com/Owner/verifier.git", None),
     ("https://github.com/Owner", None),
     ("../mirrors/verifier.git", None),
+], ids=[
+    "https-git",
+    "https-bare",
+    "https-slash",
+    "https-auth",
+    "git-scp",
+    "ssh-git",
+    "invalid-host-domain",
+    "invalid-host-subdomain",
+    "owner-without-repo",
+    "relative-mirror",
 ])
 def test_github_remote_urls_name_their_repository(url: str, expected: str | None) -> None:
     assert preflight.github_repository(url) == expected

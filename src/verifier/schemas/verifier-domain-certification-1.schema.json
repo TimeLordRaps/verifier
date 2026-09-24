@@ -395,6 +395,85 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "ACTOR"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "actor_id": {},
+                  "admitted_spaces": {},
+                  "control_surface": {},
+                  "decision_classes": {},
+                  "decisions_digest": {},
+                  "delegations_digest": {},
+                  "instrument_boundary": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "control_keys": {},
+                  "decisions": {},
+                  "delegation_events": {},
+                  "witness_attributions": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "OWNER"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "artifact": {
+                "additionalProperties": false,
+                "properties": {
+                  "chain_origin": {},
+                  "events_digest": {},
+                  "held_object_coordinate": {},
+                  "held_object_digest": {},
+                  "holder_actor_id": {},
+                  "instrument": {},
+                  "limbs": {},
+                  "limbs_kind": {},
+                  "term": {}
+                },
+                "required": [],
+                "type": "object"
+              },
+              "inputs": {
+                "additionalProperties": false,
+                "properties": {
+                  "accountability_witnesses": {},
+                  "answering_duties": {},
+                  "events": {},
+                  "held_verdict": {},
+                  "holdings_chain": {}
+                },
+                "required": [],
+                "type": "object"
+              }
+            }
+          }
         }
       ],
       "properties": {
@@ -412,7 +491,9 @@
             "HARNESS",
             "AGENT",
             "BOT",
-            "TOKEN"
+            "TOKEN",
+            "ACTOR",
+            "OWNER"
           ]
         },
         "inputs": {
@@ -605,6 +686,38 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "ACTOR"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 4
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "domain": {
+                "const": "OWNER"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target_depth": {
+                "maximum": 4
+              }
+            }
+          }
         }
       ],
       "properties": {
@@ -623,7 +736,9 @@
             "HARNESS",
             "AGENT",
             "BOT",
-            "TOKEN"
+            "TOKEN",
+            "ACTOR",
+            "OWNER"
           ]
         },
         "evidence_ref": {
@@ -660,12 +775,12 @@
           "additionalProperties": false,
           "minProperties": 1,
           "patternProperties": {
-            "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT|TOKEN)\\.[1-5]$": {
+            "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT|TOKEN|ACTOR|OWNER)(-[1-6]\\.\\d+|\\.[1-5])$": {
               "additionalProperties": false,
               "properties": {
                 "blocked_by": {
                   "items": {
-                    "pattern": "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT|TOKEN)\\.[1-5]$",
+                    "pattern": "^(DATA|ENV|BENCH|TRAIN|MODEL|SIM|HARNESS|AGENT|BOT|TOKEN|ACTOR|OWNER)(-[1-6]\\.\\d+|\\.[1-5])$",
                     "type": "string"
                   },
                   "type": "array",

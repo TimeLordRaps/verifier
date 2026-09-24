@@ -80,7 +80,7 @@ PACKAGED_SCHEMA_NAMES = frozenset(
         "verifier-silo-composition-assessment-receipt-1.schema.json",
         "verifier-silo-formation-receipt-1.schema.json",
         "verifier-silo-transfer-1.schema.json",
-        "vstd-sim-1.schema.json",
+        "verifier-simulation-receipt-1.schema.json",
         "verifier-grounded-request-1.schema.json",
         "verifier-grounded-policy-1.schema.json",
         "verifier-grounded-certification-1.schema.json",

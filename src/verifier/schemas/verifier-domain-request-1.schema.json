@@ -162,6 +162,38 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "ACTOR"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "target_depth": {
+            "maximum": 4
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "OWNER"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "target_depth": {
+            "maximum": 4
+          }
+        }
+      }
     }
   ],
   "description": "Structural envelope only. Domain evaluators check retained contract semantics; certificate replay requires external intent and policy.",
@@ -181,7 +213,9 @@
         "HARNESS",
         "AGENT",
         "BOT",
-        "TOKEN"
+        "TOKEN",
+        "ACTOR",
+        "OWNER"
       ]
     },
     "evidence_ref": {

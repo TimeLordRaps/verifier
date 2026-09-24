@@ -254,7 +254,7 @@ def _explain_domain(cert: dict[str, Any]) -> dict[str, Any]:
     rows = _explain_rows(result.get("checks", {}),
                          outcome_of=lambda r: r.get("evaluation", {}).get("outcome", "UNKNOWN"))
     depth = int(result.get("domain_depth", 0))
-    domain = rows[0]["coordinate"].split(".")[0] if rows else "?"
+    domain = rows[0]["coordinate"].split("-")[0].split(".")[0] if rows else "?"
     unresolved = [r for r in rows if not r["established"]]
     return {
         "kind": "domain certificate",

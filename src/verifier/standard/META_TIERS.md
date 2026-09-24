@@ -264,7 +264,7 @@ row names it rather than folding it into `S`: a model can be certified without o
 
 Each row adds to the row above it, and the last one collapses: `S` + decider + `HARNESS`
 beside `S` + `MODEL` is exactly `AGENT` + `SIM`. The substrate appears once per arm, which is
-why `BOT.1` re-derives the bound agent, simulation and **two** environment certificates, and
+why `BOT-1.1` re-derives the bound agent, simulation and **two** environment certificates, and
 why the tier-4 closure of `BOT` is the declared separation of those two.
 
 The decider is a slot, not an object. A model can fill it; so can a human, a script or a rule
@@ -976,8 +976,8 @@ Six consequences:
    counts depth within one tier and is not bounded by the tier's position.
 4. **The implemented `AGENT` adapter binds one operand, not the lattice's three.** It
    re-derives its observation ceiling from a bound `HARNESS` certificate and nothing else,
-   so the substrate and the decider are unbound — even though `AGENT.4` compares the
-   retained outcome inventory against an outcome contract (bench-shaped), `AGENT.2` checks
+   so the substrate and the decider are unbound — even though `AGENT-4.1` compares the
+   retained outcome inventory against an outcome contract (bench-shaped), `AGENT-2.1` checks
    a contiguous trajectory (graph-shaped), and declared actions carry tool side effects
    (env-shaped). The obligations are already in the ladder; the bindings are not.
 5. **A module count is not a reachable `m`.** `m` is a depth, so the largest `m` a
@@ -991,7 +991,7 @@ Six consequences:
    domain object.
 6. **No validator enforces the composition gate.** The reachable count above assumes a
    composed object cannot advance past its operands, which is what non-increasing strength
-   requires; nothing in the adapters checks it. `BOT.1` re-derives its bound agent,
+   requires; nothing in the adapters checks it. `BOT-1.1` re-derives its bound agent,
    simulation and two environment certificates, but it does not compare their established
    depths against its own. A `BOT` certificate at depth 5 over a `SIM` operand at
    depth 1 is admitted today and should not be.

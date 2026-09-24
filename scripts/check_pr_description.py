@@ -52,7 +52,7 @@ NUMBER_WORDS = {
 # Adapter support modules carry no domain of their own.
 NON_DOMAIN_MODULES = frozenset({
     "__init__", "catalog", "certification", "common", "numerical",
-    "statics", "mainstays",
+    "statics", "mainstays", "actor", "owner",
 })
 
 # Either dash spelling is accepted; the description uses an en dash.
@@ -117,6 +117,11 @@ def use_commit(commit: str, into: Path) -> str:
         if hasattr(tarfile, "data_filter"):
             bundle.extractall(into, filter="data")
         else:  # pragma: no cover
+            target_dir = into.resolve()
+            for member in bundle.getmembers():
+                member_path = (into / member.name).resolve()
+                if not str(member_path).startswith(str(target_dir)):
+                    raise ValueError(f"Tar member {member.name} resolves outside target directory")
             bundle.extractall(into)
     SOURCE, COMMIT, TREE = into / "src", oid, f"commit {oid[:12]}"
     return oid

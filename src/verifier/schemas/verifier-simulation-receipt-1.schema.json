@@ -1,7 +1,7 @@
 {
   "$comment": "Terminology: generative simulation specification (SIM); Verifier Standard (VSTD).",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://timelordraps.github.io/verifier/schemas/vstd-sim-1.schema.json",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-simulation-receipt-1.schema.json",
   "title": "Verifier Standard (VSTD) v2.0.0 Generative Simulation Receipt",
   "description": "Experimental declaration/receipt format. Schema validity establishes structure only; see docs/V2_CANDIDATE.md for mechanism limits.",
   "type": "object",
@@ -23,6 +23,7 @@
     "schema_version": {
       "type": "string",
       "enum": [
+        "verifier-simulation-receipt-1",
         "verifier-sim-2"
       ]
     },

@@ -117,7 +117,7 @@ lists supported mainstays, numerical semantics, trust boundaries and exclusions.
 | BOT | Bound agent, simulation and environment certificates, transition alignment, observation projection, actuation, environment separation | 5 |
 | TOKEN | Token inventory and clock, tenure refolded from the birth commitment, non-widening leases, admitted-key signatures, audience and status closure | 5 |
 
-These are cumulative domain check coordinates such as `MODEL.3`, separate from
+These are cumulative domain check coordinates such as `MODEL-2.1`, separate from
 object `3.1` or the existing experimental simulation tier identifiers. They are not
 confidence ratings. Every certificate keeps object profile conformance
 `NOT_ESTABLISHED`; an object obligation still needs its exact proposition checked.

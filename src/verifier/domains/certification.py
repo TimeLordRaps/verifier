@@ -16,7 +16,7 @@ from verifier.core.certificate import canonical_bytes
 from verifier.core.evidence import (BoundProposition, EvidenceBounds, EvidenceStore,
     MechanismDecision, MechanismOutcome, VerificationSession)
 from verifier.core.receipt import strict_json_loads
-from .catalog import CHECKS, SCOPES, domain_specification_digest
+from .catalog import ALL_CHECKS, CHECKS, COORDINATES, SCOPES, domain_specification_digest
 from .common import Budget, Refuted, Unavailable, digest, inspect_structure, integer, need, number, obj, same, text
 
 MAX_BYTES = 16 * 1024 * 1024
@@ -32,6 +32,8 @@ _ARTIFACT_FIELDS = {
     "BOT": "agent_certificate_digest sim_certificate_digest agent_environment_certificate_digest sim_environment_certificate_digest step_map exogenous_transitions initial_observation_record separation",
     "SIM": "transition trajectory_digest entropy_digest times_digest initial_state invariants finite_state_set finite_entropy_set projection macro_digest tolerance observation action_bounds shards",
     "TOKEN": "tokens_digest epochs_digest statuses_digest clock clock_skew issuing_keys key_retirements accepted_algorithms root_scopes audience period status_schedule observed_at",
+    "ACTOR": "actor_id control_surface decision_classes admitted_spaces instrument_boundary delegations_digest decisions_digest",
+    "OWNER": "holder_actor_id held_object_coordinate held_object_digest limbs limbs_kind instrument term chain_origin events_digest",
 }
 _INPUT_FIELDS = {
     "DATA": "shards", "ENV": "files configuration measurements executions",
@@ -42,6 +44,8 @@ _INPUT_FIELDS = {
     "AGENT": "harness_certificate steps actions outcomes",
     "BOT": "agent_certificate sim_certificate agent_environment_certificate sim_environment_certificate",
     "TOKEN": "tokens epochs statuses",
+    "ACTOR": "control_keys delegation_events witness_attributions decisions",
+    "OWNER": "events held_verdict holdings_chain answering_duties accountability_witnesses",
 }
 
 
@@ -78,7 +82,7 @@ def _hash(value: Any) -> str:
 
 def implementation_digest() -> str:
     dependencies = {}
-    for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "data", "env", "bench", "numerical", "train", "model", "sim", "harness", "agent", "bot", "token")),
+    for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "data", "env", "bench", "numerical", "train", "model", "sim", "harness", "agent", "bot", "token", "actor", "owner")),
                            ("verifier.core", ("certificate", "evidence", "receipt"))):
         for name in names:
             dependencies[package+"."+name] = hashlib.sha256(resources.files(package).joinpath(name+".py").read_bytes()).hexdigest()
@@ -125,25 +129,25 @@ def domain_request(evidence: dict, *, target_depth: int | None = None) -> dict:
     domain = bundle["domain"]
     return _request({"schema_version": "verifier-domain-request-1", "domain": domain,
         "subject_id": bundle["subject_id"], "artifact_digest": digest(bundle["artifact"]),
-        "evidence_ref": digest(bundle), "target_depth": len(CHECKS[domain]) if target_depth is None else target_depth})
+        "evidence_ref": digest(bundle), "target_depth": len(ALL_CHECKS[domain]) if target_depth is None else target_depth})
 
 
 def _request(value: Any) -> dict:
     value = obj(_snapshot(value), {"schema_version", "domain", "subject_id", "artifact_digest", "evidence_ref", "target_depth"})
     same(value["schema_version"], "verifier-domain-request-1", "unsupported domain request")
-    if value["domain"] not in CHECKS:
+    if value["domain"] not in ALL_CHECKS:
         raise ValueError("unknown domain")
     text(value["subject_id"])
     _hash(value["artifact_digest"])
     _hash(value["evidence_ref"])
-    integer(value["target_depth"], 1, len(CHECKS[value["domain"]]))
+    integer(value["target_depth"], 1, len(ALL_CHECKS[value["domain"]]))
     return value
 
 
 def _bundle(value: Any) -> dict:
     value = obj(_snapshot(value), {"schema_version", "domain", "subject_id", "artifact", "inputs"})
     same(value["schema_version"], "verifier-domain-evidence-1", "unsupported domain evidence")
-    if value["domain"] not in CHECKS:
+    if value["domain"] not in ALL_CHECKS:
         raise ValueError("unknown domain")
     text(value["subject_id"])
     for field, allowed in (("artifact", _ARTIFACT_FIELDS), ("inputs", _INPUT_FIELDS)):
@@ -156,7 +160,7 @@ class NativeDomainAdapter:
     """Executable mechanism for one domain; registration supplies no implicit authority."""
 
     def __init__(self, domain: str, policy: dict) -> None:
-        if domain not in CHECKS:
+        if domain not in ALL_CHECKS:
             raise ValueError("unknown domain")
         self.domain = domain
         self.policy = _policy(policy)
@@ -174,7 +178,11 @@ class NativeDomainAdapter:
             same(bundle["domain"], self.domain, "domain differs")
             same(digest(bundle["artifact"]), binding.parameters["artifact_digest"], "artifact differs")
             same(digest(self.policy), binding.parameters["policy_digest"], "checker policy differs")
-            names = dict((f"{self.domain}.{i}", c[0]) for i,c in enumerate(CHECKS[self.domain],1))
+            names = {}
+            for i, c in enumerate(ALL_CHECKS[self.domain], 1):
+                coord = COORDINATES[self.domain][i - 1]
+                names[coord] = c[0]
+                names[f"{self.domain}.{i}"] = c[0]
             if binding.predicate not in names:
                 raise Unavailable("unsupported domain predicate")
             budget = Budget(self.policy["max_operations"], self.policy["max_items"])
@@ -216,14 +224,14 @@ def build_domain_certificate(request: dict, evidence: dict, *, policy: dict) -> 
     adapter = NativeDomainAdapter(request["domain"], policy)
     session.register(adapter)
     rows, depth, holds = {}, 0, set()
-    for i, (name, statement, depends) in enumerate(CHECKS[request["domain"]][:request["target_depth"]], 1):
-        coordinate = f"{request['domain']}.{i}"
+    for i, (name, statement, depends) in enumerate(ALL_CHECKS[request["domain"]][:request["target_depth"]], 1):
+        coordinate = COORDINATES[request["domain"]][i - 1]
         proposition = BoundProposition(subject_id=request["subject_id"], predicate=coordinate, expected=True,
             mechanism_id=adapter.mechanism_id, mechanism_digest=adapter.mechanism_digest, evidence_refs=(ref,),
             trust_roots=tuple(policy["trust_roots"]), bounds=EvidenceBounds(1, policy["max_evidence_bytes"]),
             parameters={"artifact_digest": request["artifact_digest"], "policy_digest": digest(policy), "request_digest": digest(request)})
         evaluated = session.evaluate(proposition).to_dict()
-        blocked = [f"{request['domain']}.{d}" for d in depends if d not in holds]
+        blocked = [COORDINATES[request["domain"]][d - 1] for d in depends if d not in holds]
         established = not blocked and evaluated["outcome"] == "PASS"
         if established:
             holds.add(i)

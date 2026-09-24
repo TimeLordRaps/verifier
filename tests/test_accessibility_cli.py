@@ -41,7 +41,7 @@ def specimens() -> dict:
 
 @pytest.fixture(scope="module")
 def partial_sim(specimens: dict) -> dict:
-    """A SIM certificate with an interior gap: SIM.3 UNKNOWN, SIM.4/5 PASS."""
+    """A SIM certificate with an interior gap: SIM-2.5 UNKNOWN, SIM-1.4/4.1 PASS."""
     bundle = deepcopy(specimens["SIM"])
     bundle["artifact"]["projection"] = {}
     policy = domain_policy(trust_roots=["test:retained-inputs", "test:checker"])
@@ -127,22 +127,22 @@ def test_explain_separates_established_count_from_counted_prefix(partial_sim, tm
     """The headline surprise: four checks established, depth two.
 
     A reader must not be able to conclude that depth is the number of
-    established checks, nor that SIM.4 and SIM.5 failed.
+    established checks, nor that SIM-1.4 and SIM-4.1 failed.
     """
     path = tmp_path / "certificate.json"
     path.write_text(json.dumps(partial_sim), encoding="utf-8")
     report = explain_report(path)
 
     rows = {r["coordinate"]: r for r in report["rows"]}
-    assert rows["SIM.3"]["outcome"] == "UNKNOWN" and not rows["SIM.3"]["established"]
-    assert [rows[c]["established"] for c in ("SIM.4", "SIM.5")] == [True, True]
+    assert rows["SIM-2.5"]["outcome"] == "UNKNOWN" and not rows["SIM-2.5"]["established"]
+    assert [rows[c]["established"] for c in ("SIM-3.1", "SIM-4.1")] == [True, True]
     assert report["depth"] == 2
     assert len([r for r in report["rows"] if r["established"]]) == 4
 
     note = report["depth_note"]
     assert note is not None, "an interior gap must be explained, not left implicit"
-    assert "SIM.3" in note and "SIM.4" in note and "SIM.5" in note
-    assert report["next"].startswith("Supply evidence for SIM.3")
+    assert "SIM-2.5" in note and "SIM-3.1" in note and "SIM-4.1" in note
+    assert report["next"].startswith("Supply evidence for SIM-2.5")
 
 
 def test_explain_names_the_reason_not_just_the_outcome(partial_sim, tmp_path) -> None:
@@ -150,7 +150,7 @@ def test_explain_names_the_reason_not_just_the_outcome(partial_sim, tmp_path) ->
     path.write_text(json.dumps(partial_sim), encoding="utf-8")
     rows = {r["coordinate"]: r for r in explain_report(path)["rows"]}
     # the checker's own detail string, surfaced rather than discarded
-    assert "empty macro projection" in rows["SIM.3"]["meaning"]
+    assert "empty macro projection" in rows["SIM-2.5"]["meaning"]
 
 
 @pytest.fixture(scope="module")
@@ -214,10 +214,10 @@ def test_explain_does_not_advise_more_evidence_for_a_refutation(specimens, tmp_p
     report = explain_report(path)
 
     rows = {r["coordinate"]: r for r in report["rows"]}
-    assert rows["SIM.3"]["outcome"] == "FAIL"
-    assert rows["SIM.3"]["meaning"].startswith("refuted by its own evidence")
+    assert rows["SIM-2.5"]["outcome"] == "FAIL"
+    assert rows["SIM-2.5"]["meaning"].startswith("refuted by its own evidence")
     # the reason travels with the verdict, so the reader is not sent hunting
-    assert rows["SIM.3"]["reason"] in rows["SIM.3"]["meaning"]
+    assert rows["SIM-2.5"]["reason"] in rows["SIM-2.5"]["meaning"]
     assert "refuted by its own evidence" in report["next"]
     assert "Supply evidence" not in report["next"]
 

@@ -30,7 +30,7 @@ def token_issuer() -> tuple:
 
     The key is derived from a public label, so its signatures authenticate nothing
     outside this example. Without the seal extra no signature can be made: a stand-in
-    key and placeholder signatures keep every other TOKEN check runnable, and TOKEN.4
+    key and placeholder signatures keep every other TOKEN check runnable, and TOKEN-1.2
     reports UNKNOWN because no signature backend is available to check them.
     """
     seed = hashlib.sha256(b"example:token-issuer").digest()
@@ -300,10 +300,10 @@ if __name__ == "__main__":
         certificate = build_domain_certificate(request, evidence, policy=policy)
         result = recheck_domain_certificate(certificate, expected_request=request, policy=policy)
         print(domain, result["status"], result["domain_depth"], flush=True)
-        # Without the seal extra TOKEN.4 cannot check a signature and reports UNKNOWN;
+        # Without the seal extra TOKEN-1.2 cannot check a signature and reports UNKNOWN;
         # every other TOKEN check still has to replay.
         unsigned = (domain == "TOKEN" and result["status"] == "UNKNOWN"
-                    and result["checks"]["TOKEN.4"]["evaluation"]["details"] == "signature backend unavailable"
-                    and all(row["established"] for key, row in result["checks"].items() if key != "TOKEN.4"))
+                    and result["checks"]["TOKEN-1.2"]["evaluation"]["details"] == "signature backend unavailable"
+                    and all(row["established"] for key, row in result["checks"].items() if key != "TOKEN-1.2"))
         if result["status"] != "PASS" and not unsigned:
             raise SystemExit(json.dumps(result, indent=2))

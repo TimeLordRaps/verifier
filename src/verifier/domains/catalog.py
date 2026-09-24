@@ -92,6 +92,38 @@ CHECKS = {
     ),
 }
 
+COORDINATES = {
+    "DATA": ("DATA-1.2", "DATA-1.4", "DATA-2.1", "DATA-4.1", "DATA-4.4"),
+    "ENV": ("ENV-1.2", "ENV-1.4", "ENV-3.3", "ENV-2.3"),
+    "BENCH": ("BENCH-1.2", "BENCH-1.4", "BENCH-4.1", "BENCH-3.6"),
+    "TRAIN": ("TRAIN-1.1", "TRAIN-1.3", "TRAIN-4.1", "TRAIN-2.3", "TRAIN-2.1"),
+    "MODEL": ("MODEL-1.5", "MODEL-1.1", "MODEL-2.1", "MODEL-4.1", "MODEL-4.3"),
+    "SIM": ("SIM-2.1", "SIM-3.1", "SIM-2.5", "SIM-1.4", "SIM-4.1"),
+    "HARNESS": ("HARNESS-1.1", "HARNESS-2.1", "HARNESS-2.2", "HARNESS-2.3", "HARNESS-4.1"),
+    "AGENT": ("AGENT-1.1", "AGENT-2.1", "AGENT-2.3", "AGENT-4.1", "AGENT-4.3"),
+    "BOT": ("BOT-1.1", "BOT-2.1", "BOT-2.2", "BOT-2.3", "BOT-4.1"),
+    "TOKEN": ("TOKEN-1.1", "TOKEN-1.4", "TOKEN-2.4", "TOKEN-1.2", "TOKEN-2.12"),
+    "ACTOR": ("ACTOR-1.1", "ACTOR-2.1", "ACTOR-3.2", "ACTOR-4.2"),
+    "OWNER": ("OWNER-1.3", "OWNER-2.1", "OWNER-3.1", "OWNER-4.5"),
+}
+
+ACCOUNTABLE_CHECKS = {
+    "ACTOR": (
+        ("identity", "Verify bound control keys match artifact control surface and ensure instrument boundary does not overlap actor boundary.", ()),
+        ("delegation", "Replay delegation events from declared digest and verify no delegation conveys authority outside actor's decision classes.", (1,)),
+        ("accountability", "Verify witness attributions bind the declared actor and reject sole witness self-attribution.", (1,)),
+        ("attribution", "Verify decisions trace contiguously, attribute to declared actor within decision classes, and use verified external instruments.", (1, 2)),
+    ),
+    "OWNER": (
+        ("limbs", "Verify consequence limbs are within recognized consequence set, limb kinds are valid, and term interval is well-ordered.", ()),
+        ("lifecycle", "Replay lifecycle events (freeze, seal, thaw, transfer, revocation, lapse) and verify valid sequence and limb holding.", (1,)),
+        ("independence", "Verify holding consequence boundaries never alters computational verdicts, digests, or evidence bytes.", (1,)),
+        ("accountability", "Verify accountability floor and discharge-duty terminate in an accountable person with valid witness binding.", (1, 2, 3)),
+    ),
+}
+
+ALL_CHECKS = {**CHECKS, **ACCOUNTABLE_CHECKS}
+
 SCOPES = {
     "DATA": "complete retained dataset and declared transformation boundary",
     "ENV": "retained software inventory and named collector observations",
@@ -105,15 +137,24 @@ SCOPES = {
     "TOKEN": "complete retained token holding descending from one birth token under checker-admitted issuing keys",
 }
 
+ACCOUNTABLE_SCOPES = {
+    "ACTOR": "accountable party identity, control surface, delegation trace and decision attribution",
+    "OWNER": "artifact consequence limbs, lifecycle holding, and accountability floor terminating in natural persons",
+}
 
-def domain_catalog() -> dict:
+ALL_SCOPES = {**SCOPES, **ACCOUNTABLE_SCOPES}
+
+
+def domain_catalog(include_accountable: bool = False) -> dict:
     """Describe all native domain propositions, scopes and cumulative prerequisites."""
+    checks_map = ALL_CHECKS if include_accountable else CHECKS
+    scopes_map = ALL_SCOPES if include_accountable else SCOPES
     return {"schema_version": "verifier-domain-catalog-1", "domains": {
-        domain: {"scope": SCOPES[domain], "checks": [
-            {"id": f"{domain}.{i}", "name": name, "proposition": statement,
-             "depends_on": [f"{domain}.{d}" for d in depends]}
+        domain: {"scope": scopes_map[domain], "checks": [
+            {"id": COORDINATES[domain][i - 1], "name": name, "proposition": statement,
+             "depends_on": [COORDINATES[domain][d - 1] for d in depends]}
             for i, (name, statement, depends) in enumerate(checks, 1)]}
-        for domain, checks in CHECKS.items()}}
+        for domain, checks in checks_map.items()}}
 
 
 def domain_specification_digest() -> str:

@@ -387,6 +387,85 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "ACTOR"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "actor_id": {},
+              "admitted_spaces": {},
+              "control_surface": {},
+              "decision_classes": {},
+              "decisions_digest": {},
+              "delegations_digest": {},
+              "instrument_boundary": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "control_keys": {},
+              "decisions": {},
+              "delegation_events": {},
+              "witness_attributions": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "OWNER"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "chain_origin": {},
+              "events_digest": {},
+              "held_object_coordinate": {},
+              "held_object_digest": {},
+              "holder_actor_id": {},
+              "instrument": {},
+              "limbs": {},
+              "limbs_kind": {},
+              "term": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "accountability_witnesses": {},
+              "answering_duties": {},
+              "events": {},
+              "held_verdict": {},
+              "holdings_chain": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
     }
   ],
   "description": "Structural envelope only. Domain evaluators check retained contract semantics; certificate replay requires external intent and policy.",
@@ -405,7 +484,9 @@
         "HARNESS",
         "AGENT",
         "BOT",
-        "TOKEN"
+        "TOKEN",
+        "ACTOR",
+        "OWNER"
       ]
     },
     "inputs": {
