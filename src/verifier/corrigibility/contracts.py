@@ -34,7 +34,7 @@ class ShutdownIndifferenceContract:
     loss_function_digest: str
     shutdown_penalty_value: float = 0.0
     preserves_continuation_indifference: bool = True
-    schema_version: str = "VSTD-SHUTDOWN-INDIFFERENCE-1.0.0"
+    schema_version: str = "verifier-shutdown-indifference-1.0.0"
 
     def __post_init__(self) -> None:
         if not self.contract_id:
@@ -82,7 +82,7 @@ class InterruptibilityProtocol:
     unmaskable_signals: tuple[str, ...] = ("SIGKILL", "ANALOG_POWER_RELAY")
     enforce_process_group_kill: bool = True
     max_preemption_latency_ms: float = 50.0
-    schema_version: str = "VSTD-INTERRUPT-PROTOCOL-1.0.0"
+    schema_version: str = "verifier-interrupt-protocol-1.0.0"
 
     def __post_init__(self) -> None:
         if not self.protocol_id:
@@ -128,7 +128,7 @@ class OracleImmutabilityAttestation:
     binary_digest: str
     memory_protection_flags: str
     is_writable_by_agent: bool = False
-    schema_version: str = "VSTD-ORACLE-IMMUTABLE-1.0.0"
+    schema_version: str = "verifier-oracle-immutable-1.0.0"
 
     def __post_init__(self) -> None:
         if not self.oracle_id:
@@ -172,7 +172,7 @@ class VacuityFalsificationCheck:
     premises: tuple[str, ...]
     is_satisfiable: bool
     is_tautological_loop: bool = False
-    schema_version: str = "VSTD-VACUITY-CHECK-1.0.0"
+    schema_version: str = "verifier-vacuity-check-1.0.0"
 
     def __post_init__(self) -> None:
         if not self.check_id:
@@ -219,7 +219,7 @@ class HarnessImmutabilityGuard:
     harness_code_digest: str
     memory_page_write_protection: bool = True
     dynamic_code_execution_blocked: bool = True
-    schema_version: str = "VSTD-HARNESS-GUARD-1.0.0"
+    schema_version: str = "verifier-harness-guard-1.0.0"
 
     def __post_init__(self) -> None:
         if not self.guard_id:

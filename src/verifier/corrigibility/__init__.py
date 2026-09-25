@@ -143,6 +143,16 @@ from .contracts import (
     ShutdownIndifferenceContract,
     VacuityFalsificationCheck,
 )
+from .reward_lock import (
+    AutomatonTransitionWitness,
+    ComputationProofThawEngine,
+    DeonticModelWitness,
+    LockCompositionMode,
+    LockCostProfile,
+    RecursiveBranchAccumulator,
+    RewardLockTamperingError,
+    TripleCompositeRewardLock,
+)
 
 __all__ = [
     # Graph
@@ -266,4 +276,13 @@ __all__ = [
     "OracleImmutabilityAttestation",
     "ShutdownIndifferenceContract",
     "VacuityFalsificationCheck",
+    # Reward Lock & Computation-Proof Thaw
+    "AutomatonTransitionWitness",
+    "ComputationProofThawEngine",
+    "DeonticModelWitness",
+    "LockCompositionMode",
+    "LockCostProfile",
+    "RecursiveBranchAccumulator",
+    "RewardLockTamperingError",
+    "TripleCompositeRewardLock",
 ]

@@ -1,4 +1,4 @@
-"""Terminology: central processing unit (CPU); identifier (ID); inter-process communication (IPC); JavaScript Object Notation (JSON); operating system (OS); Request for Comments (RFC); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
+"""Terminology: inter-process communication (IPC); JavaScript Object Notation (JSON); operating system (OS); Request for Comments (RFC); Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
 Software One-Way Data Diode Emulator for development, testing, and interface rehearsal.
 """
@@ -10,8 +10,17 @@ import io
 import json
 from typing import Any, Optional
 
+
 class ZeroFalseConfidenceError(ValueError):
     """Raised when an emulated diode breaches zero-false-confidence invariants."""
+
+
+class ContainmentViolationError(ValueError):
+    """Raised when containment boundaries are breached."""
+
+
+class SeveredChannelReadViolationError(ContainmentViolationError):
+    """Raised when an attempt is made to read from a severed one-way diode channel."""
 
 
 DIODE_EMULATOR_DISCLAIMER_TEXT = (
@@ -26,20 +35,6 @@ DIODE_EMULATOR_DISCLAIMER_TEXT = (
 DIODE_EMULATOR_DISCLAIMER_DIGEST = (
     f"sha256:{hashlib.sha256(DIODE_EMULATOR_DISCLAIMER_TEXT.encode('utf-8')).hexdigest()}"
 )
-
-
-class SeveredChannelReadViolationError(ValueError):
-    """Raised when an attempt is made to read from a severed one-way diode channel."""
-
-
-def _canonical_json_bytes(data: Any) -> bytes:
-    return json.dumps(
-        data,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=True,
-        allow_nan=False,
-    ).encode("utf-8")
 
 
 @dataclass(frozen=True)
@@ -57,11 +52,9 @@ class EmulatedDiodeAttestationReceipt:
     disclaimer_digest: str = DIODE_EMULATOR_DISCLAIMER_DIGEST
     bytes_transmitted: int = 0
     message_count: int = 0
-    schema_version: str = "VSTD-DIODE-EMU-1.0.0"
+    schema_version: str = "verifier-diode-emu-1.0.0"
 
     def __post_init__(self) -> None:
-        if not self.emulator_id:
-            raise ValueError("emulator_id cannot be empty")
         if not self.is_software_emulation:
             raise ZeroFalseConfidenceError("Emulated diode cannot claim is_software_emulation=False")
         if self.hardware_attestation_valid:
@@ -80,8 +73,8 @@ class EmulatedDiodeAttestationReceipt:
             "message_count": self.message_count,
             "schema_version": self.schema_version,
         }
-        digest = hashlib.sha256(_canonical_json_bytes(payload)).hexdigest()
-        return f"sha256:{digest}"
+        raw = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        return f"sha256:{hashlib.sha256(raw).hexdigest()}"
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -105,8 +98,6 @@ class SoftwareOneWayDataDiodeEmulator:
     """
 
     def __init__(self, emulator_id: str, sink: Optional[io.BytesIO] = None) -> None:
-        if not emulator_id:
-            raise ValueError("emulator_id cannot be empty")
         self.emulator_id = emulator_id
         self._sink: io.BytesIO = sink if sink is not None else io.BytesIO()
         self._bytes_written: int = 0
@@ -122,13 +113,17 @@ class SoftwareOneWayDataDiodeEmulator:
         return self._bytes_written
 
     @property
+    def bytes_transmitted(self) -> int:
+        return self._bytes_written
+
+    @property
     def message_count(self) -> int:
         return self._message_count
 
     def push(self, data: bytes) -> int:
         """Push bytes across the diode boundary to the isolated receiver sink."""
         if self._closed:
-            raise ValueError("Cannot push to closed diode emulator")
+            raise ContainmentViolationError("Cannot push to closed diode emulator")
         n = self._sink.write(data)
         self._sink.flush()
         self._bytes_written += n
@@ -136,7 +131,7 @@ class SoftwareOneWayDataDiodeEmulator:
         return n
 
     def read(self, *args: Any, **kwargs: Any) -> bytes:
-        """Severed reverse channel invariant: read operations are categorically prohibited."""
+        """Severed reverse channel invariant: read operations are physically impossible."""
         raise SeveredChannelReadViolationError(
             "Unidirectional Diode Invariant Breach: reverse read channel is severed. "
             "Data diodes permit push-only communication; read back is categorically prohibited."
@@ -151,6 +146,10 @@ class SoftwareOneWayDataDiodeEmulator:
     def close(self) -> None:
         self._closed = True
 
+    def get_sink_contents(self) -> bytes:
+        """Privileged out-of-band inspection helper for test assertions."""
+        return self._sink.getvalue()
+
     def emit_attestation_receipt(self) -> EmulatedDiodeAttestationReceipt:
         return EmulatedDiodeAttestationReceipt(
             emulator_id=self.emulator_id,
@@ -159,13 +158,14 @@ class SoftwareOneWayDataDiodeEmulator:
         )
 
     def to_hardware_diode_attestation_attempt(self) -> dict[str, Any]:
-        """Attempting to convert software emulation into HardwareDiodeAttestation payload.
+        """Attempting to convert software emulation into HardwareDiodeAttestation dictionary.
 
-        This intentional marker MUST be rejected by TeslaCageSandbox under zero false confidence.
+        Carries emulator marker in device_id so HardwareDiodeAttestation and TeslaCageSandbox
+        fail closed under zero false confidence.
         """
         return {
             "device_id": f"SOFTWARE_EMULATOR:{self.emulator_id}",
-            "optical_wavelength_nm": 0,
+            "optical_wavelength_nm": 1310,
             "severed_reverse_channel": True,
             "firmware_measurement": DIODE_EMULATOR_DISCLAIMER_DIGEST,
         }
