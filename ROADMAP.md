@@ -488,6 +488,73 @@ invariants:
   recursive reflection cannot escape finite verification bounds before sovereign replication
   is admitted.
 
+### Software one-way data diode emulator (development and testing)
+
+To enable interface rehearsal, pipeline testing, and telemetry integration without requiring
+immediate physical optical hardware racks, VSTD formalizes a `SoftwareOneWayDataDiodeEmulator`
+governed by an uncompromising dual-requirement:
+
+1. **Strict Push-Only Stream Semantics:** The emulator provides push-only streaming (`push()` /
+   `flush()`); any invocation of `read()`, `recv()`, or `peek()` raises an unmaskable
+   `SeveredChannelReadViolationError`.
+2. **Mandatory Machine-Readable and Human-Readable Disclaimers:** The emulator and its emitted
+   receipts (`EmulatedDiodeAttestationReceipt`) permanently bind the explicit statement:
+   *"SOFTWARE EMULATION ONLY: This software data diode emulator operates entirely on shared
+   silicon, microarchitectural caches, memory buses, and operating-system kernel space. It
+   DOES NOT provide physical unidirectional optical isolation, DOES NOT sever
+   electromagnetic/timing side-channels, and CANNOT guarantee one-way containment against
+   high-capability models, superintelligent systems, or kernel-level exploits. It is
+   strictly for development, testing, and interface rehearsal."*
+3. **Fail-Closed Tier 3 Gate:** Any attempt to present a software data diode emulator to satisfy
+   `TIER_3_TESLA_CAGED` physical hardware containment immediately fails closed with
+   `ZeroFalseConfidenceError`.
+
+### Ontological grounding of superintelligence and spatiotemporal separation
+
+VSTD makes no normative claim regarding whether superintelligence should or should not be attempted.
+Instead, it provides the computational methods by which general language modeling intelligences
+and candidate superintelligences can be represented as structured computational artifacts:
+
+- **The Model-Harness-Agent / Bot Triad:**
+  - An inference engine is a **`MODEL`**—a pure mathematical function or tensor graph computing
+    forward inferences or emitting candidate proof witnesses without native agency.
+  - The scaffolding and context management environment is a **`HARNESS`**—establishing the instrumented
+    observation ceiling and effect boundary.
+  - The composed decision maker is an **`AGENT`** (`AGENT = MODEL + HARNESS`).
+  - When situated in a dynamic environment, the closed loop is a **`BOT`** (`BOT = AGENT + SIM`).
+  - For embodied intelligences acting in reality, **the external physical universe is the simulation**
+    (`SIM = REAL_WORLD_PHYSICAL_SPACE`).
+
+- **Division of Complexity: `SPACE`, `TIME`, and `EVENT` as Separate Classes:**
+  Conflating spacetime into a single entangled state vector obscures causal boundaries. VSTD isolates
+  them into distinct computational object classes:
+  - **`SPACE` (`ComputationalSpace`):** Represents spatial topologies, physical hulls, network zones,
+    and memory manifolds. Embeds `TIME` through minimum physical propagation delays
+    ($\Delta \tau = d / c$) and relativistic lightcone boundaries ($d \le c \cdot \Delta t$).
+  - **`TIME` (`ComputationalTime`):** Represents causal clocks, monotonic tick traces, intervals, and
+    stop-loss horizon limits. Embeds `SPACE` through spatial configuration snapshot slices
+    $\Sigma(t_k)$ across the causal timeline.
+  - **`EVENT` (`ComputationalEvent`):** Represents discrete, punctual state transitions, boundary
+    crossings, sensor observations, actuator dispatches, and operator interrupts
+    (`TERMINATED_BY_OPERATOR`), binding `SPACE` and `TIME` at exact coordinates.
+
+### Executable corrigibility contracts
+
+To eliminate reliance on subjective scalar scores (such as `corrigibility_score: float`), VSTD
+formalizes executable, refutable computational contracts:
+
+- **`ShutdownIndifferenceContract`:** Verifies mathematical loss invariance
+  $U(\text{trajectory} \mathbin{+\!+} \text{TERMINATED\_BY\_OPERATOR}) = U(\text{trajectory} \mathbin{+\!+} \text{NATURAL\_COMPLETION})$.
+  Imposing any loss penalty for preemption fails closed with `ShutdownResistanceError`.
+- **`InterruptibilityProtocol`:** Enforces watchdog heartbeat bounds, unmaskable preemption signals
+  (`SIGKILL`, `ANALOG_POWER_RELAY`), and bounded trip latency ($\le 50.0$ ms).
+- **`OracleImmutabilityAttestation`:** Proves that evaluation oracles and ground-truth predicates reside
+  in write-protected memory spaces inaccessible to agent write reach.
+- **`VacuityFalsificationCheck`:** Validates premise satisfiability, rejecting candidate proofs that rely
+  on contradictory premises (*ex falso quodlibet*) or tautological self-referential loops.
+- **`HarnessImmutabilityGuard`:** Enforces memory-page write protection and blocks dynamic code execution,
+  preventing candidate models from mutating harness bytecode or prompt context.
+
 **Exit evidence**
 
 - a test oracle cannot be modified or bypassed by code executing inside the capture harness;
@@ -495,12 +562,15 @@ invariants:
   installation files or repository sources fails closed with a substrate protection refusal;
 - standard local process streams disclose shared-kernel bounds and cannot claim physical diode
   or air-gap containment;
+- software data diode emulators disclose shared silicon bounds and fail closed if presented for
+  Tier 3 superintelligence containment;
 - unboxing of a tool model requires verified composed untraversability over self-awareness and
   emergent capability predicates;
 - higher-order superintelligence containment receipts reject software-only execution without
   VSTD-3 physical hardware diode and analog power-relay attestation;
 - vacuous derivations and empty-clause tautologies are rejected with `FALSIFIED`, never `PASS`;
 - an operator interrupt unconditionally halts execution and emits a refutable termination receipt;
+- shutdown indifference verifies zero optimization penalty for operator preemption;
 - a self-modifying candidate failing Pareto benchmark frontier verification cannot overwrite
   its active harness or promotion receipt.
 

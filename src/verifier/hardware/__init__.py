@@ -3,6 +3,13 @@
 VSTD 3 accelerator-accountability reference implementation."""
 
 from .conformance import ConformanceProfile, evaluate_conformance
+from .diode_emulator import (
+    DIODE_EMULATOR_DISCLAIMER_DIGEST,
+    DIODE_EMULATOR_DISCLAIMER_TEXT,
+    EmulatedDiodeAttestationReceipt,
+    SeveredChannelReadViolationError,
+    SoftwareOneWayDataDiodeEmulator,
+)
 from .emulator import VirtualVSTDAccelerator
 from .models import (
     AcceleratorDescriptor,
@@ -39,12 +46,17 @@ __all__ = [
     "ClaimKind",
     "ClaimStatus",
     "ContinuityRecord",
+    "DIODE_EMULATOR_DISCLAIMER_DIGEST",
+    "DIODE_EMULATOR_DISCLAIMER_TEXT",
+    "EmulatedDiodeAttestationReceipt",
     "EvidenceGap",
     "EvidenceSource",
     "FleetManifest",
     "FleetObservation",
     "LogicalDeviceIdentity",
     "PhysicalDeviceIdentity",
+    "SeveredChannelReadViolationError",
+    "SoftwareOneWayDataDiodeEmulator",
     "TopologySnapshot",
     "VSTD3Receipt",
     "VirtualVSTDAccelerator",

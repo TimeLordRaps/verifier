@@ -85,6 +85,11 @@ class HardwareDiodeAttestation:
     def __post_init__(self) -> None:
         if not self.device_id:
             raise ContainmentViolationError("device_id cannot be empty")
+        if self.device_id.startswith("SOFTWARE_EMULATOR:"):
+            raise ZeroFalseConfidenceError(
+                "Zero False Confidence Violation: Software data diode emulator cannot masquerade as "
+                "HardwareDiodeAttestation for physical containment"
+            )
         if self.optical_wavelength_nm <= 0:
             raise ContainmentViolationError("optical_wavelength_nm must be a positive integer")
         if not self.severed_reverse_channel:
@@ -203,6 +208,11 @@ class TeslaCageSandbox:
             if not self.diode_attestation:
                 raise ContainmentViolationError(
                     "TIER_3_TESLA_CAGED requires verified HardwareDiodeAttestation"
+                )
+            if self.diode_attestation.device_id.startswith("SOFTWARE_EMULATOR:"):
+                raise ZeroFalseConfidenceError(
+                    "Zero False Confidence Violation: SoftwareOneWayDataDiodeEmulator cannot be used to satisfy "
+                    "TIER_3_TESLA_CAGED physical containment. Physical optical hardware is required."
                 )
             if not self.relay_attestation:
                 raise ContainmentViolationError(

@@ -118,6 +118,31 @@ from .tesla_cage import (
     SubstrateImmunityViolationError,
     TeslaCageSandbox,
 )
+from verifier.hardware.diode_emulator import (
+    DIODE_EMULATOR_DISCLAIMER_DIGEST,
+    DIODE_EMULATOR_DISCLAIMER_TEXT,
+    EmulatedDiodeAttestationReceipt,
+    SeveredChannelReadViolationError,
+    SoftwareOneWayDataDiodeEmulator,
+)
+from .ontology import (
+    CausalTimeKind,
+    ComputationalEvent,
+    ComputationalSpace,
+    ComputationalTime,
+    EventKind,
+    GroundingEntityType,
+    SpaceTopologyKind,
+    compose_agent_ontology,
+    compose_bot_ontology,
+)
+from .contracts import (
+    HarnessImmutabilityGuard,
+    InterruptibilityProtocol,
+    OracleImmutabilityAttestation,
+    ShutdownIndifferenceContract,
+    VacuityFalsificationCheck,
+)
 
 __all__ = [
     # Graph
@@ -219,4 +244,26 @@ __all__ = [
     "verify_sim3_bisimulation_abstraction",
     "verify_sim4_agent_parity_contained",
     "verify_sim5_distributed_sharded",
+    # Data Diode Emulator
+    "DIODE_EMULATOR_DISCLAIMER_DIGEST",
+    "DIODE_EMULATOR_DISCLAIMER_TEXT",
+    "EmulatedDiodeAttestationReceipt",
+    "SeveredChannelReadViolationError",
+    "SoftwareOneWayDataDiodeEmulator",
+    # Spatiotemporal Ontology (SPACE, TIME, EVENT, Triad)
+    "CausalTimeKind",
+    "ComputationalEvent",
+    "ComputationalSpace",
+    "ComputationalTime",
+    "EventKind",
+    "GroundingEntityType",
+    "SpaceTopologyKind",
+    "compose_agent_ontology",
+    "compose_bot_ontology",
+    # Executable Corrigibility Contracts
+    "HarnessImmutabilityGuard",
+    "InterruptibilityProtocol",
+    "OracleImmutabilityAttestation",
+    "ShutdownIndifferenceContract",
+    "VacuityFalsificationCheck",
 ]

@@ -34,6 +34,9 @@ class NetworkIsolationMode(str, Enum):
     PHYSICAL_UNIDIRECTIONAL_DIODE = "PHYSICAL_UNIDIRECTIONAL_DIODE"
 
 
+from verifier.hardware.diode_emulator import ZeroFalseConfidenceError as BaseZeroFalseConfidenceError
+
+
 class EnvironmentError(ValueError):
     """Base error for ENV operations."""
 
@@ -42,8 +45,7 @@ class EnvironmentDriftError(EnvironmentError):
     """Raised when observed environment diverges from declared profile."""
 
 
-class ZeroFalseConfidenceError(EnvironmentError):
-    """Raised when software attempts to simulate physical containment primitives."""
+ZeroFalseConfidenceError = BaseZeroFalseConfidenceError
 
 
 @dataclass(frozen=True)
