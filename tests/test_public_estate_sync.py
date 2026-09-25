@@ -181,3 +181,53 @@ def test_evaluate_estate_sync_detects_drift(tmp_path: Path):
     assert any("vstd-labs.com hero badge reads" in a for a in eval_res["action_items"])
     assert any("vstd-labs.com demo session pins" in a for a in eval_res["action_items"])
     assert any("claimgarden.com index card footer reads" in a for a in eval_res["action_items"])
+
+
+def test_find_estate_path_prefers_cli_then_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    module = _load_module()
+    cli_dir = tmp_path / "from-cli"
+    env_dir = tmp_path / "from-env"
+    cli_dir.mkdir()
+    env_dir.mkdir()
+    monkeypatch.setenv("ESTATE_TEST_ROOT", str(env_dir))
+
+    assert module.find_estate_path(cli_dir, "ESTATE_TEST_ROOT") == cli_dir
+    assert module.find_estate_path(None, "ESTATE_TEST_ROOT") == env_dir
+    assert module.find_estate_path(tmp_path / "missing", "ESTATE_TEST_ROOT") == env_dir
+
+    monkeypatch.delenv("ESTATE_TEST_ROOT")
+    assert module.find_estate_path(None, "ESTATE_TEST_ROOT") is None
+
+
+def test_evaluate_estate_sync_never_probes_sibling_checkouts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    module = _load_module()
+    # Lay out sibling folders around a stand-in checkout. The script must not discover them.
+    workspace = tmp_path / "workspace"
+    monkeypatch.setattr(module, "ROOT", workspace / "verifier")
+    site = workspace / "website"
+    web = workspace / "claimgarden" / "web"
+    for folder in (module.ROOT, site, web):
+        folder.mkdir(parents=True)
+    (site / "index.html").write_text('<span class="badge badge-accent">v0.0.0 ON PYPI</span>\n', encoding="utf-8")
+    (web / "index.html").write_text('vstd-labs/gdc-sat-kernel <span>v0.0.0</span>', encoding="utf-8")
+    monkeypatch.delenv("VSTD_LABS_ROOT", raising=False)
+    monkeypatch.delenv("CLAIMGARDEN_ROOT", raising=False)
+
+    current_version = module.get_package_version(ROOT)
+    eval_res = module.evaluate_estate_sync(root=ROOT, target_version=current_version, offline=True, target_sync=True)
+    assert eval_res["vstd_labs"] == {"status": "NOT_FOUND"}
+    assert eval_res["claimgarden"] == {"status": "NOT_FOUND"}
+    assert eval_res["action_items"] == []
+    report = module.format_report(eval_res)
+    assert "pass --vstd-labs-dir or set VSTD_LABS_ROOT" in report
+    assert "pass --claimgarden-dir or set CLAIMGARDEN_ROOT" in report
+
+    # Named by the operator, the same folders are inspected.
+    monkeypatch.setenv("VSTD_LABS_ROOT", str(site))
+    monkeypatch.setenv("CLAIMGARDEN_ROOT", str(web))
+    eval_res = module.evaluate_estate_sync(root=ROOT, target_version=current_version, offline=True, target_sync=True)
+    assert eval_res["vstd_labs"]["status"] == "OBSERVED"
+    assert eval_res["vstd_labs"]["path"] == str(site)
+    assert eval_res["claimgarden"]["status"] == "OBSERVED"
+    assert any("vstd-labs.com hero badge reads 'v0.0.0 ON PYPI'" in a for a in eval_res["action_items"])
+    assert any("claimgarden.com index card footer reads 'v0.0.0'" in a for a in eval_res["action_items"])
