@@ -10,10 +10,10 @@
     },
     {
       "path": ".github/workflows/pr-description.yml",
-      "sha256": "04a97079a3dc5dbe49b53a23f3ffe7a2362937e42741dc2870eae2b19c974b79",
+      "sha256": "cb32230ad26dcb80a49d4a296f836dc89b0abf6e34fe28c60ef3a9ba7d855446",
       "symbols": [],
-      "summary": "Runs pull-request description freshness and source-tree correspondence checks on opened, synchronized, edited, reopened, and ready-for-review events.",
-      "limits": "The workflow can fail a push after it lands but cannot prevent that push, and its token has read-only repository permissions."
+      "summary": "Runs pull-request description freshness and source-tree correspondence checks on opened, synchronized, edited, reopened, and ready-for-review events; the correspondence job fetches full branch history so the review base exists.",
+      "limits": "The workflow can fail a push after it lands but cannot prevent that push, and its token has read-only repository permissions. Fetching history supplies source bytes and ancestry, not independent human review."
     },
     {
       "path": ".github/workflows/pr-policy.yml",
