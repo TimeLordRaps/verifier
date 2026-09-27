@@ -123,7 +123,8 @@ def test_missing_trusted_clock_is_unknown(example):
 
 
 @pytest.mark.parametrize("timestamp", [
-    "1970-01-01T00:03:20.0000001Z", "1970-01-01T00:03:20.000001Z",
+    "1970-01-01T00:03:20.0000001Z", "1970-01-01T00:03:20.000000001Z",
+    "1970-01-01T00:03:20.000001Z",
     "1970-01-01T00:03:20+00:00:00.0000001", None,
 ])
 def test_privacy_timestamp_never_rounds_a_different_instant(example, timestamp):
@@ -134,7 +135,8 @@ def test_privacy_timestamp_never_rounds_a_different_instant(example, timestamp):
 
 
 @pytest.mark.parametrize("timestamp", [
-    "1970-01-01T00:03:20.0000000Z", "1970-01-01T01:03:20+01:00",
+    "1970-01-01T00:03:20.0000000Z", "1970-01-01T00:03:20.000000000Z",
+    "1970-01-01T01:03:20+01:00",
     "1969-12-31T23:03:20-01:00",
 ])
 def test_equivalent_integral_privacy_instants_are_admitted(example, timestamp):

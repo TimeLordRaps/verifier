@@ -373,12 +373,12 @@
     },
     {
       "path": "src/verifier/controlled_emission.py",
-      "sha256": "e797b933d9eef2a3b0240b2fb3e09909bd3291d68e13297eb5c4d39629850910",
+      "sha256": "9d1c4c52d2de98541c00e8f875344b4f083e77d61807b2846901a7c41ff1159a",
       "symbols": [
         "evaluate_controlled_emission"
       ],
-      "summary": "Composes computational recheck with privacy, consent and governance admission into one bounded emission decision and audit receipt.",
-      "limits": "The composition does not publish artifacts, contact a network service, establish underlying evidence authenticity, or make invocation consumption atomic."
+      "summary": "Composes computational recheck with privacy, consent and governance admission into one bounded emission decision and audit receipt, including exact integral-second normalization of zero-only timestamp fractions across supported Python versions.",
+      "limits": "The composition rejects nonzero fractional instants and does not publish artifacts, contact a network service, establish underlying evidence authenticity, or make invocation consumption atomic."
     },
     {
       "path": "src/verifier/core/certification_mechanisms.py",

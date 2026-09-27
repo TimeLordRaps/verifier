@@ -100,7 +100,13 @@ Receipts are private operator audit material until separately disclosure-reviewe
             r"(?:\.0+)?(?:Z|[+-][0-9]{2}:[0-9]{2})", timestamp
         ):
             raise ValueError("privacy timestamp must identify an exact integral second")
-        instant = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+        # Python 3.10 rejects seven or more fractional digits even when they
+        # are all zero. The full match above has already excluded nonzero
+        # fractions, so remove only that redundant integral-second spelling.
+        integral_timestamp = re.sub(
+            r"\.0+(?=(?:Z|[+-][0-9]{2}:[0-9]{2})$)", "", timestamp
+        )
+        instant = datetime.fromisoformat(integral_timestamp.replace("Z", "+00:00"))
         delta = instant - datetime(1970, 1, 1, tzinfo=timezone.utc)
         exact_seconds = delta.days * 86400 + delta.seconds
         if (delta.microseconds != 0 or exact_seconds != action.timestamp
