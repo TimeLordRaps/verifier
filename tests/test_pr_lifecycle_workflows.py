@@ -424,6 +424,10 @@ def test_the_description_is_rechecked_on_every_push_and_every_edit() -> None:
 
     job = workflow["jobs"]["describes-head"]
     assert "if" not in job
+    checkout = next(step for step in job["steps"] if "actions/checkout@" in step.get("uses", ""))
+    # Source grounding compares the head tree with origin/main. A shallow
+    # single-commit checkout passed locally but failed on the hosted runner.
+    assert checkout["with"].get("fetch-depth") == 0
     (check,) = [step for step in job["steps"] if "check_pr_description.py" in str(step.get("run", ""))]
     assert check["env"]["DESCRIPTION"] == "${{ github.event.pull_request.body }}"
     assert check["env"]["HEAD_SHA"] == "${{ github.event.pull_request.head.sha }}"
