@@ -144,6 +144,14 @@ not one mandatory budget. BOT, SIM and AGENT environment operands identify their
 respective environments; this structural contract does not assert their equality
 or establish an isolation boundary between real environments.
 
+The versioned [declared identity binding](IDENTITY_OCCUPANCY.md) checks an exact
+IDENTITY, ACTOR, ROLE and selected COLLECTIVE, including typed graph substitution,
+the responsible HUMAN and admitted declared scope. A BOT declaration selects one
+of its bound SIM operands. Its replay preserves human authenticity, role authority,
+privacy, consent, governance and full object-profile conformance as NOT_ESTABLISHED.
+This direct experimental contract does not reinterpret the legacy native IDENTITY
+adapter or assign its result to a current meta-tier objective automatically.
+
 This increment does not authenticate an accountability chain, execute ARCH, prove MODEL behavior,
 establish runtime SIM containment, or fill the eight-tier obligation catalogue.
 Its OWNER structural result is not permission to acquire hardware. Missing

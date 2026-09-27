@@ -18,6 +18,11 @@ have the boundaries in [the object contract](../src/verifier/standard/NAMESPACE_
 They are not top-level supported exports or complete eight-tier certifications.
 Consumers must bind the exact source or package revision and replay their evidence
 when it changes; historical numbered-profile receipts retain their own semantics.
+The versioned [declared identity binding](../src/verifier/standard/IDENTITY_OCCUPANCY.md)
+is also a direct experimental submodule. It accepts current HUMAN, AGENT and BOT
+representations within its declared-relation scope. The legacy native IDENTITY
+adapter and command-line route retain their historical meanings; this contract
+does not migrate them or add a numbered-profile certification route.
 
 ## Supported boundary
 

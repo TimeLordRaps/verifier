@@ -30,6 +30,12 @@ and privacy those numbers. The same unversioned coordinate spelling can therefor
 name different propositions, with no completed current-object certificate
 contract and semantic mapping to disambiguate the two paths.
 
+The new [versioned identity declaration](src/verifier/standard/IDENTITY_OCCUPANCY.md)
+binds the current ACTOR-to-ROLE relation by direct Python import. Its distinct
+evidence and assessment identifiers avoid reinterpreting legacy bytes, but do not
+yet provide the current-object objective registry, certificate selection or
+command-line migration needed to close this seam.
+
 Existing numbered-profile results cannot be reinterpreted under new coordinates.
 Release remains blocked until the exact obligations, runtime contracts, schemas,
 migration and tests agree. Historical readers must preserve old receipt meanings;

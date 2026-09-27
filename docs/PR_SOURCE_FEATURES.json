@@ -1135,6 +1135,18 @@
       "limits": "PASS establishes declared ownership-kind eligibility only. Human authenticity, legal title, authority, physical containment and full object-profile conformance remain unestablished. Caller-selected checking budgets do not become runtime policy."
     },
     {
+      "path": "src/verifier/domains/contracts/identity_occupancy.py",
+      "sha256": "82ca6ca5a005cd12c59c1bd314498a5c11b0056e4105a8255ab13e260d0a13fe",
+      "symbols": [
+        "_leaves",
+        "_selected_id",
+        "assess_identity_occupancy",
+        "recheck_identity_occupancy"
+      ],
+      "summary": "Replays an exact finite namespace collection and versioned evidence to check one current IDENTITY ACTOR-to-ROLE relation, responsible HUMAN root, selected COLLECTIVE membership and declared scope; BOT scope selects one bound simulation. Captures caller collections and flat string evidence before use, rejects contradictory commitments and rehashed forged assessments. Whitespace-only evidence fields and any blank ROLE scope entry fail closed.",
+      "limits": "PASS covers a declared relation only; human authenticity, authority, evidence-reference resolution, liveness, privacy, consent, governance and full object-profile conformance remain unestablished. Direct experimental import only; legacy native IDENTITY and command-line routes retain their original meanings."
+    },
+    {
       "path": "src/verifier/domains/contracts/sim_isolation.py",
       "sha256": "b63450c7548c3f3c3c7568b17197bc8a36f52220e717bf5bb1008fd226bf07b3",
       "symbols": [
@@ -2816,6 +2828,13 @@
       "limits": "Every prerequisite needs the exact admitted mechanism. FAIL and UNKNOWN remain distinct; registration proves neither soundness nor independence, and legacy certificates are not silently converted."
     },
     {
+      "path": "src/verifier/standard/IDENTITY_OCCUPANCY.md",
+      "sha256": "20ad802868b66c004f1079096eb0b72522a2c3f6ae22c1ac9a2437e76aa307fb",
+      "symbols": [],
+      "summary": "Defines separate current identity evidence and assessment versions, exact actor/role/collective and scope bindings, BOT simulation scope, bounded field shapes, replay and PASS/FAIL/UNKNOWN behavior. Evidence strings and every admitted scope must be nonblank.",
+      "limits": "Declaration consistency does not authenticate sources or establish actual role occupancy. No automatic mapping of historical identity receipts or current meta-tier certification is specified."
+    },
+    {
       "path": "src/verifier/standard/LADDER.md",
       "sha256": "3827c6c3ed84ad1a314cc2fb630dbe0b4db5bca4d101945cb837642ee2cd3910",
       "symbols": [],
@@ -2831,10 +2850,10 @@
     },
     {
       "path": "src/verifier/standard/NAMESPACE_OBJECTS.md",
-      "sha256": "ef2fdc080c4f5d3464f61efea5156ea61776e40d2bb45d167b8100ac5306b00e",
+      "sha256": "3e3a3bb1c3c986454359bb7f53b300690f8421979bf07d7345aceca73936bece",
       "symbols": [],
-      "summary": "Specifies the 26 names and eight tier meanings, immutable object/reference commitments and collection capture, typed composition roles and graph replacement, hardware-ownership replay and the current partial-implementation/migration boundary.",
-      "limits": "The old numbered catalogues are not silently migrated and all objectives are not declared implemented. Historical receipt bytes retain original meanings; the remaining version-selection seam stays open in TIME."
+      "summary": "Specifies the 26-object/eight-tier structural hierarchy, immutable object and collection commitments, typed graph substitution, ownership eligibility and the adjacent current identity declaration contract with explicit legacy boundaries.",
+      "limits": "Current contracts are bounded structural or declared-relation checks, not complete objective certification, actor authenticity or acquisition authority. Historical numbered-profile receipts retain original meanings; current objective registration and semantic migration remain open."
     },
     {
       "path": "src/verifier/standard/PROPOSITION_TRANSFER.md",
