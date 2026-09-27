@@ -771,17 +771,26 @@ def handle_gate_command(args: argparse.Namespace) -> int:
             forbidden_terms=forbidden,
             check_secrets=not args.no_secrets,
         )
+        # The scanned path or archive member name may itself contain a secret.
+        # Keep exact locations in the local API result, but never echo them to
+        # command logs or machine-readable receipts.
+        safe_violations = [
+            {"finding_index": index, "line": int(v.get("line", 0)),
+             "kind": v["kind"] if v.get("kind") in
+             {"secret_leak", "forbidden_term_leak", "incomplete_scan"} else "other"}
+            for index, v in enumerate(violations, 1)
+        ]
         if args.json:
             print(json.dumps({
                 "status": "PASS" if not violations else "FAIL",
                 "scanned_targets": scanned,
-                "violations": violations,
+                "violations": safe_violations,
             }, indent=2))
         else:
             if violations:
                 print(f"[FAIL] Boundary gate detected {len(violations)} violations:")
-                for v in violations:
-                    print(f"  - {v['location']}:{v.get('line', 0)} [{v['kind']}] {v['label']}")
+                for v in safe_violations:
+                    print(f"  - finding {v['finding_index']} line {v['line']} [{v['kind']}]")
             else:
                 print(f"[PASS] Boundary gate clean ({scanned} items scanned).")
         return 0 if not violations else 1

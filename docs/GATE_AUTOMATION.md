@@ -33,6 +33,12 @@ inherit the user's authority, network access and environment. Planning is not a
 security approval. No schedules, hooks, remote actions or installations are added
 by the runner itself; supplied commands can perform effects and must be trusted.
 
+The boundary command's printed and JSON findings report an index, line and category
+without echoing scanned file or archive-member names, which can themselves contain
+secrets. The local `run_boundary_gate` application programming interface (API)
+still returns exact locations for a trusted caller that needs to inspect a finding
+privately.
+
 Each manifest has exactly `schema_version: verifier-gate-pipeline-1`, `root`, `inputs`,
 `steps`, `overall_timeout_seconds`, and `max_output_bytes`. `root` is relative to
 the manifest directory and cannot escape it. Inputs are explicit relative files

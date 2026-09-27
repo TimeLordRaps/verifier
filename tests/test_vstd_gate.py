@@ -329,6 +329,21 @@ def test_boundary_gate_cli_with_forbidden_flag(
     assert payload["status"] == "FAIL"
 
 
+@pytest.mark.parametrize("json_output", [False, True])
+def test_boundary_cli_does_not_log_a_secret_shaped_filename(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], json_output: bool
+) -> None:
+    secret = "sk-" + "A" * 32
+    (tmp_path / (secret + ".py")).write_text("visible forbidden marker\n", encoding="utf-8")
+    args = ["gate", "boundary", str(tmp_path), "--forbidden", "forbidden marker"]
+    if json_output:
+        args.append("--json")
+    assert main(args) == 1
+    output = capsys.readouterr().out
+    assert secret not in output
+    assert "FAIL" in output
+
+
 # ---------------------------------------------------------------------------
 # Attest Gate Tests
 # ---------------------------------------------------------------------------

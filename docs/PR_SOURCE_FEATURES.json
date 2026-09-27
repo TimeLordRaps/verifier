@@ -176,7 +176,7 @@
     },
     {
       "path": "scripts/check_pr_description.py",
-      "sha256": "5a12f031c88e1cef53c9c392fb1a123908fdc0de25cd837e46d01a1568127ed0",
+      "sha256": "fd7d3688cdd4149db0edb3e09999b886bd2d3752f7ebfc6e57636aff79afbd40",
       "symbols": [
         "_fail",
         "accountable_domain_inventory",
@@ -196,7 +196,7 @@
         "tracked_file_count",
         "use_commit"
       ],
-      "summary": "Requires a pull-request description to bind the review head, domain counts, changed source paths, and changed Python definitions to exact source bytes.",
+      "summary": "Requires a pull-request description to bind the review head, domain counts, changed source paths, and changed Python definitions to exact source bytes; commit source files are copied through bounded, path-checked regular-file extraction.",
       "limits": "Its source coverage is structural and text-based; matching entries cannot prove their semantic summaries true or tests passing."
     },
     {
@@ -271,7 +271,7 @@
     },
     {
       "path": "scripts/preflight.py",
-      "sha256": "bbb405637e89e46232e763f437e96800a8f3577b44488f1a1f45707d760f69b8",
+      "sha256": "ac3c0327aa75d806048ebf768667d9ba34bda1a287a1e9e0c70d78e812710303",
       "symbols": [
         "_run_command",
         "audit_test_skips",
@@ -288,7 +288,7 @@
         "main",
         "open_pull_requests"
       ],
-      "summary": "Streams bounded pytest runs, audits skip reasons, and adds local and pre-push pull-request description checks against GitHub metadata.",
+      "summary": "Streams bounded pytest runs, audits skip reasons, and checks pull-request descriptions against GitHub metadata while withholding branch names and failed lookup output from hook logs.",
       "limits": "Its 600-second test stop-loss and GitHub-dependent checks cover the local invocation only; a bypassed hook or unavailable remote cannot be treated as release evidence."
     },
     {
@@ -1972,7 +1972,7 @@
     },
     {
       "path": "src/verifier/runtime/gate.py",
-      "sha256": "c15595c7aa2070a5700b7b17fa830fd14ac4aff777b6d6b81551b64fdca0d73d",
+      "sha256": "bb71034f296195fc387d9c5b2daefddca937d8fc78a825d3b8c1ed6bf75eb0eb",
       "symbols": [
         "AstGateVisitor",
         "AstGateVisitor.__init__",
@@ -1998,8 +1998,8 @@
         "scan_paths_in_text",
         "verify_ci_attestation_receipt"
       ],
-      "summary": "Adds PR, path, abstract-syntax-tree, boundary, and optional HMAC attestation gate commands for selected repository evidence.",
-      "limits": "Text scans are not exhaustive secret detection, syntax-tree loop checks do not prove termination, and an attestation does not prove the reported tests ran."
+      "summary": "Adds PR, path, abstract-syntax-tree, boundary, and optional HMAC attestation gate commands; boundary CLI findings omit possibly sensitive path and archive-member names.",
+      "limits": "Text scans are not exhaustive secret detection; CLI boundary findings need trusted local API inspection to locate the affected file, and attestation does not prove the reported tests ran."
     },
     {
       "path": "src/verifier/runtime/gate_pipeline.py",

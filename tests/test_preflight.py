@@ -266,6 +266,32 @@ def test_an_unanswered_lookup_fails_the_push(failure: str, monkeypatch: pytest.M
         [("refs/heads/feature", PUSHED, "refs/heads/feature", BEFORE)], ["origin", PUSH_URL])
 
 
+def test_failed_github_lookup_does_not_print_credentials(
+        monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    secret = "ghp_" + "A" * 24
+
+    def run(command: list[str], **kwargs: object) -> tuple[int, str, str]:
+        assert command[:3] == ["gh", "pr", "list"]
+        return 1, "", "request failed with " + secret
+
+    monkeypatch.setattr(preflight, "_run_command", run)
+    assert not preflight.check_pr_descriptions_for_push(
+        [("refs/heads/feature", PUSHED, "refs/heads/feature", BEFORE)], ["origin", PUSH_URL])
+    output = capsys.readouterr().out
+    assert secret not in output
+    assert "FAIL" in output
+
+
+def test_branch_name_is_not_echoed_to_hook_logs(
+        monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    secret = "ghp_" + "B" * 24
+    branch = "feature-" + secret
+    _fake_github(monkeypatch, {branch: []})
+    assert preflight.check_pr_descriptions_for_push(
+        [("refs/heads/work", PUSHED, "refs/heads/" + branch, BEFORE)], ["origin", PUSH_URL])
+    assert secret not in capsys.readouterr().out
+
+
 def test_a_fork_pull_request_on_the_same_branch_name_is_not_moved(monkeypatch: pytest.MonkeyPatch) -> None:
     calls = _fake_github(monkeypatch, {"feature": [_pull(9, owner="Someone")]})
     assert preflight.check_pr_descriptions_for_push(

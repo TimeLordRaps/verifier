@@ -27,8 +27,9 @@ import ast
 import hashlib
 import io
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -305,17 +306,29 @@ def use_commit(commit: str, into: Path) -> str:
     )
     archive.check_returncode()
     with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as bundle:
-        # The data filter is absent before 3.10.12; the archive is our own object
-        # database, not an untrusted download, so its absence is not a hazard.
-        if hasattr(tarfile, "data_filter"):
-            bundle.extractall(into, filter="data")
-        else:  # pragma: no cover
-            target_dir = into.resolve()
-            for member in bundle.getmembers():
-                member_path = (into / member.name).resolve()
-                if not str(member_path).startswith(str(target_dir)):
-                    raise ValueError(f"Tar member {member.name} resolves outside target directory")
-            bundle.extractall(into)
+        # Copy regular source files only. This works on every supported Python
+        # version and never delegates path or link handling to tarfile extraction.
+        target_dir = into.resolve()
+        for index, member in enumerate(bundle):
+            if index >= 10000:
+                raise ValueError("commit archive member bound exceeded")
+            parts = PurePosixPath(member.name).parts
+            if (not parts or parts[0] != "src" or ".." in parts
+                    or "\\" in member.name or ":" in member.name):
+                raise ValueError("commit archive member path is invalid")
+            if member.isdir():
+                continue
+            if not member.isfile() or member.size > 16 * 1024 * 1024:
+                raise ValueError("commit archive member type or size is invalid")
+            destination = into.joinpath(*parts)
+            if not destination.resolve().is_relative_to(target_dir):
+                raise ValueError("commit archive member escapes target directory")
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            source = bundle.extractfile(member)
+            if source is None:
+                raise ValueError("commit archive member is unavailable")
+            with source, destination.open("xb") as output:
+                shutil.copyfileobj(source, output)
     SOURCE, COMMIT, TREE = into / "src", oid, f"commit {oid[:12]}"
     return oid
 

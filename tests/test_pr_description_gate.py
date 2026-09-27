@@ -11,9 +11,12 @@ mismatches it exists to catch.
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 from pathlib import Path
+import subprocess
 import sys
+import tarfile
 
 import pytest
 
@@ -32,6 +35,34 @@ def _load_gate():
 
 
 GATE = _load_gate()
+
+
+def test_commit_archive_cannot_write_to_sibling_with_shared_path_prefix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A sibling of the extraction root is outside it despite the shared prefix."""
+    gate = _load_gate()
+    target = tmp_path / "checkout"
+    sibling = tmp_path / "checkout-escape"
+    sibling.mkdir()
+    payload = b"extracted outside the requested tree\n"
+    raw = io.BytesIO()
+    with tarfile.open(fileobj=raw, mode="w") as archive:
+        member = tarfile.TarInfo("../checkout-escape/leak.py")
+        member.size = len(payload)
+        archive.addfile(member, io.BytesIO(payload))
+
+    def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess:
+        if "rev-parse" in command:
+            return subprocess.CompletedProcess(command, 0, stdout="a" * 40 + "\n")
+        assert "archive" in command
+        return subprocess.CompletedProcess(command, 0, stdout=raw.getvalue())
+
+    monkeypatch.setattr(gate.subprocess, "run", fake_run)
+    monkeypatch.delattr(gate.tarfile, "data_filter", raising=False)
+    with pytest.raises(ValueError, match="archive|member|path"):
+        gate.use_commit("a" * 40, target)
+    assert not (sibling / "leak.py").exists()
 
 
 NUMBER_WORDS = {

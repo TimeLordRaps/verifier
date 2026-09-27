@@ -394,12 +394,13 @@ def open_pull_requests(repository: str, branch: str) -> list[int]:
     A pull request from a fork can carry the same branch name; pushing here does not
     move it, so it is filtered out. Raises RuntimeError when gh cannot answer.
     """
-    code, stdout, stderr = _run_command([
+    code, stdout, _ = _run_command([
         "gh", "pr", "list", "--repo", repository, "--head", branch, "--state", "open",
         "--json", "number,headRepository,headRepositoryOwner",
     ])
     if code != 0:
-        raise RuntimeError(stderr or stdout or f"gh exited with status {code}")
+        # Command output can include credentials from a failed remote request.
+        raise RuntimeError(f"gh exited with status {code}")
     owner, name = repository.lower().split("/", 1)
     numbers = []
     for pull in json.loads(stdout or "[]"):
@@ -466,15 +467,15 @@ def check_pr_descriptions_for_push(pushes: list[tuple[str, str, str, str]],
     for branch, oid in branches:
         try:
             numbers = open_pull_requests(repository, branch)
-        except (RuntimeError, OSError, subprocess.SubprocessError, ValueError) as error:
-            print(f"[PR DESCRIPTION GATE] FAIL: could not ask GitHub whether {repository} has an "
-                  f"open pull request on {branch}: {error}")
-            print("  Authenticate gh (gh auth login), or push with --no-verify deliberately.")
+        except (RuntimeError, OSError, subprocess.SubprocessError, ValueError):
+            print("[PR DESCRIPTION GATE] FAIL: could not query open pull requests "
+                  "for the pushed branch.")
+            print("  Check gh authentication and retry; the push remains blocked.")
             success = False
             continue
         if not numbers:
-            print(f"[PR DESCRIPTION GATE] PASS: no open pull request in {repository} "
-                  f"has head branch {branch}.")
+            print("[PR DESCRIPTION GATE] PASS: no open pull request tracks "
+                  "the pushed branch.")
             continue
         for number in numbers:
             code, stdout, stderr = _run_command([
