@@ -159,6 +159,14 @@ evidence and external policy. Its semantic version distinguishes it from legacy
 `SIM-5.1` mainstay binding. This is one model-relative independence objective;
 full independence-tier conformance and physical containment remain unestablished.
 
+The [current HYPER closure route](CURRENT_HYPER_CLOSURE.md) selects versioned
+`HYPER-4.1`: exact finite declared operand-cone closure. The selected HYPER root
+and external collection commitment determine all reachable operands; unresolved
+references, cycles and unrelated extra records cannot establish this proposition.
+This is declared collection closure, not mathematical or physical world closure
+or certification of every member's own closure objectives. Legacy `HYPER-4.1`
+retains Saturation; full closure-tier and object-profile conformance stay unestablished.
+
 This increment does not authenticate an accountability chain, execute ARCH, prove MODEL behavior,
 establish runtime SIM containment, or fill the eight-tier obligation catalogue.
 Its OWNER structural result is not permission to acquire hardware. Missing

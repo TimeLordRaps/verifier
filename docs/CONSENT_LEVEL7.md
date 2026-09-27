@@ -60,6 +60,17 @@ maximum status age, minimum admitted status time and maximum chain length.
 `artifact_bindings` cannot be supplied by a request as authority. An empty set
 is `UNKNOWN`; an artifact outside the configured set is `REJECTED`.
 
+The checker captures plain built-in context and policy fields, configured key
+roots, grant envelopes and revocation evidence before authentication. The same
+captured values drive scope, freshness, revocation and receipt fields. Mutation
+of the caller's original context or policy during authentication cannot expand
+the admitted action or authority. Custom string, bytes, tuple, list and object
+subclasses are outside this plain-value admission boundary; their overridden
+length, membership, iteration or equality methods do not grant scope or satisfy
+key-length requirements. A malformed capture is `REJECTED`, with unavailable
+context, policy or evidence digests represented as `null` rather than hashing
+uncaptured caller data.
+
 Each envelope binds `key_id`, `payload`, `payload_digest` and `authenticator`.
 `authenticate_consent` computes a hash-based message authentication code (HMAC)
 using SHA-256 over a domain-separated, sorted-key compact JSON body. A digest
@@ -67,7 +78,7 @@ alone is not authentication. The evaluator recomputes both digest and
 authenticator using its external key configuration, and checks the configured
 key's actor against `issuer_id`. Unknown keys are `UNKNOWN`; known-key forgery,
 payload mutation, unexpected fields or an unauthorized authority role are
-`REJECTED`. Runtime keys must contain at least 32 bytes. Length alone does not
+`REJECTED`. Runtime keys must contain at least 32 exact bytes. Length alone does not
 establish randomness; secure provisioning is the operator's responsibility.
 
 The revocation snapshot is separately authenticated by an authorized status key.
@@ -81,7 +92,8 @@ behind its last admitted registry checkpoint.
 `recheck_consent` recomputes the complete receipt with the supplied context,
 evidence, policy, time and unchanged computational verdict. Its Boolean result
 means equality, including for an `UNKNOWN` or `REJECTED` receipt; callers must
-also inspect admission. It never treats a request-supplied `PASS` as authority.
+also inspect admission. It bounds and copies the carried receipt before
+serialization. It never treats a request-supplied `PASS` as authority.
 
 ## Authority and limitations
 
@@ -119,11 +131,19 @@ supplied historical clock proves only that historical evaluation, never current
 permission. The supplied computational verdict remains caller input, not a
 computation independently rerun by consent evaluation.
 
-All runtime imports use the standard library. Envelopes are limited to one
-mebibyte after canonical serialization, name lists to 128 entries, strings to
-512 characters and delegation to at most 16 grants. Inputs are already parsed
-Python values: these bounds are not a general untrusted JSON parser, memory
-sandbox or network denial-of-service defense.
+All runtime imports use the standard library. Candidate evidence capture is
+limited to depth 64, 50,000 traversed values, one mebibyte of encoded text,
+10,000 entries per candidate collection and at most 4,096 bits per integer.
+The trusted policy capture admits at most 50,000 combined key, role and
+artifact-binding entries and one mebibyte of descriptor source text before
+cloning. Its public descriptor remains under the one-mebibyte canonical limit.
+Configured secret-root bytes are runtime inputs outside that public text budget;
+operators must bound their storage and key-processing cost. Canonical
+serialization remains limited to one mebibyte. Text and object keys are limited
+to 512 characters, name lists to 128 entries and delegation to at most 16
+grants. These are representation limits, not physical time or assurance scores.
+Inputs are already parsed Python values: this is not a general untrusted JSON
+parser, in-process code sandbox or network denial-of-service defense.
 
 ## Reproduction
 

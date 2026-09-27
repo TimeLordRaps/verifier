@@ -346,7 +346,7 @@
     },
     {
       "path": "src/verifier/consent/engine.py",
-      "sha256": "ebc4bc5f722f55955e195f4845c6729dfa14824451342477da81e7458cc0df30",
+      "sha256": "6aa6a379ea8bdec8a2891305c5aee49a9d1fa6031cd632dac5488a294817b469",
       "symbols": [
         "ConsentContext",
         "ConsentEvaluation",
@@ -359,6 +359,9 @@
         "_Unknown",
         "_authenticate",
         "_bytes",
+        "_capture_context",
+        "_capture_plain",
+        "_capture_policy",
         "_digest",
         "_evaluate",
         "_fields",
@@ -370,8 +373,8 @@
         "evaluate_consent",
         "recheck_consent"
       ],
-      "summary": "Evaluates bounded consent policies, keyed evidence, scope and time context and rechecks the resulting admission record.",
-      "limits": "A matching retained signature and policy do not establish an external legal consent act or current revocation state beyond supplied evidence."
+      "summary": "Evaluates authenticated exact-scope consent against externally configured roots, revocation status, caller context, policy and time. Captures bounded plain evidence and trusted inputs before authentication, interpretation or receipt emission; rejects subtype membership/length deception, malformed clocks, oversized fields and deep candidate data without uncaptured receipt serialization.",
+      "limits": "Local admission under caller-selected symmetric roots only; no legal authority, execution permission, person authentication or computational correctness. Capture is not atomic against arbitrary concurrent runtime mutation. Trusted secret length has a minimum, not a finite upper operator-resource budget."
     },
     {
       "path": "src/verifier/controlled_emission.py",
@@ -1135,6 +1138,34 @@
       "limits": "PASS establishes declared ownership-kind eligibility only. Human authenticity, legal title, authority, physical containment and full object-profile conformance remain unestablished. Caller-selected checking budgets do not become runtime policy."
     },
     {
+      "path": "src/verifier/domains/contracts/hyper_closure.py",
+      "sha256": "90dd531363322e219ca087998c6dac75a5f9793ed87902b66fa2719fba023053",
+      "symbols": [
+        "CurrentHyperClosureError",
+        "_HyperClosureMechanism",
+        "_HyperClosureMechanism.__init__",
+        "_HyperClosureMechanism.evaluate",
+        "_build",
+        "_capture_collection",
+        "_cone",
+        "_digest",
+        "_limits",
+        "_name",
+        "_parameters",
+        "_parse_collection",
+        "_policy",
+        "_record",
+        "_request",
+        "build_hyper_closure_certificate",
+        "hyper_closure_policy",
+        "hyper_closure_request",
+        "mechanism_digest",
+        "recheck_hyper_closure_certificate"
+      ],
+      "summary": "Builds and replays versioned current HYPER-4.1 exact finite declared operand-cone closure. Binds external request/policy, proposition, selected HYPER root, exact collection, retained evidence and installed mechanism. Rejects missing references, cycles, unrelated records and rehashed result substitutions; captures primitive records and charges bounds before serialization.",
+      "limits": "Declared collection closure only, not mathematical or physical world closure, every member objective, full tier/profile conformance, privacy, consent, governance or authority. Legacy HYPER-4.1 Saturation retains its meaning. Experimental direct import requires external policy selection and retains complete evidence."
+    },
+    {
       "path": "src/verifier/domains/contracts/identity_occupancy.py",
       "sha256": "82ca6ca5a005cd12c59c1bd314498a5c11b0056e4105a8255ab13e260d0a13fe",
       "symbols": [
@@ -1148,7 +1179,7 @@
     },
     {
       "path": "src/verifier/domains/contracts/object_grounding.py",
-      "sha256": "64a8291d441f32fefcaeb1d1a15d781269bbfe17dc4261e3c9ad96bc88941998",
+      "sha256": "0d4c7fac5f4e1c004b9a92dc41a25e0623188ab86ad67f8a75fad7cce4d71d5a",
       "symbols": [
         "CurrentObjectGroundingError",
         "_SimConfinementMechanism",
@@ -1170,8 +1201,8 @@
         "mechanism_digest",
         "recheck_current_object_certificate"
       ],
-      "summary": "Builds and independently replays one versioned current-object SIM-5.1 certificate for finite declared capability and effect confinement. Binds the exact proposition registration, selected simulation object, complete typed collection, retained evidence, external policy, checker limits and installed mechanism; captures request and policy fields before callbacks and rejects rehashed result substitutions. Exact builtin admission types reject custom iteration, equality, length and membership behavior before checking.",
-      "limits": "One bounded model-relative independence objective only. No full tier or object-profile conformance, physical host containment, real-world model completeness or external authority. Direct experimental import; legacy SIM-5.1 mainstay binding retains its original semantics. External request and policy selection is required; labels are not authenticated roots."
+      "summary": "Builds and replays versioned current SIM-5.1 finite declared capability/effect confinement. Binds proposition, selected object, complete collection, retained finite model, external policy/request, limits and mechanism. Exact built-in fields are snapshotted into fresh records; canonical reference bytes and operation bounds are charged before whole-collection serialization.",
+      "limits": "One finite model-relative independence objective, not full tier/profile conformance, physical containment, model completeness or external authority. Experimental direct import; legacy mainstay-binding meaning unchanged. Full retained payloads establish no privacy or publication permission."
     },
     {
       "path": "src/verifier/domains/contracts/sim_isolation.py",
@@ -2766,11 +2797,18 @@
       "limits": "The reference mechanism covers at most 256 externally grounded members. Budget exhaustion remains UNKNOWN rather than INCOMPLETE; COMPLETE does not cover an unstated universe or prove source truth."
     },
     {
-      "path": "src/verifier/standard/CURRENT_OBJECT_GROUNDING.md",
-      "sha256": "98614bc071705a10f3b993ddb39599f05dc58e107b8706fe9909fdd7b0314c7b",
+      "path": "src/verifier/standard/CURRENT_HYPER_CLOSURE.md",
+      "sha256": "7f5d987c2fa38ab67d9ad394169e21b50977382f7cc771174edd3ecaf751dcf9",
       "symbols": [],
-      "summary": "Specifies current semantic namespace and SIM-5.1 finite confinement proposition, independently selected request and policy, canonical retained evidence, implementation binding and exact offline replay. Defines explicit FAIL, UNKNOWN and pre-capture bound refusal behavior.",
-      "limits": "Versioned separately from legacy numbered-profile obligations. One objective does not complete independence or the 26-object/eight-tier hierarchy; physical isolation, authority and exhaustive real-world action coverage remain unestablished."
+      "summary": "Specifies current HYPER-4.1 exact declared operand-cone closure, its versioned proposition and certificate, bound collection and external request/policy, complete evidence retention, independent replay, resource bounds and FAIL/UNKNOWN/refusal behavior.",
+      "limits": "One bounded objective. No full closure tier/profile, mathematical or physical closure, privacy proof or emission authority. Legacy Saturation is explicitly separate and unsupported migration remains open."
+    },
+    {
+      "path": "src/verifier/standard/CURRENT_OBJECT_GROUNDING.md",
+      "sha256": "ac75f2f82c87419c40a570de149061d1ca97942e95969283014aa212d32b8b40",
+      "symbols": [],
+      "summary": "Specifies current SIM-5.1 finite confinement, separate semantic version, exact canonical evidence and replay. Defines exact primitive-field snapshot and pre-serialization reference-byte/operation charging, negative verdicts, unsupported evidence and exhaustion boundaries.",
+      "limits": "Distinct from legacy mainstay binding; no full independence tier/profile, real-world completeness, arbitrary Python callback sandboxing, concurrent runtime isolation or external authority."
     },
     {
       "path": "src/verifier/standard/DERIVER_SELF_STATUS.md",
@@ -2886,10 +2924,10 @@
     },
     {
       "path": "src/verifier/standard/NAMESPACE_OBJECTS.md",
-      "sha256": "51f332800b6449c10091150b1e2eca090d6de7098f0980d502fb0c627487c705",
+      "sha256": "7272f6446489c01648f352dcd73494d8a44f1a0024018b0aab71aae004e47653",
       "symbols": [],
-      "summary": "Specifies the 26-object/eight-tier structural hierarchy, immutable object and collection commitments, typed graph substitution, ownership eligibility, current identity declaration contract and one independently versioned finite simulation confinement certificate with explicit legacy boundaries.",
-      "limits": "Structural, declared-relation and finite-model checks do not establish complete objective certification, actor authenticity, physical containment or acquisition authority. Historical numbered-profile receipts retain original meanings; remaining current objective registration and semantic migration stay open."
+      "summary": "Specifies the 26-object/eight-tier structure, typed composition, ownership eligibility, identity declaration, current SIM confinement and current HYPER exact operand-cone certificates. Separates externally bound current propositions from retained legacy numbered meanings.",
+      "limits": "Structural and finite declared-model propositions do not fill the complete hierarchy, authenticate humans, confer hardware ownership permission, establish physical or mathematical closure, or qualify privacy/consent/governance."
     },
     {
       "path": "src/verifier/standard/PROPOSITION_TRANSFER.md",

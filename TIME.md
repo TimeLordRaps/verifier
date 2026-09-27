@@ -42,6 +42,12 @@ Current `SIM-5.1` denotes this bounded model-relative independence objective;
 legacy `SIM-5.1` still denotes mainstay binding. This explicit selection does not
 resolve all remaining coordinate collisions or complete the eight-tier hierarchy.
 
+The [current HYPER closure certificate](src/verifier/standard/CURRENT_HYPER_CLOSURE.md)
+also binds one separately versioned proposition: current `HYPER-4.1` means exact
+finite declared operand-cone closure; legacy `HYPER-4.1` retains Saturation.
+This direct experimental route does not migrate legacy selection or close the
+remaining objective-registration and runtime-selection seam.
+
 Existing numbered-profile results cannot be reinterpreted under new coordinates.
 Release remains blocked until the exact obligations, runtime contracts, schemas,
 migration and tests agree. Historical readers must preserve old receipt meanings;

@@ -154,7 +154,8 @@ def _policy(value: Any) -> dict[str, Any]:
     if (any(type(root) is not str or not root.strip() or len(root) > 256 for root in roots)
             or roots != sorted(set(roots))):
         raise CurrentObjectGroundingError("policy trust roots must be bounded sorted unique labels")
-    if value["schema_version"] != POLICY_VERSION or value["mechanism_id"] != MECHANISM_ID:
+    if (type(value["schema_version"]) is not str or type(value["mechanism_id"]) is not str
+            or value["schema_version"] != POLICY_VERSION or value["mechanism_id"] != MECHANISM_ID):
         raise CurrentObjectGroundingError("unsupported current-object policy")
     if _digest(value["mechanism_digest"], "mechanism") != mechanism_digest():
         raise CurrentObjectGroundingError("policy does not admit installed current-object mechanism")
@@ -170,8 +171,11 @@ def _request(value: Any) -> dict[str, Any]:
         "isolation_evidence_digest", "policy_digest", "limits"}, "request")
     # Copy the nested plain limits before coordinate parsing and digest callbacks.
     value["limits"] = _limits(value["limits"])
-    if value["schema_version"] != REQUEST_VERSION or value["semantic_version"] != SEMANTIC_VERSION:
+    if (type(value["schema_version"]) is not str or type(value["semantic_version"]) is not str
+            or value["schema_version"] != REQUEST_VERSION or value["semantic_version"] != SEMANTIC_VERSION):
         raise CurrentObjectGroundingError("unsupported current-object semantic version")
+    if type(value["coordinate"]) is not str:
+        raise CurrentObjectGroundingError("invalid current-object coordinate")
     try:
         coordinate = ObjectCoordinate.parse(value["coordinate"])
     except (TypeError, ValueError) as exc:
@@ -191,18 +195,58 @@ def _capture_objects(objects: Sequence[NamespaceObject], limits: Mapping[str, in
         raise CurrentObjectGroundingError("collection must be a plain finite sequence")
     if len(objects) > limits["max_objects"]:
         raise Unavailable("collection object bound exhausted before serialization")
-    captured = tuple(objects)
-    if any(not isinstance(item, NamespaceObject) for item in captured):
-        raise CurrentObjectGroundingError("collection must contain immutable namespace objects")
-    payload_bytes = sum(len(item.payload_bytes) for item in captured)
-    if payload_bytes > limits["max_collection_bytes"]:
-        raise Unavailable("collection payload bound exhausted before serialization")
-    reference_bytes = sum(len(item.object_id.encode("utf-8")) for item in captured)
-    for item in captured:
-        for role, targets in item.operands:
-            reference_bytes += len(role.encode("utf-8")) + sum(len(target.encode("utf-8")) for target in targets)
-    if reference_bytes > limits["max_reference_bytes"]:
-        raise Unavailable("collection reference bound exhausted before serialization")
+    # Capture exact built-in fields before any canonicalization callback. Frozen
+    # dataclasses can still be altered with object.__setattr__, so retaining the
+    # caller's NamespaceObject instances is not a stable evidence snapshot.
+    records = []
+    payload_bytes = 0
+    operation_count = len(objects)
+    for item in objects:
+        if type(item) is not NamespaceObject:
+            raise CurrentObjectGroundingError("collection must contain exact namespace objects")
+        object_id, kind, payload, operands = item.object_id, item.kind, item.payload_bytes, item.operands
+        if (type(object_id) is not str or not object_id.strip() or len(object_id) > 256
+                or type(kind) is not ObjectKind
+                or type(payload) is not bytes or type(operands) is not tuple
+                or len(operands) > 4096):
+            raise CurrentObjectGroundingError("collection object fields must be immutable built-ins")
+        payload_bytes += len(payload)
+        if payload_bytes > limits["max_collection_bytes"]:
+            raise Unavailable("collection payload bound exhausted before serialization")
+        bindings = []
+        operation_count += len(operands)
+        if operation_count > limits["max_composition_operations"]:
+            raise Unavailable("collection operation bound exhausted before serialization")
+        for binding in operands:
+            if type(binding) is not tuple or len(binding) != 2:
+                raise CurrentObjectGroundingError("collection operand binding is malformed")
+            role, targets = binding
+            if (type(role) is not str or not role.strip() or len(role) > 256
+                    or type(targets) is not tuple or len(targets) > 4096):
+                raise CurrentObjectGroundingError("collection operand fields must be immutable built-ins")
+            if any(type(target) is not str or not target.strip() or len(target) > 256 for target in targets):
+                raise CurrentObjectGroundingError("collection operand targets must be plain text")
+            operation_count += len(targets)
+            if operation_count > limits["max_composition_operations"]:
+                raise Unavailable("collection operation bound exhausted before serialization")
+            bindings.append((role, targets))
+        records.append((object_id, kind, payload, tuple(bindings)))
+    # This is the same canonical JSON string-byte measure used by the
+    # composition checker. Escaping may make it larger than raw UTF-8.
+    reference_bytes = 0
+    for object_id, _, _, bindings in records:
+        reference_bytes += len(canonical_bytes(object_id))
+        if reference_bytes > limits["max_reference_bytes"]:
+            raise Unavailable("collection reference bound exhausted before serialization")
+        for role, targets in bindings:
+            reference_bytes += len(canonical_bytes(role))
+            if reference_bytes > limits["max_reference_bytes"]:
+                raise Unavailable("collection reference bound exhausted before serialization")
+            for target in targets:
+                reference_bytes += len(canonical_bytes(target))
+                if reference_bytes > limits["max_reference_bytes"]:
+                    raise Unavailable("collection reference bound exhausted before serialization")
+    captured = tuple(NamespaceObject(*record) for record in records)
     encoded = canonical_bytes({"schema_version": COLLECTION_VERSION,
         "objects": [item.to_dict() for item in sorted(captured, key=lambda item: item.object_id)]})
     if len(encoded) > limits["max_collection_bytes"]:

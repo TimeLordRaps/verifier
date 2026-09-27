@@ -8,11 +8,176 @@ import json
 import secrets
 
 import pytest
+import verifier.consent.engine as candidate
 
 from verifier.consent import (
     ConsentContext, ConsentKey, ConsentPolicy, ConsentVerdict,
     authenticate_consent, evaluate_consent, recheck_consent,
 )
+
+
+def test_caller_context_mutation_after_authentication_cannot_expand_purpose(
+        specimen, monkeypatch):
+    context, policy, grant, state = specimen
+    requested = replace(context, purpose="sell")
+    grant_envelope = authenticate_consent(grant, policy.keys[0])
+    status_envelope = authenticate_consent(state, policy.keys[2])
+    options = dict(policy=policy, revocation=status_envelope, evaluation_time=100)
+    baseline = evaluate_consent(requested, (grant_envelope,), **options)
+    assert baseline.verdict == ConsentVerdict.REJECTED
+    original = candidate._authenticate
+
+    def mutate_after_authentication(envelope, selected_policy):
+        authenticated = original(envelope, selected_policy)
+        if authenticated[1] == policy.root_key_ids[0]:
+            object.__setattr__(requested, "purpose", "research")
+        return authenticated
+
+    monkeypatch.setattr(candidate, "_authenticate", mutate_after_authentication)
+    result = evaluate_consent(requested, (grant_envelope,), **options)
+    assert result.verdict == ConsentVerdict.REJECTED
+    assert result.receipt["context"]["purpose"] == "sell"
+
+
+def test_policy_scope_tuple_subclass_cannot_admit_unlisted_artifact(specimen):
+    class PermissiveTuple(tuple):
+        def __contains__(self, value):
+            return True
+
+    context, policy, grant, state = specimen
+    other_only = (("BOT", "b" * 64),)
+    ordinary = replace(policy, artifact_bindings=other_only)
+    assert run(specimen, policy=ordinary).verdict == ConsentVerdict.REJECTED
+    object.__setattr__(policy, "artifact_bindings", PermissiveTuple(other_only))
+    result = run(specimen)
+    assert result.verdict == ConsentVerdict.REJECTED
+    assert result.receipt["policy_digest"] is None
+
+
+def test_signed_grant_list_subclass_cannot_expand_operation_scope(specimen):
+    class PermissiveList(list):
+        def __contains__(self, value):
+            return True
+
+    context, policy, grant, state = specimen
+    limited = {**grant, "operations": ["read"]}
+    plain = authenticate_consent(limited, policy.keys[0])
+    status = authenticate_consent(state, policy.keys[2])
+    options = dict(policy=policy, revocation=status, evaluation_time=100)
+    assert evaluate_consent(context, (plain,), **options).verdict == ConsentVerdict.REJECTED
+    subclass_envelope = authenticate_consent(limited, policy.keys[0])
+    subclass_envelope["payload"]["operations"] = PermissiveList(["read"])
+    assert json.loads(json.dumps(subclass_envelope["payload"]))["operations"] == ["read"]
+    result = evaluate_consent(context, (subclass_envelope,), **options)
+    assert result.verdict == ConsentVerdict.REJECTED
+
+
+def test_trusted_key_rejects_bytes_subclass_with_misleading_length():
+    class MaskedLengthBytes(bytes):
+        def __len__(self):
+            return 32
+
+    assert ConsentKey("root", "owner", b"x" * 32).secret == b"x" * 32
+    with pytest.raises(ValueError):
+        ConsentKey("root", "owner", b"x" * 31)
+    with pytest.raises(ValueError):
+        ConsentKey("root", "owner", MaskedLengthBytes(b"x"))
+    assert len(ConsentKey("root", "owner", b"x" * 4097).secret) == 4097
+
+
+def test_trusted_policy_collection_is_bounded_before_capture(specimen):
+    policy = specimen[1]
+    original_key = policy.keys[0]
+    object.__setattr__(policy, "keys", (original_key,) * 50001)
+    result = run(specimen)
+    assert result.verdict == ConsentVerdict.REJECTED
+    assert result.receipt["policy_digest"] is None
+
+
+def test_trusted_policy_descriptor_text_budget_precedes_clone(specimen):
+    context, policy, grant, state = specimen
+    grants = (authenticate_consent(grant, policy.keys[0]),)
+    revocation = authenticate_consent(state, policy.keys[2])
+    extras = tuple(ConsentKey(f"key-{index}".ljust(512, "x"), "owner", b"x" * 32)
+                   for index in range(2100))
+    object.__setattr__(policy, "keys", (*policy.keys, *extras))
+    result = evaluate_consent(context, grants, policy=policy,
+                              revocation=revocation, evaluation_time=100)
+    assert result.verdict == ConsentVerdict.REJECTED
+    assert result.receipt["policy_digest"] is None
+
+
+def test_policy_freshness_cannot_relax_after_grant_authentication(
+        specimen, monkeypatch):
+    context, policy, grant, state = specimen
+    strict = replace(policy, max_revocation_age_seconds=0)
+    grant_envelope = authenticate_consent(grant, strict.keys[0])
+    status_envelope = authenticate_consent(state, strict.keys[2])
+    options = dict(policy=strict, revocation=status_envelope, evaluation_time=100)
+    baseline = evaluate_consent(context, (grant_envelope,), **options)
+    assert baseline.verdict == ConsentVerdict.UNKNOWN
+    original = candidate._authenticate
+
+    def mutate_after_authentication(envelope, selected_policy):
+        authenticated = original(envelope, selected_policy)
+        if authenticated[1] == strict.root_key_ids[0]:
+            object.__setattr__(strict, "max_revocation_age_seconds", 60)
+        return authenticated
+
+    monkeypatch.setattr(candidate, "_authenticate", mutate_after_authentication)
+    result = evaluate_consent(context, (grant_envelope,), **options)
+    assert result.verdict == ConsentVerdict.UNKNOWN
+    assert result.receipt["policy_digest"] == baseline.receipt["policy_digest"]
+
+
+def test_deep_candidate_rejects_before_unbounded_copy_or_serialization(specimen):
+    context, policy, grant, state = specimen
+    envelope = authenticate_consent(grant, policy.keys[0])
+    nested = ["leaf"]
+    for _ in range(1100):
+        nested = [nested]
+    envelope["payload"]["operations"] = nested
+    result = evaluate_consent(
+        context, (envelope,), policy=policy,
+        revocation=authenticate_consent(state, policy.keys[2]), evaluation_time=100,
+    )
+    assert result.verdict == ConsentVerdict.REJECTED
+    assert result.receipt["evidence_digest"] is None
+
+
+class _TripwireClock:
+    def __str__(self):
+        raise AssertionError("caller clock string callback was invoked")
+
+    def __int__(self):
+        raise AssertionError("caller clock integer callback was invoked")
+
+
+@pytest.mark.parametrize("bad_clock", [object(), complex(1, 2), 1 << 20000,
+                                       _TripwireClock()],
+                         ids=["object", "complex", "giant-integer", "tripwire"])
+def test_malformed_trusted_clock_rejects_without_receipt_serialization(
+        specimen, bad_clock):
+    context, policy, grant, state = specimen
+    grants = (authenticate_consent(grant, policy.keys[0]),)
+    revocation = authenticate_consent(state, policy.keys[2])
+    result = evaluate_consent(context, grants, policy=policy,
+                              revocation=revocation, evaluation_time=bad_clock)
+    assert result.verdict == ConsentVerdict.REJECTED
+    assert result.receipt["evaluation_time"] is None
+    assert not recheck_consent(result.receipt, context, grants, policy=policy,
+                               revocation=revocation, evaluation_time=bad_clock)
+
+
+def test_giant_context_timestamp_rejects_without_serializing_it(specimen):
+    context, policy, grant, state = specimen
+    giant = replace(context, timestamp=1 << 20000)
+    result = evaluate_consent(giant, (authenticate_consent(grant, policy.keys[0]),),
+                              policy=policy,
+                              revocation=authenticate_consent(state, policy.keys[2]),
+                              evaluation_time=100)
+    assert result.verdict == ConsentVerdict.REJECTED
+    assert result.receipt["context"] is None
 
 
 @pytest.fixture

@@ -29,6 +29,11 @@ adds an independently versioned certificate and replay for one finite simulation
 confinement objective. Its request and policy must be selected outside the carried
 certificate. It has no top-level export or command-line route and does not establish
 an entire meta-tier, physical isolation or external authority.
+The adjacent [HYPER closure route](../src/verifier/standard/CURRENT_HYPER_CLOSURE.md)
+binds one exact finite declared operand-cone proposition under the same current
+semantic version. It is also a direct experimental import with externally selected
+request and policy, full retained evidence and complete certificate replay. Neither
+route establishes privacy, publication permission or full object-profile conformance.
 
 ## Supported boundary
 
