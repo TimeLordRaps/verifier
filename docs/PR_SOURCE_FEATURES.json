@@ -1147,6 +1147,33 @@
       "limits": "PASS covers a declared relation only; human authenticity, authority, evidence-reference resolution, liveness, privacy, consent, governance and full object-profile conformance remain unestablished. Direct experimental import only; legacy native IDENTITY and command-line routes retain their original meanings."
     },
     {
+      "path": "src/verifier/domains/contracts/object_grounding.py",
+      "sha256": "64a8291d441f32fefcaeb1d1a15d781269bbfe17dc4261e3c9ad96bc88941998",
+      "symbols": [
+        "CurrentObjectGroundingError",
+        "_SimConfinementMechanism",
+        "_SimConfinementMechanism.__init__",
+        "_SimConfinementMechanism.evaluate",
+        "_binding_parameters",
+        "_build_from_store",
+        "_capture_objects",
+        "_digest",
+        "_limits",
+        "_mapping",
+        "_name",
+        "_parse_collection",
+        "_policy",
+        "_request",
+        "build_current_object_certificate",
+        "current_object_policy",
+        "current_object_request",
+        "mechanism_digest",
+        "recheck_current_object_certificate"
+      ],
+      "summary": "Builds and independently replays one versioned current-object SIM-5.1 certificate for finite declared capability and effect confinement. Binds the exact proposition registration, selected simulation object, complete typed collection, retained evidence, external policy, checker limits and installed mechanism; captures request and policy fields before callbacks and rejects rehashed result substitutions. Exact builtin admission types reject custom iteration, equality, length and membership behavior before checking.",
+      "limits": "One bounded model-relative independence objective only. No full tier or object-profile conformance, physical host containment, real-world model completeness or external authority. Direct experimental import; legacy SIM-5.1 mainstay binding retains its original semantics. External request and policy selection is required; labels are not authenticated roots."
+    },
+    {
       "path": "src/verifier/domains/contracts/sim_isolation.py",
       "sha256": "b63450c7548c3f3c3c7568b17197bc8a36f52220e717bf5bb1008fd226bf07b3",
       "symbols": [
@@ -1416,7 +1443,7 @@
     },
     {
       "path": "src/verifier/governance/__init__.py",
-      "sha256": "9df9970ad638bc1db42a46d738219bf973f3bd256473899fdc149d0a49dcd293",
+      "sha256": "1a4a1c665008bd0b353ba0acb6d7fae80f23796c546aa66a2f402372365e9119",
       "symbols": [
         "GovernanceContext",
         "GovernanceEvaluation",
@@ -1425,6 +1452,8 @@
         "GovernancePrincipal",
         "GovernancePrincipal.__post_init__",
         "GovernanceVerdict",
+        "_capture_candidate",
+        "_capture_policy",
         "_hex",
         "_instant",
         "_signature_valid",
@@ -1433,8 +1462,8 @@
         "policy_digest",
         "recheck_governance"
       ],
-      "summary": "Adds bounded level-8 governance policy, principal, signature, quorum and status-snapshot admission with recheck.",
-      "limits": "The evaluator does not execute smart-contract law, establish legal authority or enforce a live distributed governance decision."
+      "summary": "Evaluates exact-action governance admission against independent keyed roots, policy, clock and signed status. Captures bounded plain candidate evidence, caller context, trusted policy and principal values before authentication and use; snapshots carried receipts before replay serialization. Authenticated denial, revocation, consumed invocation, quorum and principal-key checks cannot be changed by later caller mutation. Exact builtin admission types reject custom iteration, equality, length and membership behavior before checking.",
+      "limits": "Admission is relative to independently provisioned symmetric roots and a declared policy. It does not establish legal authority, execute an action, consume a live invocation, prove secret entropy, or confer computational correctness. Captured declarations may differ during concurrent capture but authentication applies to the exact captured evidence."
     },
     {
       "path": "src/verifier/hardware/__init__.py",
@@ -2737,6 +2766,13 @@
       "limits": "The reference mechanism covers at most 256 externally grounded members. Budget exhaustion remains UNKNOWN rather than INCOMPLETE; COMPLETE does not cover an unstated universe or prove source truth."
     },
     {
+      "path": "src/verifier/standard/CURRENT_OBJECT_GROUNDING.md",
+      "sha256": "98614bc071705a10f3b993ddb39599f05dc58e107b8706fe9909fdd7b0314c7b",
+      "symbols": [],
+      "summary": "Specifies current semantic namespace and SIM-5.1 finite confinement proposition, independently selected request and policy, canonical retained evidence, implementation binding and exact offline replay. Defines explicit FAIL, UNKNOWN and pre-capture bound refusal behavior.",
+      "limits": "Versioned separately from legacy numbered-profile obligations. One objective does not complete independence or the 26-object/eight-tier hierarchy; physical isolation, authority and exhaustive real-world action coverage remain unestablished."
+    },
+    {
       "path": "src/verifier/standard/DERIVER_SELF_STATUS.md",
       "sha256": "c65009e624621f8abc3766f9acd3e369b096bbd9e487824920a93fdb71568aa9",
       "symbols": [],
@@ -2850,10 +2886,10 @@
     },
     {
       "path": "src/verifier/standard/NAMESPACE_OBJECTS.md",
-      "sha256": "3e3a3bb1c3c986454359bb7f53b300690f8421979bf07d7345aceca73936bece",
+      "sha256": "51f332800b6449c10091150b1e2eca090d6de7098f0980d502fb0c627487c705",
       "symbols": [],
-      "summary": "Specifies the 26-object/eight-tier structural hierarchy, immutable object and collection commitments, typed graph substitution, ownership eligibility and the adjacent current identity declaration contract with explicit legacy boundaries.",
-      "limits": "Current contracts are bounded structural or declared-relation checks, not complete objective certification, actor authenticity or acquisition authority. Historical numbered-profile receipts retain original meanings; current objective registration and semantic migration remain open."
+      "summary": "Specifies the 26-object/eight-tier structural hierarchy, immutable object and collection commitments, typed graph substitution, ownership eligibility, current identity declaration contract and one independently versioned finite simulation confinement certificate with explicit legacy boundaries.",
+      "limits": "Structural, declared-relation and finite-model checks do not establish complete objective certification, actor authenticity, physical containment or acquisition authority. Historical numbered-profile receipts retain original meanings; remaining current objective registration and semantic migration stay open."
     },
     {
       "path": "src/verifier/standard/PROPOSITION_TRANSFER.md",

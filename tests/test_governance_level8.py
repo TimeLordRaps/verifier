@@ -9,7 +9,9 @@ import json
 import secrets
 
 import pytest
+from verifier.core.certificate import canonical_digest
 
+import verifier.governance as candidate
 from verifier.governance import (
     GovernanceContext, GovernancePolicy, GovernancePrincipal,
     evaluate_governance, policy_digest, recheck_governance,
@@ -195,3 +197,248 @@ def test_authenticated_governance_denial_survives_missing_dependency(specimen, m
     result = run(specimen, decisions=(denial, decisions[1]), **{missing: None})
     assert result.verdict.value == "REJECTED"
     assert "EXPLICIT_DENIAL_OR_VETO" in {row["code"] for row in result.receipt["checks"]}
+
+
+def test_signed_denial_cannot_change_after_authentication(specimen, monkeypatch):
+    context, policy, decisions, status = specimen
+    denial = resign(decisions[0], policy.principals[0].key, decision="DENY")
+    selected = (denial, decisions[1])
+    expected_digest = canonical_digest({"decisions": selected, "status": status})
+    assert run(specimen, decisions=selected).verdict.value == "REJECTED"
+    original = candidate._signature_valid
+
+    def mutate_after_authentication(record, key):
+        valid = original(record, key)
+        if record.get("decision_id") == denial["decision_id"]:
+            denial["decision"] = "APPROVE"
+        return valid
+
+    monkeypatch.setattr(candidate, "_signature_valid", mutate_after_authentication)
+    result = run(specimen, decisions=selected)
+    assert result.verdict.value == "REJECTED"
+    assert "EXPLICIT_DENIAL_OR_VETO" in {row["code"] for row in result.receipt["checks"]}
+    assert result.receipt["evidence_digest"] == expected_digest
+
+
+@pytest.mark.parametrize("inventory,marker", [
+    ("revoked_decisions", "board-a-vote"),
+    ("revoked_actors", "board-a"),
+    ("consumed_invocations", "one-invocation"),
+])
+def test_signed_status_inventory_cannot_clear_after_authentication(
+        specimen, monkeypatch, inventory, marker):
+    context, policy, decisions, status = specimen
+    selected_status = resign(status, policy.status_key, **{inventory: [marker]})
+    expected_digest = canonical_digest({"decisions": decisions, "status": selected_status})
+    assert run(specimen, status=selected_status).verdict.value == "REJECTED"
+    original = candidate._signature_valid
+
+    def mutate_after_authentication(record, key):
+        valid = original(record, key)
+        if key is policy.status_key:
+            selected_status[inventory].clear()
+        return valid
+
+    monkeypatch.setattr(candidate, "_signature_valid", mutate_after_authentication)
+    result = run(specimen, status=selected_status)
+    assert result.verdict.value == "REJECTED"
+    assert result.receipt["evidence_digest"] == expected_digest
+
+
+def test_foreign_signed_binding_cannot_be_swapped_into_scope_after_authentication(
+        specimen, monkeypatch):
+    context, policy, decisions, status = specimen
+    foreign = resign(decisions[0], policy.principals[0].key,
+                     binding={**asdict(context), "purpose": "another-purpose"})
+    selected = (foreign, decisions[1])
+    expected_digest = canonical_digest({"decisions": selected, "status": status})
+    assert run(specimen, decisions=selected).verdict.value == "REJECTED"
+    original = candidate._signature_valid
+
+    def mutate_after_authentication(record, key):
+        valid = original(record, key)
+        if record.get("decision_id") == foreign["decision_id"]:
+            foreign["binding"]["purpose"] = context.purpose
+        return valid
+
+    monkeypatch.setattr(candidate, "_signature_valid", mutate_after_authentication)
+    result = run(specimen, decisions=selected)
+    assert result.verdict.value == "REJECTED"
+    assert result.receipt["evidence_digest"] == expected_digest
+
+
+def test_oversized_or_deep_candidate_rejected_before_digest(specimen):
+    decisions = list(specimen[2])
+    oversized = {**decisions[0], "binding": {**asdict(specimen[0]), "purpose": "x" * 513}}
+    result = run(specimen, decisions=(oversized, decisions[1]))
+    assert result.verdict.value == "REJECTED"
+    assert result.receipt["evidence_digest"] is None
+
+    nested = "leaf"
+    for _ in range(1100):
+        nested = [nested]
+    deep = {**decisions[0], "binding": nested}
+    result = run(specimen, decisions=(deep, decisions[1]))
+    assert result.verdict.value == "REJECTED"
+    assert result.receipt["evidence_digest"] is None
+
+    overfull = {**specimen[3], "revoked_actors": ["x"] * 10001}
+    result = run(specimen, status=overfull)
+    assert result.verdict.value == "REJECTED"
+    assert result.receipt["evidence_digest"] is None
+
+
+def test_recheck_rejects_oversized_or_deep_carried_receipt_before_serialization(
+        specimen, monkeypatch):
+    context, policy, decisions, status = specimen
+    assessment = run(specimen)
+    oversized = {**assessment.receipt, "extra": "x" * 513}
+    original = candidate.canonical_bytes
+
+    def refuse_unbounded_serialization(value):
+        if value is oversized or value is deep:
+            raise AssertionError("caller-owned oversized receipt was serialized")
+        return original(value)
+
+    nested = "leaf"
+    for _ in range(1100):
+        nested = [nested]
+    deep = {**assessment.receipt, "checks": nested}
+    monkeypatch.setattr(candidate, "canonical_bytes", refuse_unbounded_serialization)
+    assert not recheck_governance(
+        oversized, context, decisions, policy=policy, status=status,
+        evaluation_time=200, computational_verdict="FAIL")
+    assert not recheck_governance(
+        deep, context, decisions, policy=policy, status=status,
+        evaluation_time=200, computational_verdict="FAIL")
+
+
+def test_caller_context_mutation_after_status_authentication_cannot_bypass_replay(
+        specimen, monkeypatch):
+    context, policy, decisions, status = specimen
+    consumed = resign(status, policy.status_key,
+                      consumed_invocations=[context.invocation_id])
+    baseline = run(specimen, status=consumed)
+    assert baseline.verdict.value == "REJECTED"
+    assert "KNOWN_INVOCATION_REPLAY" in {row["code"] for row in baseline.receipt["checks"]}
+    original = candidate._signature_valid
+
+    def mutate_after_authentication(record, key):
+        valid = original(record, key)
+        if key is policy.status_key:
+            object.__setattr__(context, "invocation_id", "another-invocation")
+        return valid
+
+    monkeypatch.setattr(candidate, "_signature_valid", mutate_after_authentication)
+    result = run(specimen, status=consumed)
+    assert result.verdict.value == "REJECTED"
+    assert "KNOWN_INVOCATION_REPLAY" in {row["code"] for row in result.receipt["checks"]}
+    assert result.receipt["binding"]["invocation_id"] == "one-invocation"
+
+
+def test_caller_policy_mutation_after_decision_authentication_cannot_lower_quorum(
+        specimen, monkeypatch):
+    context, original_policy, original_decisions, original_status = specimen
+    policy = replace(original_policy, quorum=3)
+    digest = policy_digest(policy)
+    decisions = tuple(resign(vote, policy.principals[index].key,
+                             policy_digest=digest)
+                      for index, vote in enumerate(original_decisions))
+    status = resign(original_status, policy.status_key, policy_digest=digest)
+    selected = (context, policy, decisions, status)
+    assert run(selected).verdict.value == "UNKNOWN"
+    original = candidate._signature_valid
+
+    def mutate_after_authentication(record, key):
+        valid = original(record, key)
+        if record.get("decision_id") == decisions[0]["decision_id"]:
+            object.__setattr__(policy, "quorum", 2)
+        return valid
+
+    monkeypatch.setattr(candidate, "_signature_valid", mutate_after_authentication)
+    result = run(selected)
+    assert result.verdict.value != "PASS"
+    assert result.receipt["policy_digest"] == digest
+
+
+def test_caller_principal_key_mutation_cannot_admit_foreign_signature(
+        specimen, monkeypatch):
+    context, policy, decisions, status = specimen
+    foreign_key = secrets.token_bytes(32)
+    foreign_vote = resign(decisions[1], foreign_key)
+    selected = (decisions[0], foreign_vote)
+    assert run(specimen, decisions=selected).verdict.value == "REJECTED"
+    original = candidate._signature_valid
+
+    def mutate_after_first_authentication(record, key):
+        valid = original(record, key)
+        if record.get("decision_id") == decisions[0]["decision_id"]:
+            object.__setattr__(policy.principals[1], "key", foreign_key)
+        return valid
+
+    monkeypatch.setattr(candidate, "_signature_valid", mutate_after_first_authentication)
+    result = run(specimen, decisions=selected)
+    assert result.verdict.value == "REJECTED"
+    assert "DECISION_SIGNATURE_INVALID" in {row["code"] for row in result.receipt["checks"]}
+
+
+def test_context_plain_text_bound_accepts_512_and_rejects_513(specimen):
+    context = specimen[0]
+    at_bound = run(specimen, context=replace(context, purpose="x" * 512),
+                   decisions=(), status=None)
+    assert at_bound.verdict.value == "UNKNOWN"
+    assert "MALFORMED_CONTEXT" not in {row["code"] for row in at_bound.receipt["checks"]}
+    over_bound = run(specimen, context=replace(context, purpose="x" * 513),
+                     decisions=(), status=None)
+    assert over_bound.verdict.value == "REJECTED"
+    assert "MALFORMED_CONTEXT" in {row["code"] for row in over_bound.receipt["checks"]}
+
+
+def test_context_rejects_str_subclasses_with_misleading_protocols(specimen):
+    class MaskedLength(str):
+        def __len__(self):
+            return 1
+
+    class EqualAnything(str):
+        def __eq__(self, other):
+            return True
+
+        __hash__ = str.__hash__
+
+    for value in (MaskedLength("x" * 513), EqualAnything("foreign")):
+        result = run(specimen, context=replace(specimen[0], purpose=value),
+                     decisions=(), status=None)
+        assert result.verdict.value == "REJECTED"
+        assert "MALFORMED_CONTEXT" in {row["code"] for row in result.receipt["checks"]}
+
+
+def test_policy_scope_tuple_subclass_cannot_override_membership(specimen):
+    class PermissiveTuple(tuple):
+        def __contains__(self, value):
+            return True
+
+    context, policy, decisions, status = specimen
+    original_digest = policy_digest(policy)
+    foreign = replace(context, object_name="FOREIGN")
+    foreign_votes = tuple(resign(vote, principal.key, binding=asdict(foreign))
+                          for vote, principal in zip(decisions, policy.principals))
+    object.__setattr__(policy, "object_names", PermissiveTuple(("SIM",)))
+    result = run(specimen, context=foreign, decisions=foreign_votes)
+    assert result.verdict.value == "REJECTED"
+    assert "MALFORMED_TRUSTED_POLICY" in {row["code"] for row in result.receipt["checks"]}
+    assert original_digest == status["policy_digest"]
+
+
+def test_principal_and_status_keys_require_plain_full_length_bytes(specimen):
+    class MaskedLengthBytes(bytes):
+        def __len__(self):
+            return 32
+
+    weak = MaskedLengthBytes(b"x")
+    assert GovernancePrincipal("actor", "key", b"x" * 32).key == b"x" * 32
+    with pytest.raises(ValueError):
+        GovernancePrincipal("actor", "key", b"x" * 31)
+    with pytest.raises(ValueError):
+        GovernancePrincipal("actor", "key", weak)
+    with pytest.raises(ValueError):
+        replace(specimen[1], status_key=weak)

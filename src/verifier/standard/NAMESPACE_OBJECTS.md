@@ -152,6 +152,13 @@ privacy, consent, governance and full object-profile conformance as NOT_ESTABLIS
 This direct experimental contract does not reinterpret the legacy native IDENTITY
 adapter or assign its result to a current meta-tier objective automatically.
 
+The [current-object grounding route](CURRENT_OBJECT_GROUNDING.md) selects one
+versioned `SIM-5.1` proposition: finite declared capability and effect confinement.
+It binds and replays the proposition, selected SIM, complete collection, retained
+evidence and external policy. Its semantic version distinguishes it from legacy
+`SIM-5.1` mainstay binding. This is one model-relative independence objective;
+full independence-tier conformance and physical containment remain unestablished.
+
 This increment does not authenticate an accountability chain, execute ARCH, prove MODEL behavior,
 establish runtime SIM containment, or fill the eight-tier obligation catalogue.
 Its OWNER structural result is not permission to acquire hardware. Missing

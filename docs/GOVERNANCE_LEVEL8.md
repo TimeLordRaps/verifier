@@ -61,10 +61,36 @@ The signed schema discriminator binds the record kind. Unknown fields reject.
 Intervals include their start and exclude their end. Decision inventories are
 bounded at 256 records; each status inventory at 10,000 identifiers.
 
+Before authentication, the checker captures one bounded copy of the complete
+candidate decision and status records. The capture admits plain JSON values to
+depth 64, at most 50,000 traversed values, at most 32 × 1,048,576 encoded text
+bytes, strings of at most 512 characters, arrays or objects of at most 10,000
+items each, integers of at most 4,096 bits, and finite real numbers. These are
+representation limits, not assurance scores or physical time limits. A malformed
+or exhausted capture is `REJECTED`; its receipt has `evidence_digest: null` rather
+than attempting to hash unbounded caller data. Signature verification, policy
+comparison, revocation/replay evaluation and the receipt digest all consume the
+same captured records. Mutating caller-owned evidence after authentication cannot
+turn a signed denial, foreign binding, revocation or consumed invocation into an
+approval. The action context is captured once too: later clock, policy-scope,
+signed-binding and replay comparisons use those captured fields even if the
+caller changes the original context object during authentication. Separately
+supplied trusted policy terms and principal roots are captured before their
+digest is computed; a malformed policy rejects. The captured policy drives
+signature checks, quorum, scope, status and receipt fields if the caller later
+changes its original policy object. Evaluation time remains a separate trusted
+input. Context and policy text, policy scope tuples, and secret-root byte strings
+must be exact plain built-in values. Subclasses with custom length, equality,
+membership or iteration behavior reject rather than changing a bound or scope
+comparison after capture. This is a boundary for this admission application programming interface (API); it does not
+sandbox arbitrary Python code in the caller's process.
+
 `evaluate_governance` recomputes `PASS`, `REJECTED`, or `UNKNOWN`; a passing
 receipt establishes only this bounded admission predicate. `recheck_governance`
-reruns supplied context, original evidence, independent policy and clock, then
-compares complete canonical receipt bytes. Equality also reproduces a rejection or
+first captures and bounds the caller's carried receipt, rejecting an oversized
+or structurally deep record before serialization. It then reruns supplied
+context, original evidence, independent policy and clock, and compares complete
+canonical receipt bytes. Equality also reproduces a rejection or
 unknown result; a true recheck is not automatically permission. Evidence digests
 bind retained bytes but supply no authority or archival availability themselves.
 
@@ -83,4 +109,5 @@ The focused adversarial suite is [`test_governance_level8.py`](../tests/test_gov
 It constructs signatures independently with fresh ephemeral keys. It covers exact
 binding, quorum, outsider and duplicate-key rejection, denial, veto, policy updates,
 revocation, known replay, expiry, stale status, receipt alteration, missing clocks,
-and numeric aliasing. Full-repository integration remains a separate gate.
+numeric aliasing, post-authentication mutation and bounded malformed input.
+Full-repository integration remains a separate gate.

@@ -27,14 +27,20 @@ from the legacy catalogue. The unresolved runtime seam is version selection:
 AGENT. `src/verifier/core/profile_obligations.py` registers six domain tiers with
 adaptation at 5 and disclosure at 6; the current hierarchy gives independence
 and privacy those numbers. The same unversioned coordinate spelling can therefore
-name different propositions, with no completed current-object certificate
-contract and semantic mapping to disambiguate the two paths.
+name different propositions and cannot select the intended meaning by itself.
+Current-object objective registration and semantic mapping remain incomplete.
 
 The new [versioned identity declaration](src/verifier/standard/IDENTITY_OCCUPANCY.md)
 binds the current ACTOR-to-ROLE relation by direct Python import. Its distinct
 evidence and assessment identifiers avoid reinterpreting legacy bytes, but do not
-yet provide the current-object objective registry, certificate selection or
+yet provide identity-specific objective registration, certificate selection or
 command-line migration needed to close this seam.
+
+The new [current-object certificate](src/verifier/standard/CURRENT_OBJECT_GROUNDING.md)
+binds one simulation confinement proposition to a separate semantic version.
+Current `SIM-5.1` denotes this bounded model-relative independence objective;
+legacy `SIM-5.1` still denotes mainstay binding. This explicit selection does not
+resolve all remaining coordinate collisions or complete the eight-tier hierarchy.
 
 Existing numbered-profile results cannot be reinterpreted under new coordinates.
 Release remains blocked until the exact obligations, runtime contracts, schemas,

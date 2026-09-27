@@ -24,6 +24,12 @@ representations within its declared-relation scope. The legacy native IDENTITY
 adapter and command-line route retain their historical meanings; this contract
 does not migrate them or add a numbered-profile certification route.
 
+The experimental [current-object grounding route](../src/verifier/standard/CURRENT_OBJECT_GROUNDING.md)
+adds an independently versioned certificate and replay for one finite simulation
+confinement objective. Its request and policy must be selected outside the carried
+certificate. It has no top-level export or command-line route and does not establish
+an entire meta-tier, physical isolation or external authority.
+
 ## Supported boundary
 
 The supported Python runtime API is the set of names exported by `verifier.__all__` and
