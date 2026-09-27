@@ -60,21 +60,41 @@ def test_no_object_still_carries_the_prefix() -> None:
     )
 
 
-def test_the_namespace_is_the_base_abstract_and_eighteen_objects() -> None:
-    """Enumerated by Tyler on 2026-09-22: VSTD and these eighteen, nineteen names.
+def test_historical_source_manifest_is_not_an_active_namespace_surface(tmp_path: Path, monkeypatch) -> None:
+    """The exact generated manifest may quote retired names; ordinary files may not."""
+    docs = tmp_path / "docs"
+    source = tmp_path / "src"
+    docs.mkdir()
+    source.mkdir()
+    retired = named("DATA-0.1")
+    (docs / "PR_SOURCE_FEATURES.json").write_text(
+        '{"files":[{"path":"src/old/' + retired + '.md",'
+        '"summary":"formerly ' + retired + '"}]}', encoding="utf-8"
+    )
+    (docs / "ordinary.json").write_text('{"new":"' + retired + '"}', encoding="utf-8")
+    (source / "ordinary.py").write_text('name = "' + retired + '"\n', encoding="utf-8")
+    subprocess.run(["git", "init", "--quiet", str(tmp_path)], check=True)
+    subprocess.run(["git", "-C", str(tmp_path), "add", "--", "docs", "src"], check=True)
+    gate = _gate()
+    monkeypatch.setattr(gate, "ROOT", tmp_path)
+    assert [(path, token) for path, _, token in gate.residue_offenders()] == [
+        ("docs/ordinary.json", retired), ("src/ordinary.py", retired),
+    ]
 
-    TRAIN is the eighteenth. It was held out while being composed was treated as
-    disqualifying; it is in because composition is a property an object has, not a
-    reason it is not one.
+
+def test_the_namespace_is_the_base_abstract_and_twenty_objects() -> None:
+    """VSTD and these twenty objects, twenty-one names.
+
+    TRAIN is the eighteenth; VERIFIER is the nineteenth closing the loop.
     """
     gate = _gate()
-    assert len(gate.OBJECTS) == 18
+    assert len(gate.OBJECTS) == 20
     assert gate.OBJECTS == {
         "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
         "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
-        "TRAIN", "TOKEN",
+        "TRAIN", "TOKEN", "VERIFIER", "HARDWARE",
     }
-    assert len({"VSTD"} | gate.OBJECTS) == 19, "the namespace is nineteen names"
+    assert len({"VSTD"} | gate.OBJECTS) == 21, "the namespace is twenty-one names"
 
 
 def test_the_gate_reads_the_live_catalogue_not_a_copy_of_it() -> None:
@@ -230,3 +250,28 @@ def test_the_gate_runs_as_a_script() -> None:
     )
     assert finished.returncode == 0, finished.stdout + finished.stderr
     assert "PASS" in finished.stdout
+
+
+def test_namespace_requires_every_admitted_object_to_have_obligations(monkeypatch) -> None:
+    from verifier.core import profile_obligations
+
+    gate = _gate()
+    assert gate.catalogue_missing() == []
+    monkeypatch.setattr(profile_obligations, "DOMAIN_OBJECTS", tuple(
+        name for name in profile_obligations.DOMAIN_OBJECTS if name != "VERIFIER"
+    ))
+    assert gate.catalogue_missing() == ["VERIFIER"]
+
+
+@pytest.mark.parametrize("kind", ["DEFINITION", "INSTANCE", "RUN"])
+def test_exact_experimental_wire_references_do_not_admit_namespace_objects(kind: str) -> None:
+    from verifier.domains.certification import domain_request
+    gate = _gate()
+    token = named("ENVIRONMENT-" + kind + "-0.1")
+    assert gate.admissible(token), "exact migration reference preserves existing external bytes"
+    assert "ENVIRONMENT" not in gate.OBJECTS
+    assert not gate.admissible(named("ENVIRONMENT-" + kind + "-0.2"))
+    assert not gate.admissible(named("ENVIRONMENT"))
+    with pytest.raises(ValueError, match="unknown domain"):
+        domain_request({"schema_version": "verifier-domain-evidence-1", "domain": "ENVIRONMENT",
+                        "subject_id": "example:boundary", "artifact": {}, "inputs": {}})

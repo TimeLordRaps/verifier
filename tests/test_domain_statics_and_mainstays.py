@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import pytest
 
+from test_mainstay_carriers import har_fixture
+
 from verifier.core.profile_obligations import DOMAIN_OBLIGATIONS
 from verifier.domains.catalog import domain_specification_digest
 from verifier.domains.common import Budget, Refuted, Unavailable, digest
@@ -186,14 +188,17 @@ def test_every_registered_mainstay_expresses_only_its_own_coordinates() -> None:
 
 
 def test_the_residual_is_computed_not_declared() -> None:
-    mainstay = MAINSTAYS["SIM"][0]
+    mainstay = next(row for row in MAINSTAYS["HARNESS"] if row.format_id == "har")
     residual = list(mainstay.residual())
-    artifact = sim_artifact(residual=residual)
-    observed = adapt("SIM", "residual", artifact, {}, budget())
+    artifact, inputs = har_fixture()
+    artifact["residual"] = residual
+    observed = adapt("HARNESS", "residual", artifact, inputs, budget())
     assert observed["residual"] == residual
     assert observed["by_tier"], "a residual spread over tiers is the point"
+    assert "not independently established" in observed["scope"]
+    artifact["residual"] = residual[:-1]
     with pytest.raises(Refuted, match="not the complement"):
-        adapt("SIM", "residual", sim_artifact(residual=residual[:-1]), {}, budget())
+        adapt("HARNESS", "residual", artifact, inputs, budget())
 
 
 def test_mainstay_formats_carry_facets_and_dynamics_far_more_than_statics() -> None:
@@ -209,7 +214,8 @@ def test_mainstay_formats_carry_facets_and_dynamics_far_more_than_statics() -> N
 
 
 def test_an_unregistered_format_is_refused() -> None:
-    assert adapt("SIM", "binding", sim_artifact(), {}, budget())["format_id"] == "gymnasium"
+    with pytest.raises(Unavailable):
+        adapt("SIM", "binding", sim_artifact(), {}, budget())
     bogus = sim_artifact()
     bogus["mainstay"]["format_id"] = "not-a-real-format"
     with pytest.raises(Refuted, match="not a registered mainstay"):
@@ -217,30 +223,29 @@ def test_an_unregistered_format_is_refused() -> None:
 
 
 def test_a_mapping_must_be_total_over_the_retained_inventory() -> None:
-    inputs = {"inventory": ["channel-a"]}
-    assert adapt("SIM", "layout", sim_artifact(), inputs, budget())["mapped"] == 1
+    artifact, inputs = har_fixture()
+    assert adapt("HARNESS", "layout", artifact, inputs, budget())["mapped"] == 1
+    inputs["inventory"]["unmapped-entry"] = {"retained": "but omitted"}
     with pytest.raises(Refuted, match="not total"):
-        adapt("SIM", "layout", sim_artifact(), {"inventory": ["channel-a", "channel-b"]}, budget())
+        adapt("HARNESS", "layout", artifact, inputs, budget())
 
 
 def test_a_mapping_cannot_name_a_relation_the_meta_surface_lacks() -> None:
-    artifact = sim_artifact()
-    artifact["mapping"]["layout"]["relation"] = "Env teleports to state"
-    with pytest.raises(Refuted, match="relation the meta-surface does not carry"):
-        adapt("SIM", "layout", artifact, {"inventory": ["channel-a"]}, budget())
+    artifact, inputs = har_fixture()
+    artifact["mapping"]["layout"]["relation"] = "entry teleports to state"
+    with pytest.raises(Refuted, match="relation or entity differs"):
+        adapt("HARNESS", "layout", artifact, inputs, budget())
 
 
-def test_a_round_trip_states_its_loss_or_states_none() -> None:
-    assert adapt("SIM", "roundtrip", sim_artifact(), {}, budget())["lossless"] is True
-    lossy = sim_artifact(round_trip={"exported": "sha256:" + "1" * 64,
-                                     "reimported": "sha256:" + "2" * 64, "loss": []})
-    with pytest.raises(Refuted, match="names no loss"):
-        adapt("SIM", "roundtrip", lossy, {}, budget())
-    lying = sim_artifact(round_trip={"exported": "sha256:" + "1" * 64,
-                                     "reimported": "sha256:" + "1" * 64,
-                                     "loss": ["info dict"]})
-    with pytest.raises(Refuted, match="lossless round trip names a loss"):
-        adapt("SIM", "roundtrip", lying, {}, budget())
+def test_declared_loss_and_equality_do_not_establish_a_round_trip() -> None:
+    # These records used to pass without importing any carrier. The actual
+    # supported import/export/import gates live in test_mainstay_carriers.py.
+    for exported, reimported, loss in (("a", "a", []), ("a", "b", []),
+                                      ("a", "a", ["info dict"])):
+        artifact = sim_artifact(round_trip={"exported": exported,
+                                           "reimported": reimported, "loss": loss})
+        with pytest.raises(Unavailable):
+            adapt("SIM", "roundtrip", artifact, {}, budget())
 
 
 def test_every_adaptation_check_is_bound_by_some_tier_five_obligation() -> None:

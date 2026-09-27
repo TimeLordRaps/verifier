@@ -1,4 +1,4 @@
-# Grounded certification obligations of the seventeen domain objects
+# Grounded certification obligations of the nineteen domain objects
 
 > **Acronyms:** artificial intelligence (AI);
 > benchmark specification graph (BENCH);
@@ -26,25 +26,39 @@
 > YAML Ain't Markup Language (YAML);
 > zero-identity zero-knowledge token (TOKEN).
 
-**Status:** project specification (normative for the seventeen domain objects' obligations)
+**Status:** project specification (normative for the nineteen domain objects' obligations)
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
 **Date:** 2026-09-21
 
+The full Verifier Standard (VSTD) meta-tier grammar is
+`<object>-<tier>.<m>` for positive tiers 1..8, with `m` an internal grounding
+certificate index within its tier. This file currently registers obligations
+only for domain-object tiers 1..6. Its level-6 rows address disclosure, one
+partial projection of the privacy tier; tier-7 consent and tier-8 governance
+certificates are not registered. The exact certificate-index mapping from the
+older depth-based profiles is [OPEN]. See [the architecture](META_TIERS.md).
+
 The object axis carries `1.1`-`5.11` and the Graph axis carries `GRAPH-1.1`-`GRAPH-5.6`;
 neither carries a level 6, because both are corroboration ladders and disclosure has no
 rungs. Level 6 exists on the domain objects only.
-This file carries the third namespace: the seventeen domain objects, coordinate
-`<object>-<tier>.<index>`, 626 obligations. The three namespaces are disjoint.
+This file carries the third namespace: the nineteen domain objects, coordinate
+`<object>-<tier>.<index>`, 654 obligations. The three namespaces are disjoint.
 `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, no catalogue admits another's identifiers,
 and each carries its own digest, so extending one cannot move another.
 
-**Ten of the seventeen are certifiable, and the partition has three parts rather than
-two.** A *behavioural* adapter is keyed in `verifier.domains.catalog.CHECKS`, and
-`build_domain_certificate` rejects any domain absent from it, so those ten -- `DATA`,
+**Twelve of the nineteen are certifiable in the default computational catalogue.**
+A *behavioural* adapter is keyed in `verifier.domains.catalog.CHECKS`, so those twelve -- `DATA`,
 `ENV`, `BENCH`, `TRAIN`, `MODEL`, `SIM`, `HARNESS`,
-`AGENT`, `BOT` and `TOKEN` -- are the objects a domain certificate can be built for at
-all.
+`AGENT`, `BOT`, `TOKEN`, `VERIFIER` and `HARDWARE` -- are the objects a domain certificate can be built for through that computational
+family. Separately, `ALL_CHECKS` admits eighteen bounded accountable-record checks
+across `ACTOR`, `OWNER`, `HUMAN`, `IDENTITY`, `ROLE` and `COLLECTIVE`. The public
+assessment/recheck functions and command-line interface accept these six domains;
+`domain-catalog --accountable --json` includes them in discovery. They remain
+excluded from the default twelve-adapter/57-check count. None of their
+numbered-profile obligations gains a mechanism merely from this public
+reachability. A retained-record PASS does not establish living personhood,
+legal authority, actual occupancy, person-separated quorum or consent.
 
 `HYPER` is **catalogued but not certifiable**. Its statics and adaptation
 mechanisms resolve and execute, so 10 of its 33 obligations are mechanized, but it has
@@ -55,8 +69,9 @@ partition, which is how `HYPER` came to be published as the most heavily mechani
 object on the axis while no certificate over it could be built at all.
 
 The other six -- `OWNER` and the five identity objects `HUMAN`, `ROLE`,
-`COLLECTIVE`, `IDENTITY` and `ACTOR` -- are **ungrounded**: no adapter
-executes them in any family, so all 216 of their obligations report `UNKNOWN`.
+`COLLECTIVE`, `IDENTITY` and `ACTOR` -- are **ungrounded**: no numbered-profile mechanism is bound, so all 216 of
+their obligations report `UNKNOWN`. This catalogue classification does not deny
+the six bounded public accountability routines described above.
 
 **A mechanism name is a promise that something executes it.** Every name in the
 **mechanism** column is resolved against the registered checks of that obligation's own
@@ -67,14 +82,16 @@ object resolves to the wrong check.
 *between* certified objects instead of certifying a substrate of its own; the relational
 objects are `GRAPH`, `HYPER`, `OWNER` and `IDENTITY`, of which the
 first carries its own axis and the other three sit on this one. `HYPER` is
-relational and grounded; `HUMAN`, `ROLE`, `COLLECTIVE` and `ACTOR`
+relational and partially mechanized, but not grounded or certifiable; `HUMAN`, `ROLE`, `COLLECTIVE` and `ACTOR`
 are ungrounded and not relational -- an actor is a party, not a relation between
 certified objects, even though it is the operand `OWNER` holds against. Until the identity family was catalogued the two properties could not
 be distinguished here, because `OWNER` was the only ungrounded object and it was
 relational too -- a containment that held by coincidence of there being one.
 
 Each obligation binds a predicate `vstd.<object>.obligation.<tier>.<index>`. The
-**mechanism** column names the check that establishes the obligation. An obligation
+**mechanism** column names a candidate checking route. Its registration alone
+does not establish the obligation; the route must accept the exact representation,
+evidence and independently selected policy and check the stated proposition. An obligation
 with no mechanism is specified and unmechanized: it is reported `UNKNOWN`, never absent
 and never passed. Dependencies are within one numbered profile; cumulative profile
 prerequisites apply across tiers as they do on both other axes.
@@ -108,20 +125,25 @@ Four of the six rows -- `6.2`, `6.3`, `6.4` and `6.6` -- are the **same proposit
 every object**, and that uniformity is the argument that disclosure is a level rather
 than an object of its own: an object contributes rows that differ, a level contributes the
 same row everywhere. Only `6.1` (what this object emits) and `6.5` (what composing it
-reveals) are object-specific. All 96 rows are specified with no mechanism and
-report `UNKNOWN`: no adapter runs at emission time, and no observer model is
-established anywhere in the implementation, so a `PASS` here would be a claim nothing
-supports. Level 6 therefore adds no module to `verifier.domains` and **does not move**
-`implementation_digest()`.
+reveals) are object-specific. All 114 rows are specified with no bound numbered-profile mechanism and
+report `UNKNOWN`. Separate privacy, consent, governance and controlled-emission
+routines exist and check their explicit contracts; their existence does not
+automatically discharge these domain coordinates or change computational verdicts.
 
 ## Three mechanism families
+
+The counts below count named routes in the catalogue, not supported file formats
+or established certificates. The legacy `mechanized` field means a route is named.
+For current admitted representations and exclusions see [mainstay coverage](../../../docs/MAINSTAY_COVERAGE.md).
+Statics witness records check retained consistency; differing observer labels
+do not authenticate the observer or prove independent acquisition.
 
 A mechanism name is prefixed by the family it belongs to, and the three families are
 disjoint. They differ in what kind of evidence can establish an obligation at all.
 
 | Family | Prefix | What establishes an obligation | Where | Bound |
 |---|---|---|---|---|
-| Behavioural | *(none)* | Re-executing what the subject declared: rehash, replay, recompute | [`DOMAIN_GROUNDING.md`](DOMAIN_GROUNDING.md) | 123 |
+| Behavioural | *(none)* | Re-executing what the subject declared: rehash, replay, recompute | [`DOMAIN_GROUNDING.md`](DOMAIN_GROUNDING.md) | 132 |
 | Statics | `statics:` | A witness probe, a recomputation over the retained inventory, or invariance under perturbation of the subject's own choices | this file, tier 3 | 41 |
 | Adaptation | `mainstay:` | Binding, mapping, round trip and residual against a named mainstay representation of the domain | this file, tier 5 | 72 |
 
@@ -411,7 +433,7 @@ until the mainstay representation is named, which is what the adaptation registr
 ## TRAIN
 
 **TRAIN is a composition, and it is a member of the VSTD-NAMESPACE.** The namespace is
-`VSTD` plus eighteen objects, and TRAIN is one of them -- admitted 2026-09-22. A
+`VSTD` plus nineteen objects, and TRAIN is one of them -- admitted 2026-09-22. A
 training run is `HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH, GRAPH)` indexed by a
 `GRAPH-1` recorded lineage, where `VSTD` is the model and training-loop algorithms and
 `GRAPH-1` carries the order the data was consumed in -- the one fact no operand states,
@@ -434,15 +456,15 @@ carries one of its own -- the checkpoint inventory and the step trace -- and
 `verifier.domains.train` replays it under `CHECKS["TRAIN"]`. That module shipped for the
 whole life of this catalogue under the name `hyper`, left over from before `HYPER` was
 formalized as the composition operator, which is why the partition recorded TRAIN in
-`HYPER`'s place. `HYPER` is the entry that is grounded without being certifiable: the
+`HYPER`'s place. `HYPER` is the entry that is partially mechanized without being grounded or certifiable: the
 operator holds *between* certified objects and has no substrate of its own for an
 adapter to bind to. `TOKEN` held the only other position in that residue, for the
 opposite reason -- a substrate of its own whose mechanics were not yet wired into
 `verifier.domains` -- which is why the two reasons are enumerated as `OPERATOR_OBJECTS`
 and `ADAPTER_PENDING_OBJECTS` rather than as one residue. HYPER's is the permanent one:
 an adapter could be written for TOKEN and never for an operator. Every other
-uncertifiable entry is ungrounded and carries no mechanism in any family at all. Ruled
-2026-09-22. `TOKEN`'s adapter was written on 2026-09-22, which left
+uncertifiable entry in that 2026-09-22 classification was ungrounded and carried no
+numbered-profile mechanism. `TOKEN`'s adapter was written on 2026-09-22, which left
 `ADAPTER_PENDING_OBJECTS` empty; see [`TOKEN`](#token).
 
 ### TRAIN-1: Facets
@@ -1047,7 +1069,7 @@ uncertifiable entry is ungrounded and carries no mechanism in any family at all.
 A **relational** object. It does not certify a substrate of its own; it certifies a
 holding that stands *between* a bound actor and a bound object. Of the four
 relational objects -- `GRAPH`, `HYPER`, `OWNER` and `IDENTITY` -- the last two are
-**ungrounded**, this one among them: no adapter executes it, so every obligation below is
+**ungrounded**, this one among them: no numbered-profile mechanism executes its obligations, so every obligation below is
 specified with no mechanism and reports `UNKNOWN`. That is the honest report of a specified holding that
 nothing yet checks, and it is why `OWNER` is excluded from the grounded-object
 invariants that require tiers 3 and 5 to be mechanized.
@@ -1130,7 +1152,7 @@ composition and the held object is one of the two operands.
 ### Registered mainstays of OWNER
 
 None. A mainstay is a representation a domain already publishes in, bound by an
-executing adapter; `OWNER` has no adapter, so it registers none. The formats its
+executing adapter; `OWNER` has no tier-5 mainstay adapter, so it registers none. The formats its
 tier 5 names -- licence expressions, registry maintainer records, corporate and
 beneficial-ownership registers, declared code ownership and custody chains -- are
 named as unestablished rather than registered.
@@ -1150,7 +1172,7 @@ named as unestablished rather than registered.
 ## HUMAN
 
 `HUMAN` asserts that one living person is behind a subject, and asserts
-nothing further. It is **ungrounded**: no adapter executes it, so every obligation below
+nothing further. It is **ungrounded**: no numbered-profile mechanism executes its obligations, so every obligation below
 reports `UNKNOWN`. It is not relational -- it stands on its own rather than between two
 certified objects -- which is what separates *ungrounded* from *relational* in this
 catalogue; until the identity family landed, the only ungrounded object was also
@@ -1230,7 +1252,7 @@ human, at any strength, by any route.
 ### Registered mainstays of HUMAN
 
 None. A mainstay is a representation a domain already publishes in, bound by
-an executing adapter; `HUMAN` has no adapter, so it registers none. The formats its
+an executing adapter; `HUMAN` has no tier-5 mainstay adapter, so it registers none. The formats its
 tier 5 names -- biometric error-rate and presentation-attack reporting, enrollment
 schemes, and privacy-preserving personhood attestation -- are named as unestablished
 rather than registered.
@@ -1252,7 +1274,7 @@ rather than registered.
 
 `ROLE` is a role class: a seat with declared authority and declared
 qualifications, and *not* the person or bot occupying it. It is **ungrounded** -- no
-adapter executes it -- and it is not relational. Occupancy is a separate object,
+numbered-profile mechanism executes its obligations -- and it is not relational. Occupancy is a separate object,
 `IDENTITY`; a role class that named its occupant would collapse the two.
 
 The distinction earns its keep in `ROLE-3.1` and `ROLE-3.2`: authority is a property of
@@ -1326,7 +1348,7 @@ because every line of prose describing it already called it a role.
 
 ### Registered mainstays of ROLE
 
-None. `ROLE` has no adapter, so it registers none. The formats its tier 5
+None. `ROLE` has no tier-5 mainstay adapter, so it registers none. The formats its tier 5
 names -- engagement context role credentials, access-control role definitions and
 org-chart position records -- are named as unestablished rather than registered.
 
@@ -1346,7 +1368,7 @@ org-chart position records -- are named as unestablished rather than registered.
 ## COLLECTIVE
 
 `COLLECTIVE` is a graph of role classes and the typed relations
-between them. It is **ungrounded** -- no adapter executes it. Its operand is declared:
+between them. It is **ungrounded** -- no numbered-profile mechanism executes its obligations. Its operand is declared:
 `COLLECTIVE-1.3` binds the `ROLE` set it is over, each class by its own certificate.
 `COLLECTIVE-1.1` declares the collective to be that graph rather than binding a `GRAPH`
 certificate, so the graph is the object itself and not an operand of it.
@@ -1420,7 +1442,7 @@ alone never shows.
 
 ### Registered mainstays of COLLECTIVE
 
-None. `COLLECTIVE` has no adapter, so it registers none. The
+None. `COLLECTIVE` has no tier-5 mainstay adapter, so it registers none. The
 formats its tier 5 names -- legal-entity identifiers with organizational role
 credentials, corporate registry records and access-control policy models -- are named as
 unestablished rather than registered.
@@ -1522,7 +1544,7 @@ that no bot binding is presented outside that simulation.
 
 ### Registered mainstays of IDENTITY
 
-None. `IDENTITY` has no adapter, so it registers none. The formats
+None. `IDENTITY` has no tier-5 mainstay adapter, so it registers none. The formats
 its tier 5 names -- verifiable credential data models, decentralized identifiers and
 selective-disclosure cryptosuites -- are named as unestablished rather than registered.
 Proof-of-personhood formats are deliberately not here: they establish humanness, which is
@@ -1545,7 +1567,7 @@ Proof-of-personhood formats are deliberately not here: they establish humanness,
 `ACTOR` is the party accountable for decisions, and it is the sum
 the rest of the family is assembled into: `ACTOR-1.2` binds exactly one of a `ROLE`
 certificate or a `COLLECTIVE` certificate, and an actor binding both is malformed
-rather than both. It is **ungrounded** -- no adapter executes it -- and it is **not
+rather than both. It is **ungrounded** -- no numbered-profile mechanism executes its obligations -- and it is **not
 relational**: it is an entity rather than a relation between certified objects, which is
 what separates it from `OWNER` and `IDENTITY`.
 
@@ -1635,7 +1657,7 @@ collective to declare itself human or bot. The bearer sits on the occupancy, at
 
 ### Registered mainstays of ACTOR
 
-None. `ACTOR` has no adapter, so it registers none. The formats its
+None. `ACTOR` has no tier-5 mainstay adapter, so it registers none. The formats its
 tier 5 names -- key event receipt infrastructure, decentralized identifier controllers and
 authorization-framework principals -- are named as unestablished rather than registered.
 
@@ -1825,10 +1847,136 @@ none.
 | TOKEN-6.5 | Composition delta | Emitting this certificate beside an ACTOR certificate discloses correlation: a birth epoch is within bound and a set of decision classes is within bound, while the pair singles the party out, because tenure is close to unique over any population small enough to enumerate. The join is evaluated against both operands and not against either alone. | TOKEN-6.2, TOKEN-6.4 | none |
 | TOKEN-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | TOKEN-6.2, TOKEN-6.4, TOKEN-6.5 | none |
 
-## Depth, not count
+## Topological depth of the current obligation profiles
 
-`m` in `<object>-<tier>.<m>` is the depth of complete modules represented, so the
-largest `m` a certificate can reach for a numbered profile is that profile's topological
-depth -- the longest chain of obligations each of which is a prerequisite of the next --
-and not the number of obligations it holds. Where the two differ, the coordinates above
-the depth are unreachable. `verifier.core.profile_obligations.tier_depth` computes it.
+`verifier.core.profile_obligations.tier_depth` computes the longest prerequisite
+chain within a currently catalogued numbered profile. That graph measure is
+distinct from the `.m` internal grounding certificate index. The older
+depth-lattice model used the depth as an upper bound on `m`; this identity has
+not been justified for the eight-tier architecture and must not be used to
+reject or certify a coordinate without a registered certificate mapping.
+
+
+## VERIFIER — bounded verifier decision evidence
+
+The first three routes recheck retained identity and native decision evidence.
+Resources and bootstrap have opt-in bounded positive mechanisms; legacy declarations alone cannot establish their
+obligations: they report UNKNOWN otherwise and have no positive mechanism below.
+Registration does not establish complete tier 1 or any higher tier.
+
+### VERIFIER-1: Facets
+
+`VERIFIER-1.1` through `VERIFIER-1.5`; topological depth 4; 5 of 5 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| VERIFIER-1.1 | Retained verifier identity | The declared verifier kind, version and toolchain inventory are bound to retained bytes and their recomputed digests; this does not execute the submitted verifier. | none | identity |
+| VERIFIER-1.2 | Retained decision certificate | The native grounded decision certificate is rechecked against its exact externally selected binding; acceptance establishes that bounded decision proof, not soundness of an entire proposition class. | VERIFIER-1.1 | soundness |
+| VERIFIER-1.3 | Repeated kernel replay | Repeated local kernel checking of the retained decision certificate reproduces the same result; this does not establish determinism or entropy isolation of the submitted verifier process. | VERIFIER-1.1, VERIFIER-1.2 | determinism |
+| VERIFIER-1.4 | Process resource enforcement | A checker-owned native proof replay enforces a queried Windows Job Object committed-allocation cap and bounded completion observation; charged native work is bounded separately. This is not arbitrary submitted-verifier execution, a resident-memory bound or a hard real-time guarantee. Without this admitted mechanism report UNKNOWN. | VERIFIER-1.1 | resources |
+| VERIFIER-1.5 | Bootstrap independence | An externally selected signature key binds the exact native proof requests and distinct finite truth-table oracle; the oracle independently recomputes bounded Boolean results. This establishes neither organizational independence nor general verifier soundness. Without admitted evidence report UNKNOWN. | VERIFIER-1.1, VERIFIER-1.2, VERIFIER-1.3, VERIFIER-1.4 | meta |
+
+### VERIFIER-2: Dynamics
+
+`VERIFIER-2.1` through `VERIFIER-2.1`; topological depth 1; 0 of 1 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| VERIFIER-2.1 | Verifier execution dynamics | Actual submitted-verifier execution, input consumption and result production require an admitted execution mechanism; replaying a retained proof alone leaves this profile UNKNOWN. | none | none |
+
+### VERIFIER-3: Statics
+
+`VERIFIER-3.1` through `VERIFIER-3.1`; topological depth 1; 0 of 1 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| VERIFIER-3.1 | Verifier substrate constraints | Execution-substrate identity, physical resource constraints and isolation require independent observations bound to the actual verifier run; caller declarations alone leave this profile UNKNOWN. | none | none |
+
+### VERIFIER-4: Closure
+
+`VERIFIER-4.1` through `VERIFIER-4.1`; topological depth 1; 0 of 1 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| VERIFIER-4.1 | Verifier coverage closure | Completeness over the declared verifier claim class requires independently checked coverage and counterexample boundaries; one retained decision does not close the class and leaves this profile UNKNOWN. | none | none |
+
+### VERIFIER-5: Domain adaptation
+
+`VERIFIER-5.1` through `VERIFIER-5.1`; topological depth 1; 0 of 1 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| VERIFIER-5.1 | Verifier mainstay translation | A named prover, compiler, solver or checker format requires an admitted semantics-preserving translation with explicit residuals; a format label alone leaves this profile UNKNOWN. | none | none |
+
+### VERIFIER-6: Disclosure
+
+`VERIFIER-6.1` through `VERIFIER-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| VERIFIER-6.1 | Disclosure surface | The verifier identity, retained decision coordinates and checking residuals emitted by this certificate are enumerated separately from withheld implementation or proof material. | none | none |
+| VERIFIER-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | VERIFIER-6.1 | none |
+| VERIFIER-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | VERIFIER-6.1 | none |
+| VERIFIER-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | VERIFIER-6.2, VERIFIER-6.3 | none |
+| VERIFIER-6.5 | Composition delta | Joining this verifier certificate with a decision certificate can disclose which implementation checked which claim; the joined disclosure is evaluated against both operands rather than either alone. | VERIFIER-6.2, VERIFIER-6.4 | none |
+| VERIFIER-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | VERIFIER-6.2, VERIFIER-6.4, VERIFIER-6.5 | none |
+
+
+## HARDWARE — retained device and resource records
+
+HARDWARE names the physical-device subject, while its current four native checks establish only finite retained-record consistency. central processing unit (CPU), graphics processing unit (GPU), quantum processing unit (QPU), random-access memory (RAM), storage and sensor declarations are supported. MEMORY_BYTE and STORAGE_BYTE count bytes; COMPUTE_SLOT and SAMPLE_SLOT are dimensionless per-device reservation counts, not performance equivalences. Times are integer microseconds on one declared clock; reservation intervals include the start and exclude the end. The topology is a containment directed acyclic graph, not a ban on cyclic communication networks. No check establishes physical authenticity, live availability, workload delivery, credit issuance or a currency conversion.
+
+### HARDWARE-1: Facets
+
+`HARDWARE-1.1` through `HARDWARE-1.2`; topological depth 2; 2 of 2 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| HARDWARE-1.1 | Retained device inventory | Rehash retained device records and validate named kinds and typed integer capacities; physical authenticity and live availability are not established. | none | inventory |
+| HARDWARE-1.2 | Retained containment topology | Every declared containment edge resolves within the bound inventory and the finite graph is acyclic; no undeclared physical topology is inferred. | HARDWARE-1.1 | topology |
+
+### HARDWARE-2: Dynamics
+
+`HARDWARE-2.1` through `HARDWARE-2.2`; topological depth 1; 2 of 2 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| HARDWARE-2.1 | Exclusive capacity accounting | Recompute half-open reservation intervals per device and unit; simultaneous declared occupancy never exceeds declared capacity. This is not admission of physical capacity or credit issuance. | none | allocations |
+| HARDWARE-2.2 | Retained measurement envelope | Every retained integer observation names a device, unit and instant and remains within its declared capacity. Observation authenticity requires a separate qualified mechanism. | none | measurements |
+
+### HARDWARE-3: Statics
+
+`HARDWARE-3.1` through `HARDWARE-3.1`; topological depth 1; 0 of 1 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| HARDWARE-3.1 | Physical substrate observations | Device identity, physical capacity, calibration, sensor accuracy and live availability require qualified observations with explicit freshness and trust roots; declarations alone remain UNKNOWN. | none | none |
+
+### HARDWARE-4: Closure
+
+`HARDWARE-4.1` through `HARDWARE-4.1`; topological depth 1; 0 of 1 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| HARDWARE-4.1 | Physical inventory closure | Complete coverage, nonaliasing physical identities and resource isolation require independent bounded evidence; a retained inventory alone leaves closure UNKNOWN. | none | none |
+
+### HARDWARE-5: Domain adaptation
+
+`HARDWARE-5.1` through `HARDWARE-5.1`; topological depth 1; 0 of 1 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| HARDWARE-5.1 | Hardware carrier translation | A named hardware or sensor carrier requires a qualified provenance-preserving adapter; the legacy VSTD-3 accountability receipt is not silently relabeled as this domain. | none | none |
+
+### HARDWARE-6: Disclosure
+
+`HARDWARE-6.1` through `HARDWARE-6.6`; topological depth 5; 0 of 6 mechanized.
+
+| Coordinate | Name | Requirement | Dependencies | Mechanism |
+|---|---|---|---|---|
+| HARDWARE-6.1 | Disclosure surface | The device inventory, retained resource coordinates and checking residuals emitted by this certificate are enumerated separately from withheld device identifiers or observations. | none | none |
+| HARDWARE-6.2 | Bound declaration | Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one. | HARDWARE-6.1 | none |
+| HARDWARE-6.3 | Observer identification | The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS. | HARDWARE-6.1 | none |
+| HARDWARE-6.4 | Emission-time evaluation | Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying. | HARDWARE-6.2, HARDWARE-6.3 | none |
+| HARDWARE-6.5 | Composition delta | Joining this hardware certificate with an execution certificate can disclose which device served which workload; the joined disclosure is evaluated against both operands rather than either alone. | HARDWARE-6.2, HARDWARE-6.4 | none |
+| HARDWARE-6.6 | Verdict independence | Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private. | HARDWARE-6.2, HARDWARE-6.4, HARDWARE-6.5 | none |

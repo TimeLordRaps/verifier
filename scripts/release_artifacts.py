@@ -65,6 +65,7 @@ PACKAGED_SCHEMA_NAMES = frozenset(
         "verifier-component-index-1.schema.json",
         "verifier-component-package-1.schema.json",
         "verifier-deriver-self-status-1.schema.json",
+        "verifier-gate-publication-1.schema.json",
         "verifier-global-cycle-assessment-1.schema.json",
         "verifier-graph-assurance-1.schema.json",
         "verifier-lifetime-token-1.schema.json",

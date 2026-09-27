@@ -33,7 +33,7 @@ certificates. Six obligations have built-in native adapters; the remaining 41
 require explicitly registered domain mechanisms that check their stated propositions.
 The catalogue and orchestration do not by themselves discharge those obligations.
 
-The candidate also adds ten native grounded domain adapters with 48 cumulative
+The candidate also adds twelve native grounded domain adapters with 57 cumulative
 checks: dataset transformations and split/overlap analysis; retained environment
 inventory/configuration/resource/reproduction observations; executable benchmark
 oracles and scoring; checkpoint/optimizer/gradient replay; model inference, metrics
@@ -42,13 +42,25 @@ declared agent observation surfaces and their retained transcripts; agent
 trajectories bounded by one harness certificate's observation ceiling; the closed
 loop between one bound agent certificate and one bound simulation certificate; and a
 zero-identity token holding replayed from its birth commitment under issuing keys the
-checker admits.
+checker admits; and bounded native proof-instance checking and local kernel replay for
+the verifier-engine object (VERIFIER). Its resource-enforcement and bootstrap routes
+retain `UNKNOWN` without admitted mechanisms. Explicit Windows checker-owned
+native replay and externally admitted independent finite bootstrap can establish
+all five bounded checks; [VERIFIER admission](VERIFIER_ADMISSION.md) states the
+process, key and proof limits. General verifier soundness remains unestablished.
+HARDWARE additionally checks retained device inventory, containment topology, typed reservation occupancy and measurement envelopes; physical authenticity, live availability and credit authority remain unestablished.
 These paths have portable certificates with external request and policy binding.
 Their supported formats and exclusions are defined in
 [the domain contract](../src/verifier/standard/DOMAIN_GROUNDING.md). A complete native domain
 assessment is not complete object-profile certification.
 
 ## Recovered scope and lifecycle
+
+`vstd gate init`, `plan`, `run` and `check` provide reusable local automation with
+explicit commands, dependencies, execution deadlines, bounded captured output and
+input-bound receipts. Run and check failures propagate nonzero exit codes. These are
+execution and integrity records, not automatic domain certification, authentication
+or release approval. See [gate automation](GATE_AUTOMATION.md).
 
 This candidate includes the grounded certification engine and commands, the
 pending `vstd publish` command, optional grammar

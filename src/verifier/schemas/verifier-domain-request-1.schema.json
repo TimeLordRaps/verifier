@@ -194,6 +194,70 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "COLLECTIVE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "target_depth": {
+            "maximum": 2
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "ROLE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "target_depth": {
+            "maximum": 2
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "IDENTITY"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "target_depth": {
+            "maximum": 3
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "HUMAN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "target_depth": {
+            "maximum": 3
+          }
+        }
+      }
     }
   ],
   "description": "Structural envelope only. Domain evaluators check retained contract semantics; certificate replay requires external intent and policy.",
@@ -215,7 +279,13 @@
         "BOT",
         "TOKEN",
         "ACTOR",
-        "OWNER"
+        "OWNER",
+        "COLLECTIVE",
+        "ROLE",
+        "IDENTITY",
+        "HUMAN",
+        "VERIFIER",
+        "HARDWARE"
       ]
     },
     "evidence_ref": {

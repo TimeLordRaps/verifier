@@ -1,11 +1,12 @@
 """Runnable Verifier Standard (VSTD) domain certification specimens.
 
 JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256).
-Terminology: unsatisfiable (UNSAT).
+Terminology: unsatisfiable (UNSAT); conjunctive normal form (CNF); unit propagation (UP).
 The datasets, numerical models and simulation are small complete retained
 workloads. The environment example measures its actual in-process task using
 Python traced-allocation peak bytes, wall seconds and active thread count.
 """
+# Hardware example terminology: graphics processing unit (GPU).
 from __future__ import annotations
 
 import base64
@@ -288,7 +289,66 @@ def specimens() -> dict:
         "status_schedule": 500, "observed_at": 2000},
         {"tokens": tokens, "epochs": epochs, "statuses": token_statuses})
 
+    # VERIFIER: a retained model and repeated native checking, not engine soundness.
+    # Conjunctive normal form (CNF); unit propagation (UP).
+    from verifier.core.certificate import (
+        CertificateHeader, ClaimBinding, ClaimCoordinate, ClauseGrounding, CostTier,
+        DecisionBlock, DecisionCertificate, EncodingRule, GroundedFact, Grounding,
+        ResourceBounds, VariableGrounding, Verdict,
+    )
+    from verifier.core.kernel import check as kernel_check, reference_descriptor
+    descriptor = reference_descriptor()
+    proof_binding = ClaimBinding(
+        "retained one-variable Boolean formula", ClaimCoordinate("example:formula", "satisfiable"),
+        "example:retained-rules", "example:retained-facts", descriptor,
+        ResourceBounds(1000, 1000, 10000))
+    proof = DecisionCertificate(
+        CertificateHeader(Verdict.PASS, CostTier.UP, 1, 1, 1, 0, proof_binding.digest()),
+        ((1,),), Grounding(
+            (VariableGrounding(1, GroundedFact("example:fact", "retained", "true")),),
+            (ClauseGrounding(0, "positive", {"x": 1}, {"x": "example:fact"}),),
+            (EncodingRule("positive", ("x",), ((1, "x"),)),)),
+        DecisionBlock(model={1: True}))
+    claims = [{"class": "cnf_sat", "boundary_limit": 1,
+               "refutation_witness": {"binding": proof_binding.to_dict(), "certificate": proof.to_dict()}}]
+    checked = kernel_check(proof, binding=proof_binding, budget=1000)
+    if not checked.accepted:
+        raise RuntimeError("example proof was not accepted by the native kernel")
+    proof_output = [{"certificate_digest": digest(proof.to_dict()),
+                     "binding_digest": digest(proof_binding.to_dict()), "result": checked.to_dict()}]
+    toolchain = descriptor.to_dict()
+    runs = [{"run_id": name, "input_digest": digest(claims), "software_digest": digest(toolchain),
+             "output_digest": digest(proof_output), "entropy_leakage": 0} for name in ("replay-1", "replay-2")]
+    # Resource ceilings are declared; there is no external enforcement or bootstrap
+    # evidence. Those two checks intentionally remain UNKNOWN.
+    add("VERIFIER", {"verifier_id": "example:verifier", "verifier_kind": "CHECKER",
+        "toolchain_digest": digest(toolchain), "version": "retained-native-UP-1",
+        "proposition_classes": ["cnf_sat"],
+        "refutation_boundaries": {"cnf_sat": {"max_vars": 1, "max_clauses": 1}},
+        "soundness_claims_digest": digest(claims), "runs_digest": digest(runs),
+        "ceilings": {"max_memory_bytes": 16777216, "max_wall_seconds": 5, "max_loop_iterations": 10000}},
+        {"toolchain": toolchain, "soundness_claims": claims, "runs": runs})
+
+    result["HARDWARE"] = hardware_specimen()
     return result
+
+
+def hardware_specimen():
+    devices = [
+        {"id": "gpu", "kind": "GPU", "capacities": {"MEMORY_BYTE": 8, "COMPUTE_SLOT": 2}},
+        {"id": "disk", "kind": "STORAGE", "capacities": {"STORAGE_BYTE": 20}},
+        {"id": "sensor", "kind": "SENSOR", "capacities": {"SAMPLE_SLOT": 1}},
+    ]
+    topology = [{"parent": "gpu", "child": "sensor"}]
+    allocations = [
+        {"id": "a", "device": "gpu", "unit": "COMPUTE_SLOT", "quantity": 2, "start_us": 0, "end_us": 10},
+        {"id": "b", "device": "gpu", "unit": "COMPUTE_SLOT", "quantity": 2, "start_us": 10, "end_us": 20},
+    ]
+    measurements = [{"id": "m", "device": "gpu", "unit": "MEMORY_BYTE", "quantity": 4, "at_us": 5}]
+    inputs = dict(devices=devices, topology=topology, allocations=allocations, measurements=measurements)
+    return {"schema_version": "verifier-domain-evidence-1", "domain": "HARDWARE", "subject_id": "retained:hardware",
+            "artifact": {"scope": "retained-hardware-records", "clock": "declared-monotonic-microseconds",
+                         **{key + "_digest": digest(value) for key, value in inputs.items()}}, "inputs": inputs}
 
 
 if __name__ == "__main__":
@@ -305,5 +365,9 @@ if __name__ == "__main__":
         unsigned = (domain == "TOKEN" and result["status"] == "UNKNOWN"
                     and result["checks"]["TOKEN-1.2"]["evaluation"]["details"] == "signature backend unavailable"
                     and all(row["established"] for key, row in result["checks"].items() if key != "TOKEN-1.2"))
-        if result["status"] != "PASS" and not unsigned:
+        partial_verifier = (domain == "VERIFIER" and result["status"] == "UNKNOWN"
+                            and result["domain_depth"] == 3
+                            and all(result["checks"][f"VERIFIER-1.{i}"]["established"] for i in (1, 2, 3))
+                            and all(result["checks"][f"VERIFIER-1.{i}"]["evaluation"]["outcome"] == "UNKNOWN" for i in (4, 5)))
+        if result["status"] != "PASS" and not unsigned and not partial_verifier:
             raise SystemExit(json.dumps(result, indent=2))

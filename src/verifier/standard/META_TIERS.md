@@ -1,4 +1,4 @@
-# The Verifier Standard (VSTD) meta-tier grid — nineteen ladders, five tiers
+# The Verifier Standard (VSTD) meta-tier grid — eight-tier architecture and measured corroboration subgrid
 
 > **Acronyms:** benchmark specification graph (BENCH); dataset integrity and lineage (DATA);
 > directed acyclic graph (DAG); generative simulation specification (SIM); object composition specification (HYPER);
@@ -8,14 +8,20 @@
 > Supply-chain Levels for Software Artifacts (SLSA); Verifier Standard (VSTD);
 > verifiable execution environment (ENV).
 
-**Status:** project specification (normative for what tier N means on every object axis)
+**Status:** project specification; the eight-tier coordinate grammar is normative, while the legacy five-tier depth lattice below is a measured partial projection
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
 **Date:** 2026-09-20
 
-Identifier form, for every object: `<object>-<tier>.<m>`, tier one of 1..5, `m` the
-minimum clearance attained up that tier — the depth of complete modules the certificate
-represents. Both one-indexed. See `WIRE_IDENTIFIERS.md` and `GROUNDED_CERTIFICATION.md`.
+Identifier form, for every object: `<object>-<tier>.<m>`, tier one of 1..8, `m` an
+internal grounding certificate index within that tier. The hyphen separates an
+object name from a **positive** tier number; it is not a minus sign. Both numbers
+are one-indexed and dimensionless. A certificate has its own proposition,
+prerequisites, checking mechanism and bounded result. `m` is not automatically
+equal to the topological depth of an obligation dependency graph; the existing
+depth-based ladder calculations below are a legacy projection requiring an explicit
+mapping before they can establish certificate coordinates. See
+`WIRE_IDENTIFIERS.md` and `GROUNDED_CERTIFICATION.md` for current implementations.
 
 ## The VSTD-NAMESPACE
 
@@ -40,10 +46,12 @@ coordinate in this grid. They are different namespaces that happen to share a pr
 the identifier convention below governs only the second. Renaming a wire identifier to
 match the convention breaks every reader that pins the string.
 
-## The five corroboration tiers, and level 6
+## Eight meta-tiers and the measured five-tier corroboration subgrid
 
-Tiers occupy one shared metaphorical/analogical space of meta-features. Tier N asks the
-same *kind* of question on every object axis.
+The current computational catalogue asks the following questions at tiers 1–5.
+Accountability objects have distinct authority, responsibility and commitment
+meanings; the exact mapping of their first five tiers remains [OPEN]. Similar
+numbering is not evidence that the two interpretations are equivalent.
 
 | Tier | What it represents |
 |---|---|
@@ -52,9 +60,18 @@ same *kind* of question on every object axis.
 | 3 | The **static unchanging natural phenomena** around the surface. |
 | 4 | The **closure conditions** under which the specification can be completed. |
 | 5 | **Domain adaptation surfaces** that tiers 1-4 allow to form naturally; these typically infer structure from domain mainstay representations. |
-| 6 | The **disclosure bounds** on what a certificate of this object may emit, and to whom. Not a rung: see below. |
+| 6 | **Privacy grounding certificates**. Current object rows cover disclosure bounds, a partial privacy projection. |
+| 7 | **Consent structures**. Per-object grounding certificates are not registered. |
+| 8 | **Governance and laws**: Distributed Aggregated Governance and smart contracts. Per-object grounding certificates are not registered. |
 
-**Tiers 1-5 corroborate; level 6 discloses, and the difference is structural.** Every
+Only tiers 1–6 appear in the present domain-obligation catalogue; tiers 7 and 8 are not registered.
+The two older specification axes catalogue tiers 1–5 only. The existing
+privacy, consent and governance helpers check narrower admission contracts and
+cannot be cast into complete tier-6/7/8 certificates. [OPEN] The exact per-object
+certificate propositions, dependency indices, and compatibility migration for
+tiers 6–8 have not been specified or validated.
+
+**The current computational tiers 1–5 corroborate; the current level-6 rows disclose.** Every
 tier from 1 to 5 is a rung on a corroboration ladder: it is evidence that raises what the
 object is known to satisfy, and it is settled once, by the act of certifying. Level 6 is
 none of those things. It bounds what a certificate may *emit* rather than what it
@@ -63,26 +80,25 @@ level in the grid that is **not monotone under composition**, because disclosure
 **join** of the operands rather than bounded by them; and by its own `<object>-6.6` it
 **cannot move a verdict** in tiers 1-5, in either direction.
 
-That last property is why level 6 is deliberately absent from the ladder strip, the rung
+That last property is why the existing level-6 disclosure rows are absent from the ladder strip, the rung
 totals and the composition lattice below. A level that by its own statement cannot change
 what is established is not evidence, and counting its 5 positions per object as
 rungs would inflate every reachability figure this file publishes. The strip is *what a
 certificate climbs*, and a disclosure bound is not climbed.
 
 Four of level 6's six rows are the **same proposition at every object**, which is the
-argument that disclosure is a level rather than an object of its own: an object contributes rows
-that differ, a level contributes the same row everywhere. All 66 rows are specified
-with no mechanism and report `UNKNOWN` -- no adapter runs at emission time and no observer
-model is established anywhere in the implementation, so a `PASS` would be a claim nothing
-supports. Level 6 adds no module to `verifier.domains` and **does not move**
-`implementation_digest()`.
+argument that disclosure is a level rather than an object of its own in this partial catalogue: an object contributes rows
+that differ, a level contributes the same row everywhere. All 114 rows are specified
+with no bound numbered-profile mechanism and report `UNKNOWN`. Separate privacy,
+consent, governance and controlled-emission routines check their explicit contracts;
+they do not automatically establish these coordinates.
 
 The tier-5 pattern in one sentence: a mainstay framework already represents the object
 modularly for one domain (PyTorch for neural networks, Gymnasium for environments, OCI for
 software closure), and tier 5 is that framework's structure inferred upward into a general
 specification meta-framework, rather than a new notation invented downward.
 
-## Ground truth: this is not new — it is `LADDER.md` made total
+## Computational corroboration ancestry in `LADDER.md`
 
 The object axis `VSTD-1..5` and the graph axis `GRAPH-1..5` already instantiate these
 five tiers exactly, and predate the generalization:
@@ -95,17 +111,20 @@ five tiers exactly, and predate the generalization:
 | 4 | Refutability | Refutable Transformation Closure | closure |
 | 5 | Witness Corroboration | Corroborated Verification Network | domain adaptation |
 
-So the meta-tier grid is not a second numbering laid over the Standard. It is the two
-existing axes recognized as two rows of a twelve-row table, and the other ten rows
-filled in with the same five questions.
+These two axes predate the domain-object catalogue and anchor its computational
+tiers 1–5. They do not establish that accountability objects have the same tier
+semantics, or that the eight-tier architecture is already catalogued.
 
 ---
 
 # The grid
 
-Cells marked **[anchor]** are stated verbatim by the editor and are normative for their
-row's reading of the tier. Every other cell is derived by applying the same tier question
-to that object.
+Cells marked **[anchor]** are stated verbatim by the editor. Other cells were
+derived by applying the original computational tier question to each object.
+For ACTOR, OWNER, IDENTITY, ROLE, COLLECTIVE and HUMAN, that derivation is a
+legacy proposal, not the resolved accountability tier-1–5 mapping. Their
+authority, responsibility and commitment certificate semantics remain [OPEN];
+the existing rows must not be promoted as complete accountability conformance.
 
 ---
 
@@ -411,11 +430,12 @@ if we can keep it in sims.*
 
 ## OWNER — a holding between a bound actor and a bound object
 
-The third **relational** object, and the first ungrounded one; `IDENTITY` below is the
-fourth, and is ungrounded too. `GRAPH` relates artifacts to one another, `HYPER` relates
+The third **relational** object, and the first without a bound numbered-profile
+mechanism; `IDENTITY` below is the fourth and has the same profile status. `GRAPH` relates artifacts to one another, `HYPER` relates
 operands to the object composed from them, `OWNER` relates an actor to an object it
 holds, and `IDENTITY` relates a bearer to a role class. None of the four certifies a
-substrate of its own, which is why none of them is a domain in the adapter sense.
+substrate of its own. OWNER and IDENTITY now have bounded retained-record adapters;
+neither adapter establishes the numbered-profile obligations described here.
 
 The holder is bound by its own `ACTOR` certificate, so a holding names a certified
 actor rather than a string. An **agent is not an actor**: an agent occupies a decider slot
@@ -483,7 +503,7 @@ over three years nobody answers for. Dropping either quantifier reopens that.
 
 **OWNER-5** — domain adaptation: licence expressions, registry maintainer records,
 corporate and beneficial-ownership registers, declared code ownership and custody chains.
-No adapter binds any of them today, so each is reported unestablished rather than unheld
+No tier-5 mainstay adapter binds any of them today, so each is reported unestablished rather than unheld
 — which is the distinction the whole row exists to keep.
 
 ---
@@ -694,9 +714,9 @@ instrument boundary, which is the one place a mainstay already draws this object
 
 # The grid as catalogued coordinates
 
-Nineteen objects, ninety-five numbered profiles, every one of them carrying
+Twenty ladders, one hundred numbered profiles, every one of them carrying
 obligations of its own. The object axis and the Graph axis are the two `LADDER.md`
-already carried. The other seventeen were catalogued against these tiers, so the
+already carried. The other nineteen were catalogued against these tiers, so the
 grid below is a coordinate map, not a mapping
 of adapter checks onto tiers — an adapter check is now a *mechanism* attached to an
 obligation rather than a rung in its own right:
@@ -722,24 +742,25 @@ obligation rather than a rung in its own right:
 | IDENTITY ‡ | `IDENTITY-1.1`-`1.6` | `IDENTITY-2.1`-`2.7` | `IDENTITY-3.1`-`3.6` | `IDENTITY-4.1`-`4.7` | `IDENTITY-5.1`-`5.7` | `IDENTITY-6.1`-`6.6` |
 | ACTOR ‡ | `ACTOR-1.1`-`1.7` | `ACTOR-2.1`-`2.7` | `ACTOR-3.1`-`3.6` | `ACTOR-4.1`-`4.6` | `ACTOR-5.1`-`5.6` | `ACTOR-6.1`-`6.6` |
 | TOKEN | `TOKEN-1.1`-`1.14` | `TOKEN-2.1`-`2.14` | `TOKEN-3.1`-`3.14` | `TOKEN-4.1`-`4.14` | `TOKEN-5.1`-`5.14` | `TOKEN-6.1`-`6.6` |
+| VERIFIER | `VERIFIER-1.1`-`1.5` | `VERIFIER-2.1`-`2.1` | `VERIFIER-3.1`-`3.1` | `VERIFIER-4.1`-`4.1` | `VERIFIER-5.1`-`5.1` | `VERIFIER-6.1`-`6.6` |
+| HARDWARE | `HARDWARE-1.1`-`1.2` | `HARDWARE-2.1`-`2.2` | `HARDWARE-3.1`-`3.1` | `HARDWARE-4.1`-`4.1` | `HARDWARE-5.1`-`5.1` | `HARDWARE-6.1`-`6.6` |
 
 Every cell is a coordinate range into a catalogued obligation set: the object axis in
 [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md), the Graph axis in
-[`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md), the seventeen domain objects in
-[`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 701 obligations across the three
+[`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md), the nineteen domain objects in
+[`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). 729 obligations across the three
 namespaces, which are disjoint: `DATA-4.2` never aliases `4.2` or `GRAPH-4.2`, and each
 catalogue carries its own digest. § marks `HYPER`, which is catalogued but not
-certifiable; ‡ marks the six objects with no adapter anywhere: `OWNER` and the five
+certifiable; ‡ marks the six objects with no bound numbered-profile mechanisms: `OWNER` and the five
 identity objects.
 
-## The ladder strip — what a certificate actually climbs
+## Legacy corroboration depth strip — not the full certificate registry
 
-The table above is the coordinate space; this one is the climb. Each cell is the
-interval of `m` a grounded certificate can actually reach in that profile, and
-**hovering it names every rung**: the short name of each grounding certificate from
-`.1` to the profile's depth. Reaching `.m` clears every obligation whose longest
-prerequisite chain is exactly `m`, so a rung may carry more than one obligation and
-need not be the one whose index is `m`.
+This table measures topological depth in the currently catalogued tiers 1–5.
+It is not an enumeration or reachability proof for the internal grounding
+certificates indexed by `.m`, and it omits tiers 6–8. Its linked tooltips group
+obligations by longest prerequisite chain. A depth group may contain several
+obligations and does not assign a certificate index to any of them.
 
 | Certificate stem | 1 | 2 | 3 | 4 | 5 | rungs |
 |---|---|---|---|---|---|---|
@@ -762,24 +783,34 @@ need not be the one whose index is `m`.
 | `IDENTITY-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#identity-1-facets ".1 Bearer binding, Role binding; .2 Occupancy evidence, Inherited scope; .3 Assurance level; .4 Validity and revocation surface") | [2.1–2.3](DOMAIN_OBLIGATIONS.md#identity-2-dynamics ".1 Enrollment; .2 Re-verification and renewal, Hand-over, Revocation, Presentation, Simulation end; .3 Presentation linkability") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#identity-3-statics ".1 Bearer-bounded, Multiple occupancy, Revocation does not un-happen; .2 Evidence ceiling, The binding is not the bearer; .3 Weakest operand") | [4.1–4.3](DOMAIN_OBLIGATIONS.md#identity-4-closure ".1 Presentation binding, Bearer class declared; .2 Assurance support, No self-asserted attribute, Bot containment, Human exit; .3 Closure result") | [5.1–5.6](DOMAIN_OBLIGATIONS.md#identity-5-domain-adaptation ".1 Verifiable credential mainstay, Decentralized identifier mapping; .2 Selective disclosure mapping; .3 Unlinkability mapping; .4 Round trip; .5 Inference upward; .6 Adaptation accounting") | **19** |
 | `ACTOR-` ‡ | [1.1–1.4](DOMAIN_OBLIGATIONS.md#actor-1-facets ".1 Actor identity; .2 Branch binding, Control surface, Decision classes, Admitted specification spaces; .3 Instrument boundary; .4 Facet completeness") | [2.1–2.5](DOMAIN_OBLIGATIONS.md#actor-2-dynamics ".1 Delegation, Key rotation; .2 Revocation, Collective membership; .3 Dissolution; .4 Succession; .5 Accountability replay") | [3.1–3.3](DOMAIN_OBLIGATIONS.md#actor-3-statics ".1 Decisions are factual, No sole witness, Instrument is not a party; .2 Non-transferable accountability; .3 Revocation does not un-decide, Weakest operand") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#actor-4-closure ".1 Decision inventory; .2 Exactly one actor; .3 None unattributed, None doubly attributed, Independent attribution; .4 Closure result") | [5.1–5.4](DOMAIN_OBLIGATIONS.md#actor-5-domain-adaptation ".1 Mainstay binding; .2 Key event mapping, Controller mapping, Principal mapping; .3 Round trip; .4 Inference upward") | **20** |
 | `TOKEN-` | [1.1–1.5](DOMAIN_OBLIGATIONS.md#token-1-facets ".1 Token kind; .2 Canonical bytes, Genesis commitment, Tenure accumulator, Lease scope; .3 Issuance binding, Audience, Validity window, Caveat set, Disclosure digests; .4 Algorithm binding, Key identification, Replay identifier; .5 Confirmation key") | [2.1–2.5](DOMAIN_OBLIGATIONS.md#token-2-dynamics ".1 Genesis; .2 Epoch advance, Lease grant, Key rotation; .3 Revocation, Lease expiry, Attenuation, Reissuance; .4 Discharge, Presentation, Suspension, Status publication, Clock disagreement; .5 Chain replay") | [3.1–3.5](DOMAIN_OBLIGATIONS.md#token-3-statics ".1 Preimage resistance, Soulbound non-transfer, Window emptiness; .2 Chain one-wayness, Commitment binding, Algorithm confusion, Key identity, Freshness is not validity, Disclosure complement; .3 Tenure is not authority, Possession is not presentation, Replay distinctness; .4 Attenuation is one-way; .5 Choice independence") | [4.1–4.4](DOMAIN_OBLIGATIONS.md#token-4-closure ".1 Inventory; .2 Epoch contiguity, Parent binding, Signature closure, Algorithm closure, Key closure, Audience closure, Window coverage, Replay closure, Status coverage, Disclosure closure; .3 Scope monotonicity, Discharge closure; .4 Closure result") | [5.1–5.5](DOMAIN_OBLIGATIONS.md#token-5-domain-adaptation ".1 Mainstay binding; .2 Claim-set mapping, Validity-window mapping, Header metadata mapping, Proof attestation mapping, Presentation authorization mapping, Transparency inclusion; .3 Attenuation mapping, Ceiling mapping, Selective disclosure mapping; .4 Round trip, Attenuation operators, Withheld field mapping; .5 Inference upward") | **24** |
+| `VERIFIER-` | [1.1–1.4](DOMAIN_OBLIGATIONS.md#verifier-1-facets ".1 Retained verifier identity; .2 Retained decision certificate, Process resource enforcement; .3 Repeated kernel replay; .4 Bootstrap independence") | [2.1–2.1](DOMAIN_OBLIGATIONS.md#verifier-2-dynamics ".1 Verifier execution dynamics") | [3.1–3.1](DOMAIN_OBLIGATIONS.md#verifier-3-statics ".1 Verifier substrate constraints") | [4.1–4.1](DOMAIN_OBLIGATIONS.md#verifier-4-closure ".1 Verifier coverage closure") | [5.1–5.1](DOMAIN_OBLIGATIONS.md#verifier-5-domain-adaptation ".1 Verifier mainstay translation") | **8** |
+| `HARDWARE-` | [1.1–1.2](DOMAIN_OBLIGATIONS.md#hardware-1-facets) | [2.1–2.1](DOMAIN_OBLIGATIONS.md#hardware-2-dynamics) | [3.1–3.1](DOMAIN_OBLIGATIONS.md#hardware-3-statics) | [4.1–4.1](DOMAIN_OBLIGATIONS.md#hardware-4-closure) | [5.1–5.1](DOMAIN_OBLIGATIONS.md#hardware-5-domain-adaptation) | **6** |
 
-386 rungs over ninety-five profiles. The remaining 213 of 599 catalogued
-obligations sit above their profile's depth: nameable, and unreachable as an `m`,
-because independent obligations are cleared at one depth rather than at several. A
-certificate that names one of them is malformed.
+400 depth positions over one hundred five currently catalogued corroboration
+profiles. The remaining 215 of 615 catalogued corroboration obligations exceed their profile's
+topological depth because independent obligations can occupy the same depth.
+That arithmetic does not render an obligation or an internal certificate
+coordinate malformed; a separate certificate registry and admission rule must
+settle which `.m` coordinates exist.
 
-An obligation is either **mechanized** — an adapter check establishes it today — or
+The legacy catalogue field **mechanized** means an obligation names a registered
+checking route; it does not mean every representation is supported or the proposition
+is established. An obligation can instead be
 specified without a mechanism, in which case it is reported `UNKNOWN`, never absent and
-never passed. Only 11 of the seventeen domain objects have an adapter in any family, and only
-ten have a behavioural adapter, which is what a domain certificate requires; the parenthesised
+never passed. Here, a family means one of the three numbered-profile obligation
+mechanism families, not the separate accountable-record catalogue. Only 13 of the
+nineteen domain objects have an adapter in any family, and only twelve have a
+computational behavioural adapter. Six more objects have bounded native
+accountable-record adapters, for eighteen with some native checker; these six do not
+bind their numbered-profile obligations. The parenthesised
 count in each cell of the depth grid below is how many of that profile's obligations
-one of the three families establishes today.
+one of the three families names today.
 
-Of the 626 domain obligations, 236 are mechanized, across three disjoint families: 123
+Of the 654 domain obligations, 245 are mechanized, across three disjoint families: 132
 behavioural adapter checks, 41 tier-3 statics checks and 72 tier-5 adaptation checks.
-Tier 5 is fully mechanized on the 11 grounded objects and tier 3 on seven of them; on the
+Tier 5 names routes for every obligation on 11 of the 13 grounded objects and tier 3 on seven of them; on the
 six ungrounded objects no tier is mechanized at all, and level 6 is mechanized nowhere.
-What remains bare is 69 at tier 1, 73 at tier 2, 51 at tier 3, 58 at tier 4, 37 at tier 5,
+What remains bare is 69 at tier 1, 74 at tier 2, 53 at tier 3, 60 at tier 4, 39 at tier 5,
 and the whole of level 6. The two specification axes are unmechanized by construction —
 they are checked against retained evidence rather than by any domain adapter.
 [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) sets out the three families and why a
@@ -787,20 +818,21 @@ static needs a different kind of evidence from a dynamic.
 
 ## The cardinality of the grid
 
-Ninety-five cells is the shape of the grid, not its size. Each cell is a numbered profile with
-its own internal topology, and a grounded certificate does not name the cell — it names a
-position inside it: `<object>-<tier>.<m>`, where `m` is the depth of complete modules
-represented. Write `i` for the depth of one cell's module topology and the grid spans
+One hundred five cells is the shape of the currently measured tiers-1–5 subgrid,
+not the shape of the full eight-tier architecture. Each cell has an obligation
+topology. Write `i` for the depth of one cell's module topology; the following
+product is the old model's formal depth-vector count, **not** a count of
+grounding certificates or currently reachable verification states:
 
 ```
-prod(i, 19 x 5) = 683,643,783,743,337,042,227,376,839,322,501,120,000,000,000,000,000,000,000
+prod(i, 21 x 5) = 5,469,150,269,946,696,337,819,014,714,580,008,960,000,000,000,000,000,000,000
 ```
 
 `i` is a **depth, not a count**: the longest chain of modules each of which is a
 prerequisite of the next. The two coincide only where a profile is a chain. Wherever it is
 a directed acyclic graph — where two modules both depend on a third but not on each other
 — the depth is strictly smaller, because independent modules are cleared at one depth
-rather than at two. Every one of the ninety-five profiles is a DAG, so on every object the
+rather than at two. Every one of the one hundred five profiles is a DAG, so on every object the
 depth is strictly below the count somewhere.
 
 | Object | 1 | 2 | 3 | 4 | 5 | 6 | sum i | states | mechanized |
@@ -824,18 +856,21 @@ depth is strictly below the count somewhere.
 | IDENTITY ‡ | **4** of 6 (0) | **3** of 7 (0) | **3** of 6 (0) | **3** of 7 (0) | **6** of 7 (0) | **5** of 6 (0) | 19 | 20 | 0/39 |
 | ACTOR ‡ | **4** of 7 (0) | **5** of 7 (0) | **3** of 6 (0) | **4** of 6 (0) | **4** of 6 (0) | **5** of 6 (0) | 20 | 21 | 0/38 |
 | TOKEN | **5** of 14 (12) | **5** of 14 (8) | **5** of 14 (14) | **4** of 14 (11) | **5** of 14 (14) | **5** of 6 (0) | 24 | 25 | 59/76 |
+| VERIFIER | **4** of 5 (5) | **1** (0) | **1** (0) | **1** (0) | **1** (0) | **5** of 6 (0) | 8 | 9 | 5/15 |
+| HARDWARE | **2** (2) | **1** of 2 (2) | **1** (0) | **1** (0) | **1** (0) | **5** of 6 (0) | 6 | 7 | 4/13 |
 
 **Bold is `i`.** The `6` column is shown for completeness and is **excluded from `sum i`
 and from `states`**, which count corroboration rungs only; level 6 carries no rungs.
 Where `i` is smaller than the module count, both are shown: `8` of
 `14` reads *eight is the depth of a profile holding fourteen modules*. A parenthesised
-count is how many of that profile's obligations a mechanism establishes today; the two
+count is how many of that profile's obligations name a mechanism; the two
 specification axes carry no domain adapter by construction and show none. § marks
 `HYPER`, which is **catalogued but not certifiable**: its statics and adaptation mechanisms resolve and execute, but it has
 no behavioural adapter and no `CHECKS` entry, so `build_domain_certificate` rejects it
 and no certificate over it can be built at all. ‡ marks the six ungrounded objects --
-`OWNER` and the five identity objects -- which have no adapter anywhere and
-therefore show none either.
+`OWNER` and the five identity objects -- which have no bound numbered-profile
+mechanisms and therefore show none. Native accountable-record routines for all six
+remain separate and do not establish numbered-profile conformance.
 
 **A mechanism name is a promise that something executes it.** The suite resolves every
 mechanism name against the registered checks of that obligation's **own** object, because
@@ -849,57 +884,60 @@ named `configuration`, `checkpoints`, `lineage`, `updates` or `training`; `CHECK
 2026-09-21. The checks existed -- keyed under `HYPER`, because the adapter module was
 still called `hyper.py`. Renaming it to `train.py` on 2026-09-22 restored all fourteen
 verbatim, and each one's requirement is the description of the check it names. `TRAIN`
-reports 25 of 35, and the rename brought the axis to 205 of 626. Two of those names are
+reports 25 of 35, and the rename brought the axis to 205 of 641. Two of those names are
 also check names on other objects -- `configuration` is ENV's and `lineage` is DATA's --
 which is why resolution stays object-scoped: the collision is real and it is the
 resolver, not the name, that keeps it harmless.
 
-**A passing test suite is not evidence about a ‡ row.** An ungrounded object has no
-mechanism, so the only executable checks over it are that its catalogue is well-formed and
-that the figures derived from it are correct — both of which hold no matter what its
-obligations say. Its normative text is the whole artifact, and adversarial reading is its
-only gate. Every authoring defect found in `OWNER` so far was found that way, with
+**A passing test suite is not conformance evidence about a ‡ row.** Its numbered
+obligations have no bound mechanism. Public ACTOR/OWNER accountable routines have
+executable checks, but those do not establish the catalogue obligations. Catalogue
+shape and arithmetic checks likewise cannot validate the meaning of normative text;
+adversarial reading remains necessary. Every authoring defect found in `OWNER` so far was found that way, with
 the suite green each time: an over-broad predicate, a missing existence rule, an existence
 rule that bound one axis of the two this object moves on, and a paragraph that
 contradicted another paragraph thirty-five lines below it.
 
-### Almost none of that product is reachable
+### Reachability within the legacy depth-vector model
 
-The free product counts coordinate vectors. It is not the number of verification states,
-because certification is a **topological ordering**: a coordinate is reachable only after
-its prerequisites are, and this standard orders the grid twice over.
+The free product counts depth vectors under the old model. It is not the
+number of registered internal grounding certificates or current verification
+states. Its reachability calculation assumes a **topological ordering** of
+the catalogued obligations and cross-profile prerequisites; that assumption
+does not define the eight-tier certificate registry.
 
-**Within an object, the five tiers are one chain, not five free coordinates.** A numbered
+**Within the old computational subgrid, the five tiers form one chain, not five free coordinates.** A numbered
 profile is cumulative — profile `N` requires its named coordinate and every earlier
 coordinate on the same axis — and `certified_profile_depth` is defined as the largest
 uninterrupted established prefix, or zero. One scalar per object, running straight through
 all five tiers. An object's reachable positions are therefore `1 + sum(i)`, not `prod(i)`:
 thirty for the object axis, not 6,000.
 
-**Across objects, the composition lattice orders the nineteen ladders against each other.** A
+**Across objects, the composition lattice orders the twenty-one ladders against each other.** A
 composed object cannot outrun its operands. `HYPER-2` states this twice, and the two
 statements do not bound it equally:
 
 | Gate | The sentence it comes from | Accessible states |
 |---|---|---|
-| Operands non-`UNKNOWN` | one `UNKNOWN` operand makes the composition `UNKNOWN` | 343,872,709,682,315,103,844,560 |
-| Operands complete | strength is non-increasing; the composition claims no more than its operands established | 206,159,635,176,678 |
+| Operands non-`UNKNOWN` | one `UNKNOWN` operand makes the composition `UNKNOWN` | 21,663,980,709,985,851,542,207,280 |
+| Operands complete | strength is non-increasing; the composition claims no more than its operands established | 12,988,057,016,130,714 |
 
 The tighter one governs. A composition that may advance while an operand is still partial
 can report a depth its operands never established, which is exactly what non-increasing
-strength forbids — so the reachable count is **206,159,635,176,678**, around one in
-3,316,089,413,708,250,874,581,876,764,106,243,674,088,950 of the free product.
+strength forbids — so the reachable count is **12,988,057,016,130,714**, around one in
+421,090,719,201,047,730,105,635,144,648,411,895,122,406 of the free product.
 
 ```
-free product over 95 cells    683,643,783,743,337,042,227,376,839,322,501,120,000,000,000,000,000,000,000
-cumulative profiles, per object       15,106,779,566,764,095,369,600,000
-+ composition, operands positive         343,872,709,682,315,103,844,560
-+ composition, operands complete             206,159,635,176,678   <- reachable
+free product over 105 cells    5,469,150,269,946,696,337,819,014,714,580,008,960,000,000,000,000,000,000,000
+cumulative profiles, per object       951,727,112,706,138,008,284,800,000
++ composition, operands positive         21,663,980,709,985,851,542,207,280
++ composition, operands complete             12,988,057,016,130,714   <- reachable
 ```
 
-`HYPER` is the only ladder the lattice leaves unconstrained, and for the one reason
-that cannot be repaired: it is the composition operator rather than a composed object, so
-there is no edge for it to sit on. Every other ladder is now on one. `OWNER` was the
+`HYPER`, `VERIFIER` and `HARDWARE` are the ladders the lattice leaves unconstrained.
+HYPER is the composition operator rather than a composed object, so there is no
+edge for it to sit on. VERIFIER currently binds a retained native proof, not an
+admitted cross-object composition edge. Its nine structural positions multiply the prior lattice counts; this is combinatorial enumeration, not nine reachable certified outcomes. HARDWARE has no admitted cross-object edge either; its seven structural positions multiply these counts without asserting seven certified outcomes. Every other ladder is on an edge. `OWNER` was the
 second such ladder until `OWNER-1.1` was retyped to bind a `ACTOR` certificate; it
 composed nothing then, and multiplied both gated figures by its own 19 reachable
 positions. That is why those figures **fell** by a factor of about eleven when the edge
@@ -923,12 +961,12 @@ Nothing was removed from the specification to get there. The ordering was always
 
 ### Where the rungs are
 
-386 rungs across the nineteen ladders:
+400 depth positions across the twenty-one measured corroboration ladders:
 
 | | Objects | Rungs | Rungs per object |
 |---|---|---|---|
 | Specification axes (VSTD, GRAPH) | 2 | 47 | 23.5 |
-| Domain objects | 17 | 339 | 19.9 |
+| Domain objects | 19 | 353 | 18.6 |
 
 The two axes remain the deepest single objects, which is expected: `VSTD` is the
 foundational claim surface every other object's evidence is read through, and a foundation
@@ -939,56 +977,57 @@ carrying fewer rungs than it has tiers.
 Both numbers still move. Cataloguing an object raises its obligation count and lowers its
 `i`, because declared dependencies turn a default total order into a DAG; the domain
 objects were catalogued with their dependencies declared from the start, so their `i` is
-already a depth rather than a count. What remains provisional is mechanization: 236 of
-626 domain obligations have a check behind them, and every one of the remaining 390 is
-a coordinate a certificate can name but not yet clear. 216 of those 390 are the whole of the
-six ungrounded objects, which have no adapter at all, and 23 are the unmechanized
+already a depth rather than a count. What remains provisional is mechanization: 245 of
+654 domain obligations have a check behind them, and every one of the remaining 409 is
+a coordinate a certificate can name but not yet clear. 216 of those 409 are the whole of the
+six ungrounded objects, which have no bound numbered-profile mechanisms, and 23 are the unmechanized
 obligations of HYPER, which has no behavioural adapter and so cannot be certified.
 
 ## What follows mechanically
 
 Six consequences:
 
-1. **Tier 5 is mechanized on every grounded object, and it took a different kind of
-   adapter.** Every tier-5 coordinate of a grounded object has a check, because the
+1. **Tier 5 names routes on every grounded object except VERIFIER and HARDWARE, and it took a different kind of
+   adapter.** VERIFIER and HARDWARE tier 5 are explicitly UNKNOWN. Every other grounded object has a tier-5 check, because the
    mainstay representations each domain publishes in were named first: reverse-engineering
    those formats into meta-surfaces turned "adapt to the domain" into binding, mapping,
    round trip and residual. Reducing them also produced a finding — **mainstay formats
    encode facets and dynamics, and almost never statics or closure.** The residual a
    tier-5 certificate reports is therefore computed from the meta-surface, not declared,
-   and it is consistently large.
-2. **Tier 3 is complete on every object with a statics check, and what closed it was a
+   and it is consistently large. This is catalogue coverage; executable carrier
+   admission currently covers only the bounded HAR and safetensors fragments in
+   [mainstay coverage](../../../docs/MAINSTAY_COVERAGE.md).
+2. **Tier 3 names every obligation on each object with a statics check, and what closed it was a
    third mechanism kind.** Statics are the facts an object does not choose, which is
    exactly the class that re-executing a declaration cannot establish. The grounded
    objects whose statics profile had no mechanism at all now have one: a witness probe,
    a recomputation over the retained inventory, or **invariance under perturbation of
    the subject's own choices** — re-decide the earlier statics with the object's
    declarations replaced, and refute if a verdict moves. The bare tier-3 coordinates
-   that remain on grounded objects are all on ENV, BENCH, MODEL and SIM, whose statics
-   profiles were never empty and so were never in that sweep.
-3. **`grounded_identifier` only half expresses the grid.** It used to guard
+   that remain on grounded objects are all on ENV, BENCH, MODEL, SIM, VERIFIER and HARDWARE, whose statics
+   profiles are partial or, for VERIFIER and HARDWARE, explicitly unsupported.
+3. **`grounded_identifier` only half expresses the current subgrid.** It used to guard
    `1 <= tier <= len(CHECKS[domain])`, so with ENV and BENCH at four checks each,
    `ENV-5.m` and `BENCH-5.m` raised `ValueError`; the tier bound is now the
    constant `TIERS = 5` and `m` is bounded by the adapter's module count instead. `GRAPH`
    and `VSTD` still raise `unknown domain`: the two specification axes must be present,
    with unreached tiers reported as `UNKNOWN` rather than being unconstructable. The
-   published domain schemas additionally cap `m` at `[1-5]`, which the grid does not: `m`
-   counts depth within one tier and is not bounded by the tier's position.
+   published domain schemas additionally cap `m` at `[1-5]`. Neither an adapter
+   module count nor the tier number defines the internal certificate index; a
+   registered certificate mapping is required before widening the schema.
 4. **The implemented `AGENT` adapter binds one operand, not the lattice's three.** It
    re-derives its observation ceiling from a bound `HARNESS` certificate and nothing else,
    so the substrate and the decider are unbound — even though `AGENT-4.1` compares the
    retained outcome inventory against an outcome contract (bench-shaped), `AGENT-2.1` checks
    a contiguous trajectory (graph-shaped), and declared actions carry tool side effects
    (env-shaped). The obligations are already in the ladder; the bindings are not.
-5. **A module count is not a reachable `m`.** `m` is a depth, so the largest `m` a
-   certificate can carry for a profile is that profile's `i`, not its module count. Where
-   the two differ, the difference is unreachable coordinate space: the object axis at tier
-   four holds fourteen modules at depth eight, so `4.9` through `4.14` name depths that no
-   chain of prerequisites in that profile reaches. The code bounds `m` by the count and so
-   admits them. Closing that is a validator change against the catalogued dependencies, not
-   a change to any specification, and it can now be done uniformly: every object's
-   dependencies are declared, and `tier_depth` computes the bound for any profile of any
-   domain object.
+5. **Module count, dependency depth and internal certificate index are distinct.**
+   The object axis at tier four holds fourteen obligations at depth eight. The
+   existing validator bounds `m` by a module count, while the old lattice text
+   treated eight as the maximum. Neither rule follows from the maintainer's
+   certificate-index semantics. Replacing that bound requires an explicit
+   certificate registry, dependency mapping and migration test. `tier_depth`
+   computes only the dependency graph measure for catalogued domain profiles.
 6. **No validator enforces the composition gate.** The reachable count above assumes a
    composed object cannot advance past its operands, which is what non-increasing strength
    requires; nothing in the adapters checks it. `BOT-1.1` re-derives its bound agent,
@@ -1006,7 +1045,7 @@ profile, and an admission policy. Three disjoint namespaces hold them.
 |---|---|---|---|
 | Object `VSTD-1..5` | `1.1`-`5.11` | 47 | [`GROUNDED_CERTIFICATION.md`](GROUNDED_CERTIFICATION.md) |
 | Graph `GRAPH-1..5` | `GRAPH-1.1`-`GRAPH-5.6` | 28 | [`GRAPH_GROUNDING.md`](GRAPH_GROUNDING.md) |
-| The seventeen domain objects | `<object>-1.1`-`<object>-6.6` | 626 | [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) |
+| The nineteen domain objects | `<object>-1.1`-`<object>-6.6` | 654 | [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md) |
 
 The namespaces do not overlap and no catalogue admits another's identifiers, so `DATA-4.2`
 never aliases `4.2` or `GRAPH-4.2`. Each computes its own digest, which is what makes them
@@ -1014,13 +1053,13 @@ separable: extending one provably cannot move another's.
 
 What differs between them is not the form of the obligations but how many carry a
 mechanism. The two specification axes are checked against retained evidence rather than by
-a domain adapter. Of the seventeen domain objects, 236 of 626 obligations name a check in one
+a domain adapter. Of the nineteen domain objects, 245 of 654 obligations name a check in one
 of the three families — behavioural in [`DOMAIN_GROUNDING.md`](DOMAIN_GROUNDING.md), statics and
-adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 390 are
+adaptation in [`DOMAIN_OBLIGATIONS.md`](DOMAIN_OBLIGATIONS.md). The remaining 409 are
 specified without a mechanism and are reported `UNKNOWN` — never absent, and never passed;
-216 of them are the whole of the six objects with no adapter at all, 23 more are the
+216 of them are the whole of the six objects with no bound numbered-profile mechanisms, 23 more are the
 unmechanized obligations of `HYPER`, which has no behavioural adapter, and the
-remaining 151 are the bare tiers of the ten certifiable objects.
+remaining 170 are the bare tiers of the twelve certifiable objects.
 
 `HYPER` no longer names two objects. The combination operator keeps the name; the
 training-run certifier that used to share it is now `TRAIN`, with its own row above.
@@ -1032,3 +1071,11 @@ while `HYPER` was published as certifiable. `CHECKS["TRAIN"]` keys its five chec
 the operator holds between certified objects and has no substrate of its own to adapt,
 so its residue is permanent. The rename landed while 2.0.0 was unreleased, so no shipped
 schema or digest carried the old spelling.
+
+## VERIFIER — retained decision proof boundary
+
+VERIFIER is a verifier artifact whose identity and retained native decision proof can be checked. Its first three facet obligations rehash identity, recheck the bound grounded decision certificate and repeat kernel replay. None executes the submitted verifier or proves class-wide soundness. Resource enforcement admits fixed native proof replay on Windows with queried committed-allocation limits, bounded completion observation and charged native work. Bootstrap admits an externally selected signature and a distinct finite truth-table oracle. Unsupported inputs or capabilities retain UNKNOWN; neither establishes general soundness or organizational independence. Dynamics, statics, closure and mainstay translation each retain an explicit unsupported obligation; registration establishes none of them.
+
+## HARDWARE — retained physical-device records
+
+HARDWARE has four native routes: inventory, containment topology, exclusive reservation accounting and measurement envelopes. They validate retained records with typed capacities and declared clocks. Physical identity, fresh availability, sensor accuracy, isolation and financial authority remain unestablished; tiers 3–5 are explicitly UNKNOWN. Legacy hardware accountability receipts keep their existing wire format and do not silently become this native domain. See [the exact obligations](DOMAIN_OBLIGATIONS.md#hardware-1-facets).

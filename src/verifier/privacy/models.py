@@ -1,4 +1,4 @@
-"""Data models for Level 6 disclosure bounds, declarative privacy, and provable transparency.
+"""Data models for experimental level 6 disclosure bounds and digest records.
 
 Acronyms:
     application programming interface (API);
@@ -16,12 +16,17 @@ import json
 from typing import Any
 
 
+def _string_sequence(value: Any) -> bool:
+    """Admission sets are sequences of exact strings, never substring containers."""
+    return type(value) in (tuple, list) and all(type(item) is str for item in value)
+
+
 @dataclass(frozen=True)
 class ObserverParty:
     """An observer entity identified as a party rather than a channel (obligation 6.3).
 
-    Channels can be relayed, duplicated, or forwarded; parties are accountable
-    entities bound to verified credentials, actor identity, and declared purpose.
+    Values are supplied by the caller. This record does not authenticate identity,
+    roles, purpose, or credentials; a trusted observer model must establish them.
     """
 
     actor_id: str
@@ -35,10 +40,11 @@ class ObserverParty:
 
 @dataclass(frozen=True)
 class TransparencyCommitment:
-    """A tamper-evident cryptographic commitment to a withheld private coordinate (obligation 6.1).
+    """A digest binding a withheld coordinate (obligation 6.1 helper).
 
     Provable transparency requires that withholding a field is not silent omission.
-    The existence and schema of the withheld data are transparently committed.
+    The existence and schema of the withheld data are recorded. An unsalted digest
+    is not hiding: an observer can guess low-entropy values and compare digests.
     """
 
     field_name: str
@@ -87,14 +93,38 @@ class DisclosureBound:
     conditions: tuple[tuple[str, str], ...] = ()
 
     def permits(self, observer: ObserverParty) -> bool:
-        """Evaluate whether this bound admits the given observer party."""
-        if not self.admitted_observers and not self.admitted_roles:
+        """Match a caller-established party and every declared condition.
+
+        Supported condition keys are actor_id, role, purpose (exact strings), and
+        credential (membership). Unsupported predicates deny admission, never
+        disappear. These matches are not authentication or consent verification.
+        """
+        if not isinstance(observer, ObserverParty) or not all(
+            type(value) is str for value in (observer.actor_id, observer.role, observer.purpose)
+        ):
             return False
-        if self.admitted_observers and observer.actor_id in self.admitted_observers:
-            return True
-        if self.admitted_roles and observer.role in self.admitted_roles:
-            return True
-        return False
+        if not all(_string_sequence(value) for value in (
+            self.admitted_observers, self.admitted_roles, observer.credentials,
+        )) or type(self.conditions) not in (tuple, list):
+            return False
+        admitted = (observer.actor_id in self.admitted_observers
+                    or observer.role in self.admitted_roles)
+        if not admitted:
+            return False
+        values = {"actor_id": observer.actor_id, "role": observer.role,
+                  "purpose": observer.purpose}
+        for condition in self.conditions:
+            if not isinstance(condition, (tuple, list)) or len(condition) != 2:
+                return False
+            key, expected = condition
+            if not isinstance(key, str) or not isinstance(expected, str):
+                return False
+            if key == "credential":
+                if expected not in observer.credentials:
+                    return False
+            elif key not in values or values[key] != expected:
+                return False
+        return True
 
     def to_dict(self) -> dict[str, Any]:
         return {

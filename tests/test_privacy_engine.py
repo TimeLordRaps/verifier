@@ -1,4 +1,4 @@
-"""Adversarial and conformance tests for Level 6 declarative privacy and provable transparency.
+"""Local level 6 disclosure-helper tests, not normative conformance evidence.
 
 Acronyms:
     differential privacy (DP);
@@ -32,11 +32,29 @@ from verifier.privacy import (
 )
 
 
+
+# Normative 6.2 admits no implicit public structural field. These illustrative
+# fixtures declare their complete structural surface and explicit reader bounds.
+PUBLIC_FIELDS = ("schema_version", "object_name", "domain", "verdict", "results",
+                 "request", "result", "certificate_digest", "specification_digest",
+                 "policy_digest", "mechanism_digest") + tuple(
+                     f"tier_{tier}_verdict" for tier in range(1, 6))
+
+
+def public_surface(*, object_name: str, disclosed_fields: tuple, withheld_fields: tuple) -> DisclosureSurface:
+    return DisclosureSurface(object_name, tuple(dict.fromkeys(PUBLIC_FIELDS + disclosed_fields)), withheld_fields)
+
+
+def public_bounds() -> tuple[DisclosureBound, ...]:
+    return tuple(DisclosureBound("public:" + key, key, admitted_roles=("auditor", "analyst"))
+                 for key in PUBLIC_FIELDS)
+
+
 @pytest.fixture
 def mock_certificate() -> dict:
     """Create a realistic domain certificate with Tiers 1-5 verdicts and sensitive payload fields."""
     return {
-        "schema_version": "verifier-domain-certification-1",
+        "schema_version": "privacy-test-fixture",
         "object_name": "DATA",
         "domain": "DATA",
         "subject_id": "example:data-retained",
@@ -66,7 +84,7 @@ def mock_certificate() -> dict:
 
 def test_obligation_6_1_disclosure_surface_partitioning_and_commitments(mock_certificate: dict) -> None:
     """Test [OBJECT]-6.1: Disclosure surface partitions emitted fields and creates transparency commitments."""
-    surface = DisclosureSurface(
+    surface = public_surface(
         object_name="DATA",
         disclosed_fields=("shard_count", "record_count", "split_names"),
         withheld_fields=("raw_record_samples", "curator_private_locator", "genesis_seed"),
@@ -76,6 +94,7 @@ def test_obligation_6_1_disclosure_surface_partitioning_and_commitments(mock_cer
         DisclosureBound(bound_id="b-public-2", field_name="record_count", admitted_roles=("auditor", "analyst")),
         DisclosureBound(bound_id="b-public-3", field_name="split_names", admitted_roles=("auditor", "analyst")),
     )
+    bounds += public_bounds()
     observer = ObserverParty(actor_id="actor:alice", role="analyst", purpose="metrics_review")
     context = EmissionContext(observer=observer, timestamp="2026-09-24T13:30:00Z")
 
@@ -94,8 +113,8 @@ def test_obligation_6_1_disclosure_surface_partitioning_and_commitments(mock_cer
     assert "genesis_seed" not in emitted
 
     # Negative space is transparently committed
-    assert "transparency_commitments" in emitted
-    committed_names = {c["field_name"] for c in emitted["transparency_commitments"]}
+    assert "transparency_commitments" not in emitted
+    committed_names = {c.field_name for c in result.transparency_commitments}
     assert "raw_record_samples" in committed_names
     assert "curator_private_locator" in committed_names
     assert "genesis_seed" in committed_names
@@ -111,7 +130,7 @@ def test_obligation_6_2_bound_declaration_fails_closed(mock_certificate: dict) -
     cert = copy.deepcopy(mock_certificate)
     cert["unbounded_diagnostic"] = "sensitive internal stack trace"
 
-    surface = DisclosureSurface(
+    surface = public_surface(
         object_name="DATA",
         disclosed_fields=("shard_count",),
         withheld_fields=(),
@@ -119,6 +138,7 @@ def test_obligation_6_2_bound_declaration_fails_closed(mock_certificate: dict) -
     bounds = (
         DisclosureBound(bound_id="b-1", field_name="shard_count", admitted_roles=("analyst",)),
     )
+    bounds += public_bounds()
     observer = ObserverParty(actor_id="actor:bob", role="analyst", purpose="review")
     context = EmissionContext(observer=observer, timestamp="2026-09-24T13:30:00Z")
 
@@ -134,8 +154,9 @@ def test_obligation_6_2_bound_declaration_fails_closed(mock_certificate: dict) -
 
 def test_obligation_6_3_observer_must_be_identified_party(mock_certificate: dict) -> None:
     """Test [OBJECT]-6.3: Observers must be identified as accountable parties, not relayable channels."""
-    surface = DisclosureSurface(object_name="DATA", disclosed_fields=(), withheld_fields=())
+    surface = public_surface(object_name="DATA", disclosed_fields=(), withheld_fields=())
     bounds = ()
+    bounds += public_bounds()
     evaluator = EmissionEvaluator()
 
     # Anonymous or channel-like observer (empty actor_id) fails closed
@@ -153,8 +174,9 @@ def test_obligation_6_3_observer_must_be_identified_party(mock_certificate: dict
 
 def test_obligation_6_4_dynamic_emission_time_receipt(mock_certificate: dict) -> None:
     """Test [OBJECT]-6.4: Evaluated per emission and generates verifier-privacy-assessment-receipt-1."""
-    surface = DisclosureSurface(object_name="DATA", disclosed_fields=("shard_count",), withheld_fields=())
+    surface = public_surface(object_name="DATA", disclosed_fields=("shard_count",), withheld_fields=())
     bounds = (DisclosureBound(bound_id="b-1", field_name="shard_count", admitted_roles=("auditor",)),)
+    bounds += public_bounds()
     observer = ObserverParty(actor_id="actor:eve", role="auditor", purpose="audit")
     context = EmissionContext(observer=observer, timestamp="2026-09-24T13:35:00Z")
 
@@ -172,8 +194,9 @@ def test_obligation_6_4_dynamic_emission_time_receipt(mock_certificate: dict) ->
 
 def test_obligation_6_5_composition_delta_relational_join_detection(mock_certificate: dict) -> None:
     """Test [OBJECT]-6.5: Co-emitting certificates triggers relational join leakage analysis."""
-    surface = DisclosureSurface(object_name="DATA", disclosed_fields=(), withheld_fields=())
+    surface = public_surface(object_name="DATA", disclosed_fields=(), withheld_fields=())
     bounds = ()
+    bounds += public_bounds()
 
     # Co-emitting DATA beside TRAIN discloses training set distribution
     co_emitted_train = {
@@ -195,15 +218,15 @@ def test_obligation_6_5_composition_delta_relational_join_detection(mock_certifi
     with pytest.raises(EmissionRefusalError, match="Composition delta violation.*DATA\\+TRAIN"):
         evaluator.evaluate_emission(mock_certificate, surface, bounds, context_analyst)
 
-    # Authorized auditor is admitted
+    # A self-declared auditor role cannot waive an unresolved composition risk
     auditor = ObserverParty(actor_id="actor:diana", role="auditor", purpose="regulatory_audit")
     context_auditor = EmissionContext(
         observer=auditor,
         timestamp="2026-09-24T13:30:00Z",
         co_emitted_certificates=(co_emitted_train,),
     )
-    result = evaluator.evaluate_emission(mock_certificate, surface, bounds, context_auditor)
-    assert result.receipt["composition_join_check"] == "PASS"
+    with pytest.raises(EmissionRefusalError, match="Composition delta violation"):
+        evaluator.evaluate_emission(mock_certificate, surface, bounds, context_auditor)
 
 
 def test_obligation_6_6_verdict_independence_adversarial_tamper(mock_certificate: dict) -> None:
@@ -345,7 +368,7 @@ def test_real_domain_certificate_emission_evaluation() -> None:
     assert cert["result"]["status"] == "PASS"
 
     # Define disclosure surface where evidence is governed by an explicit disclosure bound
-    surface = DisclosureSurface(
+    surface = public_surface(
         object_name="DATA",
         disclosed_fields=(
             "schema_version", "request", "result", "specification_digest",
@@ -356,18 +379,15 @@ def test_real_domain_certificate_emission_evaluation() -> None:
     bounds = (
         DisclosureBound(bound_id="b-audit-1", field_name="evidence", admitted_roles=("auditor",)),
     )
+    bounds += public_bounds()
 
-    # Analyst cannot see evidence; it is redacted with transparent commitment
+    # A strict native certificate requires retained evidence to reproduce; hiding
+    # it cannot produce another valid native certificate without a selective proof.
     analyst = ObserverParty(actor_id="actor:analyst-1", role="analyst", purpose="metrics")
     context_analyst = EmissionContext(observer=analyst, timestamp="2026-09-24T13:40:00Z")
     evaluator = EmissionEvaluator()
-    result_analyst = evaluator.evaluate_emission(cert, surface, bounds, context_analyst)
-
-    assert "evidence" not in result_analyst.emitted_certificate
-    assert result_analyst.emitted_certificate["result"]["status"] == "PASS"
-    assert len(result_analyst.transparency_commitments) == 1
-    assert result_analyst.transparency_commitments[0].field_name == "evidence"
-    assert result_analyst.receipt["verdict_independence"] == "PASS"
+    with pytest.raises(EmissionRefusalError, match="canonical certificate"):
+        evaluator.evaluate_emission(cert, surface, bounds, context_analyst)
 
     # Auditor is admitted and sees evidence
     auditor = ObserverParty(actor_id="actor:auditor-1", role="auditor", purpose="compliance")

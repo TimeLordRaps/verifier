@@ -35,7 +35,10 @@ GATE = _load_gate()
 
 
 NUMBER_WORDS = {
-    5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven",
+    1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven",
+    8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
+    14: "fourteen", 15: "fifteen", 16: "sixteen", 17: "seventeen", 18: "eighteen",
+    19: "nineteen", 20: "twenty",
 }
 
 
@@ -59,7 +62,9 @@ def _body(head: str, *, domains: str | None = None, checks: str | None = None,
     inventory = GATE.domain_inventory()
     domains = domains if domains is not None else NUMBER_WORDS[len(inventory)]
     checks = checks if checks is not None else str(sum(inventory.values()))
-    ranges = ranges if ranges is not None else _ranges(inventory)
+    ranges = ranges if ranges is not None else _ranges({
+        **inventory, **GATE.accountable_domain_inventory(),
+    })
     return (
         f"This candidate adds {domains} grounded domain adapters with {checks} "
         f"computational checks.\n\n{ranges}\n\n"
@@ -169,7 +174,7 @@ def test_an_undeclared_module_fails(head: str, tracked: str, monkeypatch) -> Non
 
 def test_the_catalogue_and_the_adapter_modules_agree() -> None:
     """Guard against the gate itself going stale as support modules are added."""
-    assert GATE.adapter_modules() == set(GATE.domain_inventory())
+    assert GATE.adapter_modules() == set(GATE.domain_inventory()) | set(GATE.accountable_domain_inventory())
 
 
 def test_the_real_description_is_current() -> None:
@@ -193,6 +198,8 @@ def test_the_real_description_is_current() -> None:
     findings: list[str] = []
     GATE.check_domains_are_described(result.stdout, findings)
     GATE.check_counts_are_described(result.stdout, findings)
+    GATE.check_declared_domains(result.stdout, findings)
+    GATE.check_source_grounding(result.stdout, findings)
     assert findings == [], findings
 
 
@@ -251,6 +258,8 @@ def test_a_commit_is_judged_on_its_own_tree_not_the_working_tree(tmp_path: Path)
     (domains / "__init__.py").write_text("", encoding="utf-8")
     (domains / "alpha.py").write_text("", encoding="utf-8")
     (domains / "catalog.py").write_text('CHECKS = {"ALPHA": ("a", "b")}\n', encoding="utf-8")
+    (repo / "src/verifier/core").mkdir()
+    (repo / "src/verifier/core/profile_obligations.py").write_text("# Empty fixture catalogue\n", encoding="utf-8")
     _git(repo, "init", "--quiet", ".")
     _git(repo, "config", "user.email", "fixture" + "@" + "example.invalid")
     _git(repo, "config", "user.name", "Fixture")
@@ -276,7 +285,7 @@ def test_a_commit_is_judged_on_its_own_tree_not_the_working_tree(tmp_path: Path)
     def run(*mode: str) -> dict:
         result = subprocess.run(
             [sys.executable, str(repo / "scripts" / "check_pr_description.py"),
-             "--body", str(body), "--json", *mode],
+             "--body", str(body), "--json", "--base", commit, *mode],
             cwd=str(repo), capture_output=True, text=True, timeout=120,
         )
         assert result.stdout, result.stderr

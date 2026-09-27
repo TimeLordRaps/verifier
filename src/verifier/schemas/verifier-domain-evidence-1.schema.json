@@ -466,6 +466,260 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "COLLECTIVE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "assembly_policy": {},
+              "collective_decisions_digest": {},
+              "collective_id": {},
+              "coordinate": {},
+              "decision_classes": {},
+              "inside": {},
+              "outside": {},
+              "relation_types": {},
+              "role_classes": {},
+              "role_decisions_digest": {},
+              "role_graph_digest": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "collective_decisions": {},
+              "role_decisions": {},
+              "role_graph": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "ROLE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "admissible_bearer_classes": {},
+              "authority": {},
+              "bearer_limit": {},
+              "coordinate": {},
+              "current_occupants": {},
+              "occupancy_events_digest": {},
+              "qualifications": {},
+              "role_class_id": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "occupancy_events": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "IDENTITY"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance_level": {},
+              "bearer_certificate_digest": {},
+              "bearer_class": {},
+              "bearer_subject_id": {},
+              "disclosure": {},
+              "events_digest": {},
+              "inherited_scope": {},
+              "occupancy_digest": {},
+              "revocation_surface": {},
+              "role_certificate_digest": {},
+              "role_class_id": {},
+              "role_coordinate": {},
+              "role_subject_id": {},
+              "simulation_id": {},
+              "validity": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "bearer_certificate": {},
+              "events": {},
+              "occupancy_evidence": {},
+              "role_certificate": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "HUMAN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "capture_pipeline": {},
+              "deduplication_mechanism": {},
+              "enrollment_population": {},
+              "events_digest": {},
+              "evidence_class": {},
+              "evidence_digest": {},
+              "liveness_claim": {},
+              "subject_ref": {},
+              "unasserted_attributes": {},
+              "uniqueness_claim": {},
+              "validity": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "events": {},
+              "evidence_records": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "VERIFIER"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "bootstrap_digest": {},
+              "ceilings": {},
+              "proposition_classes": {},
+              "refutation_boundaries": {},
+              "runs_digest": {},
+              "self_attestation_digest": {},
+              "toolchain_digest": {},
+              "verifier_id": {},
+              "soundness_claims_digest": {},
+              "verifier_kind": {},
+              "version": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "bootstrap_receipt": {},
+              "measurements": {},
+              "runs": {},
+              "self_attestation": {},
+              "soundness_claims": {},
+              "toolchain": {},
+              "resource_execution": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mechanism"
+                ],
+                "properties": {
+                  "mechanism": {
+                    "const": "windows-job-native-kernel-1"
+                  }
+                }
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "HARDWARE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {},
+              "clock": {},
+              "devices_digest": {},
+              "topology_digest": {},
+              "allocations_digest": {},
+              "measurements_digest": {}
+            }
+          },
+          "inputs": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "devices": {},
+              "topology": {},
+              "allocations": {},
+              "measurements": {}
+            }
+          }
+        }
+      }
     }
   ],
   "description": "Structural envelope only. Domain evaluators check retained contract semantics; certificate replay requires external intent and policy.",
@@ -486,7 +740,13 @@
         "BOT",
         "TOKEN",
         "ACTOR",
-        "OWNER"
+        "OWNER",
+        "COLLECTIVE",
+        "ROLE",
+        "IDENTITY",
+        "HUMAN",
+        "VERIFIER",
+        "HARDWARE"
       ]
     },
     "inputs": {

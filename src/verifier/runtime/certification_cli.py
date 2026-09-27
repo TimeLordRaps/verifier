@@ -24,8 +24,19 @@ from verifier.core.receipt import strict_json_loads
 def add_certification_parser(subparsers: Any) -> None:
     parser = subparsers.add_parser("certification", help="Inspect and replay grounded object-profile obligations.")
     commands = parser.add_subparsers(dest="certification_command", required=True)
-    domain_catalog = commands.add_parser("domain-catalog", help="List native DATA, ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT, BOT and TOKEN checks.")
+    mainstay = commands.add_parser("mainstay-catalog", help="List registered mainstays and exact bounded runtime support.")
+    mainstay.add_argument("--json", action="store_true")
+    for name in ("mainstay-assess", "mainstay-check"):
+        selected = commands.add_parser(name, help="Run selected carrier checks; no complete domain-tier claim.")
+        selected.add_argument("input", help="Retained mainstay evidence for assess; certificate for check.")
+        selected.add_argument("--request", required=True, help="Externally selected subject, checks and evidence digests.")
+        selected.add_argument("--policy", required=True, help="Checker-selected mechanism, trust roots and bounds.")
+        selected.add_argument("--json", action="store_true")
+        if name == "mainstay-assess":
+            selected.add_argument("--output", help="New certificate file; existing files are never overwritten.")
+    domain_catalog = commands.add_parser("domain-catalog", help="List native DATA, ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT, BOT, TOKEN, VERIFIER and HARDWARE checks.")
     domain_catalog.add_argument("--json", action="store_true")
+    domain_catalog.add_argument("--accountable", action="store_true", help="Include six accountability domains' bounded retained-record checks; no numbered-profile, personhood or authority claim.")
     for name in ("domain-assess", "domain-check"):
         domain = commands.add_parser(name, help="Execute or replay grounded domain computations under external policy.")
         domain.add_argument("input", help="Evidence bundle for assess; certificate for check.")
@@ -59,6 +70,8 @@ def _read(path: str) -> Any:
 
 def handle_certification_command(args: argparse.Namespace) -> int:
     try:
+        if args.certification_command.startswith("mainstay-"):
+            return _mainstay_command(args)
         if args.certification_command.startswith("domain-"):
             return _domain_command(args)
         mechanism = NativeCertificationMechanism()
@@ -120,7 +133,7 @@ def _domain_command(args: argparse.Namespace) -> int:
     from verifier.domains.catalog import domain_catalog
     from verifier.domains.certification import build_domain_certificate, recheck_domain_certificate, implementation_digest
     if args.certification_command == "domain-catalog":
-        result = domain_catalog()
+        result = domain_catalog(include_accountable=args.accountable)
         result["mechanism_digest"] = implementation_digest()
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
@@ -143,6 +156,35 @@ def _domain_command(args: argparse.Namespace) -> int:
         for key, row in result.get("checks", {}).items():
             evaluation = row["evaluation"]
             print(f"  {key}: {evaluation['outcome']}; established={row['established']}; {evaluation['details']}")
+        if "reason" in result:
+            print(result["reason"])
+    return {"PASS": 0, "FAIL": 1, "UNKNOWN": 2, "REJECTED": 1}[result["status"]]
+
+
+def _mainstay_command(args: argparse.Namespace) -> int:
+    from verifier.domains.mainstay_certification import (
+        build_mainstay_certificate, mainstay_runtime_catalog, recheck_mainstay_certificate,
+    )
+    if args.certification_command == "mainstay-catalog":
+        print(json.dumps(mainstay_runtime_catalog(), indent=2, sort_keys=True))
+        return 0
+    request, policy, source = _read(args.request), _read(args.policy), _read(args.input)
+    if args.certification_command == "mainstay-assess":
+        certificate = build_mainstay_certificate(request, source, policy=policy)
+        result, emitted = certificate["result"], certificate
+        if args.output:
+            with Path(args.output).open("x", encoding="utf-8", newline="\n") as handle:
+                json.dump(certificate, handle, sort_keys=True, indent=2, allow_nan=False)
+                handle.write("\n")
+    else:
+        result = recheck_mainstay_certificate(source, expected_request=request, policy=policy)
+        emitted = result
+    if args.json:
+        print(json.dumps(emitted, indent=2, sort_keys=True, allow_nan=False))
+    else:
+        print(f"[{result['status']}] selected mainstay checks; domain tier 5 conformance NOT_ESTABLISHED")
+        for name, row in result.get("checks", {}).items():
+            print(f"  {name}: {row['status']}; {row['details']}")
         if "reason" in result:
             print(result["reason"])
     return {"PASS": 0, "FAIL": 1, "UNKNOWN": 2, "REJECTED": 1}[result["status"]]

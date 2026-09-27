@@ -51,6 +51,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install ".[test]"
+      - name: Execute and recheck the real local gate workflow
+        run: |
+          python -B -m verifier gate plan examples/gate_pipeline.json --json
+          python -B -m verifier gate run examples/gate_pipeline.json --output gate-receipt.json --json
+          python -B -m verifier gate check gate-receipt.json --manifest examples/gate_pipeline.json --json
       - name: Run the streamed bounded suite and retain skip evidence
         run: >-
           python -u -m pytest -vv -s --durations=10 --timeout=60
@@ -549,6 +554,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - name: Fetch the pinned documentation release
         run: git fetch --no-tags --depth=1 origin refs/tags/v1.5.0:refs/tags/v1.5.0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -565,6 +572,7 @@ jobs:
           python scripts/check_pr_description.py
           --pr "${{ github.event.pull_request.number }}"
           --head "${{ github.event.pull_request.head.sha }}"
+          --base "${{ github.event.pull_request.base.sha }}"
           --require-pull-request
       - run: PYTHONPATH=src python scripts/build_pages.py --output _site --source-ref "$GITHUB_SHA"
       - name: Check the generated local component index

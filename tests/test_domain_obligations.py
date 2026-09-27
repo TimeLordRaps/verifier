@@ -146,8 +146,8 @@ def test_an_absent_mechanism_is_unknown_and_never_passed() -> None:
         assert obligation.mechanism == ""
         assert obligation.to_dict()["mechanized"] is False
     grounded = {o.profile for o in bare if o.object_name in GROUNDED_OBJECTS}
-    assert grounded == {1, 2, 3, 4, 6}, (
-        "tier 5 of a grounded object is fully mechanized, and level 6 is mechanized "
+    assert grounded == {1, 2, 3, 4, 5, 6}, (
+        "VERIFIER has unsupported higher tiers, and level 6 is mechanized "
         "nowhere -- no adapter runs at emission time")
 
 
@@ -156,7 +156,7 @@ def test_every_tier_three_and_five_profile_is_mechanized_somewhere() -> None:
         for profile in (3, 5):
             rows = [o for o in DOMAIN_OBLIGATIONS
                     if o.object_name == object_name and o.profile == profile]
-            assert any(o.mechanized for o in rows), (object_name, profile)
+            assert any(o.mechanized for o in rows) == (object_name not in {"VERIFIER", "HARDWARE"}), (object_name, profile)
 
 
 def test_an_ungrounded_object_mechanizes_nothing_at_any_tier() -> None:
@@ -393,7 +393,7 @@ def test_the_published_partition_is_measured() -> None:
     assert (int(found.group(1)), int(found.group(2))) == (sum(o.mechanized for o in hyper), len(hyper))
 
     found = _stated(r"The other (\w+) -- `OWNER` and the (\w+) identity objects (.+?) -- are "
-                    r"\*\*ungrounded\*\*: no adapter executes them in any family, so all (\d+) of "
+                    r"\*\*ungrounded\*\*: no numbered-profile mechanism is bound, so all (\d+) of "
                     r"their obligations report `UNKNOWN`")
     named = ["OWNER", *re.findall(r"`([A-Z]+)`", found.group(3))]
     assert _count(found.group(1)) == len(UNGROUNDED_OBJECTS)
@@ -475,3 +475,18 @@ def test_every_coordinate_the_prose_says_binds_is_a_binding_row() -> None:
     assert len(set(named)) >= 4, named
     for coordinate in named:
         assert re.search(r"\bbound by\b", DOMAIN_BY_ID[coordinate].requirement), coordinate
+
+
+def test_every_behavioral_adapter_coordinate_resolves_to_its_exact_mechanism() -> None:
+    from verifier.domains.catalog import COORDINATES, UNKNOWN_ONLY_CHECKS
+    for domain, checks in CHECKS.items():
+        assert domain in DOMAIN_OBJECTS, domain
+        assert len(COORDINATES[domain]) == len(checks)
+        for coordinate, check in zip(COORDINATES[domain], checks, strict=True):
+            assert coordinate in DOMAIN_BY_ID, coordinate
+            row = DOMAIN_BY_ID[coordinate]
+            assert row.object_name == domain
+            diagnostic = UNKNOWN_ONLY_CHECKS.get(domain, {}).get(coordinate)
+            assert row.mechanism == ("" if diagnostic else check[0]), (coordinate, row.mechanism, check[0])
+            if diagnostic:
+                assert diagnostic == check[0]

@@ -241,10 +241,10 @@ be followed rather than looked up. Every specification surface has one identifie
 <NAME>-<level>.<module>
 ```
 
-- **`<NAME>`** is the surface. It is one of the eighteen objects admitted to the
+- **`<NAME>`** is the surface. It is one of the nineteen objects admitted to the
   VSTD-NAMESPACE -- `ACTOR`, `AGENT`, `BENCH`, `BOT`, `COLLECTIVE`, `DATA`, `ENV`,
   `GRAPH`, `HARNESS`, `HUMAN`, `HYPER`, `IDENTITY`, `MODEL`, `OWNER`, `ROLE`, `SIM`,
-  `TOKEN`, `TRAIN` -- or omitted entirely. Every name other than the
+  `TOKEN`, `TRAIN`, `VERIFIER` -- or omitted entirely. Every name other than the
   empty one makes a claim about something particular. Omitting it names the claim surface
   itself — the basic, lowest-level foundational computational claim meta-surface — which is
   why it carries no object segment: `VSTD-1` through `VSTD-5`.
@@ -597,16 +597,24 @@ The unreleased 2.0.0 candidate adds [grounded certification across object profil
 47 explicit `X.M` obligations, externally selected mechanism policies and portable
 replay. The guide separates native checker coverage from required domain mechanisms.
 
-Ten [grounded domain adapters](src/verifier/standard/DOMAIN_GROUNDING.md) also execute retained
+Twelve [grounded domain adapters](src/verifier/standard/DOMAIN_GROUNDING.md) also execute retained
 dataset transformations, environment observation checks, benchmark oracles, training
 updates and gradients, model inference/evaluation, simulation transitions and
 relations, declared agent observation surfaces, agent trajectories bounded by one such
-surface, the closed loop between one bound agent and one bound simulation, and a
-zero-identity token holding replayed from its birth commitment. Their 48
+surface, the closed loop between one bound agent and one bound simulation, a
+zero-identity token holding replayed from its birth commitment, and computational verifier
+engine integrity and bounds, and retained hardware inventories, containment, reservations
+and measurement envelopes. Their 57
 cumulative domain checks produce replayable certificates under
 an external request and policy. Domain depth does not confer object or Graph
 numbered-profile conformance. Run `PYTHONPATH=src python examples/domain_grounding.py`
 or inspect `vstd certification domain-catalog --json`.
+See [bounded VERIFIER admission](docs/VERIFIER_ADMISSION.md),
+[ENV contract and migration](docs/ENVIRONMENT_CONTRACT.md), and
+[mainstay coverage](docs/MAINSTAY_COVERAGE.md) for exact supported boundaries.
+The accountable `ACTOR` and `OWNER` routines are separately discoverable with
+`domain-catalog --accountable --json`; their public reachability does not establish
+numbered-profile conformance.
 
 
 - [VSTD-1 receipts](src/verifier/standard/VSTD-1.md) carry claim coordinates, evidence,

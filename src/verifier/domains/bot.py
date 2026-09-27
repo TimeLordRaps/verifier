@@ -14,19 +14,24 @@ from .common import (Budget, Refuted, Unavailable, bind_certificate, digest, nee
 SEPARATIONS = ("distinct", "fused")
 
 
-def parts(artifact: dict, inputs: dict, mechanism_digest: str) -> dict:
+def parts(artifact: dict, inputs: dict, mechanism_digest: str, *, policy: dict,
+          budget: Budget, nesting: int = 0) -> dict:
     """Re-derive every bound certificate; the harness arrives through the agent, not beside it."""
-    agent = bind_certificate(inputs, artifact, "agent", "AGENT", mechanism_digest, 5)
-    world = bind_certificate(inputs, artifact, "sim", "SIM", mechanism_digest, 4)
-    agent_env = bind_certificate(inputs, artifact, "agent_environment", "ENV", mechanism_digest, 2)
-    world_env = bind_certificate(inputs, artifact, "sim_environment", "ENV", mechanism_digest, 2)
+    agent = bind_certificate(inputs, artifact, "agent", "AGENT", mechanism_digest, 5,
+                             policy=policy, budget=budget, nesting=nesting)
+    world = bind_certificate(inputs, artifact, "sim", "SIM", mechanism_digest, 4,
+                             policy=policy, budget=budget, nesting=nesting)
+    agent_env = bind_certificate(inputs, artifact, "agent_environment", "ENV", mechanism_digest, 2,
+                             policy=policy, budget=budget, nesting=nesting)
+    world_env = bind_certificate(inputs, artifact, "sim_environment", "ENV", mechanism_digest, 2,
+                             policy=policy, budget=budget, nesting=nesting)
     certificate = obj(need(agent["inputs"], "harness_certificate"))
     body = {k: v for k, v in certificate.items() if k != "certificate_digest"}
     same(digest(body), need(certificate, "certificate_digest"), "bound harness certificate digest differs")
     same(digest(certificate), need(agent["artifact"], "harness_certificate_digest"),
          "agent certificate does not bind the harness it retained")
     harness = obj(certificate["evidence"])
-    ceiling = {text(c) for c in seq(need(agent["artifact"], "required_channels"), Budget(1024, 1024))}
+    ceiling = {text(c) for c in seq(need(agent["artifact"], "required_channels"), budget)}
     return {"agent": agent, "world": world, "agent_env": agent_env, "world_env": world_env,
             "harness": harness, "ceiling": ceiling}
 
@@ -89,7 +94,7 @@ def loop(check: str, artifact: dict, bound: dict, aligned: dict, budget: Budget)
                  "the simulation replayed an action the agent did not invoke")
 
 
-def containment(artifact: dict, bound: dict) -> str:
+def containment(artifact: dict, bound: dict, budget: Budget) -> str:
     """Check the declared separation of the two retained environments; fused is not established."""
     separation = text(need(artifact, "separation"))
     if separation not in SEPARATIONS:
@@ -101,22 +106,25 @@ def containment(artifact: dict, bound: dict) -> str:
         raise Refuted("separation declared distinct but both environments name one subject")
     if digest(need(agent_env["artifact"], "files")) == digest(need(world_env["artifact"], "files")):
         raise Refuted("separation declared distinct but both environments retain one software inventory")
-    shared = set(seq(need(agent_env["artifact"], "execution_ids"), Budget(4096, 4096))) & \
-        set(seq(need(world_env["artifact"], "execution_ids"), Budget(4096, 4096)))
+    shared = set(seq(need(agent_env["artifact"], "execution_ids"), budget)) & \
+        set(seq(need(world_env["artifact"], "execution_ids"), budget))
     if shared:
         raise Refuted("one execution is claimed as both the agent runtime and the simulator runtime")
     return separation
 
 
-def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, mechanism_digest: str) -> dict:
-    bound = parts(artifact, inputs, mechanism_digest)
+def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, mechanism_digest: str,
+             policy: dict, nesting: int = 0) -> dict:
+    bound = parts(artifact, inputs, mechanism_digest, policy=policy, budget=budget, nesting=nesting)
     aligned = {"attributed": [], "exogenous": []}
     if check in ("alignment", "observation", "actuation"):
         aligned = alignment(artifact, bound, budget)
         if check != "alignment":
             loop(check, artifact, bound, aligned, budget)
-    separation = containment(artifact, bound) if check == "containment" else None
-    return {"attributed_transitions": len(aligned["attributed"]),
+    separation = containment(artifact, bound, budget) if check == "containment" else None
+    return {"child_policy": "current_checker_policy",
+            "historical_child_policy_reproduction": "NOT_ESTABLISHED",
+            "attributed_transitions": len(aligned["attributed"]),
             "exogenous_transitions": aligned["exogenous"],
             "observation_ceiling": sorted(bound["ceiling"]),
             "environment_separation": separation or "NOT_ESTABLISHED"}

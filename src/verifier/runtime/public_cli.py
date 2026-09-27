@@ -248,6 +248,9 @@ def build_parser() -> argparse.ArgumentParser:
     from verifier.runtime.certification_cli import add_certification_parser
     add_certification_parser(subparsers)
 
+    from verifier.runtime.gate import add_gate_parsers
+    add_gate_parsers(subparsers)
+
     demo_parser = subparsers.add_parser(
         "demo",
         help="Run the side-effect-free VSTD adversarial flagship demonstration.",
@@ -514,12 +517,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     publish_parser.add_argument(
         "--publisher-id",
-        required=True,
         help="Registered publisher:sha256 identity submitting this claim (not the receipt notary).",
     )
     publish_parser.add_argument(
         "--credential-file",
-        required=True,
         help="Publisher credential file containing the required bearer access token.",
     )
     publish_parser.add_argument(
@@ -536,6 +537,15 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Emit canonical JSON result instead of formatted text.",
     )
+    publish_parser.add_argument(
+        "--sim-artifact", action="store_true",
+        help="Treat the positional file as a bare SIM artifact for Claim Garden quarantine.",
+    )
+    publish_parser.add_argument("--sim-request", help="Independently selected native SIM request JSON file.")
+    publish_parser.add_argument("--sim-policy", help="Independently selected native SIM policy JSON file.")
+    publish_parser.add_argument("--source-digest", help="Expected SHA-256 digest of exact bare SIM upload bytes.")
+    from verifier.interoperability.gated_publish import add_gated_publish_options
+    add_gated_publish_options(publish_parser, subparsers)
     return parser
 
 
@@ -863,6 +873,24 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_help()
         return 2
     args = parser.parse_args(argv)
+    if args.command == "publish":
+        if args.sim_artifact:
+            if args.gated or args.claim or args.expected_head or args.genesis:
+                parser.error("SIM artifact submission cannot mix with gated, claim, or silo options")
+            if any((args.artifact,args.request,args.certificate,args.policy,args.manifest,args.dry_run,args.output,
+                    args.private_review_consent,args.expected_checker_coordinate)):
+                parser.error("SIM artifact submission cannot use gated publication options")
+            if not all((args.sim_request, args.sim_policy, args.source_digest,
+                        args.publisher_id, args.credential_file)):
+                parser.error("SIM artifact submission requires request, policy, source digest, publisher and credential")
+        elif any((args.sim_request, args.sim_policy, args.source_digest)):
+            parser.error("SIM request, policy and source digest require --sim-artifact")
+    if args.command == "publish" and not args.gated:
+        if not args.publisher_id or not args.credential_file:
+            parser.error("publish requires --publisher-id and --credential-file")
+        if any((args.artifact,args.request,args.certificate,args.policy,args.manifest,args.dry_run,args.output,
+                args.private_review_consent,args.expected_checker_coordinate)):
+            parser.error("gated publication options require --gated")
     try:
         if args.command in ("start", "explain"):
             from verifier.runtime.accessibility_cli import handle_accessibility_command
@@ -870,6 +898,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "certification":
             from verifier.runtime.certification_cli import handle_certification_command
             return handle_certification_command(args)
+        if args.command == "gate":
+            from verifier.runtime.gate import handle_gate_command
+            return handle_gate_command(args)
         if args.command == "demo":
             results = run_demo(args.scenario)
             report = demo_report(results)
@@ -988,6 +1019,9 @@ def main(argv: list[str] | None = None) -> int:
             return handle_experiment_command(args)
         if args.command == "network":
             return handle_network_command(args)
+        if args.command == "account" or (args.command == "publish" and args.gated):
+            from verifier.interoperability.gated_publish import handle_gated_publish_command
+            return handle_gated_publish_command(args)
         if args.command == "publish":
             from verifier.interoperability.claim_garden import (
                 ClaimGardenClientError,
@@ -995,15 +1029,27 @@ def main(argv: list[str] | None = None) -> int:
             )
 
             try:
-                result = publish_claim(
-                    args.receipt,
-                    claim=args.claim,
-                    endpoint=args.endpoint,
-                    publisher_id=args.publisher_id,
-                    credential_file=args.credential_file,
-                    expected_head=args.expected_head,
-                    genesis=args.genesis,
-                )
+                if args.sim_artifact:
+                    from verifier.interoperability.artifact_publish import read_intent_object, publish_sim_artifact
+                    result = publish_sim_artifact(
+                        args.receipt,
+                        expected_source_digest=args.source_digest,
+                        expected_request=read_intent_object(args.sim_request),
+                        policy=read_intent_object(args.sim_policy),
+                        endpoint=args.endpoint,
+                        publisher_id=args.publisher_id,
+                        credential_file=args.credential_file,
+                    )
+                else:
+                    result = publish_claim(
+                        args.receipt,
+                        claim=args.claim,
+                        endpoint=args.endpoint,
+                        publisher_id=args.publisher_id,
+                        credential_file=args.credential_file,
+                        expected_head=args.expected_head,
+                        genesis=args.genesis,
+                    )
             except ClaimGardenClientError as exc:
                 if args.json:
                     print(

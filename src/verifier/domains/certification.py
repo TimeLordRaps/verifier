@@ -22,6 +22,7 @@ from .common import Budget, Refuted, Unavailable, digest, inspect_structure, int
 MAX_BYTES = 16 * 1024 * 1024
 _HASH = re.compile(r"sha256:[0-9a-f]{64}\Z")
 _ARTIFACT_FIELDS = {
+    "HARDWARE": "scope clock devices_digest topology_digest allocations_digest measurements_digest",
     "DATA": "shards fields shard_fields transforms source_shards splits final_shards identity_field overlap",
     "ENV": "scope files configuration ceilings execution execution_ids",
     "BENCH": "problems minimum_score",
@@ -34,8 +35,14 @@ _ARTIFACT_FIELDS = {
     "TOKEN": "tokens_digest epochs_digest statuses_digest clock clock_skew issuing_keys key_retirements accepted_algorithms root_scopes audience period status_schedule observed_at",
     "ACTOR": "actor_id control_surface decision_classes admitted_spaces instrument_boundary delegations_digest decisions_digest",
     "OWNER": "holder_actor_id held_object_coordinate held_object_digest limbs limbs_kind instrument term chain_origin events_digest",
+    "HUMAN": "subject_ref evidence_class capture_pipeline liveness_claim uniqueness_claim enrollment_population deduplication_mechanism unasserted_attributes evidence_digest events_digest validity",
+    "IDENTITY": "bearer_class bearer_subject_id bearer_certificate_digest role_subject_id role_class_id role_coordinate role_certificate_digest occupancy_digest assurance_level inherited_scope validity revocation_surface disclosure events_digest simulation_id",
+    "ROLE": "role_class_id coordinate authority qualifications bearer_limit admissible_bearer_classes occupancy_events_digest current_occupants",
+    "COLLECTIVE": "collective_id coordinate role_classes relation_types inside outside decision_classes role_graph_digest assembly_policy role_decisions_digest collective_decisions_digest",
+    "VERIFIER": "verifier_id verifier_kind toolchain_digest version proposition_classes refutation_boundaries soundness_claims_digest runs_digest ceilings bootstrap_digest self_attestation_digest",
 }
 _INPUT_FIELDS = {
+    "HARDWARE": "devices topology allocations measurements",
     "DATA": "shards", "ENV": "files configuration measurements executions",
     "BENCH": "runs score", "TRAIN": "checkpoints steps batches",
     "MODEL": "architecture weights dependencies samples metric_value",
@@ -46,6 +53,11 @@ _INPUT_FIELDS = {
     "TOKEN": "tokens epochs statuses",
     "ACTOR": "control_keys delegation_events witness_attributions decisions",
     "OWNER": "events held_verdict holdings_chain answering_duties accountability_witnesses",
+    "HUMAN": "evidence_records events",
+    "IDENTITY": "bearer_certificate role_certificate occupancy_evidence events",
+    "ROLE": "occupancy_events",
+    "COLLECTIVE": "role_graph role_decisions collective_decisions",
+    "VERIFIER": "toolchain soundness_claims runs measurements bootstrap_receipt self_attestation resource_execution",
 }
 
 
@@ -82,8 +94,8 @@ def _hash(value: Any) -> str:
 
 def implementation_digest() -> str:
     dependencies = {}
-    for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "data", "env", "bench", "numerical", "train", "model", "sim", "harness", "agent", "bot", "token", "actor", "owner")),
-                           ("verifier.core", ("certificate", "evidence", "receipt"))):
+    for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "hardware", "data", "env", "bench", "numerical", "train", "model", "sim", "harness", "agent", "bot", "token", "actor", "owner", "human", "identity", "role", "collective", "verifier", "verifier_bootstrap", "verifier_execution")),
+                           ("verifier.core", ("certificate", "evidence", "receipt", "kernel", "grounding", "depth"))):
         for name in names:
             dependencies[package+"."+name] = hashlib.sha256(resources.files(package).joinpath(name+".py").read_bytes()).hexdigest()
     try:
@@ -159,11 +171,14 @@ def _bundle(value: Any) -> dict:
 class NativeDomainAdapter:
     """Executable mechanism for one domain; registration supplies no implicit authority."""
 
-    def __init__(self, domain: str, policy: dict) -> None:
+    def __init__(self, domain: str, policy: dict, *, _budget: Budget | None = None,
+                 _nesting: int = 0) -> None:
         if domain not in ALL_CHECKS:
             raise ValueError("unknown domain")
         self.domain = domain
         self.policy = _policy(policy)
+        self._budget = _budget
+        self._nesting = _nesting
         self.mechanism_id = "vstd.native-domain."+domain.lower()+".1"
         self.mechanism_digest = implementation_digest()
 
@@ -185,9 +200,13 @@ class NativeDomainAdapter:
                 names[f"{self.domain}.{i}"] = c[0]
             if binding.predicate not in names:
                 raise Unavailable("unsupported domain predicate")
-            budget = Budget(self.policy["max_operations"], self.policy["max_items"])
+            budget = self._budget if self._budget is not None else Budget(
+                self.policy["max_operations"], self.policy["max_items"])
+            before = budget.used
             inspect_structure(bundle, budget)
             artifact = bundle["artifact"]
+            if self.domain == "VERIFIER" and "verifier_id" in artifact:
+                same(artifact["verifier_id"], bundle["subject_id"], "verifier identity differs from requested subject")
             numerical_contracts = [artifact] if self.domain in ("TRAIN", "MODEL", "SIM") else []
             if self.domain == "BENCH":
                 numerical_contracts = [p.get("specification", {}) for p in artifact.get("problems", [])
@@ -200,11 +219,12 @@ class NativeDomainAdapter:
                     if tolerance > self.policy["max_tolerance"]:
                         raise Unavailable("requested numerical tolerance exceeds checker policy")
             module = import_module("verifier.domains."+self.domain.lower())
-            kwargs = {"witness_keys": self.policy["witness_keys"]} if self.domain in ("SIM", "TOKEN") else {}
-            if self.domain in ("AGENT", "BOT"):
-                kwargs = {"mechanism_digest": self.mechanism_digest}
+            kwargs = {"witness_keys": self.policy["witness_keys"]} if self.domain in ("SIM", "TOKEN", "VERIFIER") else {}
+            if self.domain in ("AGENT", "BOT", "IDENTITY"):
+                kwargs = {"mechanism_digest": self.mechanism_digest, "policy": self.policy,
+                          "nesting": self._nesting}
             observed = module.evaluate(names[binding.predicate], artifact, bundle["inputs"], budget, **kwargs)
-            observed["operations"] = budget.used
+            observed["operations"] = budget.used - before
             return MechanismDecision(MechanismOutcome.PASS, "bound domain computation reproduced", observed)
         except Unavailable as exc:
             return MechanismDecision(MechanismOutcome.UNKNOWN, str(exc))
@@ -214,6 +234,12 @@ class NativeDomainAdapter:
 
 def build_domain_certificate(request: dict, evidence: dict, *, policy: dict) -> dict:
     """Execute every requested prerequisite with content-addressed evidence."""
+    return _build_domain_certificate(request, evidence, policy=policy)
+
+
+def _build_domain_certificate(request: dict, evidence: dict, *, policy: dict,
+                              budget: Budget | None = None, nesting: int = 0) -> dict:
+    """Internal recursive assessment; nested calls share the current check's budget."""
     request, bundle, policy = _request(request), _bundle(evidence), _policy(policy)
     same(domain_request(bundle, target_depth=request["target_depth"]), request, "evidence does not match intended request")
     same(policy["mechanism_digest"], implementation_digest(), "checker implementation not admitted")
@@ -221,7 +247,7 @@ def build_domain_certificate(request: dict, evidence: dict, *, policy: dict) -> 
     store = EvidenceStore()
     ref = store.add(payload)
     session = VerificationSession(store)
-    adapter = NativeDomainAdapter(request["domain"], policy)
+    adapter = NativeDomainAdapter(request["domain"], policy, _budget=budget, _nesting=nesting)
     session.register(adapter)
     rows, depth, holds = {}, 0, set()
     for i, (name, statement, depends) in enumerate(ALL_CHECKS[request["domain"]][:request["target_depth"]], 1):

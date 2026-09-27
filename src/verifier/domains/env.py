@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import platform
 import sys
-from .common import Budget, Refuted, Unavailable, digest, materialize, need, number, obj, same, seq, text, unique
+from .common import Budget, Refuted, Unavailable, digest, integer, materialize, need, number, obj, same, seq, text, unique
 
 
 def collect_configuration() -> dict:
@@ -39,7 +39,11 @@ def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
         for row in observations.values():
             obj(row, set(ceilings) | {"id"})
             for key, ceiling in ceilings.items():
-                if number(ceiling) <= 0 or not 0 <= number(row[key]) <= number(ceiling):
+                if key in {"memory_bytes", "threads"}:
+                    bound, measured = integer(ceiling, 1), integer(row[key])
+                else:
+                    bound, measured = number(ceiling), number(row[key])
+                if bound <= 0 or not 0 <= measured <= bound:
                     raise Refuted("retained resource measurement exceeds bound")
     elif check == "reproduction":
         executions = unique(seq(need(inputs, "executions"), budget), "id")

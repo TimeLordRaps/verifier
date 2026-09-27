@@ -232,9 +232,10 @@ def test_builder_main_reports_bounded_refusal_without_traceback(
     assert "Traceback" not in output.err
 
 
-def test_worktree_index_retains_reviewed_proposition_transfer_sources(tmp_path: Path) -> None:
+def test_worktree_index_retains_reviewed_hardware_and_proposition_transfer_sources(tmp_path: Path) -> None:
     module = _builder()
     required = {
+        "src/verifier/domains/hardware.py",
         "src/verifier/interoperability/proposition_transfer.py",
         "src/verifier/profiles/proposition-transfer-rule-1.json",
         "src/verifier/schemas/verifier-proposition-transfer-1.schema.json",

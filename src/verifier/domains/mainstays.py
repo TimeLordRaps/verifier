@@ -1,25 +1,15 @@
-"""Verifier Standard (VSTD) tier-5 domain adaptation: mainstay formats as adapters.
+"""Verifier Standard (VSTD) mainstay registry and bounded carrier adapters.
 
-Tier 5 was empty on every object, and the reason was not that the tier is hard.
-It is that the other four tiers describe an object in this standard's own terms,
-while tier 5 has to describe it in the terms the domain already uses. There is
-no adapter to write until the mainstay representation is named.
+The registry describes format vocabulary and catalogue residuals. It does not
+establish format support. Executable admission currently covers Hypertext Transfer
+Protocol Archive (HAR) 1.2 transcripts and finite binary32/binary64 safetensors
+weights under the v0.5.3 format-description snapshot. Unsupported formats and
+unimplemented semantic checks raise Unavailable rather than validating labels.
 
-This module names them. For each object it records the file formats, wire
-protocols and runtime interfaces that the domain actually publishes in, and for
-each one a **meta-surface**: the entity kinds the format carries, the relations
-it holds between them, and the coordinates of this standard it can express. The
-adapter is then format-independent -- binding, mapping, round trip, residual --
-because every mainstay has been reduced to the same shape first.
-
-Reverse-engineering all of them produced one finding worth stating up front:
-**mainstay formats encode facets and dynamics, and almost never encode statics
-or closure.** A Parquet footer holds column statistics but not the sampling
-frame; an Open Neural Network Exchange (ONNX) graph holds operators but not the
-conditions under which the model may be refuted. The residual is therefore not
-an oversight in any of these formats -- it is the part of an object that only a
-verification standard was ever going to carry, and tier 5 computes it rather
-than accepting a declaration of it.
+Every executable check rehashes retained carrier bytes. Mapping compares actual
+parsed content, and round trips perform import/export/import and domain replay.
+No record establishes authenticity, observation completeness or whole-profile
+conformance. Residuals describe the catalogue, not proof of every expressed facet.
 
 Secure Hash Algorithm 256-bit (SHA-256); JavaScript Object Notation (JSON);
 JSON Lines (JSONL); artificial intelligence (AI); Extensible Markup Language (XML);
@@ -30,10 +20,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+import re
 
 from verifier.core.certificate import canonical_digest
 from verifier.core.profile_obligations import DOMAIN_BY_ID, DOMAIN_OBLIGATIONS
-from .common import Budget, Refuted, Unavailable, need, obj, same, seq, text
+from .common import Budget, Refuted, Unavailable, need, obj, same, text
+from . import carriers
 
 #: Every adaptation check is exposed as ``mainstay:<name>``, disjoint from both
 #: the behavioural adapter checks and the tier-3 statics mechanism.
@@ -404,47 +396,10 @@ def _bound(object_name: str, artifact: dict, budget: Budget) -> Mainstay:
     if mainstay is None:
         raise Refuted(f"the named format is not a registered mainstay of {object_name}")
     text(binding["version"])
-    if not str(binding["carrier_digest"]).startswith("sha256:"):
+    if not isinstance(binding["carrier_digest"], str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", binding["carrier_digest"]):
         raise Refuted("the mainstay carrier must be bound by a canonical digest")
     budget.tick()
     return mainstay
-
-
-def _mapping(mainstay: Mainstay, artifact: dict, inputs: dict, check: str, budget: Budget) -> dict:
-    """A mapping is admitted only when it is total over the retained inventory."""
-    mapping = obj(need(artifact, "mapping"))
-    if check not in mapping:
-        raise Unavailable(f"no declared mapping for {check}")
-    declared = obj(mapping[check], {"relation", "entity", "pairs"})
-    if text(declared["relation"]) not in mainstay.relations:
-        raise Refuted("the mapping names a relation the meta-surface does not carry")
-    if text(declared["entity"]) not in mainstay.entities:
-        raise Refuted("the mapping names an entity the meta-surface does not carry")
-    retained = seq(need(inputs, "inventory"), budget)
-    pairs = obj(declared["pairs"])
-    budget.tick(len(retained))
-    unmapped = [text(item) for item in retained if text(item) not in pairs]
-    if unmapped:
-        raise Refuted(f"the mapping is not total over the retained inventory: {unmapped[0]}")
-    if set(pairs) - {text(item) for item in retained}:
-        raise Refuted("the mapping covers items outside the retained inventory")
-    return {"relation": declared["relation"], "entity": declared["entity"],
-            "mapped": len(pairs), "distinct_targets": len(set(map(str, pairs.values())))}
-
-
-def _roundtrip(artifact: dict, inputs: dict, budget: Budget) -> dict:
-    record = obj(need(artifact, "round_trip"), {"exported", "reimported", "loss"})
-    loss = seq(record["loss"], budget, nonempty=False)
-    budget.tick()
-    if record["exported"] == record["reimported"]:
-        if loss:
-            raise Refuted("a lossless round trip names a loss")
-        return {"lossless": True, "commitment": record["exported"]}
-    if not loss:
-        raise Refuted("a lossy round trip names no loss")
-    for item in loss:
-        text(item)
-    return {"lossless": False, "loss": [text(i) for i in loss]}
 
 
 def _residual(object_name: str, mainstay: Mainstay, artifact: dict, budget: Budget) -> dict:
@@ -462,19 +417,27 @@ def _residual(object_name: str, mainstay: Mainstay, artifact: dict, budget: Budg
 
 def evaluate(object_name: str, check: str, artifact: dict, inputs: dict,
              budget: Budget, **_: Any) -> dict:
-    """Establish one tier-5 adaptation obligation against a named mainstay."""
+    """Check one supported bounded mainstay proposition against retained bytes."""
     if check not in CHECKS:
         raise Unavailable(f"unsupported adaptation check: {check}")
     mainstay = _bound(object_name, artifact, budget)
+    binding = artifact["mainstay"]
+    # A catalogue entry alone never admits a parser or a semantic mechanism.
+    parsed = carriers.inspect_carrier(mainstay.format_id, binding["version"],
+                                      need(inputs, "carrier"), budget)
+    same(parsed["carrier_digest"], binding["carrier_digest"], "bound mainstay carrier digest differs")
     if check == "binding":
-        return {"format_id": mainstay.format_id, "display": mainstay.display,
-                "carrier": mainstay.carrier, "entities": list(mainstay.entities),
-                "relations": list(mainstay.relations)}
+        return {"format_id": mainstay.format_id, "version": binding["version"],
+                "carrier_digest": parsed["carrier_digest"], "carrier_bytes": parsed["bytes"],
+                "inventory_items": len(parsed["inventory"]), "scope": parsed["scope"],
+                "native_format_conformance": "NOT_ESTABLISHED", "authentication": "NOT_ESTABLISHED"}
     if check == "roundtrip":
-        return _roundtrip(artifact, inputs, budget)
+        return carriers.roundtrip(parsed, artifact, inputs, budget)
     if check == "residual":
-        return _residual(object_name, mainstay, artifact, budget)
-    return _mapping(mainstay, artifact, inputs, check, budget)
+        result = _residual(object_name, mainstay, artifact, budget)
+        result["scope"] = "catalogue residual; expressed coordinates are not independently established"
+        return result
+    return carriers.mapping(parsed, artifact, inputs, check, budget)
 
 
 def mainstay_catalog() -> dict:
@@ -491,6 +454,10 @@ def mainstay_digest() -> str:
     """Pin this mechanism family's bytes, separately from the behavioural adapters."""
     import hashlib
     from importlib.resources import files
-    data = files("verifier.domains").joinpath("mainstays.py").read_bytes()
-    return canonical_digest({"catalog": mainstay_catalog(),
-                             "implementation": hashlib.sha256(data).hexdigest()})
+    dependencies = {}
+    for package, names in (("verifier.domains", ("mainstays", "carriers", "common", "numerical")),
+                           ("verifier.core", ("certificate", "receipt", "profile_obligations"))):
+        for name in names:
+            data = files(package).joinpath(name + ".py").read_bytes()
+            dependencies[package + "." + name] = hashlib.sha256(data).hexdigest()
+    return canonical_digest({"catalog": mainstay_catalog(), "implementation": dependencies})

@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 import hashlib
 import json
+import math
 from typing import Any
 
 from .models import ObserverParty, TransparencyCommitment
@@ -25,9 +26,9 @@ class BudgetExhaustedError(ValueError):
 class DifferentialPrivacyBudget:
     """Tracks and bounds cumulative privacy budget exhaustion across emissions.
 
-    Differential privacy models information leakage as a depletable resource
-    governed by parameters (epsilon, delta). Each emission consumes a declared
-    slice, and exceeding the total bound locks the emission interface.
+    Parameters epsilon and delta are dimensionless. This accountant sums declared
+    expenditure; it does not establish that an emission mechanism is differentially
+    private, nor does it prevent callers from resetting or sharing mutable state.
     """
 
     max_epsilon: float
@@ -38,8 +39,16 @@ class DifferentialPrivacyBudget:
 
     def consume(self, epsilon: float, delta: float = 0.0) -> dict[str, Any]:
         """Attempt to consume budget for an emission; fails closed if exhausted."""
-        if epsilon < 0.0 or delta < 0.0:
-            raise ValueError(f"Negative privacy budget parameter: eps={epsilon}, delta={delta}")
+        values = (epsilon, delta, self.max_epsilon, self.max_delta,
+                  self.consumed_epsilon, self.consumed_delta)
+        if any(isinstance(value, bool) or not isinstance(value, (int, float))
+               or not math.isfinite(value) or value < 0.0 for value in values):
+            raise ValueError("Privacy budget parameters must be finite nonnegative numbers")
+        if max(delta, self.max_delta, self.consumed_delta) > 1.0:
+            raise ValueError("Privacy delta must be within [0, 1]")
+        if (self.consumed_epsilon > self.max_epsilon or self.consumed_delta > self.max_delta
+                or type(self.emissions_count) is not int or self.emissions_count < 0):
+            raise ValueError("Invalid cumulative privacy budget state")
         new_eps = self.consumed_epsilon + epsilon
         new_delta = self.consumed_delta + delta
         if new_eps > self.max_epsilon or new_delta > self.max_delta:
@@ -103,7 +112,10 @@ class ContextualIntegrityEvaluator:
         if requested_principle not in self.ALLOWED_PRINCIPLES:
             return False, f"Unknown transmission principle: {requested_principle!r}"
 
-        # If explicit norms are configured, verify match
+        if not self.admitted_norms:
+            return False, "No contextual transmission norms configured"
+
+        # Explicit norms are local policy, not proof of a recipient's later behavior.
         if self.admitted_norms:
             match = any(
                 norm.sender == sender
@@ -127,11 +139,13 @@ class ContextualIntegrityEvaluator:
 
 
 class SelectiveMerkleDisclosure:
-    """Merkle tree leaf disclosure preserving cryptographic root integrity.
+    """Retained compatibility helper for sorted field-digest commitments.
 
     Transparently commits to every field of an object. When a field is redacted
     for privacy, its value is replaced with its leaf digest, allowing an observer
-    to verify the global root without learning the private leaf value.
+    to recompute the aggregate from all leaves. This is not a Merkle-path proof,
+    a hiding commitment, or a zero-knowledge proof: guessed private values can be
+    tested against the unsalted digest. It cannot repair a redacted native certificate.
     """
 
     @staticmethod
@@ -181,7 +195,10 @@ class SelectiveMerkleDisclosure:
 
 
 class SafeHarborPartition:
-    """Attribute-based de-identification partitioning."""
+    """Top-level identifier-name suppression; no de-identification certification.
+
+    Nested identifiers and indirect identifying combinations are not evaluated.
+    """
 
     DIRECT_IDENTIFIER_KEYS = {
         "name", "email", "phone", "ssn", "ip_address", "actor_secret", "private_key",

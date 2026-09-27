@@ -9,13 +9,15 @@ from __future__ import annotations
 from .common import (Budget, Refuted, Unavailable, bind_certificate, digest, need, obj, same, seq, text)
 
 
-def ceiling(artifact: dict, inputs: dict, mechanism_digest: str) -> dict:
-    """Re-derive the observation ceiling from the bound harness certificate."""
-    evidence = bind_certificate(inputs, artifact, "harness", "HARNESS", mechanism_digest, 5)
+def ceiling(artifact: dict, inputs: dict, mechanism_digest: str, *, policy: dict,
+            budget: Budget, nesting: int = 0) -> dict:
+    """Re-derive the observation ceiling under the current checker policy."""
+    evidence = bind_certificate(inputs, artifact, "harness", "HARNESS", mechanism_digest, 5,
+                                policy=policy, budget=budget, nesting=nesting)
     same(evidence["subject_id"], need(artifact, "harness_subject_id"), "harness subject differs")
     declared = obj(need(evidence["artifact"], "surface"))
     instrumented = {c for c, d in declared.items() if d == "instrumented"}
-    required = seq(need(artifact, "required_channels"), budget=Budget(1024, 1024))
+    required = seq(need(artifact, "required_channels"), budget=budget)
     names = {text(c) for c in required}
     if len(names) != len(required):
         raise Refuted("duplicate required channel")
@@ -23,7 +25,7 @@ def ceiling(artifact: dict, inputs: dict, mechanism_digest: str) -> dict:
     if outside:
         raise Unavailable("required channel was not instrumented: " + " ".join(sorted(outside)))
     return {"instrumented": instrumented, "required": names,
-            "records": seq(need(evidence["inputs"], "records"), Budget(1000000, 100000)),
+            "records": seq(need(evidence["inputs"], "records"), budget),
             "invocations": evidence["inputs"].get("invocations", [])}
 
 
@@ -37,8 +39,9 @@ def witnessed(bound: dict, index: object, budget: Budget) -> dict:
     return record
 
 
-def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, mechanism_digest: str) -> dict:
-    bound = ceiling(artifact, inputs, mechanism_digest)
+def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, mechanism_digest: str,
+             policy: dict, nesting: int = 0) -> dict:
+    bound = ceiling(artifact, inputs, mechanism_digest, policy=policy, budget=budget, nesting=nesting)
     steps, actions = [], []
     if check != "harness":
         steps = seq(need(inputs, "steps"), budget)
@@ -77,6 +80,8 @@ def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, mechan
             if outside:
                 raise Unavailable("claim rests on a channel outside its bound observation surface: "
                                   + " ".join(sorted(outside)))
-    return {"observation_ceiling": sorted(bound["required"]),
+    return {"child_policy": "current_checker_policy",
+            "historical_child_policy_reproduction": "NOT_ESTABLISHED",
+            "observation_ceiling": sorted(bound["required"]),
             "instrumented_channels": sorted(bound["instrumented"]),
             "steps": len(steps), "actions": len(actions)}

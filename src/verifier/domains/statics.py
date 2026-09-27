@@ -5,11 +5,13 @@ established by re-executing what the subject declared -- rehash the inventory,
 replay the trace, recompute the score. A static fact cannot be established that
 way, because re-executing a declaration can only ever confirm the declaration.
 
-Three mechanism kinds establish a static instead, and every check below is one
-of them:
+Three mechanism kinds check retained static records, and every check below is
+one of them. Witness identity and independence are not established by different
+observer strings. The witness routines check supplied measurement consistency;
+admitting an external observation requires a separate qualified mechanism:
 
 ``witness``
-    A probe of the substrate, recorded by someone other than the subject. The
+    A retained substrate-probe record naming an observer other than the subject. The
     checker recomputes whatever part of the probe is determined and refuses to
     pass the part that is not; a machine-dependent measurement is *recorded*,
     never *passed*.
@@ -130,7 +132,7 @@ BY_NAME = {object_name: {static.name: static for static in rows}
 # --------------------------------------------------------------------- witness
 
 def _probe(artifact: dict, key: str, subject: str, budget: Budget) -> Any:
-    """A probe the subject could not have authored, with a recomputable commitment."""
+    """Check a probe record; different observer text does not authenticate origin."""
     record = obj(need(artifact, key), {"instrument", "observed_by", "observed_at", "measurement", "digest"})
     text(record["instrument"])
     if text(record["observed_by"]) == subject:

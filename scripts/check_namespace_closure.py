@@ -3,7 +3,7 @@
 
 Keep the VSTD-NAMESPACE closed.
 
-The namespace is the base abstract `VSTD` plus eighteen objects and nothing else.
+The namespace is the base abstract `VSTD` plus twenty objects and nothing else.
 ALL-CAPS is the namespace marker, so an object is spelled by its bare name --
 `DATA`, `GRAPH-1`, `OWNER-4.5` -- and the `VSTD-` prefix survives only where a
 bare name would say nothing (`VSTD-1` through `VSTD-6`, the base abstract's own
@@ -12,7 +12,7 @@ tiers) or would be ambiguous (`VSTD-NAMESPACE`, the name of the space itself).
 Nothing enforced this before, and 137 names under 59 invented heads had
 accumulated by v2.0.0.  Two checks run here:
 
-  catalogue  every object the catalogue carries is one of the eighteen.  This is
+  catalogue  every object is admitted and every admitted object has obligations. This is
              the load-bearing check: it
              reads the object set rather than prose, so a new name cannot enter
              by being written down somewhere.
@@ -34,11 +34,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-#: The closed set.  `VSTD` is the base abstract; these are the eighteen objects.
+#: The closed set.  `VSTD` is the base abstract; these are the twenty objects.
 OBJECTS: frozenset[str] = frozenset({
     "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
     "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
-    "TRAIN", "TOKEN",
+    "TRAIN", "TOKEN", "VERIFIER", "HARDWARE",
 })
 
 #: Named compositions that are *not* members of the namespace.  Empty by ruling.
@@ -60,6 +60,9 @@ EXCEPTIONS: dict[str, str] = {
     "VSTD-NAMESPACE-1.1": "the published example of an identifier that does not parse",
     "VSTD-INDIVIDUAL": "historical note: the object renamed to ROLE on 2026-09-21",
     "VSTD-Conformant": "prose adjective, not an identifier",
+    "VSTD-ENVIRONMENT-DEFINITION-0.1": "exact experimental environment record discriminator quoted for migration; not an admitted namespace object or native certificate",
+    "VSTD-ENVIRONMENT-INSTANCE-0.1": "exact experimental environment record discriminator quoted for migration; not an admitted namespace object or native certificate",
+    "VSTD-ENVIRONMENT-RUN-0.1": "exact experimental environment record discriminator quoted for migration; not an admitted namespace object or native certificate",
     "VSTD-2-near-miss": "reject-path fixture: a VSTD-shaped identifier that must not resolve",
     "VSTD-5-DRAFT": "reject-path fixture: a VSTD-shaped identifier that must not resolve",
     "VSTD-SOMETHING-1": "reject-path fixture: an unrecognised schema_version",
@@ -72,6 +75,7 @@ EXCEPTIONS: dict[str, str] = {
 #: CHANGELOG entries at or below this heading record what shipped under the old
 #: names.  Rewriting them would falsify released history.
 SHIPPED_HISTORY = ("CHANGELOG.md", "## 1.5.0 - 2026-09-18")
+SOURCE_FEATURE_MANIFEST = "docs/PR_SOURCE_FEATURES.json"
 
 _RESIDUE = re.compile(r"VSTD-[A-Za-z0-9][A-Za-z0-9.]*(?:-[A-Za-z0-9][A-Za-z0-9.]*)*")
 _BASE_TIER = re.compile(r"[1-6](\.[1-9][0-9]*)?$")
@@ -94,11 +98,19 @@ def admissible(token: str) -> bool:
 
 
 def catalogue_offenders() -> list[str]:
-    """Every object the catalogue carries must be one of the seventeen."""
+    """Every object the catalogue carries must be one of the twenty."""
 
     from verifier.core.profile_obligations import DOMAIN_OBJECTS
 
     return sorted(set(DOMAIN_OBJECTS) - OBJECTS - set(COMPOSITIONS))
+
+
+def catalogue_missing() -> list[str]:
+    """Every admitted object must resolve to a normative obligation catalogue."""
+    from verifier.core.profile_obligations import DOMAIN_OBJECTS
+
+    # GRAPH has its own catalogue; all other objects use domain obligations.
+    return sorted(OBJECTS - {"GRAPH"} - set(DOMAIN_OBJECTS))
 
 
 def residue_offenders() -> list[tuple[str, int, str]]:
@@ -107,6 +119,11 @@ def residue_offenders() -> list[tuple[str, int, str]]:
     ).stdout.split("\n")
     found: list[tuple[str, int, str]] = []
     for relative in filter(None, listed):
+        # The source-coverage inventory must name deleted paths and retired wire
+        # identifiers exactly. It is historical review evidence, not an active
+        # namespace declaration; all ordinary documents and source remain scanned.
+        if relative == SOURCE_FEATURE_MANIFEST:
+            continue
         path = ROOT / relative
         try:
             text = path.read_text(encoding="utf-8", errors="replace")
@@ -126,17 +143,20 @@ def residue_offenders() -> list[tuple[str, int, str]]:
 
 def main() -> int:
     catalogue = catalogue_offenders()
+    missing = catalogue_missing()
     residue = residue_offenders()
 
     if catalogue:
-        print(f"[NAMESPACE CLOSURE] FAIL: {len(catalogue)} object(s) outside the seventeen:")
+        print(f"[NAMESPACE CLOSURE] FAIL: {len(catalogue)} object(s) outside the twenty:")
         for name in catalogue:
             print(f"  the catalogue carries {name}")
+    if missing:
+        print("[NAMESPACE CLOSURE] FAIL: admitted objects without obligations: " + ", ".join(missing))
     if residue:
         print(f"[NAMESPACE CLOSURE] FAIL: {len(residue)} VSTD- prefix(es) that should be bare:")
         for relative, number, token in residue:
             print(f"  {relative}:{number}: {token}")
-    if catalogue or residue:
+    if catalogue or missing or residue:
         print(
             "\nThe VSTD-NAMESPACE is VSTD plus "
             + ", ".join(sorted(OBJECTS))

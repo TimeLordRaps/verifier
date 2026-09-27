@@ -124,11 +124,40 @@
 <p class="ref-help">Inspect and replay grounded object-profile obligations.</p>
 <p class="ref-none">No arguments; this command only groups subcommands.</p>
 </article>
-<article class="ref-item" id="cli-vstd-certification-domain-catalog">
-<h3><code>vstd certification domain-catalog</code></h3>
-<p class="ref-help">List native DATA, ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT, BOT and TOKEN checks.</p>
+<article class="ref-item" id="cli-vstd-certification-mainstay-catalog">
+<h3><code>vstd certification mainstay-catalog</code></h3>
+<p class="ref-help">List registered mainstays and exact bounded runtime support.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-mainstay-assess">
+<h3><code>vstd certification mainstay-assess</code></h3>
+<p class="ref-help">Run selected carrier checks; no complete domain-tier claim.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>input</code></td><td>positional</td><td>Retained mainstay evidence for assess; certificate for check.</td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>Externally selected subject, checks and evidence digests.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected mechanism, trust roots and bounds.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>New certificate file; existing files are never overwritten.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-mainstay-check">
+<h3><code>vstd certification mainstay-check</code></h3>
+<p class="ref-help">Run selected carrier checks; no complete domain-tier claim.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>input</code></td><td>positional</td><td>Retained mainstay evidence for assess; certificate for check.</td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>Externally selected subject, checks and evidence digests.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected mechanism, trust roots and bounds.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-domain-catalog">
+<h3><code>vstd certification domain-catalog</code></h3>
+<p class="ref-help">List native DATA, ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT, BOT, TOKEN, VERIFIER and HARDWARE checks.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--accountable</code></td><td>optional</td><td>Include six accountability domains' bounded retained-record checks; no numbered-profile, personhood or authority claim.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="cli-vstd-certification-domain-assess">
@@ -178,6 +207,107 @@
 <tr><td><code>--request</code></td><td>required option</td><td>The request the consumer intends to check.</td></tr>
 <tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected policy, not authority supplied by the certificate.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate">
+<h3><code>vstd gate</code></h3>
+<p class="ref-help">Plan and run bounded automation, scan selected inputs, and check retained receipts.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-gate-init">
+<h3><code>vstd gate init</code></h3>
+<p class="ref-help">init a local bounded command pipeline</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>path</code></td><td>positional</td><td>[default: gate_pipeline.json]</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--input</code></td><td>optional</td><td>Selected relative project input; repeat to narrow scope (default: .).</td></tr>
+<tr><td><code>--preset</code></td><td>optional</td><td>Project paths/boundary checks, plus Python source-pattern checks when selected. (one of: project, python) [default: project]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-plan">
+<h3><code>vstd gate plan</code></h3>
+<p class="ref-help">plan a local bounded command pipeline</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>path</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-run">
+<h3><code>vstd gate run</code></h3>
+<p class="ref-help">run a local bounded command pipeline</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>path</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--output</code></td><td>required option</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-check">
+<h3><code>vstd gate check</code></h3>
+<p class="ref-help">check a local bounded command pipeline</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>path</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--manifest</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-pr">
+<h3><code>vstd gate pr</code></h3>
+<p class="ref-help">Check description coordinate/count metadata and optional local commit binding.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--file, -f</code></td><td>optional</td><td>Path to pull-request description markdown file.</td></tr>
+<tr><td><code>--text, -t</code></td><td>optional</td><td>Raw pull-request description markdown text.</td></tr>
+<tr><td><code>--commit, -c</code></td><td>optional</td><td>Commit hash to verify against.</td></tr>
+<tr><td><code>--root</code></td><td>optional</td><td>Repository root (default: current directory). [default: .]</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit JSON output.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-paths">
+<h3><code>vstd gate paths</code></h3>
+<p class="ref-help">Scan for forbidden local absolute paths.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>target</code></td><td>positional</td><td>Target directory or file to scan (default: current directory). [default: .]</td></tr>
+<tr><td><code>--exclude</code></td><td>optional</td><td>Glob pattern to exclude.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit JSON output.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-ast">
+<h3><code>vstd gate ast</code></h3>
+<p class="ref-help">Detect selected loop/allocation source patterns; does not prove termination or enforce resource limits.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>target</code></td><td>positional</td><td>Target directory or python file (default: current directory). [default: .]</td></tr>
+<tr><td><code>--max-iterations</code></td><td>optional</td><td>Maximum allowable loop bound (default: 1,000,000). [default: 1000000]</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit JSON output.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-boundary">
+<h3><code>vstd gate boundary</code></h3>
+<p class="ref-help">Parameterized boundary leak detector.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>target</code></td><td>positional</td><td>Target file, directory, or archive to scan. [default: .]</td></tr>
+<tr><td><code>--forbidden</code></td><td>optional</td><td>Forbidden terms/patterns to forbid.</td></tr>
+<tr><td><code>--forbidden-file</code></td><td>optional</td><td>File with forbidden terms (one per line).</td></tr>
+<tr><td><code>--no-secrets</code></td><td>optional</td><td>Disable secret token scanning.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit JSON output.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-attest">
+<h3><code>vstd gate attest</code></h3>
+<p class="ref-help">Record supplied run metadata with digest integrity or optional shared-key authentication; does not verify execution.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--workflow</code></td><td>optional</td><td>Workflow name. [default: ci]</td></tr>
+<tr><td><code>--run-id</code></td><td>optional</td><td>Pipeline run reference. [default: 1]</td></tr>
+<tr><td><code>--run-number</code></td><td>optional</td><td>Pipeline run number. [default: 1]</td></tr>
+<tr><td><code>--job</code></td><td>optional</td><td>Pipeline job name. [default: conformance-gate]</td></tr>
+<tr><td><code>--actor</code></td><td>optional</td><td>Actor name. [default: ci-runner]</td></tr>
+<tr><td><code>--sha</code></td><td>optional</td><td>Commit hash reference. [default: 0000000000000000000000000000000000000000]</td></tr>
+<tr><td><code>--ref</code></td><td>optional</td><td>Git ref. [default: refs/heads/main]</td></tr>
+<tr><td><code>--event-name</code></td><td>optional</td><td>Event name. [default: push]</td></tr>
+<tr><td><code>--status</code></td><td>optional</td><td>Pipeline run outcome (default: PASS). (one of: PASS, FAIL) [default: PASS]</td></tr>
+<tr><td><code>--key</code></td><td>optional</td><td>Optional secret key for HMAC-SHA256 signature.</td></tr>
+<tr><td><code>--key-env</code></td><td>optional</td><td>Read the shared authentication key from this environment variable.</td></tr>
+<tr><td><code>--verify</code></td><td>optional</td><td>Verify an existing continuous integration (CI) attestation receipt file.</td></tr>
+<tr><td><code>--output, -o</code></td><td>optional</td><td>File path to write receipt JSON.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit JSON output to stdout.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="cli-vstd-demo">
@@ -691,11 +821,35 @@
 <tr><td><code>receipt</code></td><td>positional</td><td>Path to receipt.json, claim packet JSON, or directory containing receipt and claim.</td></tr>
 <tr><td><code>--claim</code></td><td>optional</td><td>Optional path to separate claim JSON if not bundled or co-located with receipt.</td></tr>
 <tr><td><code>--endpoint</code></td><td>optional</td><td>Target Claim Garden HTTPS origin (default: https://claimgarden.com). [default: https://claimgarden.com]</td></tr>
-<tr><td><code>--publisher-id</code></td><td>required option</td><td>Registered publisher:sha256 identity submitting this claim (not the receipt notary).</td></tr>
-<tr><td><code>--credential-file</code></td><td>required option</td><td>Publisher credential file containing the required bearer access token.</td></tr>
+<tr><td><code>--publisher-id</code></td><td>optional</td><td>Registered publisher:sha256 identity submitting this claim (not the receipt notary).</td></tr>
+<tr><td><code>--credential-file</code></td><td>optional</td><td>Publisher credential file containing the required bearer access token.</td></tr>
 <tr><td><code>--expected-head</code></td><td>optional</td><td>Reserved silo-lineage option; rejected for claim storage.</td></tr>
 <tr><td><code>--genesis</code></td><td>optional</td><td>Reserved silo-lineage option; rejected for claim storage.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td>Emit canonical JSON result instead of formatted text.</td></tr>
+<tr><td><code>--sim-artifact</code></td><td>optional</td><td>Treat the positional file as a bare SIM artifact for Claim Garden quarantine.</td></tr>
+<tr><td><code>--sim-request</code></td><td>optional</td><td>Independently selected native SIM request JSON file.</td></tr>
+<tr><td><code>--sim-policy</code></td><td>optional</td><td>Independently selected native SIM policy JSON file.</td></tr>
+<tr><td><code>--source-digest</code></td><td>optional</td><td>Expected SHA-256 digest of exact bare SIM upload bytes.</td></tr>
+<tr><td><code>--gated</code></td><td>optional</td><td>Prepare or submit native evidence bound to a local gate receipt.</td></tr>
+<tr><td><code>--artifact</code></td><td>optional</td><td>Full native evidence bundle JSON file.</td></tr>
+<tr><td><code>--request</code></td><td>optional</td><td>External native request JSON file.</td></tr>
+<tr><td><code>--certificate</code></td><td>optional</td><td>Native domain certificate JSON file.</td></tr>
+<tr><td><code>--policy</code></td><td>optional</td><td>Independently selected native policy JSON file.</td></tr>
+<tr><td><code>--manifest</code></td><td>optional</td><td>Selected gate pipeline manifest JSON file.</td></tr>
+<tr><td><code>--dry-run</code></td><td>optional</td><td>Prepare locally; read no credentials and perform no transport.</td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>Create a new prepared envelope file during --gated --dry-run; never overwrite.</td></tr>
+<tr><td><code>--private-review-consent</code></td><td>optional</td><td>Consent to private retention and charged assessment for human review.</td></tr>
+<tr><td><code>--expected-checker-coordinate</code></td><td>optional</td><td>Optional expected host deployment SHA-256 digest from account inspection.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-account">
+<h3><code>vstd account</code></h3>
+<p class="ref-help">Inspect authenticated Claim Garden linkage, byte quota and host coordinates.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--publisher-id</code></td><td>required option</td><td>Registered publisher:sha256 identity.</td></tr>
+<tr><td><code>--credential-file</code></td><td>required option</td><td>Publisher bearer credential file.</td></tr>
+<tr><td><code>--endpoint</code></td><td>optional</td><td>Target Claim Garden HTTPS origin. [default: https://claimgarden.com]</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit account JSON.</td></tr>
 </tbody></table>
 </article></div>
       </div>
@@ -889,7 +1043,7 @@
 </article>
 <article class="ref-item" id="api-NativeDomainAdapter">
 <h3><code>NativeDomainAdapter</code> <span class="ref-tag">class</span></h3>
-<pre class="ref-signature"><code>NativeDomainAdapter(domain: 'str', policy: 'dict') -&gt; 'None'</code></pre>
+<pre class="ref-signature"><code>NativeDomainAdapter(domain: 'str', policy: 'dict', *, _budget: 'Budget | None' = None, _nesting: 'int' = 0) -&gt; 'None'</code></pre>
 <p class="ref-help">Executable mechanism for one domain; registration supplies no implicit authority.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>

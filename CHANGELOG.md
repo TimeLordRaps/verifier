@@ -19,6 +19,8 @@
 > agent trajectory bounded by one observation surface (AGENT);
 > one agent situated in one simulation (BOT);
 > zero-identity zero-knowledge token (TOKEN);
+> computational verifier engine integrity and bounds (VERIFIER);
+> retained physical-device and resource records (HARDWARE);
 > Supply Chain Integrity, Transparency, and Trust (SCITT); Secure Shell (SSH);
 > Coordinated Universal Time (UTC); Verifier Standard (VSTD); ZIP archive format (ZIP);
 > zero-identity/zero-knowledge (ZIZK).
@@ -29,24 +31,37 @@
 
 **Release name: The grounded certification release.**
 
-- Add ten executable grounded domain adapters: dataset integrity and lineage (DATA),
+- Add twelve executable grounded domain adapters: dataset integrity and lineage (DATA),
   execution environments (ENV), benchmark specification graphs (BENCH), training run
   specifications (TRAIN), model reproducibility specifications (MODEL),
   generative simulations (SIM), instrumented agent observation surfaces (HARNESS),
   agent trajectories bounded by one such surface (AGENT), one agent situated in one
-  simulation (BOT), and one zero-identity zero-knowledge token holding descending from
-  one birth token (TOKEN). An AGENT certificate cannot establish more than its bound
+  simulation (BOT), one zero-identity zero-knowledge token holding descending from
+  one birth token (TOKEN), computational verifier engine integrity and bounds (VERIFIER), and retained hardware inventories, containment, reservations and measurement envelopes (HARDWARE). An AGENT certificate cannot establish more than its bound
   HARNESS declared observable; a claim resting on a declared gap or an undeclared channel
   is `UNKNOWN`. A BOT certificate establishes the correspondence its parts cannot: that
   each retained observation is the simulation's own projection and each replayed action
   is the agent's own invocation. A TOKEN certificate establishes that one retained
   holding is internally consistent and was issued under keys the checker admitted, and
-  nothing about who holds it. Their 48 cumulative domain checks replay retained
+  nothing about who holds it. A VERIFIER certificate can establish content-bound toolchain identity,
+  bounded native proof-instance checking and repeated local kernel evaluation. It cannot
+  establish producer execution, general soundness, resource enforcement or bootstrap authority
+  from declarations. Explicit admission now supports Windows checker-owned native
+  replay with committed-allocation/time/work bounds and an externally selected
+  exact-scope signer plus independent finite Boolean recomputation. Unsupported
+  platform, evidence or trust admission retains `UNKNOWN`. Their 57 cumulative domain checks replay retained
   computations with external request/policy binding, strict certificate replay,
   bounded work, and preserved `UNKNOWN`. Add `certification domain-catalog`,
-  `domain-assess`, and `domain-check`, four additive schemas and ten runnable specimens.
+  `domain-assess`, and `domain-check`, four additive schemas and twelve runnable specimens.
   Domain depth remains separate from object and Graph numbered-profile conformance;
   see [native coverage and exclusions](src/verifier/standard/DOMAIN_GROUNDING.md).
+
+- Add `vstd gate init`, `plan`, `run` and `check` for reusable local command pipelines:
+  explicit argument arrays, dependency ordering, deadlines, bounded output, owned child
+  cleanup and receipts bound to selected input bytes. Missing scanner inputs and malformed
+  archives fail closed; shared-key attestation checks reject unsigned downgrade and
+  contradictory statuses. Receipt integrity does not establish execution authenticity.
+  See [gate automation](docs/GATE_AUTOMATION.md).
 
 The release name centers exact claim/evidence binding, bounded certificate checking,
 and evidence-bound assessment. It does not establish conformance for an artifact or

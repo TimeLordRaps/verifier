@@ -22,11 +22,13 @@ HIGH_RISK_JOIN_PAIRS: tuple[tuple[str, str, str], ...] = (
 
 
 class CompositionDeltaEvaluator:
-    """Evaluates information leakage over relational joins of co-emitted certificates (obligation 6.5).
+    """Screens listed domain pairs; does not establish obligation 6.5.
 
     Disclosure is the join of the operands rather than bounded by either alone.
     Two certificates that are individually admissible to an observer may, when
     emitted together, disclose a correlation that violates disclosure bounds.
+    An unmatched pair is not proof of safe disclosure. Caller-supplied role names
+    cannot waive a detected join; no general composition proof is implemented.
     """
 
     def __init__(self, custom_join_rules: tuple[tuple[str, str, str], ...] | None = None) -> None:
@@ -47,6 +49,7 @@ class CompositionDeltaEvaluator:
             primary_cert.get("object_name")
             or primary_cert.get("domain")
             or primary_cert.get("object")
+            or primary_cert.get("request", {}).get("domain")
             or ""
         ).upper()
 
@@ -59,6 +62,7 @@ class CompositionDeltaEvaluator:
                 other.get("object_name")
                 or other.get("domain")
                 or other.get("object")
+                or other.get("request", {}).get("domain")
                 or ""
             ).upper()
             if not other_object:
@@ -68,14 +72,11 @@ class CompositionDeltaEvaluator:
                 if (primary_object == obj_a and other_object == obj_b) or (
                     primary_object == obj_b and other_object == obj_a
                 ):
-                    # Check if observer has explicit role authorization to join these two objects
-                    authorized_roles = {"auditor", "verifier_admin", "compliance_officer"}
-                    if observer.role.lower() not in authorized_roles:
-                        detected_joins.append({
-                            "object_a": primary_object,
-                            "object_b": other_object,
-                            "risk": reason,
-                        })
+                    detected_joins.append({
+                        "object_a": primary_object,
+                        "object_b": other_object,
+                        "risk": reason,
+                    })
 
         if detected_joins:
             reasons = "; ".join(f"{j['object_a']}+{j['object_b']}: {j['risk']}" for j in detected_joins)

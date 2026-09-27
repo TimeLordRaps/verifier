@@ -1,4 +1,9 @@
-"""Level 6 declarative privacy and provable transparency architecture.
+"""Experimental level 6 disclosure helpers; normative conformance remains UNKNOWN.
+
+These functions match caller-supplied policy and observer declarations. They do
+not authenticate parties, establish consent, or prove general composition safety.
+Digest commitments are not hiding or zero-knowledge proofs. Use the native domain
+rechecker separately to establish the unchanged certificate's bounded result.
 
 Acronyms:
     differential privacy (DP);

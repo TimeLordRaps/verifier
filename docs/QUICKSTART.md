@@ -154,8 +154,8 @@ vstd certification domain-catalog
 ```
 
 The first lists the 47 object-profile obligations (`X.M`) and which have a
-built-in checker. The second lists the ten executable domain adapters — DATA,
-ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT, BOT and TOKEN — and their per-check
+built-in checker. The second lists the twelve executable domain adapters — DATA,
+ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT, BOT, TOKEN, VERIFIER and HARDWARE — and their per-check
 dependency graphs.
 
 Run the two shipped, complete examples:
@@ -164,6 +164,23 @@ Run the two shipped, complete examples:
 PYTHONPATH=src python examples/grounded_certification.py ./specimen
 PYTHONPATH=src python examples/domain_grounding.py
 ```
+
+The domain example includes a VERIFIER result of `UNKNOWN` at depth 3: native
+proof-instance checking and local replay are supported, while resource enforcement
+and bootstrap authority remain unestablished.
+
+For repeatable local checks, create a gate manifest and replace its starter command
+with your project's actual checks and selected inputs:
+
+```bash
+vstd gate init gate_pipeline.json
+vstd gate plan gate_pipeline.json --json
+vstd gate run gate_pipeline.json --output gate_receipt.json --json
+vstd gate check gate_receipt.json --json
+```
+
+The [automation guide](GATE_AUTOMATION.md) defines deadlines, dependencies, output
+limits, exit codes and receipt boundaries. Commands run with the caller's authority.
 
 The first establishes obligation `1.1` and leaves the rest of VSTD-1 `UNKNOWN`
 because that evidence is absent. **It exits 2, and that is the intended

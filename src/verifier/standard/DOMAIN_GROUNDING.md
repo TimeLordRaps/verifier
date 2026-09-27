@@ -7,9 +7,10 @@ training run specification; MODEL denotes a model reproducibility specification;
 denotes a generative simulation specification; HARNESS denotes an instrumented
 observation surface; AGENT denotes a retained trajectory bounded by one harness
 certificate; BOT denotes one agent situated in one simulation; TOKEN denotes one
-zero-identity zero-knowledge token holding descending from one birth token.
+zero-identity zero-knowledge token holding descending from one birth token; VERIFIER
+denotes computational verifier integrity and bounds.
 
-These ten application receipt families supplement object and Graph numbered profiles.
+These twelve application receipt families supplement object and Graph numbered profiles.
 `DATA-1.2` through `DATA-4.4`, for example, are domain check coordinates. Domain depth is
 the dimensionless count of consecutive established domain prerequisites. It MUST NOT
 be represented as object profile depth, Graph conformance, or discharge of the 47
@@ -68,13 +69,17 @@ claims about unobserved history or the outside world.
 | AGENT | harness; trajectory; actions; outcomes; claims | One bound HARNESS certificate re-derived from its retained bytes under the same mechanism; contiguous steps each witnessed by a record on a required channel; actions matched to witnessed tool invocations; complete outcome contract equality; claims whose support indices and named channels lie inside the observation ceiling | Intent, planning, deception, capability elicitation, safety of the agent, and anything resting on a declared gap or an undeclared channel |
 | BOT | binding; alignment; observation; actuation; containment | One bound AGENT certificate at complete depth and one bound SIM certificate with established channels, each re-derived from its retained bytes under the same mechanism; a strictly increasing map from simulation transitions to retained records inside the agent's observation ceiling; equality of every retained observation with the simulation's own projection and of every replayed action with the agent's own invocation; declared separation of the two retained environments | Intent, competence, safety, open-endedness, physical or process isolation, and any transition the contract declares exogenous |
 | TOKEN | inventory; tenure; leases; signatures; closure | A complete retained token inventory, each token exactly one of birth, aging or lifetime, with distinct token and replay identifiers, one birth token and a named clock; the epoch trace refolded from the birth commitment and contiguous from the birth epoch, with each aging token's interval, accrued active epochs and revocation status recomputed; every lease resolved to its parent grant, with scopes, window, invocation bound, caveats and soulbound delegate non-widening along every path; Ed25519 signatures over the canonical preimage under bound, unretired issuing keys whose bytes the checker policy admits; audience closure, window coverage over a stated period, lease phases undetermined within the clock skew, and a status observation within the schedule for every token | The genesis secret, the salt and the opening of the birth commitment; withheld fields; consumed invocations; attenuation without the issuer; third-party discharge; presentation and proof of possession; reissuance; agreement of a retained status with the tenure trace; who holds the tokens, and whether any scope they convey is authorized |
+| HARDWARE | inventory; topology; allocations; measurements | Retained typed device capacities, acyclic containment, nonoverlapping capacity accounting and bounded observations | Physical identity, observation authenticity, live availability, cross-device equivalence and credit authority are not established |
+| VERIFIER | identity; soundness; determinism; resources; meta | Retained verifier identity inventory; actual native grounded decision-certificate recheck against exact expected binding; repeated local kernel replay | Arbitrary submitted-process execution/determinism/entropy isolation and class-wide soundness are not established. Opt-in fixed native replay has Windows committed-allocation/time/work bounds; exact-scope externally admitted signatures plus finite truth-table recomputation establish bounded bootstrap only |
 
-`examples/domain_grounding.py` constructs all ten complete native specimens and
+`examples/domain_grounding.py` constructs bounded specimens for all twelve families and
 rechecks their certificates. Its environment specimen measures an actual in-process
 sort task; memory means Python traced allocation peak bytes. Its benchmark resource
 observations measure candidate construction, not a solver speed comparison. Its token
 specimen is signed only when the cryptography extra is installed; without it the
 signature check is `UNKNOWN`, and every other token check still has to replay.
+Its VERIFIER specimen retains UNKNOWN for resource enforcement and bootstrap;
+retained native proof replay does not establish either proposition.
 
 Dataset shard commitments contain `digest`, `records`, `bytes`, `record_digests`
 and `merkle_root`. Merkle leaves are canonical record references; each ordered pair
@@ -248,3 +253,5 @@ proposition, retained inputs, bounds and adversarial qualification. The native f
 are a portable baseline, not an assertion that every domain mainstay is universally
 covered. Domain results compose with object-profile obligations only through a separately
 bound mechanism that actually discharges each object's required proposition.
+
+VERIFIER-1.1 through VERIFIER-1.5 resolve to explicit normative rows. All five name bounded mechanisms. Resources requires the Windows native replay admission and meta requires an externally selected exact-scope signer plus the independent finite oracle; missing capability remains UNKNOWN. See [bounded VERIFIER admission](../../../docs/VERIFIER_ADMISSION.md) for limits. Tiers 2 through 5 remain unmechanized; level 6 remains disclosure-only. Adapter check indices are not a claim of cumulative numbered-profile conformance.

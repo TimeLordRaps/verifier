@@ -142,14 +142,22 @@ CERTIFICATE_FIELDS = {"schema_version", "request", "evidence", "policy_digest", 
 EVIDENCE_FIELDS = {"schema_version", "domain", "subject_id", "artifact", "inputs"}
 
 
-def bind_certificate(inputs: dict, artifact: dict, key: str, domain: str,
-                     mechanism_digest: str, depth: int) -> dict:
-    """Re-derive one bound domain certificate from its retained bytes and return its evidence.
+MAX_CERTIFICATE_NESTING = 4
 
-    A certificate carrying a different mechanism digest is `Unavailable`, not a weaker
-    witness. Binding supplies no assurance of its own: the bound result is a ceiling on
-    what the binding certificate may establish, never a floor beneath it.
+
+def bind_certificate(inputs: dict, artifact: dict, key: str, domain: str,
+                     mechanism_digest: str, depth: int, *, policy: dict,
+                     budget: Budget, nesting: int = 0) -> dict:
+    """Replay bound child evidence under the current checker-selected policy.
+
+    The parent binds the exact child bytes, including its historical policy digest.
+    That digest does not admit the historical policy: this check derives the child
+    request from the parent-bound evidence and reruns its mechanisms under the current
+    policy. It establishes current semantic support, not reproduction of an unknown
+    historical policy. Recursive work consumes the parent's budget.
     """
+    if nesting >= MAX_CERTIFICATE_NESTING:
+        raise Unavailable("nested certificate depth bound exhausted")
     certificate = obj(need(inputs, key + "_certificate"), CERTIFICATE_FIELDS)
     same(certificate["schema_version"], "verifier-domain-certification-1", "unsupported bound certificate")
     body = {k: v for k, v in certificate.items() if k != "certificate_digest"}
@@ -169,7 +177,46 @@ def bind_certificate(inputs: dict, artifact: dict, key: str, domain: str,
     established = result.get("domain_depth")
     if type(established) is not int or established < depth:
         raise Unavailable("bound certificate did not reach the domain depth this binding requires")
+    # Import only at invocation time: certification owns this primitive's caller.
+    from .catalog import domain_specification_digest
+    from .certification import _build_domain_certificate, domain_request
+
+    same(certificate["specification_digest"], "sha256:" + domain_specification_digest(),
+         "bound certificate specification differs")
+    request = obj(certificate["request"])
+    expected_request = domain_request(evidence, target_depth=need(request, "target_depth"))
+    same(request, expected_request, "bound certificate request differs from retained evidence")
+    if request["target_depth"] < depth:
+        raise Unavailable("bound certificate did not request the required domain depth")
+    reproduced = _build_domain_certificate(expected_request, evidence, policy=policy,
+        budget=budget, nesting=nesting + 1)["result"]
+    if reproduced["status"] == "FAIL":
+        raise Refuted("bound certificate evidence is refuted under current checker policy")
+    if reproduced["status"] != "PASS" or reproduced["domain_depth"] < depth:
+        reasons = [row["evaluation"]["details"] for row in reproduced["checks"].values()
+                   if row["evaluation"]["outcome"] != "PASS"]
+        raise Unavailable("bound certificate unsupported under current checker policy: " + "; ".join(reasons))
+    # Compare actual domain findings; policy-bound envelope metadata is intentionally
+    # not relabeled as reproduction of the child's historical policy.
+    same(_semantic_result(result), _semantic_result(reproduced),
+         "bound certificate retained result differs from current semantic replay")
     return evidence
+
+
+def _semantic_result(result: dict) -> dict:
+    checks = {}
+    for coordinate, row in obj(need(result, "checks")).items():
+        evaluation = obj(need(row, "evaluation"))
+        checks[coordinate] = {
+            "name": need(row, "name"), "proposition": need(row, "proposition"),
+            "established": need(row, "established"), "blocked_by": need(row, "blocked_by"),
+            "outcome": need(evaluation, "outcome"), "details": need(evaluation, "details"),
+            "observations": need(evaluation, "observations"),
+        }
+    return {"status": need(result, "status"), "domain_depth": need(result, "domain_depth"),
+            "scope": need(result, "scope"),
+            "object_profile_conformance": need(result, "object_profile_conformance"),
+            "checks": checks}
 
 
 def unique(records: list, key: str) -> dict:

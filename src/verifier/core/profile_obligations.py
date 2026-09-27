@@ -1113,18 +1113,71 @@ DOMAIN_OBLIGATIONS = (
         ("Composition delta", "Emitting this certificate beside an ACTOR certificate discloses correlation: a birth epoch is within bound and a set of decision classes is within bound, while the pair singles the party out, because tenure is close to unique over any population small enough to enumerate. The join is evaluated against both operands and not against either alone.", (2, 4), ""),
         ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
     )),
+    *_domain_rows("HARDWARE", 1, (
+        ("Retained device inventory", "Rehash retained device records and validate named kinds and typed integer capacities; physical authenticity and live availability are not established.", (), "inventory"),
+        ("Retained containment topology", "Every declared containment edge resolves within the bound inventory and the finite graph is acyclic; no undeclared physical topology is inferred.", (1,), "topology"),
+    )),
+    *_domain_rows("HARDWARE", 2, (
+        ("Exclusive capacity accounting", "Recompute half-open reservation intervals per device and unit; simultaneous declared occupancy never exceeds declared capacity. This is not admission of physical capacity or credit issuance.", (), "allocations"),
+        ("Retained measurement envelope", "Every retained integer observation names a device, unit and instant and remains within its declared capacity. Observation authenticity requires a separate qualified mechanism.", (), "measurements"),
+    )),
+    *_domain_rows("HARDWARE", 3, (
+        ("Physical substrate observations", "Device identity, physical capacity, calibration, sensor accuracy and live availability require qualified observations with explicit freshness and trust roots; declarations alone remain UNKNOWN.", (), ""),
+    )),
+    *_domain_rows("HARDWARE", 4, (
+        ("Physical inventory closure", "Complete coverage, nonaliasing physical identities and resource isolation require independent bounded evidence; a retained inventory alone leaves closure UNKNOWN.", (), ""),
+    )),
+    *_domain_rows("HARDWARE", 5, (
+        ("Hardware carrier translation", "A named hardware or sensor carrier requires a qualified provenance-preserving adapter; the legacy VSTD-3 accountability receipt is not silently relabeled as this domain.", (), ""),
+    )),
+    *_domain_rows("HARDWARE", 6, (
+        ("Disclosure surface", "The device inventory, retained resource coordinates and checking residuals emitted by this certificate are enumerated separately from withheld device identifiers or observations.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Joining this hardware certificate with an execution certificate can disclose which device served which workload; the joined disclosure is evaluated against both operands rather than either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
+    *_domain_rows("VERIFIER", 1, (
+        ("Retained verifier identity", "The declared verifier kind, version and toolchain inventory are bound to retained bytes and their recomputed digests; this does not execute the submitted verifier.", (), "identity"),
+        ("Retained decision certificate", "The native grounded decision certificate is rechecked against its exact externally selected binding; acceptance establishes that bounded decision proof, not soundness of an entire proposition class.", (1,), "soundness"),
+        ("Repeated kernel replay", "Repeated local kernel checking of the retained decision certificate reproduces the same result; this does not establish determinism or entropy isolation of the submitted verifier process.", (1, 2), "determinism"),
+        ("Process resource enforcement", "A checker-owned native proof replay enforces a queried Windows Job Object committed-allocation cap and bounded completion observation; charged native work is bounded separately. This is not arbitrary submitted-verifier execution, a resident-memory bound or a hard real-time guarantee. Without this admitted mechanism report UNKNOWN.", (1,), "resources"),
+        ("Bootstrap independence", "An externally selected signature key binds the exact native proof requests and distinct finite truth-table oracle; the oracle independently recomputes bounded Boolean results. This establishes neither organizational independence nor general verifier soundness. Without admitted evidence report UNKNOWN.", (1, 2, 3, 4), "meta"),
+    )),
+    *_domain_rows("VERIFIER", 2, (
+        ("Verifier execution dynamics", "Actual submitted-verifier execution, input consumption and result production require an admitted execution mechanism; replaying a retained proof alone leaves this profile UNKNOWN.", (), ""),
+    )),
+    *_domain_rows("VERIFIER", 3, (
+        ("Verifier substrate constraints", "Execution-substrate identity, physical resource constraints and isolation require independent observations bound to the actual verifier run; caller declarations alone leave this profile UNKNOWN.", (), ""),
+    )),
+    *_domain_rows("VERIFIER", 4, (
+        ("Verifier coverage closure", "Completeness over the declared verifier claim class requires independently checked coverage and counterexample boundaries; one retained decision does not close the class and leaves this profile UNKNOWN.", (), ""),
+    )),
+    *_domain_rows("VERIFIER", 5, (
+        ("Verifier mainstay translation", "A named prover, compiler, solver or checker format requires an admitted semantics-preserving translation with explicit residuals; a format label alone leaves this profile UNKNOWN.", (), ""),
+    )),
+    *_domain_rows("VERIFIER", 6, (
+        ("Disclosure surface", "The verifier identity, retained decision coordinates and checking residuals emitted by this certificate are enumerated separately from withheld implementation or proof material.", (), ""),
+        ("Bound declaration", "Every field enumerated at 6.1 carries a declared disclosure bound naming the observers it is admissible to; a field emitted without a bound is not admissible, and the absence of a bound is never read as an open one.", (1,), ""),
+        ("Observer identification", "The observer each bound is stated against is identified as a party rather than as a channel, since a channel can be relayed and a party cannot; where no observer model is established the level reports UNKNOWN and never PASS.", (1,), ""),
+        ("Emission-time evaluation", "Each bound is evaluated at every emission of the certificate rather than once when the certificate was made. A bound satisfied at certification and violated at a later emission is not satisfied, and this is the only level in the grid that is not settled by the act of certifying.", (2, 3), ""),
+        ("Composition delta", "Joining this verifier certificate with a decision certificate can disclose which implementation checked which claim; the joined disclosure is evaluated against both operands rather than either alone.", (2, 4), ""),
+        ("Verdict independence", "Redacting any emitted field to satisfy its bound leaves every verdict this object carries at tiers 1 through 5 unchanged. A disclosure bound never changes a computational verdict -- neither upward nor downward -- and a redaction that moves one makes the certificate malformed rather than more private.", (2, 4, 5), ""),
+    )),
+
 )
 
 DOMAIN_BY_ID = {o.id: o for o in DOMAIN_OBLIGATIONS}
 DOMAIN_OBJECTS = ("DATA", "ENV", "BENCH", "TRAIN", "HYPER", "MODEL", "SIM",
                   "HARNESS", "AGENT", "BOT", "OWNER",
-                  "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY", "ACTOR", "TOKEN")
+                  "HUMAN", "ROLE", "COLLECTIVE", "IDENTITY", "ACTOR", "TOKEN", "VERIFIER", "HARDWARE")
 
 # A relational object holds *between* certified objects instead of certifying a
 # substrate of its own. GRAPH carries its own axis; HYPER, OWNER and IDENTITY sit
 # on the domain axis -- IDENTITY holds between a bearer and a role class.
 #
-# Ungrounded means no adapter executes the object, so every one of its obligations
+# Ungrounded here means no numbered-profile mechanism is bound, so every obligation
 # is specified with no mechanism and reports UNKNOWN. The two properties are
 # independent, and until the identity family landed the catalogue could not show
 # it: OWNER was the only ungrounded object and it was also relational, so the
@@ -1136,9 +1189,9 @@ GROUNDED_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in UNGROUNDED_OBJECT
 
 # Grounded is not the same as certifiable, and conflating the two published a false claim
 # about HYPER for the life of this catalogue. A *behavioural* adapter is keyed in
-# verifier.domains.catalog.CHECKS, and build_domain_certificate rejects any domain absent
-# from it, so only the objects in CERTIFIABLE_OBJECTS can have a domain certificate built
-# for them at all. HYPER is catalogued and its statics and adaptation mechanisms resolve
+# verifier.domains.catalog.CHECKS. CERTIFIABLE_OBJECTS retains this computational
+# family for compatibility. Public assessment also accepts accountable ACTOR/OWNER
+# routes in ALL_CHECKS; these do not establish their numbered profiles. HYPER is catalogued and its statics and adaptation mechanisms resolve
 # and execute, but it has no behavioural adapter, so no certificate over it can be
 # produced; the ungrounded objects carry no mechanism of any kind. Membership is asserted
 # against CHECKS by the suite rather than imported here, because verifier.domains depends
@@ -1185,7 +1238,7 @@ COMPOSITION_OF = {
 ADAPTER_PENDING_OBJECTS: tuple[str, ...] = ()
 
 CERTIFIABLE_OBJECTS = ("DATA", "ENV", "BENCH", "TRAIN", "MODEL", "SIM", "HARNESS",
-                       "AGENT", "BOT", "TOKEN")
+                       "AGENT", "BOT", "TOKEN", "VERIFIER", "HARDWARE")
 UNCERTIFIABLE_OBJECTS = tuple(o for o in DOMAIN_OBJECTS if o not in CERTIFIABLE_OBJECTS)
 TIER_NAMES = {1: "Facets", 2: "Dynamics", 3: "Statics", 4: "Closure",
               5: "Domain adaptation", 6: "Disclosure"}

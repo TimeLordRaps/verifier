@@ -23,6 +23,8 @@ that the described work was reviewed, or that a human understood it.
 from __future__ import annotations
 
 import argparse
+import ast
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -52,23 +54,214 @@ NUMBER_WORDS = {
 # Adapter support modules carry no domain of their own.
 NON_DOMAIN_MODULES = frozenset({
     "__init__", "catalog", "certification", "common", "numerical",
-    "statics", "mainstays", "actor", "owner",
+    "statics", "mainstays",
+    "carriers", "mainstay_certification", "verifier_bootstrap", "verifier_execution",
 })
 
 # Either dash spelling is accepted; the description uses an en dash.
 DASH = r"[–—-]"
+SOURCE_FEATURE_MANIFEST = "docs/PR_SOURCE_FEATURES.json"
+MAX_SOURCE_FEATURE_MANIFEST_BYTES = 4 * 1024 * 1024
 
 
 def _fail(findings: list[str], message: str) -> None:
     findings.append(message)
 
 
+def source_feature_inventory(root: Path, base: str, target: str | None = None) -> dict:
+    """Bind every changed source file and changed Python definition to exact bytes.
+
+    No candidate code is imported. Private definitions count too. This is structural
+    coverage, not a proof that a summary describes every semantic change truthfully.
+    """
+    def git(*args: str) -> bytes:
+        result = subprocess.run(["git", "-C", str(root), *args], capture_output=True, timeout=60)
+        result.check_returncode()
+        return result.stdout
+
+    base_oid = git("rev-parse", "--verify", "--end-of-options", base + "^{commit}").decode().strip()
+    target_oid = git("rev-parse", "--verify", "--end-of-options", (target or "HEAD") + "^{commit}").decode().strip()
+    # A base must precede the reviewed head; an unrelated or future base cannot hide changes.
+    git("merge-base", "--is-ancestor", base_oid, target_oid)
+
+    roots = ("src", "scripts", ".github", "pyproject.toml")
+
+    def in_scope(name: str) -> bool:
+        return name.startswith(("src/", "scripts/", ".github/workflows/")) or name == "pyproject.toml"
+
+    def snapshot(revision: str) -> dict[str, bytes]:
+        available = set(git("ls-tree", "--name-only", revision).decode().splitlines())
+        selected = [name for name in roots if name in available]
+        if not selected:
+            return {}
+        raw = git("archive", "--format=tar", revision, *selected)
+        with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
+            result = {}
+            for member in archive.getmembers():
+                if not in_scope(member.name):
+                    continue
+                if member.isfile():
+                    if member.size > 16 * 1024 * 1024:
+                        raise ValueError("source file exceeds inventory byte bound")
+                    result[member.name] = archive.extractfile(member).read()
+                elif not member.isdir():
+                    raise ValueError("source inventory refuses symbolic links and special files")
+            return result
+
+    before = snapshot(base_oid)
+    if target:
+        after = snapshot(target_oid)
+    else:
+        names = git("ls-files", "--cached", "--others", "--exclude-standard", "-z", "--", *roots).decode().split("\0")
+        after = {}
+        for name in set(names) - {""}:
+            if not in_scope(name):
+                continue
+            path = root / name
+            if path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
+                raise ValueError("source inventory refuses paths outside the repository")
+            if not path.exists():
+                continue
+            if not path.is_file() or path.stat().st_size > 16 * 1024 * 1024:
+                raise ValueError("source inventory requires bounded regular files")
+            after[name] = path.read_bytes()
+
+    def definitions(raw: bytes | None, name: str) -> dict[str, str]:
+        if raw is None or not name.endswith(".py"):
+            return {}
+        tree = ast.parse(raw, filename=name)
+        found = {}
+        def visit(nodes: list, prefix: str = "") -> None:
+            for node in nodes:
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    key = prefix + node.name
+                    found[key] = ast.dump(node, include_attributes=False)
+                    if isinstance(node, ast.ClassDef):
+                        visit(node.body, key + ".")
+        visit(tree.body)
+        return found
+
+    rows = []
+    for name in sorted(set(before) | set(after)):
+        old, new = before.get(name), after.get(name)
+        if old == new:
+            continue
+        previous, current = definitions(old, name), definitions(new, name)
+        symbols = sorted(key for key in set(previous) | set(current) if previous.get(key) != current.get(key))
+        rows.append({"path": name, "sha256": hashlib.sha256(new).hexdigest() if new is not None else None,
+                     "symbols": symbols})
+    return {"base": base_oid, "target": target_oid if target else "WORKTREE:" + target_oid, "files": rows}
+
+
+def check_source_grounding(body: str, findings: list[str], *, root: Path = ROOT,
+                           base: str = "origin/main", target: str | None = None) -> None:
+    """Require one reviewable record per changed source path, with no stale exclusions."""
+    try:
+        expected = source_feature_inventory(root, base, target)
+        if not expected["files"]:
+            return
+        blocks = re.findall(r"^```vstd-source-features\s*\n(.*?)^```[ \t]*$", body, re.MULTILINE | re.DOTALL)
+        if len(blocks) != 1:
+            raise ValueError("exactly one vstd-source-features block is required")
+        def unique(pairs: list) -> dict:
+            result = {}
+            for key, value in pairs:
+                if key in result:
+                    raise ValueError("duplicate source coverage field")
+                result[key] = value
+            return result
+        record = json.loads(blocks[0], object_pairs_hook=unique)
+        if type(record) is not dict or set(record) not in (
+            {"base", "target", "files"}, {"base", "target", "manifest"}
+        ):
+            raise ValueError("invalid source coverage record fields")
+        if any(record[key] != expected[key] for key in ("base", "target")):
+            raise ValueError("source coverage base or target is stale")
+        if "manifest" in record:
+            locator = record["manifest"]
+            if (type(locator) is not dict or set(locator) != {"path", "sha256"}
+                    or locator["path"] != SOURCE_FEATURE_MANIFEST
+                    or type(locator["sha256"]) is not str
+                    or not re.fullmatch(r"[0-9a-f]{64}", locator["sha256"])):
+                raise ValueError("source coverage manifest locator is invalid")
+            if target is None:
+                manifest_path = root / SOURCE_FEATURE_MANIFEST
+                if (manifest_path.is_symlink() or not manifest_path.is_file()
+                        or not manifest_path.resolve().is_relative_to(root.resolve())
+                        or manifest_path.stat().st_size > MAX_SOURCE_FEATURE_MANIFEST_BYTES):
+                    raise ValueError("source coverage manifest must be a bounded regular file")
+                raw = manifest_path.read_bytes()
+            else:
+                object_name = expected["target"] + ":" + SOURCE_FEATURE_MANIFEST
+                size = subprocess.run(["git", "-C", str(root), "cat-file", "-s", object_name],
+                                      capture_output=True, timeout=30)
+                size.check_returncode()
+                if int(size.stdout) > MAX_SOURCE_FEATURE_MANIFEST_BYTES:
+                    raise ValueError("source coverage manifest byte bound exceeded")
+                archived = subprocess.run(["git", "-C", str(root), "show", object_name],
+                                          capture_output=True, timeout=30)
+                archived.check_returncode()
+                raw = archived.stdout
+            if hashlib.sha256(raw).hexdigest() != locator["sha256"]:
+                raise ValueError("source coverage manifest digest differs")
+            document = json.loads(raw.decode("utf-8"), object_pairs_hook=unique)
+            if type(document) is not dict or set(document) != {"base", "files"}:
+                raise ValueError("source coverage manifest fields are invalid")
+            record = {"base": document["base"], "target": record["target"],
+                      "files": document["files"]}
+            if record["base"] != expected["base"]:
+                raise ValueError("source coverage manifest base differs")
+        if type(record["files"]) is not list:
+            raise ValueError("source coverage files must be a list")
+        observed = {}
+        for row in record["files"]:
+            if type(row) is not dict or set(row) != {"path", "sha256", "symbols", "summary", "limits"}:
+                raise ValueError("each source row needs path, sha256, symbols, summary and limits")
+            if type(row["path"]) is not str or row["path"] in observed:
+                raise ValueError("invalid or duplicate source path")
+            if any(type(row[key]) is not str or not row[key].strip() for key in ("summary", "limits")):
+                raise ValueError("source coverage requires a behavioral summary and explicit limits")
+            observed[row["path"]] = {key: row[key] for key in ("path", "sha256", "symbols")}
+        wanted = {row["path"]: row for row in expected["files"]}
+        for path in sorted(set(wanted) | set(observed)):
+            if wanted.get(path) != observed.get(path):
+                _fail(findings, f"source feature coverage missing, stale or extraneous: {path}")
+    except (OSError, ValueError, SyntaxError, UnicodeError, subprocess.SubprocessError, tarfile.TarError) as error:
+        _fail(findings, f"source feature grounding failed: {error}")
+
+
+def check_declared_domains(body: str, findings: list[str]) -> None:
+    """Declared objects remain release scope even without an executable adapter."""
+    try:
+        tree = ast.parse((SOURCE / "verifier/core/profile_obligations.py").read_bytes())
+        domains = {node.args[0].value for node in ast.walk(tree)
+                   if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                   and node.func.id == "_domain_rows" and node.args
+                   and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str)}
+        for domain in sorted(domains):
+            if not re.search(rf"\b{re.escape(domain)}\b", body):
+                _fail(findings, f"declared domain {domain} is omitted; adapter absence does not remove release scope")
+    except (OSError, SyntaxError) as error:
+        _fail(findings, f"declared-domain inventory unavailable: {error}")
+
+
 def domain_inventory() -> dict[str, int]:
-    """Read the executable domain catalogue as the source of truth."""
+    """Read the default computational catalogue for its separate count gate."""
     sys.path.insert(0, str(SOURCE))
     from verifier.domains.catalog import CHECKS  # noqa: PLC0415
 
     return {domain: len(checks) for domain, checks in CHECKS.items()}
+
+
+def accountable_domain_inventory() -> dict[str, int]:
+    """Read the separately discoverable native accountability checks."""
+    sys.path.insert(0, str(SOURCE))
+    from verifier.domains import catalog  # noqa: PLC0415
+
+    # Older commit fixtures predate this separate catalogue. Any unregistered
+    # module still fails the module-versus-catalogue check below.
+    return {domain: len(checks) for domain, checks in
+            getattr(catalog, "ACCOUNTABLE_CHECKS", {}).items()}
 
 
 def adapter_modules() -> set[str]:
@@ -139,14 +332,14 @@ def head_commit() -> str:
 
 def check_domains_are_described(body: str, findings: list[str]) -> None:
     """Every executable domain appears with its exact coordinate range, and no other."""
-    inventory = domain_inventory()
+    inventory = {**domain_inventory(), **accountable_domain_inventory()}
     modules = adapter_modules()
 
     missing_modules = modules - set(inventory)
     if missing_modules:
         _fail(findings, (
             "adapter modules exist that the catalogue does not declare: "
-            f"{', '.join(sorted(missing_modules))}. Add them to CHECKS in "
+            f"{', '.join(sorted(missing_modules))}. Add them to CHECKS or ACCOUNTABLE_CHECKS in "
             "src/verifier/domains/catalog.py, then describe them."
         ))
     absent_modules = set(inventory) - modules
@@ -184,7 +377,7 @@ def check_domains_are_described(body: str, findings: list[str]) -> None:
             OBJECTS = frozenset({
                 "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
                 "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
-                "TRAIN", "TOKEN",
+                "TRAIN", "TOKEN", "VERIFIER",
             })
     unknown = {name for name in described if name not in inventory and name not in OBJECTS and not name.startswith("VSTD")}
     unknown -= {"SHA", "JSON", "CNF", "SAT", "HTTP", "PDF", "CI", "OS", "PR", "URL", "ID", "XML"}
@@ -301,6 +494,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--body", type=Path, help="read the description from this file")
     parser.add_argument("--pr", help="pull request number; defaults to the current branch")
     parser.add_argument("--repo", help="OWNER/NAME holding the pull request; defaults to gh's choice")
+    parser.add_argument("--base", default="origin/main", help="trusted review base, resolved to an ancestor commit")
+    parser.add_argument("--source-inventory", action="store_true", help="emit source coverage inputs; summaries and limits still require review")
     bound = parser.add_mutually_exclusive_group()
     bound.add_argument(
         "--head",
@@ -319,6 +514,14 @@ def main(argv: list[str] | None = None) -> int:
         help="fail when no description can be read, instead of passing",
     )
     args = parser.parse_args(argv)
+
+    if args.source_inventory:
+        try:
+            print(json.dumps(source_feature_inventory(ROOT, args.base, args.commit), indent=2))
+            return 0
+        except (OSError, ValueError, SyntaxError, subprocess.SubprocessError, tarfile.TarError) as error:
+            print(f"[PR DESCRIPTION] FAIL: source inventory unavailable: {error}")
+            return 1
 
     body = resolve_body(args)
     if body is None:
@@ -339,6 +542,8 @@ def main(argv: list[str] | None = None) -> int:
         check_head_is_bound(body, findings, args.head)
         check_inventory_is_bound(body, findings)
         check_machine_read_fields_are_parseable(body, findings)
+        check_declared_domains(body, findings)
+        check_source_grounding(body, findings, root=ROOT, base=args.base, target=COMMIT or args.head)
 
     if args.json:
         print(json.dumps({"findings": findings, "status": "FAIL" if findings else "PASS"}, indent=2))

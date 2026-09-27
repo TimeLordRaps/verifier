@@ -63,6 +63,10 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def _base_url(value: str) -> str:
+    # urlsplit strips some raw controls; reject before it can change the origin.
+    if (type(value) is not str or not value
+            or any(char.isspace() or ord(char) < 32 or 127 <= ord(char) <= 159 for char in value)):
+        raise ClaimGardenClientError("Claim Garden base URL must contain no whitespace or control characters")
     parsed = urllib.parse.urlsplit(value)
     if (parsed.scheme.lower() != "https" or not parsed.hostname or parsed.username is not None
             or parsed.password is not None or parsed.query or parsed.fragment

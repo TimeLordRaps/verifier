@@ -6,7 +6,7 @@ specification; MODEL means model reproducibility specification; SIM means genera
 simulation specification; HARNESS means an instrumented agent observation surface;
 AGENT means an agent trajectory bounded by that surface; BOT means one agent situated
 in one simulation; TOKEN means one zero-identity zero-knowledge token holding descending
-from one birth token. Domain depths are dimensionless
+from one birth token; HARDWARE names retained physical-device records. Domain depths are dimensionless
 prerequisite counts, separate from the VSTD object and Graph numbered profiles.
 
 Each check carries the exact set of lower checks its own evaluation re-executes or
@@ -90,9 +90,23 @@ CHECKS = {
         ("signatures", "Verify every token signature over its canonical preimage under a bound, unretired, checker-admitted issuing key.", (1,)),
         ("closure", "Check audience closure, report window coverage and clock-undetermined leases, and require a fresh status for every token.", (1,)),
     ),
+    "VERIFIER": (
+        ("identity", "Bind declared verifier kind, version and retained toolchain inventory digests; do not execute the submitted verifier.", ()),
+        ("soundness", "Recheck the retained native grounded decision certificate against its exact expected binding; no class-wide soundness theorem.", (1,)),
+        ("determinism", "Repeat local native-kernel replay of the retained decision certificate; no submitted-process determinism or entropy guarantee.", (1, 2)),
+        ("resources", "Enforce bounded checker-owned native replay with Windows Job Object allocation/time limits and charged native work; unavailable capability remains UNKNOWN.", (1,)),
+        ("meta", "Independently recompute finite native Boolean results under an externally admitted exact-scope signature; no general soundness or organizational independence.", (1, 2, 3, 4)),
+    ),
+    "HARDWARE": (
+        ("inventory", "Rehash retained device inventory and validate explicitly typed integer capacities; no physical authenticity.", ()),
+        ("topology", "Check complete declared containment edges resolve and form an acyclic graph.", (1,)),
+        ("allocations", "Recompute simultaneous occupancy of half-open intervals without exceeding declared per-device capacities.", (1,)),
+        ("measurements", "Check retained integer observations against their device, unit and declared capacity; no observation authenticity.", (1,)),
+    ),
 }
 
 COORDINATES = {
+    "HARDWARE": ("HARDWARE-1.1", "HARDWARE-1.2", "HARDWARE-2.1", "HARDWARE-2.2"),
     "DATA": ("DATA-1.2", "DATA-1.4", "DATA-2.1", "DATA-4.1", "DATA-4.4"),
     "ENV": ("ENV-1.2", "ENV-1.4", "ENV-3.3", "ENV-2.3"),
     "BENCH": ("BENCH-1.2", "BENCH-1.4", "BENCH-4.1", "BENCH-3.6"),
@@ -103,9 +117,17 @@ COORDINATES = {
     "AGENT": ("AGENT-1.1", "AGENT-2.1", "AGENT-2.3", "AGENT-4.1", "AGENT-4.3"),
     "BOT": ("BOT-1.1", "BOT-2.1", "BOT-2.2", "BOT-2.3", "BOT-4.1"),
     "TOKEN": ("TOKEN-1.1", "TOKEN-1.4", "TOKEN-2.4", "TOKEN-1.2", "TOKEN-2.12"),
+    "VERIFIER": ("VERIFIER-1.1", "VERIFIER-1.2", "VERIFIER-1.3", "VERIFIER-1.4", "VERIFIER-1.5"),
     "ACTOR": ("ACTOR-1.1", "ACTOR-2.1", "ACTOR-3.2", "ACTOR-4.2"),
     "OWNER": ("OWNER-1.3", "OWNER-2.1", "OWNER-3.1", "OWNER-4.5"),
+    "HUMAN": ("HUMAN-1.1", "HUMAN-2.1", "HUMAN-4.4"),
+    "IDENTITY": ("IDENTITY-1.3", "IDENTITY-2.1", "IDENTITY-4.2"),
+    "ROLE": ("ROLE-1.1", "ROLE-2.1"),
+    "COLLECTIVE": ("COLLECTIVE-1.1", "COLLECTIVE-2.5"),
 }
+
+# Named diagnostic routes have no positive establishment mechanism.
+UNKNOWN_ONLY_CHECKS: dict[str, dict[str, str]] = {}
 
 ACCOUNTABLE_CHECKS = {
     "ACTOR": (
@@ -120,11 +142,30 @@ ACCOUNTABLE_CHECKS = {
         ("independence", "Verify holding consequence boundaries never alters computational verdicts, digests, or evidence bytes.", (1,)),
         ("accountability", "Verify accountability floor and discharge-duty terminate in an accountable person with valid witness binding.", (1, 2, 3)),
     ),
+    "HUMAN": (
+        ("assertion", "Bind a declared human-subject assertion, capture class, evidence inventory, and non-asserted civil attributes; do not infer living personhood or witness independence.", ()),
+        ("lifecycle", "Replay retained enrollment and later assertion events in declared order and validity; do not infer current physical liveness.", (1,)),
+        ("closure", "Require independent personhood, liveness, error-rate, and accountability evidence; report UNKNOWN while those mechanisms are absent.", (1, 2)),
+    ),
+    "IDENTITY": (
+        ("occupancy", "Bind declared HUMAN-or-BOT bearer, ROLE seat, retained occupancy record, and an unverified evidence reference; do not infer bearer authenticity or authority.", ()),
+        ("lifecycle", "Replay declared enrollment, presentation, renewal, revocation, and simulation-end events without transferring bearer identity.", (1,)),
+        ("support", "Replay bound bearer and ROLE child certificates under checker-selected policy where supported; never infer living personhood or role authority.", (1, 2)),
+    ),
+    "ROLE": (
+        ("facets", "Validate the retained role-class declaration, admissible bearer classes, and simultaneous bearer limit; do not authenticate qualifications or authority.", ()),
+        ("occupancy", "Replay digest-bound take, leave, and atomic handover events against the declared class and bearer limit; the final trace state is not live occupancy.", (1,)),
+    ),
+    "COLLECTIVE": (
+        ("graph", "Rehash a finite typed role graph and its declared class boundary; edges do not establish occupancy, personhood, legal existence, or consent.", ()),
+        ("decisions", "Replay digest-bound finite role-decision assembly against declared required-role sets; role decisions and bearers remain unauthenticated declarations.", (1,)),
+    ),
 }
 
 ALL_CHECKS = {**CHECKS, **ACCOUNTABLE_CHECKS}
 
 SCOPES = {
+    "HARDWARE": "finite retained hardware declarations, topology, allocation arithmetic and observation envelopes; not physical attestation",
     "DATA": "complete retained dataset and declared transformation boundary",
     "ENV": "retained software inventory and named collector observations",
     "BENCH": "complete retained finite problem suite and its named oracles",
@@ -135,11 +176,16 @@ SCOPES = {
     "AGENT": "retained trajectory inside the observation ceiling of one bound harness certificate",
     "BOT": "closed loop between one bound agent certificate and one bound simulation certificate",
     "TOKEN": "complete retained token holding descending from one birth token under checker-admitted issuing keys",
+    "VERIFIER": "retained verifier identity and native proof replay; opt-in Windows bounded replay and externally admitted finite bootstrap",
 }
 
 ACCOUNTABLE_SCOPES = {
     "ACTOR": "accountable party identity, control surface, delegation trace and decision attribution",
     "OWNER": "artifact consequence limbs, lifecycle holding, and accountability floor terminating in natural persons",
+    "HUMAN": "retained human-assertion metadata and event replay; no physical personhood, liveness, uniqueness, or natural-person accountability proof",
+    "IDENTITY": "retained bearer/role/occupancy bindings and event replay; nested child replay only where checker-admitted, without authority promotion",
+    "ROLE": "retained role-class facets and finite occupancy-event replay; no credential, qualification, or legal authority authentication",
+    "COLLECTIVE": "retained typed role graph and finite decision-assembly replay; no independent occupancy, quorum, personhood, or legal existence proof",
 }
 
 ALL_SCOPES = {**SCOPES, **ACCOUNTABLE_SCOPES}
@@ -159,4 +205,5 @@ def domain_catalog(include_accountable: bool = False) -> dict:
 
 def domain_specification_digest() -> str:
     data = files("verifier.standard").joinpath("DOMAIN_GROUNDING.md").read_bytes()
-    return canonical_digest({"catalog": domain_catalog(), "specification": hashlib.sha256(data).hexdigest()})
+    return canonical_digest({"catalog": domain_catalog(include_accountable=True),
+                             "specification": hashlib.sha256(data).hexdigest()})

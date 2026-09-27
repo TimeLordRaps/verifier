@@ -108,14 +108,14 @@ def test_the_ladder_strip_depth_matches_tier_depth(object_name: str) -> None:
 
 def test_every_object_carries_five_corroboration_profiles() -> None:
     assert all(len(d) == 5 for d in ALL_DEPTHS.values())
-    assert len(ALL_DEPTHS) == 19
-    assert len(ALL_DEPTHS) * 5 == 95
+    assert len(ALL_DEPTHS) == 21
+    assert len(ALL_DEPTHS) * 5 == 105
 
 
-def test_the_published_rung_total_is_the_sum_of_the_depths() -> None:
+def test_the_published_depth_position_total_is_the_sum_of_the_depths() -> None:
     rungs = sum(sum(d) for d in ALL_DEPTHS.values())
-    assert rungs == _published(r"([\d,]+) rungs over ninety-five profiles")
-    assert rungs == _published(r"([\d,]+) rungs across the nineteen ladders")
+    assert rungs == _published(r"([\d,]+) depth positions over one hundred five")
+    assert rungs == _published(r"([\d,]+) depth positions across the twenty-one")
 
 
 def test_the_published_obligation_total_is_the_sum_of_the_catalogues() -> None:
@@ -123,11 +123,10 @@ def test_the_published_obligation_total_is_the_sum_of_the_catalogues() -> None:
     assert total == _published(r"([\d,]+) obligations across the three")
 
 
-def test_unreachable_coordinates_are_the_total_less_the_rungs() -> None:
-    """Unreachable-as-an-`m` is a statement about rungs, so it is scoped to tiers 1-5.
+def test_obligations_exceeding_profile_depth_are_total_less_depth_positions() -> None:
+    """This arithmetic describes the tiers-1–5 legacy depth projection only.
 
-    Level 6 carries no rungs at all, by construction rather than by shortfall, so folding
-    it into this figure would silently restate "not a rung" as "not yet reached".
+    It must not be interpreted as a certificate-index reachability result.
     """
     corroboration = _corroboration_total()
     rungs = sum(sum(d) for d in ALL_DEPTHS.values())
@@ -173,7 +172,7 @@ def test_only_the_composition_operator_escapes_the_lattice() -> None:
     free = prod(d for depths in ALL_DEPTHS.values() for d in depths)
     assert free // complete == _published(r"around one in\n([\d,]+) of the free product")
     # The prose must name the one escape and must no longer claim OWNER is another.
-    assert "`HYPER` is the only ladder the lattice leaves unconstrained" in META
+    assert "`HYPER`, `VERIFIER` and `HARDWARE` are the ladders the lattice leaves unconstrained" in META
     assert "`OWNER` composes nothing and is composed of nothing" not in META
 
 
@@ -288,21 +287,21 @@ def test_the_published_mechanization_figures_are_measured() -> None:
     assert {o.profile for o in mechanized if _family(o) == "adaptation"} == {5}
     assert {o.object_name for o in mechanized} == set(GROUNDED_OBJECTS)
     assert _stated(r"Only (\w+) of the (\w+) domain objects have an adapter in any family, "
-                   r"and only (\w+) have a behavioural adapter") == (
-        len(GROUNDED_OBJECTS), len(DOMAIN_OBJECTS), len(CHECKS))
+                   r"and only (\w+) have a computational behavioural adapter") == (
+        len(GROUNDED_OBJECTS), len(DOMAIN_OBJECTS), len(set(CHECKS) & set(DOMAIN_OBJECTS)))
     assert _stated(r"Of the (\d+) domain obligations, (\d+) are mechanized, across (\w+) disjoint "
                    r"families: (\d+) behavioural adapter checks, (\d+) tier-3 statics checks and "
                    r"(\d+) tier-5 adaptation checks\.") == (
         len(DOMAIN_OBLIGATIONS), len(mechanized), len(families),
         families["behavioural"], families["statics"], families["adaptation"])
 
-    assert _complete(5) == set(GROUNDED_OBJECTS)
+    assert _complete(5) == set(GROUNDED_OBJECTS) - {"VERIFIER", "HARDWARE"}
     assert not any(o.profile == DISCLOSURE_TIER for o in mechanized)
     assert not any(o.object_name in UNGROUNDED_OBJECTS for o in mechanized)
-    assert _stated(r"Tier 5 is fully mechanized on the (\w+) grounded objects and tier 3 on (\w+) "
+    assert _stated(r"Tier 5 names routes for every obligation on (\w+) of the (\w+) grounded objects and tier 3 on (\w+) "
                    r"of them; on the (\w+) ungrounded objects no tier is mechanized at all, and "
                    r"level 6 is mechanized nowhere\.") == (
-        len(GROUNDED_OBJECTS), len(_complete(3)), len(UNGROUNDED_OBJECTS))
+        len(_complete(5)), len(GROUNDED_OBJECTS), len(_complete(3)), len(UNGROUNDED_OBJECTS))
 
     bare = Counter(o.profile for o in DOMAIN_OBLIGATIONS if not o.mechanized)
     assert _stated(r"What remains bare is (\d+) at tier 1, (\d+) at tier 2, (\d+) at tier 3, "
@@ -313,9 +312,9 @@ def test_the_published_mechanization_figures_are_measured() -> None:
 def test_the_tier_three_and_five_claims_hold() -> None:
     """The shapes items 1 and 2 state in place of the counts they used to carry."""
     statics = {o.object_name for o in DOMAIN_OBLIGATIONS if o.mechanized and _family(o) == "statics"}
-    assert "Tier 5 is mechanized on every grounded object" in FLAT
-    assert _complete(5) == set(GROUNDED_OBJECTS)
-    assert "Tier 3 is complete on every object with a statics check" in FLAT
+    assert "Tier 5 names routes on every grounded object except VERIFIER and HARDWARE" in FLAT
+    assert _complete(5) == set(GROUNDED_OBJECTS) - {"VERIFIER", "HARDWARE"}
+    assert "Tier 3 names every obligation on each object with a statics check" in FLAT
     assert statics == _complete(3)
     found = re.search(r"The bare tier-3 coordinates that remain on grounded objects are all on "
                       r"((?:[A-Z]+, )*[A-Z]+ and [A-Z]+), whose", FLAT)
@@ -339,7 +338,7 @@ def test_both_remainder_partitions_are_measured() -> None:
     assert _stated(r"What remains provisional is mechanization: (\d+) of (\d+) domain obligations "
                    r"have a check behind them, and every one of the remaining (\d+) is a coordinate "
                    r"a certificate can name but not yet clear\. (\d+) of those (\d+) are the whole "
-                   r"of the (\w+) ungrounded objects, which have no adapter at all, and (\d+) are "
+                   r"of the (\w+) ungrounded objects, which have no bound numbered-profile mechanisms, and (\d+) are "
                    r"the unmechanized obligations of HYPER") == (
         mechanized, len(DOMAIN_OBLIGATIONS), len(bare), len(ungrounded), len(bare),
         len(UNGROUNDED_OBJECTS), len(operator))
@@ -348,7 +347,7 @@ def test_both_remainder_partitions_are_measured() -> None:
         len(DOMAIN_OBJECTS), mechanized, len(DOMAIN_OBLIGATIONS),
         len({_family(o) for o in DOMAIN_OBLIGATIONS if o.mechanized}))
     assert _stated(r"The remaining (\d+) are specified without a mechanism [^;]*; (\d+) of them are "
-                   r"the whole of the (\w+) objects with no adapter at all, (\d+) more are the "
+                   r"the whole of the (\w+) objects with no bound numbered-profile mechanisms, (\d+) more are the "
                    r"unmechanized obligations of `HYPER`, which has no behavioural adapter, and the "
                    r"remaining (\d+) are the bare tiers of the (\w+) certifiable objects\.") == (
         len(bare), len(ungrounded), len(UNGROUNDED_OBJECTS), len(operator), len(certifiable),

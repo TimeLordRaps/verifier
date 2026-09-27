@@ -59,10 +59,18 @@ def test_every_native_domain_prerequisite_replays(domain: str, depth: int, bundl
     request = domain_request(bundles[domain], target_depth=depth)
     certificate = build_domain_certificate(request, bundles[domain], policy=policy)
     result = recheck_domain_certificate(certificate, expected_request=request, policy=policy)
-    assert result["status"] == "PASS", result
-    assert result["domain_depth"] == depth
+    if domain == "VERIFIER" and depth >= 4:
+        assert result["status"] == "UNKNOWN", result
+        assert result["domain_depth"] == 3
+        for i, row in enumerate(result["checks"].values(), 1):
+            assert row["established"] is (i <= 3)
+            assert row["evaluation"]["outcome"] == ("PASS" if i <= 3 else "UNKNOWN")
+    else:
+        assert result["status"] == "PASS", result
+        assert result["domain_depth"] == depth
+        assert all(row["established"] for row in result["checks"].values())
     assert result["object_profile_conformance"] == "NOT_ESTABLISHED"
-    assert all(row["established"] for row in result["checks"].values())
+
 
 
 @pytest.mark.parametrize("domain", CHECKS)
@@ -758,3 +766,13 @@ def test_every_adapter_table_has_one_measured_row_per_adapter() -> None:
     consecutive = {domain: len(cells.split(";")) for domain, cells
                    in re.findall(r"^\| ([A-Z]+) \| ([^|]+) \|", contract, re.MULTILINE)}
     assert consecutive == {domain: len(checks) for domain, checks in CHECKS.items()}
+
+
+def test_packaged_python_sources_have_declared_lf_line_endings() -> None:
+    """A Windows working copy must hash the same source bytes shipped in the wheel."""
+    package_root = ROOT / "src" / "verifier"
+    sources = sorted(package_root.rglob("*.py"))
+    assert sources, "package source inventory is absent"
+    crlf_sources = [path.relative_to(ROOT).as_posix() for path in sources
+                    if b"\r\n" in path.read_bytes()]
+    assert not crlf_sources, f"Python sources violate .gitattributes eol=lf: {crlf_sources}"

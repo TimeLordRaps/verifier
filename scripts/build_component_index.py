@@ -26,6 +26,7 @@ SOURCE = ROOT / "src"
 DEFAULT_BASE_URL = "https://timelordraps.github.io/verifier/"
 FULL_COMMIT = re.compile(r"[0-9a-fA-F]{40}")
 REVIEWED_CANDIDATE_SOURCE_PATHS = (
+    "src/verifier/domains/hardware.py",
     "src/verifier/interoperability/authority_composition.py",
     "src/verifier/interoperability/bounded_completeness.py",
     "src/verifier/interoperability/claim_garden.py",

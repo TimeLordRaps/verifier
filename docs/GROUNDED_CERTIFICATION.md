@@ -6,7 +6,7 @@
 **Verifier / `verifier-standard` v2.0.0 — The grounded certification release.**
 The candidate implements one evidence-bound certification contract across the five
 object numbered profiles. It is unreleased.
-It also supplies ten executable domain adapters with 48 separate domain checks.
+It also supplies twelve executable domain adapters with 57 separate domain checks.
 
 ## What X.M means
 
@@ -67,7 +67,7 @@ The native mechanism executes bounded checks for six obligations:
 | 4.5 | Kernel enforces positive declared cost, memory and certificate-size ceilings | Unsupported checking remains `UNKNOWN` |
 
 The other 41 object obligations have executable orchestration contracts and require
-mechanisms that actually evaluate those exact propositions. The ten domain adapters
+mechanisms that actually evaluate those exact propositions. The twelve domain adapters
 below supply native domain computations; their results do not automatically discharge
 all object obligations. The CLI does not
 import plugins named by an input file. Integrators use the Python interface to
@@ -104,7 +104,7 @@ computations rather than promoting the older declaration-based records. The
 [normative domain contract](../src/verifier/standard/DOMAIN_GROUNDING.md)
 lists supported mainstays, numerical semantics, trust boundaries and exclusions.
 
-| Domain | Native domain checks | Complete native domain depth |
+| Domain | Native domain checks | Registered check count |
 | --- | --- | --- |
 | DATA | Artifact integrity, schema, transformation replay, split separation, lexical overlap | 5 |
 | ENV | Software inventory, configuration observations, measured-resource bounds, two bound execution observations | 4 |
@@ -116,6 +116,15 @@ lists supported mainstays, numerical semantics, trust boundaries and exclusions.
 | AGENT | Observation ceiling from the bound harness, witnessed decisions, witnessed actions, outcome contract, claims inside the ceiling | 5 |
 | BOT | Bound agent, simulation and environment certificates, transition alignment, observation projection, actuation, environment separation | 5 |
 | TOKEN | Token inventory and clock, tenure refolded from the birth commitment, non-widening leases, admitted-key signatures, audience and status closure | 5 |
+| HARDWARE | Retained inventory, containment graph, half-open reservations and measurement envelopes; no physical or live-capacity attestation | 4 |
+| VERIFIER | Bound toolchain inventory, native proof-instance checking, local kernel replay; opt-in bounded Windows replay and externally admitted finite bootstrap | 5 |
+
+The VERIFIER example establishes the first three checks. It checks retained
+decision-certificate instances using the native kernel and repeats that local
+evaluation; it does not establish general producer soundness, producer execution,
+universal determinism or entropy freedom. The supplied legacy example lacks the two opt-in admissions and therefore yields
+`UNKNOWN` at domain depth 3 when requesting all five. [Bounded VERIFIER admission](VERIFIER_ADMISSION.md)
+provides a positive five-check example with explicit process, signature and finite-proof limits.
 
 These are cumulative domain check coordinates such as `MODEL-2.1`, separate from
 object `3.1` or the existing experimental simulation tier identifiers. They are not
