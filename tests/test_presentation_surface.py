@@ -1208,3 +1208,35 @@ def test_generated_reference_detects_drift() -> None:
         pass
     else:
         raise AssertionError("reference build published a missing pipeline entry point")
+
+
+def test_generated_reference_ignores_ci_run_environment(monkeypatch) -> None:
+    """Hosted runner identity must not become a committed command-line interface (CLI) default."""
+    path = ROOT / "scripts/build_reference.py"
+    spec = importlib.util.spec_from_file_location("build_reference_ci_env", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    for key, value in {
+        "GITHUB_WORKFLOW": "repository-checks",
+        "GITHUB_RUN_ID": "36331256722",
+        "GITHUB_RUN_NUMBER": "223",
+        "GITHUB_JOB": "base",
+        "GITHUB_ACTOR": "test-actor",
+        "GITHUB_SHA": "f" * 40,
+        "GITHUB_REF": "refs/pull/53/merge",
+        "GITHUB_EVENT_NAME": "pull_request",
+    }.items():
+        monkeypatch.setenv(key, value)
+
+    from verifier.runtime.public_cli import build_parser
+
+    attest = next(command for command in module._walk(build_parser())
+                  if command["prog"] == "vstd gate attest")
+    run_id = next(argument for argument in attest["arguments"]
+                  if argument["name"] == "--run-id")
+    assert run_id["default"] == "36331256722"
+
+    page = (ROOT / "docs/reference.html").read_text(encoding="utf-8")
+    assert module.render() == page

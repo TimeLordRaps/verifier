@@ -187,7 +187,7 @@ def test_the_real_description_is_current() -> None:
 
     try:
         result = subprocess.run(
-            ["gh", "pr", "view", "--json", "body", "--jq", ".body"],
+            ["gh", "pr", "view", "--json", "body,headRefOid"],
             cwd=str(ROOT), capture_output=True, text=True, timeout=60,
         )
     except (OSError, subprocess.TimeoutExpired) as error:  # pragma: no cover
@@ -195,11 +195,15 @@ def test_the_real_description_is_current() -> None:
     if result.returncode != 0:  # pragma: no cover
         pytest.skip("EXTERNAL_SERVICE_BOUNDARY: no readable pull request for this branch")
 
+    pull_request = json.loads(result.stdout)
+    body = pull_request["body"]
+    head = pull_request["headRefOid"]
     findings: list[str] = []
-    GATE.check_domains_are_described(result.stdout, findings)
-    GATE.check_counts_are_described(result.stdout, findings)
-    GATE.check_declared_domains(result.stdout, findings)
-    GATE.check_source_grounding(result.stdout, findings)
+    GATE.check_domains_are_described(body, findings)
+    GATE.check_counts_are_described(body, findings)
+    GATE.check_declared_domains(body, findings)
+    GATE.check_head_is_bound(body, findings, head)
+    GATE.check_source_grounding(body, findings, target=head)
     assert findings == [], findings
 
 

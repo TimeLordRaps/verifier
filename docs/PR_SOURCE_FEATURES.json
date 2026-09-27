@@ -126,10 +126,13 @@
     },
     {
       "path": "scripts/build_reference.py",
-      "sha256": "7c4ff214524fb6adf10f2143e3b73eb0bac5eefc92aaf286c02f7dac7b38fd85",
-      "symbols": [],
-      "summary": "Adds start, explain, certification, and publish command entries to the generated reference pipeline and renames Graph terminology.",
-      "limits": "The generated reference describes registered calls; it does not run the commands or prove a submission was accepted."
+      "sha256": "c49dc9eae7211ad8aa8db4c559c38a077549b0eaf3e78e0edf5a1d8d6ec242e6",
+      "symbols": [
+        "_cli_section",
+        "render"
+      ],
+      "summary": "Adds start, explain, certification, and publish command entries to the generated reference pipeline, renames Graph terminology, and renders parser fallback defaults without GitHub runner metadata.",
+      "limits": "The generated reference describes registered calls and environment-free fallback defaults; it does not run the commands, override runtime GitHub defaults, or prove a submission was accepted."
     },
     {
       "path": "scripts/build_silo_composition_fixture.py",
