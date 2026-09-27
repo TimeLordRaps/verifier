@@ -1,6 +1,6 @@
 # Grounded certification obligations of the nineteen domain objects
 
-> **Acronyms:** artificial intelligence (AI);
+> **Acronyms:** artificial intelligence (AI); computational model architecture (ARCH);
 > benchmark specification graph (BENCH);
 > Concise Binary Object Representation (CBOR);
 > CBOR Object Signing and Encryption (COSE);
@@ -26,18 +26,49 @@
 > YAML Ain't Markup Language (YAML);
 > zero-identity zero-knowledge token (TOKEN).
 
-**Status:** project specification (normative for the nineteen domain objects' obligations)
+**Status:** project specification (normative for the nineteen domain objects' obligations); retained as a legacy numbered-profile catalogue. Its original propositions remain specified, but they are not current eight-tier certificates without a versioned migration and new evidence.
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
-**Date:** 2026-09-21
+**Date:** 2026-09-27
 
-The full Verifier Standard (VSTD) meta-tier grammar is
+The current Verifier Standard (VSTD) meta-tier grammar is
 `<object>-<tier>.<m>` for positive tiers 1..8, with `m` an internal grounding
-certificate index within its tier. This file currently registers obligations
-only for domain-object tiers 1..6. Its level-6 rows address disclosure, one
-partial projection of the privacy tier; tier-7 consent and tier-8 governance
-certificates are not registered. The exact certificate-index mapping from the
-older depth-based profiles is [OPEN]. See [the architecture](META_TIERS.md).
+objective index within its tier. The admitted namespace has 26 object kinds,
+including RECEIPT, GRAPH, OBJECT, SPACE, TIME, EVENT, and ARCH; its current
+tier meanings are facets, dynamics, statics, closure, independence, privacy,
+consent, and governance. See [the architecture](META_TIERS.md) and
+[finite object hierarchy](NAMESPACE_OBJECTS.md).
+
+This file is the **legacy numbered-profile catalogue** for 19 of those object
+kinds. It contains historical tiers 1..5 and a disclosure extension at 6.
+Legacy tier 5 is domain adaptation, **not current independence**. Legacy tier 6
+is disclosure, only a partial projection of **current privacy**. Consent at 7
+and governance at 8 have no per-object objectives here. The earlier VSTD axis
+is not an automatically migrated RECEIPT axis, and the earlier GRAPH axis does
+not prove current GRAPH objectives. OBJECT, SPACE, TIME, EVENT, and ARCH have
+no numbered-profile rows here. The exact certificate-index mapping from old
+profile obligations is [OPEN]; matching text like `ACTOR-5.1` is ambiguous
+between historical adaptation and current independence until a versioned
+semantic mapping is defined. A legacy PASS does not become a current PASS.
+Unsupported current objective assessments remain UNKNOWN.
+
+The **current ACTOR** is a decision maker represented by HUMAN, AGENT, or BOT
+with an explicit responsible HUMAN root. Current IDENTITY binds ACTOR to ROLE;
+COLLECTIVE contains ROLE members; OWNER relates ACTOR and OBJECT. The legacy
+role-or-collective ACTOR model and its agent exclusion below are superseded.
+The current structural checker establishes only finite typed composition; it
+does not authenticate a HUMAN, assign authority, or register a certificate.
+Current object-specific tier objectives must be written with exact propositions,
+typed operands, prerequisites, mechanisms, bound evidence, assumptions,
+exclusions, and falsifiers before a PASS can be claimed. The structural
+foundation and the old computational adapters alone do not discharge them.
+
+## Legacy obligations
+
+The rows and quantitative claims below describe the retained pre-migration
+catalogue. Their coordinates and statistics are preserved for compatibility
+and audit, with the original proposition and receipt interpretation intact.
+They do not define the new object hierarchy or new tier meanings.
 
 The object axis carries `1.1`-`5.11` and the Graph axis carries `GRAPH-1.1`-`GRAPH-5.6`;
 neither carries a level 6, because both are corroboration ladders and disclosure has no

@@ -11,6 +11,14 @@ The unreleased 2.0.0 domain path adds `NativeDomainAdapter`, `domain_catalog`,
 the additive [domain contracts](../src/verifier/standard/DOMAIN_GROUNDING.md); they do not
 reinterpret historical domain records or establish object numbered-profile conformance.
 
+The current hierarchy foundation uses experimental direct submodules
+`verifier.core.namespace` and `verifier.domains.contracts`. Immutable objects,
+typed composition, finite simulation isolation, and hardware-ownership eligibility
+have the boundaries in [the object contract](../src/verifier/standard/NAMESPACE_OBJECTS.md).
+They are not top-level supported exports or complete eight-tier certifications.
+Consumers must bind the exact source or package revision and replay their evidence
+when it changes; historical numbered-profile receipts retain their own semantics.
+
 ## Supported boundary
 
 The supported Python runtime API is the set of names exported by `verifier.__all__` and

@@ -1278,8 +1278,10 @@ def domain_obligation_digest() -> str:
 def tier_depth(object_name: str, tier: int) -> int:
     """The longest prerequisite chain inside one numbered profile of one object.
 
-    This is `i` in `META_TIERS.md`: the largest `m` a grounded certificate can
-    reach for `<object>-<tier>.<m>`, which is a depth and not a count.
+    This is a dependency-graph metric, not an objective index. In the
+    maintainer's `<object>-<tier>.<m>` notation, `m` selects an individual
+    objective; it does not denote this prerequisite-chain length. Retaining
+    this metric does not reinterpret any obligation or establish its evidence.
     """
     here = [o for o in DOMAIN_OBLIGATIONS
             if o.object_name == object_name and o.profile == tier]

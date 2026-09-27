@@ -1,6 +1,6 @@
 # The Verifier Standard (VSTD) meta-tier grid — eight-tier architecture and measured corroboration subgrid
 
-> **Acronyms:** benchmark specification graph (BENCH); dataset integrity and lineage (DATA);
+> **Acronyms:** computational model architecture (ARCH); benchmark specification graph (BENCH); dataset integrity and lineage (DATA);
 > directed acyclic graph (DAG); generative simulation specification (SIM); object composition specification (HYPER);
 > training run specification (TRAIN);
 > model reproducibility specification (MODEL); Open Container Initiative (OCI);
@@ -8,10 +8,10 @@
 > Supply-chain Levels for Software Artifacts (SLSA); Verifier Standard (VSTD);
 > verifiable execution environment (ENV).
 
-**Status:** project specification; the eight-tier coordinate grammar is normative, while the legacy five-tier depth lattice below is a measured partial projection
+**Status:** project specification; the 26-object, eight-tier contract below governs new coordinates. The retained five-tier depth lattice is historical evidence, not a current certificate catalogue.
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
-**Date:** 2026-09-20
+**Date:** 2026-09-27
 
 Identifier form, for every object: `<object>-<tier>.<m>`, tier one of 1..8, `m` an
 internal grounding certificate index within that tier. The hyphen separates an
@@ -46,9 +46,84 @@ coordinate in this grid. They are different namespaces that happen to share a pr
 the identifier convention below governs only the second. Renaming a wire identifier to
 match the convention breaks every reader that pins the string.
 
+## Current namespace census
+
+The Verifier Standard (VSTD) admits these **26** object kinds. `OBJECT` is both an
+admitted base kind and the placeholder in `<object>-<tier>.<m>`; the placeholder
+may be replaced only by an admitted kind. The VSTD-NAMESPACE itself is not an
+object. Names and finite structural relations are implemented by
+[`NAMESPACE_OBJECTS.md`](NAMESPACE_OBJECTS.md) and `verifier.core.namespace`;
+admission and structural composition do not certify any object's behavior.
+
+| Earlier source | Current objects | Count | Migration boundary |
+|---|---|---:|---|
+| Accountability domain catalogue | `HUMAN`, `ACTOR`, `COLLECTIVE`, `ROLE`, `IDENTITY`, `OWNER` | 6 | Earlier authority and role-branch propositions require explicit remapping. |
+| Computational domain catalogue | `HARDWARE`, `ENV`, `DATA`, `VERIFIER`, `BENCH`, `TRAIN`, `HYPER`, `MODEL`, `HARNESS`, `AGENT`, `SIM`, `BOT`, `TOKEN` | 13 | Earlier numbered-profile mechanisms retain their original propositions. |
+| Graph axis | `GRAPH` | 1 | Historical Graph coordinates and wire readers remain distinct. |
+| Former VSTD object axis | `RECEIPT` | 1 | Conceptual object rename only; historical VSTD coordinates and receipt bytes are not renamed. |
+| Newly admitted kinds | `OBJECT`, `SPACE`, `TIME`, `EVENT`, `ARCH` | 5 | Structural admission does not register certificates. |
+
+The current structural relation is **ACTOR as a decision maker represented by
+HUMAN, AGENT, or BOT and rooted in a responsible HUMAN**. IDENTITY binds an ACTOR
+to a ROLE; COLLECTIVE contains ROLE members; OWNER binds an ACTOR to an OBJECT.
+An AGENT cannot own HARDWARE, and BOT ownership is restricted to virtual
+HARDWARE inside a bound isolated SIM. RECEIPT names a subject OBJECT and the
+HARDWARE on which it ran. EVENT binds TIME, SPACE, and meaning. BENCH binds
+VERIFIER and DATA to an evaluation objective; TRAIN combines DATA, EVENT,
+BENCH, and ARCH. MODEL, HARNESS, AGENT, SIM, BOT, and typed GRAPH composition
+have their finite operand contracts in `NAMESPACE_OBJECTS.md`. These are
+representation and checking obligations, not a grant of authority, a claim that
+an event occurred, or proof of physical isolation.
+
+The eight general meta-tiers apply separately to **every** admitted object. The
+same number does not make a computational proposition and an accountability
+proposition interchangeable. The indices are dimensionless.
+
+| Tier | Current meaning | Required question |
+|---|---|---|
+| 1 | **Facets** | Which fundamental structural facets constitute this object? |
+| 2 | **Dynamics** | Which transitions and interactions can its facets undergo? |
+| 3 | **Statics** | Which external constraints and invariants must hold? |
+| 4 | **Closure** | What exact evidence closes a bounded claim about it? |
+| 5 | **Independence** | Which facets and categories must remain separate, and where does the proposition require a non-self-witnessing or independent check? |
+| 6 | **Privacy** | What information may be observed or emitted, by whom, and under which bound? |
+| 7 | **Consent** | Whose consent is required, to what action, in what scope and interval, and how is revocation checked? |
+| 8 | **Governance** | Which applicable governance decisions, laws or rules, and ethical or moral boundaries constrain this object; who has authority to select them; and how are they enforced and contested? Distributed Aggregated Governance and smart contracts are possible mechanisms, not the whole tier. |
+
+`<object>-<tier>.<m>` addresses the **m-th internal grounding objective** of that
+object and tier; `m` is not an obligation count, topological depth, adaptation
+index, or implementation version. Registering an objective requires an exact
+proposition, typed operands, prerequisites, checking mechanism, evidence and
+provenance, assumptions, exclusions, a falsifying counterexample, and a bounded
+PASS/FAIL/UNKNOWN result. The 26 by 8 grid has 208 object-tier **slots**, not
+208 implemented objectives or certificates. A parsed address does not register
+an objective. Missing mechanisms and evidence remain UNKNOWN.
+
+No legacy numbered-profile PASS transfers to a current meta-tier certificate by
+matching spelling or tier number. In particular, legacy domain adaptation at
+tier 5 is not independence, and legacy disclosure at tier 6 is only a partial
+privacy projection. The old `ACTOR = ROLE | COLLECTIVE` definition below is
+superseded by the HUMAN/AGENT/BOT-rooted ACTOR above. An unversioned spelling
+such as `ACTOR-5.1` therefore cannot identify both old adaptation and current
+independence; a versioned semantic migration and new mechanisms are required.
+Until then, current conformance for the unmapped objective is UNKNOWN. Retained
+wire readers continue to interpret historical receipts under their original
+schema and claim boundary.
+
+## Legacy corroboration projection
+
+Everything from this heading through the measured grid below records the
+earlier five-tier corroboration catalogue and its partial sixth-tier
+disclosure extension. Its numeric counts, dependency depths, named obligations,
+and historical receipt semantics remain evidence about **that catalogue only**.
+They do not redefine the current 26-object hierarchy or certify current
+independence, privacy, consent, or governance. The six identity/accountability
+objects below include a superseded ACTOR representation; their current
+obligations must be separately rewritten and mechanized.
+
 ## Eight meta-tiers and the measured five-tier corroboration subgrid
 
-The current computational catalogue asks the following questions at tiers 1–5.
+The retained computational catalogue asked the following questions at tiers 1–5.
 Accountability objects have distinct authority, responsibility and commitment
 meanings; the exact mapping of their first five tiers remains [OPEN]. Similar
 numbering is not evidence that the two interpretations are equivalent.
@@ -59,8 +134,8 @@ numbering is not evidence that the two interpretations are equivalent.
 | 2 | The **dynamics** of the structures the surface can and does represent. |
 | 3 | The **static unchanging natural phenomena** around the surface. |
 | 4 | The **closure conditions** under which the specification can be completed. |
-| 5 | **Domain adaptation surfaces** that tiers 1-4 allow to form naturally; these typically infer structure from domain mainstay representations. |
-| 6 | **Privacy grounding certificates**. Current object rows cover disclosure bounds, a partial privacy projection. |
+| 5 | **Legacy domain adaptation surfaces** that tiers 1-4 allow to form naturally; these typically infer structure from domain mainstay representations. This is not current independence. |
+| 6 | **Legacy disclosure bounds**, a partial projection of current privacy rather than complete privacy grounding certificates. |
 | 7 | **Consent structures**. Per-object grounding certificates are not registered. |
 | 8 | **Governance and laws**: Distributed Aggregated Governance and smart contracts. Per-object grounding certificates are not registered. |
 
@@ -674,7 +749,7 @@ The sum the family assembles into, and the object `OWNER` means by "holder":
 ACTOR = ROLE | COLLECTIVE
 ```
 
-**An agent is not an actor.** An agent decides; an actor answers for it. An agent's
+**In this retired model, an agent was not an actor.** An agent decides; an actor answers for it. An agent's
 decisions are taken *inside* an observation ceiling; an actor's decisions are the ones
 that *placed* it. That is why this object splits into two branches and `AGENT` splits
 into none, and why an agent never occupies the decider slot on its own.

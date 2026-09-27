@@ -9,12 +9,14 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
 from types import SimpleNamespace
+import zipfile
 
 import pytest
 
@@ -254,6 +256,65 @@ def test_worktree_index_retains_reviewed_hardware_and_proposition_transfer_sourc
     assert required <= set(module.REVIEWED_CANDIDATE_SOURCE_PATHS)
     coordinate = json.loads((output / "deployment-coordinate.json").read_text(encoding="utf-8"))
     assert coordinate["source_ref"] == "WORKTREE"
+
+
+def test_worktree_package_archive_retains_every_public_source_byte(tmp_path: Path) -> None:
+    module = _builder()
+    output = tmp_path / "components"
+    module.build(output, source_ref="WORKTREE")
+    index = load_component_index(output / "index.json")
+    entry = index.packages[0]
+    package = load_component_package(output / entry.package_path, expected_digest=entry.package_sha256)
+    artifacts = {item.path: item for item in package.artifacts}
+    archive = artifacts["source-archive/exact-public-source.zip"]
+    assert archive.media_type == "application/zip"
+    assert len(package.artifacts) <= 256
+
+    tracked = subprocess.check_output(["git", "-C", str(ROOT), "ls-files", "-z"])
+    expected = {
+        raw.decode("utf-8") for raw in tracked.split(b"\0") if raw
+        and (raw.decode("utf-8") in {"pyproject.toml", "LICENSE", "NOTICE", "README.md"}
+             or (raw.startswith(b"src/verifier/")
+                 and Path(raw.decode("utf-8")).suffix in {".py", ".json", ".md"}))
+    }
+    direct_required = {"pyproject.toml", "LICENSE", "NOTICE", "README.md"}
+    direct_required.update(
+        path for path in expected if path.startswith("src/verifier/") and (
+            path.endswith((".json", ".md"))
+            or (path.startswith("src/verifier/domains/")
+                and path.count("/") == 3 and path.endswith(".py"))
+        )
+    )
+    for component in package.registry.components:
+        module = "src/" + component.implementation_ref.split(":", 1)[0].replace(".", "/")
+        direct_required.add(next(path for path in (module + ".py", module + "/__init__.py")
+                                 if path in expected))
+    with zipfile.ZipFile(io.BytesIO(archive.content)) as bundled:
+        assert bundled.namelist() == ["source-inventory.json", *sorted(expected - direct_required)]
+        manifest_bytes = bundled.read("source-inventory.json")
+        manifest = json.loads(manifest_bytes)
+        assert manifest_bytes == json.dumps(manifest, sort_keys=True, separators=(",", ":"),
+                                           ensure_ascii=True).encode("ascii")
+        assert manifest == {
+            "schema_version": "verifier-reference-source-archive-1",
+            "files": [
+                {"path": path, "size_bytes": len((ROOT / path).read_bytes()),
+                 "sha256": hashlib.sha256((ROOT / path).read_bytes()).hexdigest(),
+                 "location": "DIRECT" if path in direct_required else "ARCHIVE"}
+                for path in sorted(expected)
+            ],
+        }
+        for item in bundled.infolist():
+            assert item.compress_type == zipfile.ZIP_STORED
+            assert item.date_time == (1980, 1, 1, 0, 0, 0)
+            assert ".." not in Path(item.filename).parts
+            if item.filename != "source-inventory.json":
+                assert bundled.read(item) == (ROOT / item.filename).read_bytes()
+    assert set(artifacts) == direct_required | {"source-archive/exact-public-source.zip"}
+    assert all(artifacts[path].content == (ROOT / path).read_bytes() for path in direct_required)
+    assert all("source-archive/exact-public-source.zip" in binding.artifact_paths
+               for binding in package.implementations)
+    assert (output / entry.package_path).stat().st_size <= 8 * 1024 * 1024
 
 
 def test_default_worktree_inventory_does_not_admit_an_unreviewed_source(

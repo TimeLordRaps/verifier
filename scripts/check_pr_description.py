@@ -380,17 +380,21 @@ def check_domains_are_described(body: str, findings: list[str]) -> None:
                 f"{domain}.1-{domain}.{count}; the catalogue declares {count} checks."
             ))
 
-    described = set(re.findall(r"\b([A-Z][A-Z0-9]{2,})(?:\.|\-[1-6]\.)\d+\b", body))
+    described = set(re.findall(r"\b([A-Z][A-Z0-9]{2,})(?:\.|\-[1-8]\.)\d+\b", body))
     try:
         from scripts.check_namespace_closure import OBJECTS
     except ModuleNotFoundError:
         try:
             from check_namespace_closure import OBJECTS
         except ModuleNotFoundError:
+            # Standalone commit fixtures may omit the companion gate. Keep this
+            # current specification inventory in parity with its runtime enum;
+            # the fallback regression also rejects unadmitted names.
             OBJECTS = frozenset({
-                "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
-                "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
-                "TRAIN", "TOKEN", "VERIFIER",
+                "HUMAN", "ACTOR", "COLLECTIVE", "ROLE", "IDENTITY", "OWNER", "HARDWARE",
+                "RECEIPT", "OBJECT", "GRAPH", "SPACE", "TIME", "EVENT", "ENV", "DATA",
+                "VERIFIER", "BENCH", "ARCH", "TRAIN", "HYPER", "MODEL", "HARNESS",
+                "AGENT", "SIM", "BOT", "TOKEN",
             })
     unknown = {name for name in described if name not in inventory and name not in OBJECTS and not name.startswith("VSTD")}
     unknown -= {"SHA", "JSON", "CNF", "SAT", "HTTP", "PDF", "CI", "OS", "PR", "URL", "ID", "XML"}

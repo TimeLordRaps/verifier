@@ -36,13 +36,15 @@ Object and Graph axes must also remain visible in the overall release inventory.
 
 ## Intended meta-tier architecture
 
-Accountability meta-tiers concern authority, responsibility, commitments and related
-accountability structures. They must not be silently identified with computational
-facets, dynamics, statics, closure and domain adaptation.
+The same eight general meanings apply separately to computational propositions
+and accountability contracts: facets, dynamics, statics, closure, independence,
+privacy, consent and governance. Accountability applications concern authority,
+responsibility and commitments; their evidence does not become computational
+correctness evidence. The historical adaptation tier is not current independence.
 
 | Coordinates | Maintainer's intended scope | Current qualification boundary |
 |---|---|---|
-| `[OBJECT]-1.m` through `[OBJECT]-5.m` | General domain coverage, with distinct accountability meanings | Exact accountability tier-name mapping and mechanism completeness remain unresolved |
+| `[OBJECT]-1.m` through `[OBJECT]-5.m` | Facets, dynamics, statics, closure and independence, applied to each object's computational or accountability propositions | Exact objective mapping and mechanism completeness remain unresolved |
 | `[OBJECT]-6.m` | Privacy grounding certificates | Existing emission helpers do not establish every privacy grounding proposition |
 | `[OBJECT]-7.m` | Consent structures | Bounded consent admission exists; full coordinate certification is not established |
 | `[OBJECT]-8.m` | Governance and laws | Bounded governance admission exists; the full requested model and law execution are not established |
@@ -51,20 +53,22 @@ facets, dynamics, statics, closure and domain adaptation.
 that object from a **positive** meta-tier number 1 through 8. Within each tier, `m`
 indexes an internal grounding certificate, starting at 1. These coordinates are
 dimensionless semantic identifiers, not physical units, software versions, or
-negative tier numbers. The maintainer identifies governance as **Distributed Aggregated
-Governance** and laws as **smart contracts**. Do not abbreviate that governance name
-to the same shorthand used for a directed acyclic graph.
+negative tier numbers. The maintainer's earlier **Distributed Aggregated
+Governance** and **smart contracts** are intended concrete governance mechanisms.
+The current general tier also covers represented external laws, rules, ethical
+and moral boundaries; it is not limited to those mechanisms. Do not abbreviate
+that governance name to the same shorthand used for a directed acyclic graph.
 
 ## Explicit specification seams
 
 The current [meta-tier specification](../src/verifier/standard/META_TIERS.md)
-catalogues a five-tier computational corroboration subgrid and treats its present
-level-6 rows as emission disclosure. Those existing rows are only a partial
-projection of the eight-tier architecture. They do not yet implement the distinct
-accountability interpretation, full privacy grounding, or registered level-7/8
-certificates. The prior use of `.m` for a topological-depth bound conflicts with
-the maintainer's internal-certificate meaning; certificate indexing and dependency
-depth must be kept separate until the migration and compatibility checks are defined.
+defines the 26-object/eight-tier hierarchy and labels the earlier corroboration
+subgrid as legacy evidence. The retained runtime catalogue still has adaptation
+at 5 and disclosure at 6. Those results do not discharge new independence,
+full privacy, consent or governance objectives. The dependency-depth computation
+is distinct from `.m`, the internal objective index. A versioned semantic mapping
+and resulting mechanisms remain required before historical results can support
+new objective claims.
 
 The current governance evaluator checks bounded policy, signatures, quorum and a
 supplied status snapshot. Its [contract](GOVERNANCE_LEVEL8.md) leaves enforcement

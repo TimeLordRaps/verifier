@@ -37,6 +37,39 @@ def _load_gate():
 GATE = _load_gate()
 
 
+def test_namespace_fallback_keeps_current_objects_without_admitting_unknown_names(monkeypatch):
+    import builtins
+    from verifier.core.namespace import ObjectKind
+
+    gate = _load_gate()
+    monkeypatch.setattr(gate, "domain_inventory", lambda: {})
+    monkeypatch.setattr(gate, "accountable_domain_inventory", lambda: {})
+    monkeypatch.setattr(gate, "adapter_modules", lambda: set())
+    real_import = builtins.__import__
+
+    def without_namespace_script(name, *args, **kwargs):
+        if name in {"scripts.check_namespace_closure", "check_namespace_closure"}:
+            raise ModuleNotFoundError(name)
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", without_namespace_script)
+    findings = []
+    gate.check_domains_are_described(" ".join(f"{kind.value}-1.1" for kind in ObjectKind), findings)
+    assert findings == []
+    gate.check_domains_are_described("ABSENT-1.1", findings)
+    assert any("ABSENT" in finding for finding in findings)
+
+
+def test_unknown_object_is_rejected_in_governance_tier(monkeypatch):
+    gate = _load_gate()
+    monkeypatch.setattr(gate, "domain_inventory", lambda: {})
+    monkeypatch.setattr(gate, "accountable_domain_inventory", lambda: {})
+    monkeypatch.setattr(gate, "adapter_modules", lambda: set())
+    findings = []
+    gate.check_domains_are_described("ABSENT-8.1", findings)
+    assert any("ABSENT" in finding for finding in findings)
+
+
 def test_commit_archive_cannot_write_to_sibling_with_shared_path_prefix(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

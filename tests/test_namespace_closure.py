@@ -46,8 +46,8 @@ def _gate():
     return module
 
 
-def test_the_catalogue_carries_no_object_outside_the_eighteen() -> None:
-    """The load-bearing check: the object set, not prose about it."""
+def test_the_legacy_catalogue_carries_no_object_outside_the_nineteen() -> None:
+    """Retained numbered profiles cannot silently add a current namespace kind."""
 
     found = _gate().catalogue_offenders()
     assert not found, "objects outside the closed VSTD-NAMESPACE: " + ", ".join(found)
@@ -82,23 +82,23 @@ def test_historical_source_manifest_is_not_an_active_namespace_surface(tmp_path:
     ]
 
 
-def test_the_namespace_is_the_base_abstract_and_twenty_objects() -> None:
-    """VSTD and these twenty objects, twenty-one names.
-
-    TRAIN is the eighteenth; VERIFIER is the nineteenth closing the loop.
-    """
+def test_the_current_namespace_has_twenty_six_objects_and_no_vstd_object() -> None:
+    """The standard name is retained, while RECEIPT is the admitted object kind."""
     gate = _gate()
-    assert len(gate.OBJECTS) == 20
+    assert len(gate.OBJECTS) == 26
     assert gate.OBJECTS == {
-        "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
-        "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
-        "TRAIN", "TOKEN", "VERIFIER", "HARDWARE",
+        "HUMAN", "ACTOR", "COLLECTIVE", "ROLE", "IDENTITY", "OWNER", "HARDWARE",
+        "RECEIPT", "OBJECT", "GRAPH", "SPACE", "TIME", "EVENT", "ENV", "DATA",
+        "VERIFIER", "BENCH", "ARCH", "TRAIN", "HYPER", "MODEL", "HARNESS",
+        "AGENT", "SIM", "BOT", "TOKEN",
     }
-    assert len({"VSTD"} | gate.OBJECTS) == 21, "the namespace is twenty-one names"
+    assert "VSTD" not in gate.OBJECTS
+    assert len(gate.LEGACY_DOMAIN_OBJECTS) == 19
+    assert gate.LEGACY_DOMAIN_OBJECTS <= gate.OBJECTS
 
 
-def test_the_gate_reads_the_live_catalogue_not_a_copy_of_it() -> None:
-    """The object set is checked against the catalogue that actually ships.
+def test_the_gate_reads_the_live_legacy_catalogue_not_a_copy_of_it() -> None:
+    """The old numbered-profile object set is checked against what ships.
 
     A gate holding its own second copy of the object set would agree with itself
     while the catalogue drifted, which is the failure mode this whole exercise
@@ -109,6 +109,7 @@ def test_the_gate_reads_the_live_catalogue_not_a_copy_of_it() -> None:
     from verifier.core.profile_obligations import DOMAIN_OBJECTS
 
     gate = _gate()
+    assert set(DOMAIN_OBJECTS) == gate.LEGACY_DOMAIN_OBJECTS
     assert set(DOMAIN_OBJECTS) - gate.OBJECTS == set(gate.COMPOSITIONS)
 
 
@@ -116,19 +117,21 @@ def test_the_gate_reads_the_live_catalogue_not_a_copy_of_it() -> None:
     "tail",
     ["1", "5", "6", "3.2", "N", "1..5", "1..VSTD-6"],
 )
-def test_admits_the_base_abstract_tiers_and_ranges(tail: str) -> None:
-    """The prefix survives exactly here: a bare `3` would name nothing."""
+def test_preserves_historical_vstd_tiers_and_ranges(tail: str) -> None:
+    """The standard's historical numbered profiles keep their exact spellings."""
 
     assert _gate().admissible(named(tail))
 
 
-def test_admits_the_base_abstract_bare() -> None:
+def test_admits_the_standard_name_bare_without_making_it_an_object() -> None:
     assert _gate().admissible("VSTD")
+    assert "VSTD" not in _gate().OBJECTS
 
 
 @pytest.mark.parametrize(
     "tail",
-    ["DATA", "GRAPH", "OWNER", "SIM", "DATA-1", "OWNER-6", "GRAPH-2.3"],
+    ["DATA", "GRAPH", "OWNER", "SIM", "OBJECT-1", "RECEIPT-3.2",
+     "DATA-1", "OWNER-6", "GRAPH-2.3"],
 )
 def test_an_object_may_no_longer_carry_the_prefix(tail: str) -> None:
     """ALL-CAPS is the marker, so the prefixed spelling of an object is retired."""
@@ -140,7 +143,7 @@ def test_an_object_may_no_longer_carry_the_prefix(tail: str) -> None:
     "tail",
     [
         # the heads that actually squatted the namespace before the gate existed
-        "SILO-TRANSFER-1", "OBJECT-1", "PUBLISHER-1",
+        "SILO-TRANSFER-1", "PUBLISHER-1",
         "PROPOSITION-TRANSFER-RULE-1", "RUNTIME-AUTHORITY-1",
         "UNTRAVERSABLE-1", "ARTIFACT-1", "ZK-1",
         # a plausible future invention
@@ -252,7 +255,7 @@ def test_the_gate_runs_as_a_script() -> None:
     assert "PASS" in finished.stdout
 
 
-def test_namespace_requires_every_admitted_object_to_have_obligations(monkeypatch) -> None:
+def test_legacy_catalogue_requires_every_retained_domain_object(monkeypatch) -> None:
     from verifier.core import profile_obligations
 
     gate = _gate()

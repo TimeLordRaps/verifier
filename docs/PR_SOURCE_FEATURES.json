@@ -156,16 +156,18 @@
     },
     {
       "path": "scripts/check_namespace_closure.py",
-      "sha256": "fdc2d84a29a73bfa4fc93f79d8414a085137cd81c0a92a0939c2f52698ccf123",
+      "sha256": "fa2c6edfabf57cb7497dc133b96986e626adfa38861192fe78a0754ca8056f7f",
       "symbols": [
         "admissible",
         "catalogue_missing",
         "catalogue_offenders",
+        "current_namespace_offenders",
+        "current_tier_offenders",
         "main",
         "residue_offenders"
       ],
-      "summary": "Checks the fixed twenty-object namespace against the domain catalogue and scans tracked text for disallowed VSTD-prefixed names, excluding only the generated historical source-feature manifest.",
-      "limits": "The residue scan uses an explicit exception list and tracked-file text; the excluded manifest may quote retired paths and identifiers but is not an active namespace declaration. Allowed names are not thereby proved to have implemented semantics."
+      "summary": "Compares an independent current 26-kind/eight-tier inventory with runtime ObjectKind/MetaTier, checks retained legacy domain membership separately, and preserves lexical checks for historical VSTD identifiers. Reports structural admission only and objective certification NOT_ESTABLISHED.",
+      "limits": "This is a namespace/notation consistency gate, not verification of object behavior, evidence, full objective coverage or migration correctness."
     },
     {
       "path": "scripts/check_pages_deployment.py",
@@ -176,7 +178,7 @@
     },
     {
       "path": "scripts/check_pr_description.py",
-      "sha256": "fd7d3688cdd4149db0edb3e09999b886bd2d3752f7ebfc6e57636aff79afbd40",
+      "sha256": "8b600df838fe8ac220f6df2ee2795f0834afcf0c482639112a424651a274c57c",
       "symbols": [
         "_fail",
         "accountable_domain_inventory",
@@ -196,8 +198,8 @@
         "tracked_file_count",
         "use_commit"
       ],
-      "summary": "Requires a pull-request description to bind the review head, domain counts, changed source paths, and changed Python definitions to exact source bytes; commit source files are copied through bounded, path-checked regular-file extraction.",
-      "limits": "Its source coverage is structural and text-based; matching entries cannot prove their semantic summaries true or tests passing."
+      "summary": "Binds pull-request prose to selected source/commit bytes, reviewed source rows, declared adapters and exact inventory/head fields; recognizes current namespace coordinates through tier8 and keeps the standalone fallback inventory in tested parity. Unknown governance-tier object names now fail.",
+      "limits": "Prose/tree consistency does not establish correctness, review acceptance, full object certification or release readiness. Historical adapter ranges retain their own meanings; the fallback remains a tested specification copy for standalone fixtures."
     },
     {
       "path": "scripts/check_pr_description_changed.py",
@@ -454,6 +456,33 @@
       "limits": "Only the reference path changes; no new kernel proof or execution mechanism is added."
     },
     {
+      "path": "src/verifier/core/namespace.py",
+      "sha256": "73e537f96d74051b9e76da2745e5dcb389f6bc8a153d4f628e9dbee10fbbe0aa",
+      "symbols": [
+        "CompositionAssessment",
+        "MetaTier",
+        "NamespaceObject",
+        "NamespaceObject.__post_init__",
+        "NamespaceObject.create",
+        "NamespaceObject.digest",
+        "NamespaceObject.payload",
+        "NamespaceObject.to_dict",
+        "ObjectCoordinate",
+        "ObjectCoordinate.__post_init__",
+        "ObjectCoordinate.__str__",
+        "ObjectCoordinate.parse",
+        "ObjectKind",
+        "_BoundExceeded",
+        "_name",
+        "_payload_bytes",
+        "_validate",
+        "assess_composition",
+        "composition_digest"
+      ],
+      "summary": "Defines immutable records for the 26-object hierarchy, eight general meta-tier names and objective-coordinate parsing; snapshots the finite collection before hashing and traversal, checks exact commitments, named operands, HUMAN roots, typed nested GRAPH replacement and input/operation bounds.",
+      "limits": "PASS covers finite typed composition only, not arbitrary payload semantics, all objective mechanisms, personhood, authority or execution. Historical receipt identifiers and numbered-obligation meanings are unchanged; arbitrary Python hooks are not sandboxed."
+    },
+    {
       "path": "src/verifier/core/platform_comparison.py",
       "sha256": "50e773fcfd6f72153965f3e5948e5d4123faad366d225a9257d0a5c92b492f31",
       "symbols": [],
@@ -462,7 +491,7 @@
     },
     {
       "path": "src/verifier/core/profile_obligations.py",
-      "sha256": "4121d8d1c2692c08e7da92d8ba206b0a9cacc1a2b5de163e16cd4b4596ece44e",
+      "sha256": "c477ad59f18c6440164eac0ce937f26e1442442e88ded6233d6efacfe5e7e080",
       "symbols": [
         "DomainObligation",
         "DomainObligation.id",
@@ -491,8 +520,8 @@
         "specification_digest",
         "tier_depth"
       ],
-      "summary": "Catalogs bounded VSTD object-profile and domain-obligation coordinates, metadata, and digests for certificate assessment.",
-      "limits": "Catalog inclusion does not bind a native mechanism to every obligation, so uncovered propositions remain UNKNOWN."
+      "summary": "Maintains the numbered computational and accountability obligation catalogue and its mechanism metadata; corrects tier_depth documentation to distinguish prerequisite-chain length from the maintainer's individual objective index.",
+      "limits": "The retained catalogue still has older six-tier semantics and does not establish the new full 26-object/eight-tier hierarchy; TIME records the open migration conflict. Named routes and depth counts are not evidence of conformance."
     },
     {
       "path": "src/verifier/core/run.py",
@@ -1086,6 +1115,38 @@
       ],
       "summary": "Provides bounded structure, digest, numeric, expression and nested-certificate replay primitives for domain adapters.",
       "limits": "These generic primitives enforce input boundaries but cannot supply domain evidence or semantic truth."
+    },
+    {
+      "path": "src/verifier/domains/contracts/__init__.py",
+      "sha256": "5201c75f68b5075f6ed07013ba3a5c80882963a81749186d52ec93225cfb3c1b",
+      "symbols": [],
+      "summary": "Separates cross-object contract mechanisms from native object adapters so helper names cannot be mistaken for additional domain objects.",
+      "limits": "Package organization grants no certification or authority and does not register new native adapters."
+    },
+    {
+      "path": "src/verifier/domains/contracts/accountability.py",
+      "sha256": "eebf93431bf63b91df1188e7344196a27e2e1c7c24f44936fa273a88c74e63e1",
+      "symbols": [
+        "_targets",
+        "assess_hardware_ownership",
+        "recheck_hardware_ownership"
+      ],
+      "summary": "Snapshots one bounded collection for composition replay and OWNER resolution; checks exact ACTOR/HUMAN-root/BOT/SIM/HARDWARE bindings, forbids AGENT hardware ownership and BOT physical hardware, and requires replayed finite isolation with the checked resource inventory for virtual BOT ownership. Recheck rejects forged or rehashed assessments.",
+      "limits": "PASS establishes declared ownership-kind eligibility only. Human authenticity, legal title, authority, physical containment and full object-profile conformance remain unestablished. Caller-selected checking budgets do not become runtime policy."
+    },
+    {
+      "path": "src/verifier/domains/contracts/sim_isolation.py",
+      "sha256": "b63450c7548c3f3c3c7568b17197bc8a36f52220e717bf5bb1008fd226bf07b3",
+      "symbols": [
+        "_binding",
+        "_check_text_byte_lower_bound",
+        "_model",
+        "_record",
+        "assess_sim_isolation",
+        "recheck_sim_isolation"
+      ],
+      "summary": "Snapshots expected binding and canonical evidence, exhaustively traverses reachable finite state/action outcomes, rejects represented escapes or new capabilities, reports missing transition coverage UNKNOWN, and returns only the replayed virtual-resource inventory on PASS. Recheck reproduces every carried field.",
+      "limits": "Isolation is relative to the complete declared finite model, not physical host containment or completeness of real channels. Input, operation and diagnostic bounds limit supported evidence; budget exhaustion never produces PASS."
     },
     {
       "path": "src/verifier/domains/data.py",
@@ -1829,99 +1890,99 @@
       "path": "src/verifier/profiles/bounded-completeness-mechanism-0.1.json",
       "sha256": null,
       "symbols": [],
-      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. The exact denominator is limited to 256 members and evidence to 8,388,608 bytes. COMPLETE concerns that denominator, not universal truth or unspecified omitted members.",
-      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/bounded-completeness-mechanism-1.json. Replaces the 0.1 profile identifier with the native -1 contract for externally source-grounded finite disposition coverage and independently replayed decisive member dispositions."
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/bounded-completeness-mechanism-1.json. Replaces the 0.1 profile identifier with the native -1 contract for externally source-grounded finite disposition coverage and independently replayed decisive member dispositions.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. The exact denominator is limited to 256 members and evidence to 8,388,608 bytes. COMPLETE concerns that denominator, not universal truth or unspecified omitted members."
     },
     {
       "path": "src/verifier/profiles/bounded-completeness-mechanism-1.json",
       "sha256": "8c0dab8009847abc17852283424931fdea1d5048859b8d7fcdd1632796eeb79f",
       "symbols": [],
-      "limits": "The exact denominator is limited to 256 members and evidence to 8,388,608 bytes. COMPLETE concerns that denominator, not universal truth or unspecified omitted members.",
-      "summary": "Replaces the 0.1 profile identifier with the native -1 contract for externally source-grounded finite disposition coverage and independently replayed decisive member dispositions."
+      "summary": "Replaces the 0.1 profile identifier with the native -1 contract for externally source-grounded finite disposition coverage and independently replayed decisive member dispositions.",
+      "limits": "The exact denominator is limited to 256 members and evidence to 8,388,608 bytes. COMPLETE concerns that denominator, not universal truth or unspecified omitted members."
     },
     {
       "path": "src/verifier/profiles/deriver-self-status-checker-0.1.json",
       "sha256": null,
       "symbols": [],
-      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Comparison covers exit code, standard output and standard error from two bounded invocations. It establishes neither global determinism nor semantic self-derivability, a sandbox, deployment or actor authority.",
-      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/deriver-self-status-checker-1.json. Migrates the exact-runtime self-status profile to its native -1 identifier while retaining executable, argument, public-environment and input bindings and fresh-directory replay."
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/deriver-self-status-checker-1.json. Migrates the exact-runtime self-status profile to its native -1 identifier while retaining executable, argument, public-environment and input bindings and fresh-directory replay.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Comparison covers exit code, standard output and standard error from two bounded invocations. It establishes neither global determinism nor semantic self-derivability, a sandbox, deployment or actor authority."
     },
     {
       "path": "src/verifier/profiles/deriver-self-status-checker-1.json",
       "sha256": "ab0398cbc82bc0a2ba9d7efdb73c5afdb64a5b75d6506785e1a683a806a7ea91",
       "symbols": [],
-      "limits": "Comparison covers exit code, standard output and standard error from two bounded invocations. It establishes neither global determinism nor semantic self-derivability, a sandbox, deployment or actor authority.",
-      "summary": "Migrates the exact-runtime self-status profile to its native -1 identifier while retaining executable, argument, public-environment and input bindings and fresh-directory replay."
+      "summary": "Migrates the exact-runtime self-status profile to its native -1 identifier while retaining executable, argument, public-environment and input bindings and fresh-directory replay.",
+      "limits": "Comparison covers exit code, standard output and standard error from two bounded invocations. It establishes neither global determinism nor semantic self-derivability, a sandbox, deployment or actor authority."
     },
     {
       "path": "src/verifier/profiles/proposition-transfer-rule-0.1.json",
       "sha256": null,
       "symbols": [],
-      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. At most 16 premises, 256 items, 34 objects and 4,194,304 evidence bytes are admitted. This specific rule is not a general proof system or runtime-authority check.",
-      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/proposition-transfer-rule-1.json. Migrates the finite-set subset/union transfer profile and schema references to native -1 identifiers, preserving exact context and canonical finite-set predicate checks."
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/proposition-transfer-rule-1.json. Migrates the finite-set subset/union transfer profile and schema references to native -1 identifiers, preserving exact context and canonical finite-set predicate checks.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. At most 16 premises, 256 items, 34 objects and 4,194,304 evidence bytes are admitted. This specific rule is not a general proof system or runtime-authority check."
     },
     {
       "path": "src/verifier/profiles/proposition-transfer-rule-1.json",
       "sha256": "b4cf102904ff248c048d947b093ae3d89deb4ca16582a8f3744ac7f7f3d1a58c",
       "symbols": [],
-      "limits": "At most 16 premises, 256 items, 34 objects and 4,194,304 evidence bytes are admitted. This specific rule is not a general proof system or runtime-authority check.",
-      "summary": "Migrates the finite-set subset/union transfer profile and schema references to native -1 identifiers, preserving exact context and canonical finite-set predicate checks."
+      "summary": "Migrates the finite-set subset/union transfer profile and schema references to native -1 identifiers, preserving exact context and canonical finite-set predicate checks.",
+      "limits": "At most 16 premises, 256 items, 34 objects and 4,194,304 evidence bytes are admitted. This specific rule is not a general proof system or runtime-authority check."
     },
     {
       "path": "src/verifier/profiles/relation-boundary-mechanism-0.1.json",
       "sha256": null,
       "symbols": [],
-      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. At most 64 facets and 1,048,576 bytes per relation artifact are admitted. Equality of declared canonical facets does not establish equivalence outside the map or historical execution.",
-      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/relation-boundary-mechanism-1.json. Migrates the canonical-object facet-map relation profile to its native -1 identifier, retaining exact replay and explicit preserved/lost source-facet accounting."
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/relation-boundary-mechanism-1.json. Migrates the canonical-object facet-map relation profile to its native -1 identifier, retaining exact replay and explicit preserved/lost source-facet accounting.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. At most 64 facets and 1,048,576 bytes per relation artifact are admitted. Equality of declared canonical facets does not establish equivalence outside the map or historical execution."
     },
     {
       "path": "src/verifier/profiles/relation-boundary-mechanism-1.json",
       "sha256": "1c127027d5c007216904918586fa1a447c8e8996bb2b6326f523df31a61f9e5b",
       "symbols": [],
-      "limits": "At most 64 facets and 1,048,576 bytes per relation artifact are admitted. Equality of declared canonical facets does not establish equivalence outside the map or historical execution.",
-      "summary": "Migrates the canonical-object facet-map relation profile to its native -1 identifier, retaining exact replay and explicit preserved/lost source-facet accounting."
+      "summary": "Migrates the canonical-object facet-map relation profile to its native -1 identifier, retaining exact replay and explicit preserved/lost source-facet accounting.",
+      "limits": "At most 64 facets and 1,048,576 bytes per relation artifact are admitted. Equality of declared canonical facets does not establish equivalence outside the map or historical execution."
     },
     {
       "path": "src/verifier/profiles/runtime-authority-correspondence-profile-0.1.json",
       "sha256": null,
       "symbols": [],
-      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Limits are 1,024 events, 256 states/transitions and 8,388,608 evidence bytes. Correspondence and coverage remain separate; retained declared transitions do not establish live deployment, unseen events, access or sandboxing.",
-      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/runtime-authority-correspondence-profile-1.json. Migrates the retained-event-trace correspondence profile and schema references to native identifiers, pinning model, executable, deployed declaration and trace and requiring independently replayed output to equal the trace."
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/runtime-authority-correspondence-profile-1.json. Migrates the retained-event-trace correspondence profile and schema references to native identifiers, pinning model, executable, deployed declaration and trace and requiring independently replayed output to equal the trace.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Limits are 1,024 events, 256 states/transitions and 8,388,608 evidence bytes. Correspondence and coverage remain separate; retained declared transitions do not establish live deployment, unseen events, access or sandboxing."
     },
     {
       "path": "src/verifier/profiles/runtime-authority-correspondence-profile-1.json",
       "sha256": "182b39577d507d72a583a4e1dbba21418fc1e480aac48037c01dc3a7bfbe8d25",
       "symbols": [],
-      "limits": "Limits are 1,024 events, 256 states/transitions and 8,388,608 evidence bytes. Correspondence and coverage remain separate; retained declared transitions do not establish live deployment, unseen events, access or sandboxing.",
-      "summary": "Migrates the retained-event-trace correspondence profile and schema references to native identifiers, pinning model, executable, deployed declaration and trace and requiring independently replayed output to equal the trace."
+      "summary": "Migrates the retained-event-trace correspondence profile and schema references to native identifiers, pinning model, executable, deployed declaration and trace and requiring independently replayed output to equal the trace.",
+      "limits": "Limits are 1,024 events, 256 states/transitions and 8,388,608 evidence bytes. Correspondence and coverage remain separate; retained declared transitions do not establish live deployment, unseen events, access or sandboxing."
     },
     {
       "path": "src/verifier/profiles/source-grounding-mechanism-0.1.json",
       "sha256": null,
       "symbols": [],
-      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Source bytes are capped at 1,048,576, with depth 16 and 4,096 nodes. The mechanism checks a declared pointer equality, not source truth, independence or completeness.",
-      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/source-grounding-mechanism-1.json. Migrates the canonical-object JSON_POINTER_EQUALS profile to its native -1 identifier while retaining exact frame, source, proposition and certificate replay."
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/source-grounding-mechanism-1.json. Migrates the canonical-object JSON_POINTER_EQUALS profile to its native -1 identifier while retaining exact frame, source, proposition and certificate replay.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Source bytes are capped at 1,048,576, with depth 16 and 4,096 nodes. The mechanism checks a declared pointer equality, not source truth, independence or completeness."
     },
     {
       "path": "src/verifier/profiles/source-grounding-mechanism-1.json",
       "sha256": "337a71d92fd79d297a22f7577c2de45f23f8cae6470f7e375819d12dcbeb9f75",
       "symbols": [],
-      "limits": "Source bytes are capped at 1,048,576, with depth 16 and 4,096 nodes. The mechanism checks a declared pointer equality, not source truth, independence or completeness.",
-      "summary": "Migrates the canonical-object JSON_POINTER_EQUALS profile to its native -1 identifier while retaining exact frame, source, proposition and certificate replay."
+      "summary": "Migrates the canonical-object JSON_POINTER_EQUALS profile to its native -1 identifier while retaining exact frame, source, proposition and certificate replay.",
+      "limits": "Source bytes are capped at 1,048,576, with depth 16 and 4,096 nodes. The mechanism checks a declared pointer equality, not source truth, independence or completeness."
     },
     {
       "path": "src/verifier/profiles/typed-formation-0.1.json",
       "sha256": null,
       "symbols": [],
-      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Bounds are 1,024 nodes, depth 64 and 4,096 path steps. Source interpretation, ground derivation, source-trace relation, layer boundary, self-status, global cycle, completeness and agency remain explicit residuals.",
-      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/typed-formation-1.json. Migrates the typed formation profile and subject/certificate schemas to native identifiers; retains ATOM, APPLY, ID, APPLY_STEP, COMPOSE, QUOTE and READ with FORM/PATH/CODE typing and separate formation/denotation checks."
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/typed-formation-1.json. Migrates the typed formation profile and subject/certificate schemas to native identifiers; retains ATOM, APPLY, ID, APPLY_STEP, COMPOSE, QUOTE and READ with FORM/PATH/CODE typing and separate formation/denotation checks.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Bounds are 1,024 nodes, depth 64 and 4,096 path steps. Source interpretation, ground derivation, source-trace relation, layer boundary, self-status, global cycle, completeness and agency remain explicit residuals."
     },
     {
       "path": "src/verifier/profiles/typed-formation-1.json",
       "sha256": "770f948d29900a63a6ba55f2bbc61bdd18fec1a73769c8e1e524d664c40f6e06",
       "symbols": [],
-      "limits": "Bounds are 1,024 nodes, depth 64 and 4,096 path steps. Source interpretation, ground derivation, source-trace relation, layer boundary, self-status, global cycle, completeness and agency remain explicit residuals.",
-      "summary": "Migrates the typed formation profile and subject/certificate schemas to native identifiers; retains ATOM, APPLY, ID, APPLY_STEP, COMPOSE, QUOTE and READ with FORM/PATH/CODE typing and separate formation/denotation checks."
+      "summary": "Migrates the typed formation profile and subject/certificate schemas to native identifiers; retains ATOM, APPLY, ID, APPLY_STEP, COMPOSE, QUOTE and READ with FORM/PATH/CODE typing and separate formation/denotation checks.",
+      "limits": "Bounds are 1,024 nodes, depth 64 and 4,096 path steps. Source interpretation, ground derivation, source-trace relation, layer boundary, self-status, global cycle, completeness and agency remain explicit residuals."
     },
     {
       "path": "src/verifier/runtime/accessibility_cli.py",
@@ -2058,799 +2119,813 @@
       "path": "src/verifier/schemas/artifact-control-1.schema.json",
       "sha256": "fd16f16204943e25aa21c26697af94b35e268a26ff4a2357758084ad10e52bf6",
       "symbols": [],
-      "limits": "Shape checking does not verify signatures, retained parent bytes or thaw history. Seals do not encrypt or prevent copying; a thaw record cannot prove an actual historical parent transition.",
-      "summary": "Updates freeze, readable signed-seal and thaw schema variants to native identifiers, preserving dual-digest artifact identity and parent/descendant fields."
+      "summary": "Updates freeze, readable signed-seal and thaw schema variants to native identifiers, preserving dual-digest artifact identity and parent/descendant fields.",
+      "limits": "Shape checking does not verify signatures, retained parent bytes or thaw history. Seals do not encrypt or prevent copying; a thaw record cannot prove an actual historical parent transition."
     },
     {
       "path": "src/verifier/schemas/graph-topology.schema.json",
       "sha256": "7a7b4079d5258c6a085cb873236845661d81c6a4298e03b1d42e6611b2eac685",
       "symbols": [],
-      "limits": "The schema does not solve equations or establish graph identity, clock comparability or physical causation. Offsets retain declared units; a listed candidate is not a demonstrated contradiction.",
-      "summary": "Renames the experimental wire to verifier-graph-topology-experimental-1, specifying graph/port bindings, finite Boolean equations, clock-relative offsets and paradox candidates."
+      "summary": "Renames the experimental wire to verifier-graph-topology-experimental-1, specifying graph/port bindings, finite Boolean equations, clock-relative offsets and paradox candidates.",
+      "limits": "The schema does not solve equations or establish graph identity, clock comparability or physical causation. Offsets retain declared units; a listed candidate is not a demonstrated contradiction."
     },
     {
       "path": "src/verifier/schemas/verifier-aging-token-1.schema.json",
       "sha256": "e8bb5a10f332db0ba5b52380b3b2e102b2bfc914ec96ee9ef9ce0cde47003e59",
       "symbols": [],
-      "limits": "Valid shape does not validate accumulator, signature, continuity or revocation. Token age or identity never strengthens an artifact verdict.",
-      "summary": "Replaces the vstd aging-token schema with native fields binding birth token, genesis digest, epoch interval, accumulator proof, revocation status, attestor and signature."
+      "summary": "Replaces the vstd aging-token schema with native fields binding birth token, genesis digest, epoch interval, accumulator proof, revocation status, attestor and signature.",
+      "limits": "Valid shape does not validate accumulator, signature, continuity or revocation. Token age or identity never strengthens an artifact verdict."
     },
     {
       "path": "src/verifier/schemas/verifier-artifact-network-1.schema.json",
       "sha256": "a98b633fd40ee5820c344be8c6ee69dd12c49eaf35eecacd609fbdc97c79c89e",
       "symbols": [],
-      "limits": "Objects are capped at 4,194,304 bytes, commit census at 256 and authority models at 256 states/transitions. Digests/signatures need runtime checks; declared membership proves neither authorship nor actual authority.",
-      "summary": "Migrates the finite network union to native identifiers for objects, commits, heads, publishers, key continuity, directories, authority models and assessments."
+      "summary": "Migrates the finite network union to native identifiers for objects, commits, heads, publishers, key continuity, directories, authority models and assessments.",
+      "limits": "Objects are capped at 4,194,304 bytes, commit census at 256 and authority models at 256 states/transitions. Digests/signatures need runtime checks; declared membership proves neither authorship nor actual authority."
     },
     {
       "path": "src/verifier/schemas/verifier-authority-model-1.schema.json",
       "sha256": "4b76adc751950b3aaca5c162cccf243850951d2a739794b2605ea36a37e91add",
       "symbols": [],
-      "limits": "Conformance concerns only the declared finite transition graph, not actual runtime behavior, access, capability, awareness or knowledge.",
-      "summary": "Replaces the authority-model schema with a native identifier and reference to authorityModel in verifier-artifact-network-1."
+      "summary": "Replaces the authority-model schema with a native identifier and reference to authorityModel in verifier-artifact-network-1.",
+      "limits": "Conformance concerns only the declared finite transition graph, not actual runtime behavior, access, capability, awareness or knowledge."
     },
     {
       "path": "src/verifier/schemas/verifier-birth-token-1.schema.json",
       "sha256": "ccb7eb96dc925661e019d759119a6c029c1f29326ddd1df2666481378f45bd03",
       "symbols": [],
-      "limits": "Commitment/signature syntax does not establish authentic issuance, uniqueness or real-world identity. This adjacent identity record is not computational correctness evidence.",
-      "summary": "Migrates birth-token shape to native identifiers with genesis artifact digest, birth epoch, commitment, issue time and signature."
+      "summary": "Migrates birth-token shape to native identifiers with genesis artifact digest, birth epoch, commitment, issue time and signature.",
+      "limits": "Commitment/signature syntax does not establish authentic issuance, uniqueness or real-world identity. This adjacent identity record is not computational correctness evidence."
     },
     {
       "path": "src/verifier/schemas/verifier-bounded-completeness-1.schema.json",
       "sha256": "d90d392bc725d3c0d1835348e8aca486139a36ffe3f872491379c19e96c6c33a",
       "symbols": [],
-      "limits": "Bounds are 256 denominator members and 8,388,608 evidence bytes. Schema validity cannot externally ground the denominator or replay dispositions; budget failure is not proof of incompleteness.",
-      "summary": "Migrates declaration, denominator, observation, assessment, receipt and mechanism-profile shapes, preserving COMPLETE/INCOMPLETE/UNKNOWN/INVALID."
+      "summary": "Migrates declaration, denominator, observation, assessment, receipt and mechanism-profile shapes, preserving COMPLETE/INCOMPLETE/UNKNOWN/INVALID.",
+      "limits": "Bounds are 256 denominator members and 8,388,608 evidence bytes. Schema validity cannot externally ground the denominator or replay dispositions; budget failure is not proof of incompleteness."
     },
     {
       "path": "src/verifier/schemas/verifier-component-index-1.schema.json",
       "sha256": "6eaff0fcd8589c6ab83b1af3026b56b50da165224dddf321c2249dad7b31cd85",
       "symbols": [],
-      "limits": "The index allows 4,096 packages of at most 33,554,432 bytes each. Declared availability/mode does not execute or qualify a component; exact paths, ordering, uniqueness and digests need loader checks.",
-      "summary": "Migrates component-index/descriptors to native identifiers, cataloguing content-addressed packages and implementation, lifecycle and execution-mode declarations."
+      "summary": "Migrates component-index/descriptors to native identifiers, cataloguing content-addressed packages and implementation, lifecycle and execution-mode declarations.",
+      "limits": "The index allows 4,096 packages of at most 33,554,432 bytes each. Declared availability/mode does not execute or qualify a component; exact paths, ordering, uniqueness and digests need loader checks."
     },
     {
       "path": "src/verifier/schemas/verifier-component-package-1.schema.json",
       "sha256": "7c59a57d07c47d890dad8c7238b83ca7d57afd40ad5d64d447e0a5c406269f93",
       "symbols": [],
-      "limits": "Collections allow 256 entries and artifacts 16,777,216 bytes. Shape cannot validate decoded bytes, canonical base64, digest/path collisions or implementation bindings; loading and planning execute nothing.",
-      "summary": "Migrates portable component packages to native identifiers with bounded registries, artifacts, implementations and dependency declarations."
+      "summary": "Migrates portable component packages to native identifiers with bounded registries, artifacts, implementations and dependency declarations.",
+      "limits": "Collections allow 256 entries and artifacts 16,777,216 bytes. Shape cannot validate decoded bytes, canonical base64, digest/path collisions or implementation bindings; loading and planning execute nothing."
     },
     {
       "path": "src/verifier/schemas/verifier-deriver-self-status-1.schema.json",
       "sha256": "d90a4a2235c57faeb99a34da335278aca5c10ce20bf068b72fc70730504cf03c",
       "symbols": [],
-      "limits": "Limits include 67,108,864 executable bytes, 64 arguments, 32 public environment entries, 60,000 milliseconds and 1,048,576 output bytes. A shaped receipt neither runs the executable nor provides isolation.",
-      "summary": "Migrates exact-runtime declarations, checker profiles and replay receipts, retaining completed, timeout, output-limit, start-failure and capture-failure states."
+      "summary": "Migrates exact-runtime declarations, checker profiles and replay receipts, retaining completed, timeout, output-limit, start-failure and capture-failure states.",
+      "limits": "Limits include 67,108,864 executable bytes, 64 arguments, 32 public environment entries, 60,000 milliseconds and 1,048,576 output bytes. A shaped receipt neither runs the executable nor provides isolation."
     },
     {
       "path": "src/verifier/schemas/verifier-domain-certification-1.schema.json",
       "sha256": "614d4afc7a5f3a7a094c1cedfa7f6165f4b927619c135c230786c5a31fb331fb",
       "symbols": [],
-      "limits": "The closed domain set and depth bounds do not establish every catalogued obligation. Replay must bind external expected intent/policy; REJECTED substitution is distinct from the embedded result vocabulary.",
-      "summary": "Defines native domain certificates binding request, evidence, policy, mechanism/specification coordinates, evaluated result and certificate digest with PASS/FAIL/UNKNOWN."
+      "summary": "Defines native domain certificates binding request, evidence, policy, mechanism/specification coordinates, evaluated result and certificate digest with PASS/FAIL/UNKNOWN.",
+      "limits": "The closed domain set and depth bounds do not establish every catalogued obligation. Replay must bind external expected intent/policy; REJECTED substitution is distinct from the embedded result vocabulary."
     },
     {
       "path": "src/verifier/schemas/verifier-domain-evidence-1.schema.json",
       "sha256": "2e71d91ab4f8ef0f4764df8ec7889038e8019f42789316c92d838c93d813cec7",
       "symbols": [],
-      "limits": "Artifact/input object semantics are checked by domain adapters. Shape acceptance does not establish arithmetic, signatures, independent witnesses or scientific claims.",
-      "summary": "Defines native domain evidence with domain, subject, artifact digest and retained artifact/input objects for the closed admitted domain set."
+      "summary": "Defines native domain evidence with domain, subject, artifact digest and retained artifact/input objects for the closed admitted domain set.",
+      "limits": "Artifact/input object semantics are checked by domain adapters. Shape acceptance does not establish arithmetic, signatures, independent witnesses or scientific claims."
     },
     {
       "path": "src/verifier/schemas/verifier-domain-policy-1.schema.json",
       "sha256": "671895ef8e95e21d8998fd3d45351ea704a3b8f5cdac608ae74ba964359a5291",
       "symbols": [],
-      "limits": "Caps include 10,000,000 operations, 100,000 items, 8,388,608 evidence bytes and tolerance 0.0001. Policy admission does not prove checker soundness or provide operating-system isolation.",
-      "summary": "Defines native policy bindings for mechanism identity, trust roots, witness keys and operation, item, evidence-byte and numeric-tolerance limits."
+      "summary": "Defines native policy bindings for mechanism identity, trust roots, witness keys and operation, item, evidence-byte and numeric-tolerance limits.",
+      "limits": "Caps include 10,000,000 operations, 100,000 items, 8,388,608 evidence bytes and tolerance 0.0001. Policy admission does not prove checker soundness or provide operating-system isolation."
     },
     {
       "path": "src/verifier/schemas/verifier-domain-request-1.schema.json",
       "sha256": "7045c3002a758dcbb2c31da3da94ff1492b4577a20e1dab6af1860d8e457abd9",
       "symbols": [],
-      "limits": "HYPER is not a certifiable request domain. Declared depth establishes no obligation; replay requires bound evidence, policy and exact external expected intent.",
-      "summary": "Defines the closed native domain request with subject, artifact digest, evidence reference and per-domain bounded target depth."
+      "summary": "Defines the closed native domain request with subject, artifact digest, evidence reference and per-domain bounded target depth.",
+      "limits": "HYPER is not a certifiable request domain. Declared depth establishes no obligation; replay requires bound evidence, policy and exact external expected intent."
     },
     {
       "path": "src/verifier/schemas/verifier-gate-publication-1.schema.json",
       "sha256": "4740f86856960321464a091f8653fbf40f9fba53b194b095119fcba4f40b85d9",
       "symbols": [],
-      "limits": "At most 1,024 inputs and 64 steps are represented with explicit error, timeout, blocked and UNKNOWN outcomes. A projection does not authorize execution/publication, prove its original receipt or establish native certification.",
-      "summary": "Adds bounded gate-publication projection shapes for runner identity, source receipt, manifest, retained/final inputs, step outcomes, cleanup and projection digest."
+      "summary": "Adds bounded gate-publication projection shapes for runner identity, source receipt, manifest, retained/final inputs, step outcomes, cleanup and projection digest.",
+      "limits": "At most 1,024 inputs and 64 steps are represented with explicit error, timeout, blocked and UNKNOWN outcomes. A projection does not authorize execution/publication, prove its original receipt or establish native certification."
     },
     {
       "path": "src/verifier/schemas/verifier-global-cycle-assessment-1.schema.json",
       "sha256": "3905499b3bcc590ef1d6069a79d314549d3c1cbba7918e567738ebcca16278b5",
       "symbols": [],
-      "limits": "At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. Shape does not ground source relations, interpret arbitrary causality or prove complete graph coverage.",
-      "summary": "Migrates declarations, semantics and receipts for separate support-dependency, Boolean-constraint and clock-relative temporal cycle assessments."
+      "summary": "Migrates declarations, semantics and receipts for separate support-dependency, Boolean-constraint and clock-relative temporal cycle assessments.",
+      "limits": "At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. Shape does not ground source relations, interpret arbitrary causality or prove complete graph coverage."
     },
     {
       "path": "src/verifier/schemas/verifier-graph-assurance-1.schema.json",
       "sha256": "bbb7932bcd6c2604836cb3f0e16a0297d28de6e23b4e7c48673abe1fa371815b",
       "symbols": [],
-      "limits": "Current views require replay of the typed evidence-bound history. An event name, actor identity or intact hash chain alone cannot establish trust, responsibility or a computational verdict.",
-      "summary": "Migrates typed assurance logs/current views retaining historical graph bindings, hash-chain events, conflicts/resolutions and TRUST, ROT, RUST and diagnostic attribution records."
+      "summary": "Migrates typed assurance logs/current views retaining historical graph bindings, hash-chain events, conflicts/resolutions and TRUST, ROT, RUST and diagnostic attribution records.",
+      "limits": "Current views require replay of the typed evidence-bound history. An event name, actor identity or intact hash chain alone cannot establish trust, responsibility or a computational verdict."
     },
     {
       "path": "src/verifier/schemas/verifier-grounded-certification-1.schema.json",
       "sha256": "0e271cff2ddd9a468fcb3d0c02e3a440ca61cca76f18f0373124cb006dfb59ec",
       "symbols": [],
-      "limits": "All prerequisite obligations require admitted mechanisms; profile 4 retains fourteen rungs. Shape, supplied grades and digests cannot replace evidence evaluation or externally expected intent.",
-      "summary": "Defines native object certificates with bound request/claim, propositions, evidence, evaluations and obligation results, separating PASS/FAIL/UNKNOWN from ESTABLISHED/NOT_ESTABLISHED."
+      "summary": "Defines native object certificates with bound request/claim, propositions, evidence, evaluations and obligation results, separating PASS/FAIL/UNKNOWN from ESTABLISHED/NOT_ESTABLISHED.",
+      "limits": "All prerequisite obligations require admitted mechanisms; profile 4 retains fourteen rungs. Shape, supplied grades and digests cannot replace evidence evaluation or externally expected intent."
     },
     {
       "path": "src/verifier/schemas/verifier-grounded-policy-1.schema.json",
       "sha256": "505bcdeba0ee634c389aa73ed3a12c04e98b78bd181081bf14f489730612be89",
       "symbols": [],
-      "limits": "The policy covers 47 object obligations with at most 4,096 evidence entries and bounded bytes. Registration is an authority decision, not proof of mechanism soundness, witness independence or execution safety.",
-      "summary": "Defines object-policy admission for exact obligation/mechanism coordinates, mechanism digests, nonempty trust roots, catalogue/specification digests and retained-evidence limits."
+      "summary": "Defines object-policy admission for exact obligation/mechanism coordinates, mechanism digests, nonempty trust roots, catalogue/specification digests and retained-evidence limits.",
+      "limits": "The policy covers 47 object obligations with at most 4,096 evidence entries and bounded bytes. Registration is an authority decision, not proof of mechanism soundness, witness independence or execution safety."
     },
     {
       "path": "src/verifier/schemas/verifier-grounded-request-1.schema.json",
       "sha256": "083d630d48b2486fef93c2f20e719f5ab8e09a93ce34b823bc645e69f020d709",
       "symbols": [],
-      "limits": "Profiles stop at 5 and evidence at 4,096 entries within 33,554,432 bytes. A requested target or references do not establish the profile; exact external intent and replay remain necessary.",
-      "summary": "Defines native object requests/claim bindings for bounded propositions, target profile and retained evidence."
+      "summary": "Defines native object requests/claim bindings for bounded propositions, target profile and retained evidence.",
+      "limits": "Profiles stop at 5 and evidence at 4,096 entries within 33,554,432 bytes. A requested target or references do not establish the profile; exact external intent and replay remain necessary."
     },
     {
       "path": "src/verifier/schemas/verifier-lifetime-token-1.schema.json",
       "sha256": "24016afe1cc3ba10cd11db81f63f2849862447ab6336276ba0c26bad94f82506",
       "symbols": [],
-      "limits": "Actual signature, expiry and delegation enforcement need runtime checks. The token does not establish artifact truth, authority outside its scope or an economic asset.",
-      "summary": "Migrates lifetime/delegation token shapes with actor/delegated key, scope, validity interval, soulbound marker, issuer and signature."
+      "summary": "Migrates lifetime/delegation token shapes with actor/delegated key, scope, validity interval, soulbound marker, issuer and signature.",
+      "limits": "Actual signature, expiry and delegation enforcement need runtime checks. The token does not establish artifact truth, authority outside its scope or an economic asset."
     },
     {
       "path": "src/verifier/schemas/verifier-proposition-transfer-1.schema.json",
       "sha256": "003ce96f7d5f0ffff55954e2ee757fc71529223794fbdc4074594e0b2561453a",
       "symbols": [],
-      "limits": "The reference rule admits at most 16 premises. SUPPORTED applies only to the bounded predicate/context, not general inference, historical execution, identity or authority.",
-      "summary": "Migrates declarations, finite-set predicates/rules and assessments, preserving distinct evidence, context, predicate, artifact, upper-bound and residual results."
+      "summary": "Migrates declarations, finite-set predicates/rules and assessments, preserving distinct evidence, context, predicate, artifact, upper-bound and residual results.",
+      "limits": "The reference rule admits at most 16 premises. SUPPORTED applies only to the bounded predicate/context, not general inference, historical execution, identity or authority."
     },
     {
       "path": "src/verifier/schemas/verifier-push-request-1.schema.json",
       "sha256": "42efa1a8190c5e66fec330e13496a2d96a2ccf19e18199b2ea8380bc2cbf8ce6",
       "symbols": [],
-      "limits": "A shaped request is neither transmission nor proof of authentication, remote acceptance or publication. The transport flag represents an observation and is not authorization.",
-      "summary": "Migrates push-request records for endpoint, publisher, commit/head, expected head, transport-performed flag and explicit claim boundary."
+      "summary": "Migrates push-request records for endpoint, publisher, commit/head, expected head, transport-performed flag and explicit claim boundary.",
+      "limits": "A shaped request is neither transmission nor proof of authentication, remote acceptance or publication. The transport flag represents an observation and is not authorization."
     },
     {
       "path": "src/verifier/schemas/verifier-relation-boundary-1.schema.json",
       "sha256": "8e349eaf33cadd1f9f1f83fcf3e2a1ccb8868546d7afdcdff21c0d168106b66d",
       "symbols": [],
-      "limits": "Bounds are 64 facets and 1,048,576 bytes per artifact. Runtime replay must check partition/equality; the schema does not prove general translation equivalence or unlisted facets.",
-      "summary": "Migrates relation declarations, evidence, receipts and profiles for exact facet maps and explicit NONE/PRESENT loss, retaining ESTABLISHED/REFUTED/UNKNOWN/INVALID."
+      "summary": "Migrates relation declarations, evidence, receipts and profiles for exact facet maps and explicit NONE/PRESENT loss, retaining ESTABLISHED/REFUTED/UNKNOWN/INVALID.",
+      "limits": "Bounds are 64 facets and 1,048,576 bytes per artifact. Runtime replay must check partition/equality; the schema does not prove general translation equivalence or unlisted facets."
     },
     {
       "path": "src/verifier/schemas/verifier-risk-profile-2.schema.json",
       "sha256": "333e59ddcae38fd802fe9376c4ee6ff37fd8a0c527dee16bbb9d78c261130201",
       "symbols": [],
-      "limits": "CONTAINED and tier names are receipt fields, not physical containment evidence by themselves. This is distinct from native domain certification and does not upgrade a legacy receipt.",
-      "summary": "Adds the experimental legacy risk-receipt schema with versioned verifier identifiers, model/graph/runtime bindings, containment tiers and bounded verdict vocabulary."
+      "summary": "Adds the experimental legacy risk-receipt schema with versioned verifier identifiers, model/graph/runtime bindings, containment tiers and bounded verdict vocabulary.",
+      "limits": "CONTAINED and tier names are receipt fields, not physical containment evidence by themselves. This is distinct from native domain certification and does not upgrade a legacy receipt."
     },
     {
       "path": "src/verifier/schemas/verifier-self-derivation-mechanism-1.schema.json",
       "sha256": "58f46bac893068738cc97cde8c701c3c1415a1bac322f2cbc0a5f802b5eb9447",
       "symbols": [],
-      "limits": "A descriptor does not demonstrate semantic self-return, source grounding or complete self-derivability. The admitted declared relation still needs checking against retained evidence.",
-      "summary": "Migrates finite declarative self-derivation mechanism descriptors with exact rule family, relation strength and claim boundary."
+      "summary": "Migrates finite declarative self-derivation mechanism descriptors with exact rule family, relation strength and claim boundary.",
+      "limits": "A descriptor does not demonstrate semantic self-return, source grounding or complete self-derivability. The admitted declared relation still needs checking against retained evidence."
     },
     {
       "path": "src/verifier/schemas/verifier-silo-assessment-1.schema.json",
       "sha256": "03caf07565169b6f9abbb0fe0bb85c40e1001b3bdbb4da925f39693dcff31adc",
       "symbols": [],
-      "limits": "COMPLETE, CLOSED or ESTABLISHED on one axis cannot establish another. This declared finite assessment is not artifact correctness, real actor identity or actual runtime authority.",
-      "summary": "Migrates finite silo assessment shapes with separate reconstructibility, derivation closure, self-derivability, completeness, grounding and agency outcomes."
+      "summary": "Migrates finite silo assessment shapes with separate reconstructibility, derivation closure, self-derivability, completeness, grounding and agency outcomes.",
+      "limits": "COMPLETE, CLOSED or ESTABLISHED on one axis cannot establish another. This declared finite assessment is not artifact correctness, real actor identity or actual runtime authority."
     },
     {
       "path": "src/verifier/schemas/verifier-silo-assessment-receipt-1.schema.json",
       "sha256": "374ee0de92a98d2724da89299bc47f29a9be29bb4067d985ba191548581db21f",
       "symbols": [],
-      "limits": "Binding the nested assessment does not strengthen its verdicts. Digest syntax does not replay retained objects or demonstrate its individual assessment axes.",
-      "summary": "Migrates noncircular silo receipts binding nested assessment to exact commit and assessment-mechanism digests."
+      "summary": "Migrates noncircular silo receipts binding nested assessment to exact commit and assessment-mechanism digests.",
+      "limits": "Binding the nested assessment does not strengthen its verdicts. Digest syntax does not replay retained objects or demonstrate its individual assessment axes."
     },
     {
       "path": "src/verifier/schemas/verifier-silo-composition-1.schema.json",
       "sha256": "1e469dde0b1a29859d9f7b09ddfc3760acbefdafe3b36b77cb23d6b2dbde09a4",
       "symbols": [],
-      "limits": "At most 256 members are declared. Their listing is input to assessment, not evidence of preserved member authority or admissible composition.",
-      "summary": "Migrates finite silo composition declarations with member commit digests and an optional composite commit."
+      "summary": "Migrates finite silo composition declarations with member commit digests and an optional composite commit.",
+      "limits": "At most 256 members are declared. Their listing is input to assessment, not evidence of preserved member authority or admissible composition."
     },
     {
       "path": "src/verifier/schemas/verifier-silo-composition-assessment-1.schema.json",
       "sha256": "0b35bf1bf76cf0e4a7d9ac59db3815421f121edbf4141b4d6c31ceaa2b69c54e",
       "symbols": [],
-      "limits": "Results cover at most 256 declared members and an optional finite composite, not global authority, hidden runtime behavior or unbounded composition.",
-      "summary": "Migrates composition assessments for member binding/completeness, local authority preservation, effective agency and ADMISSIBLE/NOT_ADMISSIBLE outcomes."
+      "summary": "Migrates composition assessments for member binding/completeness, local authority preservation, effective agency and ADMISSIBLE/NOT_ADMISSIBLE outcomes.",
+      "limits": "Results cover at most 256 declared members and an optional finite composite, not global authority, hidden runtime behavior or unbounded composition."
     },
     {
       "path": "src/verifier/schemas/verifier-silo-composition-assessment-receipt-1.schema.json",
       "sha256": "ade8744f5fa01fd5ebdc23fb55bcbf2dfe09edfb35bbe1ce91fa8d2e950178ff",
       "symbols": [],
-      "limits": "Embedding receipts does not prove validity or authority preservation; commitments/mechanisms require replay. This cannot turn a non-admissible or unknown member into a valid composite.",
-      "summary": "Migrates composition receipts binding declaration/mechanism digests, bounded independent member receipts and an optional composite receipt to assessment."
+      "summary": "Migrates composition receipts binding declaration/mechanism digests, bounded independent member receipts and an optional composite receipt to assessment.",
+      "limits": "Embedding receipts does not prove validity or authority preservation; commitments/mechanisms require replay. This cannot turn a non-admissible or unknown member into a valid composite."
     },
     {
       "path": "src/verifier/schemas/verifier-silo-formation-receipt-1.schema.json",
       "sha256": "d9fd6243e79d46b2a99145c2e20aa9c97fea3e64a6280a3da4be2fb0b632c27b",
       "symbols": [],
-      "limits": "Bounds include 1,024 nodes, 4,096 path steps, depth 64 and 256 evidence objects. Canonical order, census identity and replay need the checker; formation is not self-derivation, completeness or agency establishment.",
-      "summary": "Migrates formation selections/receipts binding subject, certificate, profile and ground paths to retained snapshots with coordinate, snapshot, agency-match and report states."
+      "summary": "Migrates formation selections/receipts binding subject, certificate, profile and ground paths to retained snapshots with coordinate, snapshot, agency-match and report states.",
+      "limits": "Bounds include 1,024 nodes, 4,096 path steps, depth 64 and 256 evidence objects. Canonical order, census identity and replay need the checker; formation is not self-derivation, completeness or agency establishment."
     },
     {
       "path": "src/verifier/schemas/verifier-silo-transfer-1.schema.json",
       "sha256": "a573853e8b230aeff801aa56b6170e364c6619cf94d5c4b3f13d94c48773fd90",
       "symbols": [],
-      "limits": "Object and continuity collections are capped at 256. Download or shape acceptance cannot establish authenticity, correct bytes, accepted authority or semantic verdict transfer.",
-      "summary": "Migrates portable silo manifests with publisher/key-continuity records, head, commit, assessment and retained base64 object bytes."
+      "summary": "Migrates portable silo manifests with publisher/key-continuity records, head, commit, assessment and retained base64 object bytes.",
+      "limits": "Object and continuity collections are capped at 256. Download or shape acceptance cannot establish authenticity, correct bytes, accepted authority or semantic verdict transfer."
     },
     {
       "path": "src/verifier/schemas/verifier-simulation-receipt-1.schema.json",
       "sha256": "6df4c5da86b44d519dfc944d6697d48d4e546da17749616160e883572528ad8c",
       "symbols": [],
-      "limits": "VERIFIED/VIOLATION_DETECTED/NOT_ESTABLISHED are receipt fields. This is not native domain certification; shape neither replays a simulation nor proves scientific validity.",
-      "summary": "Adds experimental legacy simulation receipts with verifier-simulation-receipt-1/verifier-sim-2 identifiers and trace, invariant, bisimulation, agent and distributed tier fields."
+      "summary": "Adds experimental legacy simulation receipts with verifier-simulation-receipt-1/verifier-sim-2 identifiers and trace, invariant, bisimulation, agent and distributed tier fields.",
+      "limits": "VERIFIED/VIOLATION_DETECTED/NOT_ESTABLISHED are receipt fields. This is not native domain certification; shape neither replays a simulation nor proves scientific validity."
     },
     {
       "path": "src/verifier/schemas/verifier-source-grounding-1.schema.json",
       "sha256": "e6e1cbca4fad1a72858ce4864202f5b8cfcfb84505c5c01771f906183bd0b356",
       "symbols": [],
-      "limits": "Source is limited to 1,048,576 bytes and certificates to 65,536. MECHANISM_EXECUTION is not historical execution evidence; pointer replay is required and does not prove source truth.",
-      "summary": "Migrates declarations, certificates, receipts and profiles binding canonical source, frame, proposition and mechanism under DERIVATION or TRANSLATION labels."
+      "summary": "Migrates declarations, certificates, receipts and profiles binding canonical source, frame, proposition and mechanism under DERIVATION or TRANSLATION labels.",
+      "limits": "Source is limited to 1,048,576 bytes and certificates to 65,536. MECHANISM_EXECUTION is not historical execution evidence; pointer replay is required and does not prove source truth."
     },
     {
       "path": "src/verifier/schemas/verifier-typed-formation-1.schema.json",
       "sha256": "262bd1c209714f82f06c0ac13c2f5ed0dbc3c60888dac62c89f6d87922168933",
       "symbols": [],
-      "limits": "Subjects have at most 1,024 nodes. Endpoint typing, backward references, contexts and replay need the mechanism; shape is not a Hypermath translation theorem, source-grounding proof or agency result.",
-      "summary": "Migrates subject/certificate shapes for seven constructors, finite FORM/PATH/CODE terms, node references and bounded derivation steps."
+      "summary": "Migrates subject/certificate shapes for seven constructors, finite FORM/PATH/CODE terms, node references and bounded derivation steps.",
+      "limits": "Subjects have at most 1,024 nodes. Endpoint typing, backward references, contexts and replay need the mechanism; shape is not a Hypermath translation theorem, source-grounding proof or agency result."
     },
     {
       "path": "src/verifier/schemas/vstd-actor-binding-1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "Deletion does not establish replacement composition correctness or add a certifiable HYPER adapter. Identity, key control and pipeline attribution remain separate from artifact correctness and actual authority.",
-      "summary": "Deletes the legacy actor-binding schema for PUBLISHER_CONTROL/PIPELINE_OPERATION propositions, actor/subject identifiers, keys, times and dual signatures; the token specification withdraws this object."
+      "summary": "Deletes the legacy actor-binding schema for PUBLISHER_CONTROL/PIPELINE_OPERATION propositions, actor/subject identifiers, keys, times and dual signatures; the token specification withdraws this object.",
+      "limits": "Deletion does not establish replacement composition correctness or add a certifiable HYPER adapter. Identity, key control and pipeline attribution remain separate from artifact correctness and actual authority."
     },
     {
       "path": "src/verifier/schemas/vstd-aging-token-1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Valid shape does not validate accumulator, signature, continuity or revocation. Token age or identity never strengthens an artifact verdict.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-aging-token-1.schema.json. Replaces the vstd aging-token schema with native fields binding birth token, genesis digest, epoch interval, accumulator proof, revocation status, attestor and signature."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-aging-token-1.schema.json. Replaces the vstd aging-token schema with native fields binding birth token, genesis digest, epoch interval, accumulator proof, revocation status, attestor and signature.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Valid shape does not validate accumulator, signature, continuity or revocation. Token age or identity never strengthens an artifact verdict."
     },
     {
       "path": "src/verifier/schemas/vstd-artifact-network-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Objects are capped at 4,194,304 bytes, commit census at 256 and authority models at 256 states/transitions. Digests/signatures need runtime checks; declared membership proves neither authorship nor actual authority.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-artifact-network-1.schema.json. Migrates the finite network union to native identifiers for objects, commits, heads, publishers, key continuity, directories, authority models and assessments."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-artifact-network-1.schema.json. Migrates the finite network union to native identifiers for objects, commits, heads, publishers, key continuity, directories, authority models and assessments.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Objects are capped at 4,194,304 bytes, commit census at 256 and authority models at 256 states/transitions. Digests/signatures need runtime checks; declared membership proves neither authorship nor actual authority."
     },
     {
       "path": "src/verifier/schemas/vstd-authority-model-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Conformance concerns only the declared finite transition graph, not actual runtime behavior, access, capability, awareness or knowledge.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-authority-model-1.schema.json. Replaces the authority-model schema with a native identifier and reference to authorityModel in verifier-artifact-network-1."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-authority-model-1.schema.json. Replaces the authority-model schema with a native identifier and reference to authorityModel in verifier-artifact-network-1.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Conformance concerns only the declared finite transition graph, not actual runtime behavior, access, capability, awareness or knowledge."
     },
     {
       "path": "src/verifier/schemas/vstd-birth-token-1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Commitment/signature syntax does not establish authentic issuance, uniqueness or real-world identity. This adjacent identity record is not computational correctness evidence.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-birth-token-1.schema.json. Migrates birth-token shape to native identifiers with genesis artifact digest, birth epoch, commitment, issue time and signature."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-birth-token-1.schema.json. Migrates birth-token shape to native identifiers with genesis artifact digest, birth epoch, commitment, issue time and signature.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Commitment/signature syntax does not establish authentic issuance, uniqueness or real-world identity. This adjacent identity record is not computational correctness evidence."
     },
     {
       "path": "src/verifier/schemas/vstd-bounded-completeness-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Bounds are 256 denominator members and 8,388,608 evidence bytes. Schema validity cannot externally ground the denominator or replay dispositions; budget failure is not proof of incompleteness.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-bounded-completeness-1.schema.json. Migrates declaration, denominator, observation, assessment, receipt and mechanism-profile shapes, preserving COMPLETE/INCOMPLETE/UNKNOWN/INVALID."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-bounded-completeness-1.schema.json. Migrates declaration, denominator, observation, assessment, receipt and mechanism-profile shapes, preserving COMPLETE/INCOMPLETE/UNKNOWN/INVALID.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Bounds are 256 denominator members and 8,388,608 evidence bytes. Schema validity cannot externally ground the denominator or replay dispositions; budget failure is not proof of incompleteness."
     },
     {
       "path": "src/verifier/schemas/vstd-component-index-1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. The index allows 4,096 packages of at most 33,554,432 bytes each. Declared availability/mode does not execute or qualify a component; exact paths, ordering, uniqueness and digests need loader checks.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-component-index-1.schema.json. Migrates component-index/descriptors to native identifiers, cataloguing content-addressed packages and implementation, lifecycle and execution-mode declarations."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-component-index-1.schema.json. Migrates component-index/descriptors to native identifiers, cataloguing content-addressed packages and implementation, lifecycle and execution-mode declarations.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. The index allows 4,096 packages of at most 33,554,432 bytes each. Declared availability/mode does not execute or qualify a component; exact paths, ordering, uniqueness and digests need loader checks."
     },
     {
       "path": "src/verifier/schemas/vstd-component-package-1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Collections allow 256 entries and artifacts 16,777,216 bytes. Shape cannot validate decoded bytes, canonical base64, digest/path collisions or implementation bindings; loading and planning execute nothing.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-component-package-1.schema.json. Migrates portable component packages to native identifiers with bounded registries, artifacts, implementations and dependency declarations."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-component-package-1.schema.json. Migrates portable component packages to native identifiers with bounded registries, artifacts, implementations and dependency declarations.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Collections allow 256 entries and artifacts 16,777,216 bytes. Shape cannot validate decoded bytes, canonical base64, digest/path collisions or implementation bindings; loading and planning execute nothing."
     },
     {
       "path": "src/verifier/schemas/vstd-deriver-self-status-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Limits include 67,108,864 executable bytes, 64 arguments, 32 public environment entries, 60,000 milliseconds and 1,048,576 output bytes. A shaped receipt neither runs the executable nor provides isolation.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-deriver-self-status-1.schema.json. Migrates exact-runtime declarations, checker profiles and replay receipts, retaining completed, timeout, output-limit, start-failure and capture-failure states."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-deriver-self-status-1.schema.json. Migrates exact-runtime declarations, checker profiles and replay receipts, retaining completed, timeout, output-limit, start-failure and capture-failure states.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Limits include 67,108,864 executable bytes, 64 arguments, 32 public environment entries, 60,000 milliseconds and 1,048,576 output bytes. A shaped receipt neither runs the executable nor provides isolation."
     },
     {
       "path": "src/verifier/schemas/vstd-global-cycle-assessment-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. Shape does not ground source relations, interpret arbitrary causality or prove complete graph coverage.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-global-cycle-assessment-1.schema.json. Migrates declarations, semantics and receipts for separate support-dependency, Boolean-constraint and clock-relative temporal cycle assessments."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-global-cycle-assessment-1.schema.json. Migrates declarations, semantics and receipts for separate support-dependency, Boolean-constraint and clock-relative temporal cycle assessments.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. Shape does not ground source relations, interpret arbitrary causality or prove complete graph coverage."
     },
     {
       "path": "src/verifier/schemas/vstd-graph-assurance-1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Current views require replay of the typed evidence-bound history. An event name, actor identity or intact hash chain alone cannot establish trust, responsibility or a computational verdict.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-graph-assurance-1.schema.json. Migrates typed assurance logs/current views retaining historical graph bindings, hash-chain events, conflicts/resolutions and TRUST, ROT, RUST and diagnostic attribution records."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-graph-assurance-1.schema.json. Migrates typed assurance logs/current views retaining historical graph bindings, hash-chain events, conflicts/resolutions and TRUST, ROT, RUST and diagnostic attribution records.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Current views require replay of the typed evidence-bound history. An event name, actor identity or intact hash chain alone cannot establish trust, responsibility or a computational verdict."
     },
     {
       "path": "src/verifier/schemas/vstd-lifetime-token-1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Actual signature, expiry and delegation enforcement need runtime checks. The token does not establish artifact truth, authority outside its scope or an economic asset.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-lifetime-token-1.schema.json. Migrates lifetime/delegation token shapes with actor/delegated key, scope, validity interval, soulbound marker, issuer and signature."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-lifetime-token-1.schema.json. Migrates lifetime/delegation token shapes with actor/delegated key, scope, validity interval, soulbound marker, issuer and signature.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Actual signature, expiry and delegation enforcement need runtime checks. The token does not establish artifact truth, authority outside its scope or an economic asset."
     },
     {
       "path": "src/verifier/schemas/vstd-proposition-transfer-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. The reference rule admits at most 16 premises. SUPPORTED applies only to the bounded predicate/context, not general inference, historical execution, identity or authority.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-proposition-transfer-1.schema.json. Migrates declarations, finite-set predicates/rules and assessments, preserving distinct evidence, context, predicate, artifact, upper-bound and residual results."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-proposition-transfer-1.schema.json. Migrates declarations, finite-set predicates/rules and assessments, preserving distinct evidence, context, predicate, artifact, upper-bound and residual results.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. The reference rule admits at most 16 premises. SUPPORTED applies only to the bounded predicate/context, not general inference, historical execution, identity or authority."
     },
     {
       "path": "src/verifier/schemas/vstd-push-request-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. A shaped request is neither transmission nor proof of authentication, remote acceptance or publication. The transport flag represents an observation and is not authorization.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-push-request-1.schema.json. Migrates push-request records for endpoint, publisher, commit/head, expected head, transport-performed flag and explicit claim boundary."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-push-request-1.schema.json. Migrates push-request records for endpoint, publisher, commit/head, expected head, transport-performed flag and explicit claim boundary.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. A shaped request is neither transmission nor proof of authentication, remote acceptance or publication. The transport flag represents an observation and is not authorization."
     },
     {
       "path": "src/verifier/schemas/vstd-relation-boundary-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Bounds are 64 facets and 1,048,576 bytes per artifact. Runtime replay must check partition/equality; the schema does not prove general translation equivalence or unlisted facets.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-relation-boundary-1.schema.json. Migrates relation declarations, evidence, receipts and profiles for exact facet maps and explicit NONE/PRESENT loss, retaining ESTABLISHED/REFUTED/UNKNOWN/INVALID."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-relation-boundary-1.schema.json. Migrates relation declarations, evidence, receipts and profiles for exact facet maps and explicit NONE/PRESENT loss, retaining ESTABLISHED/REFUTED/UNKNOWN/INVALID.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Bounds are 64 facets and 1,048,576 bytes per artifact. Runtime replay must check partition/equality; the schema does not prove general translation equivalence or unlisted facets."
     },
     {
       "path": "src/verifier/schemas/vstd-self-derivation-mechanism-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. A descriptor does not demonstrate semantic self-return, source grounding or complete self-derivability. The admitted declared relation still needs checking against retained evidence.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-self-derivation-mechanism-1.schema.json. Migrates finite declarative self-derivation mechanism descriptors with exact rule family, relation strength and claim boundary."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-self-derivation-mechanism-1.schema.json. Migrates finite declarative self-derivation mechanism descriptors with exact rule family, relation strength and claim boundary.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. A descriptor does not demonstrate semantic self-return, source grounding or complete self-derivability. The admitted declared relation still needs checking against retained evidence."
     },
     {
       "path": "src/verifier/schemas/vstd-silo-assessment-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. COMPLETE, CLOSED or ESTABLISHED on one axis cannot establish another. This declared finite assessment is not artifact correctness, real actor identity or actual runtime authority.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-assessment-1.schema.json. Migrates finite silo assessment shapes with separate reconstructibility, derivation closure, self-derivability, completeness, grounding and agency outcomes."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-assessment-1.schema.json. Migrates finite silo assessment shapes with separate reconstructibility, derivation closure, self-derivability, completeness, grounding and agency outcomes.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. COMPLETE, CLOSED or ESTABLISHED on one axis cannot establish another. This declared finite assessment is not artifact correctness, real actor identity or actual runtime authority."
     },
     {
       "path": "src/verifier/schemas/vstd-silo-assessment-receipt-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Binding the nested assessment does not strengthen its verdicts. Digest syntax does not replay retained objects or demonstrate its individual assessment axes.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-assessment-receipt-1.schema.json. Migrates noncircular silo receipts binding nested assessment to exact commit and assessment-mechanism digests."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-assessment-receipt-1.schema.json. Migrates noncircular silo receipts binding nested assessment to exact commit and assessment-mechanism digests.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Binding the nested assessment does not strengthen its verdicts. Digest syntax does not replay retained objects or demonstrate its individual assessment axes."
     },
     {
       "path": "src/verifier/schemas/vstd-silo-composition-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. At most 256 members are declared. Their listing is input to assessment, not evidence of preserved member authority or admissible composition.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-composition-1.schema.json. Migrates finite silo composition declarations with member commit digests and an optional composite commit."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-composition-1.schema.json. Migrates finite silo composition declarations with member commit digests and an optional composite commit.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. At most 256 members are declared. Their listing is input to assessment, not evidence of preserved member authority or admissible composition."
     },
     {
       "path": "src/verifier/schemas/vstd-silo-composition-assessment-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Results cover at most 256 declared members and an optional finite composite, not global authority, hidden runtime behavior or unbounded composition.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-composition-assessment-1.schema.json. Migrates composition assessments for member binding/completeness, local authority preservation, effective agency and ADMISSIBLE/NOT_ADMISSIBLE outcomes."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-composition-assessment-1.schema.json. Migrates composition assessments for member binding/completeness, local authority preservation, effective agency and ADMISSIBLE/NOT_ADMISSIBLE outcomes.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Results cover at most 256 declared members and an optional finite composite, not global authority, hidden runtime behavior or unbounded composition."
     },
     {
       "path": "src/verifier/schemas/vstd-silo-composition-assessment-receipt-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Embedding receipts does not prove validity or authority preservation; commitments/mechanisms require replay. This cannot turn a non-admissible or unknown member into a valid composite.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-composition-assessment-receipt-1.schema.json. Migrates composition receipts binding declaration/mechanism digests, bounded independent member receipts and an optional composite receipt to assessment."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-composition-assessment-receipt-1.schema.json. Migrates composition receipts binding declaration/mechanism digests, bounded independent member receipts and an optional composite receipt to assessment.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Embedding receipts does not prove validity or authority preservation; commitments/mechanisms require replay. This cannot turn a non-admissible or unknown member into a valid composite."
     },
     {
       "path": "src/verifier/schemas/vstd-silo-formation-receipt-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Bounds include 1,024 nodes, 4,096 path steps, depth 64 and 256 evidence objects. Canonical order, census identity and replay need the checker; formation is not self-derivation, completeness or agency establishment.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-formation-receipt-1.schema.json. Migrates formation selections/receipts binding subject, certificate, profile and ground paths to retained snapshots with coordinate, snapshot, agency-match and report states."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-formation-receipt-1.schema.json. Migrates formation selections/receipts binding subject, certificate, profile and ground paths to retained snapshots with coordinate, snapshot, agency-match and report states.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Bounds include 1,024 nodes, 4,096 path steps, depth 64 and 256 evidence objects. Canonical order, census identity and replay need the checker; formation is not self-derivation, completeness or agency establishment."
     },
     {
       "path": "src/verifier/schemas/vstd-silo-transfer-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Object and continuity collections are capped at 256. Download or shape acceptance cannot establish authenticity, correct bytes, accepted authority or semantic verdict transfer.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-transfer-1.schema.json. Migrates portable silo manifests with publisher/key-continuity records, head, commit, assessment and retained base64 object bytes."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-transfer-1.schema.json. Migrates portable silo manifests with publisher/key-continuity records, head, commit, assessment and retained base64 object bytes.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Object and continuity collections are capped at 256. Download or shape acceptance cannot establish authenticity, correct bytes, accepted authority or semantic verdict transfer."
     },
     {
       "path": "src/verifier/schemas/vstd-source-grounding-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Source is limited to 1,048,576 bytes and certificates to 65,536. MECHANISM_EXECUTION is not historical execution evidence; pointer replay is required and does not prove source truth.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-source-grounding-1.schema.json. Migrates declarations, certificates, receipts and profiles binding canonical source, frame, proposition and mechanism under DERIVATION or TRANSLATION labels."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-source-grounding-1.schema.json. Migrates declarations, certificates, receipts and profiles binding canonical source, frame, proposition and mechanism under DERIVATION or TRANSLATION labels.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Source is limited to 1,048,576 bytes and certificates to 65,536. MECHANISM_EXECUTION is not historical execution evidence; pointer replay is required and does not prove source truth."
     },
     {
       "path": "src/verifier/schemas/vstd-typed-formation-0.1.schema.json",
       "sha256": null,
       "symbols": [],
-      "limits": "The retired wire spelling is not silently accepted as the native contract. Subjects have at most 1,024 nodes. Endpoint typing, backward references, contexts and replay need the mechanism; shape is not a Hypermath translation theorem, source-grounding proof or agency result.",
-      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-typed-formation-1.schema.json. Migrates subject/certificate shapes for seven constructors, finite FORM/PATH/CODE terms, node references and bounded derivation steps."
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-typed-formation-1.schema.json. Migrates subject/certificate shapes for seven constructors, finite FORM/PATH/CODE terms, node references and bounded derivation steps.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Subjects have at most 1,024 nodes. Endpoint typing, backward references, contexts and replay need the mechanism; shape is not a Hypermath translation theorem, source-grounding proof or agency result."
     },
     {
       "path": "src/verifier/specifications/ARTIFACT_CONTROL.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Freezing and sealing do not encrypt bytes or prevent copying. Thaw/history claims require retained parent bytes; a substituted whole signed bundle is not detected merely through internal consistency.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/ARTIFACT_CONTROL.md. Consolidates freeze, readable Ed25519 seal and descendant-thaw specification under standard/ and updates native wire identifiers while preserving dual-digest byte identity."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/ARTIFACT_CONTROL.md. Consolidates freeze, readable Ed25519 seal and descendant-thaw specification under standard/ and updates native wire identifiers while preserving dual-digest byte identity.",
+      "limits": "Moving a document does not implement or establish its obligations. Freezing and sealing do not encrypt bytes or prevent copying. Thaw/history claims require retained parent bytes; a substituted whole signed bundle is not detected merely through internal consistency."
     },
     {
       "path": "src/verifier/specifications/BOUNDED_COMPLETENESS.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. The reference mechanism covers at most 256 externally grounded members. Budget exhaustion remains UNKNOWN rather than INCOMPLETE; COMPLETE does not cover an unstated universe or prove source truth.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/BOUNDED_COMPLETENESS.md. Moves finite-denominator completeness to standard/ and native wire/profile identifiers, separating decisive dispositions from unchecked or invalid members."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/BOUNDED_COMPLETENESS.md. Moves finite-denominator completeness to standard/ and native wire/profile identifiers, separating decisive dispositions from unchecked or invalid members.",
+      "limits": "Moving a document does not implement or establish its obligations. The reference mechanism covers at most 256 externally grounded members. Budget exhaustion remains UNKNOWN rather than INCOMPLETE; COMPLETE does not cover an unstated universe or prove source truth."
     },
     {
       "path": "src/verifier/specifications/DERIVER_SELF_STATUS.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Matching exit/output at the retained coordinate is not global determinism, semantic self-derivability, a CPU or memory sandbox, authorization or observed deployment.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/DERIVER_SELF_STATUS.md. Moves exact-executable/runtime self-status to standard/ with native identifiers and two bounded fresh-directory invocations."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/DERIVER_SELF_STATUS.md. Moves exact-executable/runtime self-status to standard/ with native identifiers and two bounded fresh-directory invocations.",
+      "limits": "Moving a document does not implement or establish its obligations. Matching exit/output at the retained coordinate is not global determinism, semantic self-derivability, a CPU or memory sandbox, authorization or observed deployment."
     },
     {
       "path": "src/verifier/specifications/FINITE_AUTHORITY_COMPOSITION.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Only retained finite declared transition systems are assessed. This does not prove real permissions, scheduler behavior, synchronization or hidden runtime authority; the direct module remains experimental.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md. Moves finite authority composition to standard/ and native identifiers: asynchronous interleaving, member identity preservation and checked product/composite correspondence."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md. Moves finite authority composition to standard/ and native identifiers: asynchronous interleaving, member identity preservation and checked product/composite correspondence.",
+      "limits": "Moving a document does not implement or establish its obligations. Only retained finite declared transition systems are assessed. This does not prove real permissions, scheduler behavior, synchronization or hidden runtime authority; the direct module remains experimental."
     },
     {
       "path": "src/verifier/specifications/FORMATION_RECEIPT.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. The bounded retained-coordinate check does not execute a silo or establish self-derivability, completeness or agency. A path or embedded report cannot substitute for exact object bytes.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/FORMATION_RECEIPT.md. Moves formation-receipt specification to standard/ and native identifiers, binding selected subject/certificate/profile/ground paths to retained canonical network objects and replayed formation."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/FORMATION_RECEIPT.md. Moves formation-receipt specification to standard/ and native identifiers, binding selected subject/certificate/profile/ground paths to retained canonical network objects and replayed formation.",
+      "limits": "Moving a document does not implement or establish its obligations. The bounded retained-coordinate check does not execute a silo or establish self-derivability, completeness or agency. A path or embedded report cannot substitute for exact object bytes."
     },
     {
       "path": "src/verifier/specifications/GLOBAL_CYCLE_ASSESSMENT.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. This does not establish arbitrary causal semantics, comparable clocks or completeness beyond retained relations.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GLOBAL_CYCLE_ASSESSMENT.md. Moves source-grounded cycle assessment to standard/ with native identifiers and separate support-dependency, simultaneous Boolean-constraint and clock-relative temporal facets."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GLOBAL_CYCLE_ASSESSMENT.md. Moves source-grounded cycle assessment to standard/ with native identifiers and separate support-dependency, simultaneous Boolean-constraint and clock-relative temporal facets.",
+      "limits": "Moving a document does not implement or establish its obligations. At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. This does not establish arbitrary causal semantics, comparable clocks or completeness beyond retained relations."
     },
     {
       "path": "src/verifier/specifications/LADDER.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Profiles are cumulative obligation sets, not scalar strength scores. TRUST, RUST and ROT do not imply identity-based truth, and later profiles cannot repair unmet prerequisites.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/LADDER.md. Updates the ladder overview to distinguish object VSTD-1 through VSTD-5, graph GRAPH-1 through GRAPH-5, evidence-bound establishment and a separate typed assurance lifecycle."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/LADDER.md. Updates the ladder overview to distinguish object VSTD-1 through VSTD-5, graph GRAPH-1 through GRAPH-5, evidence-bound establishment and a separate typed assurance lifecycle.",
+      "limits": "Moving a document does not implement or establish its obligations. Profiles are cumulative obligation sets, not scalar strength scores. TRUST, RUST and ROT do not imply identity-based truth, and later profiles cannot repair unmet prerequisites."
     },
     {
       "path": "src/verifier/specifications/PROPOSITION_TRANSFER.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. The reference rule allows at most 16 premises and is not general deduction. Unknown or negative results cannot be promoted; TypeScript structural equality does not demonstrate Python execution or authority.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/PROPOSITION_TRANSFER.md. Moves bounded finite-set proposition transfer to standard/ and native identifiers, requiring exact contexts, predicates, premise bytes and independently recomputed receipts."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/PROPOSITION_TRANSFER.md. Moves bounded finite-set proposition transfer to standard/ and native identifiers, requiring exact contexts, predicates, premise bytes and independently recomputed receipts.",
+      "limits": "Moving a document does not implement or establish its obligations. The reference rule allows at most 16 premises and is not general deduction. Unknown or negative results cannot be promoted; TypeScript structural equality does not demonstrate Python execution or authority."
     },
     {
       "path": "src/verifier/specifications/RELATION_BOUNDARY.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. The reference contract permits 64 facets and 1,048,576 bytes per artifact. Declared facet equality is not full semantic equivalence or evidence that a translation historically ran.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/RELATION_BOUNDARY.md. Moves relation-boundary specification to standard/ with native identifiers, disjoint complete preserved/lost source-facet accounting, exact target coverage and canonical replay."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/RELATION_BOUNDARY.md. Moves relation-boundary specification to standard/ with native identifiers, disjoint complete preserved/lost source-facet accounting, exact target coverage and canonical replay.",
+      "limits": "Moving a document does not implement or establish its obligations. The reference contract permits 64 facets and 1,048,576 bytes per artifact. Declared facet equality is not full semantic equivalence or evidence that a translation historically ran."
     },
     {
       "path": "src/verifier/specifications/RUNTIME_AUTHORITY_CORRESPONDENCE.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Correspondence and state/transition coverage remain separate. Even within 1,024 events and 256 states/transitions this does not establish live deployment, unseen execution, access authorization or sandboxing.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/RUNTIME_AUTHORITY_CORRESPONDENCE.md. Moves authority correspondence to standard/ with native model/executable/deployed-declaration/trace bindings, independently replayed output and one-to-one contiguous transition correspondence."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/RUNTIME_AUTHORITY_CORRESPONDENCE.md. Moves authority correspondence to standard/ with native model/executable/deployed-declaration/trace bindings, independently replayed output and one-to-one contiguous transition correspondence.",
+      "limits": "Moving a document does not implement or establish its obligations. Correspondence and state/transition coverage remain separate. Even within 1,024 events and 256 states/transitions this does not establish live deployment, unseen execution, access authorization or sandboxing."
     },
     {
       "path": "src/verifier/specifications/SOURCE_GROUNDING.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. The source is bounded to 1,048,576 bytes, depth 16 and 4,096 nodes. A successful pointer equality is not source truth, independence, historical execution or universal grounding.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/SOURCE_GROUNDING.md. Moves canonical-source grounding to standard/ and native identifiers, enforcing exact source/frame/proposition/certificate roles and JSON_POINTER_EQUALS replay."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/SOURCE_GROUNDING.md. Moves canonical-source grounding to standard/ and native identifiers, enforcing exact source/frame/proposition/certificate roles and JSON_POINTER_EQUALS replay.",
+      "limits": "Moving a document does not implement or establish its obligations. The source is bounded to 1,048,576 bytes, depth 16 and 4,096 nodes. A successful pointer equality is not source truth, independence, historical execution or universal grounding."
     },
     {
       "path": "src/verifier/specifications/TYPED_FORMATION.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. The mechanism is not a Hypermath translation theorem, semantic self-return, agency or source-interpretation proof. Package loading/planning executes nothing; listed semantic residuals remain outside formation.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/TYPED_FORMATION.md. Moves the seven-constructor FORM/PATH/CODE formation specification to standard/ with native identifiers, preserving formation versus normalized denotation, backward references and quotation/read constraints."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/TYPED_FORMATION.md. Moves the seven-constructor FORM/PATH/CODE formation specification to standard/ with native identifiers, preserving formation versus normalized denotation, backward references and quotation/read constraints.",
+      "limits": "Moving a document does not implement or establish its obligations. The mechanism is not a Hypermath translation theorem, semantic self-return, agency or source-interpretation proof. Package loading/planning executes nothing; listed semantic residuals remain outside formation."
     },
     {
       "path": "src/verifier/specifications/VSTD-1.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. This finite baseline is not accreditation or universal truth. The minimal proposition checker is not a general satisfiability solver; replay is not independent correctness.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-1.md. Adds grounded coordinates 1.1 through 1.7 to the object claim baseline for exact claim, mechanism, evidence, bounds, provenance and reproduction."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-1.md. Adds grounded coordinates 1.1 through 1.7 to the object claim baseline for exact claim, mechanism, evidence, bounds, provenance and reproduction.",
+      "limits": "Moving a document does not implement or establish its obligations. This finite baseline is not accreditation or universal truth. The minimal proposition checker is not a general satisfiability solver; replay is not independent correctness."
     },
     {
       "path": "src/verifier/specifications/VSTD-2.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Verdicts do not extend outside their horizon. Unverified dependencies or self-descriptions cannot establish closure; higher-order claims require their own evidence.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-2.md. Adds grounded coordinates 2.1 through 2.7 to object closure, preserving facet/region/grain/stratum/seam and horizon distinctions and separate self-closure/higher-order obligations."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-2.md. Adds grounded coordinates 2.1 through 2.7 to object closure, preserving facet/region/grain/stratum/seam and horizon distinctions and separate self-closure/higher-order obligations.",
+      "limits": "Moving a document does not implement or establish its obligations. Verdicts do not extend outside their horizon. Unverified dependencies or self-descriptions cannot establish closure; higher-order claims require their own evidence."
     },
     {
       "path": "src/verifier/specifications/VSTD-3.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Raw host telemetry or declared provider identity is not attestation, a complete physical audit or vendor endorsement. Each retained mechanism retains its bounded applicability.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-3.md. Adds grounded coordinates 3.1 through 3.8 for substrate accountability through challenged execution, firmware, accounting, provider/topology and continuity evidence."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-3.md. Adds grounded coordinates 3.1 through 3.8 for substrate accountability through challenged execution, firmware, accounting, provider/topology and continuity evidence.",
+      "limits": "Moving a document does not implement or establish its obligations. Raw host telemetry or declared provider identity is not attestation, a complete physical audit or vendor endorsement. Each retained mechanism retains its bounded applicability."
     },
     {
       "path": "src/verifier/specifications/VSTD-4.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. PASS/FAIL/UNKNOWN apply to exact claim closure and prerequisites. Caller references or candidate grades do not establish the fourteen rungs, arbitrary proof soundness or witness independence.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-4.md. Adds grounded coordinates 4.1 through 4.14 to externally refutable decisions, distinguishing structural candidate assessment from normative evidence-backed establishment."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-4.md. Adds grounded coordinates 4.1 through 4.14 to externally refutable decisions, distinguishing structural candidate assessment from normative evidence-backed establishment.",
+      "limits": "Moving a document does not implement or establish its obligations. PASS/FAIL/UNKNOWN apply to exact claim closure and prerequisites. Caller references or candidate grades do not establish the fourteen rungs, arbitrary proof soundness or witness independence."
     },
     {
       "path": "src/verifier/specifications/VSTD-5.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Witness counts, labels and self-report cannot establish independence. Corroboration must be checked and discordant evidence cannot be erased or averaged into establishment.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-5.md. Adds grounded coordinates 5.1 through 5.11 to corroborated refutability, preserving fourteen-rung entry, exact claim identity and seven dimensions of witness separation."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-5.md. Adds grounded coordinates 5.1 through 5.11 to corroborated refutability, preserving fourteen-rung entry, exact claim identity and seven dimensions of witness separation.",
+      "limits": "Moving a document does not implement or establish its obligations. Witness counts, labels and self-report cannot establish independence. Corroboration must be checked and discordant evidence cannot be erased or averaged into establishment."
     },
     {
       "path": "src/verifier/specifications/VSTD-Graph-1.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Closure concerns the observed boundary, not historical completeness. Legacy decoding remains a distinct compatibility boundary; graph structure does not verify node or edge claims.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-1.md. Defines artifact/transformation hypergraphs and observed boundaries under GRAPH-1, updates the native graph wire and requires disjoint artifact/transformation identifiers for new admission."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-1.md. Defines artifact/transformation hypergraphs and observed boundaries under GRAPH-1, updates the native graph wire and requires disjoint artifact/transformation identifiers for new admission.",
+      "limits": "Moving a document does not implement or establish its obligations. Closure concerns the observed boundary, not historical completeness. Legacy decoding remains a distinct compatibility boundary; graph structure does not verify node or edge claims."
     },
     {
       "path": "src/verifier/specifications/VSTD-Graph-2.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Caller grades remain structural candidates and NOT_ESTABLISHED without evidence-bound mechanisms. Closure does not establish physical truth or substrate accountability.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-2.md. Defines GRAPH-2 collection closure over reachable members, ancestors and edges, with exact graph/member/collection/claim bindings and object-profile prerequisites."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-2.md. Defines GRAPH-2 collection closure over reachable members, ancestors and edges, with exact graph/member/collection/claim bindings and object-profile prerequisites.",
+      "limits": "Moving a document does not implement or establish its obligations. Caller grades remain structural candidates and NOT_ESTABLISHED without evidence-bound mechanisms. Closure does not establish physical truth or substrate accountability."
     },
     {
       "path": "src/verifier/specifications/VSTD-Graph-3.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. A graph rating is not outside-party refutability. Higher-rated members cannot compensate for unsupported edges or unmet prerequisites; exact evidence closure requires checking.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-3.md. Defines GRAPH-3 accountability closure for reachable member and edge evidence at corresponding object profiles, propagating weakest-link limits through the collection."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-3.md. Defines GRAPH-3 accountability closure for reachable member and edge evidence at corresponding object profiles, propagating weakest-link limits through the collection.",
+      "limits": "Moving a document does not implement or establish its obligations. A graph rating is not outside-party refutability. Higher-rated members cannot compensate for unsupported edges or unmet prerequisites; exact evidence closure requires checking."
     },
     {
       "path": "src/verifier/specifications/VSTD-Graph-4.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Verified endpoints do not establish their connecting edge. A candidate explanation or unsatisfiability result does not constitute graph conformance or independent evidence.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-4.md. Defines GRAPH-4 refutability closure and challenge localization over member, edge and collection claims linked to grounded graph coordinates."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-4.md. Defines GRAPH-4 refutability closure and challenge localization over member, edge and collection claims linked to grounded graph coordinates.",
+      "limits": "Moving a document does not implement or establish its obligations. Verified endpoints do not establish their connecting edge. A candidate explanation or unsatisfiability result does not constitute graph conformance or independent evidence."
     },
     {
       "path": "src/verifier/specifications/VSTD-Graph-5.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Witness names, counts and self-assigned ratings do not establish independence. Conflicting required evidence remains inadmissible rather than being averaged into a stronger verdict.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-5.md. Defines GRAPH-5 independent corroboration closure for reachable member and edge claims, retaining conflicts and grounded mechanism bindings."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-5.md. Defines GRAPH-5 independent corroboration closure for reachable member and edge claims, retaining conflicts and grounded mechanism bindings.",
+      "limits": "Moving a document does not implement or establish its obligations. Witness names, counts and self-assigned ratings do not establish independence. Conflicting required evidence remains inadmissible rather than being averaged into a stronger verdict."
     },
     {
       "path": "src/verifier/specifications/VSTD-ZIZK-TOKENS.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Missing or contradictory offline evidence remains unknown or rejected. Identity, continuity, delegation and ownership never prove artifact truth; naming a HYPER replacement does not create a certifiable HYPER adapter.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/ZIZK_TOKENS.md. Moves zero-identity/zero-knowledge token specification to standard/, renames birth/aging/lifetime contracts and withdraws the actor-binding object in favor of separately scoped object/holding composition."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/ZIZK_TOKENS.md. Moves zero-identity/zero-knowledge token specification to standard/, renames birth/aging/lifetime contracts and withdraws the actor-binding object in favor of separately scoped object/holding composition.",
+      "limits": "Moving a document does not implement or establish its obligations. Missing or contradictory offline evidence remains unknown or rejected. Identity, continuity, delegation and ownership never prove artifact truth; naming a HYPER replacement does not create a certifiable HYPER adapter."
     },
     {
       "path": "src/verifier/specifications/WIRE_IDENTIFIERS.md",
       "sha256": null,
       "symbols": [],
-      "limits": "Moving a document does not implement or establish its obligations. Readers must not guess from filenames or shape, treat retired spellings as implicit aliases or infer conformance from package version. Historical contracts need an explicit supported dispatch path.",
-      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/WIRE_IDENTIFIERS.md. Reworks the wire register around native identifiers, exact dispatch and mandatory profile discriminators; adds grounded object, graph and domain contracts while separating software version from wire identity."
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/WIRE_IDENTIFIERS.md. Reworks the wire register around native identifiers, exact dispatch and mandatory profile discriminators; adds grounded object, graph and domain contracts while separating software version from wire identity.",
+      "limits": "Moving a document does not implement or establish its obligations. Readers must not guess from filenames or shape, treat retired spellings as implicit aliases or infer conformance from package version. Historical contracts need an explicit supported dispatch path."
     },
     {
       "path": "src/verifier/standard/ARTIFACT_CONTROL.md",
       "sha256": "531f4afb9629f6322668c02fa4f0bb9e62060dcaa0bb0491c310eada2b41c16b",
       "symbols": [],
-      "limits": "Freezing and sealing do not encrypt bytes or prevent copying. Thaw/history claims require retained parent bytes; a substituted whole signed bundle is not detected merely through internal consistency.",
-      "summary": "Consolidates freeze, readable Ed25519 seal and descendant-thaw specification under standard/ and updates native wire identifiers while preserving dual-digest byte identity."
+      "summary": "Consolidates freeze, readable Ed25519 seal and descendant-thaw specification under standard/ and updates native wire identifiers while preserving dual-digest byte identity.",
+      "limits": "Freezing and sealing do not encrypt bytes or prevent copying. Thaw/history claims require retained parent bytes; a substituted whole signed bundle is not detected merely through internal consistency."
     },
     {
       "path": "src/verifier/standard/BOUNDED_COMPLETENESS.md",
       "sha256": "13b90d9d91593880cbe790d05c3383ad9ba96f2ce99347aebd716f219a87028e",
       "symbols": [],
-      "limits": "The reference mechanism covers at most 256 externally grounded members. Budget exhaustion remains UNKNOWN rather than INCOMPLETE; COMPLETE does not cover an unstated universe or prove source truth.",
-      "summary": "Moves finite-denominator completeness to standard/ and native wire/profile identifiers, separating decisive dispositions from unchecked or invalid members."
+      "summary": "Moves finite-denominator completeness to standard/ and native wire/profile identifiers, separating decisive dispositions from unchecked or invalid members.",
+      "limits": "The reference mechanism covers at most 256 externally grounded members. Budget exhaustion remains UNKNOWN rather than INCOMPLETE; COMPLETE does not cover an unstated universe or prove source truth."
     },
     {
       "path": "src/verifier/standard/DERIVER_SELF_STATUS.md",
       "sha256": "c65009e624621f8abc3766f9acd3e369b096bbd9e487824920a93fdb71568aa9",
       "symbols": [],
-      "limits": "Matching exit/output at the retained coordinate is not global determinism, semantic self-derivability, a CPU or memory sandbox, authorization or observed deployment.",
-      "summary": "Moves exact-executable/runtime self-status to standard/ with native identifiers and two bounded fresh-directory invocations."
+      "summary": "Moves exact-executable/runtime self-status to standard/ with native identifiers and two bounded fresh-directory invocations.",
+      "limits": "Matching exit/output at the retained coordinate is not global determinism, semantic self-derivability, a CPU or memory sandbox, authorization or observed deployment."
     },
     {
       "path": "src/verifier/standard/DOMAIN_GROUNDING.md",
       "sha256": "1c918067d7dddc3190768eb93800b3945b21ea18c9e70d4e6a343fd57b339994",
       "symbols": [],
-      "limits": "PASS/FAIL/UNKNOWN are retained and substituted contracts rejected. Adapters do not execute arbitrary artifact code or prove whole domain sciences; operation/byte bounds are not operating-system isolation, and accountable-record checks do not establish every numbered obligation.",
-      "summary": "Introduces native bounded domain request, evidence, policy, certificate and replay contracts with full mechanism/specification binding and externally supplied expected intent."
+      "summary": "Introduces native bounded domain request, evidence, policy, certificate and replay contracts with full mechanism/specification binding and externally supplied expected intent.",
+      "limits": "PASS/FAIL/UNKNOWN are retained and substituted contracts rejected. Adapters do not execute arbitrary artifact code or prove whole domain sciences; operation/byte bounds are not operating-system isolation, and accountable-record checks do not establish every numbered obligation."
     },
     {
       "path": "src/verifier/standard/DOMAIN_OBLIGATIONS.md",
-      "sha256": "d64d8059087d405f431dc2cad500bbd23a5ebaa70eed07060ef7cebe7957486b",
+      "sha256": "ee7b6e817d3f87121f4229da16cd74fa28aeb25074837b427ecb27f59932a6dd",
       "symbols": [],
-      "limits": "Twelve computational adapters are distinguished from six accountable-record families whose numbered obligations remain UNKNOWN. HYPER has partial statics/adaptation mechanisms but no certifiable request. Level-6 disclosure obligations lack bound numbered-profile mechanisms; catalogue presence does not establish them.",
-      "summary": "Adds the 19-domain, six-level catalogue with prerequisite coordinates, topological depths, mechanism assignments and disclosure obligations distinct from verdict tiers."
+      "summary": "Retains the 19-domain numbered-profile catalogue under its original propositions while identifying the current 26-object/eight-tier contract, superseded ACTOR interpretation and required explicit semantic mapping for reused coordinate spellings.",
+      "limits": "Legacy adaptation/disclosure are not current independence/privacy certificates. The specification does not mechanize every new objective; unsupported current assessments remain UNKNOWN."
     },
     {
       "path": "src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md",
       "sha256": "9e8e574bc5b3d36ee7badec8665e35b83ba1ae92bb49bcf9c7c26bfb8a4813b5",
       "symbols": [],
-      "limits": "Only retained finite declared transition systems are assessed. This does not prove real permissions, scheduler behavior, synchronization or hidden runtime authority; the direct module remains experimental.",
-      "summary": "Moves finite authority composition to standard/ and native identifiers: asynchronous interleaving, member identity preservation and checked product/composite correspondence."
+      "summary": "Moves finite authority composition to standard/ and native identifiers: asynchronous interleaving, member identity preservation and checked product/composite correspondence.",
+      "limits": "Only retained finite declared transition systems are assessed. This does not prove real permissions, scheduler behavior, synchronization or hidden runtime authority; the direct module remains experimental."
     },
     {
       "path": "src/verifier/standard/FORMATION_RECEIPT.md",
       "sha256": "01b20a73e67c67aa0b5d9967c5e1bad8941dd435fb3286a7b175f9d8df355b31",
       "symbols": [],
-      "limits": "The bounded retained-coordinate check does not execute a silo or establish self-derivability, completeness or agency. A path or embedded report cannot substitute for exact object bytes.",
-      "summary": "Moves formation-receipt specification to standard/ and native identifiers, binding selected subject/certificate/profile/ground paths to retained canonical network objects and replayed formation."
+      "summary": "Moves formation-receipt specification to standard/ and native identifiers, binding selected subject/certificate/profile/ground paths to retained canonical network objects and replayed formation.",
+      "limits": "The bounded retained-coordinate check does not execute a silo or establish self-derivability, completeness or agency. A path or embedded report cannot substitute for exact object bytes."
     },
     {
       "path": "src/verifier/standard/GLOBAL_CYCLE_ASSESSMENT.md",
       "sha256": "408c8a30de0019539d972ef3776a90757bc6796b96a9234b703ad4173a476961",
       "symbols": [],
-      "limits": "At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. This does not establish arbitrary causal semantics, comparable clocks or completeness beyond retained relations.",
-      "summary": "Moves source-grounded cycle assessment to standard/ with native identifiers and separate support-dependency, simultaneous Boolean-constraint and clock-relative temporal facets."
+      "summary": "Moves source-grounded cycle assessment to standard/ with native identifiers and separate support-dependency, simultaneous Boolean-constraint and clock-relative temporal facets.",
+      "limits": "At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. This does not establish arbitrary causal semantics, comparable clocks or completeness beyond retained relations."
     },
     {
       "path": "src/verifier/standard/GRAPH-1.md",
       "sha256": "3c6bb548afabd3fe4a7eb7091d6b9645f535a29b6dd639155d151f978303fc2e",
       "symbols": [],
-      "limits": "Closure concerns the observed boundary, not historical completeness. Legacy decoding remains a distinct compatibility boundary; graph structure does not verify node or edge claims.",
-      "summary": "Defines artifact/transformation hypergraphs and observed boundaries under GRAPH-1, updates the native graph wire and requires disjoint artifact/transformation identifiers for new admission."
+      "summary": "Defines artifact/transformation hypergraphs and observed boundaries under GRAPH-1, updates the native graph wire and requires disjoint artifact/transformation identifiers for new admission.",
+      "limits": "Closure concerns the observed boundary, not historical completeness. Legacy decoding remains a distinct compatibility boundary; graph structure does not verify node or edge claims."
     },
     {
       "path": "src/verifier/standard/GRAPH-2.md",
       "sha256": "e2159b70417af1c91c3319a39d69290c657daa1af76b0056f626a67348a2d008",
       "symbols": [],
-      "limits": "Caller grades remain structural candidates and NOT_ESTABLISHED without evidence-bound mechanisms. Closure does not establish physical truth or substrate accountability.",
-      "summary": "Defines GRAPH-2 collection closure over reachable members, ancestors and edges, with exact graph/member/collection/claim bindings and object-profile prerequisites."
+      "summary": "Defines GRAPH-2 collection closure over reachable members, ancestors and edges, with exact graph/member/collection/claim bindings and object-profile prerequisites.",
+      "limits": "Caller grades remain structural candidates and NOT_ESTABLISHED without evidence-bound mechanisms. Closure does not establish physical truth or substrate accountability."
     },
     {
       "path": "src/verifier/standard/GRAPH-3.md",
       "sha256": "4c697603a87f0b7b59b3874114031aa79971cb5cc5f1d904daedda6faac47e13",
       "symbols": [],
-      "limits": "A graph rating is not outside-party refutability. Higher-rated members cannot compensate for unsupported edges or unmet prerequisites; exact evidence closure requires checking.",
-      "summary": "Defines GRAPH-3 accountability closure for reachable member and edge evidence at corresponding object profiles, propagating weakest-link limits through the collection."
+      "summary": "Defines GRAPH-3 accountability closure for reachable member and edge evidence at corresponding object profiles, propagating weakest-link limits through the collection.",
+      "limits": "A graph rating is not outside-party refutability. Higher-rated members cannot compensate for unsupported edges or unmet prerequisites; exact evidence closure requires checking."
     },
     {
       "path": "src/verifier/standard/GRAPH-4.md",
       "sha256": "122eb3d9290de6d048092af425f5c958f4a03b1f0f6f0d383e53e49fabc09454",
       "symbols": [],
-      "limits": "Verified endpoints do not establish their connecting edge. A candidate explanation or unsatisfiability result does not constitute graph conformance or independent evidence.",
-      "summary": "Defines GRAPH-4 refutability closure and challenge localization over member, edge and collection claims linked to grounded graph coordinates."
+      "summary": "Defines GRAPH-4 refutability closure and challenge localization over member, edge and collection claims linked to grounded graph coordinates.",
+      "limits": "Verified endpoints do not establish their connecting edge. A candidate explanation or unsatisfiability result does not constitute graph conformance or independent evidence."
     },
     {
       "path": "src/verifier/standard/GRAPH-5.md",
       "sha256": "95ecd2e029a6ac691a6b530952d2539e66f08da5412924c2d578f9380af94db4",
       "symbols": [],
-      "limits": "Witness names, counts and self-assigned ratings do not establish independence. Conflicting required evidence remains inadmissible rather than being averaged into a stronger verdict.",
-      "summary": "Defines GRAPH-5 independent corroboration closure for reachable member and edge claims, retaining conflicts and grounded mechanism bindings."
+      "summary": "Defines GRAPH-5 independent corroboration closure for reachable member and edge claims, retaining conflicts and grounded mechanism bindings.",
+      "limits": "Witness names, counts and self-assigned ratings do not establish independence. Conflicting required evidence remains inadmissible rather than being averaged into a stronger verdict."
     },
     {
       "path": "src/verifier/standard/GRAPH_GROUNDING.md",
       "sha256": "c9dcfa2cba7de912b06b74895a613de552111f04a6846cf34ba425bd8e61d0d4",
       "symbols": [],
-      "limits": "Graph and object obligation namespaces remain distinct. Reachable closure inherits weakest evidence; profile 0, legacy receipts and structural candidates cannot be auto-promoted to ESTABLISHED.",
-      "summary": "Introduces separate native graph request/policy/certificate contracts binding exact graph bytes, deduplicated members, collection claims, evidence and admitted graph-obligation mechanisms."
+      "summary": "Introduces separate native graph request/policy/certificate contracts binding exact graph bytes, deduplicated members, collection claims, evidence and admitted graph-obligation mechanisms.",
+      "limits": "Graph and object obligation namespaces remain distinct. Reachable closure inherits weakest evidence; profile 0, legacy receipts and structural candidates cannot be auto-promoted to ESTABLISHED."
     },
     {
       "path": "src/verifier/standard/GROUNDED_CERTIFICATION.md",
       "sha256": "94137b497e17d131145a8dabc662c36f7a5576914f48aad8c1b6fe2c570d28af",
       "symbols": [],
-      "limits": "Every prerequisite needs the exact admitted mechanism. FAIL and UNKNOWN remain distinct; registration proves neither soundness nor independence, and legacy certificates are not silently converted.",
-      "summary": "Introduces evidence-backed object certification for 47 cumulative obligations, exact external intent and policy, retained evidence, deterministic evaluation and certificate replay."
+      "summary": "Introduces evidence-backed object certification for 47 cumulative obligations, exact external intent and policy, retained evidence, deterministic evaluation and certificate replay.",
+      "limits": "Every prerequisite needs the exact admitted mechanism. FAIL and UNKNOWN remain distinct; registration proves neither soundness nor independence, and legacy certificates are not silently converted."
     },
     {
       "path": "src/verifier/standard/LADDER.md",
       "sha256": "3827c6c3ed84ad1a314cc2fb630dbe0b4db5bca4d101945cb837642ee2cd3910",
       "symbols": [],
-      "limits": "Profiles are cumulative obligation sets, not scalar strength scores. TRUST, RUST and ROT do not imply identity-based truth, and later profiles cannot repair unmet prerequisites.",
-      "summary": "Updates the ladder overview to distinguish object VSTD-1 through VSTD-5, graph GRAPH-1 through GRAPH-5, evidence-bound establishment and a separate typed assurance lifecycle."
+      "summary": "Updates the ladder overview to distinguish object VSTD-1 through VSTD-5, graph GRAPH-1 through GRAPH-5, evidence-bound establishment and a separate typed assurance lifecycle.",
+      "limits": "Profiles are cumulative obligation sets, not scalar strength scores. TRUST, RUST and ROT do not imply identity-based truth, and later profiles cannot repair unmet prerequisites."
     },
     {
       "path": "src/verifier/standard/META_TIERS.md",
-      "sha256": "170a1710797ba9799c73c9a33c22ee37aa08ffa85b90ad05b90f66ceb1e5c5d5",
+      "sha256": "3ade27acb8892ddac65255cc96e75ee3835d75bc83ab9269b529fa3981af4876",
       "symbols": [],
-      "limits": "Defining a tier does not implement or certify every numbered obligation. Retained VERIFIER/HARDWARE checks do not prove arbitrary verifier soundness or actual hardware availability; unsupported depths and disclosure obligations remain UNKNOWN.",
-      "summary": "Adds the common object/domain/graph ladder catalogue with facets, dynamics, statics, closure and adaptation tiers, separating level-6 disclosure from verdicts and wire identifiers."
+      "summary": "Defines current 26-object admission and eight general meanings, including facets/category independence and governance of laws/rules/ethical boundaries, the HUMAN-rooted ACTOR relation, and positive internal-objective indexing. Scopes the earlier measured lattice as legacy evidence with explicit non-migration of tier5/6 propositions.",
+      "limits": "The 208 object-tier slots are not implemented objectives or certificates. Parsed names, declarations and historical PASS results do not supply current mechanisms, human authenticity, authority or full conformance."
+    },
+    {
+      "path": "src/verifier/standard/NAMESPACE_OBJECTS.md",
+      "sha256": "ef2fdc080c4f5d3464f61efea5156ea61776e40d2bb45d167b8100ac5306b00e",
+      "symbols": [],
+      "summary": "Specifies the 26 names and eight tier meanings, immutable object/reference commitments and collection capture, typed composition roles and graph replacement, hardware-ownership replay and the current partial-implementation/migration boundary.",
+      "limits": "The old numbered catalogues are not silently migrated and all objectives are not declared implemented. Historical receipt bytes retain original meanings; the remaining version-selection seam stays open in TIME."
     },
     {
       "path": "src/verifier/standard/PROPOSITION_TRANSFER.md",
       "sha256": "8184f60c6dd09ffbc4687f175c9a922563eebce86e63b640e5b6716af2fefd4d",
       "symbols": [],
-      "limits": "The reference rule allows at most 16 premises and is not general deduction. Unknown or negative results cannot be promoted; TypeScript structural equality does not demonstrate Python execution or authority.",
-      "summary": "Moves bounded finite-set proposition transfer to standard/ and native identifiers, requiring exact contexts, predicates, premise bytes and independently recomputed receipts."
+      "summary": "Moves bounded finite-set proposition transfer to standard/ and native identifiers, requiring exact contexts, predicates, premise bytes and independently recomputed receipts.",
+      "limits": "The reference rule allows at most 16 premises and is not general deduction. Unknown or negative results cannot be promoted; TypeScript structural equality does not demonstrate Python execution or authority."
     },
     {
       "path": "src/verifier/standard/RELATION_BOUNDARY.md",
       "sha256": "499933835cdfa4b4d426afff94863819d653a033024e253ebf5a35cc9118c45b",
       "symbols": [],
-      "limits": "The reference contract permits 64 facets and 1,048,576 bytes per artifact. Declared facet equality is not full semantic equivalence or evidence that a translation historically ran.",
-      "summary": "Moves relation-boundary specification to standard/ with native identifiers, disjoint complete preserved/lost source-facet accounting, exact target coverage and canonical replay."
+      "summary": "Moves relation-boundary specification to standard/ with native identifiers, disjoint complete preserved/lost source-facet accounting, exact target coverage and canonical replay.",
+      "limits": "The reference contract permits 64 facets and 1,048,576 bytes per artifact. Declared facet equality is not full semantic equivalence or evidence that a translation historically ran."
     },
     {
       "path": "src/verifier/standard/RUNTIME_AUTHORITY_CORRESPONDENCE.md",
       "sha256": "a599d2381cd231defcc178fadb208c43b024bd65b38996f4372fac816b00a57a",
       "symbols": [],
-      "limits": "Correspondence and state/transition coverage remain separate. Even within 1,024 events and 256 states/transitions this does not establish live deployment, unseen execution, access authorization or sandboxing.",
-      "summary": "Moves authority correspondence to standard/ with native model/executable/deployed-declaration/trace bindings, independently replayed output and one-to-one contiguous transition correspondence."
+      "summary": "Moves authority correspondence to standard/ with native model/executable/deployed-declaration/trace bindings, independently replayed output and one-to-one contiguous transition correspondence.",
+      "limits": "Correspondence and state/transition coverage remain separate. Even within 1,024 events and 256 states/transitions this does not establish live deployment, unseen execution, access authorization or sandboxing."
+    },
+    {
+      "path": "src/verifier/standard/SIM_ISOLATION.md",
+      "sha256": "2fd11afdb67cf6a2a4dffa5f209a50125ddc07c0828ac2c51b29b8d2c86a7ec4",
+      "symbols": [],
+      "summary": "Defines the finite transition-model isolation proposition, expected evidence/policy binding, supported virtual resources and effects, snapshot/replay semantics, counterexamples and checking limits.",
+      "limits": "A model-relative PASS does not prove physical containment, virtuality of real resources, ownership authority, consent, governance or full SIM-tier conformance."
     },
     {
       "path": "src/verifier/standard/SOURCE_GROUNDING.md",
       "sha256": "dd874c890ad675fe43cb36d5e63d11b829d8b371d0866e7d7bfdcc6a8c0e778a",
       "symbols": [],
-      "limits": "The source is bounded to 1,048,576 bytes, depth 16 and 4,096 nodes. A successful pointer equality is not source truth, independence, historical execution or universal grounding.",
-      "summary": "Moves canonical-source grounding to standard/ and native identifiers, enforcing exact source/frame/proposition/certificate roles and JSON_POINTER_EQUALS replay."
+      "summary": "Moves canonical-source grounding to standard/ and native identifiers, enforcing exact source/frame/proposition/certificate roles and JSON_POINTER_EQUALS replay.",
+      "limits": "The source is bounded to 1,048,576 bytes, depth 16 and 4,096 nodes. A successful pointer equality is not source truth, independence, historical execution or universal grounding."
     },
     {
       "path": "src/verifier/standard/TYPED_FORMATION.md",
       "sha256": "94b3210fbab358a7c1279ede9946176060714822074d62dd18f1ad30e625f563",
       "symbols": [],
-      "limits": "The mechanism is not a Hypermath translation theorem, semantic self-return, agency or source-interpretation proof. Package loading/planning executes nothing; listed semantic residuals remain outside formation.",
-      "summary": "Moves the seven-constructor FORM/PATH/CODE formation specification to standard/ with native identifiers, preserving formation versus normalized denotation, backward references and quotation/read constraints."
+      "summary": "Moves the seven-constructor FORM/PATH/CODE formation specification to standard/ with native identifiers, preserving formation versus normalized denotation, backward references and quotation/read constraints.",
+      "limits": "The mechanism is not a Hypermath translation theorem, semantic self-return, agency or source-interpretation proof. Package loading/planning executes nothing; listed semantic residuals remain outside formation."
     },
     {
       "path": "src/verifier/standard/VSTD-1.md",
       "sha256": "b9e68fc4d09dccb81b86aadea6005c81c70db46be6d7dac02dd619ca24066e41",
       "symbols": [],
-      "limits": "This finite baseline is not accreditation or universal truth. The minimal proposition checker is not a general satisfiability solver; replay is not independent correctness.",
-      "summary": "Adds grounded coordinates 1.1 through 1.7 to the object claim baseline for exact claim, mechanism, evidence, bounds, provenance and reproduction."
+      "summary": "Adds grounded coordinates 1.1 through 1.7 to the object claim baseline for exact claim, mechanism, evidence, bounds, provenance and reproduction.",
+      "limits": "This finite baseline is not accreditation or universal truth. The minimal proposition checker is not a general satisfiability solver; replay is not independent correctness."
     },
     {
       "path": "src/verifier/standard/VSTD-2.md",
       "sha256": "662644483b16c8f327cb4cc92017beb1c5037e178dfbc725ee30e634e819dcc5",
       "symbols": [],
-      "limits": "Verdicts do not extend outside their horizon. Unverified dependencies or self-descriptions cannot establish closure; higher-order claims require their own evidence.",
-      "summary": "Adds grounded coordinates 2.1 through 2.7 to object closure, preserving facet/region/grain/stratum/seam and horizon distinctions and separate self-closure/higher-order obligations."
+      "summary": "Adds grounded coordinates 2.1 through 2.7 to object closure, preserving facet/region/grain/stratum/seam and horizon distinctions and separate self-closure/higher-order obligations.",
+      "limits": "Verdicts do not extend outside their horizon. Unverified dependencies or self-descriptions cannot establish closure; higher-order claims require their own evidence."
     },
     {
       "path": "src/verifier/standard/VSTD-3.md",
       "sha256": "e00066fab5f5bb187b638425cd21e479fcb62c65785c13cbfbe76797ea85b44f",
       "symbols": [],
-      "limits": "Raw host telemetry or declared provider identity is not attestation, a complete physical audit or vendor endorsement. Each retained mechanism retains its bounded applicability.",
-      "summary": "Adds grounded coordinates 3.1 through 3.8 for substrate accountability through challenged execution, firmware, accounting, provider/topology and continuity evidence."
+      "summary": "Adds grounded coordinates 3.1 through 3.8 for substrate accountability through challenged execution, firmware, accounting, provider/topology and continuity evidence.",
+      "limits": "Raw host telemetry or declared provider identity is not attestation, a complete physical audit or vendor endorsement. Each retained mechanism retains its bounded applicability."
     },
     {
       "path": "src/verifier/standard/VSTD-4.md",
       "sha256": "c12df81669102f8a254025645e7dae5d6712b392066ea361f402eb5ed50ed835",
       "symbols": [],
-      "limits": "PASS/FAIL/UNKNOWN apply to exact claim closure and prerequisites. Caller references or candidate grades do not establish the fourteen rungs, arbitrary proof soundness or witness independence.",
-      "summary": "Adds grounded coordinates 4.1 through 4.14 to externally refutable decisions, distinguishing structural candidate assessment from normative evidence-backed establishment."
+      "summary": "Adds grounded coordinates 4.1 through 4.14 to externally refutable decisions, distinguishing structural candidate assessment from normative evidence-backed establishment.",
+      "limits": "PASS/FAIL/UNKNOWN apply to exact claim closure and prerequisites. Caller references or candidate grades do not establish the fourteen rungs, arbitrary proof soundness or witness independence."
     },
     {
       "path": "src/verifier/standard/VSTD-5.md",
       "sha256": "fa705b42c1f56d0751747a879f6cc9d39551cce5e2d62309f2c72ba3e1576e13",
       "symbols": [],
-      "limits": "Witness counts, labels and self-report cannot establish independence. Corroboration must be checked and discordant evidence cannot be erased or averaged into establishment.",
-      "summary": "Adds grounded coordinates 5.1 through 5.11 to corroborated refutability, preserving fourteen-rung entry, exact claim identity and seven dimensions of witness separation."
+      "summary": "Adds grounded coordinates 5.1 through 5.11 to corroborated refutability, preserving fourteen-rung entry, exact claim identity and seven dimensions of witness separation.",
+      "limits": "Witness counts, labels and self-report cannot establish independence. Corroboration must be checked and discordant evidence cannot be erased or averaged into establishment."
     },
     {
       "path": "src/verifier/standard/WIRE_IDENTIFIERS.md",
       "sha256": "06fd9a8f044c3ae1151bbba4443abdb5100113956c645e198d4be0898a082f5d",
       "symbols": [],
-      "limits": "Readers must not guess from filenames or shape, treat retired spellings as implicit aliases or infer conformance from package version. Historical contracts need an explicit supported dispatch path.",
-      "summary": "Reworks the wire register around native identifiers, exact dispatch and mandatory profile discriminators; adds grounded object, graph and domain contracts while separating software version from wire identity."
+      "summary": "Reworks the wire register around native identifiers, exact dispatch and mandatory profile discriminators; adds grounded object, graph and domain contracts while separating software version from wire identity.",
+      "limits": "Readers must not guess from filenames or shape, treat retired spellings as implicit aliases or infer conformance from package version. Historical contracts need an explicit supported dispatch path."
     },
     {
       "path": "src/verifier/standard/ZIZK_TOKENS.md",
       "sha256": "49da23c6180264f1a0dead59988d6a728e41b468b8187097d034b00fd26d1e6a",
       "symbols": [],
-      "limits": "Missing or contradictory offline evidence remains unknown or rejected. Identity, continuity, delegation and ownership never prove artifact truth; naming a HYPER replacement does not create a certifiable HYPER adapter.",
-      "summary": "Moves zero-identity/zero-knowledge token specification to standard/, renames birth/aging/lifetime contracts and withdraws the actor-binding object in favor of separately scoped object/holding composition."
+      "summary": "Moves zero-identity/zero-knowledge token specification to standard/, renames birth/aging/lifetime contracts and withdraws the actor-binding object in favor of separately scoped object/holding composition.",
+      "limits": "Missing or contradictory offline evidence remains unknown or rejected. Identity, continuity, delegation and ownership never prove artifact truth; naming a HYPER replacement does not create a certifiable HYPER adapter."
     }
   ]
 }

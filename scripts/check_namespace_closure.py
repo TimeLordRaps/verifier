@@ -1,25 +1,15 @@
 #!/usr/bin/env python3
-"""Terminology: Verifier Standard (VSTD).
+"""Keep Verifier Standard (VSTD) namespace admission and legacy spellings closed.
 
-Keep the VSTD-NAMESPACE closed.
+The current VSTD-NAMESPACE has 26 object kinds and eight general meta-tiers.
+`VSTD` names the standard, not a current object kind. The older numbered-profile
+catalogue has 19 domain kinds, plus separate VSTD and Graph axes whose historical
+receipt coordinates and wire identifiers are not renamed by this gate.
 
-The namespace is the base abstract `VSTD` plus twenty objects and nothing else.
-ALL-CAPS is the namespace marker, so an object is spelled by its bare name --
-`DATA`, `GRAPH-1`, `OWNER-4.5` -- and the `VSTD-` prefix survives only where a
-bare name would say nothing (`VSTD-1` through `VSTD-6`, the base abstract's own
-tiers) or would be ambiguous (`VSTD-NAMESPACE`, the name of the space itself).
-
-Nothing enforced this before, and 137 names under 59 invented heads had
-accumulated by v2.0.0.  Two checks run here:
-
-  catalogue  every object is admitted and every admitted object has obligations. This is
-             the load-bearing check: it
-             reads the object set rather than prose, so a new name cannot enter
-             by being written down somewhere.
-
-  residue    no `VSTD-` prefix survives on anything but the tiers, the name of
-             the space, and a short list of strings that merely contain an
-             object name without referring to one.
+ALL-CAPS is the object-name marker. A `VSTD-` prefix on a current object remains
+invalid; historical `VSTD-1` through `VSTD-6` and the `VSTD-NAMESPACE` title
+remain admissible lexical references. Admission checks names and tier enum
+meanings, not per-object objective registration or certification.
 
 Run with no arguments; a non-zero exit names every offender.
 """
@@ -34,12 +24,26 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-#: The closed set.  `VSTD` is the base abstract; these are the twenty objects.
+#: Independent current specification inventory; compared with runtime ObjectKind.
 OBJECTS: frozenset[str] = frozenset({
-    "GRAPH", "ENV", "DATA", "BENCH", "HYPER", "MODEL", "SIM", "HARNESS",
-    "AGENT", "BOT", "ACTOR", "ROLE", "COLLECTIVE", "IDENTITY", "HUMAN", "OWNER",
-    "TRAIN", "TOKEN", "VERIFIER", "HARDWARE",
+    "HUMAN", "ACTOR", "COLLECTIVE", "ROLE", "IDENTITY", "OWNER", "HARDWARE",
+    "RECEIPT", "OBJECT", "GRAPH", "SPACE", "TIME", "EVENT", "ENV", "DATA",
+    "VERIFIER", "BENCH", "ARCH", "TRAIN", "HYPER", "MODEL", "HARNESS",
+    "AGENT", "SIM", "BOT", "TOKEN",
 })
+
+#: Earlier domain-object obligations retain exactly this nineteen-kind scope.
+LEGACY_DOMAIN_OBJECTS: frozenset[str] = frozenset({
+    "HUMAN", "ACTOR", "COLLECTIVE", "ROLE", "IDENTITY", "OWNER", "HARDWARE",
+    "ENV", "DATA", "VERIFIER", "BENCH", "TRAIN", "HYPER", "MODEL",
+    "HARNESS", "AGENT", "SIM", "BOT", "TOKEN",
+})
+
+#: General tier meanings, distinct from the retained numbered-profile catalogue.
+CURRENT_TIERS: dict[int, str] = {
+    1: "FACETS", 2: "DYNAMICS", 3: "STATICS", 4: "CLOSURE",
+    5: "INDEPENDENCE", 6: "PRIVACY", 7: "CONSENT", 8: "GOVERNANCE",
+}
 
 #: Named compositions that are *not* members of the namespace.  Empty by ruling.
 #: Being written over other objects was once taken to disqualify a name from
@@ -85,7 +89,7 @@ _TIER_RANGE = re.compile(r"(N|[1-6]\.\.(VSTD-)?[1-6])$")
 
 
 def admissible(token: str) -> bool:
-    """True when `token` is a VSTD- spelling the namespace still allows."""
+    """True for a retained VSTD-prefixed lexical spelling, not object admission."""
 
     if token == "VSTD" or token in EXCEPTIONS:
         return True
@@ -98,19 +102,37 @@ def admissible(token: str) -> bool:
 
 
 def catalogue_offenders() -> list[str]:
-    """Every object the catalogue carries must be one of the twenty."""
+    """An added legacy catalogue object needs an explicit migration decision."""
 
     from verifier.core.profile_obligations import DOMAIN_OBJECTS
 
-    return sorted(set(DOMAIN_OBJECTS) - OBJECTS - set(COMPOSITIONS))
+    return sorted(set(DOMAIN_OBJECTS) - LEGACY_DOMAIN_OBJECTS - set(COMPOSITIONS))
 
 
 def catalogue_missing() -> list[str]:
-    """Every admitted object must resolve to a normative obligation catalogue."""
+    """The retained 19-domain catalogue cannot silently lose a domain object."""
     from verifier.core.profile_obligations import DOMAIN_OBJECTS
 
-    # GRAPH has its own catalogue; all other objects use domain obligations.
-    return sorted(OBJECTS - {"GRAPH"} - set(DOMAIN_OBJECTS))
+    return sorted(LEGACY_DOMAIN_OBJECTS - set(DOMAIN_OBJECTS))
+
+
+def current_namespace_offenders() -> list[str]:
+    """Check the independent name inventory against admitted runtime kinds."""
+    from verifier.core.namespace import ObjectKind
+
+    runtime = {kind.value for kind in ObjectKind}
+    return ([f"{name} missing from gate" for name in sorted(runtime - OBJECTS)]
+            + [f"{name} absent from runtime" for name in sorted(OBJECTS - runtime)])
+
+
+def current_tier_offenders() -> list[str]:
+    """A tier name or number must not drift without a reviewed spec change."""
+    from verifier.core.namespace import MetaTier
+
+    runtime = {tier.value: tier.name for tier in MetaTier}
+    return [f"tier {number}: expected {CURRENT_TIERS.get(number)}, runtime {runtime.get(number)}"
+            for number in sorted(set(CURRENT_TIERS) | set(runtime))
+            if CURRENT_TIERS.get(number) != runtime.get(number)]
 
 
 def residue_offenders() -> list[tuple[str, int, str]]:
@@ -144,32 +166,37 @@ def residue_offenders() -> list[tuple[str, int, str]]:
 def main() -> int:
     catalogue = catalogue_offenders()
     missing = catalogue_missing()
+    current = current_namespace_offenders()
+    tiers = current_tier_offenders()
     residue = residue_offenders()
 
     if catalogue:
-        print(f"[NAMESPACE CLOSURE] FAIL: {len(catalogue)} object(s) outside the twenty:")
+        print(f"[NAMESPACE CLOSURE] FAIL: {len(catalogue)} object(s) outside the legacy nineteen:")
         for name in catalogue:
             print(f"  the catalogue carries {name}")
     if missing:
-        print("[NAMESPACE CLOSURE] FAIL: admitted objects without obligations: " + ", ".join(missing))
+        print("[NAMESPACE CLOSURE] FAIL: legacy domain objects without obligations: " + ", ".join(missing))
+    for offender in current + tiers:
+        print("[NAMESPACE CLOSURE] FAIL: " + offender)
     if residue:
         print(f"[NAMESPACE CLOSURE] FAIL: {len(residue)} VSTD- prefix(es) that should be bare:")
         for relative, number, token in residue:
             print(f"  {relative}:{number}: {token}")
-    if catalogue or missing or residue:
+    if catalogue or missing or current or tiers or residue:
         print(
-            "\nThe VSTD-NAMESPACE is VSTD plus "
+            "\nThe current VSTD-NAMESPACE contains "
             + ", ".join(sorted(OBJECTS))
-            + ".\nALL-CAPS is the marker, so an object is spelled bare; the prefix"
-            "\nsurvives only on VSTD-1..VSTD-6 and on VSTD-NAMESPACE itself."
-            "\nAn implementation identifier belongs in lowercase verifier-*."
+            + ".\nThe 19-object legacy domain catalogue retains old profile meanings."
+            "\nThe VSTD- prefix survives historical profile references and the"
+            " VSTD-NAMESPACE title, not current object identifiers."
         )
         return 1
 
     print(
-        f"[NAMESPACE CLOSURE] PASS: the VSTD-NAMESPACE holds VSTD and "
-        f"{len(OBJECTS)} objects, each spelled bare; the prefix survives only on "
-        f"VSTD-1..VSTD-6 and VSTD-NAMESPACE."
+        f"[NAMESPACE CLOSURE] PASS: {len(OBJECTS)} object kinds and eight meta-tiers "
+        "match the current runtime; structural admission only; "
+        "objective certification NOT_ESTABLISHED. The 19-object legacy domain "
+        "catalogue and historical VSTD-1..VSTD-6 spellings retain their old meanings."
     )
     for name, definition in COMPOSITIONS.items():
         print(f"[NAMESPACE CLOSURE] COMPOSITION: {name} -- {definition}")
