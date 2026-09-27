@@ -16,8 +16,8 @@ from .formation_storage import _decode_commit, inspect_silo_formation
 from .formation_wire import RESIDUAL_OBLIGATIONS, profile_digest
 from .network import NetworkError, _digest, _path, canonical_bytes, digest_bytes
 
-SELECTION_SCHEMA = "VSTD-SILO-FORMATION-SELECTION-0.1"
-RECEIPT_SCHEMA = "VSTD-SILO-FORMATION-RECEIPT-0.1"
+SELECTION_SCHEMA = "verifier-silo-formation-selection-1"
+RECEIPT_SCHEMA = "verifier-silo-formation-receipt-1"
 MAX_SELECTION_BYTES = 4096
 MAX_RECEIPT_BYTES = 1048576
 MAX_JSON_DEPTH = 16

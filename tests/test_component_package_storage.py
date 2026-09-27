@@ -97,7 +97,7 @@ def test_host_independent_golden_canonical_identity() -> None:
     # The same literal fixture and digest run on every configured native host.
     # This is a serialization contract, not native-verifier equivalence.
     assert sample_package().canonical_digest() == (
-        "87d2d2e61e1926e68ec2e3d4f99fdb48e23382eae1e039e70bc46500b2302f68"
+        "ee2568bafba54afafc31d924fa6b398054459449b8aeed57cfce513116874f4f"
     )
 
 
@@ -211,7 +211,7 @@ def test_missing_fields_rejected(section: str) -> None:
 
 def test_no_implicit_catalog_migration_or_array_normalization() -> None:
     value = sample_package().to_dict()
-    value["registry"]["schema_version"] = "VSTD-INTEROPERABILITY-CATALOG-1.0"
+    value["registry"]["schema_version"] = "verifier-interoperability-catalog-1"
     with pytest.raises(ComponentPackageError, match="no migration"):
         StoredComponentPackage.from_dict(value)
     value = sample_package().to_dict()
@@ -256,7 +256,7 @@ def test_malformed_or_ambiguous_transport_rejected(content: bytes, tmp_path: Pat
 
 def test_unknown_package_schema_fails_closed() -> None:
     value = sample_package().to_dict()
-    value["schema_version"] = "VSTD-COMPONENT-PACKAGE-2"
+    value["schema_version"] = "verifier-component-package-2"
     with pytest.raises(ComponentPackageError, match="schema_version"):
         StoredComponentPackage.from_dict(value)
 

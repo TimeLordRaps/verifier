@@ -1,7 +1,7 @@
 # Human operating guide for Verifier Standard (VSTD)
 
 **Role:** practical reasoning guide for human maintainers and reviewers. Normative meaning
-remains in [`standard/`](standard/); this file defines no receipt, status, or serialized receipt format.
+remains in [`standard/`](src/verifier/standard/); this file defines no receipt, status, or serialized receipt format.
 
 ## Three repository controls
 

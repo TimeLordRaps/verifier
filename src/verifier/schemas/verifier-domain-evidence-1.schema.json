@@ -1,0 +1,772 @@
+{
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-domain-evidence-1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "DATA"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "fields": {},
+              "final_shards": {},
+              "identity_field": {},
+              "overlap": {},
+              "shard_fields": {},
+              "shards": {},
+              "source_shards": {},
+              "splits": {},
+              "transforms": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "shards": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "ENV"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "ceilings": {},
+              "configuration": {},
+              "execution": {},
+              "execution_ids": {},
+              "files": {},
+              "scope": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "configuration": {},
+              "executions": {},
+              "files": {},
+              "measurements": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "BENCH"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "minimum_score": {},
+              "problems": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "runs": {},
+              "score": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "TRAIN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "architecture": {},
+              "checkpoint_digests": {},
+              "configuration": {},
+              "start_step": {},
+              "steps_digest": {},
+              "tolerance": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "batches": {},
+              "checkpoints": {},
+              "steps": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "MODEL"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "architecture_digest": {},
+              "challenges": {},
+              "dependencies": {},
+              "metric": {},
+              "metric_bounds": {},
+              "samples_digest": {},
+              "tolerance": {},
+              "weights_digest": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "architecture": {},
+              "dependencies": {},
+              "metric_value": {},
+              "samples": {},
+              "weights": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "SIM"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "action_bounds": {},
+              "entropy_digest": {},
+              "finite_entropy_set": {},
+              "finite_state_set": {},
+              "initial_state": {},
+              "invariants": {},
+              "macro_digest": {},
+              "observation": {},
+              "projection": {},
+              "shards": {},
+              "times_digest": {},
+              "tolerance": {},
+              "trajectory_digest": {},
+              "transition": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "actions": {},
+              "entropy": {},
+              "macro_states": {},
+              "observations": {},
+              "shards": {},
+              "states": {},
+              "times": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "HARNESS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "effects": {},
+              "record_count": {},
+              "surface": {},
+              "tools": {},
+              "transcript_digest": {},
+              "transcript_root": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "effects": {},
+              "invocations": {},
+              "records": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "AGENT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "actions_digest": {},
+              "claims": {},
+              "harness_certificate_digest": {},
+              "harness_subject_id": {},
+              "outcomes": {},
+              "required_channels": {},
+              "steps_digest": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "actions": {},
+              "harness_certificate": {},
+              "outcomes": {},
+              "steps": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "BOT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "agent_certificate_digest": {},
+              "agent_environment_certificate_digest": {},
+              "exogenous_transitions": {},
+              "initial_observation_record": {},
+              "separation": {},
+              "sim_certificate_digest": {},
+              "sim_environment_certificate_digest": {},
+              "step_map": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "agent_certificate": {},
+              "agent_environment_certificate": {},
+              "sim_certificate": {},
+              "sim_environment_certificate": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "TOKEN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "accepted_algorithms": {},
+              "audience": {},
+              "clock": {},
+              "clock_skew": {},
+              "epochs_digest": {},
+              "issuing_keys": {},
+              "key_retirements": {},
+              "observed_at": {},
+              "period": {},
+              "root_scopes": {},
+              "status_schedule": {},
+              "statuses_digest": {},
+              "tokens_digest": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "epochs": {},
+              "statuses": {},
+              "tokens": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "ACTOR"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "actor_id": {},
+              "admitted_spaces": {},
+              "control_surface": {},
+              "decision_classes": {},
+              "decisions_digest": {},
+              "delegations_digest": {},
+              "instrument_boundary": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "control_keys": {},
+              "decisions": {},
+              "delegation_events": {},
+              "witness_attributions": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "OWNER"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "chain_origin": {},
+              "events_digest": {},
+              "held_object_coordinate": {},
+              "held_object_digest": {},
+              "holder_actor_id": {},
+              "instrument": {},
+              "limbs": {},
+              "limbs_kind": {},
+              "term": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "accountability_witnesses": {},
+              "answering_duties": {},
+              "events": {},
+              "held_verdict": {},
+              "holdings_chain": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "COLLECTIVE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "assembly_policy": {},
+              "collective_decisions_digest": {},
+              "collective_id": {},
+              "coordinate": {},
+              "decision_classes": {},
+              "inside": {},
+              "outside": {},
+              "relation_types": {},
+              "role_classes": {},
+              "role_decisions_digest": {},
+              "role_graph_digest": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "collective_decisions": {},
+              "role_decisions": {},
+              "role_graph": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "ROLE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "admissible_bearer_classes": {},
+              "authority": {},
+              "bearer_limit": {},
+              "coordinate": {},
+              "current_occupants": {},
+              "occupancy_events_digest": {},
+              "qualifications": {},
+              "role_class_id": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "occupancy_events": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "IDENTITY"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance_level": {},
+              "bearer_certificate_digest": {},
+              "bearer_class": {},
+              "bearer_subject_id": {},
+              "disclosure": {},
+              "events_digest": {},
+              "inherited_scope": {},
+              "occupancy_digest": {},
+              "revocation_surface": {},
+              "role_certificate_digest": {},
+              "role_class_id": {},
+              "role_coordinate": {},
+              "role_subject_id": {},
+              "simulation_id": {},
+              "validity": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "bearer_certificate": {},
+              "events": {},
+              "occupancy_evidence": {},
+              "role_certificate": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "HUMAN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "capture_pipeline": {},
+              "deduplication_mechanism": {},
+              "enrollment_population": {},
+              "events_digest": {},
+              "evidence_class": {},
+              "evidence_digest": {},
+              "liveness_claim": {},
+              "subject_ref": {},
+              "unasserted_attributes": {},
+              "uniqueness_claim": {},
+              "validity": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "events": {},
+              "evidence_records": {}
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "VERIFIER"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "additionalProperties": false,
+            "properties": {
+              "bootstrap_digest": {},
+              "ceilings": {},
+              "proposition_classes": {},
+              "refutation_boundaries": {},
+              "runs_digest": {},
+              "self_attestation_digest": {},
+              "toolchain_digest": {},
+              "verifier_id": {},
+              "soundness_claims_digest": {},
+              "verifier_kind": {},
+              "version": {}
+            },
+            "required": [],
+            "type": "object"
+          },
+          "inputs": {
+            "additionalProperties": false,
+            "properties": {
+              "bootstrap_receipt": {},
+              "measurements": {},
+              "runs": {},
+              "self_attestation": {},
+              "soundness_claims": {},
+              "toolchain": {},
+              "resource_execution": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mechanism"
+                ],
+                "properties": {
+                  "mechanism": {
+                    "const": "windows-job-native-kernel-1"
+                  }
+                }
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "HARDWARE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifact": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {},
+              "clock": {},
+              "devices_digest": {},
+              "topology_digest": {},
+              "allocations_digest": {},
+              "measurements_digest": {}
+            }
+          },
+          "inputs": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "devices": {},
+              "topology": {},
+              "allocations": {},
+              "measurements": {}
+            }
+          }
+        }
+      }
+    }
+  ],
+  "description": "Structural envelope only. Domain evaluators check retained contract semantics; certificate replay requires external intent and policy.",
+  "properties": {
+    "artifact": {
+      "type": "object"
+    },
+    "domain": {
+      "enum": [
+        "DATA",
+        "ENV",
+        "BENCH",
+        "TRAIN",
+        "MODEL",
+        "SIM",
+        "HARNESS",
+        "AGENT",
+        "BOT",
+        "TOKEN",
+        "ACTOR",
+        "OWNER",
+        "COLLECTIVE",
+        "ROLE",
+        "IDENTITY",
+        "HUMAN",
+        "VERIFIER",
+        "HARDWARE"
+      ]
+    },
+    "inputs": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "verifier-domain-evidence-1"
+    },
+    "subject_id": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "domain",
+    "subject_id",
+    "artifact",
+    "inputs"
+  ],
+  "title": "Verifier Standard domain evidence version 1",
+  "type": "object"
+}

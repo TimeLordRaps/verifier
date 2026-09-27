@@ -16,8 +16,8 @@ from enum import Enum
 from typing import Any, Mapping, Optional
 
 
-CATALOG_SCHEMA_VERSION = "VSTD-INTEROPERABILITY-CATALOG-1.1"
-_LEGACY_CATALOG_SCHEMA_VERSION = "VSTD-INTEROPERABILITY-CATALOG-1.0"
+CATALOG_SCHEMA_VERSION = "verifier-interoperability-catalog-2"
+_LEGACY_CATALOG_SCHEMA_VERSION = "verifier-interoperability-catalog-1"
 AWARENESS_CLAIM_BOUNDARY = (
     "Permission does not establish artifact awareness; withholding direct access "
     "does not establish non-inferability. This operation does not establish "

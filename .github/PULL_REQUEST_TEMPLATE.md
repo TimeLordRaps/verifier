@@ -1,7 +1,7 @@
 ## Coordinate
 
-> **Acronyms:** identifier (ID); Secure Hash Algorithm 256-bit (SHA-256);
-> Verifier Standard (VSTD).
+> **Acronyms:** central processing unit (CPU); identifier (ID); operating system (OS);
+> Secure Hash Algorithm 256-bit (SHA-256); uniform resource locator (URL); Verifier Standard (VSTD).
 
 - VSTD numbered profile or closure coordinate:
 - Repository release or target commit:
@@ -26,12 +26,34 @@ These fields are checked against the live pull request. Refresh them after every
 - Promotion record SHA-256: PENDING — digest of the canonical promotion fields and complete human-gate section.
 - Actionable findings: PENDING — replace with `CLEAR —` followed by every finding and its resolved disposition, or explain why none existed.
 - Tests skipped or not run: PENDING — after the recorded repository-check run completes, copy its machine-produced values exactly as `DISCLOSED — test-evidence-sha256=<64hex> — total-skipped=<count>; skip-observation-omissions=<comma-separated-manifest-list>`, where `<64hex>` means exactly 64 lowercase hexadecimal characters; use `NONE — test-evidence-sha256=<64hex> — total-skipped=0; skip-observation-omissions=NONE` only when the bound manifest records zero skips and no observation omissions.
-- Human acceptance evidence: PENDING — link an exact-head approving review or trusted maintainer comment containing `VSTD-HUMAN-ACCEPTANCE: FULL_COMMIT_ID PROMOTION_RECORD_SHA256`.
+- Human acceptance evidence: PENDING — link an exact-head approving review or trusted maintainer comment containing `acceptance-clearance: FULL_COMMIT_ID PROMOTION_RECORD_SHA256`.
 - Post-merge validation owner and surfaces: PENDING — replace with `ASSIGNED —` and name the owner plus the exact `main`, Pages, release, or other surfaces to observe.
 
 ## Human review gates
 
 - [ ] Replace this template item with one line per proposition using `[ACCEPTED]` or `[NOT APPLICABLE]`, followed by the evidence-backed disposition. Green automation does not accept these gates.
+
+## Test skip rubric disclosure
+
+When `Tests skipped or not run` is `DISCLOSED`, mark all applicable rubric categories and list every skipped test group with its technical rationale and claim consequence per [`docs/TEST_SKIP_RUBRIC.md`](../docs/TEST_SKIP_RUBRIC.md). If zero tests were skipped (`NONE`), check only `NOT_APPLICABLE`.
+
+### Rubric checklist
+
+- [ ] `OS_CAPABILITY_GUARD`: OS-specific capability, privilege, or filesystem primitive unavailable (e.g. unprivileged Windows symlinks, POSIX mkfifo).
+- [ ] `OPTIONAL_DEPENDENCY_ABSENT`: Missing optional package extra or native binding (e.g. `scitt`, `seal`).
+- [ ] `EXTERNAL_SERVICE_BOUNDARY`: Live external network service or endpoint excluded in offline test execution.
+- [ ] `ARCHITECTURAL_PLATFORM_UNSUPPORTED`: Hardware CPU architecture or endianness unsupported on runner.
+- [ ] `HARDWARE_DEVICE_UNAVAILABLE`: Physical hardware, HSM, or accelerator unavailable.
+- [ ] `PRIVILEGE_OR_CREDENTIAL_BOUNDARY`: Administrative/root rights or production secrets intentionally withheld.
+- [ ] `PERFORMANCE_OR_DURATION_EXCLUSION`: Long-duration stress, soak, or benchmark test excluded from fast gate.
+- [ ] `QUARANTINED_DEFECT`: Confirmed upstream or tracked defect with an active issue URL.
+- [ ] `NOT_APPLICABLE`: Zero tests were skipped or omitted (`Tests skipped or not run: NONE`).
+
+### Skipped test inventory
+
+| Test coordinate / pattern | Rubric category | Exact technical reason | Claim consequence |
+|---|---|---|---|
+| None (or list skipped tests) | N/A | N/A | N/A |
 
 ## Consequences
 
@@ -49,5 +71,5 @@ These fields are checked against the live pull request. Refresh them after every
 - [ ] Every actionable review finding is resolved or explicitly retained as a blocker.
 - [ ] The promotion record and human acceptance bind the current final head.
 - [ ] Hosted and local evidence was refreshed after the final push.
-- [ ] Every skipped or unrun check and its claim consequence is disclosed.
+- [ ] Every skipped test is categorized under the formal skip rubric with technical rationale, or verified zero skips.
 - [ ] Post-merge validation has a named owner; merge and release remain separately authorized actions.

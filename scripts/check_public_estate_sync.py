@@ -122,9 +122,26 @@ def check_mandatory_documentation_coverage(root: Path, target_version: str) -> l
     return errors
 
 
+def installation_documentation_version(root: Path, target_version: str) -> str:
+    """Select a documentation pin, not evidence of external publication."""
+    changelog_path = root / "CHANGELOG.md"
+    if changelog_path.is_file():
+        changelog = changelog_path.read_text(encoding="utf-8")
+        if re.search(rf"^## {re.escape(target_version)} - UNRELEASED$", changelog, re.MULTILINE):
+            previous = re.search(r"^## (\d+\.\d+\.\d+) - \d{4}-\d{2}-\d{2}$", changelog, re.MULTILINE)
+            if previous is None:
+                raise ValueError("Unreleased candidate has no dated release coordinate for install documentation")
+            return previous.group(1)
+    return target_version
+
+
 def check_documentation_version_references(root: Path, target_version: str) -> list[str]:
-    """Verify that all documentation files with pinned install/release/clone commands match target_version."""
+    """Check released install pins separately from an unreleased source version."""
     errors: list[str] = []
+    try:
+        target_version = installation_documentation_version(root, target_version)
+    except ValueError as exc:
+        return [str(exc)]
     pip_pat = re.compile(r'verifier-standard(?:\[[a-zA-Z0-9,._-]+\])?==([0-9a-zA-Z.-]+)')
     git_pat = re.compile(r'(?:--branch\s+v|checkout\s+v|origin\s+tag\s+v|tag\s+`v)([0-9a-zA-Z.-]+)')
     ver_pat = re.compile(r"verifier\.__version__\)?\s*(?:\n\s*)?#\s*'([^']+)'")

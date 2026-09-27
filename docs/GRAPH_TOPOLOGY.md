@@ -54,8 +54,8 @@ graph_topology_binding_digest(graph)
 analyze_graph_topology(graph, contract, max_assignments=4096)
 ```
 
-The contract identifier is `VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1`; the report identifier
-is `VSTD-GRAPH-TOPOLOGY-REPORT-EXPERIMENTAL-0.1`. Top-level keys are `schema_version`,
+The contract identifier is `verifier-graph-topology-experimental-1`; the report identifier
+is `verifier-graph-topology-report-experimental-1`. Top-level keys are `schema_version`,
 `graph_digest`, `bindings`, `constraint_logic`, `equations`, `temporal_relations`, and
 `paradox_candidates`. Each binding supplies `variable_id`, `artifact_id`,
 `transformation_id`, `port_direction` (`input` or `output`), and `role`, identifying an
@@ -65,7 +65,7 @@ filename, or unrelated digest. Graph changes require a fresh binding and reanaly
 The checker coordinate records named source files read locally during the call. It does
 not attest the loaded process, interpreter or complete dependency closure. Recheck retained
 inputs in the intended environment; a carried report and its digests are not self-authenticating.
-The [contract schema](../standard/schemas/graph-topology.schema.json) checks shape only;
+The [contract schema](../src/verifier/schemas/graph-topology.schema.json) checks shape only;
 the runtime additionally rejects ambiguous bindings and enforces exact types and references.
 Runtime offsets must be integers, not floating-point values or Booleans. Structurally valid
 contracts exceeding semantic work bounds remain representable but not established.

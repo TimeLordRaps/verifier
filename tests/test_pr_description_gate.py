@@ -1,0 +1,366 @@
+"""Terminology: continuous integration (CI); pull request (PR); Secure Hash Algorithm 256-bit (SHA-256).
+
+Qualify the pull-request description gate.
+
+Every test here asserts the gate *fails* on a description that stopped matching the
+tree. A currency check that cannot fail is decoration, so passing on the real
+description is the least interesting property it has; these tests discriminate on the
+mismatches it exists to catch.
+"""
+
+from __future__ import annotations
+
+import importlib.util
+import io
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tarfile
+
+import pytest
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _load_gate():
+    spec = importlib.util.spec_from_file_location(
+        "check_pr_description", ROOT / "scripts" / "check_pr_description.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+GATE = _load_gate()
+
+
+def test_namespace_fallback_keeps_current_objects_without_admitting_unknown_names(monkeypatch):
+    import builtins
+    from verifier.core.namespace import ObjectKind
+
+    gate = _load_gate()
+    monkeypatch.setattr(gate, "domain_inventory", lambda: {})
+    monkeypatch.setattr(gate, "accountable_domain_inventory", lambda: {})
+    monkeypatch.setattr(gate, "adapter_modules", lambda: set())
+    real_import = builtins.__import__
+
+    def without_namespace_script(name, *args, **kwargs):
+        if name in {"scripts.check_namespace_closure", "check_namespace_closure"}:
+            raise ModuleNotFoundError(name)
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", without_namespace_script)
+    findings = []
+    gate.check_domains_are_described(" ".join(f"{kind.value}-1.1" for kind in ObjectKind), findings)
+    assert findings == []
+    gate.check_domains_are_described("ABSENT-1.1", findings)
+    assert any("ABSENT" in finding for finding in findings)
+
+
+def test_unknown_object_is_rejected_in_governance_tier(monkeypatch):
+    gate = _load_gate()
+    monkeypatch.setattr(gate, "domain_inventory", lambda: {})
+    monkeypatch.setattr(gate, "accountable_domain_inventory", lambda: {})
+    monkeypatch.setattr(gate, "adapter_modules", lambda: set())
+    findings = []
+    gate.check_domains_are_described("ABSENT-8.1", findings)
+    assert any("ABSENT" in finding for finding in findings)
+
+
+def test_commit_archive_cannot_write_to_sibling_with_shared_path_prefix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A sibling of the extraction root is outside it despite the shared prefix."""
+    gate = _load_gate()
+    target = tmp_path / "checkout"
+    sibling = tmp_path / "checkout-escape"
+    sibling.mkdir()
+    payload = b"extracted outside the requested tree\n"
+    raw = io.BytesIO()
+    with tarfile.open(fileobj=raw, mode="w") as archive:
+        member = tarfile.TarInfo("../checkout-escape/leak.py")
+        member.size = len(payload)
+        archive.addfile(member, io.BytesIO(payload))
+
+    def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess:
+        if "rev-parse" in command:
+            return subprocess.CompletedProcess(command, 0, stdout="a" * 40 + "\n")
+        assert "archive" in command
+        return subprocess.CompletedProcess(command, 0, stdout=raw.getvalue())
+
+    monkeypatch.setattr(gate.subprocess, "run", fake_run)
+    monkeypatch.delattr(gate.tarfile, "data_filter", raising=False)
+    with pytest.raises(ValueError, match="archive|member|path"):
+        gate.use_commit("a" * 40, target)
+    assert not (sibling / "leak.py").exists()
+
+
+NUMBER_WORDS = {
+    1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven",
+    8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
+    14: "fourteen", 15: "fifteen", 16: "sixteen", 17: "seventeen", 18: "eighteen",
+    19: "nineteen", 20: "twenty",
+}
+
+
+def _ranges(inventory: dict[str, int]) -> str:
+    """Spell every catalogued domain's coordinate range, as the description does."""
+    return " ".join(
+        f"{domain}.1–{domain}.{count}" for domain, count in sorted(inventory.items())
+    )
+
+
+def _body(head: str, *, domains: str | None = None, checks: str | None = None,
+          files: str = "620", ranges: str | None = None) -> str:
+    """Build a minimal description carrying exactly the claims the gate reads.
+
+    Every default is derived from the live catalogue rather than written down, so a
+    test fails here only when the gate's own behaviour changes — not merely because
+    a domain was added. A fixture that has to be hand-edited whenever the tree grows
+    is the failure this gate exists to prevent, and it should not be reintroduced in
+    the gate's own tests.
+    """
+    inventory = GATE.domain_inventory()
+    domains = domains if domains is not None else NUMBER_WORDS[len(inventory)]
+    checks = checks if checks is not None else str(sum(inventory.values()))
+    ranges = ranges if ranges is not None else _ranges({
+        **inventory, **GATE.accountable_domain_inventory(),
+    })
+    return (
+        f"This candidate adds {domains} grounded domain adapters with {checks} "
+        f"computational checks.\n\n{ranges}\n\n"
+        f"Current signed head: `{head}`. The tracked inventory is {files} files.\n"
+    )
+
+
+@pytest.fixture()
+def head() -> str:
+    return GATE.head_commit()
+
+
+@pytest.fixture()
+def tracked() -> str:
+    return str(GATE.tracked_file_count())
+
+
+def test_a_current_description_passes(head: str, tracked: str) -> None:
+    """The gate must not fire on a description that still matches the tree."""
+    findings: list[str] = []
+    body = _body(head, files=tracked)
+    GATE.check_domains_are_described(body, findings)
+    GATE.check_counts_are_described(body, findings)
+    GATE.check_head_is_bound(body, findings)
+    GATE.check_inventory_is_bound(body, findings)
+    assert findings == []
+
+
+def test_an_undescribed_new_domain_fails(head: str, tracked: str, monkeypatch) -> None:
+    """Adding an adapter without describing it is the failure this gate exists for.
+
+    This is the load-bearing case: it simulates exactly what happens when a new
+    adapter lands in the catalogue and the description is left alone. A synthetic
+    domain name is used so the test does not decay as real domains are added.
+    """
+    body = _body(head, files=tracked)  # written before the new domain existed
+
+    inventory = dict(GATE.domain_inventory())
+    inventory["SYNTHETIC"] = 5
+    monkeypatch.setattr(GATE, "domain_inventory", lambda: inventory)
+    monkeypatch.setattr(GATE, "adapter_modules", lambda: set(inventory))
+
+    findings: list[str] = []
+    GATE.check_domains_are_described(body, findings)
+    assert any("SYNTHETIC" in finding and "never names it" in finding for finding in findings)
+
+
+def test_a_stale_domain_count_fails(head: str, tracked: str, monkeypatch) -> None:
+    """The prose count must follow the catalogue, not the other way round."""
+    body = _body(head, files=tracked)  # written before the new domain existed
+    inventory = dict(GATE.domain_inventory())
+    inventory["SYNTHETIC"] = 5
+    monkeypatch.setattr(GATE, "domain_inventory", lambda: inventory)
+
+    findings: list[str] = []
+    GATE.check_counts_are_described(body, findings)
+    expected = NUMBER_WORDS[len(inventory)]
+    assert any(expected in finding for finding in findings)
+
+
+def test_a_stale_check_total_fails(head: str, tracked: str) -> None:
+    findings: list[str] = []
+    actual = sum(GATE.domain_inventory().values())
+    GATE.check_counts_are_described(_body(head, checks=str(actual - 1), files=tracked), findings)
+    assert any(f"total of {actual}" in finding for finding in findings)
+
+
+def test_a_changed_coordinate_range_fails(head: str, tracked: str) -> None:
+    """Adding a sixth SIM check without widening the stated range must fail."""
+    inventory = GATE.domain_inventory()
+    domain = sorted(inventory)[-1]
+    count = inventory[domain]
+    body = _body(head, files=tracked).replace(
+        f"{domain}.1–{domain}.{count}", f"{domain}.1–{domain}.{count - 1}"
+    )
+    findings: list[str] = []
+    GATE.check_domains_are_described(body, findings)
+    assert any(f"{domain}.1-{domain}.{count}" in finding for finding in findings)
+
+
+def test_a_stale_head_fails(tracked: str) -> None:
+    """A description binds one head; a new push does not inherit its evidence."""
+    findings: list[str] = []
+    GATE.check_head_is_bound(_body("0" * 40, files=tracked), findings)
+    assert any("does not carry forward" in finding for finding in findings)
+
+
+def test_a_missing_head_fails(tracked: str) -> None:
+    findings: list[str] = []
+    GATE.check_head_is_bound("no coordinate here", findings)
+    assert findings and "no `Current signed head:`" in findings[0]
+
+
+def test_a_stale_file_inventory_fails(head: str) -> None:
+    findings: list[str] = []
+    GATE.check_inventory_is_bound(_body(head, files="1"), findings)
+    assert any("working tree tracks" in finding for finding in findings)
+
+
+def test_an_undeclared_module_fails(head: str, tracked: str, monkeypatch) -> None:
+    """A module on disk that the catalogue never declares is reported, not ignored."""
+    monkeypatch.setattr(GATE, "adapter_modules", lambda: set(GATE.domain_inventory()) | {"SYNTHETIC"})
+    findings: list[str] = []
+    GATE.check_domains_are_described(_body(head, files=tracked), findings)
+    assert any("catalogue does not declare" in finding for finding in findings)
+
+
+def test_the_catalogue_and_the_adapter_modules_agree() -> None:
+    """Guard against the gate itself going stale as support modules are added."""
+    assert GATE.adapter_modules() == set(GATE.domain_inventory()) | set(GATE.accountable_domain_inventory())
+
+
+def test_the_real_description_is_current() -> None:
+    """The committed description must describe the committed tree.
+
+    Skipped rather than failed when the description cannot be read, because absence of
+    a description is not evidence that it disagrees.
+    """
+    import subprocess
+
+    try:
+        result = subprocess.run(
+            ["gh", "pr", "view", "--json", "body,headRefOid"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=60,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:  # pragma: no cover
+        pytest.skip(f"OPTIONAL_DEPENDENCY_ABSENT: gh unavailable ({error})")
+    if result.returncode != 0:  # pragma: no cover
+        pytest.skip("EXTERNAL_SERVICE_BOUNDARY: no readable pull request for this branch")
+
+    pull_request = json.loads(result.stdout)
+    body = pull_request["body"]
+    head = pull_request["headRefOid"]
+    findings: list[str] = []
+    GATE.check_domains_are_described(body, findings)
+    GATE.check_counts_are_described(body, findings)
+    GATE.check_declared_domains(body, findings)
+    GATE.check_head_is_bound(body, findings, head)
+    GATE.check_source_grounding(body, findings, target=head)
+    assert findings == [], findings
+
+
+def test_an_unparseable_run_field_fails() -> None:
+    """Prose appended to a machine-read field must fail here, not silently in the
+    continuous integration (CI) checks.
+
+    This is a regression test for a real failure: explanatory text was appended to
+    the run line, the promotion workflow's digits-only extraction returned nothing,
+    and the step exited with no stated reason.
+    """
+    findings: list[str] = []
+    GATE.check_machine_read_fields_are_parseable(
+        "- Repository-check run: 123 — stale; see below\n", findings
+    )
+    assert any("not parseable" in finding for finding in findings)
+
+
+def test_a_bare_run_field_passes() -> None:
+    findings: list[str] = []
+    GATE.check_machine_read_fields_are_parseable("- Repository-check run: 35559556082\n", findings)
+    assert findings == []
+
+
+def test_a_missing_run_field_fails() -> None:
+    findings: list[str] = []
+    GATE.check_machine_read_fields_are_parseable("no record here", findings)
+    assert findings and "no `Repository-check run:`" in findings[0]
+
+
+def _git(root: Path, *args: str) -> str:
+    import subprocess
+
+    return subprocess.run(["git", *args], cwd=str(root), capture_output=True, text=True,
+                          check=True, timeout=60).stdout.strip()
+
+
+def test_a_commit_is_judged_on_its_own_tree_not_the_working_tree(tmp_path: Path) -> None:
+    """Before a push, the pushed commit is what gets published, not the checkout.
+
+    The fixture commits one domain, then stages a second without committing it. A
+    description of the commit must pass against the commit and fail against the
+    working tree, which names the staged domain and counts the staged files. If
+    commit mode read the working tree, both runs would agree.
+    """
+    import shutil
+    import subprocess
+
+    repo = tmp_path / "repo"
+    domains = repo / "src" / "verifier" / "domains"
+    domains.mkdir(parents=True)
+    (repo / "scripts").mkdir()
+    shutil.copyfile(ROOT / "scripts" / "check_pr_description.py",
+                    repo / "scripts" / "check_pr_description.py")
+    (repo / "src" / "verifier" / "__init__.py").write_text("", encoding="utf-8")
+    (domains / "__init__.py").write_text("", encoding="utf-8")
+    (domains / "alpha.py").write_text("", encoding="utf-8")
+    (domains / "catalog.py").write_text('CHECKS = {"ALPHA": ("a", "b")}\n', encoding="utf-8")
+    (repo / "src/verifier/core").mkdir()
+    (repo / "src/verifier/core/profile_obligations.py").write_text("# Empty fixture catalogue\n", encoding="utf-8")
+    _git(repo, "init", "--quiet", ".")
+    _git(repo, "config", "user.email", "fixture" + "@" + "example.invalid")
+    _git(repo, "config", "user.name", "Fixture")
+    _git(repo, "add", ".")
+    _git(repo, "commit", "--quiet", "-m", "one domain")
+    commit = _git(repo, "rev-parse", "HEAD")
+    files = len(_git(repo, "ls-tree", "-r", "--name-only", commit).splitlines())
+
+    (domains / "beta.py").write_text("", encoding="utf-8")
+    (domains / "catalog.py").write_text(
+        'CHECKS = {"ALPHA": ("a", "b"), "BETA": ("a", "b", "c")}\n', encoding="utf-8")
+    _git(repo, "add", ".")
+
+    body = tmp_path / "body.md"
+    body.write_text(
+        "This candidate adds one grounded domain adapters with 2 computational checks.\n\n"
+        "ALPHA.1–ALPHA.2\n\n"
+        f"Current signed head: `{commit}`. The tracked inventory is {files} files.\n\n"
+        "- Repository-check run: 1\n",
+        encoding="utf-8",
+    )
+
+    def run(*mode: str) -> dict:
+        result = subprocess.run(
+            [sys.executable, str(repo / "scripts" / "check_pr_description.py"),
+             "--body", str(body), "--json", "--base", commit, *mode],
+            cwd=str(repo), capture_output=True, text=True, timeout=120,
+        )
+        assert result.stdout, result.stderr
+        return json.loads(result.stdout)
+
+    assert run("--commit", commit) == {"findings": [], "status": "PASS"}
+    working_tree = run("--head", commit)["findings"]
+    assert any("BETA" in finding and "never names it" in finding for finding in working_tree)
+    assert any(f"states a tracked inventory of {files} files" in finding
+               for finding in working_tree)

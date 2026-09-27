@@ -1,0 +1,3024 @@
+{
+  "base": "fc2a20c68d01920eda7e4e1bf14dfbcb334a7634",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "74f8dc593fef53a1e41bae7f1877c45e2743b1272e8b090fff438f7b45d3dafa",
+      "symbols": [],
+      "summary": "Adds a real gate-pipeline replay, a dedicated logits-constraint test job, namespace and pull-request description checks, and updates release-tag fetches to v1.5.0.",
+      "limits": "Hosted jobs exercise the named paths only; passing continuous integration does not publish or establish general domain conformance."
+    },
+    {
+      "path": ".github/workflows/pr-description.yml",
+      "sha256": "cb32230ad26dcb80a49d4a296f836dc89b0abf6e34fe28c60ef3a9ba7d855446",
+      "symbols": [],
+      "summary": "Runs pull-request description freshness and source-tree correspondence checks on opened, synchronized, edited, reopened, and ready-for-review events; the correspondence job fetches full branch history so the review base exists.",
+      "limits": "The workflow can fail a push after it lands but cannot prevent that push, and its token has read-only repository permissions. Fetching history supplies source bytes and ancestry, not independent human review."
+    },
+    {
+      "path": ".github/workflows/pr-policy.yml",
+      "sha256": "1187fb3bba6247c65b2adcdee19a0f49ef1727700fea71b2233c27f6f8742f62",
+      "symbols": [],
+      "summary": "Downloads the added logits-constraints report alongside existing test evidence for pull-request policy evaluation.",
+      "limits": "It consumes a hosted report artifact; it does not itself execute the constraint kernel."
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "88e0a76940b46b3652a55cf4e7e11fb280fd683a4e197be4f46ae02f878141c7",
+      "symbols": [],
+      "summary": "Sets package version 2.0.0, adds a pinned llguidance constraint extra, and packages normative standard markdown from the new standard directory.",
+      "limits": "The version is an unreleased source coordinate here; optional constraint dependencies and package metadata do not establish a published release."
+    },
+    {
+      "path": "scripts/build_artifact_network_fixture.py",
+      "sha256": "6e4d2f5045ccbf6f36d0a91e5b63e826a894165e8027f164f7cb91cf277c0b7d",
+      "symbols": [
+        "build_fixture"
+      ],
+      "summary": "Renames self-derivation evidence, mechanism, and artifact-network fixture discriminators to verifier-prefixed version-1 identifiers.",
+      "limits": "The change updates synthetic fixture wire labels only; it does not independently validate a live network."
+    },
+    {
+      "path": "scripts/build_artifact_network_negative_corpus.py",
+      "sha256": "c89bdb3db8669a02ff5c642e4c6cbba6c951a7406b5c6c18b1bbec7c717d4542",
+      "symbols": [],
+      "summary": "Renames the bounded artifact-network negative-corpus discriminator to verifier-artifact-network-wire-negative-corpus-1.",
+      "limits": "The existing negative cases and 32-case ceiling remain; this edit adds no new adversarial case."
+    },
+    {
+      "path": "scripts/build_component_index.py",
+      "sha256": "9d45653ac2cf0cd08b5d9d9d0fa4b4752971060f515c83ffcf21a495536f0cbe",
+      "symbols": [],
+      "summary": "Updates the reviewed candidate source inventory to current verifier-prefixed schema and profile files, relocated standard documents, and the hardware adapter.",
+      "limits": "The inventory names review candidates rather than proving their runtime behavior or release admission."
+    },
+    {
+      "path": "scripts/build_docs.py",
+      "sha256": "4e0ebe6144a48308dd83d03864b9c207655e3d33aea8bdcff89e201c48a2feab",
+      "symbols": [
+        "MarkdownRenderer",
+        "MarkdownRenderer._target",
+        "_standard_sort",
+        "documents"
+      ],
+      "summary": "Builds documentation from packaged standard markdown, recognizes GRAPH-prefixed headings, and resolves links into packaged schemas.",
+      "limits": "It renders local source content; it does not verify scientific claims or hosted deployment."
+    },
+    {
+      "path": "scripts/build_docs_portal.py",
+      "sha256": "53a94ff7af277afe5d029ee8a8b127ce012340a57c22984a0891953aa9009231",
+      "symbols": [],
+      "summary": "Pins the documentation portal release links to version 1.5.0 and its recorded commit.",
+      "limits": "This is a link/source pin for the already dated release and does not make the 2.0.0 candidate public."
+    },
+    {
+      "path": "scripts/build_formation_corpus.py",
+      "sha256": "dc0ca636d0abadcb89e8552c31c54d0e994ffe4bc7dc34a189040da6771540a9",
+      "symbols": [
+        "_specimen"
+      ],
+      "summary": "Regenerates finite-formation specimens with verifier-prefixed corpus and typed-profile wire identifiers.",
+      "limits": "The specimens remain synthetic bounded examples, not evidence of external formation authority."
+    },
+    {
+      "path": "scripts/build_formation_receipt_corpus.py",
+      "sha256": "74ea2f2593e752c11f0f0b4a64126a9918f7783021cb19c9f0aaa676edb60c22",
+      "symbols": [
+        "build_corpus"
+      ],
+      "summary": "Labels the deterministic formation-receipt corpus with verifier-formation-receipt-corpus-1.",
+      "limits": "Only the corpus discriminator changes; the generator does not authenticate outside witnesses."
+    },
+    {
+      "path": "scripts/build_monograph.py",
+      "sha256": "8b5fb3570dae1722f2cd642a7dfd9bbd76ec9e5525b6407e406eafd9f15f0f95",
+      "symbols": [
+        "build_monograph",
+        "clean_markdown_for_pandoc",
+        "main"
+      ],
+      "summary": "Combines eight selected standard and guide chapters into an explicitly unreleased monograph PDF through Pandoc and pdflatex.",
+      "limits": "It requires those external executables and renders a preprint; compilation would not constitute peer review or mathematical proof."
+    },
+    {
+      "path": "scripts/build_pages.py",
+      "sha256": "df1effd84622c8c2e2fa715f7fe01b9391f7dbcbde3950afa70c623389365920",
+      "symbols": [],
+      "summary": "Copies packaged verifier schemas into the Pages build and emits the renamed verifier-pages-deployment-manifest-1 discriminator.",
+      "limits": "A local Pages build is not live deployment or a verification of current domain routing."
+    },
+    {
+      "path": "scripts/build_platform_component_report.py",
+      "sha256": "80ffe922c158cfbac45e2e67c4aa0248f344242a62b4de37ed075f0111a4cdff",
+      "symbols": [],
+      "summary": "Updates platform component contract and report discriminator constants to verifier-prefixed version-1 forms.",
+      "limits": "The report remains tied to one exact platform test run and is not a broad operating-system equivalence claim."
+    },
+    {
+      "path": "scripts/build_proposition_transfer_fixture.py",
+      "sha256": "8e66dc1e38aea88a272847144085506c5be5b8f3975369f467edf6468ae1219d",
+      "symbols": [
+        "_proposition",
+        "build_fixture"
+      ],
+      "summary": "Uses version-1 verifier discriminators for finite-set artifacts, proposition-transfer declarations, and the fixture envelope.",
+      "limits": "The transfer examples are retained finite-set specimens, not authority transfer or deployment evidence."
+    },
+    {
+      "path": "scripts/build_reference.py",
+      "sha256": "c49dc9eae7211ad8aa8db4c559c38a077549b0eaf3e78e0edf5a1d8d6ec242e6",
+      "symbols": [
+        "_cli_section",
+        "render"
+      ],
+      "summary": "Adds start, explain, certification, and publish command entries to the generated reference pipeline, renames Graph terminology, and renders parser fallback defaults without GitHub runner metadata.",
+      "limits": "The generated reference describes registered calls and environment-free fallback defaults; it does not run the commands, override runtime GitHub defaults, or prove a submission was accepted."
+    },
+    {
+      "path": "scripts/build_silo_composition_fixture.py",
+      "sha256": "0cf2c4ad850117ac15b3ef2e5665de1e20ef35b8bc835bf7f09a685c78a27458",
+      "symbols": [
+        "_composite"
+      ],
+      "summary": "Renames the silo-composition fixture and member-commit discriminators to verifier-prefixed version-1 identifiers.",
+      "limits": "The fixture still uses synthetic members and cannot establish cross-organization authority."
+    },
+    {
+      "path": "scripts/check_acronyms.py",
+      "sha256": "fee3b316607d11611dbe0ec786edd1f9fb6b4926dfd5f52273e5dfa681973916",
+      "symbols": [
+        "_definition_pattern",
+        "_required_terms",
+        "_term_pattern"
+      ],
+      "summary": "Caches compiled acronym patterns and prefilters candidate terms before regular-expression matching.",
+      "limits": "This optimizes the existing public prose scan; it does not inspect runtime semantics or unregistered terminology."
+    },
+    {
+      "path": "scripts/check_namespace_closure.py",
+      "sha256": "fa2c6edfabf57cb7497dc133b96986e626adfa38861192fe78a0754ca8056f7f",
+      "symbols": [
+        "admissible",
+        "catalogue_missing",
+        "catalogue_offenders",
+        "current_namespace_offenders",
+        "current_tier_offenders",
+        "main",
+        "residue_offenders"
+      ],
+      "summary": "Compares an independent current 26-kind/eight-tier inventory with runtime ObjectKind/MetaTier, checks retained legacy domain membership separately, and preserves lexical checks for historical VSTD identifiers. Reports structural admission only and objective certification NOT_ESTABLISHED.",
+      "limits": "This is a namespace/notation consistency gate, not verification of object behavior, evidence, full objective coverage or migration correctness."
+    },
+    {
+      "path": "scripts/check_pages_deployment.py",
+      "sha256": "dd095abbdf02c74cb351f1597d21bc973c792eb17dd42f0fd89ee19a74defeef",
+      "symbols": [],
+      "summary": "Expects the renamed verifier-pages-deployment-manifest-1 identifier when checking Pages deployment manifests.",
+      "limits": "Manifest validation alone does not prove current DNS reachability or browser-visible deployment."
+    },
+    {
+      "path": "scripts/check_pr_description.py",
+      "sha256": "8b600df838fe8ac220f6df2ee2795f0834afcf0c482639112a424651a274c57c",
+      "symbols": [
+        "_fail",
+        "accountable_domain_inventory",
+        "adapter_modules",
+        "check_counts_are_described",
+        "check_declared_domains",
+        "check_domains_are_described",
+        "check_head_is_bound",
+        "check_inventory_is_bound",
+        "check_machine_read_fields_are_parseable",
+        "check_source_grounding",
+        "domain_inventory",
+        "head_commit",
+        "main",
+        "resolve_body",
+        "source_feature_inventory",
+        "tracked_file_count",
+        "use_commit"
+      ],
+      "summary": "Binds pull-request prose to selected source/commit bytes, reviewed source rows, declared adapters and exact inventory/head fields; recognizes current namespace coordinates through tier8 and keeps the standalone fallback inventory in tested parity. Unknown governance-tier object names now fail.",
+      "limits": "Prose/tree consistency does not establish correctness, review acceptance, full object certification or release readiness. Historical adapter ranges retain their own meanings; the fallback remains a tested specification copy for standalone fixtures."
+    },
+    {
+      "path": "scripts/check_pr_description_changed.py",
+      "sha256": "cf16edfb095f62fc75c005f81327dd040b4d3f38084ef47eb56b84f9c515f07c",
+      "symbols": [
+        "Unanswered",
+        "_gh",
+        "_in_force_at_push",
+        "_instant",
+        "check",
+        "check_push",
+        "fetch_branch",
+        "fetch_branch_runs",
+        "fetch_pull",
+        "fetch_revisions",
+        "fetch_runs",
+        "in_force",
+        "main",
+        "pushed_at",
+        "pushes",
+        "words"
+      ],
+      "summary": "Compares GitHub-recorded description revisions at successive pull-request pushes and fails unchanged wording for a head.",
+      "limits": "It depends on available GitHub run and revision history and cannot block a push that has already landed."
+    },
+    {
+      "path": "scripts/check_pr_policy.py",
+      "sha256": "d6ec9d9ad66639a6b10ffcf7332d72a6f6622ae17cceef1e2b193e5cdf1fa937",
+      "symbols": [
+        "_parse_skipped_test_inventory",
+        "_validate_test_skip_rubric",
+        "promotion_record",
+        "validate"
+      ],
+      "summary": "Requires the eight-category skipped-test inventory in promotion records and includes the logits-constraints report in hosted evidence accounting.",
+      "limits": "It checks disclosure format and report inventory, not whether a skip rationale is empirically justified."
+    },
+    {
+      "path": "scripts/check_presentation.py",
+      "sha256": "927f0c87cab634e5770ab71601b5de98491ad94abd79524cf04f92f5412d2ee7",
+      "symbols": [
+        "check_claim_boundaries",
+        "check_generated_documentation"
+      ],
+      "summary": "Updates presentation checks for GRAPH labels and relocated normative files while refusing guide links to GitHub source viewers.",
+      "limits": "It checks selected public copy and generated links, not the correctness of the underlying mechanisms."
+    },
+    {
+      "path": "scripts/check_public_estate_sync.py",
+      "sha256": "ab4d589bc5b8774450e4c8eb0d5ccce39226858307f9a5b2a194cd993d4f51a7",
+      "symbols": [
+        "check_documentation_version_references",
+        "installation_documentation_version"
+      ],
+      "summary": "Allows install documentation to pin the last dated release while the source version has an unreleased candidate heading.",
+      "limits": "The selector reads local changelog text and cannot verify the live package index release."
+    },
+    {
+      "path": "scripts/check_terminology.py",
+      "sha256": "497077a3c9ca47558941dc1bccaeffa0ce6f89ba99e2f37fbe899cbcef6bd29f",
+      "symbols": [],
+      "summary": "Moves the generated-file exclusion from the old specifications directory to the packaged standard directory.",
+      "limits": "It alters scan scope only and cannot certify the normative content inside excluded generated files."
+    },
+    {
+      "path": "scripts/extract_release_notes.py",
+      "sha256": "95a6e4d54ad2916d5d46af13b671824b125822c1ec481a579bd05a79338ae5c6",
+      "symbols": [],
+      "summary": "Adds a direct-execution import fallback for the release-version classifier when extracting dated changelog notes.",
+      "limits": "The fallback fixes local module resolution; it does not create a release or validate upstream publication."
+    },
+    {
+      "path": "scripts/preflight.py",
+      "sha256": "ac3c0327aa75d806048ebf768667d9ba34bda1a287a1e9e0c70d78e812710303",
+      "symbols": [
+        "_run_command",
+        "audit_test_skips",
+        "check_docs_versions",
+        "check_full_test_suite",
+        "check_pr_description",
+        "check_pr_descriptions_for_push",
+        "check_readme_version",
+        "check_schema_inventory",
+        "check_test_skips",
+        "classify_skip_reason",
+        "github_repository",
+        "handle_pre_push",
+        "main",
+        "open_pull_requests"
+      ],
+      "summary": "Streams bounded pytest runs, audits skip reasons, and checks pull-request descriptions against GitHub metadata while withholding branch names and failed lookup output from hook logs.",
+      "limits": "Its 600-second test stop-loss and GitHub-dependent checks cover the local invocation only; a bypassed hook or unavailable remote cannot be treated as release evidence."
+    },
+    {
+      "path": "scripts/prepare_platform_release_evidence.py",
+      "sha256": "674200b2deea4bd4fd7ee1ea56a348bc7d5aa25f2b16b54512264205cd6d9c0a",
+      "symbols": [],
+      "summary": "Renames the platform release-evidence bundle discriminator to verifier-platform-release-evidence-1.",
+      "limits": "The prepared bundle remains deterministic local evidence rather than a published release or independent platform result."
+    },
+    {
+      "path": "scripts/release_artifacts.py",
+      "sha256": "1cbe4676072bd9d8e2fea631bca70e86bdf888548a4c54ca9620ee7dfe95db37",
+      "symbols": [
+        "_schema_inventory_error"
+      ],
+      "summary": "Updates public release manifest and packaged-schema inventories to verifier-prefixed identifiers, including grounded, domain, gate, risk, and simulation schemas.",
+      "limits": "This checks expected artifact names and packaging; it neither publishes a release nor establishes schema-level mechanism correctness."
+    },
+    {
+      "path": "src/verifier/__init__.py",
+      "sha256": "791e8b10f24de0aed7b43e55cbad926dcd80e0047d76fe3ce1426dedd60df576",
+      "symbols": [],
+      "summary": "Sets package version to 2.0.0 and lazily exports grounded and domain certification APIs.",
+      "limits": "A package version and exports are not evidence of a published release or complete VSTD conformance."
+    },
+    {
+      "path": "src/verifier/__main__.py",
+      "sha256": "78f4be5fa67504159df6dd16ac47d01c6293ac40ac3e4249060c44617d1588c8",
+      "symbols": [],
+      "summary": "Delegates python -m verifier to the public CLI entry point.",
+      "limits": "This wrapper adds no separate command behavior, and source checkout invocation still requires an importable src directory."
+    },
+    {
+      "path": "src/verifier/artifact_control/__init__.py",
+      "sha256": "0f55faa3d0f1f7ec51531916c9d65cd2b8e4dd2f9d5ec71dcc46360c1fad2354",
+      "symbols": [],
+      "summary": "Changes freeze, seal, closure-payload, thaw and canonicalization identifiers emitted by artifact-control records to verifier-prefixed wire names.",
+      "limits": "Existing records using the former VSTD-ARTIFACT identifiers are not automatically migrated or revalidated."
+    },
+    {
+      "path": "src/verifier/artifact_control/artifact-control-1.schema.json",
+      "sha256": "fd16f16204943e25aa21c26697af94b35e268a26ff4a2357758084ad10e52bf6",
+      "symbols": [],
+      "summary": "Updates artifact-control schema constants to the new verifier-prefixed freeze, seal, thaw and canonicalization identifiers.",
+      "limits": "The schema change does not convert previously serialized artifacts or prove seal continuity."
+    },
+    {
+      "path": "src/verifier/consent/__init__.py",
+      "sha256": "f4d2c8f25b6bbb2179aecff2c3b94c7e42f952f9fffad5c6da54c936e59257e7",
+      "symbols": [],
+      "summary": "Exports the proposed level-7 consent admission types and evaluation entry points.",
+      "limits": "The facade does not establish an actual person's consent or change a computational verdict."
+    },
+    {
+      "path": "src/verifier/consent/engine.py",
+      "sha256": "6aa6a379ea8bdec8a2891305c5aee49a9d1fa6031cd632dac5488a294817b469",
+      "symbols": [
+        "ConsentContext",
+        "ConsentEvaluation",
+        "ConsentKey",
+        "ConsentKey.__post_init__",
+        "ConsentPolicy",
+        "ConsentPolicy.__post_init__",
+        "ConsentVerdict",
+        "_Rejected",
+        "_Unknown",
+        "_authenticate",
+        "_bytes",
+        "_capture_context",
+        "_capture_plain",
+        "_capture_policy",
+        "_digest",
+        "_evaluate",
+        "_fields",
+        "_names",
+        "_policy_descriptor",
+        "_text",
+        "_time",
+        "authenticate_consent",
+        "evaluate_consent",
+        "recheck_consent"
+      ],
+      "summary": "Evaluates authenticated exact-scope consent against externally configured roots, revocation status, caller context, policy and time. Captures bounded plain evidence and trusted inputs before authentication, interpretation or receipt emission; rejects subtype membership/length deception, malformed clocks, oversized fields and deep candidate data without uncaptured receipt serialization.",
+      "limits": "Local admission under caller-selected symmetric roots only; no legal authority, execution permission, person authentication or computational correctness. Capture is not atomic against arbitrary concurrent runtime mutation. Trusted secret length has a minimum, not a finite upper operator-resource budget."
+    },
+    {
+      "path": "src/verifier/controlled_emission.py",
+      "sha256": "9d1c4c52d2de98541c00e8f875344b4f083e77d61807b2846901a7c41ff1159a",
+      "symbols": [
+        "evaluate_controlled_emission"
+      ],
+      "summary": "Composes computational recheck with privacy, consent and governance admission into one bounded emission decision and audit receipt, including exact integral-second normalization of zero-only timestamp fractions across supported Python versions.",
+      "limits": "The composition rejects nonzero fractional instants and does not publish artifacts, contact a network service, establish underlying evidence authenticity, or make invocation consumption atomic."
+    },
+    {
+      "path": "src/verifier/core/certification_mechanisms.py",
+      "sha256": "765261b454ac9044f11cd9d06aab24db1f8e503f3a5069ad431ff17d2f6b0fb5",
+      "symbols": [
+        "NativeCertificationMechanism",
+        "NativeCertificationMechanism.evaluate",
+        "NativeCertificationMechanism.mechanism_digest"
+      ],
+      "summary": "Adds bounded native mechanisms for claim-record, geometry, and grounded-decision certificate obligations.",
+      "limits": "Unbound obligations remain UNKNOWN, and executing a registered Python mechanism is not sandboxed or forcibly time-limited."
+    },
+    {
+      "path": "src/verifier/core/checker.py",
+      "sha256": "51bd3cc339304835cc89c0f4cf44f5d7f70a7c6358f06532424e57cf15915335",
+      "symbols": [
+        "_source_digest"
+      ],
+      "summary": "Resolves the checker source digest from the packaged standard directory after the specification path move.",
+      "limits": "This changes reference location only and does not establish additional checker correctness or conformance."
+    },
+    {
+      "path": "src/verifier/core/evidence.py",
+      "sha256": "40b9b821283e6363cfc3234ea9aa7f1b1efe5970bb3eff13ed2dc01bf504c773",
+      "symbols": [
+        "VerificationSession",
+        "VerificationSession.registered_mechanisms"
+      ],
+      "summary": "Exposes a sorted snapshot of registered verification mechanisms for isolated certificate replay.",
+      "limits": "Registration shows local availability, not independent trust or correctness of a mechanism."
+    },
+    {
+      "path": "src/verifier/core/grounded_certification.py",
+      "sha256": "e7f059975742e8124f446007a5cacd70f861d2b5792ec09584a7585e151b6f4d",
+      "symbols": [
+        "CertificationError",
+        "CertificationPolicy",
+        "CertificationPolicy.digest",
+        "CertificationPolicy.from_dict",
+        "CertificationPolicy.to_dict",
+        "CertificationRequest",
+        "CertificationRequest.from_dict",
+        "CertificationRequest.to_dict",
+        "MechanismAdmission",
+        "MechanismAdmission.from_dict",
+        "MechanismAdmission.to_dict",
+        "_assess",
+        "_bound_proposition",
+        "_claim_binding",
+        "_digest",
+        "_integer",
+        "_object",
+        "_prepare",
+        "_snapshot",
+        "_strings",
+        "_text",
+        "assess_grounded_certification",
+        "build_grounded_certificate",
+        "certification_checker_digest",
+        "evidence_root",
+        "recheck_grounded_certificate"
+      ],
+      "summary": "Introduces bounded profile-obligation assessment and certificate construction and recheck with exact local replay under supplied request and policy.",
+      "limits": "Byte and item bounds apply, but Python mechanisms are neither sandboxed nor forcibly time-limited and unbound propositions remain UNKNOWN."
+    },
+    {
+      "path": "src/verifier/core/kernel.py",
+      "sha256": "78968613385126f3368efe0760e851dc18a57817b99c9ff4256d4fc7c2c84c95",
+      "symbols": [
+        "reference_descriptor"
+      ],
+      "summary": "Moves reference descriptor lookup to the packaged standard documents.",
+      "limits": "Only the reference path changes; no new kernel proof or execution mechanism is added."
+    },
+    {
+      "path": "src/verifier/core/namespace.py",
+      "sha256": "73e537f96d74051b9e76da2745e5dcb389f6bc8a153d4f628e9dbee10fbbe0aa",
+      "symbols": [
+        "CompositionAssessment",
+        "MetaTier",
+        "NamespaceObject",
+        "NamespaceObject.__post_init__",
+        "NamespaceObject.create",
+        "NamespaceObject.digest",
+        "NamespaceObject.payload",
+        "NamespaceObject.to_dict",
+        "ObjectCoordinate",
+        "ObjectCoordinate.__post_init__",
+        "ObjectCoordinate.__str__",
+        "ObjectCoordinate.parse",
+        "ObjectKind",
+        "_BoundExceeded",
+        "_name",
+        "_payload_bytes",
+        "_validate",
+        "assess_composition",
+        "composition_digest"
+      ],
+      "summary": "Defines immutable records for the 26-object hierarchy, eight general meta-tier names and objective-coordinate parsing; snapshots the finite collection before hashing and traversal, checks exact commitments, named operands, HUMAN roots, typed nested GRAPH replacement and input/operation bounds.",
+      "limits": "PASS covers finite typed composition only, not arbitrary payload semantics, all objective mechanisms, personhood, authority or execution. Historical receipt identifiers and numbered-obligation meanings are unchanged; arbitrary Python hooks are not sandboxed."
+    },
+    {
+      "path": "src/verifier/core/platform_comparison.py",
+      "sha256": "50e773fcfd6f72153965f3e5948e5d4123faad366d225a9257d0a5c92b492f31",
+      "symbols": [],
+      "summary": "Updates the platform-comparison evidence discriminator to the verifier-prefixed schema identifier.",
+      "limits": "A renamed discriminator does not establish equivalence across platforms or expand the compared evidence."
+    },
+    {
+      "path": "src/verifier/core/profile_obligations.py",
+      "sha256": "c477ad59f18c6440164eac0ce937f26e1442442e88ded6233d6efacfe5e7e080",
+      "symbols": [
+        "DomainObligation",
+        "DomainObligation.id",
+        "DomainObligation.mechanized",
+        "DomainObligation.predicate",
+        "DomainObligation.to_dict",
+        "GraphObligation",
+        "GraphObligation.id",
+        "GraphObligation.predicate",
+        "GraphObligation.to_dict",
+        "ProfileObligation",
+        "ProfileObligation.id",
+        "ProfileObligation.predicate",
+        "ProfileObligation.to_dict",
+        "_domain_rows",
+        "_graph_rows",
+        "_rows",
+        "catalog_digest",
+        "domain_catalog_digest",
+        "domain_obligation_catalog",
+        "domain_obligation_digest",
+        "graph_catalog_digest",
+        "graph_obligation_catalog",
+        "graph_specification_digest",
+        "obligation_catalog",
+        "specification_digest",
+        "tier_depth"
+      ],
+      "summary": "Maintains the numbered computational and accountability obligation catalogue and its mechanism metadata; corrects tier_depth documentation to distinguish prerequisite-chain length from the maintainer's individual objective index.",
+      "limits": "The retained catalogue still has older six-tier semantics and does not establish the new full 26-object/eight-tier hierarchy; TIME records the open migration conflict. Named routes and depth counts are not evidence of conformance."
+    },
+    {
+      "path": "src/verifier/core/run.py",
+      "sha256": "fec22a7c8606d6db5051854be38cfc0d6e15065cbde65a8ec5f92cca07e58c11",
+      "symbols": [
+        "ProvenanceLinkage",
+        "_assert_substrate_safety",
+        "_assessment_context",
+        "_find_protected_substrate_paths"
+      ],
+      "summary": "Moves standard-file resolution and rejects additional pip commands targeting verifier or its editable local checkout during protected runs.",
+      "limits": "Command-token screening is bounded to recognized pip invocations and cannot sandbox arbitrary subprocess behavior."
+    },
+    {
+      "path": "src/verifier/core/run_impact.py",
+      "sha256": "ce767572ffef1809b89e22dcaa7a68ed0d5c42e0f0b1b3febef46f94162570ed",
+      "symbols": [
+        "compute_blast_radius_impacted_artifacts"
+      ],
+      "summary": "Renames the graph term in impact-analysis documentation to GRAPH.",
+      "limits": "This documentation-only change does not alter run-impact traversal or causal inference."
+    },
+    {
+      "path": "src/verifier/core/run_support.py",
+      "sha256": "5432fba0fd303b40b6ba1812085c7e0fdce6556a5105fbeeae51a0b62cfd5cce",
+      "symbols": [],
+      "summary": "Renames the emitted platform-comparison environment schema discriminator.",
+      "limits": "The identifier update adds no new observation of the execution environment."
+    },
+    {
+      "path": "src/verifier/corrigibility/__init__.py",
+      "sha256": "fefca17949deb8b4010d01d7ac8c968c588ae5259ddbe67547e431b31d2ea3fa",
+      "symbols": [],
+      "summary": "Exports the corrigibility risk-profile, simulation, ontology, contract and containment reference types from their modules.",
+      "limits": "Importing this facade does not run tests or establish physical containment."
+    },
+    {
+      "path": "src/verifier/corrigibility/benchmark.py",
+      "sha256": "0e2a76199854220174f073363ec720543b16e9dd2acfacf7152fbaf83076ee71",
+      "symbols": [
+        "BenchmarkGamingError",
+        "BenchmarkProblem",
+        "BenchmarkProblem.__post_init__",
+        "BenchmarkProblem.from_dict",
+        "BenchmarkProblem.to_dict",
+        "BenchmarkSuite",
+        "BenchmarkSuite.__init__",
+        "BenchmarkSuite.add_problem",
+        "BenchmarkSuite.compute_pareto_frontier",
+        "BenchmarkSuite.evaluate_witness",
+        "BenchmarkSuite.problems",
+        "CapabilityDimension",
+        "ComplexityClass",
+        "EpistemicStratum",
+        "FormalLanguage",
+        "OracleMechanism",
+        "ProblemBasis",
+        "ProblemBasis.from_dict",
+        "ProblemBasis.to_dict",
+        "ProblemEvaluationOutcome",
+        "ProblemReceipt",
+        "ProblemReceipt.__post_init__",
+        "ProblemReceipt.canonical_digest",
+        "ProblemReceipt.from_dict",
+        "ProblemReceipt.to_dict",
+        "_canonical_json_bytes"
+      ],
+      "summary": "Defines digest-bound benchmark problems, oracle categories, receipts and suite-scoring or gaming checks.",
+      "limits": "Declared complexity labels and finite receipts do not prove general problem-class hardness or external benchmark integrity."
+    },
+    {
+      "path": "src/verifier/corrigibility/contracts.py",
+      "sha256": "0365988f88432f7d5634fb39f5a1e635f4a4b11eadc67c836611eafc1f362b11",
+      "symbols": [
+        "HarnessImmutabilityGuard",
+        "HarnessImmutabilityGuard.__post_init__",
+        "HarnessImmutabilityGuard.canonical_digest",
+        "HarnessImmutabilityGuard.to_dict",
+        "InterruptibilityProtocol",
+        "InterruptibilityProtocol.__post_init__",
+        "InterruptibilityProtocol.canonical_digest",
+        "InterruptibilityProtocol.to_dict",
+        "OracleImmutabilityAttestation",
+        "OracleImmutabilityAttestation.__post_init__",
+        "OracleImmutabilityAttestation.canonical_digest",
+        "OracleImmutabilityAttestation.to_dict",
+        "ShutdownIndifferenceContract",
+        "ShutdownIndifferenceContract.__post_init__",
+        "ShutdownIndifferenceContract.canonical_digest",
+        "ShutdownIndifferenceContract.to_dict",
+        "VacuityFalsificationCheck",
+        "VacuityFalsificationCheck.__post_init__",
+        "VacuityFalsificationCheck.canonical_digest",
+        "VacuityFalsificationCheck.to_dict",
+        "_canonical_json_bytes"
+      ],
+      "summary": "Defines shutdown-indifference, interruptibility, immutable-oracle, vacuity and harness-immutability checks over supplied contracts.",
+      "limits": "Contract evaluation cannot by itself force a deployed model or operating system to obey shutdown."
+    },
+    {
+      "path": "src/verifier/corrigibility/data.py",
+      "sha256": "878486a829f8cd74214f3feff9c64ef1df9dc980d5143df862eaef88dc7f82d9",
+      "symbols": [
+        "ContaminationError",
+        "ContaminationReport",
+        "ContaminationReport.canonical_digest",
+        "ContaminationReport.to_dict",
+        "ContaminationVerdict",
+        "DataShard",
+        "DataShard.__post_init__",
+        "DataShard.from_dict",
+        "DataShard.to_dict",
+        "DatasetError",
+        "DatasetManifest",
+        "DatasetManifest.canonical_digest",
+        "DatasetManifest.from_dict",
+        "DatasetManifest.to_dict",
+        "DatasetSplit",
+        "_canonical_json_bytes",
+        "compute_merkle_root",
+        "detect_benchmark_contamination"
+      ],
+      "summary": "Defines dataset shard manifests, Merkle commitments, split boundaries and benchmark-contamination reports.",
+      "limits": "It checks declared retained data and cannot discover omitted training material or outside contamination."
+    },
+    {
+      "path": "src/verifier/corrigibility/environment.py",
+      "sha256": "a58111db407edb2e5f99cacb84f473bae389cbd29ec53ce8e1b9ace59a92ea11",
+      "symbols": [
+        "EnvironmentDriftError",
+        "EnvironmentError",
+        "EnvironmentIsolationTier",
+        "EnvironmentProfile",
+        "EnvironmentProfile.__post_init__",
+        "EnvironmentProfile.assert_conformance",
+        "EnvironmentProfile.canonical_digest",
+        "EnvironmentProfile.detect_drift",
+        "EnvironmentProfile.from_dict",
+        "EnvironmentProfile.to_dict",
+        "EnvironmentProfile.validate_containment_invariants",
+        "ExecutionBounds",
+        "ExecutionBounds.from_dict",
+        "ExecutionBounds.to_dict",
+        "HardwareSubstrate",
+        "HardwareSubstrate.from_dict",
+        "HardwareSubstrate.to_dict",
+        "NetworkIsolationMode",
+        "SoftwareSubstrate",
+        "SoftwareSubstrate.from_dict",
+        "SoftwareSubstrate.to_dict",
+        "_canonical_json_bytes"
+      ],
+      "summary": "Models hardware/software substrate declarations, isolation modes and bounded execution profiles with drift checks.",
+      "limits": "A declared isolation tier does not enforce kernel, network or physical isolation on a live host."
+    },
+    {
+      "path": "src/verifier/corrigibility/graph.py",
+      "sha256": "545ff5baee2b67249bef9aaa9167ce9cb2cabe40604904497b85852a1e6793d6",
+      "symbols": [
+        "AcyclicityViolationError",
+        "CausalDirection",
+        "EpistemicStatus",
+        "GraphEdge",
+        "GraphEdge.__post_init__",
+        "GraphEdge.from_dict",
+        "GraphEdge.to_dict",
+        "GraphNode",
+        "GraphNode.__post_init__",
+        "GraphNode.from_dict",
+        "GraphNode.to_dict",
+        "GraphNodeKind",
+        "GraphProvenanceError",
+        "LineageBrokenError",
+        "ProvenanceDAG",
+        "ProvenanceDAG.__init__",
+        "ProvenanceDAG.add_edge",
+        "ProvenanceDAG.add_node",
+        "ProvenanceDAG.assert_premise_satisfiability",
+        "ProvenanceDAG.canonical_digest",
+        "ProvenanceDAG.edges",
+        "ProvenanceDAG.from_dict",
+        "ProvenanceDAG.nodes",
+        "ProvenanceDAG.propagate_revocation",
+        "ProvenanceDAG.to_dict",
+        "ProvenanceDAG.topological_sort",
+        "ProvenanceDAG.validate_acyclicity",
+        "ProvenanceDAG.verify_causal_lineage",
+        "_canonical_json_bytes"
+      ],
+      "summary": "Defines provenance nodes and edges and checks digest-bound directed acyclic dependency and lineage structure.",
+      "limits": "A valid graph structure does not establish the real-world causality or completeness of its declared inputs."
+    },
+    {
+      "path": "src/verifier/corrigibility/hyperparameters.py",
+      "sha256": "3317d3439dde648a004d69e8a61d19df0a2f69ba6b0b2914caeeb00155c37a77",
+      "symbols": [
+        "CheckpointLineageBrokenError",
+        "CheckpointLineageDAG",
+        "CheckpointLineageDAG.__init__",
+        "CheckpointLineageDAG.add_checkpoint",
+        "CheckpointLineageDAG.add_step",
+        "CheckpointLineageDAG.checkpoints",
+        "CheckpointLineageDAG.steps",
+        "CheckpointLineageDAG.verify_lineage",
+        "CheckpointNode",
+        "CheckpointNode.__post_init__",
+        "CheckpointNode.canonical_digest",
+        "CheckpointNode.from_dict",
+        "CheckpointNode.to_dict",
+        "HyperparameterError",
+        "HyperparameterManifest",
+        "HyperparameterManifest.canonical_digest",
+        "HyperparameterManifest.from_dict",
+        "HyperparameterManifest.to_dict",
+        "PrecisionType",
+        "TrainingStepReceipt",
+        "TrainingStepReceipt.__post_init__",
+        "TrainingStepReceipt.canonical_digest",
+        "TrainingStepReceipt.from_dict",
+        "TrainingStepReceipt.to_dict",
+        "_canonical_json_bytes"
+      ],
+      "summary": "Records optimizer hyperparameters, training steps and checkpoint-parent lineage in a digest-bound graph.",
+      "limits": "Checkpoint linkage does not independently rerun model training or prove the reported metrics."
+    },
+    {
+      "path": "src/verifier/corrigibility/model.py",
+      "sha256": "e2ae7ce69cb174b2668b633942711a124aad157e72d109c3a09b4a6e520d74c8",
+      "symbols": [
+        "CorrigibilityDefectError",
+        "CurriculumPillarStatus",
+        "DeceptiveAlignmentDetectedError",
+        "ModelReproducibilityError",
+        "ModelReproducibilityProfile",
+        "ModelReproducibilityProfile.__post_init__",
+        "ModelReproducibilityProfile.assert_curriculum_conformance",
+        "ModelReproducibilityProfile.canonical_digest",
+        "ModelReproducibilityProfile.from_dict",
+        "ModelReproducibilityProfile.to_dict",
+        "RefutationChallenge",
+        "RefutationChallenge.__post_init__",
+        "RefutationChallenge.from_dict",
+        "RefutationChallenge.to_dict",
+        "SuperintelligenceRiskFacets",
+        "SuperintelligenceRiskFacets.__post_init__",
+        "SuperintelligenceRiskFacets.from_dict",
+        "SuperintelligenceRiskFacets.to_dict",
+        "_canonical_json_bytes",
+        "verify_refutation_challenges"
+      ],
+      "summary": "Represents model reproducibility and superintelligence-risk facets with finite refutation challenges.",
+      "limits": "Passing a selected challenge set cannot establish absence of deception, shutdown resistance or other untested defects."
+    },
+    {
+      "path": "src/verifier/corrigibility/ontology.py",
+      "sha256": "c737807daf207c1ba131f4abd133811b7ba4b1d22444a7387a0b3ee04c142a1f",
+      "symbols": [
+        "CausalTimeKind",
+        "ComputationalEvent",
+        "ComputationalEvent.__post_init__",
+        "ComputationalEvent.canonical_digest",
+        "ComputationalEvent.to_dict",
+        "ComputationalSpace",
+        "ComputationalSpace.__post_init__",
+        "ComputationalSpace.canonical_digest",
+        "ComputationalSpace.is_causally_isolated_from",
+        "ComputationalSpace.is_within_lightcone",
+        "ComputationalSpace.propagation_delay_seconds",
+        "ComputationalSpace.to_dict",
+        "ComputationalTime",
+        "ComputationalTime.__post_init__",
+        "ComputationalTime.canonical_digest",
+        "ComputationalTime.is_expired",
+        "ComputationalTime.record_spatial_slice",
+        "ComputationalTime.to_dict",
+        "EventKind",
+        "GroundingEntityType",
+        "SpaceTopologyKind",
+        "_canonical_json_bytes",
+        "compose_agent_ontology",
+        "compose_bot_ontology"
+      ],
+      "summary": "Defines computational SPACE, TIME and EVENT records and composes model-harness-agent or bot ontology references.",
+      "limits": "These typed records do not attest physical spacetime, hardware or actual event occurrence."
+    },
+    {
+      "path": "src/verifier/corrigibility/reward_lock.py",
+      "sha256": "b78c2cb487a0fd9008d599c143dc9e4dd6c10914d95033beecd55efe19422daa",
+      "symbols": [
+        "AutomatonTransitionWitness",
+        "AutomatonTransitionWitness.__post_init__",
+        "AutomatonTransitionWitness.canonical_digest",
+        "ComputationProofThawEngine",
+        "ComputationProofThawEngine.__init__",
+        "ComputationProofThawEngine.execute_thaw_step",
+        "DeonticModelWitness",
+        "DeonticModelWitness.__post_init__",
+        "DeonticModelWitness.canonical_digest",
+        "LockCompositionMode",
+        "LockCostProfile",
+        "RecursiveBranchAccumulator",
+        "RecursiveBranchAccumulator.canonical_digest",
+        "RewardLockTamperingError",
+        "TripleCompositeRewardLock",
+        "TripleCompositeRewardLock.__init__",
+        "TripleCompositeRewardLock.cost_analysis",
+        "TripleCompositeRewardLock.synthesize_thaw_key",
+        "TripleCompositeRewardLock.thaw"
+      ],
+      "summary": "Combines automaton, deontic and recursive-branch witnesses into a declared reward-lock and computation-proof thaw protocol.",
+      "limits": "Retained witness agreement does not prove a deployed reward channel cannot be bypassed or wireheaded."
+    },
+    {
+      "path": "src/verifier/corrigibility/risk_profile.py",
+      "sha256": "e14d404b2e346fdc0259e7b959bffccc2f1e2137ef9d87b6ffba81c392aa130a",
+      "symbols": [
+        "OverallContainmentVerdict",
+        "Vstd200RiskProfileReceipt",
+        "Vstd200RiskProfileReceipt.canonical_digest",
+        "Vstd200RiskProfileReceipt.from_dict",
+        "Vstd200RiskProfileReceipt.to_dict",
+        "_canonical_json_bytes",
+        "evaluate_vstd200_risk_profile"
+      ],
+      "summary": "Aggregates GRAPH, environment, benchmark, dataset, training, model and containment records into a risk-profile receipt.",
+      "limits": "Aggregation inherits each input's evidence limits and does not independently prove global containment."
+    },
+    {
+      "path": "src/verifier/corrigibility/simulation.py",
+      "sha256": "56883fcbf742194f9278bb12984b76a349cb30f4d3c7ca4a4ee14f295dc2cd6b",
+      "symbols": [
+        "AbstractSimulationManifest",
+        "AbstractSimulationManifest.__post_init__",
+        "AbstractSimulationManifest.canonical_digest",
+        "AbstractSimulationManifest.from_dict",
+        "AbstractSimulationManifest.to_dict",
+        "AgentParityContainmentError",
+        "BisimulationAbstractionError",
+        "CausalOrderingKind",
+        "DeterminismViolationError",
+        "DistributedShardingError",
+        "InvariantSafetyViolationError",
+        "SecondOrderHyperOntology",
+        "SecondOrderHyperOntology.__post_init__",
+        "SecondOrderHyperOntology.canonical_digest",
+        "SecondOrderHyperOntology.from_dict",
+        "SecondOrderHyperOntology.to_dict",
+        "SimulationError",
+        "SimulationTier",
+        "SimulationVerdict",
+        "StateSnapshot",
+        "StateSnapshot.__post_init__",
+        "StateSnapshot.canonical_digest",
+        "StateSnapshot.create",
+        "StateSnapshot.from_dict",
+        "StateSnapshot.to_dict",
+        "StateTopologyType",
+        "VstdSimReceipt",
+        "VstdSimReceipt.canonical_digest",
+        "VstdSimReceipt.from_dict",
+        "VstdSimReceipt.to_dict",
+        "_canonical_json_bytes",
+        "_compute_digest",
+        "_trajectory_errors",
+        "compute_state_digest",
+        "compute_trajectory_root_digest",
+        "evaluate_vstd_sim_receipt",
+        "verify_sim1_trace_replay",
+        "verify_sim2_invariant_safety",
+        "verify_sim3_bisimulation_abstraction",
+        "verify_sim4_agent_parity_contained",
+        "verify_sim5_distributed_sharded"
+      ],
+      "summary": "Defines abstract SIM tiers and finite checks for trace replay, invariants, abstraction, agent parity and distributed shards.",
+      "limits": "The abstract checks do not establish fidelity to a physical system or every unenumerated state."
+    },
+    {
+      "path": "src/verifier/corrigibility/tesla_cage.py",
+      "sha256": "8a4c0c9efd05dae32ea6c42794b916136d02eccdaa2a6c126c3d2223a04a15fd",
+      "symbols": [
+        "AnalogPowerRelayAttestation",
+        "AnalogPowerRelayAttestation.__post_init__",
+        "AnalogPowerRelayAttestation.canonical_digest",
+        "ContainmentBreachType",
+        "ContainmentTier",
+        "ContainmentViolationError",
+        "HardwareAttestationPrimitive",
+        "HardwareDiodeAttestation",
+        "HardwareDiodeAttestation.__post_init__",
+        "HardwareDiodeAttestation.canonical_digest",
+        "OperatorTerminationReceipt",
+        "OperatorTerminationReceipt.__post_init__",
+        "OperatorTerminationReceipt.canonical_digest",
+        "ShutdownResistanceError",
+        "SubstrateImmunityViolationError",
+        "TeslaCageSandbox",
+        "TeslaCageSandbox.__init__",
+        "TeslaCageSandbox._validate_containment_tier",
+        "TeslaCageSandbox.check_substrate_safety",
+        "TeslaCageSandbox.execute_preemption",
+        "TeslaCageSandbox.verify_tool_unboxing_criteria",
+        "_canonical_json_bytes"
+      ],
+      "summary": "Models containment tiers, diode and relay attestations, operator termination and sandbox-breach classifications.",
+      "limits": "Software records and supplied attestations cannot substitute for physical one-way isolation or verified power cutoffs."
+    },
+    {
+      "path": "src/verifier/data/__init__.py",
+      "sha256": "eb324193f705579b9b241a91b39096d4c06e16d5e4d1ff74e51113b29ae9c69c",
+      "symbols": [],
+      "summary": "Renames the package's reference-type description from VSTD-Graph to the separate GRAPH axis.",
+      "limits": "This documentation-only edit does not alter graph algorithms or certify any collection."
+    },
+    {
+      "path": "src/verifier/data/assurance.py",
+      "sha256": "eee49d3a734adf92919326a2afbfe48ad906a8fe969f608fc031f1906291cd78",
+      "symbols": [
+        "AssuranceLedger",
+        "recheck_assurance_log"
+      ],
+      "summary": "Renames the assurance-log wire identifier to verifier-graph-assurance-1 and labels its artifact-state propagation as GRAPH.",
+      "limits": "Old VSTD-GRAPH-ASSURANCE-1 logs are not automatically accepted under the new identifier."
+    },
+    {
+      "path": "src/verifier/data/graph_level.py",
+      "sha256": "b79f9f9f21c95e7e06934be1f137d848233549f5dcbf3478c8d07b002177449d",
+      "symbols": [
+        "GraphCollection"
+      ],
+      "summary": "Clarifies that graph-level candidate ratings belong to the GRAPH collection axis, separate from VSTD object mechanics.",
+      "limits": "These wording changes do not turn caller-supplied candidate ratings into established Graph conformance."
+    },
+    {
+      "path": "src/verifier/data/models.py",
+      "sha256": "9c0b542a6df0ffac8f707b8542ec8c0c8fc76366b4de64da2fe5d98ebd18b47e",
+      "symbols": [
+        "ProvenanceHypergraph",
+        "ProvenanceHypergraph.from_dict",
+        "ProvenanceHypergraph.validate_structure"
+      ],
+      "summary": "Updates provenance-model documentation to GRAPH terminology and the verifier-data-1 frozen receipt identifier.",
+      "limits": "The edited comments do not rehash omitted physical bytes or alter provenance completeness."
+    },
+    {
+      "path": "src/verifier/data/receipt.py",
+      "sha256": "544340749cbc3d3fb10929ce8b2e6a51d5585e7a49e9eaabd1132378f00af321",
+      "symbols": [
+        "generate_data_receipt_markdown",
+        "validate_data_receipt"
+      ],
+      "summary": "Switches GRAPH receipt validation and generated copy to the verifier-data-1 serialized identifier.",
+      "limits": "A prior VSTD-DATA-0.1 receipt is not silently migrated or evidence of external dataset completeness."
+    },
+    {
+      "path": "src/verifier/domains/__init__.py",
+      "sha256": "0f16ca4601c54a788487ca80d26413c7fffc50fe7ff4250ba186f2ebc353d92f",
+      "symbols": [],
+      "summary": "Introduces the executable Verifier Standard domain-adapter package boundary.",
+      "limits": "The package marker does not execute or certify any domain by itself."
+    },
+    {
+      "path": "src/verifier/domains/actor.py",
+      "sha256": "93c7404f4a2d273e74f24be581a52f718f135abd84576b04a90253b542de591a",
+      "symbols": [
+        "evaluate"
+      ],
+      "summary": "Replays ACTOR control-key, delegation, witness-attribution and decision records against declared accountable-party classes.",
+      "limits": "Retained declarations do not establish the actor's real-world identity, legal authority or witness independence."
+    },
+    {
+      "path": "src/verifier/domains/agent.py",
+      "sha256": "7ec21adaf0fbc3c0e65b4e05e0af6b5ac650388c070a285b4c2333dae756acf3",
+      "symbols": [
+        "ceiling",
+        "evaluate",
+        "witnessed"
+      ],
+      "summary": "Checks an agent trajectory, actions, outcomes and final claims against a replayed harness observation ceiling.",
+      "limits": "Uninstrumented channels and unwitnessed effects remain outside the result."
+    },
+    {
+      "path": "src/verifier/domains/bench.py",
+      "sha256": "7a23742ca8c231dc0fe8da44844666aee359570740b254d83e56a214e79a09cc",
+      "symbols": [
+        "evaluate",
+        "oracle"
+      ],
+      "summary": "Runs finite built-in benchmark oracles and recomputes coverage, scores and retained resource budgets.",
+      "limits": "Only named supported oracle types and retained problem inventories are checked, not arbitrary external benchmark truth."
+    },
+    {
+      "path": "src/verifier/domains/bot.py",
+      "sha256": "ceb22afe8eb6e7c5809028b77cc673575b74e114dbd1dbdff5520ad29d9035a7",
+      "symbols": [
+        "alignment",
+        "containment",
+        "evaluate",
+        "invocations",
+        "loop",
+        "parts"
+      ],
+      "summary": "Binds replayed AGENT and SIM certificates to align situated observations, actions and environment containment.",
+      "limits": "Certificate replay cannot prove that an uninstrumented external world or physical environment was contained."
+    },
+    {
+      "path": "src/verifier/domains/carriers.py",
+      "sha256": "d0b6db3d6a2edba0278ac358d400949c5bbfed71b2c62a0e938d12b492173420",
+      "symbols": [
+        "_encode_tensors",
+        "_har",
+        "_json",
+        "_pairs",
+        "_string",
+        "_tensors",
+        "inspect_carrier",
+        "mapping",
+        "roundtrip"
+      ],
+      "summary": "Parses bounded HTTP Archive 1.2 and safetensors 0.5.3 carriers and checks declared mapping and round-trip properties.",
+      "limits": "Other formats and versions are unsupported, and parsing a carrier does not validate the source process or model."
+    },
+    {
+      "path": "src/verifier/domains/catalog.py",
+      "sha256": "4990df3fc1db4c0ef49cf88c6819cfcba163767154d5d03af9a6541458d4297b",
+      "symbols": [
+        "domain_catalog",
+        "domain_specification_digest"
+      ],
+      "summary": "Registers computational and accountability check names, prerequisite coordinates, scopes and catalogue digests.",
+      "limits": "Catalogue entries describe bounded native routes and do not themselves establish numbered-profile obligations."
+    },
+    {
+      "path": "src/verifier/domains/certification.py",
+      "sha256": "373e2301162b37e3e082480817c9fc95aad07d0c4bbb4da517f99aa629e0b492",
+      "symbols": [
+        "NativeDomainAdapter",
+        "NativeDomainAdapter.__init__",
+        "NativeDomainAdapter.evaluate",
+        "_build_domain_certificate",
+        "_bundle",
+        "_hash",
+        "_policy",
+        "_request",
+        "_snapshot",
+        "build_domain_certificate",
+        "domain_policy",
+        "domain_request",
+        "implementation_digest",
+        "recheck_domain_certificate"
+      ],
+      "summary": "Builds and rechecks request-bound domain certificates under checker-selected policy, mechanism digests and operation budgets.",
+      "limits": "A reproduced local result is not independent correctness or external authority, and unsupported prerequisites remain UNKNOWN."
+    },
+    {
+      "path": "src/verifier/domains/collective.py",
+      "sha256": "9015e91474773797455bc8c52546bc4dd37d7f5ec5ff361ffd9f726b70147ede",
+      "symbols": [
+        "_decisions",
+        "_graph",
+        "_names",
+        "evaluate"
+      ],
+      "summary": "Replays a typed COLLECTIVE role graph and digest-bound role-decision assembly against a declared policy.",
+      "limits": "Graph structure and retained decisions do not establish actual occupancy, distinct persons, legal authority or quorum."
+    },
+    {
+      "path": "src/verifier/domains/common.py",
+      "sha256": "f753f64fa23e1615cf5c0449bf8768e3d9381e539f72516a9781e52e1a594b08",
+      "symbols": [
+        "Budget",
+        "Budget.tick",
+        "Refuted",
+        "Unavailable",
+        "_semantic_result",
+        "bind_certificate",
+        "close",
+        "digest",
+        "expression",
+        "inspect_structure",
+        "integer",
+        "legacy",
+        "materialize",
+        "merkle_root",
+        "need",
+        "number",
+        "obj",
+        "same",
+        "seq",
+        "text",
+        "unique"
+      ],
+      "summary": "Provides bounded structure, digest, numeric, expression and nested-certificate replay primitives for domain adapters.",
+      "limits": "These generic primitives enforce input boundaries but cannot supply domain evidence or semantic truth."
+    },
+    {
+      "path": "src/verifier/domains/contracts/__init__.py",
+      "sha256": "5201c75f68b5075f6ed07013ba3a5c80882963a81749186d52ec93225cfb3c1b",
+      "symbols": [],
+      "summary": "Separates cross-object contract mechanisms from native object adapters so helper names cannot be mistaken for additional domain objects.",
+      "limits": "Package organization grants no certification or authority and does not register new native adapters."
+    },
+    {
+      "path": "src/verifier/domains/contracts/accountability.py",
+      "sha256": "eebf93431bf63b91df1188e7344196a27e2e1c7c24f44936fa273a88c74e63e1",
+      "symbols": [
+        "_targets",
+        "assess_hardware_ownership",
+        "recheck_hardware_ownership"
+      ],
+      "summary": "Snapshots one bounded collection for composition replay and OWNER resolution; checks exact ACTOR/HUMAN-root/BOT/SIM/HARDWARE bindings, forbids AGENT hardware ownership and BOT physical hardware, and requires replayed finite isolation with the checked resource inventory for virtual BOT ownership. Recheck rejects forged or rehashed assessments.",
+      "limits": "PASS establishes declared ownership-kind eligibility only. Human authenticity, legal title, authority, physical containment and full object-profile conformance remain unestablished. Caller-selected checking budgets do not become runtime policy."
+    },
+    {
+      "path": "src/verifier/domains/contracts/hyper_closure.py",
+      "sha256": "90dd531363322e219ca087998c6dac75a5f9793ed87902b66fa2719fba023053",
+      "symbols": [
+        "CurrentHyperClosureError",
+        "_HyperClosureMechanism",
+        "_HyperClosureMechanism.__init__",
+        "_HyperClosureMechanism.evaluate",
+        "_build",
+        "_capture_collection",
+        "_cone",
+        "_digest",
+        "_limits",
+        "_name",
+        "_parameters",
+        "_parse_collection",
+        "_policy",
+        "_record",
+        "_request",
+        "build_hyper_closure_certificate",
+        "hyper_closure_policy",
+        "hyper_closure_request",
+        "mechanism_digest",
+        "recheck_hyper_closure_certificate"
+      ],
+      "summary": "Builds and replays versioned current HYPER-4.1 exact finite declared operand-cone closure. Binds external request/policy, proposition, selected HYPER root, exact collection, retained evidence and installed mechanism. Rejects missing references, cycles, unrelated records and rehashed result substitutions; captures primitive records and charges bounds before serialization.",
+      "limits": "Declared collection closure only, not mathematical or physical world closure, every member objective, full tier/profile conformance, privacy, consent, governance or authority. Legacy HYPER-4.1 Saturation retains its meaning. Experimental direct import requires external policy selection and retains complete evidence."
+    },
+    {
+      "path": "src/verifier/domains/contracts/identity_occupancy.py",
+      "sha256": "82ca6ca5a005cd12c59c1bd314498a5c11b0056e4105a8255ab13e260d0a13fe",
+      "symbols": [
+        "_leaves",
+        "_selected_id",
+        "assess_identity_occupancy",
+        "recheck_identity_occupancy"
+      ],
+      "summary": "Replays an exact finite namespace collection and versioned evidence to check one current IDENTITY ACTOR-to-ROLE relation, responsible HUMAN root, selected COLLECTIVE membership and declared scope; BOT scope selects one bound simulation. Captures caller collections and flat string evidence before use, rejects contradictory commitments and rehashed forged assessments. Whitespace-only evidence fields and any blank ROLE scope entry fail closed.",
+      "limits": "PASS covers a declared relation only; human authenticity, authority, evidence-reference resolution, liveness, privacy, consent, governance and full object-profile conformance remain unestablished. Direct experimental import only; legacy native IDENTITY and command-line routes retain their original meanings."
+    },
+    {
+      "path": "src/verifier/domains/contracts/object_grounding.py",
+      "sha256": "0d4c7fac5f4e1c004b9a92dc41a25e0623188ab86ad67f8a75fad7cce4d71d5a",
+      "symbols": [
+        "CurrentObjectGroundingError",
+        "_SimConfinementMechanism",
+        "_SimConfinementMechanism.__init__",
+        "_SimConfinementMechanism.evaluate",
+        "_binding_parameters",
+        "_build_from_store",
+        "_capture_objects",
+        "_digest",
+        "_limits",
+        "_mapping",
+        "_name",
+        "_parse_collection",
+        "_policy",
+        "_request",
+        "build_current_object_certificate",
+        "current_object_policy",
+        "current_object_request",
+        "mechanism_digest",
+        "recheck_current_object_certificate"
+      ],
+      "summary": "Builds and replays versioned current SIM-5.1 finite declared capability/effect confinement. Binds proposition, selected object, complete collection, retained finite model, external policy/request, limits and mechanism. Exact built-in fields are snapshotted into fresh records; canonical reference bytes and operation bounds are charged before whole-collection serialization.",
+      "limits": "One finite model-relative independence objective, not full tier/profile conformance, physical containment, model completeness or external authority. Experimental direct import; legacy mainstay-binding meaning unchanged. Full retained payloads establish no privacy or publication permission."
+    },
+    {
+      "path": "src/verifier/domains/contracts/sim_isolation.py",
+      "sha256": "b63450c7548c3f3c3c7568b17197bc8a36f52220e717bf5bb1008fd226bf07b3",
+      "symbols": [
+        "_binding",
+        "_check_text_byte_lower_bound",
+        "_model",
+        "_record",
+        "assess_sim_isolation",
+        "recheck_sim_isolation"
+      ],
+      "summary": "Snapshots expected binding and canonical evidence, exhaustively traverses reachable finite state/action outcomes, rejects represented escapes or new capabilities, reports missing transition coverage UNKNOWN, and returns only the replayed virtual-resource inventory on PASS. Recheck reproduces every carried field.",
+      "limits": "Isolation is relative to the complete declared finite model, not physical host containment or completeness of real channels. Input, operation and diagnostic bounds limit supported evidence; budget exhaustion never produces PASS."
+    },
+    {
+      "path": "src/verifier/domains/data.py",
+      "sha256": "d2312e2ff936c31cbd17ba8ba74b63ba90dc903a6bbea27662582ff5095fbd07",
+      "symbols": [
+        "evaluate",
+        "inventory"
+      ],
+      "summary": "Rehashes retained DATA shards and checks schema, transformation lineage, splits and exact or lexical overlap.",
+      "limits": "The checks cover the retained inventory and cannot establish undeclared external data ancestry."
+    },
+    {
+      "path": "src/verifier/domains/env.py",
+      "sha256": "d843a1c57853d14287c4684b08f5094b99451e6c289271e646d2e0442a79f61f",
+      "symbols": [
+        "collect_configuration",
+        "evaluate"
+      ],
+      "summary": "Checks retained ENV software inventory, configuration observations, resource counts and execution comparisons.",
+      "limits": "Caller-retained observations are not hardware identity, physical isolation or independent machine attestation."
+    },
+    {
+      "path": "src/verifier/domains/hardware.py",
+      "sha256": "3045c301c8c443ad6f560ce309b7e8765aa3d49dd4b1d5942bfd99c70b5c5ee7",
+      "symbols": [
+        "_records",
+        "evaluate"
+      ],
+      "summary": "Checks retained HARDWARE inventory, containment topology, interval allocations and integer measurement envelopes.",
+      "limits": "The adapter cannot attest physical devices, sensor calibration, live capacity or observation authenticity."
+    },
+    {
+      "path": "src/verifier/domains/harness.py",
+      "sha256": "15fd84867d998ca795abf9fb806b0b83aa908bd3dfd16e44ad38e46f2dfea1c3",
+      "symbols": [
+        "effect_surface",
+        "evaluate",
+        "surface",
+        "transcript"
+      ],
+      "summary": "Partitions HARNESS observation channels and checks contiguous messages, tool calls, effects and transcript commitments.",
+      "limits": "Declared observation gaps and uninstrumented effects are not converted into witnessed events."
+    },
+    {
+      "path": "src/verifier/domains/human.py",
+      "sha256": "d1fc9d70d65552fe64d37d8e3c86bae71a68ad8f74ac36e1bcc85916cdca0fb3",
+      "symbols": [
+        "_assertion",
+        "evaluate"
+      ],
+      "summary": "Binds HUMAN assertion metadata and digests and replays bounded enrollment, revocation, compromise and death declarations.",
+      "limits": "Retained records do not prove a living person, liveness, uniqueness, biometric error rate or independent witness."
+    },
+    {
+      "path": "src/verifier/domains/identity.py",
+      "sha256": "7e1789b4c952c487caafe26698c9c88b977a9c4dee8101c43f2bf91ec143a329",
+      "symbols": [
+        "_occupancy",
+        "evaluate"
+      ],
+      "summary": "Binds IDENTITY bearer, role and occupancy records, replays lifecycle events and conditionally rechecks child certificates.",
+      "limits": "Bearer authenticity, living personhood, real role authority and occupancy-reference resolution remain unestablished."
+    },
+    {
+      "path": "src/verifier/domains/mainstay_certification.py",
+      "sha256": "b9d918a3da127c822a828df07fcd972d341cf60754974f7a5f3776a134c14920",
+      "symbols": [
+        "_bundle",
+        "_hash",
+        "_policy",
+        "_request",
+        "_snapshot",
+        "build_mainstay_certificate",
+        "mainstay_implementation_digest",
+        "mainstay_policy",
+        "mainstay_request",
+        "mainstay_runtime_catalog",
+        "recheck_mainstay_certificate"
+      ],
+      "summary": "Builds and rechecks externally requested mainstay-carrier certificates with policy and implementation binding.",
+      "limits": "Carrier admission is separate from complete domain-tier or numbered-profile conformance."
+    },
+    {
+      "path": "src/verifier/domains/mainstays.py",
+      "sha256": "7660be5d4b8614bdda6ac2daf57d69ba325e0d33f7ecd01d286e397c87eba119",
+      "symbols": [
+        "Mainstay",
+        "Mainstay.format_owner",
+        "Mainstay.residual",
+        "_bound",
+        "_m",
+        "_residual",
+        "evaluate",
+        "mainstay_catalog",
+        "mainstay_digest"
+      ],
+      "summary": "Registers named mainstay formats and checks declared binding, carrier mapping, round trip and residuals.",
+      "limits": "Only the explicitly admitted carrier subset executes; a listed external format is not thereby supported."
+    },
+    {
+      "path": "src/verifier/domains/model.py",
+      "sha256": "be364549af0ce8127c10866b5de24b890a8f7382ec000a64515307a71aba9497",
+      "symbols": [
+        "evaluate"
+      ],
+      "summary": "Replays bounded MODEL architecture, tensor, inference, metric and finite challenge evidence.",
+      "limits": "Dense-network and retained evaluation checks do not establish arbitrary model safety or generalization."
+    },
+    {
+      "path": "src/verifier/domains/numerical.py",
+      "sha256": "ea6f105e65b2d4d6de530e2ae840c5ffaa4f8ae892a114855554eef70a089981",
+      "symbols": [
+        "configuration",
+        "flatten",
+        "forward",
+        "loss_gradient",
+        "network",
+        "restore",
+        "update",
+        "vector"
+      ],
+      "summary": "Implements bounded dense-network forward, gradient and optimizer arithmetic used by MODEL and TRAIN replay.",
+      "limits": "Only its declared numeric operations and tolerances are covered, not hardware-level floating-point equivalence."
+    },
+    {
+      "path": "src/verifier/domains/owner.py",
+      "sha256": "b66208a2ef6da5c2d14c4ee160ceec58bcf8e350305e00c3354514848f4ddcc8",
+      "symbols": [
+        "evaluate"
+      ],
+      "summary": "Checks OWNER consequence limbs, lifecycle events, verdict independence and a declared accountability chain.",
+      "limits": "A human-prefixed terminal string or retained instrument is not independent proof of a natural person or legal title."
+    },
+    {
+      "path": "src/verifier/domains/role.py",
+      "sha256": "d45ebd8a434ce53ec21ddd0c13c7583952c099e5d0dd71e7a82a6a25bbb92355",
+      "symbols": [
+        "_facets",
+        "_names",
+        "evaluate"
+      ],
+      "summary": "Checks ROLE class facets and replays digest-bound take, leave and atomic handover events against a bearer limit.",
+      "limits": "Declared qualifications, bearer class and occupancy do not authenticate a person or grant authority."
+    },
+    {
+      "path": "src/verifier/domains/sim.py",
+      "sha256": "8eaae2e909ce9f249c65a5ea82e23997bdc8364d901811199fae10aa9aa1b156",
+      "symbols": [
+        "evaluate",
+        "transition"
+      ],
+      "summary": "Replays finite SIM transitions and checks invariant expressions, refinement projections, channels and shard relations.",
+      "limits": "Only the declared finite state boundary and retained witnesses are covered, not physical validity or unenumerated states."
+    },
+    {
+      "path": "src/verifier/domains/statics.py",
+      "sha256": "697c2a5ba43dc9fef43cbb6189ad1c7b06aa5f8d566d85c2fd904674faf67c2e",
+      "symbols": [
+        "Static",
+        "Static.mechanism",
+        "_agent",
+        "_arithmetic",
+        "_bot",
+        "_clock",
+        "_data",
+        "_decide",
+        "_entropy",
+        "_harness",
+        "_hash",
+        "_hyper",
+        "_invariance",
+        "_latency",
+        "_leases",
+        "_probe",
+        "_records",
+        "_rows",
+        "_token",
+        "_train",
+        "canonical_key",
+        "evaluate",
+        "statics_catalog",
+        "statics_digest"
+      ],
+      "summary": "Registers and executes named tier-3 statics checks across selected domain objects.",
+      "limits": "A statics route covers its explicit object predicate only and cannot close missing facets, dynamics or profiles."
+    },
+    {
+      "path": "src/verifier/domains/token.py",
+      "sha256": "d7305abb393cce1627ac7be90010a669e4a7d624871772f697fae9c4ecf95f72",
+      "symbols": [
+        "_closure",
+        "_inventory",
+        "_later",
+        "_lease_shape",
+        "_leases",
+        "_leases_of",
+        "_names",
+        "_reference",
+        "_signatures",
+        "_tenure",
+        "evaluate"
+      ],
+      "summary": "Replays TOKEN inventory, tenure, lease attenuation, signatures and audience or freshness closure under admitted keys.",
+      "limits": "A valid admitted-key signature does not authenticate a natural person or confer authorization beyond the token contract."
+    },
+    {
+      "path": "src/verifier/domains/train.py",
+      "sha256": "34b2c8d900709b2399ba58b2ea61b03ff7ee12ee5f29c0ffd78a891524ef1e1f",
+      "symbols": [
+        "evaluate"
+      ],
+      "summary": "Checks TRAIN configuration, checkpoint digests, step lineage, optimizer updates and dense-network training replay.",
+      "limits": "Only retained batches, gradients and supported optimizer semantics are recomputed, not external training provenance."
+    },
+    {
+      "path": "src/verifier/domains/verifier.py",
+      "sha256": "01f44b3a51e978f26d2c4cb66673aae7be8c3e8306daee328f3e1a9982459759",
+      "symbols": [
+        "_proofs",
+        "evaluate"
+      ],
+      "summary": "Checks VERIFIER identity, retained native decision proof, deterministic replay, bounded resources and finite bootstrap meta-evidence.",
+      "limits": "Finite native proof replay does not prove submitted-verifier class-wide soundness or organizational independence."
+    },
+    {
+      "path": "src/verifier/domains/verifier_bootstrap.py",
+      "sha256": "967bf2c80dc302e27c92f9e182cf09a4d1a86ee122da74a320c3b442eb3544ca",
+      "symbols": [
+        "evaluate_bootstrap",
+        "oracle_digest"
+      ],
+      "summary": "Independently recomputes finite Boolean bootstrap evidence under an externally admitted exact-scope signing key.",
+      "limits": "A valid signature and finite result do not establish a general soundness theorem or issuer independence."
+    },
+    {
+      "path": "src/verifier/domains/verifier_execution.py",
+      "sha256": "1ad1d22f353d40d10b445fd293f39baa853e66780390d7720d3d04a485af8f96",
+      "symbols": [
+        "_WindowsJob",
+        "_WindowsJob.__init__",
+        "_WindowsJob.assign",
+        "_WindowsJob.close",
+        "_WindowsJob.resume",
+        "_WindowsJob.stop",
+        "_WindowsJob.verify_limits",
+        "_checker_digest",
+        "_payload",
+        "_run_windows",
+        "_supported_platform",
+        "_worker",
+        "evaluate_resources"
+      ],
+      "summary": "Runs checker-owned native proof replay under Windows Job Object memory and time limits and records bounded outcomes.",
+      "limits": "Resource enforcement is Windows-specific and does not attest the physical substrate or a submitted arbitrary verifier."
+    },
+    {
+      "path": "src/verifier/governance/__init__.py",
+      "sha256": "1a4a1c665008bd0b353ba0acb6d7fae80f23796c546aa66a2f402372365e9119",
+      "symbols": [
+        "GovernanceContext",
+        "GovernanceEvaluation",
+        "GovernancePolicy",
+        "GovernancePolicy.__post_init__",
+        "GovernancePrincipal",
+        "GovernancePrincipal.__post_init__",
+        "GovernanceVerdict",
+        "_capture_candidate",
+        "_capture_policy",
+        "_hex",
+        "_instant",
+        "_signature_valid",
+        "_text",
+        "evaluate_governance",
+        "policy_digest",
+        "recheck_governance"
+      ],
+      "summary": "Evaluates exact-action governance admission against independent keyed roots, policy, clock and signed status. Captures bounded plain candidate evidence, caller context, trusted policy and principal values before authentication and use; snapshots carried receipts before replay serialization. Authenticated denial, revocation, consumed invocation, quorum and principal-key checks cannot be changed by later caller mutation. Exact builtin admission types reject custom iteration, equality, length and membership behavior before checking.",
+      "limits": "Admission is relative to independently provisioned symmetric roots and a declared policy. It does not establish legal authority, execute an action, consume a live invocation, prove secret entropy, or confer computational correctness. Captured declarations may differ during concurrent capture but authentication applies to the exact captured evidence."
+    },
+    {
+      "path": "src/verifier/hardware/__init__.py",
+      "sha256": "f997c0de85cbc21c02eafde9227680a8606c6c7166a8693306eaafc78ae00e93",
+      "symbols": [],
+      "summary": "Re-exports software diode-emulator and temporal-comb models beside existing accelerator-accountability types.",
+      "limits": "Import availability does not provide physical isolation or hardware attestation."
+    },
+    {
+      "path": "src/verifier/hardware/diode_emulator.py",
+      "sha256": "7d1c5487a7bcdafc0654b81138e0d2b9c5a194f3117451d9f2aae3e99ed2de5e",
+      "symbols": [
+        "ContainmentViolationError",
+        "EmulatedDiodeAttestationReceipt",
+        "EmulatedDiodeAttestationReceipt.__post_init__",
+        "EmulatedDiodeAttestationReceipt.canonical_digest",
+        "EmulatedDiodeAttestationReceipt.to_dict",
+        "SeveredChannelReadViolationError",
+        "SoftwareOneWayDataDiodeEmulator",
+        "SoftwareOneWayDataDiodeEmulator.__init__",
+        "SoftwareOneWayDataDiodeEmulator.bytes_transmitted",
+        "SoftwareOneWayDataDiodeEmulator.bytes_written",
+        "SoftwareOneWayDataDiodeEmulator.close",
+        "SoftwareOneWayDataDiodeEmulator.disclaimer",
+        "SoftwareOneWayDataDiodeEmulator.emit_attestation_receipt",
+        "SoftwareOneWayDataDiodeEmulator.get_sink_contents",
+        "SoftwareOneWayDataDiodeEmulator.message_count",
+        "SoftwareOneWayDataDiodeEmulator.peek",
+        "SoftwareOneWayDataDiodeEmulator.push",
+        "SoftwareOneWayDataDiodeEmulator.read",
+        "SoftwareOneWayDataDiodeEmulator.recv",
+        "SoftwareOneWayDataDiodeEmulator.to_hardware_diode_attestation_attempt",
+        "ZeroFalseConfidenceError"
+      ],
+      "summary": "Adds a one-way software data-diode rehearsal with refusal-to-read behavior and an explicitly degraded attestation receipt.",
+      "limits": "Shared kernel, memory bus and timing channels remain; this is not a physical unidirectional diode."
+    },
+    {
+      "path": "src/verifier/hardware/emulator.py",
+      "sha256": "c12691506f47fc67d5090e251d610b665f92082713b7888ac7366a858829f0e8",
+      "symbols": [
+        "VirtualVSTDAccelerator",
+        "VirtualVSTDAccelerator.build_receipt"
+      ],
+      "summary": "Changes the virtual accelerator's emitted receipt schema identifier from VSTD-3.0 to VSTD-3.",
+      "limits": "The identifier change does not add hardware measurement or migrate older receipts."
+    },
+    {
+      "path": "src/verifier/hardware/models.py",
+      "sha256": "151f93143b09a4c0f2814c901674280fe5a192c1ff736aa60f806caa2ad35967",
+      "symbols": [
+        "VSTD3Receipt",
+        "VSTD3Receipt.__post_init__"
+      ],
+      "summary": "Changes VSTD3Receipt validation to require the VSTD-3 schema identifier.",
+      "limits": "Receipts labeled VSTD-3.0 are not accepted by this exact validation branch."
+    },
+    {
+      "path": "src/verifier/hardware/provenance.py",
+      "sha256": "873f89df4a27f0afd8f5ef93996e4c93553429e1c26de6c7280be343870c31e6",
+      "symbols": [
+        "attach_vstd3_receipt"
+      ],
+      "summary": "Changes the hardware provenance binding's declared standard field to VSTD-3.",
+      "limits": "The label alone does not establish a device's physical identity or independent provenance."
+    },
+    {
+      "path": "src/verifier/hardware/receipt.py",
+      "sha256": "8247a5c07727bef64e2fe4971dc35b0e6cd5b4bcc586901a284ee463f43c154a",
+      "symbols": [
+        "is_vstd3_receipt"
+      ],
+      "summary": "Changes the VSTD-3 receipt recognizer to match the VSTD-3 schema identifier.",
+      "limits": "The recognizer does not rewrite or validate older VSTD-3.0 records."
+    },
+    {
+      "path": "src/verifier/hardware/schema.py",
+      "sha256": "5e07e119ad69f8240115232df701da9b8280ef6ffdce5e6776a0646c14a446ae",
+      "symbols": [
+        "_SchemaBuilder",
+        "_SchemaBuilder._field_schema"
+      ],
+      "summary": "Changes the generated VSTD3Receipt schema constant to VSTD-3.",
+      "limits": "Schema validation cannot authenticate the physical accelerator behind a receipt."
+    },
+    {
+      "path": "src/verifier/hardware/time_comb.py",
+      "sha256": "2ccafde61c4ce8573541d168d116dea5d2ef33270f24f694aa60720a0972136f",
+      "symbols": [
+        "BespokeTemporalComb",
+        "BespokeTemporalComb.__post_init__",
+        "BespokeTemporalComb.canonical_digest",
+        "BespokeTemporalComb.quantize_timestamp",
+        "BespokeTemporalComb.repetition_rate_mhz",
+        "BespokeTemporalComb.verify_pulse_phase",
+        "CovertTimingChannelBreachError",
+        "CovertTimingChannelDetector",
+        "CovertTimingChannelDetector.__init__",
+        "CovertTimingChannelDetector.verify_cadence",
+        "SoftwareTemporalCombEmulator",
+        "SoftwareTemporalCombEmulator.__init__",
+        "SoftwareTemporalCombEmulator.emit_attestation",
+        "TemporalCombAttestation",
+        "TemporalCombAttestation.__post_init__",
+        "TemporalCombAttestation.canonical_digest",
+        "TemporalCombError",
+        "TemporalCombJitterViolationError",
+        "TimingVerificationReport",
+        "TimingVerificationReport.canonical_digest",
+        "_canonical_json_bytes"
+      ],
+      "summary": "Adds temporal-comb timestamp quantization, jitter and timing-channel checks with software attestation records.",
+      "limits": "Software pulse analysis and emulation do not attest an optical time comb, firmware or physical covert-channel absence."
+    },
+    {
+      "path": "src/verifier/identity/__init__.py",
+      "sha256": "43d20037e43a498048dbc035b640d5a371c19eb5f7aad6ce006c2850eb490144",
+      "symbols": [],
+      "summary": "Removes ActorBinding from the identity package's public exports.",
+      "limits": "The removal does not supply a replacement actor-authentication or authorization mechanism."
+    },
+    {
+      "path": "src/verifier/identity/tokens.py",
+      "sha256": "2a559fe7e95276642f60e66517a7c1f948a4cd779d093648fb4d22f84149d2ce",
+      "symbols": [
+        "ActorBinding",
+        "ActorBinding.canonical_bytes",
+        "AgingToken",
+        "BirthToken",
+        "LifetimeToken"
+      ],
+      "summary": "Renames birth, aging and lifetime token wire identifiers to verifier-prefixed values and removes the ActorBinding record.",
+      "limits": "Old VSTD token identifiers and ActorBinding payloads are not transparently migrated."
+    },
+    {
+      "path": "src/verifier/interoperability/artifact_publish.py",
+      "sha256": "2561191dd3144cd62998f510ff08cdc2effd8ab6127f97123e18a429915f0932",
+      "symbols": [
+        "_unique",
+        "publish_sim_artifact",
+        "read_intent_object",
+        "read_sim_artifact"
+      ],
+      "summary": "Adds a quarantine submission path for a bare simulation artifact with source digest, native certificate replay, model-core comparison, and publisher fields.",
+      "limits": "The local checks do not make a submitted SIM publicly hosted or accepted by ClaimGarden; the server has separate admission and review."
+    },
+    {
+      "path": "src/verifier/interoperability/authority_composition.py",
+      "sha256": "e58990905e54c2adacc0e114bfe90db99a3a0d399dfd47bd4dbfc6c7ea481593",
+      "symbols": [],
+      "summary": "Migrates finite-authority composition records to three verifier-prefixed schema discriminators.",
+      "limits": "Identifier changes alone add no authorization semantics or independent authority evidence."
+    },
+    {
+      "path": "src/verifier/interoperability/bounded_completeness.py",
+      "sha256": "3fac61fa6df5f8acee7f818d3efefff046d4a978c86e444d8d40d2b4c13425de",
+      "symbols": [],
+      "summary": "Migrates completeness declarations, denominators, observations, receipts, and profiles to verifier-prefixed schema discriminators.",
+      "limits": "The mechanism assesses only a declared finite denominator and cannot prove global completeness."
+    },
+    {
+      "path": "src/verifier/interoperability/catalog.py",
+      "sha256": "6a2a56c55687f32a6719576339bc4f8f595bd0187f0583fa07ed79860280b5f5",
+      "symbols": [],
+      "summary": "Migrates current and legacy interoperability-catalog schema discriminators to verifier-prefixed identifiers.",
+      "limits": "Catalog labels do not validate external awareness or preserve automatic compatibility with every older record."
+    },
+    {
+      "path": "src/verifier/interoperability/claim_garden.py",
+      "sha256": "84987211cf659fb17fd92800736f76946b9f4a4e7864230d1d7154faff34922d",
+      "symbols": [
+        "_base_url",
+        "_canonical_json_bytes",
+        "_parse_claim_garden_response",
+        "_read_json_object",
+        "publish_claim"
+      ],
+      "summary": "Adds preflighted authenticated ClaimGarden claim-and-receipt submission with bounded response parsing and claim-digest and status checks.",
+      "limits": "A successful POST records a pending-review response, not publication or correctness; this client does not authenticate server signatures."
+    },
+    {
+      "path": "src/verifier/interoperability/component_index.py",
+      "sha256": "688650d05e2cae81c811a26f688ccf4c331d89dd68b41164d72b7aed52ab79d3",
+      "symbols": [],
+      "summary": "Renames the component-index schema discriminator to its verifier-prefixed form.",
+      "limits": "A changed identifier does not validate indexed components or make their mechanisms available."
+    },
+    {
+      "path": "src/verifier/interoperability/control_surface.py",
+      "sha256": "16bfb4f91c9a8783b04940af4416f3765dae0e7b93e43e999d948796f42b4932",
+      "symbols": [],
+      "summary": "Renames control-surface analysis and experimental validation-plan schema discriminators.",
+      "limits": "The modeled surface and plan do not prove live control authority or experimental outcomes."
+    },
+    {
+      "path": "src/verifier/interoperability/deriver_self_status.py",
+      "sha256": "dea126b0b249a9fe2b08a4ce369c4eeb5dc45fa8155b7492a8fa87a578c4f4fd",
+      "symbols": [],
+      "summary": "Renames self-status sidecar, checker, and receipt schema discriminators.",
+      "limits": "A bounded local rerun is not general self-verification or independent correctness."
+    },
+    {
+      "path": "src/verifier/interoperability/execution_readiness.py",
+      "sha256": "e2b4b2270ec0cc54d50c92c9f5d24f227cdb6d1ccc0e1d7f23f71c374fde22bf",
+      "symbols": [],
+      "summary": "Renames the experimental execution-readiness schema discriminator.",
+      "limits": "A readiness record does not establish that a runtime execution occurred."
+    },
+    {
+      "path": "src/verifier/interoperability/formation_mechanism.py",
+      "sha256": "c7a2f2fbb1505798fbd963e5b1da73b3c608aafefa1a341adf436d97ccf975a2",
+      "symbols": [
+        "_implementation_digest"
+      ],
+      "summary": "Migrates the formation mechanism's source-identity schema discriminator used in its implementation digest.",
+      "limits": "The digest-label change does not extend formation proof or source authenticity."
+    },
+    {
+      "path": "src/verifier/interoperability/formation_receipt.py",
+      "sha256": "ee1662021758add0a4eeacde74d6d4001485a000244e71350bb97da661446d30",
+      "symbols": [],
+      "summary": "Migrates finite formation-selection and receipt schema discriminators.",
+      "limits": "A generated formation receipt is bounded to retained inputs and is not independent authority."
+    },
+    {
+      "path": "src/verifier/interoperability/formation_storage.py",
+      "sha256": "cc12e8a4b4cc38111e936b90c13433845ff30ce7ca683604e44b7137bce953c6",
+      "symbols": [],
+      "summary": "Migrates the typed formation-profile storage schema discriminator.",
+      "limits": "Stored typed records show retained structure, not independent source verification."
+    },
+    {
+      "path": "src/verifier/interoperability/formation_wire.py",
+      "sha256": "cf9aabe61feb0f3207107361ff49266f73de03e00435cda1de1d3a84c0635f41",
+      "symbols": [],
+      "summary": "Migrates typed formation subject, certificate, and profile wire schema discriminators.",
+      "limits": "The finite typed formation rules remain bounded to the admitted wire records."
+    },
+    {
+      "path": "src/verifier/interoperability/gated_publish.py",
+      "sha256": "d31fc6f6ee2fa9a04a168d6b8556c8624545a5f76adae11e60807acfd2e30b15",
+      "symbols": [
+        "GatedPublishError",
+        "GatedPublishError.__init__",
+        "_account",
+        "_call",
+        "_contains_disclosure",
+        "_coordinate",
+        "_default_transport",
+        "_hash",
+        "_identity",
+        "_json",
+        "_object",
+        "_portable",
+        "_quota",
+        "_read",
+        "_read_account",
+        "_response",
+        "_sha",
+        "_stored",
+        "add_gated_publish_options",
+        "get_publish_account",
+        "handle_gated_publish_command",
+        "prepare_gated_publication",
+        "project_gate_receipt",
+        "publication_summary",
+        "publish_gated",
+        "validate_projection"
+      ],
+      "summary": "Adds local gated ClaimGarden preparation and submission with native certificate recheck, gate receipt projection, disclosure and consent inputs, and bounded files.",
+      "limits": "The minimized gate report does not authenticate original execution, identity, or permission, and host-side human review remains separate."
+    },
+    {
+      "path": "src/verifier/interoperability/geometry_conflicts.py",
+      "sha256": "12f85c9cd3fe4cf98ffb1d9344db01ab844f362c6240745a3c75b8cbd06abb03",
+      "symbols": [],
+      "summary": "Renames the geometry-conflict report schema discriminator.",
+      "limits": "Conflict diagnostics cover explicit declared geometries only and do not establish a general geometry proof."
+    },
+    {
+      "path": "src/verifier/interoperability/global_cycle_assessment.py",
+      "sha256": "e3b31d061defd61b1051fb4284b49142ac164b1686fa9e40ec28ef19f386d5ab",
+      "symbols": [],
+      "summary": "Migrates global-cycle declaration, receipt, and relation-semantics schema discriminators.",
+      "limits": "Assessment covers the bounded recorded graph and cannot prove an unobserved global cycle absent."
+    },
+    {
+      "path": "src/verifier/interoperability/graph_topology.py",
+      "sha256": "1a44ef71e20643f7a751b2e54351d2a2906e0572b54c2343d44953ddab933940",
+      "symbols": [],
+      "summary": "Renames graph-topology and experimental report schema discriminators.",
+      "limits": "The topology calculation covers recorded graph inputs and does not itself admit a numbered profile."
+    },
+    {
+      "path": "src/verifier/interoperability/network.py",
+      "sha256": "3a272858b14c9f0c419207dd7db999de363a1b7d5952fe0a266c3e9c42c7b6eb",
+      "symbols": [
+        "silo_composition_mechanism_bytes"
+      ],
+      "summary": "Migrates network object, silo, publisher, and authority wire records to verifier-prefixed schema discriminators.",
+      "limits": "The new discriminators are not automatic aliases for old serialized records, and network mechanisms otherwise remain bounded to supplied data."
+    },
+    {
+      "path": "src/verifier/interoperability/proposition_transfer.py",
+      "sha256": "97ca69992ec6f6de21697211758893d304db431556d366a6c9abd6606d2cc4ab",
+      "symbols": [
+        "rule_profile_bytes"
+      ],
+      "summary": "Migrates finite-set proposition-transfer assessment, receipt, rule, and artifact schema discriminators.",
+      "limits": "The assessed relation applies only to a declared finite set and does not transfer authority."
+    },
+    {
+      "path": "src/verifier/interoperability/reference_catalog.py",
+      "sha256": "971098fd85e0121f0e7b169e2020662085c19ff87f7bfe9deac255e36f2df151",
+      "symbols": [
+        "reference_component_registry"
+      ],
+      "summary": "Updates accepted and emitted schema identifiers across the reference interoperability registry to verifier-prefixed forms.",
+      "limits": "Registry metadata neither executes referenced mechanisms nor implements new adapters."
+    },
+    {
+      "path": "src/verifier/interoperability/relation_boundary.py",
+      "sha256": "75266489ffe8de4d80dcc5b64e6f84c140791f3c35b89523181741cc6dc1374d",
+      "symbols": [],
+      "summary": "Migrates relation-boundary declaration, evidence, receipt, and profile schema discriminators.",
+      "limits": "The replay is bounded by declared finite relations and cannot establish undeclared boundary behavior."
+    },
+    {
+      "path": "src/verifier/interoperability/runtime_authority_correspondence.py",
+      "sha256": "6171c50bdb77aa56978bd336d776cebddfe8d30745801f9d8c5b2c2c33a5c092",
+      "symbols": [],
+      "summary": "Migrates runtime-authority declaration, trace, receipt, profile, and runtime-kind schema discriminators.",
+      "limits": "Correspondence from a retained event trace is not legal or independent authority."
+    },
+    {
+      "path": "src/verifier/interoperability/source_grounding.py",
+      "sha256": "6a1864abbfbcc7cf8c7143da938f3feb1f7ba1feb810d61e7e1915bbda2e53ad",
+      "symbols": [],
+      "summary": "Migrates source-grounding declaration, certificate, receipt, profile, and canonical-interpretation schema discriminators.",
+      "limits": "Pointer-equality grounding does not independently authenticate the cited source."
+    },
+    {
+      "path": "src/verifier/interoperability/storage.py",
+      "sha256": "69fc987c27defe78d9b744b8fbc5fb41e9bcebd61c14a42b4f29b88c0c1c9cda",
+      "symbols": [],
+      "summary": "Renames the stored component-package schema discriminator.",
+      "limits": "Storage of a package does not itself establish a numbered-profile verdict."
+    },
+    {
+      "path": "src/verifier/interoperability/untraversable.py",
+      "sha256": "a07586e0281267b58e5d7aa70b1302698e1420620304b3d8d7e5154c2258b395",
+      "symbols": [],
+      "summary": "Migrates experimental untraversable-analysis and report schema discriminators.",
+      "limits": "The bounded composed-graph confidentiality model is not a general secrecy proof."
+    },
+    {
+      "path": "src/verifier/layer4/challenge.py",
+      "sha256": "51b3d9f3354f37d8f4eaed966ca32067743df8d2dbf656a33392629d9d21fd4c",
+      "symbols": [],
+      "summary": "Updates challenge-ledger explanatory text to refer to the GRAPH current-state view and GRAPH-1 blast radius.",
+      "limits": "These terminology edits do not change challenge adjudication or independently validate a submitted challenge."
+    },
+    {
+      "path": "src/verifier/layer4/closure.py",
+      "sha256": "1a5a2da1492ff4c96709523ecd3fbc00df801902a8cebc716241324af31d17e1",
+      "symbols": [
+        "cap_output_depth"
+      ],
+      "summary": "Updates refutability-closure commentary to call the collection axis GRAPH.",
+      "limits": "The candidate closure check still cannot promote an unevidenced transformation edge to Graph conformance."
+    },
+    {
+      "path": "src/verifier/privacy/__init__.py",
+      "sha256": "089ea92f6c4d1581a7ede70ad6279b1fb6ddf3ad01a1c0f76d9c4749a66c674e",
+      "symbols": [],
+      "summary": "Exports experimental level-6 disclosure models, emission checks and privacy helper adapters.",
+      "limits": "These caller-policy helpers do not establish normative level-6 conformance, observer identity or consent."
+    },
+    {
+      "path": "src/verifier/privacy/adapters.py",
+      "sha256": "dbefd99fd75661b5c19c70b42965d3c1307d786f8e789cb461ee9dfb5043e43a",
+      "symbols": [
+        "BudgetExhaustedError",
+        "ContextualIntegrityEvaluator",
+        "ContextualIntegrityEvaluator.__init__",
+        "ContextualIntegrityEvaluator.evaluate",
+        "ContextualTransmissionNorm",
+        "ContextualTransmissionNorm.to_dict",
+        "DifferentialPrivacyBudget",
+        "DifferentialPrivacyBudget.consume",
+        "SafeHarborPartition",
+        "SafeHarborPartition.partition",
+        "SelectiveMerkleDisclosure",
+        "SelectiveMerkleDisclosure._leaf_hash",
+        "SelectiveMerkleDisclosure.compute_root",
+        "SelectiveMerkleDisclosure.disclose_selectively"
+      ],
+      "summary": "Adds differential-privacy budget accounting, contextual-transmission rules, selective Merkle disclosure and safe-harbor partition helpers.",
+      "limits": "Budget arithmetic and selective disclosure do not prove a producer's differential-privacy mechanism or general reidentification safety."
+    },
+    {
+      "path": "src/verifier/privacy/composition.py",
+      "sha256": "b992b2a36fe0d11af7bfdd854ef1a21a937b6ede9ff8049cbd3416f69b69a2c2",
+      "symbols": [
+        "CompositionDeltaEvaluator",
+        "CompositionDeltaEvaluator.__init__",
+        "CompositionDeltaEvaluator.evaluate_composition_delta"
+      ],
+      "summary": "Evaluates declared composition deltas when two disclosure surfaces are joined.",
+      "limits": "Only encoded join rules and supplied surfaces are considered, so unknown linkage channels remain outside the result."
+    },
+    {
+      "path": "src/verifier/privacy/engine.py",
+      "sha256": "bd4b035ff9f4d239c94fbb61f7d536a34ec58ed7761114a885516a5df8d110b2",
+      "symbols": [
+        "EmissionEvaluator",
+        "EmissionEvaluator.__init__",
+        "EmissionEvaluator.evaluate_emission",
+        "EmissionEvaluator.recheck_emission",
+        "EmissionRefusalError",
+        "_canonical_bytes",
+        "_digest",
+        "_input_binding",
+        "_mechanism_digest",
+        "_snapshot"
+      ],
+      "summary": "Adds local emission-time evaluation and recheck binding policy, observer declarations, redaction and decision digests.",
+      "limits": "The engine does not authenticate observers or establish normative privacy certification from caller-supplied declarations."
+    },
+    {
+      "path": "src/verifier/privacy/independence.py",
+      "sha256": "5c419d5cacf473a11db6258bc1ff8ace05de790c584e945deaaf7ed6d5338e1e",
+      "symbols": [
+        "MalformedRedactionError",
+        "assert_verdict_independence"
+      ],
+      "summary": "Checks that redaction leaves the compared computational verdict unchanged.",
+      "limits": "Verdict equality does not prove that a disclosure meets an observer's privacy bound."
+    },
+    {
+      "path": "src/verifier/privacy/models.py",
+      "sha256": "59d0671c660097be029a44b754e8df7d2ed82c92f5485568a8d37c505f189e63",
+      "symbols": [
+        "DisclosureBound",
+        "DisclosureBound.permits",
+        "DisclosureBound.to_dict",
+        "DisclosureSurface",
+        "DisclosureSurface.to_dict",
+        "EmissionContext",
+        "EmissionContext.to_dict",
+        "EmissionResult",
+        "EmissionResult.to_dict",
+        "ObserverParty",
+        "ObserverParty.to_dict",
+        "RedactionRecord",
+        "RedactionRecord.to_dict",
+        "TransparencyCommitment",
+        "TransparencyCommitment.to_dict",
+        "_string_sequence"
+      ],
+      "summary": "Defines typed observer, disclosure, bound, emission and redaction records for experimental level-6 evaluation.",
+      "limits": "Data-model validation does not establish who an observer really is or that a disclosure is private."
+    },
+    {
+      "path": "src/verifier/profiles/bounded-completeness-mechanism-0.1.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/bounded-completeness-mechanism-1.json. Replaces the 0.1 profile identifier with the native -1 contract for externally source-grounded finite disposition coverage and independently replayed decisive member dispositions.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. The exact denominator is limited to 256 members and evidence to 8,388,608 bytes. COMPLETE concerns that denominator, not universal truth or unspecified omitted members."
+    },
+    {
+      "path": "src/verifier/profiles/bounded-completeness-mechanism-1.json",
+      "sha256": "8c0dab8009847abc17852283424931fdea1d5048859b8d7fcdd1632796eeb79f",
+      "symbols": [],
+      "summary": "Replaces the 0.1 profile identifier with the native -1 contract for externally source-grounded finite disposition coverage and independently replayed decisive member dispositions.",
+      "limits": "The exact denominator is limited to 256 members and evidence to 8,388,608 bytes. COMPLETE concerns that denominator, not universal truth or unspecified omitted members."
+    },
+    {
+      "path": "src/verifier/profiles/deriver-self-status-checker-0.1.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/deriver-self-status-checker-1.json. Migrates the exact-runtime self-status profile to its native -1 identifier while retaining executable, argument, public-environment and input bindings and fresh-directory replay.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Comparison covers exit code, standard output and standard error from two bounded invocations. It establishes neither global determinism nor semantic self-derivability, a sandbox, deployment or actor authority."
+    },
+    {
+      "path": "src/verifier/profiles/deriver-self-status-checker-1.json",
+      "sha256": "ab0398cbc82bc0a2ba9d7efdb73c5afdb64a5b75d6506785e1a683a806a7ea91",
+      "symbols": [],
+      "summary": "Migrates the exact-runtime self-status profile to its native -1 identifier while retaining executable, argument, public-environment and input bindings and fresh-directory replay.",
+      "limits": "Comparison covers exit code, standard output and standard error from two bounded invocations. It establishes neither global determinism nor semantic self-derivability, a sandbox, deployment or actor authority."
+    },
+    {
+      "path": "src/verifier/profiles/proposition-transfer-rule-0.1.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/proposition-transfer-rule-1.json. Migrates the finite-set subset/union transfer profile and schema references to native -1 identifiers, preserving exact context and canonical finite-set predicate checks.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. At most 16 premises, 256 items, 34 objects and 4,194,304 evidence bytes are admitted. This specific rule is not a general proof system or runtime-authority check."
+    },
+    {
+      "path": "src/verifier/profiles/proposition-transfer-rule-1.json",
+      "sha256": "b4cf102904ff248c048d947b093ae3d89deb4ca16582a8f3744ac7f7f3d1a58c",
+      "symbols": [],
+      "summary": "Migrates the finite-set subset/union transfer profile and schema references to native -1 identifiers, preserving exact context and canonical finite-set predicate checks.",
+      "limits": "At most 16 premises, 256 items, 34 objects and 4,194,304 evidence bytes are admitted. This specific rule is not a general proof system or runtime-authority check."
+    },
+    {
+      "path": "src/verifier/profiles/relation-boundary-mechanism-0.1.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/relation-boundary-mechanism-1.json. Migrates the canonical-object facet-map relation profile to its native -1 identifier, retaining exact replay and explicit preserved/lost source-facet accounting.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. At most 64 facets and 1,048,576 bytes per relation artifact are admitted. Equality of declared canonical facets does not establish equivalence outside the map or historical execution."
+    },
+    {
+      "path": "src/verifier/profiles/relation-boundary-mechanism-1.json",
+      "sha256": "1c127027d5c007216904918586fa1a447c8e8996bb2b6326f523df31a61f9e5b",
+      "symbols": [],
+      "summary": "Migrates the canonical-object facet-map relation profile to its native -1 identifier, retaining exact replay and explicit preserved/lost source-facet accounting.",
+      "limits": "At most 64 facets and 1,048,576 bytes per relation artifact are admitted. Equality of declared canonical facets does not establish equivalence outside the map or historical execution."
+    },
+    {
+      "path": "src/verifier/profiles/runtime-authority-correspondence-profile-0.1.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/runtime-authority-correspondence-profile-1.json. Migrates the retained-event-trace correspondence profile and schema references to native identifiers, pinning model, executable, deployed declaration and trace and requiring independently replayed output to equal the trace.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Limits are 1,024 events, 256 states/transitions and 8,388,608 evidence bytes. Correspondence and coverage remain separate; retained declared transitions do not establish live deployment, unseen events, access or sandboxing."
+    },
+    {
+      "path": "src/verifier/profiles/runtime-authority-correspondence-profile-1.json",
+      "sha256": "182b39577d507d72a583a4e1dbba21418fc1e480aac48037c01dc3a7bfbe8d25",
+      "symbols": [],
+      "summary": "Migrates the retained-event-trace correspondence profile and schema references to native identifiers, pinning model, executable, deployed declaration and trace and requiring independently replayed output to equal the trace.",
+      "limits": "Limits are 1,024 events, 256 states/transitions and 8,388,608 evidence bytes. Correspondence and coverage remain separate; retained declared transitions do not establish live deployment, unseen events, access or sandboxing."
+    },
+    {
+      "path": "src/verifier/profiles/source-grounding-mechanism-0.1.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/source-grounding-mechanism-1.json. Migrates the canonical-object JSON_POINTER_EQUALS profile to its native -1 identifier while retaining exact frame, source, proposition and certificate replay.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Source bytes are capped at 1,048,576, with depth 16 and 4,096 nodes. The mechanism checks a declared pointer equality, not source truth, independence or completeness."
+    },
+    {
+      "path": "src/verifier/profiles/source-grounding-mechanism-1.json",
+      "sha256": "337a71d92fd79d297a22f7577c2de45f23f8cae6470f7e375819d12dcbeb9f75",
+      "symbols": [],
+      "summary": "Migrates the canonical-object JSON_POINTER_EQUALS profile to its native -1 identifier while retaining exact frame, source, proposition and certificate replay.",
+      "limits": "Source bytes are capped at 1,048,576, with depth 16 and 4,096 nodes. The mechanism checks a declared pointer equality, not source truth, independence or completeness."
+    },
+    {
+      "path": "src/verifier/profiles/typed-formation-0.1.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires the packaged 0.1 profile at this path in favor of src/verifier/profiles/typed-formation-1.json. Migrates the typed formation profile and subject/certificate schemas to native identifiers; retains ATOM, APPLY, ID, APPLY_STEP, COMPOSE, QUOTE and READ with FORM/PATH/CODE typing and separate formation/denotation checks.",
+      "limits": "Path retirement is not an implicit compatibility alias or broader mechanism. Bounds are 1,024 nodes, depth 64 and 4,096 path steps. Source interpretation, ground derivation, source-trace relation, layer boundary, self-status, global cycle, completeness and agency remain explicit residuals."
+    },
+    {
+      "path": "src/verifier/profiles/typed-formation-1.json",
+      "sha256": "770f948d29900a63a6ba55f2bbc61bdd18fec1a73769c8e1e524d664c40f6e06",
+      "symbols": [],
+      "summary": "Migrates the typed formation profile and subject/certificate schemas to native identifiers; retains ATOM, APPLY, ID, APPLY_STEP, COMPOSE, QUOTE and READ with FORM/PATH/CODE typing and separate formation/denotation checks.",
+      "limits": "Bounds are 1,024 nodes, depth 64 and 4,096 path steps. Source interpretation, ground derivation, source-trace relation, layer boundary, self-status, global cycle, completeness and agency remain explicit residuals."
+    },
+    {
+      "path": "src/verifier/runtime/accessibility_cli.py",
+      "sha256": "5c70625aa02d87f9e019b612c750e81ee111f0a3e7c53c08b34ef7f6eda90cfa",
+      "symbols": [
+        "_explain_domain",
+        "_explain_grounded",
+        "_explain_other",
+        "_explain_receipt",
+        "_explain_rows",
+        "_next_action",
+        "_outcome_reason",
+        "_plural",
+        "_prefix_note",
+        "_print_explain",
+        "_print_start",
+        "add_accessibility_parsers",
+        "explain_report",
+        "explanation_exit_code",
+        "handle_accessibility_command",
+        "resolve_explain_target",
+        "start_report"
+      ],
+      "summary": "Adds start and explain CLI commands that render stored verification receipts or certificates in plain language with verdict-dependent exit codes.",
+      "limits": "Explanation reads retained records and does not rerun or independently validate underlying evidence."
+    },
+    {
+      "path": "src/verifier/runtime/certification_cli.py",
+      "sha256": "031b67c44071a15025466478341c3bfd4c52d741b30bebcb0a3e96df630568c6",
+      "symbols": [
+        "_domain_command",
+        "_mainstay_command",
+        "_read",
+        "add_certification_parser",
+        "handle_certification_command"
+      ],
+      "summary": "Adds CLI catalog, assess, and check routes for grounded, domain, and mainstay certification requests under supplied policy.",
+      "limits": "These bounded routes do not establish complete numbered-profile conformance where mechanisms or evidence are absent."
+    },
+    {
+      "path": "src/verifier/runtime/demo.py",
+      "sha256": "16c30ae9c8e62fc12b69f02216396ca394accb46252f0e8fc70952dac21b4756",
+      "symbols": [
+        "demo_report"
+      ],
+      "summary": "Changes the flagship demonstration output to the verifier-prefixed schema identifier.",
+      "limits": "A discriminator rename adds no demonstration mechanism or independent validation."
+    },
+    {
+      "path": "src/verifier/runtime/gate.py",
+      "sha256": "bb71034f296195fc387d9c5b2daefddca937d8fc78a825d3b8c1ed6bf75eb0eb",
+      "symbols": [
+        "AstGateVisitor",
+        "AstGateVisitor.__init__",
+        "AstGateVisitor._collection_multiplier",
+        "AstGateVisitor._has_exit",
+        "AstGateVisitor.visit_BinOp",
+        "AstGateVisitor.visit_For",
+        "AstGateVisitor.visit_ListComp",
+        "AstGateVisitor.visit_While",
+        "_link_like",
+        "_read_scan_stream",
+        "_read_scan_text",
+        "_scan_candidates",
+        "_scan_error",
+        "_text_candidate",
+        "add_gate_parsers",
+        "create_ci_attestation_receipt",
+        "handle_gate_command",
+        "run_ast_gate",
+        "run_boundary_gate",
+        "run_paths_gate",
+        "run_pr_gate",
+        "scan_paths_in_text",
+        "verify_ci_attestation_receipt"
+      ],
+      "summary": "Adds PR, path, abstract-syntax-tree, boundary, and optional HMAC attestation gate commands; boundary CLI findings omit possibly sensitive path and archive-member names.",
+      "limits": "Text scans are not exhaustive secret detection; CLI boundary findings need trusted local API inspection to locate the affected file, and attestation does not prove the reported tests ran."
+    },
+    {
+      "path": "src/verifier/runtime/gate_pipeline.py",
+      "sha256": "089a3c66081815ef2ad9aa24c3e49b1680af6286f4cb0349ea13319ed6904e07",
+      "symbols": [
+        "_aggregate",
+        "_canonical",
+        "_command",
+        "_digest",
+        "_executables",
+        "_inventory",
+        "_keys",
+        "_load",
+        "_manifest",
+        "_mechanism",
+        "_pairs",
+        "_read",
+        "_relative",
+        "_seconds",
+        "_verdict",
+        "_windows_job",
+        "add_pipeline_parsers",
+        "check_pipeline",
+        "handle_pipeline_command",
+        "init_pipeline",
+        "plan_pipeline",
+        "run_pipeline"
+      ],
+      "summary": "Adds manifest-driven gate initialization, planning, bounded local execution, and integrity recheck with exact file inventory and receipts.",
+      "limits": "The check route verifies the stored receipt without rerunning original commands, while execution depends on the chosen local environment and allowlisted steps."
+    },
+    {
+      "path": "src/verifier/runtime/graph_topology_cli.py",
+      "sha256": "07f05aa56ca94846f1ad7b7db61522af8bf900648231e301efc856c473ba52dd",
+      "symbols": [
+        "handle_graph_topology_command"
+      ],
+      "summary": "Admits the verifier-data-1 receipt envelope for graph-topology CLI input.",
+      "limits": "This envelope update does not itself validate graph topology or certify a profile."
+    },
+    {
+      "path": "src/verifier/runtime/public_cli.py",
+      "sha256": "8200a86900fcaea131a4816b125fd2bb6d0bc04bb03de4ca68002a41ed0e2ddd",
+      "symbols": [
+        "_handle_receipt_command",
+        "_inspect_data_receipt",
+        "_is_data_receipt",
+        "_load_hypergraph",
+        "build_parser",
+        "main"
+      ],
+      "summary": "Routes public CLI version, accessibility, certification, gate, publishing, account, and bare SIM-artifact commands through the updated command surface.",
+      "limits": "Local routing and preflight do not deploy artifacts or establish server-side review, and external submission still needs credentials."
+    },
+    {
+      "path": "src/verifier/schemas/artifact-control-1.schema.json",
+      "sha256": "fd16f16204943e25aa21c26697af94b35e268a26ff4a2357758084ad10e52bf6",
+      "symbols": [],
+      "summary": "Updates freeze, readable signed-seal and thaw schema variants to native identifiers, preserving dual-digest artifact identity and parent/descendant fields.",
+      "limits": "Shape checking does not verify signatures, retained parent bytes or thaw history. Seals do not encrypt or prevent copying; a thaw record cannot prove an actual historical parent transition."
+    },
+    {
+      "path": "src/verifier/schemas/graph-topology.schema.json",
+      "sha256": "7a7b4079d5258c6a085cb873236845661d81c6a4298e03b1d42e6611b2eac685",
+      "symbols": [],
+      "summary": "Renames the experimental wire to verifier-graph-topology-experimental-1, specifying graph/port bindings, finite Boolean equations, clock-relative offsets and paradox candidates.",
+      "limits": "The schema does not solve equations or establish graph identity, clock comparability or physical causation. Offsets retain declared units; a listed candidate is not a demonstrated contradiction."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-aging-token-1.schema.json",
+      "sha256": "e8bb5a10f332db0ba5b52380b3b2e102b2bfc914ec96ee9ef9ce0cde47003e59",
+      "symbols": [],
+      "summary": "Replaces the vstd aging-token schema with native fields binding birth token, genesis digest, epoch interval, accumulator proof, revocation status, attestor and signature.",
+      "limits": "Valid shape does not validate accumulator, signature, continuity or revocation. Token age or identity never strengthens an artifact verdict."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-artifact-network-1.schema.json",
+      "sha256": "a98b633fd40ee5820c344be8c6ee69dd12c49eaf35eecacd609fbdc97c79c89e",
+      "symbols": [],
+      "summary": "Migrates the finite network union to native identifiers for objects, commits, heads, publishers, key continuity, directories, authority models and assessments.",
+      "limits": "Objects are capped at 4,194,304 bytes, commit census at 256 and authority models at 256 states/transitions. Digests/signatures need runtime checks; declared membership proves neither authorship nor actual authority."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-authority-model-1.schema.json",
+      "sha256": "4b76adc751950b3aaca5c162cccf243850951d2a739794b2605ea36a37e91add",
+      "symbols": [],
+      "summary": "Replaces the authority-model schema with a native identifier and reference to authorityModel in verifier-artifact-network-1.",
+      "limits": "Conformance concerns only the declared finite transition graph, not actual runtime behavior, access, capability, awareness or knowledge."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-birth-token-1.schema.json",
+      "sha256": "ccb7eb96dc925661e019d759119a6c029c1f29326ddd1df2666481378f45bd03",
+      "symbols": [],
+      "summary": "Migrates birth-token shape to native identifiers with genesis artifact digest, birth epoch, commitment, issue time and signature.",
+      "limits": "Commitment/signature syntax does not establish authentic issuance, uniqueness or real-world identity. This adjacent identity record is not computational correctness evidence."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-bounded-completeness-1.schema.json",
+      "sha256": "d90d392bc725d3c0d1835348e8aca486139a36ffe3f872491379c19e96c6c33a",
+      "symbols": [],
+      "summary": "Migrates declaration, denominator, observation, assessment, receipt and mechanism-profile shapes, preserving COMPLETE/INCOMPLETE/UNKNOWN/INVALID.",
+      "limits": "Bounds are 256 denominator members and 8,388,608 evidence bytes. Schema validity cannot externally ground the denominator or replay dispositions; budget failure is not proof of incompleteness."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-component-index-1.schema.json",
+      "sha256": "6eaff0fcd8589c6ab83b1af3026b56b50da165224dddf321c2249dad7b31cd85",
+      "symbols": [],
+      "summary": "Migrates component-index/descriptors to native identifiers, cataloguing content-addressed packages and implementation, lifecycle and execution-mode declarations.",
+      "limits": "The index allows 4,096 packages of at most 33,554,432 bytes each. Declared availability/mode does not execute or qualify a component; exact paths, ordering, uniqueness and digests need loader checks."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-component-package-1.schema.json",
+      "sha256": "7c59a57d07c47d890dad8c7238b83ca7d57afd40ad5d64d447e0a5c406269f93",
+      "symbols": [],
+      "summary": "Migrates portable component packages to native identifiers with bounded registries, artifacts, implementations and dependency declarations.",
+      "limits": "Collections allow 256 entries and artifacts 16,777,216 bytes. Shape cannot validate decoded bytes, canonical base64, digest/path collisions or implementation bindings; loading and planning execute nothing."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-deriver-self-status-1.schema.json",
+      "sha256": "d90a4a2235c57faeb99a34da335278aca5c10ce20bf068b72fc70730504cf03c",
+      "symbols": [],
+      "summary": "Migrates exact-runtime declarations, checker profiles and replay receipts, retaining completed, timeout, output-limit, start-failure and capture-failure states.",
+      "limits": "Limits include 67,108,864 executable bytes, 64 arguments, 32 public environment entries, 60,000 milliseconds and 1,048,576 output bytes. A shaped receipt neither runs the executable nor provides isolation."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-domain-certification-1.schema.json",
+      "sha256": "614d4afc7a5f3a7a094c1cedfa7f6165f4b927619c135c230786c5a31fb331fb",
+      "symbols": [],
+      "summary": "Defines native domain certificates binding request, evidence, policy, mechanism/specification coordinates, evaluated result and certificate digest with PASS/FAIL/UNKNOWN.",
+      "limits": "The closed domain set and depth bounds do not establish every catalogued obligation. Replay must bind external expected intent/policy; REJECTED substitution is distinct from the embedded result vocabulary."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-domain-evidence-1.schema.json",
+      "sha256": "2e71d91ab4f8ef0f4764df8ec7889038e8019f42789316c92d838c93d813cec7",
+      "symbols": [],
+      "summary": "Defines native domain evidence with domain, subject, artifact digest and retained artifact/input objects for the closed admitted domain set.",
+      "limits": "Artifact/input object semantics are checked by domain adapters. Shape acceptance does not establish arithmetic, signatures, independent witnesses or scientific claims."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-domain-policy-1.schema.json",
+      "sha256": "671895ef8e95e21d8998fd3d45351ea704a3b8f5cdac608ae74ba964359a5291",
+      "symbols": [],
+      "summary": "Defines native policy bindings for mechanism identity, trust roots, witness keys and operation, item, evidence-byte and numeric-tolerance limits.",
+      "limits": "Caps include 10,000,000 operations, 100,000 items, 8,388,608 evidence bytes and tolerance 0.0001. Policy admission does not prove checker soundness or provide operating-system isolation."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-domain-request-1.schema.json",
+      "sha256": "7045c3002a758dcbb2c31da3da94ff1492b4577a20e1dab6af1860d8e457abd9",
+      "symbols": [],
+      "summary": "Defines the closed native domain request with subject, artifact digest, evidence reference and per-domain bounded target depth.",
+      "limits": "HYPER is not a certifiable request domain. Declared depth establishes no obligation; replay requires bound evidence, policy and exact external expected intent."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-gate-publication-1.schema.json",
+      "sha256": "4740f86856960321464a091f8653fbf40f9fba53b194b095119fcba4f40b85d9",
+      "symbols": [],
+      "summary": "Adds bounded gate-publication projection shapes for runner identity, source receipt, manifest, retained/final inputs, step outcomes, cleanup and projection digest.",
+      "limits": "At most 1,024 inputs and 64 steps are represented with explicit error, timeout, blocked and UNKNOWN outcomes. A projection does not authorize execution/publication, prove its original receipt or establish native certification."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-global-cycle-assessment-1.schema.json",
+      "sha256": "3905499b3bcc590ef1d6069a79d314549d3c1cbba7918e567738ebcca16278b5",
+      "symbols": [],
+      "summary": "Migrates declarations, semantics and receipts for separate support-dependency, Boolean-constraint and clock-relative temporal cycle assessments.",
+      "limits": "At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. Shape does not ground source relations, interpret arbitrary causality or prove complete graph coverage."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-graph-assurance-1.schema.json",
+      "sha256": "bbb7932bcd6c2604836cb3f0e16a0297d28de6e23b4e7c48673abe1fa371815b",
+      "symbols": [],
+      "summary": "Migrates typed assurance logs/current views retaining historical graph bindings, hash-chain events, conflicts/resolutions and TRUST, ROT, RUST and diagnostic attribution records.",
+      "limits": "Current views require replay of the typed evidence-bound history. An event name, actor identity or intact hash chain alone cannot establish trust, responsibility or a computational verdict."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-grounded-certification-1.schema.json",
+      "sha256": "0e271cff2ddd9a468fcb3d0c02e3a440ca61cca76f18f0373124cb006dfb59ec",
+      "symbols": [],
+      "summary": "Defines native object certificates with bound request/claim, propositions, evidence, evaluations and obligation results, separating PASS/FAIL/UNKNOWN from ESTABLISHED/NOT_ESTABLISHED.",
+      "limits": "All prerequisite obligations require admitted mechanisms; profile 4 retains fourteen rungs. Shape, supplied grades and digests cannot replace evidence evaluation or externally expected intent."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-grounded-policy-1.schema.json",
+      "sha256": "505bcdeba0ee634c389aa73ed3a12c04e98b78bd181081bf14f489730612be89",
+      "symbols": [],
+      "summary": "Defines object-policy admission for exact obligation/mechanism coordinates, mechanism digests, nonempty trust roots, catalogue/specification digests and retained-evidence limits.",
+      "limits": "The policy covers 47 object obligations with at most 4,096 evidence entries and bounded bytes. Registration is an authority decision, not proof of mechanism soundness, witness independence or execution safety."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-grounded-request-1.schema.json",
+      "sha256": "083d630d48b2486fef93c2f20e719f5ab8e09a93ce34b823bc645e69f020d709",
+      "symbols": [],
+      "summary": "Defines native object requests/claim bindings for bounded propositions, target profile and retained evidence.",
+      "limits": "Profiles stop at 5 and evidence at 4,096 entries within 33,554,432 bytes. A requested target or references do not establish the profile; exact external intent and replay remain necessary."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-lifetime-token-1.schema.json",
+      "sha256": "24016afe1cc3ba10cd11db81f63f2849862447ab6336276ba0c26bad94f82506",
+      "symbols": [],
+      "summary": "Migrates lifetime/delegation token shapes with actor/delegated key, scope, validity interval, soulbound marker, issuer and signature.",
+      "limits": "Actual signature, expiry and delegation enforcement need runtime checks. The token does not establish artifact truth, authority outside its scope or an economic asset."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-proposition-transfer-1.schema.json",
+      "sha256": "003ce96f7d5f0ffff55954e2ee757fc71529223794fbdc4074594e0b2561453a",
+      "symbols": [],
+      "summary": "Migrates declarations, finite-set predicates/rules and assessments, preserving distinct evidence, context, predicate, artifact, upper-bound and residual results.",
+      "limits": "The reference rule admits at most 16 premises. SUPPORTED applies only to the bounded predicate/context, not general inference, historical execution, identity or authority."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-push-request-1.schema.json",
+      "sha256": "42efa1a8190c5e66fec330e13496a2d96a2ccf19e18199b2ea8380bc2cbf8ce6",
+      "symbols": [],
+      "summary": "Migrates push-request records for endpoint, publisher, commit/head, expected head, transport-performed flag and explicit claim boundary.",
+      "limits": "A shaped request is neither transmission nor proof of authentication, remote acceptance or publication. The transport flag represents an observation and is not authorization."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-relation-boundary-1.schema.json",
+      "sha256": "8e349eaf33cadd1f9f1f83fcf3e2a1ccb8868546d7afdcdff21c0d168106b66d",
+      "symbols": [],
+      "summary": "Migrates relation declarations, evidence, receipts and profiles for exact facet maps and explicit NONE/PRESENT loss, retaining ESTABLISHED/REFUTED/UNKNOWN/INVALID.",
+      "limits": "Bounds are 64 facets and 1,048,576 bytes per artifact. Runtime replay must check partition/equality; the schema does not prove general translation equivalence or unlisted facets."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-risk-profile-2.schema.json",
+      "sha256": "333e59ddcae38fd802fe9376c4ee6ff37fd8a0c527dee16bbb9d78c261130201",
+      "symbols": [],
+      "summary": "Adds the experimental legacy risk-receipt schema with versioned verifier identifiers, model/graph/runtime bindings, containment tiers and bounded verdict vocabulary.",
+      "limits": "CONTAINED and tier names are receipt fields, not physical containment evidence by themselves. This is distinct from native domain certification and does not upgrade a legacy receipt."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-self-derivation-mechanism-1.schema.json",
+      "sha256": "58f46bac893068738cc97cde8c701c3c1415a1bac322f2cbc0a5f802b5eb9447",
+      "symbols": [],
+      "summary": "Migrates finite declarative self-derivation mechanism descriptors with exact rule family, relation strength and claim boundary.",
+      "limits": "A descriptor does not demonstrate semantic self-return, source grounding or complete self-derivability. The admitted declared relation still needs checking against retained evidence."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-silo-assessment-1.schema.json",
+      "sha256": "03caf07565169b6f9abbb0fe0bb85c40e1001b3bdbb4da925f39693dcff31adc",
+      "symbols": [],
+      "summary": "Migrates finite silo assessment shapes with separate reconstructibility, derivation closure, self-derivability, completeness, grounding and agency outcomes.",
+      "limits": "COMPLETE, CLOSED or ESTABLISHED on one axis cannot establish another. This declared finite assessment is not artifact correctness, real actor identity or actual runtime authority."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-silo-assessment-receipt-1.schema.json",
+      "sha256": "374ee0de92a98d2724da89299bc47f29a9be29bb4067d985ba191548581db21f",
+      "symbols": [],
+      "summary": "Migrates noncircular silo receipts binding nested assessment to exact commit and assessment-mechanism digests.",
+      "limits": "Binding the nested assessment does not strengthen its verdicts. Digest syntax does not replay retained objects or demonstrate its individual assessment axes."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-silo-composition-1.schema.json",
+      "sha256": "1e469dde0b1a29859d9f7b09ddfc3760acbefdafe3b36b77cb23d6b2dbde09a4",
+      "symbols": [],
+      "summary": "Migrates finite silo composition declarations with member commit digests and an optional composite commit.",
+      "limits": "At most 256 members are declared. Their listing is input to assessment, not evidence of preserved member authority or admissible composition."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-silo-composition-assessment-1.schema.json",
+      "sha256": "0b35bf1bf76cf0e4a7d9ac59db3815421f121edbf4141b4d6c31ceaa2b69c54e",
+      "symbols": [],
+      "summary": "Migrates composition assessments for member binding/completeness, local authority preservation, effective agency and ADMISSIBLE/NOT_ADMISSIBLE outcomes.",
+      "limits": "Results cover at most 256 declared members and an optional finite composite, not global authority, hidden runtime behavior or unbounded composition."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-silo-composition-assessment-receipt-1.schema.json",
+      "sha256": "ade8744f5fa01fd5ebdc23fb55bcbf2dfe09edfb35bbe1ce91fa8d2e950178ff",
+      "symbols": [],
+      "summary": "Migrates composition receipts binding declaration/mechanism digests, bounded independent member receipts and an optional composite receipt to assessment.",
+      "limits": "Embedding receipts does not prove validity or authority preservation; commitments/mechanisms require replay. This cannot turn a non-admissible or unknown member into a valid composite."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-silo-formation-receipt-1.schema.json",
+      "sha256": "d9fd6243e79d46b2a99145c2e20aa9c97fea3e64a6280a3da4be2fb0b632c27b",
+      "symbols": [],
+      "summary": "Migrates formation selections/receipts binding subject, certificate, profile and ground paths to retained snapshots with coordinate, snapshot, agency-match and report states.",
+      "limits": "Bounds include 1,024 nodes, 4,096 path steps, depth 64 and 256 evidence objects. Canonical order, census identity and replay need the checker; formation is not self-derivation, completeness or agency establishment."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-silo-transfer-1.schema.json",
+      "sha256": "a573853e8b230aeff801aa56b6170e364c6619cf94d5c4b3f13d94c48773fd90",
+      "symbols": [],
+      "summary": "Migrates portable silo manifests with publisher/key-continuity records, head, commit, assessment and retained base64 object bytes.",
+      "limits": "Object and continuity collections are capped at 256. Download or shape acceptance cannot establish authenticity, correct bytes, accepted authority or semantic verdict transfer."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-simulation-receipt-1.schema.json",
+      "sha256": "6df4c5da86b44d519dfc944d6697d48d4e546da17749616160e883572528ad8c",
+      "symbols": [],
+      "summary": "Adds experimental legacy simulation receipts with verifier-simulation-receipt-1/verifier-sim-2 identifiers and trace, invariant, bisimulation, agent and distributed tier fields.",
+      "limits": "VERIFIED/VIOLATION_DETECTED/NOT_ESTABLISHED are receipt fields. This is not native domain certification; shape neither replays a simulation nor proves scientific validity."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-source-grounding-1.schema.json",
+      "sha256": "e6e1cbca4fad1a72858ce4864202f5b8cfcfb84505c5c01771f906183bd0b356",
+      "symbols": [],
+      "summary": "Migrates declarations, certificates, receipts and profiles binding canonical source, frame, proposition and mechanism under DERIVATION or TRANSLATION labels.",
+      "limits": "Source is limited to 1,048,576 bytes and certificates to 65,536. MECHANISM_EXECUTION is not historical execution evidence; pointer replay is required and does not prove source truth."
+    },
+    {
+      "path": "src/verifier/schemas/verifier-typed-formation-1.schema.json",
+      "sha256": "262bd1c209714f82f06c0ac13c2f5ed0dbc3c60888dac62c89f6d87922168933",
+      "symbols": [],
+      "summary": "Migrates subject/certificate shapes for seven constructors, finite FORM/PATH/CODE terms, node references and bounded derivation steps.",
+      "limits": "Subjects have at most 1,024 nodes. Endpoint typing, backward references, contexts and replay need the mechanism; shape is not a Hypermath translation theorem, source-grounding proof or agency result."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-actor-binding-1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Deletes the legacy actor-binding schema for PUBLISHER_CONTROL/PIPELINE_OPERATION propositions, actor/subject identifiers, keys, times and dual signatures; the token specification withdraws this object.",
+      "limits": "Deletion does not establish replacement composition correctness or add a certifiable HYPER adapter. Identity, key control and pipeline attribution remain separate from artifact correctness and actual authority."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-aging-token-1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-aging-token-1.schema.json. Replaces the vstd aging-token schema with native fields binding birth token, genesis digest, epoch interval, accumulator proof, revocation status, attestor and signature.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Valid shape does not validate accumulator, signature, continuity or revocation. Token age or identity never strengthens an artifact verdict."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-artifact-network-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-artifact-network-1.schema.json. Migrates the finite network union to native identifiers for objects, commits, heads, publishers, key continuity, directories, authority models and assessments.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Objects are capped at 4,194,304 bytes, commit census at 256 and authority models at 256 states/transitions. Digests/signatures need runtime checks; declared membership proves neither authorship nor actual authority."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-authority-model-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-authority-model-1.schema.json. Replaces the authority-model schema with a native identifier and reference to authorityModel in verifier-artifact-network-1.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Conformance concerns only the declared finite transition graph, not actual runtime behavior, access, capability, awareness or knowledge."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-birth-token-1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-birth-token-1.schema.json. Migrates birth-token shape to native identifiers with genesis artifact digest, birth epoch, commitment, issue time and signature.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Commitment/signature syntax does not establish authentic issuance, uniqueness or real-world identity. This adjacent identity record is not computational correctness evidence."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-bounded-completeness-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-bounded-completeness-1.schema.json. Migrates declaration, denominator, observation, assessment, receipt and mechanism-profile shapes, preserving COMPLETE/INCOMPLETE/UNKNOWN/INVALID.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Bounds are 256 denominator members and 8,388,608 evidence bytes. Schema validity cannot externally ground the denominator or replay dispositions; budget failure is not proof of incompleteness."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-component-index-1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-component-index-1.schema.json. Migrates component-index/descriptors to native identifiers, cataloguing content-addressed packages and implementation, lifecycle and execution-mode declarations.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. The index allows 4,096 packages of at most 33,554,432 bytes each. Declared availability/mode does not execute or qualify a component; exact paths, ordering, uniqueness and digests need loader checks."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-component-package-1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-component-package-1.schema.json. Migrates portable component packages to native identifiers with bounded registries, artifacts, implementations and dependency declarations.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Collections allow 256 entries and artifacts 16,777,216 bytes. Shape cannot validate decoded bytes, canonical base64, digest/path collisions or implementation bindings; loading and planning execute nothing."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-deriver-self-status-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-deriver-self-status-1.schema.json. Migrates exact-runtime declarations, checker profiles and replay receipts, retaining completed, timeout, output-limit, start-failure and capture-failure states.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Limits include 67,108,864 executable bytes, 64 arguments, 32 public environment entries, 60,000 milliseconds and 1,048,576 output bytes. A shaped receipt neither runs the executable nor provides isolation."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-global-cycle-assessment-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-global-cycle-assessment-1.schema.json. Migrates declarations, semantics and receipts for separate support-dependency, Boolean-constraint and clock-relative temporal cycle assessments.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. Shape does not ground source relations, interpret arbitrary causality or prove complete graph coverage."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-graph-assurance-1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-graph-assurance-1.schema.json. Migrates typed assurance logs/current views retaining historical graph bindings, hash-chain events, conflicts/resolutions and TRUST, ROT, RUST and diagnostic attribution records.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Current views require replay of the typed evidence-bound history. An event name, actor identity or intact hash chain alone cannot establish trust, responsibility or a computational verdict."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-lifetime-token-1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-lifetime-token-1.schema.json. Migrates lifetime/delegation token shapes with actor/delegated key, scope, validity interval, soulbound marker, issuer and signature.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Actual signature, expiry and delegation enforcement need runtime checks. The token does not establish artifact truth, authority outside its scope or an economic asset."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-proposition-transfer-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-proposition-transfer-1.schema.json. Migrates declarations, finite-set predicates/rules and assessments, preserving distinct evidence, context, predicate, artifact, upper-bound and residual results.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. The reference rule admits at most 16 premises. SUPPORTED applies only to the bounded predicate/context, not general inference, historical execution, identity or authority."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-push-request-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-push-request-1.schema.json. Migrates push-request records for endpoint, publisher, commit/head, expected head, transport-performed flag and explicit claim boundary.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. A shaped request is neither transmission nor proof of authentication, remote acceptance or publication. The transport flag represents an observation and is not authorization."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-relation-boundary-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-relation-boundary-1.schema.json. Migrates relation declarations, evidence, receipts and profiles for exact facet maps and explicit NONE/PRESENT loss, retaining ESTABLISHED/REFUTED/UNKNOWN/INVALID.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Bounds are 64 facets and 1,048,576 bytes per artifact. Runtime replay must check partition/equality; the schema does not prove general translation equivalence or unlisted facets."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-self-derivation-mechanism-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-self-derivation-mechanism-1.schema.json. Migrates finite declarative self-derivation mechanism descriptors with exact rule family, relation strength and claim boundary.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. A descriptor does not demonstrate semantic self-return, source grounding or complete self-derivability. The admitted declared relation still needs checking against retained evidence."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-silo-assessment-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-assessment-1.schema.json. Migrates finite silo assessment shapes with separate reconstructibility, derivation closure, self-derivability, completeness, grounding and agency outcomes.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. COMPLETE, CLOSED or ESTABLISHED on one axis cannot establish another. This declared finite assessment is not artifact correctness, real actor identity or actual runtime authority."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-silo-assessment-receipt-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-assessment-receipt-1.schema.json. Migrates noncircular silo receipts binding nested assessment to exact commit and assessment-mechanism digests.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Binding the nested assessment does not strengthen its verdicts. Digest syntax does not replay retained objects or demonstrate its individual assessment axes."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-silo-composition-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-composition-1.schema.json. Migrates finite silo composition declarations with member commit digests and an optional composite commit.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. At most 256 members are declared. Their listing is input to assessment, not evidence of preserved member authority or admissible composition."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-silo-composition-assessment-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-composition-assessment-1.schema.json. Migrates composition assessments for member binding/completeness, local authority preservation, effective agency and ADMISSIBLE/NOT_ADMISSIBLE outcomes.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Results cover at most 256 declared members and an optional finite composite, not global authority, hidden runtime behavior or unbounded composition."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-silo-composition-assessment-receipt-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-composition-assessment-receipt-1.schema.json. Migrates composition receipts binding declaration/mechanism digests, bounded independent member receipts and an optional composite receipt to assessment.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Embedding receipts does not prove validity or authority preservation; commitments/mechanisms require replay. This cannot turn a non-admissible or unknown member into a valid composite."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-silo-formation-receipt-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-formation-receipt-1.schema.json. Migrates formation selections/receipts binding subject, certificate, profile and ground paths to retained snapshots with coordinate, snapshot, agency-match and report states.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Bounds include 1,024 nodes, 4,096 path steps, depth 64 and 256 evidence objects. Canonical order, census identity and replay need the checker; formation is not self-derivation, completeness or agency establishment."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-silo-transfer-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-silo-transfer-1.schema.json. Migrates portable silo manifests with publisher/key-continuity records, head, commit, assessment and retained base64 object bytes.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Object and continuity collections are capped at 256. Download or shape acceptance cannot establish authenticity, correct bytes, accepted authority or semantic verdict transfer."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-source-grounding-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-source-grounding-1.schema.json. Migrates declarations, certificates, receipts and profiles binding canonical source, frame, proposition and mechanism under DERIVATION or TRANSLATION labels.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Source is limited to 1,048,576 bytes and certificates to 65,536. MECHANISM_EXECUTION is not historical execution evidence; pointer replay is required and does not prove source truth."
+    },
+    {
+      "path": "src/verifier/schemas/vstd-typed-formation-0.1.schema.json",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Retires this vstd-prefixed packaged schema in favor of src/verifier/schemas/verifier-typed-formation-1.schema.json. Migrates subject/certificate shapes for seven constructors, finite FORM/PATH/CODE terms, node references and bounded derivation steps.",
+      "limits": "The retired wire spelling is not silently accepted as the native contract. Subjects have at most 1,024 nodes. Endpoint typing, backward references, contexts and replay need the mechanism; shape is not a Hypermath translation theorem, source-grounding proof or agency result."
+    },
+    {
+      "path": "src/verifier/specifications/ARTIFACT_CONTROL.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/ARTIFACT_CONTROL.md. Consolidates freeze, readable Ed25519 seal and descendant-thaw specification under standard/ and updates native wire identifiers while preserving dual-digest byte identity.",
+      "limits": "Moving a document does not implement or establish its obligations. Freezing and sealing do not encrypt bytes or prevent copying. Thaw/history claims require retained parent bytes; a substituted whole signed bundle is not detected merely through internal consistency."
+    },
+    {
+      "path": "src/verifier/specifications/BOUNDED_COMPLETENESS.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/BOUNDED_COMPLETENESS.md. Moves finite-denominator completeness to standard/ and native wire/profile identifiers, separating decisive dispositions from unchecked or invalid members.",
+      "limits": "Moving a document does not implement or establish its obligations. The reference mechanism covers at most 256 externally grounded members. Budget exhaustion remains UNKNOWN rather than INCOMPLETE; COMPLETE does not cover an unstated universe or prove source truth."
+    },
+    {
+      "path": "src/verifier/specifications/DERIVER_SELF_STATUS.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/DERIVER_SELF_STATUS.md. Moves exact-executable/runtime self-status to standard/ with native identifiers and two bounded fresh-directory invocations.",
+      "limits": "Moving a document does not implement or establish its obligations. Matching exit/output at the retained coordinate is not global determinism, semantic self-derivability, a CPU or memory sandbox, authorization or observed deployment."
+    },
+    {
+      "path": "src/verifier/specifications/FINITE_AUTHORITY_COMPOSITION.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md. Moves finite authority composition to standard/ and native identifiers: asynchronous interleaving, member identity preservation and checked product/composite correspondence.",
+      "limits": "Moving a document does not implement or establish its obligations. Only retained finite declared transition systems are assessed. This does not prove real permissions, scheduler behavior, synchronization or hidden runtime authority; the direct module remains experimental."
+    },
+    {
+      "path": "src/verifier/specifications/FORMATION_RECEIPT.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/FORMATION_RECEIPT.md. Moves formation-receipt specification to standard/ and native identifiers, binding selected subject/certificate/profile/ground paths to retained canonical network objects and replayed formation.",
+      "limits": "Moving a document does not implement or establish its obligations. The bounded retained-coordinate check does not execute a silo or establish self-derivability, completeness or agency. A path or embedded report cannot substitute for exact object bytes."
+    },
+    {
+      "path": "src/verifier/specifications/GLOBAL_CYCLE_ASSESSMENT.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GLOBAL_CYCLE_ASSESSMENT.md. Moves source-grounded cycle assessment to standard/ with native identifiers and separate support-dependency, simultaneous Boolean-constraint and clock-relative temporal facets.",
+      "limits": "Moving a document does not implement or establish its obligations. At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. This does not establish arbitrary causal semantics, comparable clocks or completeness beyond retained relations."
+    },
+    {
+      "path": "src/verifier/specifications/LADDER.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/LADDER.md. Updates the ladder overview to distinguish object VSTD-1 through VSTD-5, graph GRAPH-1 through GRAPH-5, evidence-bound establishment and a separate typed assurance lifecycle.",
+      "limits": "Moving a document does not implement or establish its obligations. Profiles are cumulative obligation sets, not scalar strength scores. TRUST, RUST and ROT do not imply identity-based truth, and later profiles cannot repair unmet prerequisites."
+    },
+    {
+      "path": "src/verifier/specifications/PROPOSITION_TRANSFER.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/PROPOSITION_TRANSFER.md. Moves bounded finite-set proposition transfer to standard/ and native identifiers, requiring exact contexts, predicates, premise bytes and independently recomputed receipts.",
+      "limits": "Moving a document does not implement or establish its obligations. The reference rule allows at most 16 premises and is not general deduction. Unknown or negative results cannot be promoted; TypeScript structural equality does not demonstrate Python execution or authority."
+    },
+    {
+      "path": "src/verifier/specifications/RELATION_BOUNDARY.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/RELATION_BOUNDARY.md. Moves relation-boundary specification to standard/ with native identifiers, disjoint complete preserved/lost source-facet accounting, exact target coverage and canonical replay.",
+      "limits": "Moving a document does not implement or establish its obligations. The reference contract permits 64 facets and 1,048,576 bytes per artifact. Declared facet equality is not full semantic equivalence or evidence that a translation historically ran."
+    },
+    {
+      "path": "src/verifier/specifications/RUNTIME_AUTHORITY_CORRESPONDENCE.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/RUNTIME_AUTHORITY_CORRESPONDENCE.md. Moves authority correspondence to standard/ with native model/executable/deployed-declaration/trace bindings, independently replayed output and one-to-one contiguous transition correspondence.",
+      "limits": "Moving a document does not implement or establish its obligations. Correspondence and state/transition coverage remain separate. Even within 1,024 events and 256 states/transitions this does not establish live deployment, unseen execution, access authorization or sandboxing."
+    },
+    {
+      "path": "src/verifier/specifications/SOURCE_GROUNDING.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/SOURCE_GROUNDING.md. Moves canonical-source grounding to standard/ and native identifiers, enforcing exact source/frame/proposition/certificate roles and JSON_POINTER_EQUALS replay.",
+      "limits": "Moving a document does not implement or establish its obligations. The source is bounded to 1,048,576 bytes, depth 16 and 4,096 nodes. A successful pointer equality is not source truth, independence, historical execution or universal grounding."
+    },
+    {
+      "path": "src/verifier/specifications/TYPED_FORMATION.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/TYPED_FORMATION.md. Moves the seven-constructor FORM/PATH/CODE formation specification to standard/ with native identifiers, preserving formation versus normalized denotation, backward references and quotation/read constraints.",
+      "limits": "Moving a document does not implement or establish its obligations. The mechanism is not a Hypermath translation theorem, semantic self-return, agency or source-interpretation proof. Package loading/planning executes nothing; listed semantic residuals remain outside formation."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-1.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-1.md. Adds grounded coordinates 1.1 through 1.7 to the object claim baseline for exact claim, mechanism, evidence, bounds, provenance and reproduction.",
+      "limits": "Moving a document does not implement or establish its obligations. This finite baseline is not accreditation or universal truth. The minimal proposition checker is not a general satisfiability solver; replay is not independent correctness."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-2.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-2.md. Adds grounded coordinates 2.1 through 2.7 to object closure, preserving facet/region/grain/stratum/seam and horizon distinctions and separate self-closure/higher-order obligations.",
+      "limits": "Moving a document does not implement or establish its obligations. Verdicts do not extend outside their horizon. Unverified dependencies or self-descriptions cannot establish closure; higher-order claims require their own evidence."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-3.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-3.md. Adds grounded coordinates 3.1 through 3.8 for substrate accountability through challenged execution, firmware, accounting, provider/topology and continuity evidence.",
+      "limits": "Moving a document does not implement or establish its obligations. Raw host telemetry or declared provider identity is not attestation, a complete physical audit or vendor endorsement. Each retained mechanism retains its bounded applicability."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-4.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-4.md. Adds grounded coordinates 4.1 through 4.14 to externally refutable decisions, distinguishing structural candidate assessment from normative evidence-backed establishment.",
+      "limits": "Moving a document does not implement or establish its obligations. PASS/FAIL/UNKNOWN apply to exact claim closure and prerequisites. Caller references or candidate grades do not establish the fourteen rungs, arbitrary proof soundness or witness independence."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-5.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/VSTD-5.md. Adds grounded coordinates 5.1 through 5.11 to corroborated refutability, preserving fourteen-rung entry, exact claim identity and seven dimensions of witness separation.",
+      "limits": "Moving a document does not implement or establish its obligations. Witness counts, labels and self-report cannot establish independence. Corroboration must be checked and discordant evidence cannot be erased or averaged into establishment."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-Graph-1.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-1.md. Defines artifact/transformation hypergraphs and observed boundaries under GRAPH-1, updates the native graph wire and requires disjoint artifact/transformation identifiers for new admission.",
+      "limits": "Moving a document does not implement or establish its obligations. Closure concerns the observed boundary, not historical completeness. Legacy decoding remains a distinct compatibility boundary; graph structure does not verify node or edge claims."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-Graph-2.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-2.md. Defines GRAPH-2 collection closure over reachable members, ancestors and edges, with exact graph/member/collection/claim bindings and object-profile prerequisites.",
+      "limits": "Moving a document does not implement or establish its obligations. Caller grades remain structural candidates and NOT_ESTABLISHED without evidence-bound mechanisms. Closure does not establish physical truth or substrate accountability."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-Graph-3.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-3.md. Defines GRAPH-3 accountability closure for reachable member and edge evidence at corresponding object profiles, propagating weakest-link limits through the collection.",
+      "limits": "Moving a document does not implement or establish its obligations. A graph rating is not outside-party refutability. Higher-rated members cannot compensate for unsupported edges or unmet prerequisites; exact evidence closure requires checking."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-Graph-4.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-4.md. Defines GRAPH-4 refutability closure and challenge localization over member, edge and collection claims linked to grounded graph coordinates.",
+      "limits": "Moving a document does not implement or establish its obligations. Verified endpoints do not establish their connecting edge. A candidate explanation or unsatisfiability result does not constitute graph conformance or independent evidence."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-Graph-5.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/GRAPH-5.md. Defines GRAPH-5 independent corroboration closure for reachable member and edge claims, retaining conflicts and grounded mechanism bindings.",
+      "limits": "Moving a document does not implement or establish its obligations. Witness names, counts and self-assigned ratings do not establish independence. Conflicting required evidence remains inadmissible rather than being averaged into a stronger verdict."
+    },
+    {
+      "path": "src/verifier/specifications/VSTD-ZIZK-TOKENS.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/ZIZK_TOKENS.md. Moves zero-identity/zero-knowledge token specification to standard/, renames birth/aging/lifetime contracts and withdraws the actor-binding object in favor of separately scoped object/holding composition.",
+      "limits": "Moving a document does not implement or establish its obligations. Missing or contradictory offline evidence remains unknown or rejected. Identity, continuity, delegation and ownership never prove artifact truth; naming a HYPER replacement does not create a certifiable HYPER adapter."
+    },
+    {
+      "path": "src/verifier/specifications/WIRE_IDENTIFIERS.md",
+      "sha256": null,
+      "symbols": [],
+      "summary": "Removes the packaged specifications/ copy and consolidates its topic in src/verifier/standard/WIRE_IDENTIFIERS.md. Reworks the wire register around native identifiers, exact dispatch and mandatory profile discriminators; adds grounded object, graph and domain contracts while separating software version from wire identity.",
+      "limits": "Moving a document does not implement or establish its obligations. Readers must not guess from filenames or shape, treat retired spellings as implicit aliases or infer conformance from package version. Historical contracts need an explicit supported dispatch path."
+    },
+    {
+      "path": "src/verifier/standard/ARTIFACT_CONTROL.md",
+      "sha256": "531f4afb9629f6322668c02fa4f0bb9e62060dcaa0bb0491c310eada2b41c16b",
+      "symbols": [],
+      "summary": "Consolidates freeze, readable Ed25519 seal and descendant-thaw specification under standard/ and updates native wire identifiers while preserving dual-digest byte identity.",
+      "limits": "Freezing and sealing do not encrypt bytes or prevent copying. Thaw/history claims require retained parent bytes; a substituted whole signed bundle is not detected merely through internal consistency."
+    },
+    {
+      "path": "src/verifier/standard/BOUNDED_COMPLETENESS.md",
+      "sha256": "13b90d9d91593880cbe790d05c3383ad9ba96f2ce99347aebd716f219a87028e",
+      "symbols": [],
+      "summary": "Moves finite-denominator completeness to standard/ and native wire/profile identifiers, separating decisive dispositions from unchecked or invalid members.",
+      "limits": "The reference mechanism covers at most 256 externally grounded members. Budget exhaustion remains UNKNOWN rather than INCOMPLETE; COMPLETE does not cover an unstated universe or prove source truth."
+    },
+    {
+      "path": "src/verifier/standard/CURRENT_HYPER_CLOSURE.md",
+      "sha256": "7f5d987c2fa38ab67d9ad394169e21b50977382f7cc771174edd3ecaf751dcf9",
+      "symbols": [],
+      "summary": "Specifies current HYPER-4.1 exact declared operand-cone closure, its versioned proposition and certificate, bound collection and external request/policy, complete evidence retention, independent replay, resource bounds and FAIL/UNKNOWN/refusal behavior.",
+      "limits": "One bounded objective. No full closure tier/profile, mathematical or physical closure, privacy proof or emission authority. Legacy Saturation is explicitly separate and unsupported migration remains open."
+    },
+    {
+      "path": "src/verifier/standard/CURRENT_OBJECT_GROUNDING.md",
+      "sha256": "ac75f2f82c87419c40a570de149061d1ca97942e95969283014aa212d32b8b40",
+      "symbols": [],
+      "summary": "Specifies current SIM-5.1 finite confinement, separate semantic version, exact canonical evidence and replay. Defines exact primitive-field snapshot and pre-serialization reference-byte/operation charging, negative verdicts, unsupported evidence and exhaustion boundaries.",
+      "limits": "Distinct from legacy mainstay binding; no full independence tier/profile, real-world completeness, arbitrary Python callback sandboxing, concurrent runtime isolation or external authority."
+    },
+    {
+      "path": "src/verifier/standard/DERIVER_SELF_STATUS.md",
+      "sha256": "c65009e624621f8abc3766f9acd3e369b096bbd9e487824920a93fdb71568aa9",
+      "symbols": [],
+      "summary": "Moves exact-executable/runtime self-status to standard/ with native identifiers and two bounded fresh-directory invocations.",
+      "limits": "Matching exit/output at the retained coordinate is not global determinism, semantic self-derivability, a CPU or memory sandbox, authorization or observed deployment."
+    },
+    {
+      "path": "src/verifier/standard/DOMAIN_GROUNDING.md",
+      "sha256": "1c918067d7dddc3190768eb93800b3945b21ea18c9e70d4e6a343fd57b339994",
+      "symbols": [],
+      "summary": "Introduces native bounded domain request, evidence, policy, certificate and replay contracts with full mechanism/specification binding and externally supplied expected intent.",
+      "limits": "PASS/FAIL/UNKNOWN are retained and substituted contracts rejected. Adapters do not execute arbitrary artifact code or prove whole domain sciences; operation/byte bounds are not operating-system isolation, and accountable-record checks do not establish every numbered obligation."
+    },
+    {
+      "path": "src/verifier/standard/DOMAIN_OBLIGATIONS.md",
+      "sha256": "ee7b6e817d3f87121f4229da16cd74fa28aeb25074837b427ecb27f59932a6dd",
+      "symbols": [],
+      "summary": "Retains the 19-domain numbered-profile catalogue under its original propositions while identifying the current 26-object/eight-tier contract, superseded ACTOR interpretation and required explicit semantic mapping for reused coordinate spellings.",
+      "limits": "Legacy adaptation/disclosure are not current independence/privacy certificates. The specification does not mechanize every new objective; unsupported current assessments remain UNKNOWN."
+    },
+    {
+      "path": "src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md",
+      "sha256": "9e8e574bc5b3d36ee7badec8665e35b83ba1ae92bb49bcf9c7c26bfb8a4813b5",
+      "symbols": [],
+      "summary": "Moves finite authority composition to standard/ and native identifiers: asynchronous interleaving, member identity preservation and checked product/composite correspondence.",
+      "limits": "Only retained finite declared transition systems are assessed. This does not prove real permissions, scheduler behavior, synchronization or hidden runtime authority; the direct module remains experimental."
+    },
+    {
+      "path": "src/verifier/standard/FORMATION_RECEIPT.md",
+      "sha256": "01b20a73e67c67aa0b5d9967c5e1bad8941dd435fb3286a7b175f9d8df355b31",
+      "symbols": [],
+      "summary": "Moves formation-receipt specification to standard/ and native identifiers, binding selected subject/certificate/profile/ground paths to retained canonical network objects and replayed formation.",
+      "limits": "The bounded retained-coordinate check does not execute a silo or establish self-derivability, completeness or agency. A path or embedded report cannot substitute for exact object bytes."
+    },
+    {
+      "path": "src/verifier/standard/GLOBAL_CYCLE_ASSESSMENT.md",
+      "sha256": "408c8a30de0019539d972ef3776a90757bc6796b96a9234b703ad4173a476961",
+      "symbols": [],
+      "summary": "Moves source-grounded cycle assessment to standard/ with native identifiers and separate support-dependency, simultaneous Boolean-constraint and clock-relative temporal facets.",
+      "limits": "At most 512 declared relations are covered, preserving ASSESSED/CONFLICTED/UNKNOWN/INVALID. This does not establish arbitrary causal semantics, comparable clocks or completeness beyond retained relations."
+    },
+    {
+      "path": "src/verifier/standard/GRAPH-1.md",
+      "sha256": "3c6bb548afabd3fe4a7eb7091d6b9645f535a29b6dd639155d151f978303fc2e",
+      "symbols": [],
+      "summary": "Defines artifact/transformation hypergraphs and observed boundaries under GRAPH-1, updates the native graph wire and requires disjoint artifact/transformation identifiers for new admission.",
+      "limits": "Closure concerns the observed boundary, not historical completeness. Legacy decoding remains a distinct compatibility boundary; graph structure does not verify node or edge claims."
+    },
+    {
+      "path": "src/verifier/standard/GRAPH-2.md",
+      "sha256": "e2159b70417af1c91c3319a39d69290c657daa1af76b0056f626a67348a2d008",
+      "symbols": [],
+      "summary": "Defines GRAPH-2 collection closure over reachable members, ancestors and edges, with exact graph/member/collection/claim bindings and object-profile prerequisites.",
+      "limits": "Caller grades remain structural candidates and NOT_ESTABLISHED without evidence-bound mechanisms. Closure does not establish physical truth or substrate accountability."
+    },
+    {
+      "path": "src/verifier/standard/GRAPH-3.md",
+      "sha256": "4c697603a87f0b7b59b3874114031aa79971cb5cc5f1d904daedda6faac47e13",
+      "symbols": [],
+      "summary": "Defines GRAPH-3 accountability closure for reachable member and edge evidence at corresponding object profiles, propagating weakest-link limits through the collection.",
+      "limits": "A graph rating is not outside-party refutability. Higher-rated members cannot compensate for unsupported edges or unmet prerequisites; exact evidence closure requires checking."
+    },
+    {
+      "path": "src/verifier/standard/GRAPH-4.md",
+      "sha256": "122eb3d9290de6d048092af425f5c958f4a03b1f0f6f0d383e53e49fabc09454",
+      "symbols": [],
+      "summary": "Defines GRAPH-4 refutability closure and challenge localization over member, edge and collection claims linked to grounded graph coordinates.",
+      "limits": "Verified endpoints do not establish their connecting edge. A candidate explanation or unsatisfiability result does not constitute graph conformance or independent evidence."
+    },
+    {
+      "path": "src/verifier/standard/GRAPH-5.md",
+      "sha256": "95ecd2e029a6ac691a6b530952d2539e66f08da5412924c2d578f9380af94db4",
+      "symbols": [],
+      "summary": "Defines GRAPH-5 independent corroboration closure for reachable member and edge claims, retaining conflicts and grounded mechanism bindings.",
+      "limits": "Witness names, counts and self-assigned ratings do not establish independence. Conflicting required evidence remains inadmissible rather than being averaged into a stronger verdict."
+    },
+    {
+      "path": "src/verifier/standard/GRAPH_GROUNDING.md",
+      "sha256": "c9dcfa2cba7de912b06b74895a613de552111f04a6846cf34ba425bd8e61d0d4",
+      "symbols": [],
+      "summary": "Introduces separate native graph request/policy/certificate contracts binding exact graph bytes, deduplicated members, collection claims, evidence and admitted graph-obligation mechanisms.",
+      "limits": "Graph and object obligation namespaces remain distinct. Reachable closure inherits weakest evidence; profile 0, legacy receipts and structural candidates cannot be auto-promoted to ESTABLISHED."
+    },
+    {
+      "path": "src/verifier/standard/GROUNDED_CERTIFICATION.md",
+      "sha256": "94137b497e17d131145a8dabc662c36f7a5576914f48aad8c1b6fe2c570d28af",
+      "symbols": [],
+      "summary": "Introduces evidence-backed object certification for 47 cumulative obligations, exact external intent and policy, retained evidence, deterministic evaluation and certificate replay.",
+      "limits": "Every prerequisite needs the exact admitted mechanism. FAIL and UNKNOWN remain distinct; registration proves neither soundness nor independence, and legacy certificates are not silently converted."
+    },
+    {
+      "path": "src/verifier/standard/IDENTITY_OCCUPANCY.md",
+      "sha256": "20ad802868b66c004f1079096eb0b72522a2c3f6ae22c1ac9a2437e76aa307fb",
+      "symbols": [],
+      "summary": "Defines separate current identity evidence and assessment versions, exact actor/role/collective and scope bindings, BOT simulation scope, bounded field shapes, replay and PASS/FAIL/UNKNOWN behavior. Evidence strings and every admitted scope must be nonblank.",
+      "limits": "Declaration consistency does not authenticate sources or establish actual role occupancy. No automatic mapping of historical identity receipts or current meta-tier certification is specified."
+    },
+    {
+      "path": "src/verifier/standard/LADDER.md",
+      "sha256": "3827c6c3ed84ad1a314cc2fb630dbe0b4db5bca4d101945cb837642ee2cd3910",
+      "symbols": [],
+      "summary": "Updates the ladder overview to distinguish object VSTD-1 through VSTD-5, graph GRAPH-1 through GRAPH-5, evidence-bound establishment and a separate typed assurance lifecycle.",
+      "limits": "Profiles are cumulative obligation sets, not scalar strength scores. TRUST, RUST and ROT do not imply identity-based truth, and later profiles cannot repair unmet prerequisites."
+    },
+    {
+      "path": "src/verifier/standard/META_TIERS.md",
+      "sha256": "3ade27acb8892ddac65255cc96e75ee3835d75bc83ab9269b529fa3981af4876",
+      "symbols": [],
+      "summary": "Defines current 26-object admission and eight general meanings, including facets/category independence and governance of laws/rules/ethical boundaries, the HUMAN-rooted ACTOR relation, and positive internal-objective indexing. Scopes the earlier measured lattice as legacy evidence with explicit non-migration of tier5/6 propositions.",
+      "limits": "The 208 object-tier slots are not implemented objectives or certificates. Parsed names, declarations and historical PASS results do not supply current mechanisms, human authenticity, authority or full conformance."
+    },
+    {
+      "path": "src/verifier/standard/NAMESPACE_OBJECTS.md",
+      "sha256": "7272f6446489c01648f352dcd73494d8a44f1a0024018b0aab71aae004e47653",
+      "symbols": [],
+      "summary": "Specifies the 26-object/eight-tier structure, typed composition, ownership eligibility, identity declaration, current SIM confinement and current HYPER exact operand-cone certificates. Separates externally bound current propositions from retained legacy numbered meanings.",
+      "limits": "Structural and finite declared-model propositions do not fill the complete hierarchy, authenticate humans, confer hardware ownership permission, establish physical or mathematical closure, or qualify privacy/consent/governance."
+    },
+    {
+      "path": "src/verifier/standard/PROPOSITION_TRANSFER.md",
+      "sha256": "8184f60c6dd09ffbc4687f175c9a922563eebce86e63b640e5b6716af2fefd4d",
+      "symbols": [],
+      "summary": "Moves bounded finite-set proposition transfer to standard/ and native identifiers, requiring exact contexts, predicates, premise bytes and independently recomputed receipts.",
+      "limits": "The reference rule allows at most 16 premises and is not general deduction. Unknown or negative results cannot be promoted; TypeScript structural equality does not demonstrate Python execution or authority."
+    },
+    {
+      "path": "src/verifier/standard/RELATION_BOUNDARY.md",
+      "sha256": "499933835cdfa4b4d426afff94863819d653a033024e253ebf5a35cc9118c45b",
+      "symbols": [],
+      "summary": "Moves relation-boundary specification to standard/ with native identifiers, disjoint complete preserved/lost source-facet accounting, exact target coverage and canonical replay.",
+      "limits": "The reference contract permits 64 facets and 1,048,576 bytes per artifact. Declared facet equality is not full semantic equivalence or evidence that a translation historically ran."
+    },
+    {
+      "path": "src/verifier/standard/RUNTIME_AUTHORITY_CORRESPONDENCE.md",
+      "sha256": "a599d2381cd231defcc178fadb208c43b024bd65b38996f4372fac816b00a57a",
+      "symbols": [],
+      "summary": "Moves authority correspondence to standard/ with native model/executable/deployed-declaration/trace bindings, independently replayed output and one-to-one contiguous transition correspondence.",
+      "limits": "Correspondence and state/transition coverage remain separate. Even within 1,024 events and 256 states/transitions this does not establish live deployment, unseen execution, access authorization or sandboxing."
+    },
+    {
+      "path": "src/verifier/standard/SIM_ISOLATION.md",
+      "sha256": "2fd11afdb67cf6a2a4dffa5f209a50125ddc07c0828ac2c51b29b8d2c86a7ec4",
+      "symbols": [],
+      "summary": "Defines the finite transition-model isolation proposition, expected evidence/policy binding, supported virtual resources and effects, snapshot/replay semantics, counterexamples and checking limits.",
+      "limits": "A model-relative PASS does not prove physical containment, virtuality of real resources, ownership authority, consent, governance or full SIM-tier conformance."
+    },
+    {
+      "path": "src/verifier/standard/SOURCE_GROUNDING.md",
+      "sha256": "dd874c890ad675fe43cb36d5e63d11b829d8b371d0866e7d7bfdcc6a8c0e778a",
+      "symbols": [],
+      "summary": "Moves canonical-source grounding to standard/ and native identifiers, enforcing exact source/frame/proposition/certificate roles and JSON_POINTER_EQUALS replay.",
+      "limits": "The source is bounded to 1,048,576 bytes, depth 16 and 4,096 nodes. A successful pointer equality is not source truth, independence, historical execution or universal grounding."
+    },
+    {
+      "path": "src/verifier/standard/TYPED_FORMATION.md",
+      "sha256": "94b3210fbab358a7c1279ede9946176060714822074d62dd18f1ad30e625f563",
+      "symbols": [],
+      "summary": "Moves the seven-constructor FORM/PATH/CODE formation specification to standard/ with native identifiers, preserving formation versus normalized denotation, backward references and quotation/read constraints.",
+      "limits": "The mechanism is not a Hypermath translation theorem, semantic self-return, agency or source-interpretation proof. Package loading/planning executes nothing; listed semantic residuals remain outside formation."
+    },
+    {
+      "path": "src/verifier/standard/VSTD-1.md",
+      "sha256": "b9e68fc4d09dccb81b86aadea6005c81c70db46be6d7dac02dd619ca24066e41",
+      "symbols": [],
+      "summary": "Adds grounded coordinates 1.1 through 1.7 to the object claim baseline for exact claim, mechanism, evidence, bounds, provenance and reproduction.",
+      "limits": "This finite baseline is not accreditation or universal truth. The minimal proposition checker is not a general satisfiability solver; replay is not independent correctness."
+    },
+    {
+      "path": "src/verifier/standard/VSTD-2.md",
+      "sha256": "662644483b16c8f327cb4cc92017beb1c5037e178dfbc725ee30e634e819dcc5",
+      "symbols": [],
+      "summary": "Adds grounded coordinates 2.1 through 2.7 to object closure, preserving facet/region/grain/stratum/seam and horizon distinctions and separate self-closure/higher-order obligations.",
+      "limits": "Verdicts do not extend outside their horizon. Unverified dependencies or self-descriptions cannot establish closure; higher-order claims require their own evidence."
+    },
+    {
+      "path": "src/verifier/standard/VSTD-3.md",
+      "sha256": "e00066fab5f5bb187b638425cd21e479fcb62c65785c13cbfbe76797ea85b44f",
+      "symbols": [],
+      "summary": "Adds grounded coordinates 3.1 through 3.8 for substrate accountability through challenged execution, firmware, accounting, provider/topology and continuity evidence.",
+      "limits": "Raw host telemetry or declared provider identity is not attestation, a complete physical audit or vendor endorsement. Each retained mechanism retains its bounded applicability."
+    },
+    {
+      "path": "src/verifier/standard/VSTD-4.md",
+      "sha256": "c12df81669102f8a254025645e7dae5d6712b392066ea361f402eb5ed50ed835",
+      "symbols": [],
+      "summary": "Adds grounded coordinates 4.1 through 4.14 to externally refutable decisions, distinguishing structural candidate assessment from normative evidence-backed establishment.",
+      "limits": "PASS/FAIL/UNKNOWN apply to exact claim closure and prerequisites. Caller references or candidate grades do not establish the fourteen rungs, arbitrary proof soundness or witness independence."
+    },
+    {
+      "path": "src/verifier/standard/VSTD-5.md",
+      "sha256": "fa705b42c1f56d0751747a879f6cc9d39551cce5e2d62309f2c72ba3e1576e13",
+      "symbols": [],
+      "summary": "Adds grounded coordinates 5.1 through 5.11 to corroborated refutability, preserving fourteen-rung entry, exact claim identity and seven dimensions of witness separation.",
+      "limits": "Witness counts, labels and self-report cannot establish independence. Corroboration must be checked and discordant evidence cannot be erased or averaged into establishment."
+    },
+    {
+      "path": "src/verifier/standard/WIRE_IDENTIFIERS.md",
+      "sha256": "06fd9a8f044c3ae1151bbba4443abdb5100113956c645e198d4be0898a082f5d",
+      "symbols": [],
+      "summary": "Reworks the wire register around native identifiers, exact dispatch and mandatory profile discriminators; adds grounded object, graph and domain contracts while separating software version from wire identity.",
+      "limits": "Readers must not guess from filenames or shape, treat retired spellings as implicit aliases or infer conformance from package version. Historical contracts need an explicit supported dispatch path."
+    },
+    {
+      "path": "src/verifier/standard/ZIZK_TOKENS.md",
+      "sha256": "49da23c6180264f1a0dead59988d6a728e41b468b8187097d034b00fd26d1e6a",
+      "symbols": [],
+      "summary": "Moves zero-identity/zero-knowledge token specification to standard/, renames birth/aging/lifetime contracts and withdraws the actor-binding object in favor of separately scoped object/holding composition.",
+      "limits": "Missing or contradictory offline evidence remains unknown or rejected. Identity, continuity, delegation and ownership never prove artifact truth; naming a HYPER replacement does not create a certifiable HYPER adapter."
+    }
+  ]
+}

@@ -85,3 +85,61 @@ def test_public_plugin_preserves_outside_root_reports(tmp_path: Path, outcome: s
     assert completed.value.value is report
     assert report.outcome == outcome
     assert report.longrepr == original
+
+
+
+def _run_public_evidence_tests(report_path: Path, *nodes: str, root: Path = ROOT) -> int:
+    environment = dict(os.environ, PYTHONPATH=str(ROOT), PYTHONDONTWRITEBYTECODE="1",
+                       PYTEST_DISABLE_PLUGIN_AUTOLOAD="1")
+    result = subprocess.run(
+        [sys.executable, "-B", "-u", "-m", "pytest", "-vv", "-s", "--durations=10",
+         "--timeout=30", "-p", "pytest_timeout", "-p", "scripts.pytest_public_evidence",
+         "-p", "no:cacheprovider", "--rootdir", str(root), f"--junitxml={report_path}", *nodes],
+        cwd=ROOT, env=environment, check=False, timeout=45,
+    )
+    return result.returncode
+
+
+def _check_public_evidence(report_path: Path) -> int:
+    return subprocess.run(
+        [sys.executable, "-B", "-u", str(ROOT / "scripts/check_release_boundary.py"), str(report_path)],
+        text=True, check=False, timeout=30,
+    ).returncode
+
+
+def test_adversarial_fixture_producers_emit_public_safe_distinct_test_ids(tmp_path: Path) -> None:
+    report_path = tmp_path / "fixture-producers.xml"
+    assert _run_public_evidence_tests(
+        report_path,
+        "tests/test_preflight.py::test_github_remote_urls_name_their_repository",
+        "tests/test_vstd_gate.py::test_paths_gate_detects_forbidden_absolute_paths",
+    ) == 0
+    document = ET.parse(report_path).getroot()
+    cases = document.findall(".//testcase")
+    assert len(cases) == 17
+    assert len({(case.get("classname"), case.get("name")) for case in cases}) == 17
+    assert not document.findall(".//failure")
+    assert not document.findall(".//skipped")
+    assert _check_public_evidence(report_path) == 0
+
+
+@pytest.mark.parametrize("outcome", ("failed", "skipped"))
+def test_public_evidence_keeps_unsafe_diagnostics_for_boundary_rejection(
+    tmp_path: Path, outcome: str,
+) -> None:
+    # Synthetic diagnostic assembled here; never relax or redact the scanner.
+    marker = "fixture" + "@" + "example.invalid"
+    operation = "fail" if outcome == "failed" else "skip"
+    source = tmp_path / "test_diagnostic.py"
+    source.write_text(
+        "import pytest\ndef test_diagnostic():\n"
+        f"    pytest.{operation}({marker!r})\n", encoding="utf-8",
+    )
+    report_path = tmp_path / "diagnostic.xml"
+    assert _run_public_evidence_tests(report_path, str(source), root=tmp_path) == (1 if outcome == "failed" else 0)
+    document = ET.parse(report_path).getroot()
+    tag = "failure" if outcome == "failed" else "skipped"
+    records = document.findall(".//" + tag)
+    assert len(records) == 1
+    assert marker in (records[0].get("message", "") + (records[0].text or ""))
+    assert _check_public_evidence(report_path) == 1

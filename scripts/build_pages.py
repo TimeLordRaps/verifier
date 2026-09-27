@@ -20,11 +20,11 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
-SCHEMA_SOURCES = (ROOT / "receipts/schema", ROOT / "standard/schemas")
+SCHEMA_SOURCES = (ROOT / "receipts/schema", ROOT / "src/verifier/schemas")
 PUBLIC_SCHEMA_PREFIX = "https://timelordraps.github.io/verifier/schemas/"
 CANONICAL_BASE_URL = "https://timelordraps.github.io/verifier/"
 DEPLOYMENT_MANIFEST_PATH = "deployment-manifest.json"
-DEPLOYMENT_MANIFEST_SCHEMA = "VSTD-PAGES-DEPLOYMENT-MANIFEST-1"
+DEPLOYMENT_MANIFEST_SCHEMA = "verifier-pages-deployment-manifest-1"
 MAX_DEPLOYMENT_FILES = 4096
 MAX_DEPLOYMENT_FILE_BYTES = 8 * 1024 * 1024
 MAX_DEPLOYMENT_TOTAL_BYTES = 64 * 1024 * 1024

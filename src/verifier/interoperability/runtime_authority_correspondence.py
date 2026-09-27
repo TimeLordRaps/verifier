@@ -21,11 +21,11 @@ from typing import Any
 from .network import AUTHORITY_MODEL_SCHEMA, AuthorityModel, canonical_bytes, digest_bytes
 
 
-DECLARATION_SCHEMA = "VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-0.1"
-TRACE_SCHEMA = "VSTD-RUNTIME-AUTHORITY-TRACE-0.1"
-RECEIPT_SCHEMA = "VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-RECEIPT-0.1"
-PROFILE_SCHEMA = "VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-PROFILE-0.1"
-SUPPORTED_RUNTIME_KIND = "VSTD-RETAINED-EVENT-TRACE-REPLAY-0.1"
+DECLARATION_SCHEMA = "verifier-runtime-authority-correspondence-1"
+TRACE_SCHEMA = "verifier-runtime-authority-trace-1"
+RECEIPT_SCHEMA = "verifier-runtime-authority-correspondence-receipt-1"
+PROFILE_SCHEMA = "verifier-runtime-authority-correspondence-profile-1"
+SUPPORTED_RUNTIME_KIND = "verifier-retained-event-trace-replay-1"
 
 MAX_DECLARATION_BYTES = 262_144
 MAX_MODEL_BYTES = 1_048_576

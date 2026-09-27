@@ -16,12 +16,12 @@ from typing import Any, Mapping
 from .network import NetworkError, SiloCommit, _path, canonical_bytes, digest_bytes
 
 
-TRANSFER_SCHEMA = "VSTD-PROPOSITION-TRANSFER-0.1"
-ASSESSMENT_SCHEMA = "VSTD-PROPOSITION-TRANSFER-ASSESSMENT-0.1"
-RECEIPT_SCHEMA = "VSTD-PROPOSITION-TRANSFER-RECEIPT-0.1"
+TRANSFER_SCHEMA = "verifier-proposition-transfer-1"
+ASSESSMENT_SCHEMA = "verifier-proposition-transfer-assessment-1"
+RECEIPT_SCHEMA = "verifier-proposition-transfer-receipt-1"
 RULE_ID = "canonical_finite_set_union_v1"
 PREDICATE_ID = "canonical_finite_set_subset_v1"
-ARTIFACT_SCHEMA = "VSTD-CANONICAL-FINITE-SET-0.1"
+ARTIFACT_SCHEMA = "verifier-canonical-finite-set-1"
 MAX_RECORD_BYTES = 262144
 MAX_EVIDENCE_BYTES = 4194304
 MAX_JSON_DEPTH = 32
@@ -50,7 +50,7 @@ def rule_profile_bytes() -> bytes:
         "max_json_depth": MAX_JSON_DEPTH, "max_json_nodes": MAX_JSON_NODES,
         "max_objects": 34, "max_premises": 16, "max_record_bytes": MAX_RECORD_BYTES,
         "max_string_bytes": 256, "predicate_id": PREDICATE_ID, "rule_id": RULE_ID,
-        "schema_version": "VSTD-PROPOSITION-TRANSFER-RULE-0.1",
+        "schema_version": "verifier-proposition-transfer-rule-1",
     })
 
 

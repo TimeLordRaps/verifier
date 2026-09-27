@@ -156,7 +156,7 @@ You did **not** establish that the number in `results.txt` is correct, that the 
 to any particular person or organization, that the freeze happened at a claimed time, or
 that any external party retained a copy. A freeze binds bytes; it does not make them true.
 For the boundary in normative form, read the
-[artifact-control mechanism](../../standard/ARTIFACT_CONTROL.md), and for the
+[artifact-control mechanism](../../src/verifier/standard/ARTIFACT_CONTROL.md), and for the
 surrounding model read [realms and time capsules](../REALMS_AND_TIME_CAPSULES.md) and
 [claims and limits](../CLAIMS_AND_LIMITS.md).
 

@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-lifetime-token-1.schema.json",
+  "title": "Verifier Standard (VSTD) zero-identity lifetime capability lease",
+  "description": "Soulbound ephemeral capability lease bound to specific verification scopes with strict expiry windows.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "token_id",
+    "actor_id",
+    "delegate_key_id",
+    "permitted_scopes",
+    "not_before",
+    "not_after",
+    "soulbound",
+    "issuing_key_id",
+    "issued_at",
+    "signature_base64url"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "verifier-lifetime-token-1"
+    },
+    "token_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "actor_id": {
+      "type": "string",
+      "pattern": "^actor:sha256:[0-9a-f]{64}$"
+    },
+    "delegate_key_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "permitted_scopes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "minItems": 1
+    },
+    "not_before": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "not_after": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "max_invocations": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "soulbound": {
+      "const": true
+    },
+    "parent_grant_id": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "issuing_key_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "issued_at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "signature_base64url": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+}

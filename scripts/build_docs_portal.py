@@ -28,9 +28,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SITE = "https://verifier-standard.com/"
 OLD_SITE = "https://timelordraps.github.io/verifier/"
 REPOSITORY = "https://github.com/TimeLordRaps/verifier"
-RELEASE = "1.4.0"
+RELEASE = "1.5.0"
 RELEASE_TAG = "v" + RELEASE
-RELEASE_COMMIT = "93cccdd89923092bdac51a84fa0a9855a7ef5f34"
+RELEASE_COMMIT = "117ab2b1d92eb6f72b06386b88a8f9b02ff1d55a"
 RELEASE_PATH = "releases/" + RELEASE + "/"
 ASSETS = ROOT / "scripts" / "portal"
 

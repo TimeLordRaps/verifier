@@ -36,10 +36,10 @@ from .source_grounding import (
 )
 
 
-DECLARATION_SCHEMA = "VSTD-RELATION-BOUNDARY-0.1"
-EVIDENCE_SCHEMA = "VSTD-RELATION-BOUNDARY-EVIDENCE-0.1"
-RECEIPT_SCHEMA = "VSTD-RELATION-BOUNDARY-RECEIPT-0.1"
-MECHANISM_PROFILE_SCHEMA = "VSTD-RELATION-BOUNDARY-MECHANISM-PROFILE-0.1"
+DECLARATION_SCHEMA = "verifier-relation-boundary-1"
+EVIDENCE_SCHEMA = "verifier-relation-boundary-evidence-1"
+RECEIPT_SCHEMA = "verifier-relation-boundary-receipt-1"
+MECHANISM_PROFILE_SCHEMA = "verifier-relation-boundary-mechanism-profile-1"
 MECHANISM_ID = "canonical-json-facet-map-v1"
 CHECKER_IMPLEMENTATION = "verifier.interoperability.relation_boundary"
 CHECKER_VERSION = "0.1"

@@ -413,7 +413,7 @@ def demo_report(
     """Return the stable machine-readable report used by the CLI and tests."""
     materialized = tuple(results)
     return {
-        "demo": "VSTD-FLAGSHIP-1",
+        "demo": "verifier-flagship-1",
         "status": "OK" if all(item.ok for item in materialized) else "FAILED",
         "scenario_count": len(materialized),
         "successful_scenarios": sum(item.ok for item in materialized),

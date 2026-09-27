@@ -11,7 +11,12 @@ import sys
 try:
     from scripts.classify_release_version import classify_release_version
 except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
-    from classify_release_version import classify_release_version
+    try:
+        from classify_release_version import classify_release_version
+    except ModuleNotFoundError:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from classify_release_version import classify_release_version
+
 
 
 class ReleaseNotesError(ValueError):

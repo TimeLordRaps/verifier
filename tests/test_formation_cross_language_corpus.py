@@ -104,13 +104,13 @@ def test_formation_corpus_is_fresh_deterministic_and_bounded(corpus: dict[str, A
     assert module.build_corpus() == corpus
     assert len(raw) < 1_000_000
     assert set(corpus) == {"schema_version", "profile", "pure_cases", "silo_cases"}
-    assert corpus["schema_version"] == "VSTD-FORMATION-INTEROPERABILITY-CORPUS-0.1"
+    assert corpus["schema_version"] == "verifier-formation-interoperability-corpus-1"
     assert len(corpus["pure_cases"]) == len(PURE_EXPECTED) == 30
     assert len(corpus["silo_cases"]) == len(SILO_EXPECTED) == 20
     assert {item["case_id"] for item in corpus["pure_cases"]} == set(PURE_EXPECTED)
     assert {item["case_id"] for item in corpus["silo_cases"]} == set(SILO_EXPECTED)
     profile = corpus["profile"]
-    assert profile["digest"] == "sha256:271760d604e1ade55cba4974c658b92263bd3ee8ae343677dd91d0e713fb677f"
+    assert profile["digest"] == "sha256:770f948d29900a63a6ba55f2bbc61bdd18fec1a73769c8e1e524d664c40f6e06"
     assert _digest(_decode(profile["bytes_base64url"])) == profile["digest"]
     assert module.main(["--check", "--output", str(TARGET)]) == 0
 

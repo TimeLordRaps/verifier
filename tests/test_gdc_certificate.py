@@ -595,7 +595,7 @@ def test_trusted_computing_base_is_hashes_not_a_literal_dict():
     assert descriptor.implementation_hash == expected
 
     expected_specification = "sha256:" + hashlib.sha256(
-        (Path(__file__).resolve().parents[1] / "standard" / "VSTD-1.md").read_bytes()
+        (Path(__file__).resolve().parents[1] / "src/verifier/standard" / "VSTD-1.md").read_bytes()
     ).hexdigest()
     assert descriptor.specification_hash == expected_specification
 

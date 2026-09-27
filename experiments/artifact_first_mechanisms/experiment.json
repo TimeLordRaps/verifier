@@ -104,14 +104,14 @@
       "id": "artifact-zi-report",
       "role": "round-1-zero-identity-report",
       "media_type": "text/markdown",
-      "digest": "sha256:f303cf6a2e047c09517187a74a9bc850214b1971ca98f51997e5898ec04765ae",
+      "digest": "sha256:fdff8d9ce732c4111baebca8a787dc502f85f2a1463f73fa8c9c3804b7fed64b",
       "locator": "repo:examples/zizk_artifact_first/zero_identity/ROUND1_ZERO_IDENTITY_REPORT.md"
     },
     {
       "id": "artifact-round2-design",
       "role": "round-2-reverification-design",
       "media_type": "text/markdown",
-      "digest": "sha256:7c119945d1446ad2253dc3d9d51ef15024e32be86d92924eca0ab27587d09a46",
+      "digest": "sha256:23fa988b4136c67b256bb686953264368ddbb522a5b96cd533611f34867fd75a",
       "locator": "repo:experiments/artifact_first_mechanisms/reverification/ROUND2_DESIGN_NOTE.md"
     }
   ],
@@ -335,7 +335,7 @@
         "observation-zk-proof",
         "observation-identity-boundary"
       ],
-      "decision": "Treat standard/LADDER.md section 1.1 and VSTD-GRAPH-ASSURANCE-1 as the controlling semantic and implemented reference boundaries; confine Round 2 to domain-specific TRUST transfer, ROT derivation/propagation, RUST backtrace/concentration and localization mechanisms, independent cross-implementation replay, and remaining proof research.",
+      "decision": "Treat standard/LADDER.md section 1.1 and verifier-graph-assurance-1 as the controlling semantic and implemented reference boundaries; confine Round 2 to domain-specific TRUST transfer, ROT derivation/propagation, RUST backtrace/concentration and localization mechanisms, independent cross-implementation replay, and remaining proof research.",
       "reason": "The architecture and bounded reference event/dispatch mechanisms are implemented; the complete domain-independent transfer algebra, complete trichotomy derivation, external independent replay, and specific unfinished optional proof backends remain experimental.",
       "action_ids": [
         "action-reverification-synthesis"
@@ -432,5 +432,5 @@
   },
   "workflow_events": [],
   "interventions": [],
-  "manifest_digest": "sha256:81ce95f54a1ca98cd9fb897cf0568329aff03d5cb7334ffd367c915c2f6835dc"
+  "manifest_digest": "sha256:a29ba38b4cfd9f3ddfa9cab7b4dd277145ac4ee732e589005bc7355234a6ecbd"
 }

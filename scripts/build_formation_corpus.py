@@ -31,7 +31,7 @@ from verifier.interoperability.network import (
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / "tests/fixtures/formation-interoperability-corpus.json"
 MAX_CORPUS_BYTES = 1024 * 1024
-SCHEMA_VERSION = "VSTD-FORMATION-INTEROPERABILITY-CORPUS-0.1"
+SCHEMA_VERSION = "verifier-formation-interoperability-corpus-1"
 OPAQUE = digest_bytes(b"unretrieved synthetic atom")
 PATHS = {"subject_path": "subject.json", "certificate_path": "certificate.json",
          "profile_path": "profile.json", "ground_path": "ground.txt"}
@@ -142,7 +142,7 @@ def _specimen() -> tuple[SiloCommit, dict[str, bytes]]:
         "ground.txt": (ground, "text/plain", "opaque-ground", "NOT_DECLARED"),
         "subject.json": (canonical_bytes(subject), "application/json", "typed-formation-subject", SUBJECT_SCHEMA),
         "certificate.json": (canonical_bytes(_certificate(subject)), "application/json", "typed-formation-certificate", CERTIFICATE_SCHEMA),
-        "profile.json": (profile_bytes(), "application/json", "typed-formation-profile", "VSTD-TYPED-FORMATION-PROFILE-0.1"),
+        "profile.json": (profile_bytes(), "application/json", "typed-formation-profile", "verifier-typed-formation-profile-1"),
         "unrelated.txt": (b"retained but not a formation premise", "text/plain", "opaque", "NOT_DECLARED"),
     }
     census = tuple(CensusEntry(path, ObjectRecord.from_payload(*values),

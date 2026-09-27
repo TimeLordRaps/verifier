@@ -37,6 +37,19 @@ expected index or package digest through a separately trusted release, commit, s
 statement, or other explicit continuity mechanism when whole-site substitution matters.
 Changing a locator without checking the expected digest does not preserve identity.
 
+When the public source inventory exceeds the stored package's 256-artifact limit,
+the exporter retains metadata, declared entrypoint modules, native domain adapters
+and public schema/specification files directly. Remaining source bytes are stored
+in `source-archive/exact-public-source.zip`, using ZIP archive format (ZIP) without
+compression or executable extraction. Its canonical `source-inventory.json`
+manifest records every captured file's path, size, SHA-256 digest and `DIRECT` or
+`ARCHIVE` location. Direct artifacts and archive members together retain the
+complete selected inventory; the archive alone is not the full source tree.
+Sorted entries, fixed timestamps and fixed permissions make repeated exports
+deterministic for the same capture. Component bindings include the archive.
+The package and site byte limits still apply. Inspection does not unpack code,
+resolve dependencies or establish that the retained source can execute.
+
 ## Inspect and search locally
 
 Download or otherwise obtain the index and packages through a channel appropriate to your

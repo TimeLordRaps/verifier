@@ -1,6 +1,6 @@
 """Experimental actual deriver self-status for Verifier Standard (VSTD).
 
-The ``VSTD-DERIVER-SELF-STATUS-0.1`` sidecar records one bounded process
+The ``verifier-deriver-self-status-1`` sidecar records one bounded process
 invocation and independently reruns it before establishing its exact declared
 output. Secure Hash Algorithm 256-bit (SHA-256) binds retained bytes and
 canonical JavaScript Object Notation (JSON) records; it does not prove their
@@ -37,9 +37,9 @@ from typing import Any, Mapping, Sequence
 from .network import NetworkError, canonical_bytes, digest_bytes
 
 
-DECLARATION_SCHEMA = "VSTD-DERIVER-SELF-STATUS-0.1"
-RECEIPT_SCHEMA = "VSTD-DERIVER-SELF-STATUS-RECEIPT-0.1"
-CHECKER_SCHEMA = "VSTD-DERIVER-SELF-STATUS-CHECKER-0.1"
+DECLARATION_SCHEMA = "verifier-deriver-self-status-1"
+RECEIPT_SCHEMA = "verifier-deriver-self-status-receipt-1"
+CHECKER_SCHEMA = "verifier-deriver-self-status-checker-1"
 RUNNER_ID = "vstd.bounded-subprocess.0.1"
 MAX_DECLARATION_BYTES = 131_072
 MAX_RECEIPT_BYTES = 2_228_224

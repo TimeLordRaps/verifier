@@ -3,6 +3,23 @@
 VSTD 3 accelerator-accountability reference implementation."""
 
 from .conformance import ConformanceProfile, evaluate_conformance
+from .diode_emulator import (
+    DIODE_EMULATOR_DISCLAIMER_DIGEST,
+    DIODE_EMULATOR_DISCLAIMER_TEXT,
+    EmulatedDiodeAttestationReceipt,
+    SeveredChannelReadViolationError,
+    SoftwareOneWayDataDiodeEmulator,
+)
+from .time_comb import (
+    BespokeTemporalComb,
+    CovertTimingChannelBreachError,
+    CovertTimingChannelDetector,
+    SoftwareTemporalCombEmulator,
+    TemporalCombAttestation,
+    TemporalCombError,
+    TemporalCombJitterViolationError,
+    TimingVerificationReport,
+)
 from .emulator import VirtualVSTDAccelerator
 from .models import (
     AcceleratorDescriptor,
@@ -33,18 +50,31 @@ __all__ = [
     "AccountingExactness",
     "AccountingMethod",
     "AccountingQuantity",
+    "BespokeTemporalComb",
     "Capability",
     "ConformanceProfile",
     "ClaimEvaluation",
     "ClaimKind",
     "ClaimStatus",
     "ContinuityRecord",
+    "CovertTimingChannelBreachError",
+    "CovertTimingChannelDetector",
+    "DIODE_EMULATOR_DISCLAIMER_DIGEST",
+    "DIODE_EMULATOR_DISCLAIMER_TEXT",
+    "EmulatedDiodeAttestationReceipt",
     "EvidenceGap",
     "EvidenceSource",
     "FleetManifest",
     "FleetObservation",
     "LogicalDeviceIdentity",
     "PhysicalDeviceIdentity",
+    "SeveredChannelReadViolationError",
+    "SoftwareOneWayDataDiodeEmulator",
+    "SoftwareTemporalCombEmulator",
+    "TemporalCombAttestation",
+    "TemporalCombError",
+    "TemporalCombJitterViolationError",
+    "TimingVerificationReport",
     "TopologySnapshot",
     "VSTD3Receipt",
     "VirtualVSTDAccelerator",

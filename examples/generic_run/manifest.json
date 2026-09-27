@@ -54,7 +54,7 @@
     ],
     "falsification_condition": "After every declared platform supplies one canonically intact receipt with an identical non-platform binding, any difference in the declared result projection yields CONFLICTED.",
     "platform_comparability": {
-      "mechanism_id": "VSTD-GENERIC-WORD-FREQUENCY-1",
+      "mechanism_id": "verifier-generic-word-frequency-1",
       "compatible_platforms": ["Linux", "Windows", "Darwin"],
       "result_surfaces": ["execution", "declared_outputs", "evaluator_claims", "stdio"]
     }

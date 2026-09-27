@@ -19,9 +19,11 @@ import enum
 import html
 import importlib
 import inspect
+import os
 from pathlib import Path
 import re
 import sys
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,6 +37,33 @@ SOURCE_BASE = "https://github.com/TimeLordRaps/verifier/blob/main/"
 # imported during generation, so a rename or removal breaks the build rather than
 # silently publishing a stale pipeline map.
 PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+    (
+        "vstd start",
+        "Prints the ordered, copy-pasteable path from an installed package to a "
+        "checked result; runs nothing and writes nothing.",
+        ("verifier.runtime.accessibility_cli:start_report",),
+    ),
+    (
+        "vstd explain",
+        "Restates a stored receipt or certificate in plain language, naming what "
+        "was established, what was not and why; never re-evaluates evidence.",
+        ("verifier.runtime.accessibility_cli:explain_report",),
+    ),
+    (
+        "vstd certification catalog",
+        "Lists the object-profile obligation catalogue and bounded native checker coverage.",
+        ("verifier.core.profile_obligations:obligation_catalog",),
+    ),
+    (
+        "vstd certification assess",
+        "Executes externally admitted native obligation mechanisms and emits a new grounded certificate.",
+        ("verifier.core.grounded_certification:build_grounded_certificate",),
+    ),
+    (
+        "vstd certification check",
+        "Rehashes and reruns a certificate against the consumer's expected request and admission policy.",
+        ("verifier.core.grounded_certification:recheck_grounded_certificate",),
+    ),
     (
         "vstd demo",
         "Runs the four adversarial specimens in-process and reports whether each "
@@ -128,7 +157,7 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     (
         "vstd data",
         "Traces, renders, or exports the provenance hypergraph carried by a "
-        "VSTD-Graph receipt.",
+        "GRAPH receipt.",
         ("verifier.data.models:ProvenanceHypergraph",),
     ),
     (
@@ -160,6 +189,11 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
             "verifier.runtime.hardware_cli:handle_vstd3_command",
             "verifier.hardware.validation:validate_vstd3_receipt",
         ),
+    ),
+    (
+        "vstd publish",
+        "Checks local inputs and submits a claim and receipt for authenticated storage pending human review.",
+        ("verifier.interoperability.claim_garden:publish_claim",),
     ),
 )
 
@@ -248,7 +282,15 @@ def _cli_section() -> str:
     from verifier.runtime.public_cli import build_parser
 
     blocks: list[str] = []
-    for command in _walk(build_parser()):
+    # The gate-attestation parser deliberately reads GitHub's live run metadata.
+    # A published reference must show the fallback defaults, not the identity of
+    # whichever runner happened to build it. Restore the caller's environment
+    # immediately after constructing this read-only parser snapshot.
+    without_github = {key: value for key, value in os.environ.items()
+                      if not key.startswith("GITHUB_")}
+    with patch.dict(os.environ, without_github, clear=True):
+        commands = _walk(build_parser())
+    for command in commands:
         prog = str(command["prog"])
         anchor = "cli-" + prog.replace(" ", "-")
         rows = ""
@@ -474,7 +516,9 @@ def render() -> str:
         <p class="section-lead">Extracted from the live argument parser in
         <a href="{SOURCE_BASE}src/verifier/runtime/public_cli.py"><code>verifier.runtime.public_cli</code></a>.
         <code>vstd</code> is the canonical cross-platform command; <code>verifier</code> is
-        retained as an alias only on platforms where it is unambiguous.</p>
+        retained as an alias only on platforms where it is unambiguous. Defaults below
+        show a run without GitHub environment variables; <code>vstd gate attest</code>
+        reads those variables at execution when present.</p>
         <div class="ref-list">{_cli_section()}</div>
       </div>
     </section>

@@ -45,5 +45,5 @@ def load_vstd3_receipt(path_or_dir: Path) -> VSTD3Receipt:
 
 
 def is_vstd3_receipt(payload: Mapping[str, Any]) -> bool:
-    return payload.get("schema_version") == "VSTD-3.0"
+    return payload.get("schema_version") == "VSTD-3"
 

@@ -9,7 +9,7 @@ identifiers, code symbols, filenames, and third-party names remain byte-for-byte
 are formal semantic names, not acronyms. They mean mechanism-earned forward artifact
 support, typed time-indexed degradation of current admissibility, and inverse-TRUST
 diagnostic traversal, respectively. `RUST` is not the Rust programming language. Their
-normative definitions are in [`standard/LADDER.md`](../standard/LADDER.md).
+normative definitions are in [`standard/LADDER.md`](../src/verifier/standard/LADDER.md).
 
 | Term | Expansion used in this repository | Scope note |
 |---|---|---|
@@ -143,12 +143,9 @@ normative definitions are in [`standard/LADDER.md`](../standard/LADDER.md).
 | `VDS` | verifiable data structure | Append-only or otherwise provable data structure. |
 | `VM` | virtual machine | Software-defined machine environment. |
 | `VSTD` | Verifier Standard | Repository standard and reference implementation. |
-| `VSTD-BENCH` | benchmark specification graph | Benchmark specification graph profile. |
-| `VSTD-ENV` | verifiable execution environment | Verifiable execution environment profile. |
-| `VSTD-MODEL` | model reproducibility specification | Model reproducibility and test-time refutation profile. |
-| `VSTD-SSA` | software self-assembly | Autonomous software self-assembly profile. |
-| `VSTD-SSI` | software self-improvement | Recursive software self-improvement profile. |
-| `VSTD-SSR` | candidate self-replication | Candidate software self-replication profile. |
+| `verifier-ssa` | software self-assembly | Autonomous software self-assembly profile. |
+| `verifier-ssi` | software self-improvement | Recursive software self-improvement profile. |
+| `verifier-ssr` | candidate self-replication | Candidate software self-replication profile. |
 | `W3C` | World Wide Web Consortium | Web standards organization. |
 | `WG` | working group | Standards-development group. |
 | `WSL2` | Windows Subsystem for Linux 2 | Windows-hosted Linux environment. |

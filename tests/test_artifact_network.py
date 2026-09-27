@@ -93,7 +93,7 @@ def _complete_silo(
 ) -> tuple[ContentAddressedStore, SiloCommit]:
     store = ContentAddressedStore(tmp_path / ("hostile" if hostile else "silo"))
     ground = store.add_object(b"declared ground", "text/plain", "ground", "GROUND-1")
-    mechanism = store.add_object(self_derivation_mechanism_bytes(), "application/json", "derivation-mechanism", "VSTD-SELF-DERIVATION-MECHANISM-0.1")
+    mechanism = store.add_object(self_derivation_mechanism_bytes(), "application/json", "derivation-mechanism", "verifier-self-derivation-mechanism-1")
     result = store.add_object(b"bounded result", "application/json", "self-derivation-status", "RESULT-1")
     evidence_paths = (
         "evidence/ground-self.json", "evidence/derivation-reflexivity.json",
@@ -103,13 +103,13 @@ def _complete_silo(
     evidence_records = tuple(
         store.add_object(
             canonical_bytes({
-                "schema_version": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+                "schema_version": "verifier-self-derivation-evidence-1",
                 "predicate": predicate,
                 "subject_path": "result.json",
                 "mechanism_digest": mechanism.object_digest,
             }),
             "application/json", "self-derivation-evidence",
-            "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "verifier-self-derivation-evidence-1",
         )
         for predicate in predicates
     )
@@ -336,11 +336,11 @@ def test_authority_withdrawal_requires_exact_model_and_actor_binding(
         closure_status="OPEN", residual_obligations=("unrelated open branch",),
     )
     if binding == "model_version":
-        hostile = replace(hostile, authority_axiom_agency_version="VSTD-AUTHORITY-AXIOM-AGENCY-9")
+        hostile = replace(hostile, authority_axiom_agency_version="verifier-authority-axiom-agency-9")
     elif binding == "model_digest":
         hostile = replace(hostile, authority_axiom_agency_digest="sha256:" + "0" * 64)
     elif binding == "actor_scope_version":
-        hostile = replace(hostile, actor_scope_version="VSTD-AUTHORITY-ACTOR-SCOPE-9")
+        hostile = replace(hostile, actor_scope_version="verifier-authority-actor-scope-9")
     elif binding == "actor_scope_digest":
         hostile = replace(hostile, actor_scope_digest="sha256:" + "0" * 64)
     elif binding == "transition_scope":
@@ -350,7 +350,7 @@ def test_authority_withdrawal_requires_exact_model_and_actor_binding(
         hostile = replace(hostile, states=(replace(hostile.states[0], local_authority_additions=(addition,)), hostile.states[1]))
     candidate = _replace_authority_model(store, commit, hostile)
     if binding == "commit_version":
-        candidate = replace(candidate, authority_axiom_agency_version="VSTD-AUTHORITY-AXIOM-AGENCY-9")
+        candidate = replace(candidate, authority_axiom_agency_version="verifier-authority-axiom-agency-9")
     elif binding == "commit_digest":
         candidate = replace(candidate, authority_axiom_agency_digest="sha256:" + "0" * 64)
     assert assess_silo(candidate, store).authority_axiom_agency == "UNKNOWN"
@@ -851,7 +851,7 @@ def test_incomplete_member_binding_cannot_claim_composed_grounding(tmp_path: Pat
 def test_unknown_agency_binding_blocks_composition_without_calling_it_a_removal(tmp_path: Path) -> None:
     first_store, first = _complete_silo(tmp_path / "first")
     second_store, second = _complete_silo(tmp_path / "second")
-    unknown = replace(second, authority_axiom_agency_version="VSTD-AUTHORITY-AXIOM-AGENCY-9")
+    unknown = replace(second, authority_axiom_agency_version="verifier-authority-axiom-agency-9")
     assessment = assess_silo(unknown, second_store)
     assert assessment.authority_axiom_agency == "UNKNOWN"
     result = assess_composition((first, unknown), (first_store, second_store))
@@ -885,7 +885,7 @@ def test_arbitrary_mechanism_or_evidence_substitution_cannot_establish_self_deri
     )
     assert assess_silo(substituted, store).self_derivability == "NOT_ESTABLISHED"
 
-    arbitrary_evidence = store.add_object(b"{}", "application/json", "self-derivation-evidence", "VSTD-SELF-DERIVATION-EVIDENCE-0.1")
+    arbitrary_evidence = store.add_object(b"{}", "application/json", "self-derivation-evidence", "verifier-self-derivation-evidence-1")
     census = tuple(
         replace(entry, object_record=arbitrary_evidence) if entry.path == "evidence/ground-self.json" else entry
         for entry in commit.census
@@ -1267,7 +1267,7 @@ def test_transfer_rejects_noncanonical_json_before_writing(tmp_path: Path) -> No
     destination = tmp_path / "noncanonical"
     with pytest.raises(NetworkError, match="canonical JSON"):
         materialize_silo_transfer(json.dumps(transfer, indent=2).encode(), destination)
-    duplicate_key = b'{"schema_version":"VSTD-SILO-TRANSFER-0.1",' + canonical_bytes(transfer)[1:]
+    duplicate_key = b'{"schema_version":"verifier-silo-transfer-1",' + canonical_bytes(transfer)[1:]
     with pytest.raises(NetworkError, match="duplicate JSON key"):
         materialize_silo_transfer(duplicate_key, destination)
     assert not destination.exists()
@@ -1504,18 +1504,18 @@ def test_published_schema_accepts_canonical_record_variants(tmp_path: Path) -> N
         (DirectoryEntry(publisher.publisher_id, head.canonical_digest(), "https://publisher.invalid/silo/", "LISTED"),),
         key, 0, None, "2026-09-08T00:00:00Z",
     )
-    schema = json.loads(Path("standard/schemas/vstd-artifact-network-0.1.schema.json").read_text(encoding="utf-8"))
+    schema = json.loads(Path("src/verifier/schemas/verifier-artifact-network-1.schema.json").read_text(encoding="utf-8"))
     validator = jsonschema.Draft202012Validator(schema)
     receipt = build_silo_assessment_receipt(commit, store)
     authority_model = network_module._load_authority_model(commit, store)
     assert authority_model is not None
     for record in (commit.census[0].object_record, authority_model, commit, head, publisher, continuity, directory, receipt):
         validator.validate(record.to_dict())
-    for schema_path in Path("standard/schemas").glob("vstd-*0.1.schema.json"):
+    for schema_path in Path("src/verifier/schemas").glob("vstd-*0.1.schema.json"):
         jsonschema.Draft202012Validator.check_schema(json.loads(schema_path.read_text(encoding="utf-8")))
-    mechanism_schema = json.loads(Path("standard/schemas/vstd-self-derivation-mechanism-0.1.schema.json").read_text(encoding="utf-8"))
+    mechanism_schema = json.loads(Path("src/verifier/schemas/verifier-self-derivation-mechanism-1.schema.json").read_text(encoding="utf-8"))
     jsonschema.Draft202012Validator(mechanism_schema).validate(json.loads(self_derivation_mechanism_bytes()))
-    transfer_schema = json.loads(Path("standard/schemas/vstd-silo-transfer-0.1.schema.json").read_text(encoding="utf-8"))
+    transfer_schema = json.loads(Path("src/verifier/schemas/verifier-silo-transfer-1.schema.json").read_text(encoding="utf-8"))
     registry = referencing.Registry().with_resource(
         schema["$id"], referencing.Resource.from_contents(schema)
     )
@@ -1785,5 +1785,5 @@ def test_cli_local_publish_inspect_export_rebuild_and_push_contract(tmp_path: Pa
     capsys.readouterr()
     assert main(["network", "push", str(destination), "--endpoint", "https://hub.invalid/v1/pushes"]) == 0
     push = json.loads(capsys.readouterr().out)
-    assert push["schema_version"] == "VSTD-PUSH-REQUEST-0.1"
+    assert push["schema_version"] == "verifier-push-request-1"
     assert push["transport_performed"] is False

@@ -98,8 +98,8 @@ def test_certifier_capability_survives_strict_catalog_and_package_roundtrip(
     )
     assert registry == package.registry
     assert registry.get(descriptor.component_id).to_dict() == descriptor.to_dict()
-    assert registry.schema_version == CATALOG_SCHEMA_VERSION == "VSTD-INTEROPERABILITY-CATALOG-1.1"
-    assert package.schema_version == COMPONENT_PACKAGE_SCHEMA_VERSION == "VSTD-COMPONENT-PACKAGE-1"
+    assert registry.schema_version == CATALOG_SCHEMA_VERSION == "verifier-interoperability-catalog-2"
+    assert package.schema_version == COMPONENT_PACKAGE_SCHEMA_VERSION == "verifier-component-package-1"
     path = tmp_path / "certifier.json"
     save_component_package(package, path)
     loaded = load_component_package(path, expected_digest=package.canonical_digest())

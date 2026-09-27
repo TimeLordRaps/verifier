@@ -37,7 +37,7 @@ from verifier.core.run_support import (
 )
 
 
-PLATFORM_COMPARISON_MECHANISM = "VSTD-PLATFORM-COMPARISON-0.1"
+PLATFORM_COMPARISON_MECHANISM = "verifier-platform-comparison-1"
 _IMPLEMENTATION_SOURCE_NAMES = (
     "platform_comparison.py",
     "receipt.py",

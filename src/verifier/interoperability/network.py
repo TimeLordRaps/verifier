@@ -34,20 +34,20 @@ import urllib.parse
 import urllib.request
 
 
-OBJECT_SCHEMA = "VSTD-OBJECT-0.1"
-COMMIT_SCHEMA = "VSTD-SILO-COMMIT-0.1"
-HEAD_SCHEMA = "VSTD-SIGNED-HEAD-0.1"
-PUBLISHER_SCHEMA = "VSTD-PUBLISHER-0.1"
-KEY_CONTINUITY_SCHEMA = "VSTD-KEY-CONTINUITY-0.1"
-DIRECTORY_SCHEMA = "VSTD-DIRECTORY-SNAPSHOT-0.1"
-EXPORT_SCHEMA = "VSTD-SILO-EXPORT-0.1"
-TRANSFER_SCHEMA = "VSTD-SILO-TRANSFER-0.1"
-ASSESSMENT_SCHEMA = "VSTD-SILO-ASSESSMENT-0.1"
-ASSESSMENT_RECEIPT_SCHEMA = "VSTD-SILO-ASSESSMENT-RECEIPT-0.1"
-COMPOSITION_SCHEMA = "VSTD-SILO-COMPOSITION-0.1"
-COMPOSITION_ASSESSMENT_SCHEMA = "VSTD-SILO-COMPOSITION-ASSESSMENT-0.1"
-COMPOSITION_ASSESSMENT_RECEIPT_SCHEMA = "VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1"
-PUSH_REQUEST_SCHEMA = "VSTD-PUSH-REQUEST-0.1"
+OBJECT_SCHEMA = "verifier-object-1"
+COMMIT_SCHEMA = "verifier-silo-commit-1"
+HEAD_SCHEMA = "verifier-signed-head-1"
+PUBLISHER_SCHEMA = "verifier-publisher-1"
+KEY_CONTINUITY_SCHEMA = "verifier-key-continuity-1"
+DIRECTORY_SCHEMA = "verifier-directory-snapshot-1"
+EXPORT_SCHEMA = "verifier-silo-export-1"
+TRANSFER_SCHEMA = "verifier-silo-transfer-1"
+ASSESSMENT_SCHEMA = "verifier-silo-assessment-1"
+ASSESSMENT_RECEIPT_SCHEMA = "verifier-silo-assessment-receipt-1"
+COMPOSITION_SCHEMA = "verifier-silo-composition-1"
+COMPOSITION_ASSESSMENT_SCHEMA = "verifier-silo-composition-assessment-1"
+COMPOSITION_ASSESSMENT_RECEIPT_SCHEMA = "verifier-silo-composition-assessment-receipt-1"
+PUSH_REQUEST_SCHEMA = "verifier-push-request-1"
 SIGNATURE_ALGORITHM = "Ed25519"
 MAX_OBJECT_BYTES = 4 * 1024 * 1024
 MAX_RECORD_BYTES = 16 * 1024 * 1024
@@ -67,9 +67,9 @@ STORE_DIRECTORIES = (
     "objects", "objects/sha256", "records", "records/commits", "records/heads",
     "records/publishers", "records/keys", "records/directories", "records/assessments",
 )
-SELF_DERIVATION_EVIDENCE_SCHEMA = "VSTD-SELF-DERIVATION-EVIDENCE-0.1"
-SELF_DERIVATION_MECHANISM_SCHEMA = "VSTD-SELF-DERIVATION-MECHANISM-0.1"
-AUTHORITY_MODEL_SCHEMA = "VSTD-AUTHORITY-MODEL-0.1"
+SELF_DERIVATION_EVIDENCE_SCHEMA = "verifier-self-derivation-evidence-1"
+SELF_DERIVATION_MECHANISM_SCHEMA = "verifier-self-derivation-mechanism-1"
+AUTHORITY_MODEL_SCHEMA = "verifier-authority-model-1"
 SUPPORTED_RELATION_STRENGTHS = ("DERIVES",)
 
 AUTHORITY_AXIOM_AGENCY = (
@@ -83,9 +83,9 @@ AUTHORITY_AXIOM_AGENCY = (
     "SELECT_TRUST_ROOTS",
     "WITHDRAW_OWN_AUTHORIZATION",
 )
-AUTHORITY_AXIOM_AGENCY_VERSION = "VSTD-AUTHORITY-AXIOM-AGENCY-0.1"
+AUTHORITY_AXIOM_AGENCY_VERSION = "verifier-authority-axiom-agency-1"
 AUTHORITY_ACTOR_SCOPES = ("ANY_ACTOR",)
-AUTHORITY_ACTOR_SCOPE_VERSION = "VSTD-AUTHORITY-ACTOR-SCOPE-0.1"
+AUTHORITY_ACTOR_SCOPE_VERSION = "verifier-authority-actor-scope-1"
 
 _DIGEST = re.compile(r"sha256:[0-9a-f]{64}\Z")
 _PUBLISHER = re.compile(r"publisher:sha256:[0-9a-f]{64}\Z")
@@ -177,7 +177,7 @@ def silo_composition_mechanism_bytes() -> bytes:
     """Return the canonical alpha mechanism used by composition receipts."""
 
     return canonical_bytes({
-        "schema_version": "VSTD-SILO-COMPOSITION-MECHANISM-0.1",
+        "schema_version": "verifier-silo-composition-mechanism-1",
         "mechanism_id": "vstd.reference.silo_composition.0.1",
         "rules": [
             "recompute_every_member_silo_assessment",

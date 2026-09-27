@@ -41,7 +41,7 @@ def _source_digest(*candidates: Any) -> str:
         path = Path(candidate)
         paths = [path] if path.is_absolute() else [_REPO_ROOT / path, Path.cwd() / path]
         if not path.is_absolute() and path.parts and path.parts[0] == "standard":
-            paths.append(_MODULE_PATH.parents[1] / "specifications" / path.name)
+            paths.append(_MODULE_PATH.parents[1] / "standard" / path.name)
         for resolved in paths:
             try:
                 return "sha256:" + hashlib.sha256(resolved.read_bytes()).hexdigest()

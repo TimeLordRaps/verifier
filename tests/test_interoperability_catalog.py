@@ -285,7 +285,7 @@ def test_legacy_catalog_preserves_planning_match_without_inventing_native_accept
     legacy_component["accepted_schema_ids"] = legacy_component.pop(
         "planning_surface_schema_ids"
     )
-    current["schema_version"] = "VSTD-INTEROPERABILITY-CATALOG-1.0"
+    current["schema_version"] = "verifier-interoperability-catalog-1"
 
     migrated = InteroperabilityComponentRegistry.from_dict(current)
     descriptor = migrated.get("component:a")
@@ -307,7 +307,7 @@ def test_catalog_schema_versions_reject_mixed_descriptor_shapes() -> None:
         InteroperabilityComponentRegistry.from_dict(current)
 
     legacy = InteroperabilityComponentRegistry("1.3.0", (component("component:a"),)).to_dict()
-    legacy["schema_version"] = "VSTD-INTEROPERABILITY-CATALOG-1.0"
+    legacy["schema_version"] = "verifier-interoperability-catalog-1"
     with pytest.raises(CatalogError, match="1.0 component descriptors must not contain"):
         InteroperabilityComponentRegistry.from_dict(legacy)
 

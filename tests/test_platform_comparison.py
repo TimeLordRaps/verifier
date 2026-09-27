@@ -702,7 +702,7 @@ def test_compare_platforms_cli_emits_bounded_json_report(
 
     assert report["status"] == "PASS"
     assert report["report_kind"] == "platform_comparison_diagnostic"
-    assert report["mechanism"]["identifier"] == "VSTD-PLATFORM-COMPARISON-0.1"
+    assert report["mechanism"]["identifier"] == "verifier-platform-comparison-1"
     assert (
         report["declaration"]["mechanism_id"]
         == "PLATFORM-COMPARISON-TEST-SUBJECT-1"

@@ -31,8 +31,8 @@ class UnsupportedFormation(FormationError):
     """The submitted record requires an unsupported interpretation."""
 
 
-SUBJECT_SCHEMA = "VSTD-TYPED-FORMATION-0.1"
-CERTIFICATE_SCHEMA = "VSTD-TYPED-FORMATION-CERTIFICATE-0.1"
+SUBJECT_SCHEMA = "verifier-typed-formation-1"
+CERTIFICATE_SCHEMA = "verifier-typed-formation-certificate-1"
 MAX_NODES = 1024
 MAX_DEPTH = 64
 MAX_PATH_STEPS = 4096
@@ -56,7 +56,7 @@ _REF_FIELDS = {
     "QUOTE": ("value",), "READ": ("code",),
 }
 _PROFILE_BYTES = canonical_bytes({
-    "schema_version": "VSTD-TYPED-FORMATION-PROFILE-0.1",
+    "schema_version": "verifier-typed-formation-profile-1",
     "subject_schema": SUBJECT_SCHEMA,
     "certificate_schema": CERTIFICATE_SCHEMA,
     "context_fields": ["ground_artifact_digest", "authority_axiom_agency_digest"],

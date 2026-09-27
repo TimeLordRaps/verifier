@@ -510,7 +510,7 @@ def test_real_local_deriver_execution_produces_and_reproduces_the_exact_trace(
     )
     trace_bytes = evidence[declaration["trace_digest"]]
     source_bytes = Path(deriver_module.__file__).read_bytes()
-    assert digest_bytes(source_bytes) == "sha256:50379e925911f8a0a7cd3940b62b8d39ae60bf863d9898533729e854edc86dff"
+    assert digest_bytes(source_bytes) == "sha256:dea126b0b249a9fe2b08a4ce369c4eeb5dc45fa8155b7492a8fa87a578c4f4fd"
     public_environment = (
         (("SYSTEMROOT", os.environ["SystemRoot"]),) if os.name == "nt" else ()
     )

@@ -99,7 +99,7 @@ def _resolved(tmp_path: Path, fixture: dict[str, Any]) -> tuple[
 
 def test_checked_in_fixture_is_canonical() -> None:
     checked_in = _load()
-    assert checked_in["schema_version"] == "VSTD-SILO-COMPOSITION-WIRE-FIXTURE-0.1"
+    assert checked_in["schema_version"] == "verifier-silo-composition-wire-fixture-1"
     assert [case["case_id"] for case in checked_in["negative_cases"]] == sorted(
         case["case_id"] for case in checked_in["negative_cases"]
     )

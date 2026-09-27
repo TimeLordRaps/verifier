@@ -132,7 +132,7 @@ def test_bundle_is_complete_deterministic_and_exactly_bound(tmp_path: Path) -> N
     _prepare(evidence_root, second)
 
     assert first.read_bytes() == second.read_bytes()
-    assert manifest["schema_version"] == "VSTD-PLATFORM-RELEASE-EVIDENCE-1"
+    assert manifest["schema_version"] == "verifier-platform-release-evidence-1"
     assert manifest["verification_effect"] == "NONE"
     assert manifest["source_commit"] == SOURCE_COMMIT
     assert manifest["workflow"]["run_id"] == RUN_ID

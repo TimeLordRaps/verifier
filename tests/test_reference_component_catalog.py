@@ -274,115 +274,115 @@ def test_only_native_parsers_declare_serialized_schema_acceptance() -> None:
 
     assert declared == {
         "component:artifact-bundle-verifier": (
-            "VSTD-ARTIFACT-FREEZE-1",
-            "VSTD-ARTIFACT-SEAL-1",
+            "verifier-artifact-freeze-1",
+            "verifier-artifact-seal-1",
         ),
         "component:artifact-network-transfer-materializer": (
-            "VSTD-SILO-TRANSFER-0.1",
+            "verifier-silo-transfer-1",
         ),
         "component:artifact-network-authority-composition-assessor": (
-            "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
+            "verifier-finite-authority-composition-1",
         ),
         "component:artifact-network-bounded-completeness-assessor": (
-            "VSTD-BOUNDED-COMPLETENESS-0.1",
-            "VSTD-BOUNDED-COMPLETENESS-DENOMINATOR-0.1",
-            "VSTD-BOUNDED-COMPLETENESS-OBSERVATIONS-0.1",
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+            "verifier-bounded-completeness-1",
+            "verifier-bounded-completeness-denominator-1",
+            "verifier-bounded-completeness-observations-1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-receipt-1",
         ),
         "component:artifact-network-bounded-completeness-receipt-rechecker": (
-            "VSTD-BOUNDED-COMPLETENESS-0.1",
-            "VSTD-BOUNDED-COMPLETENESS-DENOMINATOR-0.1",
-            "VSTD-BOUNDED-COMPLETENESS-OBSERVATIONS-0.1",
-            "VSTD-BOUNDED-COMPLETENESS-RECEIPT-0.1",
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+            "verifier-bounded-completeness-1",
+            "verifier-bounded-completeness-denominator-1",
+            "verifier-bounded-completeness-observations-1",
+            "verifier-bounded-completeness-receipt-1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-receipt-1",
         ),
         "component:artifact-network-finite-composition-qualifier": (
-            "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
-            "VSTD-SILO-COMMIT-0.1",
+            "verifier-finite-authority-composition-1",
+            "verifier-silo-commit-1",
         ),
         "component:artifact-network-composition-declaration-decoder": (
-            "VSTD-SILO-COMPOSITION-0.1",
+            "verifier-silo-composition-1",
         ),
         "component:artifact-network-composition-receipt-rechecker": (
-            "VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1",
+            "verifier-silo-composition-assessment-receipt-1",
         ),
         "component:artifact-network-deriver-self-status-rechecker": (
-            "VSTD-DERIVER-SELF-STATUS-0.1",
-            "VSTD-DERIVER-SELF-STATUS-RECEIPT-0.1",
+            "verifier-deriver-self-status-1",
+            "verifier-deriver-self-status-receipt-1",
         ),
         "component:artifact-network-deriver-session-recorder": (
-            "VSTD-DERIVER-SELF-STATUS-0.1",
+            "verifier-deriver-self-status-1",
         ),
         "component:artifact-network-proposition-transfer-assessor": (
-            "VSTD-PROPOSITION-TRANSFER-0.1",
+            "verifier-proposition-transfer-1",
         ),
         "component:artifact-network-proposition-transfer-rechecker": (
-            "VSTD-PROPOSITION-TRANSFER-0.1",
-            "VSTD-PROPOSITION-TRANSFER-RECEIPT-0.1",
+            "verifier-proposition-transfer-1",
+            "verifier-proposition-transfer-receipt-1",
         ),
         "component:artifact-network-global-cycle-assessor": (
-            "VSTD-CYCLE-RELATION-SEMANTICS-0.1",
-            "VSTD-GLOBAL-CYCLE-ASSESSMENT-0.1",
-            "VSTD-RELATION-BOUNDARY-RECEIPT-0.1",
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+            "verifier-cycle-relation-semantics-1",
+            "verifier-global-cycle-assessment-1",
+            "verifier-relation-boundary-receipt-1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-receipt-1",
         ),
         "component:artifact-network-global-cycle-receipt-rechecker": (
-            "VSTD-CYCLE-RELATION-SEMANTICS-0.1",
-            "VSTD-GLOBAL-CYCLE-ASSESSMENT-0.1",
-            "VSTD-GLOBAL-CYCLE-ASSESSMENT-RECEIPT-0.1",
-            "VSTD-RELATION-BOUNDARY-RECEIPT-0.1",
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+            "verifier-cycle-relation-semantics-1",
+            "verifier-global-cycle-assessment-1",
+            "verifier-global-cycle-assessment-receipt-1",
+            "verifier-relation-boundary-receipt-1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-receipt-1",
         ),
         "component:artifact-network-relation-boundary-assessor": (
-            "VSTD-RELATION-BOUNDARY-0.1",
-            "VSTD-RELATION-BOUNDARY-EVIDENCE-0.1",
+            "verifier-relation-boundary-1",
+            "verifier-relation-boundary-evidence-1",
         ),
         "component:artifact-network-relation-boundary-receipt-rechecker": (
-            "VSTD-RELATION-BOUNDARY-0.1",
-            "VSTD-RELATION-BOUNDARY-EVIDENCE-0.1",
-            "VSTD-RELATION-BOUNDARY-RECEIPT-0.1",
+            "verifier-relation-boundary-1",
+            "verifier-relation-boundary-evidence-1",
+            "verifier-relation-boundary-receipt-1",
         ),
         "component:artifact-network-runtime-authority-correspondence-assessor": (
-            "VSTD-AUTHORITY-MODEL-0.1",
-            "VSTD-DERIVER-SELF-STATUS-0.1",
-            "VSTD-DERIVER-SELF-STATUS-RECEIPT-0.1",
-            "VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-0.1",
-            "VSTD-RUNTIME-AUTHORITY-TRACE-0.1",
+            "verifier-authority-model-1",
+            "verifier-deriver-self-status-1",
+            "verifier-deriver-self-status-receipt-1",
+            "verifier-runtime-authority-correspondence-1",
+            "verifier-runtime-authority-trace-1",
         ),
         "component:artifact-network-runtime-authority-correspondence-receipt-rechecker": (
-            "VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-RECEIPT-0.1",
+            "verifier-runtime-authority-correspondence-receipt-1",
         ),
         "component:artifact-network-source-grounding-assessor": (
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-CERTIFICATE-0.1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-certificate-1",
         ),
         "component:artifact-network-source-grounding-receipt-rechecker": (
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-CERTIFICATE-0.1",
-            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-certificate-1",
+            "verifier-source-grounding-receipt-1",
         ),
         "component:artifact-network-typed-formation-checker": (
-            "VSTD-TYPED-FORMATION-0.1",
-            "VSTD-TYPED-FORMATION-CERTIFICATE-0.1",
+            "verifier-typed-formation-1",
+            "verifier-typed-formation-certificate-1",
         ),
         "component:artifact-network-typed-formation-producer": (
-            "VSTD-TYPED-FORMATION-0.1",
+            "verifier-typed-formation-1",
         ),
         "component:artifact-network-typed-formation-receipt-rechecker": (
-            "VSTD-SILO-COMMIT-0.1",
-            "VSTD-SILO-FORMATION-RECEIPT-0.1",
-            "VSTD-SILO-FORMATION-SELECTION-0.1",
+            "verifier-silo-commit-1",
+            "verifier-silo-formation-receipt-1",
+            "verifier-silo-formation-selection-1",
         ),
         "component:generic-run-validator": ("VSTD-1",),
         "component:platform-run-comparator": ("VSTD-1",),
         "component:vstd-graph-assurance-rechecker": (
-            "VSTD-GRAPH-ASSURANCE-1",
+            "verifier-graph-assurance-1",
         ),
-        "component:vstd-graph-receipt-validator": ("VSTD-DATA-0.1",),
+        "component:vstd-graph-receipt-validator": ("verifier-data-1",),
         "component:vstd2-geometry-loader": ("VSTD-2",),
         "component:vstd4-evidence-rechecker": ("VSTD-4",),
         "component:vstd5-witness-rechecker": ("VSTD-5",),
@@ -489,9 +489,9 @@ def test_graph_topology_metadata_declares_typed_experimental_bounded_analysis() 
     assert component.accepted_schema_ids == ()
     assert component.planning_surface_schema_ids == ("VSTD-2",)
     assert component.emitted_schema_ids == (
-        "VSTD-GRAPH-TOPOLOGY-REPORT-EXPERIMENTAL-0.1",
+        "verifier-graph-topology-report-experimental-1",
     )
-    assert component.native_versions == ("VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1",)
+    assert component.native_versions == ("verifier-graph-topology-experimental-1",)
     assert component.native_inputs == (
         "max_assignments bound",
         "typed GraphTopologyContract",
@@ -589,7 +589,7 @@ def test_untraversability_metadata_matches_the_native_callable_contract() -> Non
         ({}, ("component:composed-untraversability-analyzer",)),
         ({"relation_id": "relation:composed-Untraversability"}, ()),
         ({"mechanism_id": "mechanism:composed-untraversability"}, ()),
-        ({"schema_id": "VSTD-UNTRAVERSABLE-EXPERIMENTAL-0.1"}, ()),
+        ({"schema_id": "verifier-untraversable-experimental-1"}, ()),
         ({"interaction_mode": InteractionMode.SIMULATION}, ()),
     ),
     ids=("exact", "relation-case", "mechanism-near-miss", "native-schema", "mode"),
@@ -662,8 +662,8 @@ def test_artifact_network_composition_planning_matches_only_exact_capabilities(
         ({"mechanism_id": "mechanism:graph-topology"}, ()),
         ({"mechanism_id": "mechanism:vstd4-grounded-certificate-check"}, ()),
         ({"interaction_mode": InteractionMode.OFFLINE_REPLAY}, ()),
-        ({"schema_id": "VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1"}, ()),
-        ({"schema_id": "VSTD-DATA-0.1"}, ()),
+        ({"schema_id": "verifier-graph-topology-experimental-1"}, ()),
+        ({"schema_id": "verifier-data-1"}, ()),
     ),
     ids=("exact", "relation-case", "mechanism-near-miss", "other-constraint",
          "mode", "stored-contract-not-planning-schema", "graph-not-planning-schema"),
@@ -735,7 +735,7 @@ def test_schema_parsers_and_artifact_verifier_fail_closed_on_representative_inpu
     assurance_callable = _resolve(
         registry.get("component:vstd-graph-assurance-rechecker").implementation_ref
     )
-    with pytest.raises(AssuranceFlowError, match="not a VSTD-Graph assurance log"):
+    with pytest.raises(AssuranceFlowError, match="not a GRAPH assurance log"):
         assurance_callable({"schema_version": "NOT-ASSURANCE"}, mechanisms=())
 
     artifact_callable = _resolve(

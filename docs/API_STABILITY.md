@@ -5,6 +5,36 @@
 This policy applies beginning with the first release that contains it. It does not
 retroactively change frozen receipts or earlier release bytes.
 
+The unreleased 2.0.0 domain path adds `NativeDomainAdapter`, `domain_catalog`,
+`domain_policy`, `domain_request`, `build_domain_certificate`, and
+`recheck_domain_certificate` to the supported exports. These functions consume
+the additive [domain contracts](../src/verifier/standard/DOMAIN_GROUNDING.md); they do not
+reinterpret historical domain records or establish object numbered-profile conformance.
+
+The current hierarchy foundation uses experimental direct submodules
+`verifier.core.namespace` and `verifier.domains.contracts`. Immutable objects,
+typed composition, finite simulation isolation, and hardware-ownership eligibility
+have the boundaries in [the object contract](../src/verifier/standard/NAMESPACE_OBJECTS.md).
+They are not top-level supported exports or complete eight-tier certifications.
+Consumers must bind the exact source or package revision and replay their evidence
+when it changes; historical numbered-profile receipts retain their own semantics.
+The versioned [declared identity binding](../src/verifier/standard/IDENTITY_OCCUPANCY.md)
+is also a direct experimental submodule. It accepts current HUMAN, AGENT and BOT
+representations within its declared-relation scope. The legacy native IDENTITY
+adapter and command-line route retain their historical meanings; this contract
+does not migrate them or add a numbered-profile certification route.
+
+The experimental [current-object grounding route](../src/verifier/standard/CURRENT_OBJECT_GROUNDING.md)
+adds an independently versioned certificate and replay for one finite simulation
+confinement objective. Its request and policy must be selected outside the carried
+certificate. It has no top-level export or command-line route and does not establish
+an entire meta-tier, physical isolation or external authority.
+The adjacent [HYPER closure route](../src/verifier/standard/CURRENT_HYPER_CLOSURE.md)
+binds one exact finite declared operand-cone proposition under the same current
+semantic version. It is also a direct experimental import with externally selected
+request and policy, full retained evidence and complete certificate replay. Neither
+route establishes privacy, publication permission or full object-profile conformance.
+
 ## Supported boundary
 
 The supported Python runtime API is the set of names exported by `verifier.__all__` and
@@ -35,7 +65,7 @@ reparse-point aliases. This does not change the accepted read-only alias behavio
 outer parent-bundle or explicit thaw-record argument. Ordinary hard links remain regular
 file byte-and-path semantics rather than an exclusive-inode claim.
 
-`thawed_artifact_status` treats a `VSTD-ARTIFACT-THAW-1` sidecar as unkeyed lineage
+`thawed_artifact_status` treats a `verifier-artifact-thaw-1` sidecar as unkeyed lineage
 metadata. Without `parent_bundle`, it returns `NOT_ESTABLISHED` even when descendant bytes
 agree with the sidecar's recorded identifier. `THAWED_CLEAN` or `THAWED_DIRTY` requires an
 actual supplied parent that verifies as cleanly sealed and matches every recorded parent
@@ -89,7 +119,7 @@ the complete carried VSTD-4 entry, requires the bundle `claim_id` to equal the a
 VSTD-4 claim identifier, and mechanism-checks `corroboration_class`; schema-valid field
 relabeling cannot retain an established replay result.
 
-`ProvenanceHypergraph.from_dict` retains the frozen `VSTD-DATA-0.1` two-namespace reader:
+`ProvenanceHypergraph.from_dict` retains the frozen `verifier-data-1` two-namespace reader:
 one identifier may occur once as an artifact and once as a transformation. Direct `add_*`
 construction and default structural validation are stricter and globally disjoint. Such a
 historical overlap remains readable but cannot enter evidence-bound Graph establishment or
@@ -108,8 +138,8 @@ to every name under `verifier.interoperability`:
 | Component descriptors, kinds, catalog matching, stored packages, planning, execution-readiness preflight | Experimental; declarations and byte bindings do not supply execution, qualification, or authority. |
 | Graph topology | Experimental direct submodule only; separate from supported analysis and from a general geometry satisfiability checker. |
 | Composed untraversability | Experimental direct submodule only; observer-relative bounded knowledge closure, not universal confidentiality or runtime enforcement. |
-| Typed formation | Experimental direct `formation_*` submodules only; finite proof-step production, independent checking, evidence-bound session integration and retained-silo inspection. Catalog discovery is inert; census-byte retention is not silo completeness. No source self-status, completeness or agency upgrade. See [typed formation](../standard/TYPED_FORMATION.md). |
-| Finite authority composition | Experimental direct `authority_composition` submodule and strict `network compose --require-finite-authority-composition` mode; exact selected finite asynchronous-interleaving correspondence, with separate coordinate, transition and authority results. Strict qualification additionally requires the legacy composition assessment and exact input binding; no runtime correspondence, source proof or six-axis status upgrade. See [finite authority composition](../standard/FINITE_AUTHORITY_COMPOSITION.md). |
+| Typed formation | Experimental direct `formation_*` submodules only; finite proof-step production, independent checking, evidence-bound session integration and retained-silo inspection. Catalog discovery is inert; census-byte retention is not silo completeness. No source self-status, completeness or agency upgrade. See [typed formation](../src/verifier/standard/TYPED_FORMATION.md). |
+| Finite authority composition | Experimental direct `authority_composition` submodule and strict `network compose --require-finite-authority-composition` mode; exact selected finite asynchronous-interleaving correspondence, with separate coordinate, transition and authority results. Strict qualification additionally requires the legacy composition assessment and exact input binding; no runtime correspondence, source proof or six-axis status upgrade. See [finite authority composition](../src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md). |
 
 `verifier.interoperability` contains both the supported analyzer names exported by
 `verifier.__all__` and an experimental planning surface. Its complete characterized names
@@ -179,7 +209,7 @@ executing a component. The facade provides no component executor, evidence colle
 post-execution reanalysis implementation, Boolean satisfiability geometry analyzer, or new
 closure result.
 
-The experimental stored-component format `VSTD-COMPONENT-PACKAGE-1` adds
+The experimental stored-component format `verifier-component-package-1` adds
 `PackageArtifact`, `ImplementationBinding`, `PackageDependency`, `StoredComponentPackage`,
 `load_component_package` and `save_component_package` through
 `verifier.interoperability.storage` and the interoperability facade. It retains exact
@@ -243,7 +273,7 @@ increase assurance or establish an external standard.
   alias where unambiguous; `verifiable` is permanent because published refutation steps
   bind it.
 - Serialized receipt identifiers and released receipt bytes follow
-  [`WIRE_IDENTIFIERS.md`](../standard/WIRE_IDENTIFIERS.md), not this Python policy.
+  [`WIRE_IDENTIFIERS.md`](../src/verifier/standard/WIRE_IDENTIFIERS.md), not this Python policy.
 - Published JavaScript Object Notation (JSON) Schemas change only under their declared
   profile and compatibility rules.
 - Artifact-control formats follow `standard/ARTIFACT_CONTROL.md`. They are not receipts;

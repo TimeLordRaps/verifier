@@ -1,0 +1,75 @@
+{
+  "schema_version": "verifier-gate-pipeline-1",
+  "root": ".",
+  "inputs": [
+    "gate_pipeline.json",
+    "gate_project"
+  ],
+  "overall_timeout_seconds": 90,
+  "max_output_bytes": 65536,
+  "steps": [
+    {
+      "id": "paths",
+      "argv": [
+        "python",
+        "-B",
+        "-m",
+        "verifier",
+        "gate",
+        "paths",
+        "gate_project",
+        "--json"
+      ],
+      "needs": [],
+      "timeout_seconds": 20,
+      "result_contract": "vstd-verdict"
+    },
+    {
+      "id": "boundary",
+      "argv": [
+        "python",
+        "-B",
+        "-m",
+        "verifier",
+        "gate",
+        "boundary",
+        "gate_project",
+        "--json"
+      ],
+      "needs": [],
+      "timeout_seconds": 20,
+      "result_contract": "vstd-verdict"
+    },
+    {
+      "id": "ast",
+      "argv": [
+        "python",
+        "-B",
+        "-m",
+        "verifier",
+        "gate",
+        "ast",
+        "gate_project",
+        "--json"
+      ],
+      "needs": [],
+      "timeout_seconds": 20,
+      "result_contract": "vstd-verdict"
+    },
+    {
+      "id": "dataset",
+      "argv": [
+        "python",
+        "-B",
+        "gate_project/check_dataset.py"
+      ],
+      "needs": [
+        "paths",
+        "boundary",
+        "ast"
+      ],
+      "timeout_seconds": 20,
+      "result_contract": "vstd-verdict"
+    }
+  ]
+}

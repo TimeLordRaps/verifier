@@ -9,7 +9,6 @@ from pathlib import Path
 import pytest
 
 from verifier.identity.tokens import (
-    ActorBinding,
     AgingToken,
     BirthToken,
     LifetimeToken,
@@ -29,7 +28,7 @@ def test_birth_token_commitment_and_canonical_bytes() -> None:
     assert len(commitment) == 71
 
     token = BirthToken(
-        schema_version="VSTD-BIRTH-TOKEN-1",
+        schema_version="verifier-birth-token-1",
         token_id="birth:001",
         genesis_key_digest=genesis_key,
         birth_epoch=100,
@@ -40,7 +39,7 @@ def test_birth_token_commitment_and_canonical_bytes() -> None:
     )
     raw_bytes = token.canonical_bytes()
     data = json.loads(raw_bytes.decode("utf-8"))
-    assert data["schema_version"] == "VSTD-BIRTH-TOKEN-1"
+    assert data["schema_version"] == "verifier-birth-token-1"
     assert "signature_base64url" not in data  # signature stripped for canonical representation
     assert data["commitment"] == commitment
 
@@ -54,7 +53,7 @@ def test_aging_token_progression() -> None:
     assert acc2 != acc1
 
     token = AgingToken(
-        schema_version="VSTD-AGING-TOKEN-1",
+        schema_version="verifier-aging-token-1",
         token_id="aging:001",
         birth_token_id="birth:001",
         genesis_key_digest=genesis_key,
@@ -75,7 +74,7 @@ def test_aging_token_progression() -> None:
 
 def test_lifetime_token_lease_and_bounds() -> None:
     token = LifetimeToken(
-        schema_version="VSTD-LIFETIME-TOKEN-1",
+        schema_version="verifier-lifetime-token-1",
         token_id="lease:001",
         actor_id="actor:sha256:3333333333333333333333333333333333333333333333333333333333333333",
         delegate_key_id="runner:worker_01",
@@ -92,26 +91,6 @@ def test_lifetime_token_lease_and_bounds() -> None:
     data = json.loads(raw_bytes.decode("utf-8"))
     assert data["soulbound"] is True
     assert data["permitted_scopes"] == ["sat:verify", "receipt:check"]
-
-
-def test_actor_binding_structure() -> None:
-    binding = ActorBinding(
-        schema_version="VSTD-ACTOR-BINDING-1",
-        binding_id="bind:001",
-        kind="PUBLISHER_CONTROL",
-        actor_id="actor:sha256:4444444444444444444444444444444444444444444444444444444444444444",
-        subject_id="publisher:sha256:5555555555555555555555555555555555555555555555555555555555555555",
-        bound_proposition="Mutual signature establishing dual control at hub.",
-        actor_key_id="key:actor_01",
-        subject_key_id="key:pub_01",
-        issued_at="2026-01-01T00:00:00Z",
-        actor_signature_base64url="sig_actor",
-        subject_signature_base64url="sig_pub",
-    )
-    raw_bytes = binding.canonical_bytes()
-    data = json.loads(raw_bytes.decode("utf-8"))
-    assert data["kind"] == "PUBLISHER_CONTROL"
-    assert data["actor_id"].startswith("actor:sha256:")
 
 
 def test_offline_evaluator_accepted_bounded() -> None:

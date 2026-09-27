@@ -96,7 +96,7 @@
         "corroboration_class": {"type": "string", "minLength": 1}
       }
     },
-    "evaluation": {"$ref": "https://timelordraps.github.io/verifier/schemas/vstd-graph-assurance-1.schema.json#/$defs/evaluation"},
+    "evaluation": {"$ref": "https://timelordraps.github.io/verifier/schemas/verifier-graph-assurance-1.schema.json#/$defs/evaluation"},
     "result": {
       "type": "object", "additionalProperties": false,
       "required": ["claim_id", "status", "conformance_status", "computed_independence", "independence_evaluations", "corroboration_evaluations", "disagreements", "binding_errors", "identity_errors", "separation_errors", "corroboration_errors", "errors", "limitations"],

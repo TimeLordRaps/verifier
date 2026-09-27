@@ -14,7 +14,7 @@ are useful contributions.
 
 | Change | Primary location | Required companion work |
 |---|---|---|
-| Normative requirement or numbered-profile meaning | `standard/` | Matching installed copy under `src/verifier/specifications/`, compatibility analysis, schema/model/runtime review, and falsification test |
+| Normative requirement or numbered-profile meaning | `standard/` | Matching installed copy under `src/verifier/standard/`, compatibility analysis, schema/model/runtime review, and falsification test |
 | Frozen identifier or profile dispatch | `standard/WIRE_IDENTIFIERS.md` | Historical-receipt audit; never silently redefine a released value |
 | Published receipt shape | `receipts/schema/` | Typed model, validator, examples, Pages schema route, and adversarial schema tests |
 | Reference implementation | `src/verifier/` | Tests for the exact implemented proposition and failure boundary |
@@ -144,7 +144,8 @@ Use the pull-request template to record:
 
 Before promotion, also record the exact current head and base, executed integration commit,
 repository-check event and run, every actionable finding and its disposition, every skipped
-or unrun check with its claim consequence, the canonical promotion-record digest, exact-head
+or unrun check with its rubric classification and claim consequence per [`docs/TEST_SKIP_RUBRIC.md`](docs/TEST_SKIP_RUBRIC.md),
+the canonical promotion-record digest, exact-head
 human acceptance evidence, and the owner plus scope of post-merge validation. A head, base,
 record, or human-gate change invalidates the earlier acceptance. Refresh the record and
 affected evidence before the pull request can pass policy again.
@@ -160,7 +161,8 @@ The installed workflow generates inputs from source-side fixtures but consumes t
 the isolated installed package outside the checkout; it is not deployment evidence.
 A newly added pytest invocation must be added
 to this exact inventory before promotion can pass. Free-form `DISCLOSED` prose is not
-evidence and is rejected; `NONE` is permitted only when all twelve reports contain actual
+evidence and is rejected; skipped tests must be categorized against the formal rubric in
+[`docs/TEST_SKIP_RUBRIC.md`](docs/TEST_SKIP_RUBRIC.md); `NONE` is permitted only when all twelve reports contain actual
 test cases and record zero skips. An empty report is rejected even if its summary claims
 that tests ran.
 
@@ -171,7 +173,7 @@ link its review or comment. The digest deliberately excludes its own field and t
 avoid a circular record; it includes every other promotion field and every human-gate line.
 
 The human acceptance is an approving review on the exact head or a trusted maintainer
-comment containing `VSTD-HUMAN-ACCEPTANCE: <full-head-commit-identifier>
+comment containing `acceptance-clearance: <full-head-commit-identifier>
 <promotion-record-sha256>`, linked from the pull-request
 body. Automated contributors MUST NOT create that marker for their own work. This mechanism
 establishes a recorded repository action by an authorized account; it does not establish

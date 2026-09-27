@@ -120,11 +120,11 @@ MATURITY_CONFORMANCE = {
     "VSTD-3": "Implemented reference surface",
     "VSTD-4": "Candidate path `NOT_ESTABLISHED`; evidence-bound path can establish conformance",
     "VSTD-5": "Mechanism can establish a bounded result; a positive observation with unresolved independence remains overall `UNKNOWN`; no repository claim of a real independent witness",
-    "VSTD-Graph-1": "Implemented reference subset",
-    "VSTD-Graph-2": "Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot",
-    "VSTD-Graph-3": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
-    "VSTD-Graph-4": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
-    "VSTD-Graph-5": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
+    "GRAPH-1": "Implemented reference subset",
+    "GRAPH-2": "Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot",
+    "GRAPH-3": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
+    "GRAPH-4": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
+    "GRAPH-5": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
     "Generic run": "Implemented VSTD-1 profile",
     "Experimental workflow": "No VSTD conformance claim",
     "Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability": (
@@ -408,7 +408,7 @@ def transient_time_status_violations(text: str) -> list[str]:
 def check_claim_boundaries(errors: list[str]) -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     roadmap = (ROOT / "ROADMAP.md").read_text(encoding="utf-8")
-    wire = (ROOT / "standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
+    wire = (ROOT / "src/verifier/standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
     reference = (ROOT / "docs/reference.html").read_text(encoding="utf-8")
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     scitt_demo = (ROOT / "examples/scitt_interop/demo.py").read_text(encoding="utf-8")
@@ -429,7 +429,7 @@ def check_claim_boundaries(errors: list[str]) -> None:
         "vstd demo",
         "A later-profile result does **not** supply",
         "It cannot prove general AI",
-        "[Normative specifications](standard/LADDER.md)",
+        "[Normative specifications](src/verifier/standard/LADDER.md)",
         "[Report an ambiguity or counterexample]",
         "[Report a vulnerability privately]",
         "SCITT registration proves neither payload",
@@ -687,8 +687,12 @@ def check_generated_documentation(errors: list[str]) -> None:
     guides = pages["docs/guides.html"]
     if "github.com/TimeLordRaps/verifier/blob/main/docs/" in guides:
         errors.append("docs/guides.html sends maintained guides to the GitHub file viewer")
-    if "github.com/TimeLordRaps/verifier/blob/main/standard/" in guides:
-        errors.append("docs/guides.html sends specifications to the GitHub file viewer")
+    for viewer in (
+        "github.com/TimeLordRaps/verifier/blob/main/standard/",
+        "github.com/TimeLordRaps/verifier/blob/main/src/verifier/standard/",
+    ):
+        if viewer in guides:
+            errors.append("docs/guides.html sends specifications to the GitHub file viewer")
 
 
 def check_experiment_index(errors: list[str]) -> None:

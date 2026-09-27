@@ -735,8 +735,8 @@ class VSTD3Receipt(CanonicalModel):
     canonical_digest: str = ""
 
     def __post_init__(self) -> None:
-        if self.schema_version != "VSTD-3.0":
-            raise ValueError("VSTD3Receipt schema_version must be VSTD-3.0")
+        if self.schema_version != "VSTD-3":
+            raise ValueError("VSTD3Receipt schema_version must be VSTD-3")
 
     def stable_payload(self) -> dict[str, Any]:
         payload = self.to_dict()
