@@ -66,10 +66,12 @@
     },
     {
       "path": "scripts/build_docs_portal.py",
-      "sha256": "53a94ff7af277afe5d029ee8a8b127ce012340a57c22984a0891953aa9009231",
-      "symbols": [],
-      "summary": "Pins the documentation portal release links to version 1.5.0 and its recorded commit.",
-      "limits": "This is a link/source pin for the already dated release and does not make the 2.0.0 candidate public."
+      "sha256": "d6175601af86f7fb67db283d5829423630a45fda9b97cb2fd7d6ce493394fd4b",
+      "symbols": [
+        "navigation"
+      ],
+      "summary": "Builds separate published 1.5.0 and unreleased source documentation editions with edition-aware navigation and search.",
+      "limits": "The published edition stays pinned to its recorded release source; this build does not deploy the candidate, certify its claims, or verify account-side domain routing."
     },
     {
       "path": "scripts/build_formation_corpus.py",
@@ -126,13 +128,14 @@
     },
     {
       "path": "scripts/build_reference.py",
-      "sha256": "c49dc9eae7211ad8aa8db4c559c38a077549b0eaf3e78e0edf5a1d8d6ec242e6",
+      "sha256": "a8dd6a8b1fa74c1e9d2cc5428e55725dcc73cad2525684ff1944a0cc850823ad",
       "symbols": [
+        "_api_section",
         "_cli_section",
         "render"
       ],
-      "summary": "Adds start, explain, certification, and publish command entries to the generated reference pipeline, renames Graph terminology, and renders parser fallback defaults without GitHub runner metadata.",
-      "limits": "The generated reference describes registered calls and environment-free fallback defaults; it does not run the commands, override runtime GitHub defaults, or prove a submission was accepted."
+      "summary": "Generates command and argument inventory from the parser and supported Python exports from verifier.__all__; import-checks a selected pipeline map and marks missing method docstrings.",
+      "limits": "The selected map and source summaries are descriptions, not behavior proofs. Experimental direct submodules and methods lacking docstrings remain outside full descriptive coverage."
     },
     {
       "path": "scripts/build_silo_composition_fixture.py",
