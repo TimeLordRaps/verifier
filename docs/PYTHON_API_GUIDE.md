@@ -11,7 +11,10 @@ build time. For what is promised to stay stable, read
 
 At this unreleased 2.0.0 source coordinate, the Verifier Standard (VSTD) supported
 Python surface is exactly `verifier.__all__` — 69 names. The generated reference
-also lists commands from the live CLI parser. Direct imports from experimental
+also lists public instance methods, class methods, and properties of exported classes,
+plus commands from the live CLI parser. Member descriptions come from source docstrings
+or the reviewed [member summary map](API_MEMBER_SUMMARIES.json); the map does not alter
+runtime source bytes or establish correctness. Direct imports from experimental
 submodules are outside this supported top-level boundary.
 The base package has no required third-party dependencies; seal creation and verification
 need the optional `seal` extra.

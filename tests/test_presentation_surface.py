@@ -8,7 +8,9 @@ The public first impression is a checked repository surface."""
 
 from __future__ import annotations
 
+import enum
 from html.parser import HTMLParser
+import inspect
 import importlib.util
 import json
 from pathlib import Path
@@ -994,6 +996,51 @@ def test_generated_reference_covers_commands_and_top_level_exports() -> None:
     )
     assert "VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM" in page
     assert "Monotone reproduction-fidelity states" in page
+
+
+def test_generated_reference_explains_every_public_class_member() -> None:
+    """A public class member needs a reachable entry and a source-grounded summary."""
+    import verifier
+
+    page = (ROOT / "docs/reference.html").read_text(encoding="utf-8")
+    missing = []
+    for export_name in verifier.__all__:
+        value = getattr(verifier, export_name)
+        if not inspect.isclass(value) or issubclass(value, enum.Enum):
+            continue
+        for member_name, member in inspect.getmembers(value):
+            if member_name.startswith("_"):
+                continue
+            if not (inspect.isfunction(member) or inspect.ismethod(member)
+                    or isinstance(member, property)):
+                continue
+            anchor = f'id="api-{export_name}.{member_name}"'
+            if anchor not in page:
+                missing.append(f"{export_name}.{member_name}")
+    assert not missing, f"reference omits public class members: {missing}"
+    assert "No method docstring is declared." not in page
+    assert "No public member docstring is declared." not in page
+
+
+def test_generated_reference_rejects_stale_member_summary(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A summary detached from the public source surface must fail the build."""
+    path = ROOT / "scripts/build_reference.py"
+    spec = importlib.util.spec_from_file_location("build_reference_stale_map", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    summaries = json.loads((ROOT / "docs/API_MEMBER_SUMMARIES.json").read_text(encoding="utf-8"))
+    source = "src/verifier/core/evidence.py"
+    summaries["source_files"][source]["EvidenceStore.not_a_public_method"] = "Stale description."
+    candidate = tmp_path / "member_summaries.json"
+    candidate.write_text(json.dumps(summaries), encoding="utf-8")
+    monkeypatch.setattr(module, "MEMBER_SUMMARIES", candidate)
+
+    with pytest.raises(module.ReferenceBuildError, match="unused member summaries"):
+        module._api_section()
 
 
 @pytest.mark.parametrize(

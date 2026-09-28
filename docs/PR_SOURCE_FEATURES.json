@@ -131,14 +131,16 @@
     },
     {
       "path": "scripts/build_reference.py",
-      "sha256": "a8dd6a8b1fa74c1e9d2cc5428e55725dcc73cad2525684ff1944a0cc850823ad",
+      "sha256": "7c5592ece3251525571190931f255b4b272c71abb94612225db6057544ecdd7c",
       "symbols": [
         "_api_section",
         "_cli_section",
+        "_member_source",
+        "_member_summaries",
         "render"
       ],
-      "summary": "Generates command and argument inventory from the parser and supported Python exports from verifier.__all__; import-checks a selected pipeline map and marks missing method docstrings.",
-      "limits": "The selected map and source summaries are descriptions, not behavior proofs. Experimental direct submodules and methods lacking docstrings remain outside full descriptive coverage."
+      "summary": "Generates parser-based command inventory and the supported Python export reference, including public class members; binds undocumented members to reviewed summaries keyed by their source file and fails on missing or stale summaries.",
+      "limits": "The selected pipeline map, source docstrings, and reviewed summaries describe declared behavior rather than proving it. Experimental direct submodule imports remain outside the supported top-level reference."
     },
     {
       "path": "scripts/build_silo_composition_fixture.py",
