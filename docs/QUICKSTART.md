@@ -2,14 +2,15 @@
 
 > Reader aid: [concept glossary and primary precedents](CONCEPTS_AND_PRECEDENTS.md).
 
-## 1. Install the public source
+## 1. Install the v2.0.0 candidate source
 
 VSTD requires Python 3.10–3.13. The base runtime has no required third-party
-dependencies.
+dependencies. Use the v2 candidate checkout identified by the documentation
+site's source coordinate. The default branch may not yet contain this candidate
+while its release pull request is under review.
 
 ```bash
-git clone https://github.com/TimeLordRaps/verifier.git
-cd verifier
+# From the v2.0.0 candidate checkout
 python -m pip install .
 ```
 

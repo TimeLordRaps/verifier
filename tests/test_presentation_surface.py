@@ -464,8 +464,10 @@ def test_pages_artifact_serves_every_canonical_schema_id(tmp_path: Path) -> None
     }
     for page in (output / "index.html", output / "guides.html"):
         text = page.read_text(encoding="utf-8")
-        assert "released 2026-09-18" in text
-        assert "unreleased candidate" not in text.lower()
+        assert "v2.0.0 candidate source" in text
+        assert "1.5.0" in text
+        assert text.index("v2.0.0 candidate source") < text.index("1.5.0")
+        assert "not a published package" in text or "not yet published as a" in text
     sources = sorted(
         (
             *ROOT.joinpath("receipts/schema").glob("*.json"),

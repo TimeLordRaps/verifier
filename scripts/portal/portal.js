@@ -85,7 +85,7 @@
         anchor.className = 'search-result';
         anchor.href = root + entry.url;
         const title = document.createElement('strong'); title.textContent = entry.title;
-        const meta = document.createElement('small'); meta.textContent = (entry.edition === 'release' ? 'Released package' : 'Repository source') + ' · ' + entry.page;
+        const meta = document.createElement('small'); meta.textContent = (entry.edition === 'release' ? 'Released 1.5.0 archive' : 'v2.0.0 candidate source') + ' · ' + entry.page;
         const snippet = document.createElement('p');
         const at = Math.max(0, entry.text.toLowerCase().indexOf(tokens[0]) - 55);
         snippet.textContent = (at ? '…' : '') + entry.text.slice(at, at + 170) + (entry.text.length > at + 170 ? '…' : '');

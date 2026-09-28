@@ -66,12 +66,15 @@
     },
     {
       "path": "scripts/build_docs_portal.py",
-      "sha256": "d6175601af86f7fb67db283d5829423630a45fda9b97cb2fd7d6ce493394fd4b",
+      "sha256": "682f99741c9bb216666395de907c8f6ffea4ffaa139f4466484bf79a10a59499",
       "symbols": [
-        "navigation"
+        "build",
+        "home",
+        "navigation",
+        "shell"
       ],
-      "summary": "Builds separate published 1.5.0 and unreleased source documentation editions with edition-aware navigation and search.",
-      "limits": "The published edition stays pinned to its recorded release source; this build does not deploy the candidate, certify its claims, or verify account-side domain routing."
+      "summary": "Makes v2.0.0 candidate source the portal root and default search scope, while rendering a separate tagged 1.5.0 homepage and release navigation.",
+      "limits": "The release edition stays pinned to its tag; the portal remains a preview artifact and does not replace the GitHub Pages deployment, certify v2 claims, or verify domain routing."
     },
     {
       "path": "scripts/build_formation_corpus.py",
@@ -273,6 +276,27 @@
       "symbols": [],
       "summary": "Adds a direct-execution import fallback for the release-version classifier when extracting dated changelog notes.",
       "limits": "The fallback fixes local module resolution; it does not create a release or validate upstream publication."
+    },
+    {
+      "path": "scripts/portal/home.html.in",
+      "sha256": "dd685bcecbf2347614f7e5fc7f29039661ba71ff8579e0bdbc525824d1564d86",
+      "symbols": [],
+      "summary": "Makes the portal landing page lead to the unreleased v2.0.0 source reference and local source installation.",
+      "limits": "The generated reference lists current exports, but landing-page links do not establish complete API explanations or release readiness."
+    },
+    {
+      "path": "scripts/portal/portal.js",
+      "sha256": "005ff90cbebdbb897a0b9fc6fd701bea1702c45417cf767952c542d22445f9c5",
+      "symbols": [],
+      "summary": "Labels search results by v2.0.0 candidate source or released 1.5.0 archive.",
+      "limits": "Search labels depend on the generated edition index and do not verify the underlying technical claims."
+    },
+    {
+      "path": "scripts/portal/release-home.html.in",
+      "sha256": "872b784c5bd91fc74ff1ea4853ad464dd728caecaf9963ba92469d168e1c2ca6",
+      "symbols": [],
+      "summary": "Preserves the tagged 1.5.0 package homepage in its separate archive edition.",
+      "limits": "The tagged source build does not prove equivalence to the published distribution or future archive availability."
     },
     {
       "path": "scripts/preflight.py",

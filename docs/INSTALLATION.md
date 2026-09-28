@@ -3,11 +3,13 @@
 Verifier implements the Verifier Standard (VSTD), a verification-domain language for
 portable, bounded, refutable evidence about computational claims.
 
-## Install the released package
+## Install the v2.0.0 candidate source
 
 Use Python 3.10 or newer in a fresh virtual environment. The base runtime has no
-required third-party dependencies. These instructions pin release **1.5.0** from
-the Python Package Index (PyPI).
+required third-party dependencies. Use the v2.0.0 source revision identified in
+the GitHub Pages `documentation-coordinate.json` or the portal preview's
+`portal-coordinate.json`. Version 2.0.0 is not yet a
+published Python Package Index (PyPI) release. From that source checkout:
 
 ```bash
 python -m venv .venv
@@ -28,12 +30,12 @@ source .venv/bin/activate
 Install and inspect the version:
 
 ```bash
-python -m pip install verifier-standard==1.5.0
+python -m pip install .
 python -c "import verifier; print(verifier.__version__)"
 vstd --help
 ```
 
-The version command should print `1.5.0`. The distribution name is
+The version command should print `2.0.0` for this candidate source. The distribution name is
 `verifier-standard`; the Python import is `verifier`; the cross-platform command
 is `vstd`. On Windows, the name `verifier` can resolve to Windows Driver Verifier,
 so use `vstd` for this package.
@@ -70,11 +72,18 @@ See the [API stability policy](API_STABILITY.md) before depending on an export.
 
 ## Choose a documentation coordinate
 
-The documentation portal provides a released `1.5.0` reference generated from the
-corresponding Git tag and a separate current repository reference. Repository
-source can include commands that the released distribution does not yet contain.
-Use the version selector or the **Package reference · 1.5.0** navigation group when
-working with the package above.
+The root documentation and generated reference describe the v2.0.0 candidate
+source. They are tied to the repository revision in the site's build metadata.
+Read the [candidate scope and migration guide](V2_CANDIDATE.md) and
+[open contradictions](../TIME.md) before relying on candidate behavior.
+
+The separately built portal preview has a version selector and a tagged archive
+for the published `1.5.0` package. If you need that release, install
+`verifier-standard==1.5.0` from PyPI and use its tagged
+[GitHub release](https://github.com/TimeLordRaps/verifier/releases/tag/v1.5.0)
+and corresponding reference. The GitHub Pages build does not include the portal
+archive.
+Do not mix examples or API coverage across these coordinates.
 
 To work on repository changes, follow the
 [repository walkthrough](REPOSITORY_WALKTHROUGH.md). Avoid mixing an editable

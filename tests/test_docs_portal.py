@@ -132,22 +132,33 @@ def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path)
         assert (site / PORTAL.RELEASE_PATH / route).is_file()
 
     groups = dict(PORTAL.navigation("", site))
-    assert [target for _, target in groups["Tutorials"]] == [
-        "docs/tutorials/SEAL_AN_ARTIFACT.html",
-        "docs/tutorials/PUBLISH_A_SILO.html",
-        "docs/PYTHON_API_GUIDE.html",
+    assert groups["v2.0.0 source reference"][:2] == [
+        ("Commands", "reference.html#cli"),
+        ("Python exports", "reference.html#api"),
     ]
+    assert ("Python API guide", "docs/PYTHON_API_GUIDE.html") in groups["v2.0.0 source reference"]
     assert ("Typical use cases", "docs/USE_CASES.html") in groups["Start here"]
+    assert groups["Published archive · 1.5.0"][0] == ("Release introduction", PORTAL.RELEASE_PATH + "index.html")
 
     candidate = groups["Version 2.0.0 candidate"]
     assert ("Candidate scope and migration", "docs/V2_CANDIDATE.html") in candidate
     assert ("Open contradictions", "project/TIME.html") in candidate
     assert "Version 2.0.0 candidate" not in dict(PORTAL.navigation(PORTAL.RELEASE_PATH, site))
-    assert "Version 2.0.0 candidate" in (site / "index.html").read_text(encoding="utf-8")
-    assert "Version 2.0.0 candidate" not in (site / PORTAL.RELEASE_PATH / "index.html").read_text(encoding="utf-8")
+    current_home = (site / "index.html").read_text(encoding="utf-8")
+    release_home = (site / PORTAL.RELEASE_PATH / "index.html").read_text(encoding="utf-8")
+    assert "v2.0.0 candidate source" in current_home
+    assert 'href="reference.html#api"' in current_home
+    assert 'href="releases/1.5.0/reference.html#api"' not in current_home.split('<div class="portal-content">', 1)[1]
+    assert 'value="repository" selected' in current_home
+    assert 'python -m pip install .' in current_home
+    assert "verifier-standard==1.5.0" not in current_home
+    assert "Version 2.0.0 candidate" not in release_home
+    assert 'value="release" selected' in release_home
+    assert 'verifier-standard==1.5.0' in release_home
+    assert 'href="../../releases/1.5.0/docs/INSTALLATION.html"' in release_home
 
     released = dict(PORTAL.navigation(PORTAL.RELEASE_PATH, site))
-    for _, target in released["Tutorials"] + [released["Start here"][-1]]:
+    for _, target in released["Tutorials"] + released["Start here"][1:]:
         assert target.startswith(PORTAL.RELEASE_PATH)
 
     entries = json.loads((site / "search-index.json").read_text(encoding="utf-8"))

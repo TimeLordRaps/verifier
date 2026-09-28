@@ -142,10 +142,45 @@ def navigation(prefix: str, output: Path) -> list[tuple[str, list[tuple[str, str
     def route(path: str) -> str:
         return prefix + path if (output / (prefix + path)).exists() else path
 
+    if not prefix:
+        return [
+            ("Start here", [("Introduction", "index.html"),
+                            ("Install v2.0.0 candidate source", "docs/INSTALLATION.html"),
+                            ("Your first receipt", "docs/FIRST_RECEIPT.html"),
+                            ("Typical use cases", "docs/USE_CASES.html")]),
+            ("v2.0.0 source reference", [("Commands", "reference.html#cli"),
+                                        ("Python exports", "reference.html#api"),
+                                        ("Python API guide", "docs/PYTHON_API_GUIDE.html"),
+                                        ("API stability", "docs/API_STABILITY.html")]),
+            ("Version 2.0.0 candidate", [
+                ("Candidate scope and migration", "docs/V2_CANDIDATE.html"),
+                ("Grounded certification", "docs/GROUNDED_CERTIFICATION.html"),
+                ("Gate automation", "docs/GATE_AUTOMATION.html"),
+                ("Open contradictions", "project/TIME.html"),
+            ]),
+            ("Tutorials", [("Seal an artifact", "docs/tutorials/SEAL_AN_ARTIFACT.html"),
+                           ("Publish a silo", "docs/tutorials/PUBLISH_A_SILO.html")]),
+            ("Understand the model", [("Concepts & precedents", "docs/CONCEPTS_AND_PRECEDENTS.html"),
+                                      ("Claims & limits", "docs/CLAIMS_AND_LIMITS.html"),
+                                      ("Numbered profiles", "standard/index.html"),
+                                      ("All guides", "guides.html")]),
+            ("Work in the repository", [("Repository walkthrough", "docs/REPOSITORY_WALKTHROUGH.html"),
+                                        ("Component catalog", "components/index.html"),
+                                        ("Architecture", "docs/ARCHITECTURE.html"),
+                                        ("Experiments", "experiments/index.html")]),
+            ("Published archive · " + RELEASE, [("Release introduction", RELEASE_PATH + "index.html"),
+                                                ("Release commands", RELEASE_PATH + "reference.html#cli"),
+                                                ("Release Python exports", RELEASE_PATH + "reference.html#api")]),
+            ("Contribute", [("Contribution guidelines", "project/CONTRIBUTING.html"),
+                            ("Security reporting", "project/SECURITY.html"),
+                            ("Roadmap", "project/ROADMAP.html"),
+                            ("Changelog", "project/CHANGELOG.html")]),
+        ]
+
     groups = [
         ("Start here", [("Introduction", prefix + "index.html"),
-                         ("Install Verifier", "docs/INSTALLATION.html"),
-                         ("Your first receipt", "docs/FIRST_RECEIPT.html"),
+                         ("Install Verifier", route("docs/INSTALLATION.html")),
+                         ("Your first receipt", route("docs/FIRST_RECEIPT.html")),
                          ("Typical use cases", route("docs/USE_CASES.html"))]),
         ("Tutorials", [("Seal an artifact", route("docs/tutorials/SEAL_AN_ARTIFACT.html")),
                        ("Publish a silo", route("docs/tutorials/PUBLISH_A_SILO.html")),
@@ -167,18 +202,16 @@ def navigation(prefix: str, output: Path) -> list[tuple[str, list[tuple[str, str
                         ("Roadmap", "project/ROADMAP.html"),
                         ("Changelog", "project/CHANGELOG.html")]),
     ]
-    if not prefix:
-        groups.insert(4, ("Version 2.0.0 candidate", [
-            ("Candidate scope and migration", "docs/V2_CANDIDATE.html"),
-            ("Grounded certification", "docs/GROUNDED_CERTIFICATION.html"),
-            ("Gate automation", "docs/GATE_AUTOMATION.html"),
-            ("Open contradictions", "project/TIME.html"),
-        ]))
     return groups
 
 
-def home() -> str:
-    return (ASSETS / "home.html.in").read_text(encoding="utf-8").replace("{{release}}", RELEASE).replace("{{release_path}}", RELEASE_PATH)
+def home(stable: bool) -> str:
+    template = "release-home.html.in" if stable else "home.html.in"
+    content = (ASSETS / template).read_text(encoding="utf-8")
+    if stable:
+        for section in ("docs/", "project/"):
+            content = content.replace('href="@/' + section, 'href="@/{{release_path}}' + section)
+    return content.replace("{{release}}", RELEASE).replace("{{release_path}}", RELEASE_PATH)
 
 
 def shell(content: str, *, route: str, title: str, outline: list[tuple[str, str]],
@@ -200,11 +233,11 @@ def shell(content: str, *, route: str, title: str, outline: list[tuple[str, str]
                       "".join(navlink(name, target) for name, target in entries) + "</section>"
                       for label, entries in groups)
     toc = "".join(f'<a href="#{anchor}">{html.escape(label)}</a>' for anchor, label in outline)
-    coordinate = "Released package " + RELEASE if stable else "Repository documentation"
+    coordinate = "Released package " + RELEASE if stable else "v2.0.0 candidate source"
     other = route.removeprefix(RELEASE_PATH) if stable else RELEASE_PATH + route
     if not (output / other).is_file():
         other = "index.html" if stable else RELEASE_PATH + "index.html"
-    version_links = navlink("Released " + RELEASE, route if stable else other) + navlink("Repository source", other if stable else route)
+    version_links = navlink("v2.0.0 candidate source", other if stable else route) + navlink("Released " + RELEASE + " archive", route if stable else other)
     source = REPOSITORY + "/tree/" + source_ref
     known = [target for _, entries in groups for _, target in entries if "#" not in target]
     next_link = ""
@@ -234,12 +267,12 @@ def shell(content: str, *, route: str, title: str, outline: list[tuple[str, str]
 <details class="version-picker"><summary><span class="version-dot"></span>{coordinate}<span aria-hidden="true">⌄</span></summary><div>{version_links}</div></details>
 {sidebar}<div class="sidebar-foot">Verifier Standard (VSTD)<br>Open source · Apache-2.0</div></aside>
 <main id="document" class="portal-main"><span id="top"></span><div class="page-context"><a href="{link('index.html')}">Documentation</a><span>/</span><span>{html.escape(title)}</span></div>
-<div class="edition-note {'stable' if stable else ''}"><span class="version-dot"></span><strong>{coordinate}</strong><span>{'Source pinned to ' + RELEASE_TAG if stable else 'May include additions beyond the released package'}</span></div>
+<div class="edition-note {'stable' if stable else ''}"><span class="version-dot"></span><strong>{coordinate}</strong><span>{'Source pinned to ' + RELEASE_TAG if stable else 'Unreleased source; inspect the source coordinate and open contradictions before use'}</span></div>
 <div class="portal-content">{content}</div>{next_link}
 <footer class="portal-footer"><span>Maintainer-led alpha · No standards-body endorsement claimed.</span><a href="{source}">Source coordinate ↗</a></footer></main>
 <aside class="portal-toc" aria-label="On this page"><p>On this page</p>{toc}<div class="toc-extra"><a href="{REPOSITORY}/issues/new/choose">Improve these docs ↗</a><a href="https://vstd-labs.com">About VSTD Labs ↗</a></div></aside></div>
-<dialog class="search-dialog" aria-label="Search documentation"><form method="dialog"><label class="sr-only" for="docs-search">Search documentation</label><input id="docs-search" type="search" placeholder="Search concepts, commands, Python exports…" autocomplete="off"><button aria-label="Close search">Esc</button></form><div class="search-options"><label for="search-edition">Search in</label><select id="search-edition"><option value="all">All documentation</option><option value="release">Released {RELEASE}</option><option value="repository">Repository source</option></select></div><p class="search-status" role="status" aria-live="polite">Type to search.</p><div class="search-results"></div></dialog>
-<noscript><p class="no-script">Search requires JavaScript. Browse the <a href="{link('guides.html')}">guide index</a> and <a href="{link(RELEASE_PATH + 'reference.html')}">package reference</a>.</p></noscript></body></html>'''
+<dialog class="search-dialog" aria-label="Search documentation"><form method="dialog"><label class="sr-only" for="docs-search">Search documentation</label><input id="docs-search" type="search" placeholder="Search concepts, commands, Python exports…" autocomplete="off"><button aria-label="Close search">Esc</button></form><div class="search-options"><label for="search-edition">Search in</label><select id="search-edition"><option value="repository"{'' if stable else ' selected'}>v2.0.0 candidate source</option><option value="release"{' selected' if stable else ''}>Released {RELEASE} archive</option><option value="all">All documentation</option></select></div><p class="search-status" role="status" aria-live="polite">Type to search.</p><div class="search-results"></div></dialog>
+<noscript><p class="no-script">Search requires JavaScript. Browse the <a href="{link(prefix + 'guides.html')}">guide index</a> and <a href="{link(prefix + 'reference.html')}">{'released package' if stable else 'v2.0.0 source'} reference</a>.</p></noscript></body></html>'''
 
 
 def search_entries(content: str, route: str, title: str) -> list[dict[str, str]]:
@@ -294,7 +327,7 @@ def build(output: Path, *, base_url: str = SITE) -> dict[str, object]:
                       lambda m: 'href="' + "../" * depth + prefix + m.group(1) + '"', page)
         content, title, outline = prepare_content(page)
         if route in ("index.html", RELEASE_PATH + "index.html"):
-            content = home()
+            content = home(bool(prefix))
             content = content.replace('href="@/', 'href="' + "../" * depth)
             title = "Introduction"
             outline = [("start-building", "Start building"), ("explore", "Explore the documentation"), ("claim-boundaries", "Know what a result means")]
