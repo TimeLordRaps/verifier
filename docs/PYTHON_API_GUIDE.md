@@ -9,14 +9,17 @@ This guide is organized by task. For exact signatures of every export, read the
 build time. For what is promised to stay stable, read
 [API stability](API_STABILITY.md). This page shows how the pieces fit together.
 
-The Verifier Standard (VSTD) supported surface is exactly `verifier.__all__` — 53 names.
+At this unreleased 2.0.0 source coordinate, the Verifier Standard (VSTD) supported
+Python surface is exactly `verifier.__all__` — 69 names. The generated reference
+also lists commands from the live CLI parser. Direct imports from experimental
+submodules are outside this supported top-level boundary.
 The base package has no required third-party dependencies; seal creation and verification
 need the optional `seal` extra.
 
 ```python
 import verifier
 
-verifier.__version__           # '1.5.0'
+verifier.__version__           # source version (2.0.0 in this unreleased checkout)
 verifier.__standard__          # 'VSTD-5'
 verifier.__standard_status__   # 'PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM'
 ```
@@ -248,6 +251,74 @@ mechanism with a second copy. A mechanism that mutates its invocation copy yield
 rather than a bound result. If no digestible snapshot can be taken,
 `EvidenceBindingError` is raised before execution rather than a result being invented.
 
+## Assess a grounded domain
+
+The 2.0.0 candidate exposes six top-level domain names: `domain_catalog`,
+`domain_policy`, `domain_request`, `build_domain_certificate`,
+`recheck_domain_certificate`, and `NativeDomainAdapter`. Their supported
+inputs and exclusions are in the [domain contract](../src/verifier/standard/DOMAIN_GROUNDING.md).
+The catalogue identifies the available domain propositions; it does not establish
+any proposition for a particular artifact.
+
+Given a reviewed evidence bundle, select the request and policy independently of
+any certificate you receive:
+
+```python
+from verifier import (
+    build_domain_certificate, domain_policy, domain_request,
+    recheck_domain_certificate,
+)
+
+request = domain_request(evidence_bundle)
+policy = domain_policy(trust_roots=["example:reviewed-checker"])
+certificate = build_domain_certificate(request, evidence_bundle, policy=policy)
+result = recheck_domain_certificate(
+    certificate, expected_request=request, policy=policy,
+)
+```
+
+`evidence_bundle` here is the independently selected domain evidence, not data
+accepted from the certificate. The [runnable domain specimens](../examples/domain_grounding.py)
+show complete inputs. A domain `PASS` is limited to its executed, retained checks;
+the certificate keeps object-profile conformance `NOT_ESTABLISHED`.
+`NativeDomainAdapter` is for explicit registration in a `VerificationSession`;
+registration alone grants no authority or checker qualification.
+
+## Certify individual object-profile obligations
+
+The candidate also exports `ProfileObligation`, `obligation_catalog`,
+`CertificationRequest`, `CertificationPolicy`, `MechanismAdmission`,
+`NativeCertificationMechanism`, `CertificationError`,
+`assess_grounded_certification`, `build_grounded_certificate`, and
+`recheck_grounded_certificate`. The [grounded certification guide](GROUNDED_CERTIFICATION.md)
+maps the 47 separate obligation coordinates across object profiles 1–5 and
+states which six have a native checker. Other obligations require admitted
+mechanisms that evaluate their exact propositions.
+
+The [executable Python specimen](../examples/grounded_certification.py) constructs
+an external request, policy, evidence store, and registered session. Its core
+calls are:
+
+```python
+from verifier import (
+    NativeCertificationMechanism, build_grounded_certificate,
+    recheck_grounded_certificate,
+)
+from verifier.core.certificate import canonical_digest
+
+certificate = build_grounded_certificate(request, policy=policy, session=session)
+rechecked = recheck_grounded_certificate(
+    certificate, policy=policy, expected_request_digest=canonical_digest(request.to_dict()),
+    mechanisms=(NativeCertificationMechanism(),),
+)
+```
+
+The consumer supplies its own expected request digest, admission policy, and
+mechanisms. The digest helper is a direct module import used by the specimen,
+not a top-level supported export. A partial certificate preserves `UNKNOWN`; one passing obligation
+does not establish its full numbered profile. The specimen establishes only
+obligation 1.1, then exits 2 because the rest of VSTD-1 remains `UNKNOWN`.
+
 ## Establish depth and replay it offline
 
 `establish_vstd4` reruns every bound mechanism and establishes VSTD-4 only if all pass;
@@ -342,6 +413,8 @@ isinstance(cert, DecisionCertificate)  # True
 | Graph profiles | `ProvenanceHypergraph`, `establish_graph_level`, `graph_collection_binding_digest`, `build_evidence_bound_graph_level_record`, `recheck_evidence_bound_graph_level_record` |
 | Assurance | `AssuranceLedger`, `ObligationCoordinate`, `recheck_assurance_log` |
 | Certificates | `DecisionCertificate`, `certificate_from_canonical_bytes` |
+| Grounded domains | `NativeDomainAdapter`, `domain_catalog`, `domain_policy`, `domain_request`, `build_domain_certificate`, `recheck_domain_certificate` |
+| Grounded certification | `CertificationError`, `CertificationPolicy`, `CertificationRequest`, `MechanismAdmission`, `ProfileObligation`, `obligation_catalog`, `NativeCertificationMechanism`, `assess_grounded_certification`, `build_grounded_certificate`, `recheck_grounded_certificate` |
 
 The experimental artifact-network surface is reached through
 `verifier.interoperability.network` rather than the top-level package, because its `0.1`

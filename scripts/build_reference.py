@@ -6,9 +6,10 @@ Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
 
 Generate the public CLI and top-level API reference page from the live implementation.
 
-Nothing on the generated page is hand-written prose about behaviour: every command,
-option, top-level export, signature, and listed pipeline edge is read out of the
-importable package at build time. `scripts/check_presentation.py` and
+CLI names and options come from the argument parser; top-level Python names and
+signatures come from the importable package. The pipeline map is a selected,
+manually described set of import-checked dispatch targets, and summaries come
+from source docstrings. `scripts/check_presentation.py` and
 `tests/test_presentation_surface.py` regenerate this file and fail closed when the
 committed page drifts from the code."""
 
@@ -356,9 +357,10 @@ def _api_section() -> str:
                     member_signature = f"{member_name}{inspect.signature(member)}"
                 except (TypeError, ValueError):
                     member_signature = member_name
+                method_summary = _summary(member) or "No method docstring is declared."
                 rows += (
                     f"<tr><td><code>{_esc(member_signature)}</code></td>"
-                    f"<td>{_esc(_summary(member))}</td></tr>\n"
+                    f"<td>{_esc(method_summary)}</td></tr>\n"
                 )
             if rows:
                 members = (
@@ -478,19 +480,21 @@ def render() -> str:
   <main id="top">
     <div class="wrap ref-hero">
       <div class="eyebrow">Reference &middot; {_esc(source_coordinate)} &middot; {_esc(standard)} {_esc(standard_status)}</div>
-      <h1>Inspect the whole pipeline.</h1>
+      <h1>Inspect the supported surface.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
       Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); and YAML Ain't Markup Language
       (YAML).</p>
-      <p class="lead">Every command, argument, top-level export, and listed dispatch edge below
-      is read out of the installed package when this page is built, by
-      <code>scripts/build_reference.py</code>, and the presentation tests fail closed when the
-      committed page drifts &mdash; so it cannot describe behaviour the implementation no
-      longer has.</p>
+      <p class="lead">The command and argument inventory comes from the parser; the Python
+      export inventory and signatures come from <code>verifier.__all__</code> at build time.
+      The pipeline map selects import-checked implementation targets. Summaries come from
+      source docstrings or the map's reviewed prose. Presentation tests detect generated
+      page drift from these sources; they do not prove the described behaviour correct.</p>
       <p class="status">This page states the declared public surface of one implementation. It
-      does not establish that any individual claim checked by these commands is true, nor that
-      an external implementation exists.</p>
+      does not cover experimental direct submodule imports. A method marked "No method
+      docstring is declared" has a signature here but no descriptive contract. The page
+      does not establish that an individual claim checked by these commands is true, nor
+      that an external implementation exists.</p>
       <div class="actions">
         <a class="button primary" href="#pipeline">Pipeline map</a>
         <a class="button" href="#cli">CLI reference</a>
@@ -502,7 +506,7 @@ def render() -> str:
     <section id="pipeline">
       <div class="wrap">
         <div class="eyebrow">Pipeline</div>
-        <h2>Command to implementation, without a gap.</h2>
+        <h2>Selected command-to-implementation paths.</h2>
         <p class="section-lead">Each entry point below is imported while this page is built. A
         rename, move, or deletion fails the build instead of publishing a stale map.</p>
         <div class="ref-table">{_pipeline_section()}</div>
