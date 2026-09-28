@@ -66,10 +66,15 @@
     },
     {
       "path": "scripts/build_docs_portal.py",
-      "sha256": "53a94ff7af277afe5d029ee8a8b127ce012340a57c22984a0891953aa9009231",
-      "symbols": [],
-      "summary": "Pins the documentation portal release links to version 1.5.0 and its recorded commit.",
-      "limits": "This is a link/source pin for the already dated release and does not make the 2.0.0 candidate public."
+      "sha256": "682f99741c9bb216666395de907c8f6ffea4ffaa139f4466484bf79a10a59499",
+      "symbols": [
+        "build",
+        "home",
+        "navigation",
+        "shell"
+      ],
+      "summary": "Makes v2.0.0 candidate source the portal root and default search scope, while rendering a separate tagged 1.5.0 homepage and release navigation.",
+      "limits": "The release edition stays pinned to its tag; the portal remains a preview artifact and does not replace the GitHub Pages deployment, certify v2 claims, or verify domain routing."
     },
     {
       "path": "scripts/build_formation_corpus.py",
@@ -126,13 +131,16 @@
     },
     {
       "path": "scripts/build_reference.py",
-      "sha256": "c49dc9eae7211ad8aa8db4c559c38a077549b0eaf3e78e0edf5a1d8d6ec242e6",
+      "sha256": "7c5592ece3251525571190931f255b4b272c71abb94612225db6057544ecdd7c",
       "symbols": [
+        "_api_section",
         "_cli_section",
+        "_member_source",
+        "_member_summaries",
         "render"
       ],
-      "summary": "Adds start, explain, certification, and publish command entries to the generated reference pipeline, renames Graph terminology, and renders parser fallback defaults without GitHub runner metadata.",
-      "limits": "The generated reference describes registered calls and environment-free fallback defaults; it does not run the commands, override runtime GitHub defaults, or prove a submission was accepted."
+      "summary": "Generates parser-based command inventory and the supported Python export reference, including public class members; binds undocumented members to reviewed summaries keyed by their source file and fails on missing or stale summaries.",
+      "limits": "The selected pipeline map, source docstrings, and reviewed summaries describe declared behavior rather than proving it. Experimental direct submodule imports remain outside the supported top-level reference."
     },
     {
       "path": "scripts/build_silo_composition_fixture.py",
@@ -178,7 +186,7 @@
     },
     {
       "path": "scripts/check_pr_description.py",
-      "sha256": "8b600df838fe8ac220f6df2ee2795f0834afcf0c482639112a424651a274c57c",
+      "sha256": "6d6c803b7adcabfda035e6abb664a23c320e4e6bff7e7621bd8554af010a8b6b",
       "symbols": [
         "_fail",
         "accountable_domain_inventory",
@@ -198,8 +206,8 @@
         "tracked_file_count",
         "use_commit"
       ],
-      "summary": "Binds pull-request prose to selected source/commit bytes, reviewed source rows, declared adapters and exact inventory/head fields; recognizes current namespace coordinates through tier8 and keeps the standalone fallback inventory in tested parity. Unknown governance-tier object names now fail.",
-      "limits": "Prose/tree consistency does not establish correctness, review acceptance, full object certification or release readiness. Historical adapter ranges retain their own meanings; the fallback remains a tested specification copy for standalone fixtures."
+      "summary": "Binds pull-request prose to selected source/commit bytes, reviewed source rows, declared adapters and exact inventory/head fields. It now checks up to two distinct ancestor-base source blocks against the same head for stacked pull requests, while retaining current namespace and fallback inventory checks.",
+      "limits": "Every supplied source block is checked for completeness, but prose/tree consistency does not establish correctness, review acceptance, full object certification or release readiness. Historical adapter ranges retain their meanings; the fallback remains a tested specification copy."
     },
     {
       "path": "scripts/check_pr_description_changed.py",
@@ -270,6 +278,27 @@
       "symbols": [],
       "summary": "Adds a direct-execution import fallback for the release-version classifier when extracting dated changelog notes.",
       "limits": "The fallback fixes local module resolution; it does not create a release or validate upstream publication."
+    },
+    {
+      "path": "scripts/portal/home.html.in",
+      "sha256": "dd685bcecbf2347614f7e5fc7f29039661ba71ff8579e0bdbc525824d1564d86",
+      "symbols": [],
+      "summary": "Makes the portal landing page lead to the unreleased v2.0.0 source reference and local source installation.",
+      "limits": "The generated reference lists current exports, but landing-page links do not establish complete API explanations or release readiness."
+    },
+    {
+      "path": "scripts/portal/portal.js",
+      "sha256": "005ff90cbebdbb897a0b9fc6fd701bea1702c45417cf767952c542d22445f9c5",
+      "symbols": [],
+      "summary": "Labels search results by v2.0.0 candidate source or released 1.5.0 archive.",
+      "limits": "Search labels depend on the generated edition index and do not verify the underlying technical claims."
+    },
+    {
+      "path": "scripts/portal/release-home.html.in",
+      "sha256": "872b784c5bd91fc74ff1ea4853ad464dd728caecaf9963ba92469d168e1c2ca6",
+      "symbols": [],
+      "summary": "Preserves the tagged 1.5.0 package homepage in its separate archive edition.",
+      "limits": "The tagged source build does not prove equivalence to the published distribution or future archive availability."
     },
     {
       "path": "scripts/preflight.py",

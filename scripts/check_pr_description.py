@@ -156,14 +156,14 @@ def source_feature_inventory(root: Path, base: str, target: str | None = None) -
 
 def check_source_grounding(body: str, findings: list[str], *, root: Path = ROOT,
                            base: str = "origin/main", target: str | None = None) -> None:
-    """Require one reviewable record per changed source path, with no stale exclusions."""
+    """Require complete source records for each declared stacked review base."""
     try:
         expected = source_feature_inventory(root, base, target)
         if not expected["files"]:
             return
         blocks = re.findall(r"^```vstd-source-features\s*\n(.*?)^```[ \t]*$", body, re.MULTILINE | re.DOTALL)
-        if len(blocks) != 1:
-            raise ValueError("exactly one vstd-source-features block is required")
+        if not 1 <= len(blocks) <= 2:
+            raise ValueError("one or two vstd-source-features blocks are required")
         def unique(pairs: list) -> dict:
             result = {}
             for key, value in pairs:
@@ -171,62 +171,76 @@ def check_source_grounding(body: str, findings: list[str], *, root: Path = ROOT,
                     raise ValueError("duplicate source coverage field")
                 result[key] = value
             return result
-        record = json.loads(blocks[0], object_pairs_hook=unique)
-        if type(record) is not dict or set(record) not in (
-            {"base", "target", "files"}, {"base", "target", "manifest"}
-        ):
-            raise ValueError("invalid source coverage record fields")
-        if any(record[key] != expected[key] for key in ("base", "target")):
+        records = [json.loads(block, object_pairs_hook=unique) for block in blocks]
+        bases: set[str] = set()
+        for record in records:
+            if type(record) is not dict or set(record) not in (
+                {"base", "target", "files"}, {"base", "target", "manifest"}
+            ):
+                raise ValueError("invalid source coverage record fields")
+            declared_base = record["base"]
+            if (type(declared_base) is not str
+                    or not re.fullmatch(r"[0-9a-f]{40}", declared_base)
+                    or declared_base in bases):
+                raise ValueError("source coverage bases must be distinct commit identifiers")
+            bases.add(declared_base)
+        if expected["base"] not in bases:
             raise ValueError("source coverage base or target is stale")
-        if "manifest" in record:
-            locator = record["manifest"]
-            if (type(locator) is not dict or set(locator) != {"path", "sha256"}
-                    or locator["path"] != SOURCE_FEATURE_MANIFEST
-                    or type(locator["sha256"]) is not str
-                    or not re.fullmatch(r"[0-9a-f]{64}", locator["sha256"])):
-                raise ValueError("source coverage manifest locator is invalid")
-            if target is None:
-                manifest_path = root / SOURCE_FEATURE_MANIFEST
-                if (manifest_path.is_symlink() or not manifest_path.is_file()
-                        or not manifest_path.resolve().is_relative_to(root.resolve())
-                        or manifest_path.stat().st_size > MAX_SOURCE_FEATURE_MANIFEST_BYTES):
-                    raise ValueError("source coverage manifest must be a bounded regular file")
-                raw = manifest_path.read_bytes()
-            else:
-                object_name = expected["target"] + ":" + SOURCE_FEATURE_MANIFEST
-                size = subprocess.run(["git", "-C", str(root), "cat-file", "-s", object_name],
-                                      capture_output=True, timeout=30)
-                size.check_returncode()
-                if int(size.stdout) > MAX_SOURCE_FEATURE_MANIFEST_BYTES:
-                    raise ValueError("source coverage manifest byte bound exceeded")
-                archived = subprocess.run(["git", "-C", str(root), "show", object_name],
+
+        for record in records:
+            checked = (expected if record["base"] == expected["base"] else
+                       source_feature_inventory(root, record["base"], target))
+            if record["target"] != checked["target"]:
+                raise ValueError("source coverage base or target is stale")
+            if "manifest" in record:
+                locator = record["manifest"]
+                if (type(locator) is not dict or set(locator) != {"path", "sha256"}
+                        or locator["path"] != SOURCE_FEATURE_MANIFEST
+                        or type(locator["sha256"]) is not str
+                        or not re.fullmatch(r"[0-9a-f]{64}", locator["sha256"])):
+                    raise ValueError("source coverage manifest locator is invalid")
+                if target is None:
+                    manifest_path = root / SOURCE_FEATURE_MANIFEST
+                    if (manifest_path.is_symlink() or not manifest_path.is_file()
+                            or not manifest_path.resolve().is_relative_to(root.resolve())
+                            or manifest_path.stat().st_size > MAX_SOURCE_FEATURE_MANIFEST_BYTES):
+                        raise ValueError("source coverage manifest must be a bounded regular file")
+                    raw = manifest_path.read_bytes()
+                else:
+                    object_name = checked["target"] + ":" + SOURCE_FEATURE_MANIFEST
+                    size = subprocess.run(["git", "-C", str(root), "cat-file", "-s", object_name],
                                           capture_output=True, timeout=30)
-                archived.check_returncode()
-                raw = archived.stdout
-            if hashlib.sha256(raw).hexdigest() != locator["sha256"]:
-                raise ValueError("source coverage manifest digest differs")
-            document = json.loads(raw.decode("utf-8"), object_pairs_hook=unique)
-            if type(document) is not dict or set(document) != {"base", "files"}:
-                raise ValueError("source coverage manifest fields are invalid")
-            record = {"base": document["base"], "target": record["target"],
-                      "files": document["files"]}
-            if record["base"] != expected["base"]:
-                raise ValueError("source coverage manifest base differs")
-        if type(record["files"]) is not list:
-            raise ValueError("source coverage files must be a list")
-        observed = {}
-        for row in record["files"]:
-            if type(row) is not dict or set(row) != {"path", "sha256", "symbols", "summary", "limits"}:
-                raise ValueError("each source row needs path, sha256, symbols, summary and limits")
-            if type(row["path"]) is not str or row["path"] in observed:
-                raise ValueError("invalid or duplicate source path")
-            if any(type(row[key]) is not str or not row[key].strip() for key in ("summary", "limits")):
-                raise ValueError("source coverage requires a behavioral summary and explicit limits")
-            observed[row["path"]] = {key: row[key] for key in ("path", "sha256", "symbols")}
-        wanted = {row["path"]: row for row in expected["files"]}
-        for path in sorted(set(wanted) | set(observed)):
-            if wanted.get(path) != observed.get(path):
-                _fail(findings, f"source feature coverage missing, stale or extraneous: {path}")
+                    size.check_returncode()
+                    if int(size.stdout) > MAX_SOURCE_FEATURE_MANIFEST_BYTES:
+                        raise ValueError("source coverage manifest byte bound exceeded")
+                    archived = subprocess.run(["git", "-C", str(root), "show", object_name],
+                                              capture_output=True, timeout=30)
+                    archived.check_returncode()
+                    raw = archived.stdout
+                if hashlib.sha256(raw).hexdigest() != locator["sha256"]:
+                    raise ValueError("source coverage manifest digest differs")
+                document = json.loads(raw.decode("utf-8"), object_pairs_hook=unique)
+                if type(document) is not dict or set(document) != {"base", "files"}:
+                    raise ValueError("source coverage manifest fields are invalid")
+                record = {"base": document["base"], "target": record["target"],
+                          "files": document["files"]}
+                if record["base"] != checked["base"]:
+                    raise ValueError("source coverage manifest base differs")
+            if type(record["files"]) is not list:
+                raise ValueError("source coverage files must be a list")
+            observed = {}
+            for row in record["files"]:
+                if type(row) is not dict or set(row) != {"path", "sha256", "symbols", "summary", "limits"}:
+                    raise ValueError("each source row needs path, sha256, symbols, summary and limits")
+                if type(row["path"]) is not str or row["path"] in observed:
+                    raise ValueError("invalid or duplicate source path")
+                if any(type(row[key]) is not str or not row[key].strip() for key in ("summary", "limits")):
+                    raise ValueError("source coverage requires a behavioral summary and explicit limits")
+                observed[row["path"]] = {key: row[key] for key in ("path", "sha256", "symbols")}
+            wanted = {row["path"]: row for row in checked["files"]}
+            for path in sorted(set(wanted) | set(observed)):
+                if wanted.get(path) != observed.get(path):
+                    _fail(findings, f"source feature coverage missing, stale or extraneous: {path}")
     except (OSError, ValueError, SyntaxError, UnicodeError, subprocess.SubprocessError, tarfile.TarError) as error:
         _fail(findings, f"source feature grounding failed: {error}")
 

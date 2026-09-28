@@ -36,19 +36,21 @@
   <main id="top">
     <div class="wrap ref-hero">
       <div class="eyebrow">Reference &middot; UNRELEASED SOURCE · base package version 2.0.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
-      <h1>Inspect the whole pipeline.</h1>
+      <h1>Inspect the supported surface.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
       Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); and YAML Ain't Markup Language
       (YAML).</p>
-      <p class="lead">Every command, argument, top-level export, and listed dispatch edge below
-      is read out of the installed package when this page is built, by
-      <code>scripts/build_reference.py</code>, and the presentation tests fail closed when the
-      committed page drifts &mdash; so it cannot describe behaviour the implementation no
-      longer has.</p>
+      <p class="lead">The command and argument inventory comes from the parser; the Python
+      export inventory and signatures come from <code>verifier.__all__</code> at build time.
+      The pipeline map selects import-checked implementation targets. Summaries come from
+      source docstrings or the reviewed public-member summary map. Presentation tests detect generated
+      page drift from these sources; they do not prove the described behaviour correct.</p>
       <p class="status">This page states the declared public surface of one implementation. It
-      does not establish that any individual claim checked by these commands is true, nor that
-      an external implementation exists.</p>
+      does not cover experimental direct submodule imports. Public instance methods,
+      class methods, and properties of exported classes are listed here. The page
+      does not establish that an individual claim checked by these commands is true, nor
+      that an external implementation exists.</p>
       <div class="actions">
         <a class="button primary" href="#pipeline">Pipeline map</a>
         <a class="button" href="#cli">CLI reference</a>
@@ -60,7 +62,7 @@
     <section id="pipeline">
       <div class="wrap">
         <div class="eyebrow">Pipeline</div>
-        <h2>Command to implementation, without a gap.</h2>
+        <h2>Selected command-to-implementation paths.</h2>
         <p class="section-lead">Each entry point below is imported while this page is built. A
         rename, move, or deletion fails the build instead of publishing a stale map.</p>
         <div class="ref-table"><table><thead><tr><th>Command</th><th>What it does</th><th>Implementation entry points</th></tr></thead><tbody>
@@ -878,7 +880,8 @@
 <p class="ref-help">Result of independently recomputing a frozen artifact and its seals.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-ArtifactVerification.sealed"><td><code>sealed (property)</code></td><td>Report whether this verification result's state is SEALED.</td></tr>
+<tr id="api-ArtifactVerification.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the observed freeze, guard, seal, anchor, errors, and warnings.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-AssuranceLedger">
@@ -887,32 +890,33 @@
 <p class="ref-help">Append-only current-state overlay for an immutable provenance graph.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>admissibility_blocking_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td>Return conflicts whose effect still blocks a clean TRUST route.</td></tr>
-<tr><td><code>compose_guilt(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, localization_event_digest: 'str', responsibility_component_digest: 'str', applicability_component_digest: 'str', violation_component_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compose technical GUILT from three exact, separately earned components.</td></tr>
-<tr><td><code>current_status(self, artifact_id: 'str') -&gt; 'ArtifactStatus'</code></td><td></td></tr>
-<tr><td><code>current_transformation_status(self, transformation_id: 'str') -&gt; 'str'</code></td><td>Return a transformation's additive current status projection.</td></tr>
-<tr><td><code>current_trust_events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return recursively current edge-local TRUST records.</td></tr>
-<tr><td><code>diagnose(self, kind: 'DiagnosticKind', ancestor_id: 'str', descendant_id: 'str', proposition: 'Optional[BoundProposition]', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compute BLAME, or fail closed for legacy opaque GUILT calls.</td></tr>
-<tr><td><code>establish_guilt_components(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', responsibility_proposition: 'BoundProposition', applicability_proposition: 'BoundProposition', violation_proposition: 'BoundProposition', *, localization_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, AssuranceEvent, AssuranceEvent]'</code></td><td>Run one compound mechanism and retain three separately bound results.</td></tr>
-<tr><td><code>establish_obligation_applicability(self, artifact_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate whether one exact obligation applies to one exact artifact.</td></tr>
-<tr><td><code>establish_obligation_violation(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, localization_event_digest: 'str', applicability_component_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate violation after exact applicability and deviation localization.</td></tr>
-<tr><td><code>establish_responsibility(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, localization_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate one separately bound material-contribution component.</td></tr>
-<tr><td><code>events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td></td></tr>
-<tr><td><code>impacted_descendants(self, artifact_id: 'str') -&gt; 'tuple[str, ...]'</code></td><td>Return the deduplicated recorded forward impact set, not a verdict.</td></tr>
-<tr><td><code>localize_cause(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, rust_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Bind one ancestor to one exact passing descendant-deviation event.</td></tr>
-<tr><td><code>materialize_current_graph(self) -&gt; 'ProvenanceHypergraph'</code></td><td>Create a derived current view; never mutate the historical graph.</td></tr>
-<tr><td><code>project_challenges(self, challenges: 'ChallengeLedger', *, recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Project challenge state into an additive current Graph overlay.</td></tr>
-<tr><td><code>record_conflict(self, conflict: 'ConflictRecord', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Add mechanism-established current conflict evidence without rewriting Graph.</td></tr>
-<tr><td><code>record_rot(self, artifact_id: 'str', resulting_status: 'ArtifactStatus', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
-<tr><td><code>record_rust(self, descendant_id: 'str', deviation: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
-<tr><td><code>record_status_projection(self, artifact_id: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Record a mechanism-checked current-status projection additively.</td></tr>
-<tr><td><code>record_trust(self, target_id: 'str', source_ids: 'Iterable[str]', proposition: 'BoundProposition', *, transformation_id: 'str', prerequisite_trust_event_digests: 'Iterable[str]' = (), session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
-<tr><td><code>resolutions(self) -&gt; 'tuple[ConflictResolution, ...]'</code></td><td></td></tr>
-<tr><td><code>resolve_conflict(self, conflict_id: 'str', selected_value: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'ConflictResolution'</code></td><td>Adjudicate one value without equating selection with admissibility.</td></tr>
-<tr><td><code>rust_concentration(self) -&gt; 'tuple[StructuralConcentration, ...]'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>unresolved_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td></td></tr>
-<tr><td><code>verify_hash_chain(self) -&gt; 'bool'</code></td><td></td></tr>
+<tr id="api-AssuranceLedger.admissibility_blocking_conflicts"><td><code>admissibility_blocking_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td>Return conflicts whose effect still blocks a clean TRUST route.</td></tr>
+<tr id="api-AssuranceLedger.compose_guilt"><td><code>compose_guilt(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, localization_event_digest: 'str', responsibility_component_digest: 'str', applicability_component_digest: 'str', violation_component_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compose technical GUILT from three exact, separately earned components.</td></tr>
+<tr id="api-AssuranceLedger.current_status"><td><code>current_status(self, artifact_id: 'str') -&gt; 'ArtifactStatus'</code></td><td>Return the most degraded recorded status for an artifact, or UNKNOWN when it is absent.</td></tr>
+<tr id="api-AssuranceLedger.current_transformation_status"><td><code>current_transformation_status(self, transformation_id: 'str') -&gt; 'str'</code></td><td>Return a transformation's additive current status projection.</td></tr>
+<tr id="api-AssuranceLedger.current_trust_events"><td><code>current_trust_events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return recursively current edge-local TRUST records.</td></tr>
+<tr id="api-AssuranceLedger.diagnose"><td><code>diagnose(self, kind: 'DiagnosticKind', ancestor_id: 'str', descendant_id: 'str', proposition: 'Optional[BoundProposition]', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compute BLAME, or fail closed for legacy opaque GUILT calls.</td></tr>
+<tr id="api-AssuranceLedger.establish_guilt_components"><td><code>establish_guilt_components(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', responsibility_proposition: 'BoundProposition', applicability_proposition: 'BoundProposition', violation_proposition: 'BoundProposition', *, localization_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, AssuranceEvent, AssuranceEvent]'</code></td><td>Run one compound mechanism and retain three separately bound results.</td></tr>
+<tr id="api-AssuranceLedger.establish_obligation_applicability"><td><code>establish_obligation_applicability(self, artifact_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate whether one exact obligation applies to one exact artifact.</td></tr>
+<tr id="api-AssuranceLedger.establish_obligation_violation"><td><code>establish_obligation_violation(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, localization_event_digest: 'str', applicability_component_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate violation after exact applicability and deviation localization.</td></tr>
+<tr id="api-AssuranceLedger.establish_responsibility"><td><code>establish_responsibility(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, localization_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate one separately bound material-contribution component.</td></tr>
+<tr id="api-AssuranceLedger.events"><td><code>events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return an immutable snapshot of recorded assurance events.</td></tr>
+<tr id="api-AssuranceLedger.graph_digest"><td><code>graph_digest (property)</code></td><td>Return the digest captured for the historical Graph at ledger creation.</td></tr>
+<tr id="api-AssuranceLedger.impacted_descendants"><td><code>impacted_descendants(self, artifact_id: 'str') -&gt; 'tuple[str, ...]'</code></td><td>Return the deduplicated recorded forward impact set, not a verdict.</td></tr>
+<tr id="api-AssuranceLedger.localize_cause"><td><code>localize_cause(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, rust_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Bind one ancestor to one exact passing descendant-deviation event.</td></tr>
+<tr id="api-AssuranceLedger.materialize_current_graph"><td><code>materialize_current_graph(self) -&gt; 'ProvenanceHypergraph'</code></td><td>Create a derived current view; never mutate the historical graph.</td></tr>
+<tr id="api-AssuranceLedger.project_challenges"><td><code>project_challenges(self, challenges: 'ChallengeLedger', *, recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Project challenge state into an additive current Graph overlay.</td></tr>
+<tr id="api-AssuranceLedger.record_conflict"><td><code>record_conflict(self, conflict: 'ConflictRecord', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Add mechanism-established current conflict evidence without rewriting Graph.</td></tr>
+<tr id="api-AssuranceLedger.record_rot"><td><code>record_rot(self, artifact_id: 'str', resulting_status: 'ArtifactStatus', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate an exact current-status proposition and append a strictly degrading ROT event.</td></tr>
+<tr id="api-AssuranceLedger.record_rust"><td><code>record_rust(self, descendant_id: 'str', deviation: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate a descendant deviation and record diagnostic backward reachability, not causal attribution.</td></tr>
+<tr id="api-AssuranceLedger.record_status_projection"><td><code>record_status_projection(self, artifact_id: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Record a mechanism-checked current-status projection additively.</td></tr>
+<tr id="api-AssuranceLedger.record_trust"><td><code>record_trust(self, target_id: 'str', source_ids: 'Iterable[str]', proposition: 'BoundProposition', *, transformation_id: 'str', prerequisite_trust_event_digests: 'Iterable[str]' = (), session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Check exact transformation inputs, current admissibility, and prerequisites before evaluating and appending a TRUST event.</td></tr>
+<tr id="api-AssuranceLedger.resolutions"><td><code>resolutions(self) -&gt; 'tuple[ConflictResolution, ...]'</code></td><td>Return an immutable snapshot of recorded conflict resolutions.</td></tr>
+<tr id="api-AssuranceLedger.resolve_conflict"><td><code>resolve_conflict(self, conflict_id: 'str', selected_value: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'ConflictResolution'</code></td><td>Adjudicate one value without equating selection with admissibility.</td></tr>
+<tr id="api-AssuranceLedger.rust_concentration"><td><code>rust_concentration(self) -&gt; 'tuple[StructuralConcentration, ...]'</code></td><td>Count distinct passing RUST origins reaching each ancestor; this is diagnostic, not causal strength.</td></tr>
+<tr id="api-AssuranceLedger.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the historical Graph, events, resolutions, and digest of the current view.</td></tr>
+<tr id="api-AssuranceLedger.unresolved_conflicts"><td><code>unresolved_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td>Return conflict records that have no recorded resolution.</td></tr>
+<tr id="api-AssuranceLedger.verify_hash_chain"><td><code>verify_hash_chain(self) -&gt; 'bool'</code></td><td>Check event order and predecessor digests; this alone does not replay mechanisms or authenticate actors.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-BoundProposition">
@@ -921,8 +925,9 @@
 <p class="ref-help">Exact proposition, evidence, mechanism, trust-root, and bound binding.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-BoundProposition.digest"><td><code>digest(self) -&gt; 'str'</code></td><td>Return the canonical digest of this proposition's serialized binding.</td></tr>
+<tr id="api-BoundProposition.from_dict"><td><code>from_dict(data: 'Mapping[str, Any]') -&gt; "'BoundProposition'"</code></td><td>Reconstruct a bound proposition and its evidence bounds from a mapping.</td></tr>
+<tr id="api-BoundProposition.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the exact subject, mechanism, evidence, trust roots, bounds, and parameters of this proposition.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-CertificationError">
@@ -938,8 +943,9 @@
 <p class="ref-help">External mechanism admission and resource policy, not certificate authority.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-CertificationPolicy.digest"><td><code>digest(self) -&gt; 'str'</code></td><td>Return the canonical digest of this policy's serialized fields.</td></tr>
+<tr id="api-CertificationPolicy.from_dict"><td><code>from_dict(value: 'Any') -&gt; 'CertificationPolicy'</code></td><td>Parse a versioned policy, rejecting unknown coordinates and out-of-range resource bounds.</td></tr>
+<tr id="api-CertificationPolicy.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize admitted obligations, resource ceilings, and catalogue and specification digests.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-CertificationRequest">
@@ -948,7 +954,8 @@
 <p class="ref-help">Exact claim and individual evidence propositions; no supplied outcomes.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-CertificationRequest.from_dict"><td><code>from_dict(value: 'Any') -&gt; 'CertificationRequest'</code></td><td>Parse a versioned request, rejecting unknown or out-of-target obligation coordinates.</td></tr>
+<tr id="api-CertificationRequest.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the requested claim binding, target profile, and bound obligations.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-ControlSurfaceContext">
@@ -957,7 +964,7 @@
 <p class="ref-help">External planning context; only schema and interaction mode affect matches.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-ControlSurfaceContext.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize interaction mode, domain tags, operating regime, consequences, and authority requirements.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-DecisionCertificate">
@@ -966,9 +973,9 @@
 <p class="ref-help">Canonical grounded decision certificate (GDC) blocks for the bounded checker.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/certificate.py"><code>verifier.core.certificate</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>without_hints(self) -&gt; "'DecisionCertificate'"</code></td><td>Hint-stripped form.</td></tr>
+<tr id="api-DecisionCertificate.digest"><td><code>digest(self) -&gt; 'str'</code></td><td>Return the canonical digest of this certificate's serialized fields, including hints.</td></tr>
+<tr id="api-DecisionCertificate.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the certificate header, formula, grounding, decision block, and hints.</td></tr>
+<tr id="api-DecisionCertificate.without_hints"><td><code>without_hints(self) -&gt; "'DecisionCertificate'"</code></td><td>Hint-stripped form.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-EvidenceBindingError">
@@ -984,7 +991,7 @@
 <p class="ref-help">Resource ceilings enforced before invoking a domain mechanism.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, int]'</code></td><td></td></tr>
+<tr id="api-EvidenceBounds.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, int]'</code></td><td>Serialize the item-count and byte-count ceilings for bound evidence.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-EvidenceStore">
@@ -993,10 +1000,10 @@
 <p class="ref-help">In-memory content-addressed evidence store with collision/fork refusal.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>add(self, payload: 'bytes') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>export_base64(self, references: 'Sequence[str]') -&gt; 'dict[str, str]'</code></td><td>Export exact evidence bytes for portable, offline mechanism replay.</td></tr>
-<tr><td><code>import_base64(self, payloads: 'Mapping[str, str]') -&gt; 'None'</code></td><td>Import a portable bundle and refuse every reference/byte mismatch.</td></tr>
-<tr><td><code>resolve(self, reference: 'str') -&gt; 'bytes'</code></td><td></td></tr>
+<tr id="api-EvidenceStore.add"><td><code>add(self, payload: 'bytes') -&gt; 'str'</code></td><td>Retain exact payload bytes and return their content reference, rejecting other types or a digest collision.</td></tr>
+<tr id="api-EvidenceStore.export_base64"><td><code>export_base64(self, references: 'Sequence[str]') -&gt; 'dict[str, str]'</code></td><td>Export exact evidence bytes for portable, offline mechanism replay.</td></tr>
+<tr id="api-EvidenceStore.import_base64"><td><code>import_base64(self, payloads: 'Mapping[str, str]') -&gt; 'None'</code></td><td>Import a portable bundle and refuse every reference/byte mismatch.</td></tr>
+<tr id="api-EvidenceStore.resolve"><td><code>resolve(self, reference: 'str') -&gt; 'bytes'</code></td><td>Return retained bytes only when the reference exists and the bytes still match its digest.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-GeometryLoadError">
@@ -1018,7 +1025,8 @@
 <p class="ref-help">Checker-selected executable and trust roots for one exact obligation.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-MechanismAdmission.from_dict"><td><code>from_dict(value: 'Any') -&gt; 'MechanismAdmission'</code></td><td>Parse a mechanism admission with exact required fields and normalized digest.</td></tr>
+<tr id="api-MechanismAdmission.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the admitted mechanism identifier, normalized digest, and declared trust roots.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-MechanismDecision">
@@ -1040,7 +1048,8 @@
 <p class="ref-help">Execute bounded claim-record, geometry and decision-certificate checks.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/certification_mechanisms.py"><code>verifier.core.certification_mechanisms</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>evaluate(self, binding: 'BoundProposition', evidence: 'Sequence[bytes]') -&gt; 'MechanismDecision'</code></td><td></td></tr>
+<tr id="api-NativeCertificationMechanism.evaluate"><td><code>evaluate(self, binding: 'BoundProposition', evidence: 'Sequence[bytes]') -&gt; 'MechanismDecision'</code></td><td>Check one supported native obligation against retained evidence; unsupported inputs stay UNKNOWN.</td></tr>
+<tr id="api-NativeCertificationMechanism.mechanism_digest"><td><code>mechanism_digest (property)</code></td><td>Return a digest binding the listed native source modules to their current file bytes.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-NativeDomainAdapter">
@@ -1049,7 +1058,7 @@
 <p class="ref-help">Executable mechanism for one domain; registration supplies no implicit authority.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>evaluate(self, binding: 'BoundProposition', evidence: 'Sequence[bytes]') -&gt; 'MechanismDecision'</code></td><td></td></tr>
+<tr id="api-NativeDomainAdapter.evaluate"><td><code>evaluate(self, binding: 'BoundProposition', evidence: 'Sequence[bytes]') -&gt; 'MechanismDecision'</code></td><td>Replay one domain obligation against its bound bundle and policy, distinguishing unavailable from refuted evidence.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-ObligationCoordinate">
@@ -1058,8 +1067,9 @@
 <p class="ref-help">Exact technical obligation and the declared scope in which it applies.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-ObligationCoordinate.digest"><td><code>digest(self) -&gt; 'str'</code></td><td>Return the canonical digest of this obligation coordinate's serialized fields.</td></tr>
+<tr id="api-ObligationCoordinate.from_dict"><td><code>from_dict(data: 'Mapping[str, Any]') -&gt; "'ObligationCoordinate'"</code></td><td>Reconstruct an obligation coordinate, requiring its scope to be a mapping.</td></tr>
+<tr id="api-ObligationCoordinate.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the obligation identifier, content digest, scope, assumptions, and exclusions.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-PlatformComparisonResult">
@@ -1068,7 +1078,8 @@
 <p class="ref-help">Machine-readable diagnostic result; this object is not a VSTD receipt.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/platform_comparison.py"><code>verifier.core.platform_comparison</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-PlatformComparisonResult.exit_code"><td><code>exit_code (property)</code></td><td>Map PASS to zero, CONFLICTED or INVALID to one, and other statuses to two.</td></tr>
+<tr id="api-PlatformComparisonResult.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the bounded diagnostic, compared platforms, differences, errors, and claim boundary.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-PlatformComparisonStatus">
@@ -1083,7 +1094,9 @@
 <p class="ref-help">A separately checked proposition with explicit prerequisite obligations.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/profile_obligations.py"><code>verifier.core.profile_obligations</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-ProfileObligation.id"><td><code>id (property)</code></td><td>Return the numbered profile and index as a dotted obligation identifier.</td></tr>
+<tr id="api-ProfileObligation.predicate"><td><code>predicate (property)</code></td><td>Return the predicate name, using the VSTD-4 rung form for profile four.</td></tr>
+<tr id="api-ProfileObligation.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize this obligation with its dependency list, identifier, and predicate.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-ProvenanceHypergraph">
@@ -1092,22 +1105,23 @@
 <p class="ref-help">N-ary Hypergraph structure for dataset, training, and artifact lineage.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/models.py"><code>verifier.data.models</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>add_artifact(self, artifact: 'ArtifactNode') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>add_conflict(self, conflict: 'ConflictRecord') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>add_contributor(self, contributor: 'ContributorSpec') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>add_rights(self, rights: 'RightsSpec') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>add_transformation(self, transform: 'TransformationHyperedge') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>ancestors(self, artifact_ids: 'Iterable[str]') -&gt; 'set[str]'</code></td><td>Backward reachability closure across transformation hyperedges.</td></tr>
-<tr><td><code>blast_radius(self, revoked_artifact_id: 'str') -&gt; 'list[str]'</code></td><td>Compute the forward blast radius of affected downstream artifacts when one node is revoked.</td></tr>
-<tr><td><code>compute_completeness(self) -&gt; 'CompletenessMetrics'</code></td><td></td></tr>
-<tr><td><code>descendants(self, artifact_ids: 'Iterable[str]') -&gt; 'set[str]'</code></td><td>Forward reachability closure across transformation hyperedges.</td></tr>
-<tr><td><code>has_conflict(self, subject_id: 'str') -&gt; 'bool'</code></td><td></td></tr>
-<tr><td><code>incoming_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that produce artifact_id as an output.</td></tr>
-<tr><td><code>outgoing_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that consume artifact_id as an input.</td></tr>
-<tr><td><code>root_sources(self) -&gt; 'set[str]'</code></td><td>Artifacts with zero incoming hyperedges (genesis roots).</td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>validate_structure(self, *, allow_legacy_identifier_overlap: 'bool' = False) -&gt; 'list[str]'</code></td><td>Return deterministic errors for the implemented graph surface.</td></tr>
-<tr><td><code>verify_acyclicity(self, artifact_ids: 'Optional[Iterable[str]]' = None) -&gt; 'bool'</code></td><td>Check whether all or a selected artifact-induced subgraph contains cycles.</td></tr>
+<tr id="api-ProvenanceHypergraph.add_artifact"><td><code>add_artifact(self, artifact: 'ArtifactNode') -&gt; 'str'</code></td><td>Add an artifact by unique identifier, keeping artifact and transformation identifiers disjoint.</td></tr>
+<tr id="api-ProvenanceHypergraph.add_conflict"><td><code>add_conflict(self, conflict: 'ConflictRecord') -&gt; 'str'</code></td><td>Add a conflict record by unique identifier and return that identifier.</td></tr>
+<tr id="api-ProvenanceHypergraph.add_contributor"><td><code>add_contributor(self, contributor: 'ContributorSpec') -&gt; 'str'</code></td><td>Add a contributor by unique identifier and return that identifier.</td></tr>
+<tr id="api-ProvenanceHypergraph.add_rights"><td><code>add_rights(self, rights: 'RightsSpec') -&gt; 'str'</code></td><td>Add a rights record by unique identifier and return that identifier.</td></tr>
+<tr id="api-ProvenanceHypergraph.add_transformation"><td><code>add_transformation(self, transform: 'TransformationHyperedge') -&gt; 'str'</code></td><td>Add a transformation by unique identifier, keeping transformation and artifact identifiers disjoint.</td></tr>
+<tr id="api-ProvenanceHypergraph.ancestors"><td><code>ancestors(self, artifact_ids: 'Iterable[str]') -&gt; 'set[str]'</code></td><td>Backward reachability closure across transformation hyperedges.</td></tr>
+<tr id="api-ProvenanceHypergraph.blast_radius"><td><code>blast_radius(self, revoked_artifact_id: 'str') -&gt; 'list[str]'</code></td><td>Compute the forward blast radius of affected downstream artifacts when one node is revoked.</td></tr>
+<tr id="api-ProvenanceHypergraph.compute_completeness"><td><code>compute_completeness(self) -&gt; 'CompletenessMetrics'</code></td><td>Compute declared-field coverage and lineage depth; digest presence does not rehash artifact bytes.</td></tr>
+<tr id="api-ProvenanceHypergraph.descendants"><td><code>descendants(self, artifact_ids: 'Iterable[str]') -&gt; 'set[str]'</code></td><td>Forward reachability closure across transformation hyperedges.</td></tr>
+<tr id="api-ProvenanceHypergraph.from_dict"><td><code>from_dict(data: 'Mapping[str, Any]', *, allow_legacy_identifier_overlap: 'bool' = True) -&gt; "'ProvenanceHypergraph'"</code></td><td>Decode stored Graph bytes without rewriting their identifier semantics.</td></tr>
+<tr id="api-ProvenanceHypergraph.has_conflict"><td><code>has_conflict(self, subject_id: 'str') -&gt; 'bool'</code></td><td>Report whether any recorded conflict names this subject; resolution state is not considered.</td></tr>
+<tr id="api-ProvenanceHypergraph.incoming_hyperedges"><td><code>incoming_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that produce artifact_id as an output.</td></tr>
+<tr id="api-ProvenanceHypergraph.outgoing_hyperedges"><td><code>outgoing_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that consume artifact_id as an input.</td></tr>
+<tr id="api-ProvenanceHypergraph.root_sources"><td><code>root_sources(self) -&gt; 'set[str]'</code></td><td>Artifacts with zero incoming hyperedges (genesis roots).</td></tr>
+<tr id="api-ProvenanceHypergraph.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize recorded artifacts, transformations, contributors, rights, and conflicts.</td></tr>
+<tr id="api-ProvenanceHypergraph.validate_structure"><td><code>validate_structure(self, *, allow_legacy_identifier_overlap: 'bool' = False) -&gt; 'list[str]'</code></td><td>Return deterministic errors for the implemented graph surface.</td></tr>
+<tr id="api-ProvenanceHypergraph.verify_acyclicity"><td><code>verify_acyclicity(self, artifact_ids: 'Optional[Iterable[str]]' = None) -&gt; 'bool'</code></td><td>Check whether all or a selected artifact-induced subgraph contains cycles.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-ReproducibilityLevel">
@@ -1122,8 +1136,8 @@
 <p class="ref-help">Deterministic report over only the supplied, declared geometry.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>canonical_json_bytes(self) -&gt; 'bytes'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-SurfaceAnalysis.canonical_json_bytes"><td><code>canonical_json_bytes(self) -&gt; 'bytes'</code></td><td>Return canonical JSON bytes for this surface analysis's serialized fields.</td></tr>
+<tr id="api-SurfaceAnalysis.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the geometry assessment, validity errors, closure blockers, holes, and claim boundary.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-SurfaceAnalysisError">
@@ -1139,7 +1153,8 @@
 <p class="ref-help">One structured diagnostic derived from an existing geometry blocker.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-SurfaceHole.native_state"><td><code>native_state (property)</code></td><td>Compatibility spelling for callers that describe statuses as states.</td></tr>
+<tr id="api-SurfaceHole.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize a detected hole with its native state, blocking effects, and required relations.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-SurfaceHoleKind">
@@ -1154,10 +1169,10 @@
 <p class="ref-help">A finite verification geometry and its higher-order audit surface.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry.py"><code>verifier.core.geometry</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>assess_closure(self) -&gt; 'ClosureAssessment'</code></td><td>Assess declared closure and higher-order self-closure separately.</td></tr>
-<tr><td><code>canonical_digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>validate(self) -&gt; 'list[str]'</code></td><td>Return structural and epistemic errors; an empty list means valid.</td></tr>
+<tr id="api-VerificationGeometry.assess_closure"><td><code>assess_closure(self) -&gt; 'ClosureAssessment'</code></td><td>Assess declared closure and higher-order self-closure separately.</td></tr>
+<tr id="api-VerificationGeometry.canonical_digest"><td><code>canonical_digest(self) -&gt; 'str'</code></td><td>Return the SHA-256 hex digest of the geometry's sorted compact JSON bytes.</td></tr>
+<tr id="api-VerificationGeometry.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the geometry's declared coordinates and relations as JSON-compatible values.</td></tr>
+<tr id="api-VerificationGeometry.validate"><td><code>validate(self) -&gt; 'list[str]'</code></td><td>Return structural and epistemic errors; an empty list means valid.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-VerificationSession">
@@ -1166,10 +1181,10 @@
 <p class="ref-help">Resolve evidence and rerun only explicitly registered mechanisms.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>evaluate(self, binding: 'BoundProposition') -&gt; 'EvaluatedProposition'</code></td><td></td></tr>
-<tr><td><code>evaluate_compound(self, bindings: 'Sequence[BoundProposition]') -&gt; 'tuple[EvaluatedProposition, ...]'</code></td><td>Run one compound mechanism invocation over separately bound propositions.</td></tr>
-<tr><td><code>register(self, mechanism: 'VerificationMechanism') -&gt; 'None'</code></td><td></td></tr>
-<tr><td><code>registered_mechanisms(self) -&gt; 'tuple[VerificationMechanism, ...]'</code></td><td>Snapshot caller-registered capabilities for an isolated evidence replay.</td></tr>
+<tr id="api-VerificationSession.evaluate"><td><code>evaluate(self, binding: 'BoundProposition') -&gt; 'EvaluatedProposition'</code></td><td>Evaluate a bound proposition against registered mechanism and retained evidence; unmet prerequisites yield UNKNOWN.</td></tr>
+<tr id="api-VerificationSession.evaluate_compound"><td><code>evaluate_compound(self, bindings: 'Sequence[BoundProposition]') -&gt; 'tuple[EvaluatedProposition, ...]'</code></td><td>Run one compound mechanism invocation over separately bound propositions.</td></tr>
+<tr id="api-VerificationSession.register"><td><code>register(self, mechanism: 'VerificationMechanism') -&gt; 'None'</code></td><td>Register a mechanism by identifier and digest, refusing substitution under an existing identifier.</td></tr>
+<tr id="api-VerificationSession.registered_mechanisms"><td><code>registered_mechanisms(self) -&gt; 'tuple[VerificationMechanism, ...]'</code></td><td>Snapshot caller-registered capabilities for an isolated evidence replay.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-VerificationVerdict">
@@ -1184,11 +1199,11 @@
 <p class="ref-help">Mutable in-memory model of a canonically digested VSTD-1 claim receipt.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>compute_and_set_digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>get_stable_payload(self) -&gt; 'dict[str, Any]'</code></td><td>Extract only deterministic, location-independent fields for canonical hashing.</td></tr>
-<tr><td><code>save_to_directory(self, out_dir: 'Path') -&gt; 'Path'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>verify_digest_integrity(self) -&gt; 'bool'</code></td><td></td></tr>
+<tr id="api-VstdReceipt.compute_and_set_digest"><td><code>compute_and_set_digest(self) -&gt; 'str'</code></td><td>Compute and store the digest of the receipt's stable payload; return that digest.</td></tr>
+<tr id="api-VstdReceipt.get_stable_payload"><td><code>get_stable_payload(self) -&gt; 'dict[str, Any]'</code></td><td>Extract only deterministic, location-independent fields for canonical hashing.</td></tr>
+<tr id="api-VstdReceipt.save_to_directory"><td><code>save_to_directory(self, out_dir: 'Path') -&gt; 'Path'</code></td><td>Write the receipt, claim, file manifest, optional log, and report under the output directory.</td></tr>
+<tr id="api-VstdReceipt.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the receipt and compute its stable-payload digest first when absent.</td></tr>
+<tr id="api-VstdReceipt.verify_digest_integrity"><td><code>verify_digest_integrity(self) -&gt; 'bool'</code></td><td>Compare the stored digest with the stable payload's recomputed digest, without verifying the claim.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-WitnessBundle">
@@ -1197,7 +1212,8 @@
 <p class="ref-help">Claim-bound identities, ordered separation assertions, and corroborations.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/witness.py"><code>verifier.core.witness</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-WitnessBundle.from_dict"><td><code>from_dict(data: 'Mapping[str, Any]') -&gt; "'WitnessBundle'"</code></td><td>Reconstruct a witness bundle from its witness, independence, and corroboration mappings.</td></tr>
+<tr id="api-WitnessBundle.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the claim binding, witness identities, independence assertions, and corroborations.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-analyze_verification_surface">

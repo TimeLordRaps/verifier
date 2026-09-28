@@ -7,16 +7,16 @@ copy, and then changes that copy so the runtime reports a different verdict. The
 steps matter most: a mechanism that never reports a negative result has not been shown to
 detect anything.
 
-Every command below belongs to the published `vstd artifact` surface, and none of them
+Every command below belongs to the `vstd artifact` surface, and none of them
 executes the artifact's contents. It requires the
-[released package installation](../INSTALLATION.md).
+[v2.0.0 candidate source installation](../INSTALLATION.md).
 
 ## Install the sealing extra
 
 Sealing uses Ed25519 signatures, which come from the optional `seal` dependency:
 
 ```bash
-python -m pip install "verifier-standard[seal]==1.5.0"
+python -m pip install ".[seal]"
 vstd artifact --help
 ```
 

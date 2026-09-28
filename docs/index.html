@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="The Verifier Standard (VSTD) is a verification-domain language and Python reference implementation for bounded computational claims.">
-  <meta property="og:title" content="VSTD — portable, bounded, refutable evidence">
+  <meta property="og:title" content="Verifier Standard v2.0.0 candidate documentation">
   <meta property="og:description" content="A project specification and reference implementation for bounded computational claims and provenance graphs.">
   <meta property="og:image" content="https://timelordraps.github.io/verifier/assets/vstd-overview.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://timelordraps.github.io/verifier/">
-  <title>VSTD — portable, bounded, refutable</title>
+  <title>Verifier Standard v2.0.0 candidate documentation</title>
   <link rel="canonical" href="https://timelordraps.github.io/verifier/">
   <link rel="icon" href="assets/vstd-overview.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/site.css">
@@ -35,7 +35,7 @@
   <main id="top">
     <div class="wrap hero">
       <div>
-        <div class="eyebrow">Verification language for computational work</div>
+        <div class="eyebrow">Verifier Standard v2.0.0 candidate source</div>
         <h1>Make the claim challengeable.</h1>
         <p class="lead">VSTD packages bounded computational claims with their evidence,
         checking mechanisms, limits, refutation conditions, provenance, and
@@ -122,10 +122,18 @@ $ vstd demo
         <h2>Current implementation status</h2>
         <p class="status">VSTD is a maintainer-led alpha project specification. Compatibility VSTD-4 and Graph paths remain <code>NOT_ESTABLISHED</code> candidates. Separate evidence-bound VSTD-4, VSTD-5, Graph-profile, and assurance-event paths rerun exact registered mechanisms from embedded evidence; no real external witness is claimed by this repository. The project has no demonstrated external adoption, independent implementation, interoperability deployment, or third-party security review.</p>
         <p class="status"><strong>Artifact-control boundary:</strong> freeze preserves exact bytes and sealing is not encryption. A thaw sidecar alone is unkeyed metadata and remains <code>NOT_ESTABLISHED</code>; clean or dirty status requires the actual supplied parent to verify as sealed with every recorded parent coordinate matching. This current comparison does not authenticate the historical copy operation or external continuity.</p>
-        <p class="release-coordinate"><strong>Release coordinate:</strong>
-        <code>verifier-standard 1.5.0</code>, released 2026-09-18. Use the
-        <a href="https://github.com/TimeLordRaps/verifier/releases/tag/v1.5.0">versioned GitHub release</a>
-        for published artifacts and citation coordinates.</p>
+        <p class="release-coordinate"><strong>Documentation coordinate:</strong>
+        <code>v2.0.0 candidate source</code>. The current repository source is
+        under review and is not a published package. The site's source revision is
+        recorded in its footer and build metadata. Read the
+        <a href="docs/V2_CANDIDATE.html">candidate scope and migration guide</a>,
+        <a href="docs/GROUNDED_CERTIFICATION.html">grounded certification guide</a>, and
+        <a href="project/TIME.html">open repository contradictions</a> before using
+        candidate behavior.</p>
+        <p class="status"><strong>Published archive:</strong>
+        <code>verifier-standard 1.5.0</code>, released 2026-09-18, has a
+        <a href="https://github.com/TimeLordRaps/verifier/releases/tag/v1.5.0">separate versioned artifacts and citation coordinates</a>.
+        The released package does not inherit v2 candidate additions.</p>
         <div class="actions">
           <a class="button primary" href="https://github.com/TimeLordRaps/verifier#current-maturity">Review the maturity table</a>
           <a class="button" href="https://github.com/TimeLordRaps/verifier/issues/new/choose">Report an ambiguity or counterexample</a>

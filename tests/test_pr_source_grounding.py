@@ -168,6 +168,30 @@ def test_duplicate_json_keys_and_multiple_blocks_fail(repo):
     assert check(repo, body.replace('"base":', '"base":"forged", "base":', 1))
 
 
+def test_stacked_pull_request_covers_both_review_bases(repo):
+    root, main_base = repo
+    git(root, "add", ".")
+    git(root, "commit", "-m", "release parent")
+    release_base = git(root, "rev-parse", "HEAD")
+    (root / "src/verifier/feature.py").write_text(
+        "def existing():\n    return 3\n\ndef admission():\n    return False\n",
+        encoding="utf-8",
+    )
+    main_block = body_for(gate.source_feature_inventory(root, main_base))
+    release_block = body_for(gate.source_feature_inventory(root, release_base))
+    body = main_block + "\n" + release_block
+
+    for base in (main_base, release_base):
+        findings = []
+        gate.check_source_grounding(body, findings, root=root, base=base)
+        assert findings == []
+
+    stale = release_block.replace('"sha256": "', '"sha256": "0', 1)
+    findings = []
+    gate.check_source_grounding(main_block + "\n" + stale, findings, root=root, base=main_base)
+    assert findings
+
+
 def test_unimplemented_accountability_domain_cannot_be_omitted(tmp_path, monkeypatch):
     source = tmp_path / "verifier/core"
     source.mkdir(parents=True)

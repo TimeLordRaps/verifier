@@ -6,9 +6,11 @@ Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
 
 Generate the public CLI and top-level API reference page from the live implementation.
 
-Nothing on the generated page is hand-written prose about behaviour: every command,
-option, top-level export, signature, and listed pipeline edge is read out of the
-importable package at build time. `scripts/check_presentation.py` and
+CLI names and options come from the argument parser; top-level Python names and
+signatures come from the importable package. The pipeline map is a selected,
+manually described set of import-checked dispatch targets, and summaries come
+from source docstrings or a reviewed map of undocumented public members.
+`scripts/check_presentation.py` and
 `tests/test_presentation_surface.py` regenerate this file and fail closed when the
 committed page drifts from the code."""
 
@@ -19,6 +21,7 @@ import enum
 import html
 import importlib
 import inspect
+import json
 import os
 from pathlib import Path
 import re
@@ -31,6 +34,7 @@ SOURCE_ROOT = ROOT / "src"
 if str(SOURCE_ROOT) not in sys.path:
     sys.path.insert(0, str(SOURCE_ROOT))
 OUTPUT = ROOT / "docs/reference.html"
+MEMBER_SUMMARIES = ROOT / "docs/API_MEMBER_SUMMARIES.json"
 SOURCE_BASE = "https://github.com/TimeLordRaps/verifier/blob/main/"
 
 # command -> the declared implementation stages it dispatches into. Every target is
@@ -228,6 +232,38 @@ def _summary(obj: object) -> str:
     return doc.split("\n\n", 1)[0].strip().replace("\n", " ")
 
 
+def _member_summaries() -> dict[tuple[str, str], str]:
+    try:
+        payload = json.loads(MEMBER_SUMMARIES.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ReferenceBuildError(f"cannot load reviewed member summaries: {exc}") from exc
+    if not isinstance(payload, dict) or set(payload) != {"schema_version", "source_files"}:
+        raise ReferenceBuildError("member summary map has unexpected top-level fields")
+    if payload["schema_version"] != 1 or not isinstance(payload["source_files"], dict):
+        raise ReferenceBuildError("member summary map has an unsupported schema")
+    summaries: dict[tuple[str, str], str] = {}
+    for source, members in payload["source_files"].items():
+        if (not isinstance(source, str) or not source.startswith("src/verifier/")
+                or not (ROOT / source).is_file() or not isinstance(members, dict)):
+            raise ReferenceBuildError(f"invalid member summary source: {source!r}")
+        for name, summary in members.items():
+            if not isinstance(name, str) or not isinstance(summary, str) or not summary.strip():
+                raise ReferenceBuildError(f"invalid member summary: {source}:{name}")
+            summaries[(source, name)] = summary.strip()
+    return summaries
+
+
+def _member_source(member: object) -> str:
+    target = member.fget if isinstance(member, property) else member
+    source = inspect.getsourcefile(target)
+    if source is None:
+        raise ReferenceBuildError(f"cannot locate source for public member {member!r}")
+    try:
+        return Path(source).resolve().relative_to(ROOT).as_posix()
+    except ValueError as exc:
+        raise ReferenceBuildError(f"public member source is outside repository: {source}") from exc
+
+
 def _esc(text: str) -> str:
     return html.escape(text, quote=False)
 
@@ -328,6 +364,8 @@ def _cli_section() -> str:
 def _api_section() -> str:
     package = importlib.import_module("verifier")
     blocks: list[str] = []
+    member_summaries = _member_summaries()
+    used_summaries: set[tuple[str, str]] = set()
     for name in sorted(package.__all__):
         value = getattr(package, name)
         module_name = value.__module__
@@ -349,16 +387,31 @@ def _api_section() -> str:
             members = f'<p class="ref-help">Members: <code>{_esc(values)}</code></p>'
         elif kind == "class":
             rows = ""
-            for member_name, member in sorted(inspect.getmembers(value, inspect.isfunction)):
+            for member_name, member in inspect.getmembers(value):
                 if member_name.startswith("_"):
                     continue
-                try:
-                    member_signature = f"{member_name}{inspect.signature(member)}"
-                except (TypeError, ValueError):
-                    member_signature = member_name
+                if isinstance(member, property):
+                    member_signature = f"{member_name} (property)"
+                elif inspect.isfunction(member) or inspect.ismethod(member):
+                    try:
+                        member_signature = f"{member_name}{inspect.signature(member)}"
+                    except (TypeError, ValueError):
+                        member_signature = member_name
+                else:
+                    continue
+                member_summary = _summary(member)
+                if not member_summary:
+                    key = (_member_source(member), f"{name}.{member_name}")
+                    member_summary = member_summaries.get(key, "")
+                    if not member_summary:
+                        raise ReferenceBuildError(
+                            f"public member has no reviewed summary: {key[0]}:{key[1]}"
+                        )
+                    used_summaries.add(key)
                 rows += (
-                    f"<tr><td><code>{_esc(member_signature)}</code></td>"
-                    f"<td>{_esc(_summary(member))}</td></tr>\n"
+                    f'<tr id="api-{_esc(name)}.{_esc(member_name)}">'
+                    f"<td><code>{_esc(member_signature)}</code></td>"
+                    f"<td>{_esc(member_summary)}</td></tr>\n"
                 )
             if rows:
                 members = (
@@ -393,6 +446,9 @@ def _api_section() -> str:
             f"<code>{_esc(module_name)}</code></a></p>\n"
             f"{members}\n</article>"
         )
+    stale = set(member_summaries) - used_summaries
+    if stale:
+        raise ReferenceBuildError(f"unused member summaries: {sorted(stale)}")
     return "\n".join(blocks)
 
 
@@ -478,19 +534,21 @@ def render() -> str:
   <main id="top">
     <div class="wrap ref-hero">
       <div class="eyebrow">Reference &middot; {_esc(source_coordinate)} &middot; {_esc(standard)} {_esc(standard_status)}</div>
-      <h1>Inspect the whole pipeline.</h1>
+      <h1>Inspect the supported surface.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
       Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); and YAML Ain't Markup Language
       (YAML).</p>
-      <p class="lead">Every command, argument, top-level export, and listed dispatch edge below
-      is read out of the installed package when this page is built, by
-      <code>scripts/build_reference.py</code>, and the presentation tests fail closed when the
-      committed page drifts &mdash; so it cannot describe behaviour the implementation no
-      longer has.</p>
+      <p class="lead">The command and argument inventory comes from the parser; the Python
+      export inventory and signatures come from <code>verifier.__all__</code> at build time.
+      The pipeline map selects import-checked implementation targets. Summaries come from
+      source docstrings or the reviewed public-member summary map. Presentation tests detect generated
+      page drift from these sources; they do not prove the described behaviour correct.</p>
       <p class="status">This page states the declared public surface of one implementation. It
-      does not establish that any individual claim checked by these commands is true, nor that
-      an external implementation exists.</p>
+      does not cover experimental direct submodule imports. Public instance methods,
+      class methods, and properties of exported classes are listed here. The page
+      does not establish that an individual claim checked by these commands is true, nor
+      that an external implementation exists.</p>
       <div class="actions">
         <a class="button primary" href="#pipeline">Pipeline map</a>
         <a class="button" href="#cli">CLI reference</a>
@@ -502,7 +560,7 @@ def render() -> str:
     <section id="pipeline">
       <div class="wrap">
         <div class="eyebrow">Pipeline</div>
-        <h2>Command to implementation, without a gap.</h2>
+        <h2>Selected command-to-implementation paths.</h2>
         <p class="section-lead">Each entry point below is imported while this page is built. A
         rename, move, or deletion fails the build instead of publishing a stale map.</p>
         <div class="ref-table">{_pipeline_section()}</div>
