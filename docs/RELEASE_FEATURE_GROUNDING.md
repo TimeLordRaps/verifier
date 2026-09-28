@@ -21,8 +21,12 @@ to obtain the binding fields. Add `--commit <reviewed-commit>` for commit eviden
 The base is the trusted review target, not a base chosen to conceal changes; hosted
 callers must supply the actual target branch or base. Missing objects fail closed.
 
-The description must contain exactly one fenced `vstd-source-features` block with
-a JavaScript Object Notation (JSON) object. Small changes may place `base`, `target`
+The description must contain one fenced `vstd-source-features` block for the
+review base, or two blocks with distinct ancestor bases for a stacked pull
+request whose hosted checks use both its immediate parent and the default
+branch. Every block is checked against the same reviewed head; a second block
+cannot conceal a missing or stale row in the first. Each block contains a
+JavaScript Object Notation (JSON) object. Small changes may place `base`, `target`
 and `files` in that block. Large changes may put the complete `files` array in
 the committed `docs/PR_SOURCE_FEATURES.json` file and place `base`, `target`, and
 `manifest: {"path":"docs/PR_SOURCE_FEATURES.json","sha256":"..."}` in the block.
@@ -40,7 +44,7 @@ working-tree edits cannot change the verdict. Both forms require each file row t
 
 The generated inventory deliberately does not invent summaries or limits. A list
 of hashes without those fields fails. Omitted or extra paths, missing definitions,
-duplicate keys/paths/blocks, stale digests and incorrect base/target bindings fail.
+duplicate keys/paths/bases, stale digests and incorrect base/target bindings fail.
 Non-Python files and module-level changes remain bound through whole-file digests.
 The manifest is a review aid, not a way to omit a source path, altered definition,
 behavioral summary or limit from the description's referenced evidence.

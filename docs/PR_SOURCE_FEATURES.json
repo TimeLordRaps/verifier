@@ -186,7 +186,7 @@
     },
     {
       "path": "scripts/check_pr_description.py",
-      "sha256": "8b600df838fe8ac220f6df2ee2795f0834afcf0c482639112a424651a274c57c",
+      "sha256": "6d6c803b7adcabfda035e6abb664a23c320e4e6bff7e7621bd8554af010a8b6b",
       "symbols": [
         "_fail",
         "accountable_domain_inventory",
@@ -206,8 +206,8 @@
         "tracked_file_count",
         "use_commit"
       ],
-      "summary": "Binds pull-request prose to selected source/commit bytes, reviewed source rows, declared adapters and exact inventory/head fields; recognizes current namespace coordinates through tier8 and keeps the standalone fallback inventory in tested parity. Unknown governance-tier object names now fail.",
-      "limits": "Prose/tree consistency does not establish correctness, review acceptance, full object certification or release readiness. Historical adapter ranges retain their own meanings; the fallback remains a tested specification copy for standalone fixtures."
+      "summary": "Binds pull-request prose to selected source/commit bytes, reviewed source rows, declared adapters and exact inventory/head fields. It now checks up to two distinct ancestor-base source blocks against the same head for stacked pull requests, while retaining current namespace and fallback inventory checks.",
+      "limits": "Every supplied source block is checked for completeness, but prose/tree consistency does not establish correctness, review acceptance, full object certification or release readiness. Historical adapter ranges retain their meanings; the fallback remains a tested specification copy."
     },
     {
       "path": "scripts/check_pr_description_changed.py",
