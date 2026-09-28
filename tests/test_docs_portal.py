@@ -139,6 +139,13 @@ def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path)
     ]
     assert ("Typical use cases", "docs/USE_CASES.html") in groups["Start here"]
 
+    candidate = groups["Version 2.0.0 candidate"]
+    assert ("Candidate scope and migration", "docs/V2_CANDIDATE.html") in candidate
+    assert ("Open contradictions", "project/TIME.html") in candidate
+    assert "Version 2.0.0 candidate" not in dict(PORTAL.navigation(PORTAL.RELEASE_PATH, site))
+    assert "Version 2.0.0 candidate" in (site / "index.html").read_text(encoding="utf-8")
+    assert "Version 2.0.0 candidate" not in (site / PORTAL.RELEASE_PATH / "index.html").read_text(encoding="utf-8")
+
     released = dict(PORTAL.navigation(PORTAL.RELEASE_PATH, site))
     for _, target in released["Tutorials"] + [released["Start here"][-1]]:
         assert target.startswith(PORTAL.RELEASE_PATH)

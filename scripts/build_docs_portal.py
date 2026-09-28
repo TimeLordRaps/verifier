@@ -142,7 +142,7 @@ def navigation(prefix: str, output: Path) -> list[tuple[str, list[tuple[str, str
     def route(path: str) -> str:
         return prefix + path if (output / (prefix + path)).exists() else path
 
-    return [
+    groups = [
         ("Start here", [("Introduction", prefix + "index.html"),
                          ("Install Verifier", "docs/INSTALLATION.html"),
                          ("Your first receipt", "docs/FIRST_RECEIPT.html"),
@@ -167,6 +167,14 @@ def navigation(prefix: str, output: Path) -> list[tuple[str, list[tuple[str, str
                         ("Roadmap", "project/ROADMAP.html"),
                         ("Changelog", "project/CHANGELOG.html")]),
     ]
+    if not prefix:
+        groups.insert(4, ("Version 2.0.0 candidate", [
+            ("Candidate scope and migration", "docs/V2_CANDIDATE.html"),
+            ("Grounded certification", "docs/GROUNDED_CERTIFICATION.html"),
+            ("Gate automation", "docs/GATE_AUTOMATION.html"),
+            ("Open contradictions", "project/TIME.html"),
+        ]))
+    return groups
 
 
 def home() -> str:
