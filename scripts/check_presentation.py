@@ -58,7 +58,8 @@ LOCAL_WINDOWS_PATH = re.compile(
     r"\\\\Users[\\/]|[\\/]\.codex[\\/])"
 )
 DRIVE_QUALIFIED_PATH = re.compile(
-    r"(?i)(?<![A-Za-z0-9_%])(?:[A-Za-z]:(?:\\\\|[\\/])[A-Za-z0-9._-]{2,})"
+    r"(?i)(?<![A-Za-z0-9_%])(?:[A-Za-z]:(?:\\\\|[\\/])"
+    r"(?:[A-Za-z0-9._-]{2,}|[A-Za-z0-9._-](?=[\\/])))"
 )
 UNIX_HOME_PATH = re.compile(
     r"(?<![A-Za-z0-9_./:\\])/(?:home|Users)/[^/\\\s\"'<>]+(?:/|(?=$|[\s\"'<>]))"

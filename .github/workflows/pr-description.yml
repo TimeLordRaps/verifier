@@ -1,0 +1,125 @@
+name: pull-request-description
+
+# Terminology: pull request (PR). Ordinary required checks execute protected
+# default-branch helpers, with descriptions and candidate trees treated as data.
+# The initial addition has one explicit bootstrap coordinate: the independently
+# observed default commit below has no workflow. Once main advances, candidate
+# events have distinct non-authoritative names and cannot clear a required check
+# through a skipped job. Repository promotion policy remains the authority gate.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited, ready_for_review]
+  pull_request_target:
+    types: [opened, reopened, synchronize, edited, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  describes-head:
+    name: ${{ (github.event_name == 'pull_request_target' || github.event.pull_request.base.sha == 'fc2a20c68d01920eda7e4e1bf14dfbcb334a7634') && 'describes-head' || 'candidate-description-non-authoritative' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.repository.default_branch || (github.event.pull_request.base.sha == 'fc2a20c68d01920eda7e4e1bf14dfbcb334a7634' && github.event.pull_request.head.sha || github.event.repository.default_branch) }}
+          fetch-depth: 0
+          persist-credentials: false
+      - id: admission
+        name: Require protected execution or the exact initial bootstrap base
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          BOOTSTRAP_BASE: fc2a20c68d01920eda7e4e1bf14dfbcb334a7634
+        run: |
+          if test "$EVENT" = pull_request_target; then
+            echo 'allowed=true' >> "$GITHUB_OUTPUT"
+          elif test "$BASE" = "$BOOTSTRAP_BASE"; then
+            observed="$(git ls-remote origin "refs/heads/$DEFAULT_BRANCH" | cut -f1)"
+            test "$observed" = "$BOOTSTRAP_BASE"
+            test -z "$(git ls-tree "$BOOTSTRAP_BASE" -- .github/workflows/pr-description.yml)"
+            echo 'allowed=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'allowed=false' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        if: steps.admission.outputs.allowed == 'true'
+        with:
+          python-version: '3.12'
+      - id: check
+        name: Bind the event description to its exact head
+        if: steps.admission.outputs.allowed == 'true'
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/check_pr_description.py --repo "$REPOSITORY" \
+            --commit "$HEAD_SHA" --event "$GITHUB_EVENT_PATH"
+
+  changed-since-last-push:
+    name: ${{ (github.event_name == 'pull_request_target' || github.event.pull_request.base.sha == 'fc2a20c68d01920eda7e4e1bf14dfbcb334a7634') && 'changed-since-last-push' || 'candidate-history-non-authoritative' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: description-push-record-${{ github.event.pull_request.number }}-${{ github.event_name }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.repository.default_branch || (github.event.pull_request.base.sha == 'fc2a20c68d01920eda7e4e1bf14dfbcb334a7634' && github.event.pull_request.head.sha || github.event.repository.default_branch) }}
+          fetch-depth: 0
+          persist-credentials: false
+      - id: admission
+        name: Require protected execution or the exact initial bootstrap base
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          BOOTSTRAP_BASE: fc2a20c68d01920eda7e4e1bf14dfbcb334a7634
+        run: |
+          if test "$EVENT" = pull_request_target; then
+            echo 'allowed=true' >> "$GITHUB_OUTPUT"
+          elif test "$BASE" = "$BOOTSTRAP_BASE"; then
+            observed="$(git ls-remote origin "refs/heads/$DEFAULT_BRANCH" | cut -f1)"
+            test "$observed" = "$BOOTSTRAP_BASE"
+            test -z "$(git ls-tree "$BOOTSTRAP_BASE" -- .github/workflows/pr-description.yml)"
+            echo 'allowed=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'allowed=false' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        if: steps.admission.outputs.allowed == 'true'
+        with:
+          python-version: '3.12'
+      - id: check
+        name: Compare immutable recorded event descriptions
+        if: steps.admission.outputs.allowed == 'true'
+        env:
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          ATTEMPT: ${{ github.run_attempt }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          python scripts/check_pr_description_changed.py --event "$GITHUB_EVENT_PATH" \
+            --repository "$REPOSITORY" --run-id "$RUN_ID" --attempt "$ATTEMPT" \
+            --output "$RUNNER_TEMP/description-history.json"
+          result=$?
+          if test -f "$RUNNER_TEMP/description-history.json"; then
+            echo 'record=true' >> "$GITHUB_OUTPUT"
+          fi
+          exit "$result"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always() && steps.admission.outputs.allowed == 'true' && steps.check.outputs.record == 'true' && (github.event.action == 'opened' || github.event.action == 'synchronize')
+        with:
+          name: pr-description-push-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/description-history.json
+          if-no-files-found: error
+          retention-days: 90
