@@ -21,19 +21,6 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _default_paths() -> tuple[tuple[Path, ...], tuple[Path, ...]]:
-    vlt_candidate = ROOT.parent.parent / "".join(["VSTD", "-", "Labs"]) / "website"
-    vlt_paths = (
-        vlt_candidate,
-        ROOT.parent / "website",
-    )
-    cg_paths = (
-        ROOT.parent / "claimgarden" / "web",
-        ROOT.parent.parent / "claimgarden" / "web",
-    )
-    return vlt_paths, cg_paths
-
-
 REQUIRED_DOCUMENTATION_FILES = (
     "docs/index.html",
     "docs/guides.html",
@@ -196,8 +183,13 @@ def fetch_pypi_status(package_name: str = "verifier-standard", timeout: float = 
         }
 
 
-def find_estate_path(configured: Path | None, env_var: str, defaults: tuple[Path, ...]) -> Path | None:
-    """Resolve an estate component path from CLI, environment, or standard locations."""
+def find_estate_path(configured: Path | None, env_var: str) -> Path | None:
+    """Resolve an estate component path from the CLI or the environment.
+
+    The operator names these directories. The script never guesses where other
+    checkouts sit on the machine that runs it, so the published source carries
+    no assumptions about any local layout.
+    """
     if configured and configured.is_dir():
         return configured
     env_val = os.environ.get(env_var)
@@ -205,9 +197,6 @@ def find_estate_path(configured: Path | None, env_var: str, defaults: tuple[Path
         p = Path(env_val)
         if p.is_dir():
             return p
-    for default in defaults:
-        if default.is_dir():
-            return default
     return None
 
 
@@ -306,7 +295,6 @@ def evaluate_estate_sync(
     If target_sync is True, evaluates synchronization against target_version.
     Otherwise evaluates against the live published PyPI version (or target_version if PyPI is unavailable).
     """
-    vlt_defaults, cg_defaults = _default_paths()
     doc_errors = check_mandatory_documentation_coverage(root, target_version)
     pypi_data = (
         {"status": "SKIPPED_OFFLINE", "latest_version": None, "release_count": None, "releases": []}
@@ -314,10 +302,10 @@ def evaluate_estate_sync(
         else fetch_pypi_status()
     )
 
-    resolved_labs_path = find_estate_path(vstd_labs_dir, "VSTD_LABS_ROOT", vlt_defaults)
+    resolved_labs_path = find_estate_path(vstd_labs_dir, "VSTD_LABS_ROOT")
     labs_data = inspect_vstd_labs(resolved_labs_path) if resolved_labs_path else {"status": "NOT_FOUND"}
 
-    resolved_cg_path = find_estate_path(claimgarden_dir, "CLAIMGARDEN_ROOT", cg_defaults)
+    resolved_cg_path = find_estate_path(claimgarden_dir, "CLAIMGARDEN_ROOT")
     cg_data = inspect_claimgarden(resolved_cg_path) if resolved_cg_path else {"status": "NOT_FOUND"}
 
     action_items: list[str] = []
@@ -411,7 +399,7 @@ def format_report(eval_result: dict[str, Any]) -> str:
             f"Session Pin: {labs.get('session_pinned_version')}"
         )
     else:
-        lines.append(f"  Company Site (vstd-labs) : {labs.get('status')}")
+        lines.append(f"  Company Site (vstd-labs) : {labs.get('status')} (pass --vstd-labs-dir or set VSTD_LABS_ROOT)")
 
     cg = eval_result["claimgarden"]
     if cg.get("status") == "OBSERVED":
@@ -420,7 +408,7 @@ def format_report(eval_result: dict[str, Any]) -> str:
             f"Catalog: {cg.get('catalog_vstd_version')}"
         )
     else:
-        lines.append(f"  ClaimGarden (claimgarden): {cg.get('status')}")
+        lines.append(f"  ClaimGarden (claimgarden): {cg.get('status')} (pass --claimgarden-dir or set CLAIMGARDEN_ROOT)")
 
     lines.append("-----------------------------------------------------------------")
     action_items = eval_result.get("action_items", [])
