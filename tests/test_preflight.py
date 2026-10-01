@@ -43,6 +43,7 @@ def test_docs_versions_detects_mismatch(tmp_path: Path, monkeypatch: pytest.Monk
     assert preflight.check_docs_versions() is False
 
 
+@pytest.mark.timeout(180)
 def test_presentation_gate_conforms() -> None:
     assert preflight.check_presentation_gate() is True
 
@@ -55,5 +56,6 @@ def test_git_signatures_on_head_or_range() -> None:
     assert isinstance(preflight.check_git_signatures("HEAD~1..HEAD"), bool)
 
 
+@pytest.mark.timeout(180)
 def test_preflight_main_execution() -> None:
     assert preflight.main() in (0, 1)
