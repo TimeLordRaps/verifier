@@ -58,12 +58,24 @@ LOCAL_WINDOWS_PATH = re.compile(
     r"\\\\Users[\\/]|[\\/]\.codex[\\/])"
 )
 DRIVE_QUALIFIED_PATH = re.compile(
-    r"(?i)(?<![A-Za-z0-9_%])(?:[A-Za-z]:(?:\\\\|[\\/])[A-Za-z0-9._-]{2,})"
+    r"(?i)(?<![A-Za-z0-9_%])(?:[A-Za-z]:(?:\\\\|[\\/])"
+    r"(?:[A-Za-z0-9._-]{2,}|[A-Za-z0-9._-](?=[\\/])))"
+)
+UNIX_HOME_PATH = re.compile(
+    r"(?<![A-Za-z0-9_./:\\])/(?:home|Users)/[^/\\\s\"'<>]+(?:/|(?=$|[\s\"'<>]))"
+)
+# Universal Naming Convention (UNC): require both a host and a share, so
+# ordinary escaped characters and isolated typesetting commands stay valid.
+UNC_PATH = re.compile(
+    r"(?<![A-Za-z0-9_:\\])\\{2,}[A-Za-z0-9][A-Za-z0-9._-]*"
+    r"\\+[A-Za-z0-9_$][A-Za-z0-9._$-]*(?:\\|(?=$|[\s\"']))"
 )
 LOCAL_MODEL_ARTIFACT_SUFFIX = re.compile(r"(?i)\.gguf\b")
 PUBLIC_BOUNDARY_PATTERNS = (
     ("local user or home path", LOCAL_WINDOWS_PATH),
     ("drive-qualified local path", DRIVE_QUALIFIED_PATH),
+    ("Unix or macOS home path", UNIX_HOME_PATH),
+    ("UNC network share path", UNC_PATH),
     ("synthetic private locator", re.compile(r"(?i)evaluator" r"-vault://")),
     (
         "private deployment field",
