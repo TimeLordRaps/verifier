@@ -1,12 +1,13 @@
 # AGENTS.md
 
-> **Acronyms:** application programming interface (API); Concise Binary Object Representation (CBOR);
-> CBOR Object Signing and Encryption (COSE); continuous integration (CI); command-line interface (CLI);
+> **Acronyms:** application programming interface (API); central processing unit (CPU);
+> Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE);
+> continuous integration (CI); command-line interface (CLI);
 > carriage return and line feed (CRLF); GNU Privacy Guard (GPG); hash-based message authentication code (HMAC);
 > Hypertext Markup Language (HTML); Internet Engineering Task Force (IETF);
 > International Organization for Standardization (ISO); JavaScript Object Notation (JSON); line feed (LF);
-> Supply Chain Integrity, Transparency, and Trust (SCITT); Verifier Standard (VSTD);
-> World Wide Web Consortium (W3C).
+> operating system (OS); Supply Chain Integrity, Transparency, and Trust (SCITT);
+> uniform resource locator (URL); Verifier Standard (VSTD); World Wide Web Consortium (W3C).
 
 Working rules for automated contributors to VSTD. Read this before editing anything.
 
@@ -381,6 +382,32 @@ The live observation occurs after GitHub Pages has deployed. A failed live obser
 detects incomplete or stale promotion and supports bounded retry; it does not automatically
 roll back the deployment. Use the separately recorded prior deployment for an explicitly
 authorized rollback.
+
+### 9.2 Mandatory test skip disclosure and rubric classification
+
+Automated agents MUST NOT permit unmonitored "skip slippage". Skipping tests without
+rigorous, rubric-categorized justification is non-conforming. Every test skip in local runs
+and pull requests must be justified against the formal definitional rubric in
+[`docs/TEST_SKIP_RUBRIC.md`](docs/TEST_SKIP_RUBRIC.md):
+
+1. `OS_CAPABILITY_GUARD`: Platform capability, kernel privilege, or filesystem primitive
+   unavailable on runner (e.g. unprivileged Windows symlink creation, POSIX `os.mkfifo`).
+2. `OPTIONAL_DEPENDENCY_ABSENT`: Documented package extra or binding not installed in the
+   minimal base environment (e.g. `scitt`, `seal`).
+3. `EXTERNAL_SERVICE_BOUNDARY`: Live external network service or endpoint excluded in
+   offline test execution.
+4. `ARCHITECTURAL_PLATFORM_UNSUPPORTED`: Hardware central processing unit (CPU) architecture
+   or endianness variant unsupported on runner.
+5. `HARDWARE_DEVICE_UNAVAILABLE`: Physical hardware, hardware security module, or accelerator unavailable.
+6. `PRIVILEGE_OR_CREDENTIAL_BOUNDARY`: Administrative/root rights or production secrets
+   intentionally withheld.
+7. `PERFORMANCE_OR_DURATION_EXCLUSION`: Long-duration stress, soak, or benchmark suite
+   excluded from rapid gates.
+8. `QUARANTINED_DEFECT`: Confirmed upstream or tracked defect with an active issue uniform resource locator (URL).
+
+Pull requests MUST include the completed rubric checklist and itemized skip inventory in
+`## Test skip rubric disclosure`. An unclassified skip or missing technical rationale will
+cause the pull-request policy check to fail closed.
 
 ## 10. Safety
 

@@ -67,6 +67,21 @@ supports byte-level reproducibility for that rerun and those outputs. A mismatch
 refutes that bounded statement. Missing evidence or capability must remain
 `UNKNOWN`, rather than becoming success.
 
+## Publish to Claim Garden
+
+When local inspection and validation confirm a `VERIFIED` verdict, publish the verified
+receipt and claim bundle to Claim Garden (`https://claimgarden.com`):
+
+```bash
+vstd publish receipt-demo
+```
+
+The CLI executes local fail-closed preflight checks: verifying that the overall verdict is
+`VERIFIED`, statements checked count is positive, and canonical Secure Hash Algorithm
+256-bit (SHA-256) digests of the claim and receipt match. If any check fails, publication
+refuses network submission. See the [claim publication tutorial](tutorials/PUBLISH_A_CLAIM.md)
+for endpoint configuration and publisher credentials.
+
 ## Follow the evidence boundary
 
 | Observation | What it establishes | What it does not establish |
@@ -75,6 +90,7 @@ refutes that bounded statement. Missing evidence or capability must remain
 | Run completes | The capture path produced its recorded run and bundle | Independent validation or claim truth |
 | Validation succeeds | The implemented structural and digest checks succeed | External evidence or artifact comparison |
 | Rerun outputs agree | The declared outputs match for that rerun | Universal determinism, portability, or independent corroboration |
+| Publication succeeds | The verified claim packet was admitted to Claim Garden in PENDING_REVIEW state | Claim accreditation, moderation approval, or independent recomputation |
 
 The example declares limitations and refutation conditions so a result stays tied
 to its actual scope. Keep those boundaries when adapting it to your own work.

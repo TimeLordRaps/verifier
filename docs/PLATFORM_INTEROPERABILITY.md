@@ -61,7 +61,8 @@ Collection placeholders are not executed tests. Parameterized instances are not 
 of independent mechanisms. The reports map 18 catalog entries through 13 test modules
 and 413 mapped instances; shared tests and wrappers do not become independent verifiers.
 The raw reports retain the exact skip reasons. Unavailable optional mechanisms and
-platform-specific filesystem cases do not earn passing coverage.
+platform-specific filesystem cases do not earn passing coverage. See
+[`TEST_SKIP_RUBRIC.md`](TEST_SKIP_RUBRIC.md) for the normative skip classification rubric.
 
 ## Evidence classes
 

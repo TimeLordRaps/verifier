@@ -2,7 +2,7 @@
 """Terminology: continuous integration (CI);
 Extensible Markup Language (XML); identifier (ID);
 Java unit test report format (JUnit); JavaScript Object Notation (JSON);
-pull request (PR); Secure Hash Algorithm 256-bit (SHA-256);
+operating system (OS); pull request (PR); Secure Hash Algorithm 256-bit (SHA-256);
 uniform resource locator (URL); Verifier Standard (VSTD).
 
 Validate the exact-head pull-request promotion record.
@@ -42,6 +42,16 @@ BOUND_FIELD_NAMES = tuple(
 )
 TRUSTED_ASSOCIATIONS = frozenset({"OWNER", "MEMBER", "COLLABORATOR"})
 REPOSITORY_CHECK_WORKFLOW_PATH = ".github/workflows/ci.yml"
+TEST_SKIP_RUBRIC_CATEGORIES = (
+    "OS_CAPABILITY_GUARD",
+    "OPTIONAL_DEPENDENCY_ABSENT",
+    "EXTERNAL_SERVICE_BOUNDARY",
+    "ARCHITECTURAL_PLATFORM_UNSUPPORTED",
+    "HARDWARE_DEVICE_UNAVAILABLE",
+    "PRIVILEGE_OR_CREDENTIAL_BOUNDARY",
+    "PERFORMANCE_OR_DURATION_EXCLUSION",
+    "QUARANTINED_DEFECT",
+)
 REQUIRED_CHECKLIST_ITEMS = (
     "I did not turn `UNKNOWN` or `CONFLICTED` into a clean result.",
     "I did not strengthen a claim without stronger evidence.",
@@ -51,7 +61,7 @@ REQUIRED_CHECKLIST_ITEMS = (
     "Every actionable review finding is resolved or explicitly retained as a blocker.",
     "The promotion record and human acceptance bind the current final head.",
     "Hosted and local evidence was refreshed after the final push.",
-    "Every skipped or unrun check and its claim consequence is disclosed.",
+    "Every skipped test is categorized under the formal skip rubric with technical rationale, or verified zero skips.",
     "Post-merge validation has a named owner; merge and release remain separately authorized actions.",
 )
 PLACEHOLDER = re.compile(
@@ -216,6 +226,126 @@ def _checklist(body: str) -> list[str]:
     return lines
 
 
+def _parse_skipped_test_inventory(section: str) -> list[dict[str, str]]:
+    inventory_heading = re.search(
+        r"^###\s+Skipped test inventory\s*$", section, re.MULTILINE
+    )
+    if not inventory_heading:
+        raise PullRequestPolicyError("missing required section: Skipped test inventory")
+    table_text = section[inventory_heading.end():].strip()
+    lines = [line.strip() for line in table_text.splitlines() if line.strip()]
+    table_rows: list[list[str]] = []
+    for line in lines:
+        if line.startswith("##"):
+            break
+        if not line.startswith("|") or not line.endswith("|"):
+            continue
+        cells = [c.strip() for c in line[1:-1].split("|")]
+        if any("test coordinate" in c.lower() for c in cells):
+            continue
+        if all(re.match(r"^:?-+:?$", c) for c in cells if c):
+            continue
+        if len(cells) != 4:
+            raise PullRequestPolicyError(
+                f"skipped test inventory table row must have exactly 4 columns: {line}"
+            )
+        table_rows.append(cells)
+
+    parsed: list[dict[str, str]] = []
+    for cells in table_rows:
+        coord, category, reason, consequence = [c.strip("` ") for c in cells]
+        parsed.append(
+            {
+                "claim_consequence": consequence,
+                "coordinate": coord,
+                "rubric_category": category,
+                "technical_reason": reason,
+            }
+        )
+    return parsed
+
+
+def _validate_test_skip_rubric(body: str, disposition_kind: str) -> dict[str, object]:
+    section = _section(body, "Test skip rubric disclosure")
+    if PLACEHOLDER.search(section):
+        raise PullRequestPolicyError("test skip rubric disclosure contains unresolved placeholders")
+    checked_categories = [
+        category
+        for category in TEST_SKIP_RUBRIC_CATEGORIES
+        if re.search(rf"^- \[[xX]\]\s+`?{re.escape(category)}`?", section, re.MULTILINE)
+    ]
+    not_applicable = bool(
+        re.search(r"^- \[[xX]\]\s+`?NOT_APPLICABLE`?", section, re.MULTILINE)
+    )
+    inventory = _parse_skipped_test_inventory(section)
+
+    if disposition_kind == "DISCLOSED":
+        if not_applicable:
+            raise PullRequestPolicyError(
+                "NOT_APPLICABLE cannot be checked when tests are skipped or not run"
+            )
+        if not checked_categories:
+            raise PullRequestPolicyError(
+                "at least one formal rubric category must be checked when tests are skipped"
+            )
+        if not inventory:
+            raise PullRequestPolicyError(
+                "skipped test inventory table must not be empty when tests are skipped or not run"
+            )
+        for item in inventory:
+            coord = item["coordinate"]
+            cat = item["rubric_category"]
+            reason = item["technical_reason"]
+            consequence = item["claim_consequence"]
+            if coord.lower() in {"none", "n/a", "none (or list skipped tests)"} or coord.lower().startswith("none ("):
+                raise PullRequestPolicyError(
+                    f"skipped test inventory contains unresolved template placeholder: {coord}"
+                )
+            if cat not in TEST_SKIP_RUBRIC_CATEGORIES:
+                raise PullRequestPolicyError(
+                    f"unrecognized rubric category in skipped test inventory: {cat}"
+                )
+            if cat not in checked_categories:
+                raise PullRequestPolicyError(
+                    f"rubric category {cat} in inventory is not checked in the rubric checklist"
+                )
+            if not reason or reason.upper() in {"N/A", "NONE", "TODO", "TBD", "REPLACE"}:
+                raise PullRequestPolicyError(
+                    f"technical reason missing or unresolved for {coord}"
+                )
+            if not consequence or consequence.upper() in {"N/A", "NONE", "TODO", "TBD", "REPLACE"}:
+                raise PullRequestPolicyError(
+                    f"claim consequence missing or unresolved for {coord}"
+                )
+        inventory_categories = {item["rubric_category"] for item in inventory}
+        if set(checked_categories) != inventory_categories:
+            missing_in_inv = sorted(set(checked_categories) - inventory_categories)
+            raise PullRequestPolicyError(
+                f"checked rubric categories do not match categories in skipped test inventory: {missing_in_inv}"
+            )
+    elif disposition_kind == "NONE":
+        if not not_applicable:
+            raise PullRequestPolicyError(
+                "NOT_APPLICABLE must be checked when zero tests are skipped"
+            )
+        if checked_categories:
+            raise PullRequestPolicyError(
+                "no skip category may be checked when zero tests are skipped"
+            )
+        for item in inventory:
+            if item["rubric_category"] in TEST_SKIP_RUBRIC_CATEGORIES:
+                raise PullRequestPolicyError(
+                    "cannot itemize skipped tests when zero tests are skipped"
+                )
+        inventory = []
+
+    return {
+        "checked_categories": checked_categories,
+        "inventory": inventory,
+        "not_applicable": not_applicable,
+    }
+
+
 def promotion_record(body: str) -> dict[str, object]:
     """Return the canonical non-circular record bound by human acceptance."""
     body = _bounded_body(body)
@@ -224,6 +354,10 @@ def promotion_record(body: str) -> dict[str, object]:
     for name, value in values.items():
         if _field(promotion_section, name) != value:
             raise PullRequestPolicyError(f"promotion field is outside its section: {name}")
+    tests_skipped = values["Tests skipped or not run"]
+    disp_match = TEST_DISPOSITION.fullmatch(tests_skipped)
+    disp_kind = disp_match.group(1) if disp_match is not None else "DISCLOSED"
+    skip_rubric = _validate_test_skip_rubric(body, disp_kind)
     return {
         "actionable_findings": values["Actionable findings"],
         "executed_integration_commit": values["Executed integration commit"].strip("`"),
@@ -236,6 +370,7 @@ def promotion_record(body: str) -> dict[str, object]:
         ],
         "repository_check_event": values["Repository-check event"],
         "repository_check_run": values["Repository-check run"],
+        "test_skip_rubric": skip_rubric,
         "tests_skipped_or_not_run": values["Tests skipped or not run"],
     }
 
@@ -579,7 +714,8 @@ def validate(
     recorded_digest = values["Promotion record SHA-256"].strip("`")
     if FULL_DIGEST.fullmatch(recorded_digest) is None or recorded_digest != record_sha256:
         raise PullRequestPolicyError("promotion record SHA-256 does not match canonical record")
-    if re.search(r"^- \[ \]", body, re.MULTILINE):
+    checklist_content = _section(body, "Checklist")
+    if re.search(r"^- \[ \]", checklist_content, re.MULTILINE):
         raise PullRequestPolicyError("the pull-request checklist contains unchecked items")
 
     acceptance_url = _acceptance_url(values["Human acceptance evidence"])
@@ -593,6 +729,8 @@ def validate(
         raise PullRequestPolicyError(
             "acceptance evidence is not trusted or does not bind the exact head and record"
         )
+    record = promotion_record(body)
+    skip_rubric = record["test_skip_rubric"]
     return {
         "schema_version": 1,
         "result": "PASS",
@@ -612,6 +750,9 @@ def validate(
         "test_evidence_skip_observation_omission_count": len(
             test_evidence_manifest["skip_observation_omissions"]
         ),
+        "test_skip_rubric_categories": skip_rubric["checked_categories"],
+        "test_skip_rubric_inventory": skip_rubric["inventory"],
+        "test_skip_rubric_not_applicable": skip_rubric["not_applicable"],
         "claim_boundary": (
             "Recorded trusted-participant acceptance and coordinate completeness; not reviewer "
             "comprehension, implementation correctness, merge identity, or release authorization."

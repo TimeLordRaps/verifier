@@ -239,15 +239,142 @@ def check_schema_inventory() -> bool:
     return True
 
 
+TEST_SKIP_RUBRIC_CATEGORIES = (
+    "OS_CAPABILITY_GUARD",
+    "OPTIONAL_DEPENDENCY_ABSENT",
+    "EXTERNAL_SERVICE_BOUNDARY",
+    "ARCHITECTURAL_PLATFORM_UNSUPPORTED",
+    "HARDWARE_DEVICE_UNAVAILABLE",
+    "PRIVILEGE_OR_CREDENTIAL_BOUNDARY",
+    "PERFORMANCE_OR_DURATION_EXCLUSION",
+    "QUARANTINED_DEFECT",
+)
+
+
+def classify_skip_reason(reason: str) -> str:
+    """Classify a test skip reason string against the formal rubric in docs/TEST_SKIP_RUBRIC.md."""
+    stripped = reason.strip()
+    for category in TEST_SKIP_RUBRIC_CATEGORIES:
+        if (
+            stripped.startswith(f"[{category}]")
+            or stripped.startswith(f"[`{category}`]")
+            or stripped.startswith(f"{category}:")
+            or stripped.startswith(f"`{category}`:")
+            or stripped.startswith(f"{category} -")
+        ):
+            return category
+
+    lower = stripped.lower()
+    if any(
+        term in lower
+        for term in (
+            "symlink",
+            "mkfifo",
+            "fifo",
+            "first-in, first-out",
+            "named pipe",
+            "unix",
+            "posix",
+            "errno=",
+            "winerror=",
+        )
+    ):
+        return "OS_CAPABILITY_GUARD"
+    if any(term in lower for term in ("optional", "extra", "scitt", "seal", "dependency")):
+        return "OPTIONAL_DEPENDENCY_ABSENT"
+    if any(term in lower for term in ("network", "service", "endpoint", "offline", "air-gap")):
+        return "EXTERNAL_SERVICE_BOUNDARY"
+    if any(term in lower for term in ("architecture", "arm64", "x86_64", "endian")):
+        return "ARCHITECTURAL_PLATFORM_UNSUPPORTED"
+    if any(term in lower for term in ("hardware", "device", "gpu", "tpu", "hsm", "accelerator")):
+        return "HARDWARE_DEVICE_UNAVAILABLE"
+    if any(term in lower for term in ("privilege", "admin", "root", "credential", "secret", "permission")):
+        return "PRIVILEGE_OR_CREDENTIAL_BOUNDARY"
+    if any(term in lower for term in ("slow", "duration", "benchmark", "soak", "stress", "performance")):
+        return "PERFORMANCE_OR_DURATION_EXCLUSION"
+    if any(term in lower for term in ("quarantin", "issue", "bug", "defect", "http://", "https://")):
+        return "QUARANTINED_DEFECT"
+    return "UNCLASSIFIED"
+
+
+def audit_test_skips(output: str) -> tuple[bool, dict[str, int], list[tuple[str, str]]]:
+    """Parse pytest skip output and audit against the rubric to prevent skip slippage."""
+    counts: dict[str, int] = {category: 0 for category in TEST_SKIP_RUBRIC_CATEGORIES}
+    unclassified: list[tuple[str, str]] = []
+
+    skip_pattern = re.compile(
+        r"^SKIPPED(?:\s+\[(\d+)\])?\s+((?:[A-Za-z]:)?[^:\r\n]+(?::\d+|::[^\r\n:]+)?):\s*(.*)$",
+        re.MULTILINE,
+    )
+
+    for match in skip_pattern.finditer(output):
+        count_str, loc, reason = match.groups()
+        count = int(count_str) if count_str else 1
+        category = classify_skip_reason(reason)
+        if category in counts:
+            counts[category] += count
+        else:
+            unclassified.append((loc, reason))
+
+    total_parsed = sum(counts.values()) + len(unclassified)
+    summary_match = re.search(r"=\s*.*?\b(\d+)\s+skipped\b.*?\s*=", output)
+    if not summary_match:
+        summary_match = re.search(r"\b(\d+)\s+skipped\b", output)
+    if summary_match:
+        summary_skips = int(summary_match.group(1))
+        if summary_skips > total_parsed:
+            unclassified.append((
+                "PYTEST_SUMMARY_DISCREPANCY",
+                f"pytest reported {summary_skips} skipped tests, but audit parsed only {total_parsed} skips (unparsed skip slippage)",
+            ))
+
+    success = len(unclassified) == 0
+    return success, counts, unclassified
+
+
+def check_test_skips(output: str | None = None) -> bool:
+    """Run skip audit and print classified skip rationale or unclassified slippage."""
+    if output is None:
+        cmd = [sys.executable, "-m", "pytest", "-q", "-rs", "tests/"]
+        code, stdout, stderr = _run_command(cmd)
+        output = stdout + "\n" + stderr
+
+    success, counts, unclassified = audit_test_skips(output)
+    total_skips = sum(counts.values()) + len(unclassified)
+
+    if not success:
+        print(f"[SKIP AUDIT] FAIL: Found {len(unclassified)} unclassified test skip(s) risking skip slippage:")
+        for loc, reason in unclassified:
+            print(f"  - [{loc}] {reason}")
+        print("\nRemedy:")
+        print("  Every skipped test must be justified against docs/TEST_SKIP_RUBRIC.md.")
+        print("  Either update the test skip message with a rubric tag like [OS_CAPABILITY_GUARD],")
+        print("  or ensure the rationale clearly documents the missing platform capability/dependency.")
+        return False
+
+    if total_skips == 0:
+        print("[SKIP AUDIT] PASS: Zero tests skipped (complete clean run).")
+        return True
+
+    print(f"[SKIP AUDIT] PASS: All {total_skips} skipped test(s) accounted for under rubric categories:")
+    for category, count in counts.items():
+        if count > 0:
+            print(f"  - {category}: {count} test(s)")
+    return True
+
+
 def check_full_test_suite() -> bool:
-    """Run full repository pytest test suite."""
-    cmd = [sys.executable, "-m", "pytest", "-q"]
+    """Run full repository pytest test suite and audit test skips."""
+    cmd = [sys.executable, "-m", "pytest", "-q", "-rs"]
     code, stdout, stderr = _run_command(cmd)
     if code != 0:
         print(f"[TEST SUITE] FAIL: Pytest suite failed:")
         print(stdout or stderr)
         return False
     print("[TEST SUITE] PASS: Full test suite passed.")
+    if stdout:
+        if not check_test_skips(stdout):
+            return False
     return True
 
 
@@ -345,6 +472,7 @@ def main() -> int:
     parser.add_argument("--range", dest="rev_range", default=None, help="Commit range to check for signatures")
     parser.add_argument("--full", action="store_true", help="Run full test suite in addition to fast preflight")
     parser.add_argument("--signatures-only", action="store_true", help="Check only commit signatures")
+    parser.add_argument("--audit-skips", action="store_true", help="Audit test skips against docs/TEST_SKIP_RUBRIC.md")
     args, remaining = parser.parse_known_args()
 
     if args.install_hook:
@@ -352,6 +480,9 @@ def main() -> int:
 
     if args.pre_push:
         return handle_pre_push(remaining)
+
+    if args.audit_skips:
+        return 0 if check_test_skips() else 1
 
     print("=== VSTD Preflight Flight Check ===")
     success = True
