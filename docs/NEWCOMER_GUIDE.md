@@ -149,10 +149,11 @@ Automated agent evaluations and language model leaderboards are plagued by promp
 When working in advanced mathematical foundations, interactive theorem provers (such as Lean 4, Coq, Isabelle, or Metamath) and foundational algebraic kernels produce mechanically checked proofs:
 - In formal mathematical ecosystems—such as `hypermath` (primitive foundational algebraic kernel, quadrilateral filtration, Lean 4 bridge), `ordinatics` (ordinal arithmetic, Veblen hierarchies, transfinite stage semantics), `grounded-hyperset-theory` (Aczel's Anti-Foundation Axiom (AFA), accessible pointed graphs (APGs), non-well-founded sets), and `grounded-hypercalculi` (Oracle, Language, Meta, Hyper, Ordinal, and Real Calculi, stratified reflection)—mathematical claims span multiple formal representations.
 - A Lean 4 proof verifies a proposition relative to Lean's environment and axioms. But how do you verify cross-system mathematics—for example, connecting a Lean 4 theorem to a Python algebraic kernel, a SAT solver certificate, or a Metamath proof step without trusting a single monolithic system?
-- VSTD provides the **meta-verification envelope**:
-  1. **Axiom Enumeration**: It binds the exact explicit axiom set (refusing ungrounded axioms or `sorry` escapes).
-  2. **Environment & Kernel Binding**: It hashes the exact prover kernel binary, source files, and dependencies.
-  3. **Heterogeneous Composition**: It allows an ordinal bound in `ordinatics`, a hyperset graph in `grounded-hyperset-theory`, and an equational derivation in `hypermath` to link together into a unified, refutable proof graph.
+- **Planned for VSTD 2.0.0; not implemented in this release.** The intended **meta-verification envelope** would:
+  1. **Axiom Enumeration**: bind the exact explicit axiom set (refusing ungrounded axioms or `sorry` escapes).
+  2. **Environment & Kernel Binding**: hash the exact prover kernel binary, source files, and dependencies.
+  3. **Heterogeneous Composition**: let an ordinal bound in `ordinatics`, a hyperset graph in `grounded-hyperset-theory`, and an equational derivation in `hypermath` link together into a unified, refutable proof graph.
+- **What exists today.** No code in `src/` reads Lean, Metamath or any prover output. The current release binds artifact digests and bounded SAT certificates, and `standard/TYPED_FORMATION.md` states that it is "not a translation theorem for Hypermath". A prover's acceptance is the proof status; VSTD can bind that acceptance as an artifact and cannot substitute for it. The meta-class table in `ROADMAP.md` (Lean row) is the design target this work will fill.
 - **Tutorial & Runnable Specimen**: Review [Python API Guide: Grounded Decision Certificates](PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc) and the [Normative VSTD-4 Grounded Certificate Specification](../standard/VSTD-4.md).
 
 ### G. For Nanochemistry, Molecular Robotics & Mechanosynthesis (Self-Assembly Containment and Anti-Replication Gates)
