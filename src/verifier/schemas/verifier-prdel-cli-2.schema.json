@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-prdel-cli-2.schema.json",
+  "title": "Pull Request Domain Explanation Language (PRDEL) command-line interface (CLI) result, version 2",
+  "description": "Development-candidate wrapper for explicit version-two validation, exact render equality, and complete private shard replay. Unsupported compilation, comparison, impact-DAG, and frontier-discharge capabilities remain UNKNOWN without version-one fallback.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "report", "findings"],
+  "properties": {
+    "schema_version": {"const": "verifier-prdel-cli-2"},
+    "operation": {"enum": ["render", "validate-shards"]},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "rendered": {"type": "string"},
+    "report": {
+      "type": "object",
+      "required": ["schema_version", "status", "source_grounding_status", "semantic_status", "claim_boundary", "findings"],
+      "properties": {
+        "schema_version": {"const": "verifier-prdel-report-2"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "source_grounding_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "semantic_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "verdict_scope": {"const": "GATE_OBLIGATION_FULFILLMENT"},
+        "proposition_truth": {"const": "NOT_INFERRED_FROM_MISSING_EVIDENCE"},
+        "required_checks_not_run": {"type": "integer", "minimum": 0},
+        "claim_boundary": {"type": "string"},
+        "findings": {"type": "array"}
+      }
+    },
+    "shard_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "status",
+        "transport_status",
+        "coverage_status",
+        "recomposition_status",
+        "scope",
+        "gate_status",
+        "reason",
+        "logical_report"
+      ],
+      "properties": {
+        "schema_version": {"const": "verifier-prdel-v2-shard-report-1"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "transport_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "coverage_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "recomposition_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "scope": {"const": "V2_MANUAL_TEMPLATE_TRANSPORT_ONLY"},
+        "gate_status": {"const": "NOT_ASSESSED"},
+        "reason": {"type": ["string", "null"]},
+        "logical_report": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "required": ["schema_version", "status", "findings"],
+              "properties": {
+                "schema_version": {"const": "verifier-prdel-report-2"},
+                "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+                "findings": {"type": "array"}
+              }
+            }
+          ]
+        }
+      }
+    },
+    "findings": {"type": "array", "items": {"type": "string"}}
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["operation"],
+        "properties": {"operation": {"const": "render"}}
+      },
+      "then": {
+        "required": ["rendered"],
+        "not": {"required": ["shard_report"]}
+      }
+    },
+    {
+      "if": {
+        "required": ["operation"],
+        "properties": {"operation": {"const": "validate-shards"}}
+      },
+      "then": {
+        "required": ["shard_report"],
+        "not": {"required": ["rendered"]}
+      }
+    },
+    {
+      "if": {"not": {"required": ["operation"]}},
+      "then": {
+        "not": {
+          "anyOf": [
+            {"required": ["rendered"]},
+            {"required": ["shard_report"]}
+          ]
+        }
+      }
+    }
+  ]
+}

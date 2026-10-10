@@ -316,7 +316,7 @@ def test_formation_mechanism_has_exact_selected_source_identity() -> None:
     mechanism, _store, _session, _binding, _payloads = _fixture()
     module = importlib.import_module("verifier.interoperability.formation_mechanism")
     root = Path(module.__file__).parent
-    inventory = {"schema_version": "VSTD-TYPED-FORMATION-SOURCE-IDENTITY-0.1",
+    inventory = {"schema_version": "verifier-typed-formation-source-identity-1",
         "profile_digest": wire.profile_digest(), "sources": [
             {"path": name, "digest": wire.digest_bytes((root / name).read_bytes())}
             for name in ("formation_mechanism.py", "formation_checker.py", "formation_wire.py", "network.py")

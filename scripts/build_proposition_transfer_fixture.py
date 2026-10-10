@@ -43,10 +43,10 @@ def _proposition(
     evidence: dict[str, bytes], *, raw: bytes | None = None,
 ) -> dict[str, Any]:
     payload = raw if raw is not None else canonical_bytes({
-        "schema_version": "VSTD-CANONICAL-FINITE-SET-0.1", "items": _sorted(items),
+        "schema_version": "verifier-canonical-finite-set-1", "items": _sorted(items),
     })
     record = ObjectRecord.from_payload(
-        payload, "application/json", "finite-set", "VSTD-CANONICAL-FINITE-SET-0.1",
+        payload, "application/json", "finite-set", "verifier-canonical-finite-set-1",
     )
     commit = replace(base, census=(*base.census, CensusEntry(path, record, "DISPENSABLE")))
     commit_bytes = canonical_bytes(commit.to_dict())
@@ -95,7 +95,7 @@ def build_fixture() -> dict[str, Any]:
         sources = sources if sources is not None else [(["a"], ["a"]), (["b"], ["b"])]
         target = target if target is not None else (["a", "b"], ["a", "b"])
         declaration = {
-            "schema_version": "VSTD-PROPOSITION-TRANSFER-0.1",
+            "schema_version": "verifier-proposition-transfer-1",
             "rule_id": "canonical_finite_set_union_v1",
             "rule_profile_digest": digest_bytes(rule_profile_bytes()),
             "premises": [
@@ -200,7 +200,7 @@ def build_fixture() -> dict[str, Any]:
            artifact_relation="UNKNOWN", upper_bound_preservation="UNKNOWN",
            conclusion_support="NOT_ESTABLISHED")
     return {
-        "schema_version": "VSTD-PROPOSITION-TRANSFER-FIXTURE-0.1",
+        "schema_version": "verifier-proposition-transfer-fixture-1",
         "rule_profile_canonical_json": rule_profile_bytes().decode("utf-8"),
         "rule_profile_digest": digest_bytes(rule_profile_bytes()),
         "cases": sorted(cases, key=lambda item: item["case_id"]),

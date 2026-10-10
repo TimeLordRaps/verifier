@@ -15,6 +15,8 @@ escalation, see [`HUMANS.md`](HUMANS.md).
 
 None.
 
+## Recording a contradiction
+
 When a contradiction is open, change the status to `Status: OPEN` and record the exact
 coordinates, both incompatible claims, evidence for each side, and affected behavior. An
 evidence-backed repair removes the resolved live entry and returns this file to

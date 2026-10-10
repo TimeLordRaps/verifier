@@ -49,7 +49,7 @@ def _fixture(tmp_path: Path, *, omit: str | None = None) -> tuple[dict, dict, tu
         evidence[model_record.object_digest] = selected_store.read_object(model_record)
         selections.append({"commit_digest": commit.canonical_digest(), "authority_model_path": commit.authority_model_path, "authority_model_digest": model_record.object_digest})
     declaration = {
-        "schema_version": "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
+        "schema_version": "verifier-finite-authority-composition-1",
         "profile_digest": "sha256:" + "0" * 64,
         "members": selections[:-1], "composite": selections[-1],
         "state_bindings": [

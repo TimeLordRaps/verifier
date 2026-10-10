@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-prdel-1.schema.json",
+  "title": "Pull Request Domain Explanation Language (PRDEL), version 1",
+  "description": "Structural template contract. Exact independent source recomputation and supported predicates are required for bounded clearance; schema validation alone grants no semantic, execution or release clearance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "binding", "requirements", "source_obligations", "impact_graph", "records", "evidence"],
+  "properties": {
+    "schema_version": {"const": "verifier-prdel-1"},
+    "binding": {"$ref": "#/$defs/binding"},
+    "requirements": {"$ref": "#/$defs/requirements"},
+    "source_obligations": {"type": "array", "minItems": 1, "maxItems": 40000, "items": {"type": "object", "required": ["id", "kind", "path", "question"], "properties": {"id": {"type": "string"}, "kind": {"enum": ["source", "contract", "frontier"]}, "path": {"type": "string"}, "question": {"type": "string"}}}},
+    "impact_graph": {"type": "object", "description": "Generated graph must equal independent recomputation.", "required": ["schema_version", "binding", "nodes", "edges", "obligations", "frontier", "components", "dag_edges", "bounds", "selected_predicates"], "properties": {"schema_version": {"const": "verifier-prdel-impact-1"}, "binding": {"$ref": "#/$defs/binding"}, "nodes": {"type": "array"}, "edges": {"type": "array"}, "obligations": {"type": "array"}, "frontier": {"type": "array"}, "components": {"type": "array"}, "dag_edges": {"type": "array"}, "bounds": {"type": "object"}, "selected_predicates": {"type": "object"}}},
+    "records": {"type": "array", "maxItems": 40000, "items": {"$ref": "#/$defs/record"}},
+    "evidence": {"type": "array", "description": "Reported observations never authenticate their own execution.", "items": {"type": "object"}}
+  },
+  "$defs": {
+    "binding": {
+      "type": "object", "additionalProperties": false, "required": ["base", "head", "source_digest", "requirements_digest"],
+      "properties": {
+        "base": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+        "head": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+        "source_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "requirements_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "requirements": {
+      "type": "object", "additionalProperties": false, "required": ["schema_version", "items"],
+      "properties": {
+        "schema_version": {"const": "verifier-prdel-requirements-1"},
+        "items": {"type": "array", "minItems": 1, "maxItems": 10000, "items": {"type": "object", "additionalProperties": false, "required": ["id", "text"], "properties": {"id": {"type": "string", "minLength": 1, "maxLength": 256}, "text": {"type": "string", "minLength": 1, "maxLength": 16384}, "predicate": {"$ref": "#/$defs/finitePredicate"}}}}
+      }
+    },
+    "finitePredicate": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "path", "symbol", "cases"],
+      "properties": {
+        "kind": {"const": "finite_python_function"}, "path": {"type": "string", "minLength": 1}, "symbol": {"type": "string", "minLength": 1},
+        "cases": {"type": "array", "minItems": 1, "maxItems": 128, "items": {"type": "object", "additionalProperties": false, "required": ["arguments", "expected"], "properties": {"arguments": {"type": "array", "maxItems": 16, "items": {"type": "integer", "minimum": -1000000000, "maximum": 1000000000}}, "expected": {"type": "integer", "minimum": -1000000000, "maximum": 1000000000}}}}
+      }
+    },
+    "record": {
+      "type": "object", "additionalProperties": false, "required": ["id", "requirement_ids", "why", "claims", "summary", "limits", "coverage"],
+      "properties": {
+        "id": {"type": "string"}, "requirement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "why": {"type": "object", "additionalProperties": false, "required": ["requirement_id", "quote"], "properties": {"requirement_id": {"type": ["string", "null"]}, "quote": {"type": "string"}}},
+        "claims": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/claim"}},
+        "summary": {"type": "string", "description": "Exactly the newline-joined natural rendering of supported claims."},
+        "limits": {"type": "array", "uniqueItems": true, "maxItems": 5, "items": {"enum": ["NO_RUNTIME_CORRECTNESS", "NO_EXECUTION_PROVENANCE", "NO_REQUIREMENT_AUTHORITY", "NO_COMPLETE_OBJECTIVE_CLOSURE", "EXACT_COMMIT_SCOPE"]}},
+        "coverage": {"type": "object", "additionalProperties": {"type": "object"}, "propertyNames": {"enum": ["base", "unit", "integration", "regression", "preventative"]}}
+      }
+    },
+    "claim": {"oneOf": [
+      {"type": "object", "additionalProperties": false, "required": ["kind", "obligation_id"], "properties": {"kind": {"enum": ["source_delta", "no_source_changes"]}, "obligation_id": {"type": "string"}}},
+      {"type": "object", "additionalProperties": false, "required": ["kind", "edge_id"], "properties": {"kind": {"const": "ast_relationship"}, "edge_id": {"type": "string"}}},
+      {"type": "object", "additionalProperties": false, "required": ["kind", "requirement_id", "quote"], "properties": {"kind": {"const": "requirement_quote"}, "requirement_id": {"type": "string"}, "quote": {"type": "string"}}},
+      {"type": "object", "additionalProperties": false, "required": ["kind", "requirement_id"], "properties": {"kind": {"const": "finite_function_contract"}, "requirement_id": {"type": "string"}}}
+    ]}
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "checks": {
+    "scitt_evidence_bytes_identical": true,
+    "scitt_signature_and_inclusion_receipt_after_external_artifact_mutation": "PASS",
+    "scitt_signature_and_inclusion_receipt_original": "PASS",
+    "vstd_mutated_artifact_composition": "FAIL",
+    "vstd_original_exact_artifact_composition": "PASS"
+  },
+  "conclusion": "The signed statement and inclusion receipt remain authentic for the original statement. They do not establish the attempted proposition about different artifact bytes; exact VSTD composition rejects it.",
+  "demonstration": "authentic-receipt-unsupported-proposition/1",
+  "mutated": {
+    "artifact_sha256": "7f02fae37eb628f9ad7c88e49c8d31146886fedc0a8fc460a466ff66165d435f",
+    "composition": {
+      "native_scitt_result": "SIGNED_STATEMENT_AND_INCLUSION_RECEIPT_VERIFIED",
+      "native_vstd_result": "PASS",
+      "reason": "artifact binding mismatch",
+      "scitt_statement_sha256": "3e6f2a928abc6162511d648305a91b7fa242803f4b607c4beb91a0d8ab8391b5",
+      "status": "FAIL",
+      "status_scope": "NATIVE_VSTD_RESULT_AND_SCITT_REGISTRATION",
+      "vstd_conformance_status": "NOT_ESTABLISHED",
+      "vstd_receipt_sha256": "f8117247e97f12834206f5b024085c54b5d899e6880659d8afcebfeee2ddece1"
+    }
+  },
+  "original": {
+    "artifact_sha256": "39c442988b425a1e4cc7c6bb41d4fb35046dea61a5be3cdf39a582b054eae341",
+    "composition": {
+      "native_scitt_result": "SIGNED_STATEMENT_AND_INCLUSION_RECEIPT_VERIFIED",
+      "native_vstd_result": "PASS",
+      "reason": "native candidate-check result PASS (VSTD conformance NOT_ESTABLISHED) and exact current SCITT registration both verified",
+      "scitt_statement_sha256": "3e6f2a928abc6162511d648305a91b7fa242803f4b607c4beb91a0d8ab8391b5",
+      "status": "PASS",
+      "status_scope": "NATIVE_VSTD_RESULT_AND_SCITT_REGISTRATION",
+      "vstd_conformance_status": "NOT_ESTABLISHED",
+      "vstd_receipt_sha256": "f8117247e97f12834206f5b024085c54b5d899e6880659d8afcebfeee2ddece1"
+    }
+  },
+  "unchanged_scitt": {
+    "native_result": "SIGNED_STATEMENT_AND_INCLUSION_RECEIPT_VERIFIED",
+    "payload_sha256": "a0fc13840915e31f4d4787c7503f86f789be24e4a18fa76181991fa9aaecca63",
+    "receipt_sha256": "700df05d3c99098f8dbabb0757bf24fbe46073aa3823e1f5612bb373f426cfea",
+    "statement_sha256": "3e6f2a928abc6162511d648305a91b7fa242803f4b607c4beb91a0d8ab8391b5"
+  }
+}

@@ -25,6 +25,7 @@ EXPECTED_FACADE = [
     "CandidateExecutionDeclaration",
     "CatalogError",
     "COMPONENT_PACKAGE_SCHEMA_VERSION",
+    "COMPONENT_PACKAGE_V2_SCHEMA_VERSION",
     "ComponentAvailability",
     "ComponentKind",
     "ComponentLifecycle",

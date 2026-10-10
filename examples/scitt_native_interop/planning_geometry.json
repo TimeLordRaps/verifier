@@ -1,0 +1,105 @@
+{
+  "schema_version": "VSTD-2",
+  "geometry_id": "geometry:scitt-public-specimen-planning:1",
+  "primary_subject_id": "subject:scitt-public-specimen",
+  "subjects": [
+    {
+      "subject_id": "subject:scitt-public-specimen",
+      "label": "Verifier Standard (VSTD) noncritical Supply Chain Integrity, Transparency, and Trust (SCITT) public specimen planning",
+      "version": "public-fixed-specimen-1",
+      "parent_subject_id": null
+    }
+  ],
+  "loci": [
+    {
+      "locus_id": "locus:signed-statement",
+      "subject_id": "subject:scitt-public-specimen",
+      "label": "Public signed-statement bytes; Secure Hash Algorithm 256-bit (SHA-256) below is a descriptive coordinate, not an established native input binding",
+      "kind": "FILE",
+      "grain": "FILE",
+      "stratum": "OUTPUT",
+      "address": "examples/scitt_interop/generated/signed_statement.cose#sha256=3e6f2a928abc6162511d648305a91b7fa242803f4b607c4beb91a0d8ab8391b5",
+      "parent_locus_id": null
+    },
+    {
+      "locus_id": "locus:receipt",
+      "subject_id": "subject:scitt-public-specimen",
+      "label": "Public receipt bytes; descriptive coordinate only",
+      "kind": "FILE",
+      "grain": "FILE",
+      "stratum": "OUTPUT",
+      "address": "examples/scitt_interop/generated/receipt.cose#sha256=700df05d3c99098f8dbabb0757bf24fbe46073aa3823e1f5612bb373f426cfea",
+      "parent_locus_id": null
+    },
+    {
+      "locus_id": "locus:payload",
+      "subject_id": "subject:scitt-public-specimen",
+      "label": "Public payload JavaScript Object Notation (JSON) bytes; computational truth has no checker in this specimen",
+      "kind": "FILE",
+      "grain": "FILE",
+      "stratum": "OUTPUT",
+      "address": "examples/scitt_interop/generated/vstd_scitt_payload.json#sha256=35e2e6d2e15c983ba777fb91532bcad6680926905842ebcc3cc8540a7950d821",
+      "parent_locus_id": null
+    }
+  ],
+  "facets": [
+    {
+      "facet_id": "facet:statement-signature",
+      "label": "Signature under the explicitly selected public specimen key",
+      "description": "Proposed signature check using examples/scitt_interop/generated/issuer_public.pem, SHA-256 45b82e3528f834817db06868146f1a565badc739aeeeba864894778a7cd46db7. No input binding or evidence-to-judgment mapping is supplied; signature validity, issuer authority, payload truth, and safety are not established."
+    },
+    {
+      "facet_id": "facet:receipt-inclusion",
+      "label": "Receipt inclusion over the exact original signed-statement leaf bytes",
+      "description": "Proposed receipt check using examples/scitt_interop/generated/log_public.pem, SHA-256 e3272849658664b4b237ad6028d900584a7719c505af526a3c5a2b6e795f5d79, and the signed-statement locus as leaf. No native binding is established; inclusion does not imply computational truth or authority."
+    },
+    {
+      "facet_id": "facet:payload-computational-truth",
+      "label": "Truth of the computational claims represented in the payload",
+      "description": "Separate unverified coordinate with no declared mechanism. Neither signature, inclusion, matching native flags, nor retained source establishes these claims."
+    }
+  ],
+  "coordinates": [
+    {"coordinate_id": "coordinate:statement-signature", "locus_id": "locus:signed-statement", "facet_id": "facet:statement-signature"},
+    {"coordinate_id": "coordinate:receipt-inclusion", "locus_id": "locus:receipt", "facet_id": "facet:receipt-inclusion"},
+    {"coordinate_id": "coordinate:payload-computational-truth", "locus_id": "locus:payload", "facet_id": "facet:payload-computational-truth"}
+  ],
+  "surface": {
+    "surface_id": "surface:scitt-public-specimen",
+    "subject_id": "subject:scitt-public-specimen",
+    "coordinate_ids": ["coordinate:statement-signature", "coordinate:receipt-inclusion", "coordinate:payload-computational-truth"],
+    "seam_ids": [],
+    "scope_statement": "Nonexecuting planning over three unresolved coordinates in a noncritical public specimen. Descriptive paths and digests do not bind native inputs or map recorded results into judgments. No validity, issuer authority, computational truth, safety, or complete verification-surface closure is inferred."
+  },
+  "mechanisms": [
+    {"mechanism_id": "scitt-cose:statement-signature", "label": "Declared native statement-signature mechanism; not invoked or post-verified", "version": "unqualified-planning-declaration-1", "post_verified": false, "post_verification_evidence_ids": [], "boundary_horizon_id": null},
+    {"mechanism_id": "scitt-cose:receipt-inclusion", "label": "Declared native receipt-inclusion mechanism; not invoked or post-verified", "version": "unqualified-planning-declaration-1", "post_verified": false, "post_verification_evidence_ids": [], "boundary_horizon_id": null}
+  ],
+  "judgments": [
+    {
+      "coordinate_id": "coordinate:statement-signature",
+      "status": "INDETERMINATE",
+      "mechanism_ids": ["scitt-cose:statement-signature"],
+      "evidence_ids": [],
+      "assumptions": ["The coordinate describes the public fixed specimen only."],
+      "limitations": ["No native input binding, execution authorization, or output-to-judgment mapping is established."]
+    },
+    {
+      "coordinate_id": "coordinate:receipt-inclusion",
+      "status": "INDETERMINATE",
+      "mechanism_ids": ["scitt-cose:receipt-inclusion"],
+      "evidence_ids": [],
+      "assumptions": ["The proposed leaf is the exact original signed-statement bytes, not transparent-statement bytes."],
+      "limitations": ["Recorded comparison does not discharge this coordinate or establish log authority."]
+    },
+    {
+      "coordinate_id": "coordinate:payload-computational-truth",
+      "status": "INDETERMINATE",
+      "mechanism_ids": [],
+      "evidence_ids": [],
+      "assumptions": [],
+      "limitations": ["No checker for payload computational truth is supplied; signature and inclusion are different propositions."]
+    }
+  ],
+  "focus_coordinate_ids": ["coordinate:statement-signature", "coordinate:receipt-inclusion", "coordinate:payload-computational-truth"]
+}

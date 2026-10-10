@@ -39,7 +39,7 @@ from verifier.interoperability.network import (
 
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / "examples" / "artifact-network" / "canonical-silo-composition-fixture.json"
-SCHEMA = "VSTD-SILO-COMPOSITION-WIRE-FIXTURE-0.1"
+SCHEMA = "verifier-silo-composition-wire-fixture-1"
 MAX_FIXTURE_BYTES = 2 * 1024 * 1024
 ZERO_DIGEST = "sha256:" + "0" * 64
 
@@ -121,8 +121,8 @@ def _composite(
 ) -> tuple[SiloCommit, ContentAddressedStore]:
     base, store = _materialize_base(root)
     extras = (
-        ("members/first.json", canonical_bytes(members[0].to_dict()), "member-commit", "VSTD-SILO-COMMIT-0.1"),
-        ("members/second.json", canonical_bytes(members[1].to_dict()), "member-commit", "VSTD-SILO-COMMIT-0.1"),
+        ("members/first.json", canonical_bytes(members[0].to_dict()), "member-commit", "verifier-silo-commit-1"),
+        ("members/second.json", canonical_bytes(members[1].to_dict()), "member-commit", "verifier-silo-commit-1"),
         ("adapter.bin", b"canonical composition adapter", "composition-adapter", "COMPOSITION-ADAPTER-1"),
         ("policy.json", b"canonical additive policy", "composition-policy", "COMPOSITION-POLICY-1"),
         ("bridge.json", b"canonical bridge relation", "composition-relation", "COMPOSITION-RELATION-1"),

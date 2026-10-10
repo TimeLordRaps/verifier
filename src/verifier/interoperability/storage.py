@@ -28,10 +28,13 @@ from .catalog import (
 )
 
 
-COMPONENT_PACKAGE_SCHEMA_VERSION = "VSTD-COMPONENT-PACKAGE-1"
+COMPONENT_PACKAGE_SCHEMA_VERSION = "verifier-component-package-1"
 MAX_PACKAGE_BYTES = 32 * 1024 * 1024
 MAX_CONTENT_BYTES = 16 * 1024 * 1024
 MAX_PACKAGE_ITEMS = 256
+COMPONENT_PACKAGE_V2_SCHEMA_VERSION = "verifier-component-package-2"
+MAX_PACKAGE_V2_ARTIFACTS = 512
+MAX_PACKAGE_V2_IMPLEMENTATION_PATHS = 512
 PACKAGE_CLAIM_BOUNDARY = (
     "Package integrity binds retained bytes and declarations only. Publisher and "
     "license are unsigned declarations. Implementation correctness, dependency "
@@ -83,14 +86,24 @@ def _keys(value: Any, expected: set[str], label: str) -> Mapping[str, Any]:
     return value
 
 
-def _array(value: Any, label: str) -> tuple[Any, ...]:
-    if not isinstance(value, (list, tuple)) or len(value) > MAX_PACKAGE_ITEMS:
-        raise ComponentPackageError(f"{label} must be an array of at most {MAX_PACKAGE_ITEMS} items")
+def _package_bounds(schema_version: str) -> tuple[int, int]:
+    if type(schema_version) is not str:
+        raise ComponentPackageError("unsupported component package schema_version")
+    if schema_version == COMPONENT_PACKAGE_SCHEMA_VERSION:
+        return MAX_PACKAGE_ITEMS, MAX_PACKAGE_ITEMS
+    if schema_version == COMPONENT_PACKAGE_V2_SCHEMA_VERSION:
+        return MAX_PACKAGE_V2_ARTIFACTS, MAX_PACKAGE_V2_IMPLEMENTATION_PATHS
+    raise ComponentPackageError("unsupported component package schema_version")
+
+
+def _array(value: Any, label: str, *, maximum: int = MAX_PACKAGE_ITEMS) -> tuple[Any, ...]:
+    if not isinstance(value, (list, tuple)) or len(value) > maximum:
+        raise ComponentPackageError(f"{label} must be an array of at most {maximum} items")
     return tuple(value)
 
 
-def _strings(value: Any, label: str, *, paths: bool = False) -> tuple[str, ...]:
-    values = tuple(_path(item) if paths else _text(item, label) for item in _array(value, label))
+def _strings(value: Any, label: str, *, paths: bool = False, maximum: int = MAX_PACKAGE_ITEMS) -> tuple[str, ...]:
+    values = tuple(_path(item) if paths else _text(item, label) for item in _array(value, label, maximum=maximum))
     if len(set(values)) != len(values):
         raise ComponentPackageError(f"{label} contains duplicate references")
     return tuple(sorted(values))
@@ -174,11 +187,13 @@ class ImplementationBinding:
     implementation_ref: str
     artifact_paths: tuple[str, ...]
     dependency_ids: tuple[str, ...] = ()
+    schema_version: str = COMPONENT_PACKAGE_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
         _text(self.component_id, "component_id")
         _text(self.implementation_ref, "implementation_ref")
-        object.__setattr__(self, "artifact_paths", _strings(self.artifact_paths, "artifact_paths", paths=True))
+        object.__setattr__(self, "artifact_paths", _strings(self.artifact_paths, "artifact_paths", paths=True,
+            maximum=_package_bounds(self.schema_version)[1]))
         object.__setattr__(self, "dependency_ids", _strings(self.dependency_ids, "dependency_ids"))
         if not self.artifact_paths:
             raise ComponentPackageError("every implementation must bind retained artifact bytes")
@@ -192,9 +207,9 @@ class ImplementationBinding:
         }
 
     @classmethod
-    def from_dict(cls, value: Mapping[str, Any]) -> ImplementationBinding:
+    def from_dict(cls, value: Mapping[str, Any], *, schema_version: str = COMPONENT_PACKAGE_SCHEMA_VERSION) -> ImplementationBinding:
         value = _keys(value, {"component_id", "implementation_ref", "artifact_paths", "dependency_ids"}, "implementation")
-        return cls(**value)
+        return cls(**value, schema_version=schema_version)
 
 
 @dataclass(frozen=True)
@@ -251,8 +266,7 @@ class StoredComponentPackage:
     schema_version: str = COMPONENT_PACKAGE_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
-        if self.schema_version != COMPONENT_PACKAGE_SCHEMA_VERSION:
-            raise ComponentPackageError("unsupported component package schema_version")
+        artifact_maximum, path_maximum = _package_bounds(self.schema_version)
         for field in ("package_id", "package_version", "publisher", "license", "description"):
             _text(getattr(self, field), field)
         if not isinstance(self.registry, InteroperabilityComponentRegistry):
@@ -265,7 +279,8 @@ class StoredComponentPackage:
             ("implementations", ImplementationBinding, "component_id"),
             ("dependencies", PackageDependency, "dependency_id"),
         ):
-            entries = _array(getattr(self, field), field)
+            entries = _array(getattr(self, field), field,
+                maximum=artifact_maximum if field == "artifacts" else MAX_PACKAGE_ITEMS)
             if not all(isinstance(item, expected_type) for item in entries):
                 raise ComponentPackageError(f"{field} contains an unexpected record type")
             identifiers = [getattr(item, key) for item in entries]
@@ -282,6 +297,9 @@ class StoredComponentPackage:
             raise ComponentPackageError("every catalog component requires exactly one implementation binding")
         dependency_ids = {item.dependency_id for item in self.dependencies}
         for binding in self.implementations:
+            if binding.schema_version != self.schema_version:
+                raise ComponentPackageError("implementation binding package version differs")
+            _array(binding.artifact_paths, "artifact_paths", maximum=path_maximum)
             if binding.implementation_ref != descriptors[binding.component_id].implementation_ref:
                 raise ComponentPackageError("implementation_ref differs from the catalog descriptor")
             if not set(binding.dependency_ids) <= dependency_ids:
@@ -359,8 +377,7 @@ class StoredComponentPackage:
             "description", "registry", "registry_sha256", "artifacts", "implementations",
             "dependencies",
         }, "component package")
-        if value["schema_version"] != COMPONENT_PACKAGE_SCHEMA_VERSION:
-            raise ComponentPackageError("unsupported component package schema_version")
+        artifact_maximum, _ = _package_bounds(value["schema_version"])
         raw_registry = value["registry"]
         if not isinstance(raw_registry, Mapping) or raw_registry.get("schema_version") != CATALOG_SCHEMA_VERSION:
             raise ComponentPackageError("stored packages require the exact current catalog schema; no migration")
@@ -378,8 +395,8 @@ class StoredComponentPackage:
             package_id=value["package_id"], package_version=value["package_version"],
             publisher=value["publisher"], license=value["license"], description=value["description"],
             registry=registry,
-            artifacts=tuple(PackageArtifact.from_dict(item) for item in _array(value["artifacts"], "artifacts")),
-            implementations=tuple(ImplementationBinding.from_dict(item) for item in _array(value["implementations"], "implementations")),
+            artifacts=tuple(PackageArtifact.from_dict(item) for item in _array(value["artifacts"], "artifacts", maximum=artifact_maximum)),
+            implementations=tuple(ImplementationBinding.from_dict(item, schema_version=value["schema_version"]) for item in _array(value["implementations"], "implementations")),
             dependencies=tuple(PackageDependency.from_dict(item) for item in _array(value["dependencies"], "dependencies")),
             schema_version=value["schema_version"],
         )
@@ -457,7 +474,9 @@ def save_component_package(package: StoredComponentPackage, path: str | Path) ->
 
 
 __all__ = [
-    "COMPONENT_PACKAGE_SCHEMA_VERSION", "ComponentPackageError", "ImplementationBinding",
+    "COMPONENT_PACKAGE_SCHEMA_VERSION", "COMPONENT_PACKAGE_V2_SCHEMA_VERSION",
+    "MAX_PACKAGE_V2_ARTIFACTS", "MAX_PACKAGE_V2_IMPLEMENTATION_PATHS",
+    "ComponentPackageError", "ImplementationBinding",
     "PackageArtifact", "PackageDependency", "StoredComponentPackage",
     "load_component_package", "save_component_package",
 ]

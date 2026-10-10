@@ -17,7 +17,7 @@ from typing import Any, Iterable
 from verifier.core.geometry import CoordinateStatus, VerificationGeometry
 
 
-CONFLICT_REPORT_SCHEMA_VERSION = "VSTD-GEOMETRY-CONFLICTS-EXPERIMENTAL-0.1"
+CONFLICT_REPORT_SCHEMA_VERSION = "verifier-geometry-conflicts-experimental-1"
 CONFLICT_REPORT_CLAIM_BOUNDARY = (
     "This diagnostic covers only the supplied geometry bytes, explicit shared-"
     "proposition bindings, and declared acyclic dependencies. It does not infer "

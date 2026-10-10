@@ -1,0 +1,831 @@
+{
+  "$defs": {
+    "descriptor": {
+      "additionalProperties": false,
+      "description": "JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256). This schema validates operation metadata, not native request, policy, evidence, result or error witnesses.",
+      "properties": {
+        "binding": {
+          "additionalProperties": false,
+          "properties": {
+            "function": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "function_source_digest": {
+              "maxLength": 71,
+              "minLength": 71,
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "mechanism_digest": {
+              "maxLength": 71,
+              "minLength": 71,
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "mechanism_id": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "module": {
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^verifier\\.domains\\.contracts\\.[a-z_]+$",
+              "type": "string"
+            },
+            "sources": {
+              "additionalProperties": {
+                "maxLength": 71,
+                "minLength": 71,
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "maxProperties": 9,
+              "minProperties": 9,
+              "propertyNames": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "object"
+            }
+          },
+          "required": [
+            "mechanism_id",
+            "mechanism_digest",
+            "module",
+            "function",
+            "function_source_digest",
+            "sources"
+          ],
+          "type": "object"
+        },
+        "category": {
+          "const": "finite_native_certificate_replay"
+        },
+        "interface": {
+          "const": "verifier.domains.contracts.current_object_routes.replay_current_object_certificate"
+        },
+        "interface_signature": {
+          "additionalProperties": false,
+          "properties": {
+            "parameters": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "annotation": {
+                    "anyOf": [
+                      {
+                        "maxLength": 1024,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "kind": {
+                    "enum": [
+                      "POSITIONAL_ONLY",
+                      "POSITIONAL_OR_KEYWORD",
+                      "VAR_POSITIONAL",
+                      "KEYWORD_ONLY",
+                      "VAR_KEYWORD"
+                    ]
+                  },
+                  "name": {
+                    "maxLength": 256,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "required": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "kind",
+                  "required",
+                  "annotation"
+                ],
+                "type": "object"
+              },
+              "maxItems": 16,
+              "minItems": 1,
+              "type": "array"
+            },
+            "return_annotation": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "parameters",
+            "return_annotation"
+          ],
+          "type": "object"
+        },
+        "native_signature": {
+          "additionalProperties": false,
+          "properties": {
+            "parameters": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "annotation": {
+                    "anyOf": [
+                      {
+                        "maxLength": 1024,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "kind": {
+                    "enum": [
+                      "POSITIONAL_ONLY",
+                      "POSITIONAL_OR_KEYWORD",
+                      "VAR_POSITIONAL",
+                      "KEYWORD_ONLY",
+                      "VAR_KEYWORD"
+                    ]
+                  },
+                  "name": {
+                    "maxLength": 256,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "required": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "kind",
+                  "required",
+                  "annotation"
+                ],
+                "type": "object"
+              },
+              "maxItems": 16,
+              "minItems": 1,
+              "type": "array"
+            },
+            "return_annotation": {
+              "anyOf": [
+                {
+                  "maxLength": 1024,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "parameters",
+            "return_annotation"
+          ],
+          "type": "object"
+        },
+        "operation_id": {
+          "maxLength": 78,
+          "minLength": 78,
+          "pattern": "^native-replay:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "operation_version": {
+          "const": "1"
+        },
+        "owner_wire_identifiers": {
+          "additionalProperties": false,
+          "maxProperties": 6,
+          "properties": {
+            "ASSESSMENT_VERSION": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "CERTIFICATE_VERSION": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "EVIDENCE_VERSION": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "POLICY_VERSION": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "REQUEST_VERSION": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "RESULT_VERSION": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "qualification": {
+          "additionalProperties": false,
+          "properties": {
+            "authority": {
+              "const": "NOT_ESTABLISHED"
+            },
+            "budget": {
+              "const": "UNSUPPORTED"
+            },
+            "cancellation": {
+              "const": "UNSUPPORTED"
+            },
+            "disclosures": {
+              "const": "UNSUPPORTED"
+            },
+            "effects": {
+              "const": "UNSUPPORTED"
+            },
+            "full_execution": {
+              "const": "UNKNOWN"
+            },
+            "idempotency": {
+              "const": "UNSUPPORTED"
+            },
+            "mandatory_obligation_census": {
+              "const": "UNKNOWN"
+            },
+            "metadata": {
+              "const": "AVAILABLE"
+            },
+            "native_replay": {
+              "const": "NOT_RUN"
+            },
+            "production_admission": {
+              "const": "NOT_ESTABLISHED"
+            },
+            "runtime_availability": {
+              "const": "UNKNOWN"
+            },
+            "whole_tier_conformance": {
+              "const": "NOT_ESTABLISHED"
+            }
+          },
+          "required": [
+            "metadata",
+            "native_replay",
+            "runtime_availability",
+            "effects",
+            "disclosures",
+            "idempotency",
+            "cancellation",
+            "budget",
+            "full_execution",
+            "mandatory_obligation_census",
+            "whole_tier_conformance",
+            "authority",
+            "production_admission"
+          ],
+          "type": "object"
+        },
+        "route": {
+          "additionalProperties": false,
+          "properties": {
+            "certificate_schema_version": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "proposition_digest": {
+              "maxLength": 71,
+              "minLength": 71,
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "represented_kind_rule": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "scope": {
+              "maxLength": 1024,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "certificate_schema_version",
+            "proposition_digest",
+            "scope",
+            "represented_kind_rule"
+          ],
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "verifier-native-replay-operation-descriptor-1"
+        },
+        "schemas": {
+          "additionalProperties": false,
+          "properties": {
+            "descriptor": {
+              "additionalProperties": false,
+              "properties": {
+                "digest": {
+                  "maxLength": 71,
+                  "minLength": 71,
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "schema_version": {
+                  "const": "verifier-native-replay-operation-descriptor-1"
+                }
+              },
+              "required": [
+                "schema_version",
+                "digest"
+              ],
+              "type": "object"
+            },
+            "lookup_result": {
+              "additionalProperties": false,
+              "properties": {
+                "digest": {
+                  "maxLength": 71,
+                  "minLength": 71,
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "schema_version": {
+                  "const": "verifier-native-replay-operation-lookup-1"
+                }
+              },
+              "required": [
+                "schema_version",
+                "digest"
+              ],
+              "type": "object"
+            },
+            "native_error": {
+              "const": "UNSUPPORTED"
+            },
+            "native_evidence": {
+              "const": "UNSUPPORTED"
+            },
+            "native_policy": {
+              "const": "UNSUPPORTED"
+            },
+            "native_request": {
+              "const": "UNSUPPORTED"
+            },
+            "native_result": {
+              "const": "UNSUPPORTED"
+            }
+          },
+          "required": [
+            "descriptor",
+            "lookup_result",
+            "native_request",
+            "native_policy",
+            "native_evidence",
+            "native_result",
+            "native_error"
+          ],
+          "type": "object"
+        },
+        "selector": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "semantic_version": {
+                    "const": "verifier-current-ten-tier-object-obligations-1"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "objective": {
+                    "enum": [
+                      "VERIFIER-6.1",
+                      "VERIFIER-10.1"
+                    ]
+                  },
+                  "represented_kind": {
+                    "const": "VERIFIER"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "objective": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "represented_kind": {
+              "enum": [
+                "HUMAN",
+                "ACTOR",
+                "COLLECTIVE",
+                "ROLE",
+                "IDENTITY",
+                "OWNER",
+                "HARDWARE",
+                "RECEIPT",
+                "OBJECT",
+                "GRAPH",
+                "SPACE",
+                "TIME",
+                "EVENT",
+                "ENV",
+                "DATA",
+                "VERIFIER",
+                "BENCH",
+                "ARCH",
+                "TRAIN",
+                "HYPER",
+                "MODEL",
+                "HARNESS",
+                "AGENT",
+                "SIM",
+                "BOT",
+                "TOKEN"
+              ]
+            },
+            "semantic_version": {
+              "enum": [
+                "verifier-current-object-obligations-1",
+                "verifier-current-ten-tier-object-obligations-1"
+              ]
+            }
+          },
+          "required": [
+            "semantic_version",
+            "objective",
+            "represented_kind"
+          ],
+          "type": "object"
+        },
+        "transport_limits": {
+          "additionalProperties": false,
+          "properties": {
+            "certificate_bytes": {
+              "maximum": 16777216,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "container_items": {
+              "maximum": 10000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "integer_bits": {
+              "maximum": 4096,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "native_additional_bounds": {
+              "const": "UNKNOWN"
+            },
+            "selection_depth": {
+              "maximum": 64,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "selection_nodes_per_request_or_policy": {
+              "maximum": 10000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "selection_text_bytes_per_request_or_policy": {
+              "maximum": 1048576,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "certificate_bytes",
+            "selection_text_bytes_per_request_or_policy",
+            "selection_nodes_per_request_or_policy",
+            "selection_depth",
+            "integer_bits",
+            "container_items",
+            "native_additional_bounds"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema_version",
+        "operation_id",
+        "operation_version",
+        "category",
+        "interface",
+        "selector",
+        "route",
+        "binding",
+        "native_signature",
+        "interface_signature",
+        "transport_limits",
+        "owner_wire_identifiers",
+        "schemas",
+        "qualification"
+      ],
+      "title": "Finite native replay operation descriptor metadata",
+      "type": "object"
+    }
+  },
+  "$id": "https://timelordraps.github.io/verifier/schemas/native-replay-operation-lookup-1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "descriptor": {
+            "type": "null"
+          },
+          "descriptor_digest": {
+            "type": "null"
+          },
+          "metadata_status": {
+            "const": "UNAVAILABLE"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "descriptor": {
+            "$ref": "#/$defs/descriptor"
+          },
+          "descriptor_digest": {
+            "maxLength": 71,
+            "minLength": 71,
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "metadata_status": {
+            "const": "AVAILABLE"
+          },
+          "pin_comparison": {
+            "enum": [
+              "MATCH",
+              "NOT_SELECTED"
+            ]
+          },
+          "reason": {
+            "const": "REGISTERED_METADATA_DESCRIBED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "FAIL"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pin_comparison": {
+            "const": "DIFFERS"
+          },
+          "reason": {
+            "enum": [
+              "SOURCE_PIN_SET_DIFFERS",
+              "SOURCE_PIN_DIFFERS",
+              "MECHANISM_PIN_DIFFERS",
+              "DESCRIPTOR_PIN_DIFFERS"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "UNKNOWN"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pin_comparison": {
+            "enum": [
+              "UNAVAILABLE",
+              "NOT_SELECTED"
+            ]
+          },
+          "reason": {
+            "enum": [
+              "METADATA_LOOKUP_CANCELLED",
+              "INSTALLED_METADATA_UNAVAILABLE"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "description": "JavaScript Object Notation (JSON). PASS means metadata was described only; native replay and execution remain unqualified.",
+  "properties": {
+    "descriptor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/descriptor"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "descriptor_digest": {
+      "anyOf": [
+        {
+          "maxLength": 71,
+          "minLength": 71,
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "full_execution_qualification": {
+      "const": "UNKNOWN"
+    },
+    "mandatory_obligation_census": {
+      "const": "UNKNOWN"
+    },
+    "metadata_status": {
+      "enum": [
+        "AVAILABLE",
+        "UNAVAILABLE"
+      ]
+    },
+    "native_replay": {
+      "const": "NOT_RUN"
+    },
+    "pin_comparison": {
+      "enum": [
+        "MATCH",
+        "NOT_SELECTED",
+        "DIFFERS",
+        "UNAVAILABLE"
+      ]
+    },
+    "reason": {
+      "enum": [
+        "REGISTERED_METADATA_DESCRIBED",
+        "SOURCE_PIN_SET_DIFFERS",
+        "SOURCE_PIN_DIFFERS",
+        "MECHANISM_PIN_DIFFERS",
+        "DESCRIPTOR_PIN_DIFFERS",
+        "METADATA_LOOKUP_CANCELLED",
+        "INSTALLED_METADATA_UNAVAILABLE"
+      ]
+    },
+    "schema_version": {
+      "const": "verifier-native-replay-operation-lookup-1"
+    },
+    "selector": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "semantic_version": {
+                "const": "verifier-current-ten-tier-object-obligations-1"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "objective": {
+                "enum": [
+                  "VERIFIER-6.1",
+                  "VERIFIER-10.1"
+                ]
+              },
+              "represented_kind": {
+                "const": "VERIFIER"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "objective": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "represented_kind": {
+          "enum": [
+            "HUMAN",
+            "ACTOR",
+            "COLLECTIVE",
+            "ROLE",
+            "IDENTITY",
+            "OWNER",
+            "HARDWARE",
+            "RECEIPT",
+            "OBJECT",
+            "GRAPH",
+            "SPACE",
+            "TIME",
+            "EVENT",
+            "ENV",
+            "DATA",
+            "VERIFIER",
+            "BENCH",
+            "ARCH",
+            "TRAIN",
+            "HYPER",
+            "MODEL",
+            "HARNESS",
+            "AGENT",
+            "SIM",
+            "BOT",
+            "TOKEN"
+          ]
+        },
+        "semantic_version": {
+          "enum": [
+            "verifier-current-object-obligations-1",
+            "verifier-current-ten-tier-object-obligations-1"
+          ]
+        }
+      },
+      "required": [
+        "semantic_version",
+        "objective",
+        "represented_kind"
+      ],
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "metadata_status",
+    "reason",
+    "selector",
+    "descriptor",
+    "descriptor_digest",
+    "pin_comparison",
+    "native_replay",
+    "full_execution_qualification",
+    "mandatory_obligation_census"
+  ],
+  "title": "Native replay operation metadata lookup result",
+  "type": "object"
+}

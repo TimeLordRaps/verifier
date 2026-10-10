@@ -68,7 +68,7 @@ class _SchemaBuilder:
     def _field_schema(self, owner: type, field_name: str, annotation: Any) -> dict[str, object]:
         schema = self._type_schema(annotation)
         if owner is VSTD3Receipt and field_name == "schema_version":
-            return {"const": "VSTD-3.0"}
+            return {"const": "VSTD-3"}
         if field_name == "capacity_fraction_ppm":
             return {"type": "integer", "minimum": 1, "maximum": 1_000_000}
         if field_name in {"epoch", "sequence"}:

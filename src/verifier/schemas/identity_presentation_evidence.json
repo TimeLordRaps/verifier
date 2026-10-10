@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/identity_presentation_evidence.json",
+  "title": "Retained configured identity presentation prerequisite evidence",
+  "description": "Structural wire shape only. Native checking establishes exact selections, supported purpose-specific witness grammar, child replay, signatures, time coverage and bounded availability. A schema-valid instance is no authentication or acceptance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "identity_scope_certificate", "identity_lifecycle_certificate", "supports", "exit_probe"],
+  "properties": {
+    "schema_version": {"const": "verifier-current-identity-presentation-evidence-1"},
+    "identity_scope_certificate": {"type": ["object", "null"]},
+    "identity_lifecycle_certificate": {"type": ["object", "null"]},
+    "supports": {"type": "object", "maxProperties": 64, "additionalProperties": {"$ref": "#/$defs/supportEnvelope"}},
+    "exit_probe": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/terminalProbe"}]}
+  },
+  "$defs": {
+    "commitment": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
+    "text": {"type": "string", "minLength": 1, "maxLength": 256},
+    "declaredMicroseconds": {"type": "integer", "minimum": 0, "maximum": 9223372036854775807},
+    "supportEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "source_id", "key_id", "payload", "signature"],
+      "properties": {
+        "schema_version": {"const": "verifier-current-identity-source-envelope-1"},
+        "source_id": {"$ref": "#/$defs/text"},
+        "key_id": {"$ref": "#/$defs/text"},
+        "payload": {"$ref": "#/$defs/supportPayload"},
+        "signature": {"$ref": "#/$defs/signature"}
+      }
+    },
+    "supportPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "selection_digest", "requirement_id", "purpose", "source_id", "subject_id", "object_digest", "binding_digest", "scope", "clock_id", "valid_from", "valid_until", "issued_at", "witness"],
+      "properties": {
+        "schema_version": {"const": "verifier-current-identity-scoped-support-1"},
+        "selection_digest": {"$ref": "#/$defs/commitment"},
+        "requirement_id": {"$ref": "#/$defs/text"},
+        "purpose": {"$ref": "#/$defs/text"},
+        "source_id": {"$ref": "#/$defs/text"},
+        "subject_id": {"$ref": "#/$defs/text"},
+        "object_digest": {"$ref": "#/$defs/commitment"},
+        "binding_digest": {"$ref": "#/$defs/commitment"},
+        "scope": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "clock_id": {"$ref": "#/$defs/text"},
+        "valid_from": {"$ref": "#/$defs/declaredMicroseconds"},
+        "valid_until": {"$ref": "#/$defs/declaredMicroseconds"},
+        "issued_at": {"$ref": "#/$defs/declaredMicroseconds"},
+        "witness": {"description": "Supported purpose-specific exact fields and typed predicates are enforced by native code; unsupported purpose or method receives no semantic certification."}
+      }
+    },
+    "terminalProbe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "selection_digest", "binding_digest", "head_digest", "holder_id", "clock_id", "at", "challenge_digest", "controller_id", "signature"],
+      "properties": {
+        "schema_version": {"const": "verifier-current-identity-terminal-probe-1"},
+        "selection_digest": {"$ref": "#/$defs/commitment"},
+        "binding_digest": {"$ref": "#/$defs/commitment"},
+        "head_digest": {"$ref": "#/$defs/commitment"},
+        "holder_id": {"$ref": "#/$defs/text"},
+        "clock_id": {"$ref": "#/$defs/text"},
+        "at": {"$ref": "#/$defs/declaredMicroseconds"},
+        "challenge_digest": {"$ref": "#/$defs/commitment"},
+        "controller_id": {"$ref": "#/$defs/text"},
+        "signature": {"$ref": "#/$defs/signature"}
+      }
+    }
+  }
+}

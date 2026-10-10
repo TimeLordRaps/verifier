@@ -51,7 +51,7 @@
       "additionalProperties": false,
       "required": ["schema_version", "artifact_id", "content_id", "artifact_kind", "media_type", "entries", "lineage", "bound_contexts", "mechanism", "freeze_id"],
       "properties": {
-        "schema_version": {"const": "VSTD-ARTIFACT-FREEZE-1"},
+        "schema_version": {"const": "verifier-artifact-freeze-1"},
         "artifact_id": {"$ref": "#/$defs/artifactIdentifier"},
         "content_id": {"$ref": "#/$defs/dualIdentifier"},
         "artifact_kind": {"enum": ["file", "directory"]},
@@ -69,7 +69,7 @@
           "properties": {
             "name": {"const": "vstd-reference-freezer"},
             "version": {"const": "1"},
-            "canonicalization": {"const": "VSTD-ARTIFACT-CANONICAL-1"},
+            "canonicalization": {"const": "verifier-artifact-canonical-1"},
             "write_guard": {"const": "PORTABLE_READ_ONLY_TREE"}
           }
         },
@@ -81,7 +81,7 @@
       "additionalProperties": false,
       "required": ["schema_version", "artifact_id", "content_id", "freeze_id", "freeze_manifest_digests", "key_id", "algorithm", "closure_rule"],
       "properties": {
-        "schema_version": {"const": "VSTD-ARTIFACT-SEAL-CLOSURE-1"},
+        "schema_version": {"const": "verifier-artifact-seal-closure-1"},
         "artifact_id": {"$ref": "#/$defs/artifactIdentifier"},
         "content_id": {"$ref": "#/$defs/dualIdentifier"},
         "freeze_id": {"$ref": "#/$defs/dualIdentifier"},
@@ -96,7 +96,7 @@
       "additionalProperties": false,
       "required": ["schema_version", "seal_payload", "public_key_base64", "signature_base64", "seal_id"],
       "properties": {
-        "schema_version": {"const": "VSTD-ARTIFACT-SEAL-1"},
+        "schema_version": {"const": "verifier-artifact-seal-1"},
         "seal_payload": {"$ref": "#/$defs/sealPayload"},
         "public_key_base64": {"type": "string", "contentEncoding": "base64"},
         "signature_base64": {"type": "string", "contentEncoding": "base64"},
@@ -109,7 +109,7 @@
       "additionalProperties": false,
       "required": ["schema_version", "parent_artifact_id", "parent_content_id", "parent_freeze_id", "parent_seal_ids", "artifact_kind", "media_type", "thaw_id"],
       "properties": {
-        "schema_version": {"const": "VSTD-ARTIFACT-THAW-1"},
+        "schema_version": {"const": "verifier-artifact-thaw-1"},
         "parent_artifact_id": {"$ref": "#/$defs/artifactIdentifier"},
         "parent_content_id": {"$ref": "#/$defs/dualIdentifier"},
         "parent_freeze_id": {"$ref": "#/$defs/dualIdentifier"},

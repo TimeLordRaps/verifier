@@ -22,9 +22,9 @@ from .network import (
     authority_axiom_agency_digest, canonical_bytes, digest_bytes,
 )
 
-DECLARATION_SCHEMA = "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1"
-RESULT_SCHEMA = "VSTD-FINITE-AUTHORITY-COMPOSITION-RESULT-0.1"
-PROFILE_SCHEMA = "VSTD-FINITE-AUTHORITY-COMPOSITION-PROFILE-0.1"
+DECLARATION_SCHEMA = "verifier-finite-authority-composition-1"
+RESULT_SCHEMA = "verifier-finite-authority-composition-result-1"
+PROFILE_SCHEMA = "verifier-finite-authority-composition-profile-1"
 MIN_MEMBERS = 2
 MAX_MEMBERS = 4
 MAX_PRODUCT_STATES = 256

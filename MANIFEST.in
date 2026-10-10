@@ -1,0 +1,5 @@
+include scripts/build_component_index.py
+include scripts/build_self_polish_tier1_ledger.py
+include scripts/check_pr_description.py
+include scripts/check_prdel_v2_selection.py
+include scripts/check_prdel_v2_selection_r2.py

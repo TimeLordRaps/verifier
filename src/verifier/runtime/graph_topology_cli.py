@@ -54,10 +54,10 @@ def handle_graph_topology_command(args: argparse.Namespace) -> int:
 
     path = Path(args.receipt)
     payload = _read_document(path / "receipt.json" if path.is_dir() else path)
-    if payload.get("schema_version") != "VSTD-DATA-0.1" or not isinstance(
+    if payload.get("schema_version") != "verifier-data-1" or not isinstance(
         payload.get("hypergraph"), dict
     ):
-        raise ValueError("topology requires a VSTD-DATA-0.1 graph inspection envelope")
+        raise ValueError("topology requires a verifier-data-1 graph inspection envelope")
     try:
         graph = ProvenanceHypergraph.from_dict(payload["hypergraph"])
     except (TypeError, AttributeError, RecursionError) as exc:

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verifier-standard"
-version = "1.5.0"
+version = "2.0.0"
 description = "Verification-domain language and reference implementation for bounded computational claims."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,7 +35,7 @@ Homepage = "https://github.com/TimeLordRaps/verifier"
 Documentation = "https://timelordraps.github.io/verifier/"
 "API Policy" = "https://github.com/TimeLordRaps/verifier/blob/main/docs/API_STABILITY.md"
 Issues = "https://github.com/TimeLordRaps/verifier/issues"
-Specification = "https://github.com/TimeLordRaps/verifier/tree/main/standard"
+Specification = "https://github.com/TimeLordRaps/verifier/tree/main/src/verifier/standard"
 Changelog = "https://github.com/TimeLordRaps/verifier/blob/main/CHANGELOG.md"
 Security = "https://github.com/TimeLordRaps/verifier/security/policy"
 
@@ -43,6 +43,7 @@ Security = "https://github.com/TimeLordRaps/verifier/security/policy"
 yaml = ["pyyaml>=6.0"]
 llguidance = ["llguidance==1.8.0"]
 torch = ["torch>=2.2"]
+constraints = ["llguidance==1.8.0", "torch>=2.2"]
 jsonschema = ["jsonschema>=4.18"]
 seal = ["cryptography==50.0.0"]
 scitt = [
@@ -50,7 +51,7 @@ scitt = [
   "cbor2==6.1.4",
   "cryptography==50.0.0",
 ]
-test = ["pytest>=8.0", "pytest-timeout==2.4.0", "coverage==7.15.4", "pyyaml>=6.0", "jsonschema>=4.18"]
+test = ["pytest>=8.0", "pytest-timeout==2.4.0", "coverage==7.15.4", "pyyaml>=6.0", "jsonschema>=4.18", "build==1.5.0"]
 release = ["build==1.5.0", "twine==7.0.0"]
 
 [project.scripts]
@@ -68,7 +69,7 @@ verifier = "verifier.runtime.public_cli:main"
 verifiable = "verifier.runtime.public_cli:main"
 
 [tool.setuptools.package-data]
-verifier = ["artifact_control/*.json", "hardware/*.json", "profiles/*.json", "schemas/*.json", "specifications/*.md"]
+verifier = ["artifact_control/*.json", "hardware/*.json", "profiles/*.json", "schemas/*.json", "standard/*.md"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

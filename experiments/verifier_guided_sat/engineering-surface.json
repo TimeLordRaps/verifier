@@ -1,0 +1,33 @@
+{
+  "count_rule": "nonblank physical lines excluding lines whose first non-whitespace character is #; module docstrings included",
+  "domain_specific_files": {
+    "baselines.py": 112,
+    "external_verifiers.py": 151,
+    "instances.py": 52,
+    "reserve_verifiers.py": 79
+  },
+  "domain_specific_lines": 394,
+  "generic_files": {
+    "analysis.py": 174,
+    "audit.py": 130,
+    "benchmark.py": 160,
+    "canonical.py": 35,
+    "contracts.py": 80,
+    "freeze.py": 104,
+    "harness.py": 449,
+    "independent_validation.py": 189,
+    "lm_backend.py": 122,
+    "metrics.py": 90,
+    "noise.py": 51,
+    "prompts.py": 20,
+    "result_validator.py": 124,
+    "route.py": 311,
+    "sat_backend.py": 113,
+    "vstd_binding.py": 285
+  },
+  "generic_lines": 2437,
+  "human_engineering_time": "UNKNOWN_NOT_PROSPECTIVELY_INSTRUMENTED",
+  "measurement_version": "vgsat-engineering-surface-0.1",
+  "tests_excluded": true,
+  "vendored_upstream_lines_excluded": true
+}

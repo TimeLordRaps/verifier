@@ -311,7 +311,7 @@ def _contract_payload(
         },
     }
     return {
-        "schema_version": "VSTD-UNTRAVERSABLE-EXPERIMENTAL-0.1",
+        "schema_version": "verifier-untraversable-experimental-1",
         "contract_id": "untraversable:fixture",
         "graph_digest": bound_graph_digest,
         "semantics_id": semantics_id,

@@ -22,6 +22,7 @@ import hashlib
 import importlib.metadata as importlib_metadata
 import inspect
 import json
+import tempfile
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
@@ -486,7 +487,13 @@ def produce(
     return verify(output)
 
 
-def verify(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
+def verify(
+    output: Path,
+    *,
+    vstd_budget: int = 100,
+    artifact_path: Path = ARTIFACT,
+    write_result: bool = True,
+) -> dict[str, Any]:
     crypto = _crypto()
     payload_bytes = (output / "vstd_scitt_payload.json").read_bytes().rstrip(b"\n")
     payload = VstdScittPayload.from_bytes(payload_bytes)
@@ -583,14 +590,19 @@ def verify(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
         payload,
         vstd_observation,
         observation,
-        artifact_digests={"primary": _sha256(ARTIFACT.read_bytes())},
+        artifact_digests={"primary": _sha256(artifact_path.read_bytes())},
         accepted_issuers=[ISSUER],
     )
-    expected_composition = {
-        KernelOutcome.ACCEPTED: "PASS",
-        KernelOutcome.REFUSED: "UNKNOWN",
-        KernelOutcome.REJECTED: "FAIL",
-    }[vstd_result.outcome]
+    expected_composition = (
+        "FAIL"
+        if _sha256(artifact_path.read_bytes())
+        != payload.coordinates.artifact_digests["primary"]
+        else {
+            KernelOutcome.ACCEPTED: "PASS",
+            KernelOutcome.REFUSED: "UNKNOWN",
+            KernelOutcome.REJECTED: "FAIL",
+        }[vstd_result.outcome]
+    )
     if composition.status.value != expected_composition:
         raise RuntimeError(f"composition failed: {composition}")
 
@@ -609,13 +621,84 @@ def verify(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
         "direct_runtime_dependencies": crypto["direct_runtime_dependencies"],
         "scitt_as_vstd_evidence": scitt_as_vstd_evidence,
         "composition": composition.to_dict(),
-        "artifact_sha256": _sha256(ARTIFACT.read_bytes()),
+        "artifact_sha256": _sha256(artifact_path.read_bytes()),
         "payload_sha256": _sha256(payload_bytes),
         "statement_sha256": _sha256(statement),
         "receipt_sha256": _sha256(scitt_receipt),
         "transparent_statement_sha256": _sha256(transparent),
     }
-    (output / "verification_result.json").write_text(
+    if write_result:
+        (output / "verification_result.json").write_text(
+            json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+    return result
+
+
+def boundary_demo(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
+    """Show that authentic registration cannot transfer to different bytes.
+
+    The same signed statement and inclusion receipt are verified twice: once
+    against the bound artifact and once against separately observed artifact
+    bytes that differ.  Neither pass rewrites ``verification_result.json``.
+    """
+
+    original = verify(output, vstd_budget=vstd_budget, write_result=False)
+    with tempfile.TemporaryDirectory(prefix="vstd-scitt-boundary-") as directory:
+        mutated_artifact = Path(directory) / "artifact.txt"
+        mutated_artifact.write_bytes(ARTIFACT.read_bytes() + b"MUTATION")
+        mutated = verify(
+            output,
+            vstd_budget=vstd_budget,
+            artifact_path=mutated_artifact,
+            write_result=False,
+        )
+
+    same_scitt_evidence = all(
+        original[key] == mutated[key]
+        for key in (
+            "payload_sha256",
+            "statement_sha256",
+            "receipt_sha256",
+            "transparent_statement_sha256",
+            "scitt_observation",
+        )
+    )
+    result = {
+        "demonstration": "authentic-receipt-unsupported-proposition/1",
+        "checks": {
+            "scitt_signature_and_inclusion_receipt_original": "PASS",
+            "scitt_signature_and_inclusion_receipt_after_external_artifact_mutation": "PASS",
+            "scitt_evidence_bytes_identical": same_scitt_evidence,
+            "vstd_original_exact_artifact_composition": original["composition"]["status"],
+            "vstd_mutated_artifact_composition": mutated["composition"]["status"],
+        },
+        "original": {
+            "artifact_sha256": original["artifact_sha256"],
+            "composition": original["composition"],
+        },
+        "mutated": {
+            "artifact_sha256": mutated["artifact_sha256"],
+            "composition": mutated["composition"],
+        },
+        "unchanged_scitt": {
+            "payload_sha256": original["payload_sha256"],
+            "statement_sha256": original["statement_sha256"],
+            "receipt_sha256": original["receipt_sha256"],
+            "native_result": original["scitt_observation"]["native_result"],
+        },
+        "conclusion": (
+            "The signed statement and inclusion receipt remain authentic for the "
+            "original statement. They do not establish the attempted proposition "
+            "about different artifact bytes; exact VSTD composition rejects it."
+        ),
+    }
+    if not same_scitt_evidence:
+        raise RuntimeError("boundary demonstration changed SCITT evidence bytes")
+    if result["checks"]["vstd_original_exact_artifact_composition"] != "PASS":
+        raise RuntimeError("boundary demonstration original case did not pass")
+    if result["checks"]["vstd_mutated_artifact_composition"] != "FAIL":
+        raise RuntimeError("boundary demonstration mutation was not rejected")
+    (output / "boundary_demo_result.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     return result
@@ -623,15 +706,16 @@ def verify(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("produce", "verify"))
+    parser.add_argument("command", choices=("produce", "verify", "boundary"))
     parser.add_argument("--output", type=Path, default=HERE / "generated")
     parser.add_argument("--vstd-budget", type=int, default=100)
     args = parser.parse_args()
-    result = (
-        produce(args.output)
-        if args.command == "produce"
-        else verify(args.output, vstd_budget=args.vstd_budget)
-    )
+    if args.command == "produce":
+        result = produce(args.output)
+    elif args.command == "verify":
+        result = verify(args.output, vstd_budget=args.vstd_budget)
+    else:
+        result = boundary_demo(args.output, vstd_budget=args.vstd_budget)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 

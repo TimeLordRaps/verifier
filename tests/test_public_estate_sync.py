@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """Terminology: application programming interface (API);
-uniform resource locator (URL); Verifier Standard (VSTD).
+uniform resource locator (URL); Python Package Index (PyPI); Verifier Standard (VSTD).
 """
 
 import importlib.util
@@ -29,6 +29,31 @@ def test_mandatory_documentation_coverage_passes_on_repo():
     version = module.get_package_version(ROOT)
     errors = module.check_mandatory_documentation_coverage(ROOT, version)
     assert errors == [], f"Unexpected documentation coverage errors: {errors}"
+
+
+def test_candidate_install_commands_pin_the_previous_release(tmp_path: Path):
+    module = _load_module()
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "CHANGELOG.md").write_text(
+        "## 2.0.0 - UNRELEASED\n\n## 1.5.0 - 2026-09-18\n", encoding="utf-8",
+    )
+    installation = tmp_path / "docs/INSTALLATION.md"
+    installation.write_text("python -m pip install verifier-standard==1.5.0\n", encoding="utf-8")
+    assert module.check_documentation_version_references(tmp_path, "2.0.0") == []
+    installation.write_text("python -m pip install verifier-standard==2.0.0\n", encoding="utf-8")
+    assert module.check_documentation_version_references(tmp_path, "2.0.0")
+
+
+def test_finalized_install_commands_must_pin_target_release(tmp_path: Path):
+    module = _load_module()
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "CHANGELOG.md").write_text(
+        "## 2.0.0 - 2026-09-20\n\n## 1.5.0 - 2026-09-18\n", encoding="utf-8",
+    )
+    (tmp_path / "docs/INSTALLATION.md").write_text(
+        "python -m pip install verifier-standard==1.5.0\n", encoding="utf-8",
+    )
+    assert module.check_documentation_version_references(tmp_path, "2.0.0")
 
 
 def test_mandatory_documentation_coverage_fails_on_missing_file(tmp_path: Path):
@@ -231,3 +256,93 @@ def test_evaluate_estate_sync_never_probes_sibling_checkouts(tmp_path: Path, mon
     assert eval_res["claimgarden"]["status"] == "OBSERVED"
     assert any("vstd-labs.com hero badge reads 'v0.0.0 ON PYPI'" in a for a in eval_res["action_items"])
     assert any("claimgarden.com index card footer reads 'v0.0.0'" in a for a in eval_res["action_items"])
+
+
+def test_a_directory_with_no_site_files_is_not_observed(tmp_path: Path):
+    module = _load_module()
+    empty = tmp_path / "empty"
+    empty.mkdir()
+
+    assert module.inspect_vstd_labs(empty)["status"] == "NOT_FOUND"
+    assert module.inspect_claimgarden(empty)["status"] == "NOT_FOUND"
+
+    eval_res = module.evaluate_estate_sync(
+        root=ROOT,
+        target_version=module.get_package_version(ROOT),
+        vstd_labs_dir=empty,
+        claimgarden_dir=empty,
+        offline=True,
+        target_sync=True,
+    )
+    assert eval_res["vstd_labs"]["status"] == "NOT_FOUND"
+    assert eval_res["claimgarden"]["status"] == "NOT_FOUND"
+    assert eval_res["action_items"] == []
+
+
+@pytest.mark.parametrize(
+    "files",
+    [
+        {"app.js": "const EMITTED = {};\n"},
+        {"index.html": "<html><body>nothing that names a release</body></html>\n"},
+    ],
+)
+def test_a_site_without_its_version_fields_is_reported_as_drift_not_a_crash(
+    tmp_path: Path, files: dict[str, str]
+):
+    module = _load_module()
+    labs = tmp_path / "website"
+    labs.mkdir()
+    for name, content in files.items():
+        (labs / name).write_text(content, encoding="utf-8")
+
+    eval_res = module.evaluate_estate_sync(
+        root=ROOT,
+        target_version=module.get_package_version(ROOT),
+        vstd_labs_dir=labs,
+        offline=True,
+        target_sync=True,
+    )
+
+    assert eval_res["vstd_labs"]["status"] == "OBSERVED"
+    assert any("hero badge missing version" in a for a in eval_res["action_items"])
+    assert any("metric card missing version" in a for a in eval_res["action_items"])
+    assert not any("'None'" in a for a in eval_res["action_items"])
+
+
+def test_the_report_does_not_call_unobserved_surfaces_clean():
+    module = _load_module()
+    eval_result = {
+        "target_version": "0.0.0",
+        "doc_coverage_status": "PASS",
+        "doc_coverage_errors": [],
+        "pypi": {"status": "SKIPPED_OFFLINE"},
+        "vstd_labs": {"status": "NOT_FOUND"},
+        "claimgarden": {"status": "NOT_FOUND"},
+        "action_items": [],
+    }
+
+    report = module.format_report(eval_result)
+
+    assert "CLEAN for observed surfaces" in report
+    assert "PyPI (SKIPPED_OFFLINE)" in report
+    assert "Company Site (NOT_FOUND)" in report
+    assert "ClaimGarden (NOT_FOUND)" in report
+    assert "No drift detected" not in report
+
+
+def test_the_report_calls_a_fully_observed_estate_clean():
+    module = _load_module()
+    eval_result = {
+        "target_version": "0.0.0",
+        "doc_coverage_status": "PASS",
+        "doc_coverage_errors": [],
+        "pypi": {"status": "OBSERVED", "latest_version": "0.0.0", "release_count": 1},
+        "vstd_labs": {"status": "OBSERVED"},
+        "claimgarden": {"status": "OBSERVED"},
+        "action_items": [],
+    }
+
+    report = module.format_report(eval_result)
+
+    assert "Estate Synchronization: CLEAN (No drift detected)" in report
+    assert "unobserved" not in report

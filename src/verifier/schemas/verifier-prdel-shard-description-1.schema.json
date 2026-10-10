@@ -1,0 +1,360 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-prdel-shard-description-1.schema.json",
+  "title": "Source-bound sharded PRDEL description linkage and bounded gate results, version 1",
+  "description": "Typed linkage, independently replayed bounded assessment, and command-line interface (CLI) wrapper. Schema validity alone supplies no source evidence, execution authentication, acceptance or publication authority.",
+  "$defs": {
+    "linkage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "binding",
+        "manifest_sha256",
+        "shard_sha256",
+        "required_residuals_sha256"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "verifier-prdel-shard-description-1"
+        },
+        "binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "base",
+            "head",
+            "source_digest",
+            "requirements_digest"
+          ],
+          "properties": {
+            "base": {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            "head": {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            "source_digest": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "requirements_digest": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "shard_sha256": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40000,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required_residuals_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "gate_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "status",
+        "scope",
+        "claim_boundary",
+        "execution_provenance",
+        "binding",
+        "manifest_sha256",
+        "shard_sha256",
+        "compilation_replay",
+        "logical_report",
+        "required_compilation_residuals",
+        "required_native_findings",
+        "required_replay_findings",
+        "description_digest",
+        "admission_policy"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "verifier-prdel-shard-gate-1"
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ]
+        },
+        "scope": {
+          "const": "BOUNDED_SHARDED_EXACT_SOURCE_ONLY"
+        },
+        "claim_boundary": {
+          "type": "string"
+        },
+        "execution_provenance": {
+          "const": "NOT_ESTABLISHED"
+        },
+        "binding": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "base",
+                "head",
+                "source_digest",
+                "requirements_digest"
+              ],
+              "properties": {
+                "base": {
+                  "type": "string",
+                  "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+                },
+                "head": {
+                  "type": "string",
+                  "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+                },
+                "source_digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "requirements_digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "manifest_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "shard_sha256": {
+          "type": "array",
+          "maxItems": 40000,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "compilation_replay": {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "UNKNOWN",
+                "NOT_RUN"
+              ]
+            }
+          }
+        },
+        "logical_report": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "required_compilation_residuals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "status"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": [
+                  "PASS",
+                  "FAIL",
+                  "UNKNOWN"
+                ]
+              }
+            }
+          }
+        },
+        "required_native_findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "status"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": [
+                  "PASS",
+                  "FAIL",
+                  "UNKNOWN"
+                ]
+              }
+            }
+          }
+        },
+        "required_replay_findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "status"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": [
+                  "PASS",
+                  "FAIL",
+                  "UNKNOWN"
+                ]
+              }
+            }
+          }
+        },
+        "description_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "admission_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schema_version",
+                "max_packet_bytes",
+                "max_description_bytes",
+                "max_rows",
+                "leaf_inventory_operations"
+              ],
+              "properties": {
+                "schema_version": {
+                  "const": "verifier-prdel-shard-admission-profile-1"
+                },
+                "max_packet_bytes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 67108864
+                },
+                "max_description_bytes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 32768
+                },
+                "max_rows": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 40000
+                },
+                "leaf_inventory_operations": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 200000
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "cli": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "operation",
+        "status",
+        "body",
+        "report"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "verifier-prdel-shard-cli-1"
+        },
+        "operation": {
+          "enum": [
+            "render",
+            "validate"
+          ]
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ]
+        },
+        "body": {
+          "description": "Shape only: this schema does not enforce the body Unicode Transformation Format, 8-bit (UTF-8) byte limit. Runtime admission enforces the selected positive limit, at most 32768 bytes; schema validity alone does not establish byte admission.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "report": {
+          "$ref": "#/$defs/gate_report"
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/linkage"
+    },
+    {
+      "$ref": "#/$defs/gate_report"
+    },
+    {
+      "$ref": "#/$defs/cli"
+    }
+  ]
+}

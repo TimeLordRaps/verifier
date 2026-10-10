@@ -1,0 +1,16 @@
+Produce one residual witness route for this exact instance. Return {"route": ROUTE_OBJECT} and no other top-level fields.
+
+The closed route language is:
+- route_version: "vgsat-route-0.1"
+- declared_statement: nonempty bounded statement
+- slots: [{"id": string, "domain": [distinct integers]}]
+- constraints: fixed, allowed_values, all_different, forbidden_pair, allowed_pairs, or product_equals
+- decoder: {"kind":"list_field","field":string,"slots":[slot ids]} or {"kind":"object_fields","fields":{candidate field:slot id}}
+
+Every slot must be consumed exactly once by the decoder. Do not invent constraint kinds. Prefer a genuine partial route; fixing every slot is generate-and-check-equivalent and will not count as SAT-assisted benefit. The route may be incomplete relative to the domain. Its UNSAT result will remain route-local.
+
+VERIFIER CONTRACT
+{{VERIFIER_CONTRACT}}
+
+INSTANCE
+{{INSTANCE}}

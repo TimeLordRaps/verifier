@@ -2,18 +2,14 @@
 
 This walkthrough uses the Verifier Standard (VSTD) generic-run example: a small
 word-frequency computation with declared input and output files. It requires Git
-and the [released package installation](INSTALLATION.md).
+and the [v2.0.0 candidate source installation](INSTALLATION.md).
 
 ## Get the matching example
 
-Use the example from the same release as the installed package:
+Use the example from the same v2.0.0 candidate checkout as the installed source.
+Run the commands below from that checkout's root.
 
-```bash
-git clone --branch v1.5.0 --depth 1 https://github.com/TimeLordRaps/verifier.git verifier-example
-cd verifier-example
-```
-
-This checkout is a release snapshot, not a development branch. The example lives
+The site's source coordinate identifies the candidate revision. The example lives
 under `examples/generic_run/`. Its manifest names the command, inputs, outputs,
 claim scope, limitations, and falsification conditions.
 
@@ -67,6 +63,15 @@ supports byte-level reproducibility for that rerun and those outputs. A mismatch
 refutes that bounded statement. Missing evidence or capability must remain
 `UNKNOWN`, rather than becoming success.
 
+## Submit a compatible claim for storage
+
+The generic receipt above is not automatically a Claim Garden computational claim packet.
+For an independently prepared compatible claim and receipt, `vstd publish` requires a
+registered submitting publisher identity and its credential file. Successful authenticated
+storage remains pending human review, with publication `NOT_ESTABLISHED`.
+See the [claim submission tutorial](tutorials/PUBLISH_A_CLAIM.md) for the exact input,
+credential, digest, response-binding and duplicate-submission contract.
+
 ## Follow the evidence boundary
 
 | Observation | What it establishes | What it does not establish |
@@ -75,6 +80,7 @@ refutes that bounded statement. Missing evidence or capability must remain
 | Run completes | The capture path produced its recorded run and bundle | Independent validation or claim truth |
 | Validation succeeds | The implemented structural and digest checks succeed | External evidence or artifact comparison |
 | Rerun outputs agree | The declared outputs match for that rerun | Universal determinism, portability, or independent corroboration |
+| Publication succeeds | The verified claim packet was admitted to Claim Garden in PENDING_REVIEW state | Claim accreditation, moderation approval, or independent recomputation |
 
 The example declares limitations and refutation conditions so a result stays tied
 to its actual scope. Keep those boundaries when adapting it to your own work.

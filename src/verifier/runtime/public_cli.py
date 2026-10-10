@@ -1,7 +1,7 @@
 """Terminology: application programming interface (API); command-line interface (CLI);
-identifier (ID); JavaScript Object Notation (JSON);
-Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD);
-YAML Ain't Markup Language (YAML).
+Hypertext Transfer Protocol Secure (HTTPS); identifier (ID);
+JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256);
+Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
 
 Public, target-neutral CLI for the VSTD reference implementation.
 
@@ -93,15 +93,15 @@ def _read_receipt(path_or_dir: Path) -> dict[str, Any] | None:
 
 
 def _is_data_receipt(payload: dict[str, Any]) -> bool:
-    return payload.get("schema_version") == "VSTD-DATA-0.1" and "hypergraph" in payload
+    return payload.get("schema_version") == "verifier-data-1" and "hypergraph" in payload
 
 
 def _load_hypergraph(path_or_dir: Path) -> tuple[dict[str, Any], ProvenanceHypergraph]:
     payload = _read_receipt(path_or_dir)
     if payload is None or not _is_data_receipt(payload):
         raise ValueError(
-            "not a readable VSTD-Graph-1 receipt with serialized schema_version identifier "
-            f"VSTD-DATA-0.1: {_receipt_file(path_or_dir)}"
+            "not a readable GRAPH-1 receipt with serialized schema_version identifier "
+            f"verifier-data-1: {_receipt_file(path_or_dir)}"
         )
     return payload, ProvenanceHypergraph.from_dict(payload["hypergraph"])
 
@@ -151,7 +151,7 @@ def _inspect_data_receipt(path_or_dir: Path) -> int:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 1
     print("=" * 70)
-    print(f"VSTD-GRAPH RECEIPT: {payload.get('receipt_id')}")
+    print(f"GRAPH RECEIPT: {payload.get('receipt_id')}")
     print("=" * 70)
     print(f"Canonical Digest: {payload.get('canonical_digest')}")
     print(f"Target Artifact:  {payload.get('dataset_spec', {}).get('target_artifact_id')}")
@@ -221,12 +221,77 @@ def _receipt_command_failure(args: argparse.Namespace, message: str) -> int:
     return 1
 
 
+_MEMORY_UNKNOWN_SCHEMA = "verifier-public-cli-unknown-1"
+_MEMORY_UNKNOWN_REASON = "LOCAL_MEMORY_UNAVAILABLE"
+_MEMORY_UNKNOWN_BOUNDARY = (
+    "The selected public CLI command did not complete; no command outcome, "
+    "claim truth, or release clearance is established."
+)
+_MEMORY_UNKNOWN_MESSAGE = (
+    "selected command did not complete because local memory was unavailable"
+)
+
+
+def _memory_unknown(args: argparse.Namespace) -> int:
+    if bool(getattr(args, "json", False)):
+        print(
+            json.dumps(
+                {
+                    "schema_version": _MEMORY_UNKNOWN_SCHEMA,
+                    "status": "UNKNOWN",
+                    "reason": _MEMORY_UNKNOWN_REASON,
+                    "command": args.command,
+                    "claim_boundary": _MEMORY_UNKNOWN_BOUNDARY,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+    else:
+        print(f"[UNKNOWN] {_MEMORY_UNKNOWN_MESSAGE}", file=sys.stderr)
+    return 2
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="vstd",
         description="Target-neutral VSTD receipt and provenance reference runtime.",
+        epilog="\n".join((
+            "new here?          run `vstd start` for the ordered path from "
+            "nothing to a checked result.",
+            "holding a result?  run `vstd explain <file.json>` to read it in "
+            "plain language.",
+            "most commands take --json for programmatic use.",
+        )),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    from verifier import __version__
+
+    parser.add_argument(
+        "--version", action="version", version=f"vstd {__version__}",
+        help="Show the installed verifier-standard version and exit.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    from verifier.runtime.accessibility_cli import add_accessibility_parsers
+    add_accessibility_parsers(subparsers)
+
+    from verifier.runtime.certification_cli import add_certification_parser
+    add_certification_parser(subparsers)
+
+    from verifier.runtime.gate import add_gate_parsers
+    add_gate_parsers(subparsers)
+
+    from verifier.runtime.current_object_cli import add_current_object_parsers
+    add_current_object_parsers(subparsers)
+    from verifier.runtime.native_operation_cli import add_native_operation_parsers
+    add_native_operation_parsers(subparsers)
+    from verifier.runtime.polish import add_polish_parsers
+    add_polish_parsers(subparsers)
+    from verifier.runtime.security_cli import add_security_parsers
+    add_security_parsers(subparsers)
+    from verifier.runtime.gates import add_gates_parser
+    add_gates_parser(subparsers)
 
     demo_parser = subparsers.add_parser(
         "demo",
@@ -356,7 +421,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     for command, help_text in (
         ("validate", "Run implemented receipt checks; Graph candidate validation is not conformance."),
-        ("inspect", "Inspect a generic-run or VSTD-Graph receipt; validate and report VSTD-3."),
+        ("inspect", "Inspect a generic-run or GRAPH receipt; validate and report VSTD-3."),
         ("reproduce", "Replay the mechanisms available in a stored receipt."),
     ):
         command_parser = subparsers.add_parser(command, help=help_text)
@@ -380,7 +445,7 @@ def build_parser() -> argparse.ArgumentParser:
     impact_parser.add_argument("artifact_id")
     impact_parser.add_argument("--search-root", default="receipts")
 
-    data_parser = subparsers.add_parser("data", help="Inspect a stored VSTD-Graph hypergraph.")
+    data_parser = subparsers.add_parser("data", help="Inspect a stored GRAPH hypergraph.")
     data_commands = data_parser.add_subparsers(dest="data_command", required=True)
 
     trace_parser = data_commands.add_parser("trace")
@@ -474,6 +539,61 @@ def build_parser() -> argparse.ArgumentParser:
     add_experiment_parsers(subparsers)
     add_vstd3_parsers(subparsers)
     add_network_parsers(subparsers)
+
+    publish_parser = subparsers.add_parser(
+        "publish",
+        help="Submit a preflighted claim and receipt for authenticated storage and human review.",
+    )
+    publish_parser.add_argument(
+        "receipt",
+        nargs="?",
+        help="Path to receipt.json, claim packet JSON, or directory containing receipt and claim.",
+    )
+    publish_parser.add_argument(
+        "--claim",
+        help="Optional path to separate claim JSON if not bundled or co-located with receipt.",
+    )
+    publish_parser.add_argument(
+        "--endpoint",
+        default="https://claimgarden.com",
+        help="Target Claim Garden HTTPS origin (default: https://claimgarden.com).",
+    )
+    publish_parser.add_argument(
+        "--publisher-id",
+        help="Registered publisher:sha256 identity submitting this claim (not the receipt notary).",
+    )
+    publish_parser.add_argument(
+        "--credential-file",
+        help="Publisher credential file containing the required bearer access token.",
+    )
+    publish_parser.add_argument(
+        "--expected-head",
+        help="Reserved silo-lineage option; rejected for claim storage.",
+    )
+    publish_parser.add_argument(
+        "--genesis",
+        action="store_true",
+        help="Reserved silo-lineage option; rejected for claim storage.",
+    )
+    publish_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Emit canonical JSON result instead of formatted text.",
+    )
+    publish_parser.add_argument(
+        "--sim-artifact", action="store_true",
+        help="Treat the positional file as a bare SIM artifact for Claim Garden quarantine.",
+    )
+    publish_parser.add_argument("--sim-request", help="Independently selected native SIM request JSON file.")
+    publish_parser.add_argument("--sim-policy", help="Independently selected native SIM policy JSON file.")
+    publish_parser.add_argument("--source-digest", help="Expected SHA-256 digest of exact bare SIM upload bytes.")
+    from verifier.interoperability.gated_publish import add_gated_publish_options
+    add_gated_publish_options(publish_parser, subparsers)
+    publish_parser.add_argument("--facet-inventory", help="Independent exact namespace facet inventory for local clearance preparation.")
+    publish_parser.add_argument("--facet-specification", help="Independent versioned abstract facet and interaction requirements.")
+    publish_parser.add_argument("--facet-policy", help="Independent exact facet inventory/specification/native-rule admission policy.")
+    publish_parser.add_argument("--dependency-policy", help="Independent host-selected certificate dependency profile policy for clearance preparation.")
+    publish_parser.add_argument("--clearance", help="Independently replay automatic-gates clearance before local publication preparation.")
     return parser
 
 
@@ -506,7 +626,7 @@ def _handle_receipt_command(args: argparse.Namespace) -> int:
         elif args.rerun:
             handler = lambda: _receipt_command_failure(
                 argparse.Namespace(command=args.command, json=False),
-                "--rerun is not defined for stored VSTD-Graph receipts",
+                "--rerun is not defined for stored GRAPH receipts",
             )
         else:
             handler = lambda: reproduce_data_receipt(receipt_path)
@@ -792,9 +912,90 @@ def _handle_artifact_command(args: argparse.Namespace) -> int:
     return 1
 
 
+# The parser-registered subcommands of "vstd polish"; numeric self-polish tiers
+# are dispatched before argparse so they cannot be mistaken for artifact paths.
+# A test compares this set with the parser.
+POLISH_SUBCOMMANDS = frozenset({
+    "1", "2",
+    "catalog", "assess", "coverage", "check", "prepare", "report",
+    "application", "core-application",
+})
+
+
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if (len(arguments) > 1 and arguments[0] == "polish"
+            and arguments[1] in ("1", "2")):
+        numeric_args = argparse.Namespace(
+            command="polish", json="--json" in arguments
+        )
+        try:
+            from verifier.runtime.self_polish_tiers import handle_self_polish_tier_argv
+            return handle_self_polish_tier_argv(arguments[1:])
+        except (ImportError, MemoryError, OSError):
+            return _memory_unknown(numeric_args)
+    parser = build_parser()
+    # A bare `vstd` is the first thing most people type. argparse's own answer
+    # is a usage error on stderr listing every subcommand and naming none of
+    # them as the place to begin, which is the least useful moment in the tool.
+    if not arguments:
+        parser.print_help()
+        return 2
+    if (len(arguments) > 1 and arguments[0] == "polish" and not arguments[1].startswith("-")
+            and arguments[1] not in POLISH_SUBCOMMANDS):
+        # "vstd polish PATH ..." prepares PATH with the gates preparation report; an explicit --report-format after it wins.
+        arguments[1:1] = ["prepare", "--report-format", "verifier-polish-preparation-1"]
+    args = parser.parse_args(arguments)
     try:
+        if args.command == "publish" and args.clearance:
+            from verifier.runtime.clearance_publish import handle_clearance_publish
+            return handle_clearance_publish(args)
+        if args.command == "publish" and any((args.dependency_policy, args.facet_inventory, args.facet_specification, args.facet_policy)):
+            parser.error("dependency and facet requirements require --clearance")
+        if args.command == "publish":
+            if not args.receipt:
+                parser.error("publish requires a receipt or the --clearance preparation mode")
+            if args.sim_artifact:
+                if args.gated or args.claim or args.expected_head or args.genesis:
+                    parser.error("SIM artifact submission cannot mix with gated, claim, or silo options")
+                if any((args.artifact,args.request,args.certificate,args.policy,args.manifest,args.dry_run,args.output,
+                        args.private_review_consent,args.expected_checker_coordinate)):
+                    parser.error("SIM artifact submission cannot use gated publication options")
+                if not all((args.sim_request, args.sim_policy, args.source_digest,
+                            args.publisher_id, args.credential_file)):
+                    parser.error("SIM artifact submission requires request, policy, source digest, publisher and credential")
+            elif any((args.sim_request, args.sim_policy, args.source_digest)):
+                parser.error("SIM request, policy and source digest require --sim-artifact")
+        if args.command == "publish" and not args.gated:
+            if not args.publisher_id or not args.credential_file:
+                parser.error("publish requires --publisher-id and --credential-file")
+            if any((args.artifact,args.request,args.certificate,args.policy,args.manifest,args.dry_run,args.output,
+                    args.private_review_consent,args.expected_checker_coordinate)):
+                parser.error("gated publication options require --gated")
+        if args.command in ("start", "explain"):
+            from verifier.runtime.accessibility_cli import handle_accessibility_command
+            return handle_accessibility_command(args)
+        if args.command == "certification":
+            from verifier.runtime.certification_cli import handle_certification_command
+            return handle_certification_command(args)
+        if args.command == "gate":
+            from verifier.runtime.gate import handle_gate_command
+            return handle_gate_command(args)
+        if args.command == "current-object":
+            from verifier.runtime.current_object_cli import handle_current_object_command
+            return handle_current_object_command(args)
+        if args.command == "operations":
+            from verifier.runtime.native_operation_cli import handle_native_operation_command
+            return handle_native_operation_command(args)
+        if args.command == "polish":
+            from verifier.runtime.polish import handle_polish_command
+            return handle_polish_command(args)
+        if args.command == "security":
+            from verifier.runtime.security_cli import handle_security_command
+            return handle_security_command(args)
+        if args.command == "gates":
+            from verifier.runtime.gates import handle_gates_command
+            return handle_gates_command(args)
         if args.command == "demo":
             results = run_demo(args.scenario)
             report = demo_report(results)
@@ -913,8 +1114,78 @@ def main(argv: list[str] | None = None) -> int:
             return handle_experiment_command(args)
         if args.command == "network":
             return handle_network_command(args)
+        if args.command == "account" or (args.command == "publish" and args.gated):
+            from verifier.interoperability.gated_publish import handle_gated_publish_command
+            return handle_gated_publish_command(args)
+        if args.command == "publish":
+            from verifier.interoperability.claim_garden import (
+                ClaimGardenClientError,
+                publish_claim,
+            )
+
+            try:
+                if args.sim_artifact:
+                    from verifier.interoperability.artifact_publish import read_intent_object, publish_sim_artifact
+                    result = publish_sim_artifact(
+                        args.receipt,
+                        expected_source_digest=args.source_digest,
+                        expected_request=read_intent_object(args.sim_request),
+                        policy=read_intent_object(args.sim_policy),
+                        endpoint=args.endpoint,
+                        publisher_id=args.publisher_id,
+                        credential_file=args.credential_file,
+                    )
+                else:
+                    result = publish_claim(
+                        args.receipt,
+                        claim=args.claim,
+                        endpoint=args.endpoint,
+                        publisher_id=args.publisher_id,
+                        credential_file=args.credential_file,
+                        expected_head=args.expected_head,
+                        genesis=args.genesis,
+                    )
+            except ClaimGardenClientError as exc:
+                if args.json:
+                    print(
+                        json.dumps(
+                            {"error": str(exc), "result": "REJECTED"},
+                            indent=2,
+                            sort_keys=True,
+                        )
+                    )
+                else:
+                    print(f"[FAIL] {exc}", file=sys.stderr)
+                return 1
+
+            if args.json:
+                print(json.dumps(result, indent=2, sort_keys=True))
+            else:
+                status_label = (
+                    result.get("status") or result.get("result") or "SUBMITTED"
+                )
+                claim_id = result.get("claim_id") or args.receipt
+                print(f"[{status_label}] {claim_id}")
+                if "receipt_id" in result:
+                    print(f"  Receipt ID:       {result['receipt_id']}")
+                if "claim_digest" in result:
+                    print(f"  Claim Digest:     {result['claim_digest']}")
+                if "state" in result:
+                    print(f"  State:            {result['state']}")
+                if "publication_gate" in result:
+                    print(f"  Publication Gate: {result['publication_gate']}")
+                if "publication" in result:
+                    print(f"  Publication:      {result['publication']}")
+            return (
+                0
+                if result.get("status") == "ADMITTED"
+                or result.get("result") == "SUBMITTED"
+                else 1
+            )
         if args.command in {"hardware", "continuity", "fleet", "evidence", "claims"}:
             return handle_vstd3_command(args)
+    except MemoryError:
+        return _memory_unknown(args)
     except (OSError, RunError, ValueError, KeyError) as exc:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 1

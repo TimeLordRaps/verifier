@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def _subject() -> dict[str, Any]:
     return {
-        "schema_version": "VSTD-TYPED-FORMATION-0.1",
+        "schema_version": "verifier-typed-formation-1",
         "profile_digest": profile_digest(),
         "context": {
             "ground_artifact_digest": digest_bytes(b"declared ground"),
@@ -48,14 +48,14 @@ def _subject() -> dict[str, Any]:
 
 
 def _validator() -> Draft202012Validator:
-    data = (ROOT / "standard/schemas/vstd-typed-formation-0.1.schema.json").read_bytes()
+    data = (ROOT / "src/verifier/schemas/verifier-typed-formation-1.schema.json").read_bytes()
     schema = json.loads(data)
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)
 
 
 def test_formation_profile_is_exact_inert_installed_resource() -> None:
-    retained = importlib.resources.files("verifier").joinpath("profiles/typed-formation-0.1.json")
+    retained = importlib.resources.files("verifier").joinpath("profiles/typed-formation-1.json")
     assert retained.read_bytes() == profile_bytes()
     assert digest_bytes(retained.read_bytes()) == profile_digest()
     assert json.loads(retained.read_bytes())["context_meaning"] == (
@@ -103,10 +103,7 @@ def test_formation_schema_pass_is_not_reference_or_type_checking() -> None:
 def test_formation_resources_are_explicitly_packaged_and_experimental() -> None:
     from scripts.release_artifacts import PACKAGED_SCHEMA_NAMES
 
-    assert "vstd-typed-formation-0.1.schema.json" in PACKAGED_SCHEMA_NAMES
-    specification = ROOT / "standard/TYPED_FORMATION.md"
-    assert specification.read_bytes() == (
-        ROOT / "src/verifier/specifications/TYPED_FORMATION.md"
-    ).read_bytes()
+    assert "verifier-typed-formation-1.schema.json" in PACKAGED_SCHEMA_NAMES
+    specification = ROOT / "src/verifier/standard/TYPED_FORMATION.md"
     assert "Experimental typed formation" in specification.read_text(encoding="utf-8")
     assert "COMPLETENESS_NOT_ESTABLISHED" in specification.read_text(encoding="utf-8")

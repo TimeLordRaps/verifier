@@ -53,10 +53,13 @@ VSTD elevates `UNKNOWN` to a first-class, honorable result:
 
 You do not need complicated tools or heavy frameworks to use VSTD. The reference library has **zero required third-party dependencies**—it runs on standard Python 3.10+.
 
-### Step 1: Install `verifier-standard`
+### Step 1: Install v2.0.0 candidate source
+
+Use the v2.0.0 source checkout identified by the documentation site's source
+coordinate. This version has not been published to the Python Package Index.
 
 ```bash
-python -m pip install "verifier-standard==1.5.0"
+python -m pip install .
 ```
 
 ### Step 2: Inspect the library
@@ -67,7 +70,7 @@ Open a Python interactive shell:
 import verifier
 
 print(verifier.__version__)
-# '1.5.0'
+# Confirm this matches the candidate source coordinate.
 
 print(verifier.__standard__)
 # 'VSTD-5'
@@ -136,7 +139,7 @@ When analyzing self-referential systems, recursive agent loops, ordinal bounds, 
 - Informal safety arguments frequently suffer from circular reasoning, ungrounded induction steps, or silent domain upgrades.
 - VSTD enforces strict **stratified profiles (Profiles 1 to 5)**: a higher profile cannot supply or backfill missing evidence for a lower profile, and self-observation is never promoted to independent verification.
 - Graph profiles track directed acyclic graphs (DAGs) and detect when an upstream dependency in an agent's reasoning chain has been revoked or invalidated.
-- **Tutorial & Runnable Specimen**: Study the profile hierarchy in the [Normative Ladder](../standard/LADDER.md) and run the four adversarial specimens in [`examples/flagship_demo/`](../examples/flagship_demo/README.md).
+- **Tutorial & Runnable Specimen**: Study the profile hierarchy in the [Normative Ladder](../src/verifier/standard/LADDER.md) and run the four adversarial specimens in [`examples/flagship_demo/`](../examples/flagship_demo/README.md).
 
 ### E. For Intellidynamics and AI Benchmarkers
 Automated agent evaluations and language model leaderboards are plagued by prompt leaking, test-set contamination, and stochastic output variance:
@@ -153,7 +156,7 @@ When working in advanced mathematical foundations, interactive theorem provers (
   1. **Axiom Enumeration**: It binds the exact explicit axiom set (refusing ungrounded axioms or `sorry` escapes).
   2. **Environment & Kernel Binding**: It hashes the exact prover kernel binary, source files, and dependencies.
   3. **Heterogeneous Composition**: It allows an ordinal bound in `ordinatics`, a hyperset graph in `grounded-hyperset-theory`, and an equational derivation in `hypermath` to link together into a unified, refutable proof graph.
-- **Tutorial & Runnable Specimen**: Review [Python API Guide: Grounded Decision Certificates](PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc) and the [Normative VSTD-4 Grounded Certificate Specification](../standard/VSTD-4.md).
+- **Foundations, Tutorial & Runnable Specimen**: Review [Mathematical Foundations Guide](MATHEMATICAL_FOUNDATIONS.md), [Python API Guide: Grounded Decision Certificates](PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc), and the [Normative VSTD-4 Grounded Certificate Specification](../src/verifier/standard/VSTD-4.md).
 
 ### G. For Nanochemistry, Molecular Robotics & Mechanosynthesis (Self-Assembly Containment and Anti-Replication Gates)
 In molecular dynamics simulations, chemical reaction networks (CRNs), and autonomous molecular robotics (such as deoxyribonucleic acid (DNA) origami walkers or mechanosynthetic tooltips), molecular self-assembly poses an urgent containment challenge: preventing runaway autocatalytic self-replication.
@@ -177,5 +180,5 @@ VSTD provides the computational containment seal:
 Now that you understand the mental model:
 - [Run your first generic computation](FIRST_RECEIPT.md) — step-by-step tutorial capturing a word-frequency script into a receipt.
 - [Explore the Python API](PYTHON_API_GUIDE.md) — generate and inspect receipts directly from your Python code.
-- [Read the Normative Ladder](../standard/LADDER.md) — the formal specification of Profiles 1 through 5.
+- [Read the Normative Ladder](../src/verifier/standard/LADDER.md) — the formal specification of Profiles 1 through 5.
 - [Inspect the Architecture Map](ARCHITECTURE.md) — internal module layout and design principles.

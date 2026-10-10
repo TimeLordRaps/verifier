@@ -268,3 +268,22 @@ def test_real_valid_scitt_registration_does_not_repair_rejected_vstd_claim(tmp_p
     assert result["vstd_kernel"]["outcome"] == "REJECTED"
     assert result["vstd_observation"]["state"] == "REJECTED"
     assert result["composition"]["status"] == "FAIL"
+
+
+def test_authentic_receipt_remains_valid_while_mutated_artifact_is_rejected(tmp_path):
+    demo = _load_demo()
+    demo.produce(tmp_path)
+    result = demo.boundary_demo(tmp_path)
+
+    assert result["checks"] == {
+        "scitt_signature_and_inclusion_receipt_original": "PASS",
+        "scitt_signature_and_inclusion_receipt_after_external_artifact_mutation": "PASS",
+        "scitt_evidence_bytes_identical": True,
+        "vstd_original_exact_artifact_composition": "PASS",
+        "vstd_mutated_artifact_composition": "FAIL",
+    }
+    assert result["original"]["artifact_sha256"] != result["mutated"][
+        "artifact_sha256"
+    ]
+    assert result["mutated"]["composition"]["reason"] == "artifact binding mismatch"
+    assert (tmp_path / "boundary_demo_result.json").exists()

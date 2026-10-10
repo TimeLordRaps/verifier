@@ -645,11 +645,16 @@ def reference_descriptor() -> VerifierDescriptor:
     def digest(*candidates: str) -> str:
         for name in candidates:
             relative = Path(name)
+            # A ``standard/`` coordinate names the packaged normative bytes only; the
+            # launch directory must not choose what a published specification hash covers.
             paths = (
-                here.parent / relative,
-                Path.cwd() / relative,
-                here.parents[3] / relative,
-                here.parents[1] / "specifications" / relative.name,
+                (here.parents[1] / "standard" / relative.name,)
+                if "standard" in relative.parts
+                else (
+                    here.parent / relative,
+                    Path.cwd() / relative,
+                    here.parents[3] / relative,
+                )
             )
             for path in paths:
                 try:

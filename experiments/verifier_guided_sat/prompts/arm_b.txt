@@ -1,0 +1,7 @@
+Produce one complete candidate for this exact instance. Return {"candidate": OBJECT} and no other top-level fields. The candidate must match the witness schema in the verifier contract.
+
+VERIFIER CONTRACT
+{{VERIFIER_CONTRACT}}
+
+INSTANCE
+{{INSTANCE}}

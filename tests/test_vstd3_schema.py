@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def _empty_receipt() -> VSTD3Receipt:
     receipt = VSTD3Receipt(
-        schema_version="VSTD-3.0",
+        schema_version="VSTD-3",
         receipt_id="schema-fixture",
         created_at="2026-08-21T18:00:00Z",
         descriptors=(),

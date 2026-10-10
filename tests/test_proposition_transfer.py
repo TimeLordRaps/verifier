@@ -22,18 +22,18 @@ from verifier.interoperability.network import (
 
 
 RULE_PROFILE = {
-    "artifact_schema": "VSTD-CANONICAL-FINITE-SET-0.1", "context_policy": "EXACT",
+    "artifact_schema": "verifier-canonical-finite-set-1", "context_policy": "EXACT",
     "facet": "items", "max_evidence_bytes": 4194304, "max_items": 256,
     "max_json_depth": 32, "max_json_nodes": 20000, "max_objects": 34,
     "max_premises": 16, "max_record_bytes": 262144, "max_string_bytes": 256,
     "predicate_id": "canonical_finite_set_subset_v1",
     "rule_id": "canonical_finite_set_union_v1",
-    "schema_version": "VSTD-PROPOSITION-TRANSFER-RULE-0.1",
+    "schema_version": "verifier-proposition-transfer-rule-1",
 }
 
 
 def _subject(items: list[str], allowed: list[str]) -> tuple[dict[str, Any], dict[str, bytes]]:
-    payload = canonical_bytes({"schema_version": "VSTD-CANONICAL-FINITE-SET-0.1", "items": items})
+    payload = canonical_bytes({"schema_version": "verifier-canonical-finite-set-1", "items": items})
     path = "items.json"
     commit = SiloCommit(
         publisher_id="publisher:sha256:" + "a" * 64, parents=(),
@@ -65,7 +65,7 @@ def _fixture() -> tuple[dict[str, Any], dict[str, bytes]]:
     second, second_bytes = _subject(["b"], ["b"])
     conclusion, conclusion_bytes = _subject(["a", "b"], ["a", "b"])
     return {
-        "schema_version": "VSTD-PROPOSITION-TRANSFER-0.1", "rule_id": RULE_PROFILE["rule_id"],
+        "schema_version": "verifier-proposition-transfer-1", "rule_id": RULE_PROFILE["rule_id"],
         "rule_profile_digest": digest_bytes(canonical_bytes(RULE_PROFILE)),
         "premises": sorted([first, second], key=lambda value: digest_bytes(canonical_bytes(value))),
         "conclusion": conclusion, "residual_obligations": [],
@@ -108,7 +108,7 @@ def test_exact_union_has_checked_support_without_authority_or_graph_claims() -> 
     assert checker.rule_profile_bytes() == canonical_bytes(RULE_PROFILE)
     assert checker.decode_transfer(wire) == declaration
     result = checker.assess_transfer(wire, evidence)
-    assert result["schema_version"] == "VSTD-PROPOSITION-TRANSFER-ASSESSMENT-0.1"
+    assert result["schema_version"] == "verifier-proposition-transfer-assessment-1"
     assert result["reason_codes"] == []
     assert result["conclusion_support"] == "SUPPORTED"
     assert result["authority_admissibility"] == "NOT_ESTABLISHED"
@@ -394,11 +394,11 @@ def _rebind_artifact(proposition: dict[str, Any], evidence: dict[str, bytes], pa
 
 
 @pytest.mark.parametrize("payload", [
-    b"not JSON", b'{"items":[],"schema_version":"VSTD-CANONICAL-FINITE-SET-0.1"}\n',
-    b'{"items":["a","a"],"schema_version":"VSTD-CANONICAL-FINITE-SET-0.1"}',
+    b"not JSON", b'{"items":[],"schema_version":"verifier-canonical-finite-set-1"}\n',
+    b'{"items":["a","a"],"schema_version":"verifier-canonical-finite-set-1"}',
     b'{"items":[],"schema_version":"UNSUPPORTED"}',
-    b'{"items":["\\ud800"],"schema_version":"VSTD-CANONICAL-FINITE-SET-0.1"}',
-    b'{"items":["e\\u0301"],"schema_version":"VSTD-CANONICAL-FINITE-SET-0.1"}',
+    b'{"items":["\\ud800"],"schema_version":"verifier-canonical-finite-set-1"}',
+    b'{"items":["e\\u0301"],"schema_version":"verifier-canonical-finite-set-1"}',
 ])
 def test_malformed_actual_artifact_does_not_turn_byte_identity_into_a_semantic_result(payload: bytes) -> None:
     declaration, evidence = _fixture()
@@ -423,7 +423,7 @@ def test_unsupported_predicate_leaves_opaque_non_json_bytes_and_parameters_unint
     assert result["artifact_relation"] == "UNKNOWN"
 
 
-@pytest.mark.parametrize("malformed", [b"[]", b"{", b'{"schema_version":"VSTD-SILO-COMMIT-0.1"}'])
+@pytest.mark.parametrize("malformed", [b"[]", b"{", b'{"schema_version":"verifier-silo-commit-1"}'])
 def test_hash_valid_malformed_commit_is_invalid_without_erasing_direct_predicate(malformed: bytes) -> None:
     declaration, evidence = _fixture()
     source = declaration["premises"][0]

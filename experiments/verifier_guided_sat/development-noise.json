@@ -1,0 +1,252 @@
+{
+  "domain": "stable_matching",
+  "instances": 20,
+  "measurement_version": "vgsat-noise-0.1",
+  "preregistered_aggregate_improvement_threshold": 0.1,
+  "relative_mad_median": 0.008742155715103034,
+  "repeats_per_instance": 5,
+  "rows": [
+    {
+      "instance_id": "stable_matching-development-000",
+      "median_total_ns": 13379300,
+      "relative_mad": 0.03292399452886175,
+      "repeat_total_ns": [
+        58497100,
+        13453600,
+        13379300,
+        12938800,
+        11884600
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-001",
+      "median_total_ns": 13102400,
+      "relative_mad": 0.0026483697643179876,
+      "repeat_total_ns": [
+        13102400,
+        13137100,
+        13124500,
+        9653800,
+        10752900
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-002",
+      "median_total_ns": 11484900,
+      "relative_mad": 0.07279993730898833,
+      "repeat_total_ns": [
+        10648800,
+        15098500,
+        15035200,
+        10939000,
+        11484900
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-003",
+      "median_total_ns": 13091500,
+      "relative_mad": 0.0065156781117519,
+      "repeat_total_ns": [
+        13107000,
+        13006200,
+        13514800,
+        13091500,
+        10553800
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-004",
+      "median_total_ns": 10310400,
+      "relative_mad": 0.00932068590937306,
+      "repeat_total_ns": [
+        8302300,
+        12320200,
+        10310400,
+        10214300,
+        10330000
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-005",
+      "median_total_ns": 10326300,
+      "relative_mad": 0.22158953352120314,
+      "repeat_total_ns": [
+        10326300,
+        11445900,
+        12924700,
+        8038100,
+        8036800
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-006",
+      "median_total_ns": 8532200,
+      "relative_mad": 0.00521553643843323,
+      "repeat_total_ns": [
+        16030300,
+        8532200,
+        8527000,
+        8484600,
+        8576700
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-007",
+      "median_total_ns": 8448900,
+      "relative_mad": 0.010297198451869475,
+      "repeat_total_ns": [
+        8361900,
+        8448900,
+        8550100,
+        8751400,
+        8385600
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-008",
+      "median_total_ns": 8524400,
+      "relative_mad": 0.001372530617990709,
+      "repeat_total_ns": [
+        8524400,
+        8512700,
+        8592900,
+        8519900,
+        8554800
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-009",
+      "median_total_ns": 8024300,
+      "relative_mad": 0.007477287738494324,
+      "repeat_total_ns": [
+        7964300,
+        8044600,
+        8112800,
+        8024300,
+        7893800
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-010",
+      "median_total_ns": 8335800,
+      "relative_mad": 0.006190167710357734,
+      "repeat_total_ns": [
+        8335800,
+        8212000,
+        8325400,
+        8387400,
+        8501900
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-011",
+      "median_total_ns": 8041900,
+      "relative_mad": 0.008704410649224685,
+      "repeat_total_ns": [
+        8111900,
+        8041900,
+        7930800,
+        8009200,
+        8139600
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-012",
+      "median_total_ns": 7973500,
+      "relative_mad": 0.004703078949018624,
+      "repeat_total_ns": [
+        7978200,
+        8012200,
+        7973500,
+        7925700,
+        7936000
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-013",
+      "median_total_ns": 8036400,
+      "relative_mad": 0.005761286148026479,
+      "repeat_total_ns": [
+        7950700,
+        8036400,
+        8017900,
+        8082700,
+        8094500
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-014",
+      "median_total_ns": 7976100,
+      "relative_mad": 0.009290254635724226,
+      "repeat_total_ns": [
+        8050200,
+        7891800,
+        7916500,
+        8369500,
+        7976100
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-015",
+      "median_total_ns": 8219800,
+      "relative_mad": 0.03103481836541035,
+      "repeat_total_ns": [
+        7964700,
+        8704100,
+        8097200,
+        8492900,
+        8219800
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-016",
+      "median_total_ns": 8495700,
+      "relative_mad": 0.00900455524559483,
+      "repeat_total_ns": [
+        8597100,
+        8344000,
+        8495700,
+        8518000,
+        8419200
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-017",
+      "median_total_ns": 8796600,
+      "relative_mad": 0.004251642680126413,
+      "repeat_total_ns": [
+        8834000,
+        8895400,
+        8796600,
+        8681800,
+        8795400
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-018",
+      "median_total_ns": 8118700,
+      "relative_mad": 0.015778388165593012,
+      "repeat_total_ns": [
+        8271600,
+        8118700,
+        7990600,
+        8363300,
+        7998600
+      ]
+    },
+    {
+      "instance_id": "stable_matching-development-019",
+      "median_total_ns": 8143600,
+      "relative_mad": 0.008779900780981384,
+      "repeat_total_ns": [
+        8072100,
+        8249600,
+        8143600,
+        8111100,
+        8302500
+      ]
+    }
+  ],
+  "rule": "max(0.10, 3 * median per-instance relative MAD)",
+  "timing_metric": "total_time_to_outcome_ns"
+}

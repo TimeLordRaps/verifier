@@ -50,7 +50,7 @@ def _digest(value: bytes) -> str:
 
 def _subject(wire: ModuleType, nodes: list[dict[str, Any]], root: int | None = None) -> dict[str, Any]:
     return {
-        "schema_version": "VSTD-TYPED-FORMATION-0.1", "profile_digest": wire.profile_digest(),
+        "schema_version": "verifier-typed-formation-1", "profile_digest": wire.profile_digest(),
         "context": {"ground_artifact_digest": DIGEST_B, "authority_axiom_agency_digest": DIGEST_C},
         "nodes": nodes, "root": len(nodes) - 1 if root is None else root,
     }
@@ -58,7 +58,7 @@ def _subject(wire: ModuleType, nodes: list[dict[str, Any]], root: int | None = N
 
 def _certificate(subject: dict[str, Any]) -> dict[str, Any]:
     return {
-        "schema_version": "VSTD-TYPED-FORMATION-CERTIFICATE-0.1",
+        "schema_version": "verifier-typed-formation-certificate-1",
         "subject_digest": _digest(_bytes(subject)), "profile_digest": subject["profile_digest"],
         "steps": [
             {"node": index, "rule": node["tag"], "premises": [node[field] for field in REF_FIELDS.get(node["tag"], ())]}
@@ -387,7 +387,7 @@ def test_typed_formation_unsupported_profile_is_unknown_not_checked(formation, u
     if unsupported == "profile":
         subject["profile_digest"] = DIGEST_A
     else:
-        subject["schema_version"] = "VSTD-TYPED-FORMATION-9"
+        subject["schema_version"] = "verifier-typed-formation-9"
     result = _check(checker, subject)
     _assert_failure(result, "UNKNOWN", "FORMATION_PROFILE_UNSUPPORTED")
     assert result["residual_obligations"] == list(wire.RESIDUAL_OBLIGATIONS)

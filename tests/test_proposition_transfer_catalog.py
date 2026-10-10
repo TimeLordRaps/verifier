@@ -34,8 +34,8 @@ from verifier.interoperability.storage import load_component_package
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PROFILE_PATH = "src/verifier/profiles/proposition-transfer-rule-0.1.json"
-PROFILE_DIGEST = "sha256:0d26f06addc32e61e0ba68a466b4721db6a8ad2a46021c96f226da7d91b410bd"
+PROFILE_PATH = "src/verifier/profiles/proposition-transfer-rule-1.json"
+PROFILE_DIGEST = "sha256:b4cf102904ff248c048d947b093ae3d89deb4ca16582a8f3744ac7f7f3d1a58c"
 COMPONENTS = (
     ("assessor", "assess_transfer", (TRANSFER_SCHEMA,)),
     ("rechecker", "recheck_transfer_receipt", tuple(sorted((TRANSFER_SCHEMA, RECEIPT_SCHEMA)))),
@@ -60,7 +60,7 @@ def _fixture(case_id: str = "two_source_union") -> tuple[bytes, bytes, dict[str,
 
 
 def test_compiled_profile_has_an_exact_inert_packaged_mirror() -> None:
-    artifact = importlib.resources.files("verifier").joinpath("profiles/proposition-transfer-rule-0.1.json")
+    artifact = importlib.resources.files("verifier").joinpath("profiles/proposition-transfer-rule-1.json")
     assert artifact.read_bytes() == rule_profile_bytes()
     assert digest_bytes(artifact.read_bytes()) == PROFILE_DIGEST
     assert '"profiles/*.json"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")

@@ -35,20 +35,22 @@
 
   <main id="top">
     <div class="wrap ref-hero">
-      <div class="eyebrow">Reference &middot; RELEASED SOURCE · package version 1.5.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
-      <h1>Inspect the whole pipeline.</h1>
+      <div class="eyebrow">Reference &middot; UNRELEASED SOURCE · base package version 2.0.0 &middot; VSTD-5 PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM</div>
+      <h1>Inspect the supported surface.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
       Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); and YAML Ain't Markup Language
       (YAML).</p>
-      <p class="lead">Every command, argument, top-level export, and listed dispatch edge below
-      is read out of the installed package when this page is built, by
-      <code>scripts/build_reference.py</code>, and the presentation tests fail closed when the
-      committed page drifts &mdash; so it cannot describe behaviour the implementation no
-      longer has.</p>
+      <p class="lead">The command and argument inventory comes from the parser; the Python
+      export inventory and signatures come from <code>verifier.__all__</code> at build time.
+      The pipeline map selects import-checked implementation targets. Summaries come from
+      source docstrings or the reviewed public-member summary map. Presentation tests detect generated
+      page drift from these sources; they do not prove the described behaviour correct.</p>
       <p class="status">This page states the declared public surface of one implementation. It
-      does not establish that any individual claim checked by these commands is true, nor that
-      an external implementation exists.</p>
+      does not cover experimental direct submodule imports. Public instance methods,
+      class methods, and properties of exported classes are listed here. The page
+      does not establish that an individual claim checked by these commands is true, nor
+      that an external implementation exists.</p>
       <div class="actions">
         <a class="button primary" href="#pipeline">Pipeline map</a>
         <a class="button" href="#cli">CLI reference</a>
@@ -60,10 +62,21 @@
     <section id="pipeline">
       <div class="wrap">
         <div class="eyebrow">Pipeline</div>
-        <h2>Command to implementation, without a gap.</h2>
+        <h2>Selected command-to-implementation paths.</h2>
         <p class="section-lead">Each entry point below is imported while this page is built. A
         rename, move, or deletion fails the build instead of publishing a stale map.</p>
         <div class="ref-table"><table><thead><tr><th>Command</th><th>What it does</th><th>Implementation entry points</th></tr></thead><tbody>
+<tr><td><code>vstd gates</code></td><td>Replays applicable installed gates and exact preparation. Workflow reports require a separately pinned contract; local clearance grants no publication authority.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/gates.py"><code>verifier.runtime.gates:run_gates</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/gates.py"><code>verifier.runtime.gates:validate_clearance</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/polish_workflow_replay.py"><code>verifier.runtime.polish_workflow_replay:validate_workflow_preparation</code></a></td></tr>
+<tr><td><code>vstd polish report</code></td><td>Displays carried bounded findings, TIME contradictions, explicitly selected report-family and stage omissions, and comparable primary workflow attempt differences. Source and evaluator bindings are required for observed fixes; foreign related reports cannot fulfil candidate requirements. No replay, completeness guarantee or gate clearance.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/polish_findings.py"><code>verifier.runtime.polish_findings:project_reports</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/polish_findings.py"><code>verifier.runtime.polish_findings:render_findings</code></a></td></tr>
+<tr><td><code>vstd polish prepare</code></td><td>Runs the installed preparation stage catalogue with separately pinned policy and optional quality checks; explicit local apply has a recovery plan. Publication and polished status remain separate. bind-inputs: Bind admitted source and policy bytes. validate-definitions: Validate canonical explanation definitions. project-comments: Stage managed comment projections. compile-explanations: Compile exact committed source facts into explanations. quality: Run independently selected optional quality checks. retain-bundle: Retain an immutable preparation bundle without publication.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/polish_workflow.py"><code>verifier.runtime.polish_workflow:prepare_workflow</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/polish_prepare.py"><code>verifier.runtime.polish_prepare:prepare_artifact</code></a></td></tr>
+<tr><td><code>vstd current-object check</code></td><td>Replays one externally selected current-object certificate without whole-profile promotion.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/contracts/current_object_routes.py"><code>verifier.domains.contracts.current_object_routes:replay_current_object_certificate</code></a></td></tr>
+<tr><td><code>vstd polish assess / check</code></td><td>Assesses declared wiring and registered objective evidence, or recomputes a stored assessment; complete polished-artifact closure remains unestablished.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/polish.py"><code>verifier.runtime.polish:assess_polish</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/polish.py"><code>verifier.runtime.polish:recheck_polish</code></a></td></tr>
+<tr><td><code>vstd polish coverage</code></td><td>Compares a separately pinned finite numbered requirements inventory and replays selected native evidence; exhaustive closure and polished issuance remain unestablished.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/polish_requirements.py"><code>verifier.runtime.polish_requirements:assess_polish_inventory</code></a></td></tr>
+<tr><td><code>vstd start</code></td><td>Prints the ordered, copy-pasteable path from an installed package to a checked result; runs nothing and writes nothing.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/accessibility_cli.py"><code>verifier.runtime.accessibility_cli:start_report</code></a></td></tr>
+<tr><td><code>vstd explain</code></td><td>Restates a stored receipt or certificate in plain language, naming what was established, what was not and why; never re-evaluates evidence.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/accessibility_cli.py"><code>verifier.runtime.accessibility_cli:explain_report</code></a></td></tr>
+<tr><td><code>vstd certification catalog</code></td><td>Lists the object-profile obligation catalogue and bounded native checker coverage.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/profile_obligations.py"><code>verifier.core.profile_obligations:obligation_catalog</code></a></td></tr>
+<tr><td><code>vstd certification assess</code></td><td>Executes externally admitted native obligation mechanisms and emits a new grounded certificate.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification:build_grounded_certificate</code></a></td></tr>
+<tr><td><code>vstd certification check</code></td><td>Rehashes and reruns a certificate against the consumer's expected request and admission policy.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification:recheck_grounded_certificate</code></a></td></tr>
 <tr><td><code>vstd demo</code></td><td>Runs the four adversarial specimens in-process and reports whether each defensive outcome matched its declared invariant.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:run_demo</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/demo.py"><code>verifier.runtime.demo:demo_report</code></a></td></tr>
 <tr><td><code>vstd plan</code></td><td>Resolves a manifest's command and declared paths without executing anything.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_planning.py"><code>verifier.core.run_planning:describe_run_plan</code></a></td></tr>
 <tr><td><code>vstd components inspect</code></td><td>Loads a bounded stored component package and checks retained-byte bindings; does not extract, install, execute, or qualify its implementation.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/storage.py"><code>verifier.interoperability.storage:load_component_package</code></a></td></tr>
@@ -75,10 +88,11 @@
 <tr><td><code>vstd inspect</code></td><td>Prints the claim coordinate, digest, and verdict surface of a stored receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_inspection.py"><code>verifier.core.run_inspection:inspect_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/receipt.py"><code>verifier.hardware.receipt:load_vstd3_receipt</code></a></td></tr>
 <tr><td><code>vstd reproduce</code></td><td>Replays only the mechanisms a stored receipt actually carries; physical hardware execution is refused rather than simulated.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_reproduction.py"><code>verifier.core.run_reproduction:reproduce_run_receipt</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/receipt.py"><code>verifier.data.receipt:reproduce_data_receipt</code></a></td></tr>
 <tr><td><code>vstd impact</code></td><td>Finds stored run receipts whose recorded ancestry reaches a revoked provenance artifact.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/run_impact.py"><code>verifier.core.run_impact:find_run_receipts_impacted_by_revocation</code></a></td></tr>
-<tr><td><code>vstd data</code></td><td>Traces, renders, or exports the provenance hypergraph carried by a VSTD-Graph receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/models.py"><code>verifier.data.models:ProvenanceHypergraph</code></a></td></tr>
+<tr><td><code>vstd data</code></td><td>Traces, renders, or exports the provenance hypergraph carried by a GRAPH receipt.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/models.py"><code>verifier.data.models:ProvenanceHypergraph</code></a></td></tr>
 <tr><td><code>vstd artifact</code></td><td>Freezes exact regular-file bytes, adds or verifies finite self-closing seals, and creates observable copy-on-write thaw descendants.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:freeze_artifact</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:seal_artifact</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:verify_frozen_artifact</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control:thaw_artifact</code></a></td></tr>
 <tr><td><code>vstd experiment</code></td><td>Validates experimental workflow manifests or maps normalized GitHub snapshots without granting a VSTD verdict.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/experimental_workflow_cli.py"><code>verifier.runtime.experimental_workflow_cli:handle_experiment_command</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/experimental_workflow/profile.py"><code>verifier.experimental_workflow.profile:load_manifest</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/experimental_workflow/github.py"><code>verifier.experimental_workflow.github:github_snapshot_to_events</code></a></td></tr>
 <tr><td><code>vstd hardware / continuity / fleet / evidence / claims</code></td><td>Evaluates VSTD-3 substrate-accountability receipts, their continuity and fleet evidence, and their declared claims.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/hardware_cli.py"><code>verifier.runtime.hardware_cli:handle_vstd3_command</code></a><br><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/hardware/validation.py"><code>verifier.hardware.validation:validate_vstd3_receipt</code></a></td></tr>
+<tr><td><code>vstd publish</code></td><td>Checks local inputs and submits a claim and receipt for authenticated storage pending human review.</td><td><a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/claim_garden.py"><code>verifier.interoperability.claim_garden:publish_claim</code></a></td></tr>
 </tbody></table></div>
       </div>
     </section>
@@ -90,11 +104,603 @@
         <p class="section-lead">Extracted from the live argument parser in
         <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/runtime/public_cli.py"><code>verifier.runtime.public_cli</code></a>.
         <code>vstd</code> is the canonical cross-platform command; <code>verifier</code> is
-        retained as an alias only on platforms where it is unambiguous.</p>
+        retained as an alias only on platforms where it is unambiguous. Defaults below
+        show a run without GitHub environment variables; <code>vstd gate attest</code>
+        reads those variables at execution when present.</p>
         <div class="ref-list"><article class="ref-item" id="cli-vstd">
 <h3><code>vstd</code></h3>
 <p class="ref-help">Subcommand group.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--version</code></td><td>optional</td><td>Show the installed verifier-standard version and exit. [default: ==SUPPRESS==]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-start">
+<h3><code>vstd start</code></h3>
+<p class="ref-help">Show the shortest guided path from nothing to a checked result.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit the same path as a machine-readable task list.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-explain">
+<h3><code>vstd explain</code></h3>
+<p class="ref-help">Describe a receipt or certificate in plain language.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>path</code></td><td>positional</td><td>A receipt or certificate JSON file.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit the same explanation as structured data.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification">
+<h3><code>vstd certification</code></h3>
+<p class="ref-help">Inspect and replay grounded object-profile obligations.</p>
 <p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-certification-mainstay-catalog">
+<h3><code>vstd certification mainstay-catalog</code></h3>
+<p class="ref-help">List registered mainstays and exact bounded runtime support.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-mainstay-assess">
+<h3><code>vstd certification mainstay-assess</code></h3>
+<p class="ref-help">Run selected carrier checks; no complete domain-tier claim.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>input</code></td><td>positional</td><td>Retained mainstay evidence for assess; certificate for check.</td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>Externally selected subject, checks and evidence digests.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected mechanism, trust roots and bounds.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>New certificate file; existing files are never overwritten.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-mainstay-check">
+<h3><code>vstd certification mainstay-check</code></h3>
+<p class="ref-help">Run selected carrier checks; no complete domain-tier claim.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>input</code></td><td>positional</td><td>Retained mainstay evidence for assess; certificate for check.</td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>Externally selected subject, checks and evidence digests.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected mechanism, trust roots and bounds.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-domain-catalog">
+<h3><code>vstd certification domain-catalog</code></h3>
+<p class="ref-help">List native DATA, ENV, BENCH, TRAIN, MODEL, SIM, HARNESS, AGENT, BOT, TOKEN, VERIFIER and HARDWARE checks.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--accountable</code></td><td>optional</td><td>Include six accountability domains' bounded retained-record checks; no numbered-profile, personhood or authority claim.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-domain-assess">
+<h3><code>vstd certification domain-assess</code></h3>
+<p class="ref-help">Execute or replay legacy domain v1 computations under external policy.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>input</code></td><td>positional</td><td>Evidence bundle for assess; certificate for check.</td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>Externally selected domain request.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected domain policy.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>New certificate file; never overwrites existing files.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-domain-check">
+<h3><code>vstd certification domain-check</code></h3>
+<p class="ref-help">Execute or replay legacy domain v1 computations under external policy.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>input</code></td><td>positional</td><td>Evidence bundle for assess; certificate for check.</td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>Externally selected domain request.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected domain policy.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-catalog">
+<h3><code>vstd certification catalog</code></h3>
+<p class="ref-help">List all X.M obligations and native mechanism coverage.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-assess">
+<h3><code>vstd certification assess</code></h3>
+<p class="ref-help">Execute admitted built-in checks and emit a fresh certificate.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>request</code></td><td>positional</td><td>Externally selected grounded request file.</td></tr>
+<tr><td><code>--evidence</code></td><td>required option</td><td>Object mapping evidence addresses to base64 bytes.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected admission policy file.</td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>New certificate file; existing files are never overwritten.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-certification-check">
+<h3><code>vstd certification check</code></h3>
+<p class="ref-help">Rehash and rerun a certificate against an external request and policy.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>certificate</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>The request the consumer intends to check.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Checker-selected policy, not authority supplied by the certificate.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate">
+<h3><code>vstd gate</code></h3>
+<p class="ref-help">Plan and run bounded automation, scan selected inputs, and check retained receipts.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-gate-init">
+<h3><code>vstd gate init</code></h3>
+<p class="ref-help">init a local bounded command pipeline</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>path</code></td><td>positional</td><td>[default: gate_pipeline.json]</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--input</code></td><td>optional</td><td>Selected relative project input; repeat to narrow scope (default: .).</td></tr>
+<tr><td><code>--preset</code></td><td>optional</td><td>Project paths/boundary checks, plus Python source-pattern checks when selected. (one of: project, python) [default: project]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-plan">
+<h3><code>vstd gate plan</code></h3>
+<p class="ref-help">plan a local bounded command pipeline</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>path</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-run">
+<h3><code>vstd gate run</code></h3>
+<p class="ref-help">run a local bounded command pipeline</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>path</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--output</code></td><td>required option</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-check">
+<h3><code>vstd gate check</code></h3>
+<p class="ref-help">check a local bounded command pipeline</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>path</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--manifest</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-secrets">
+<h3><code>vstd gate secrets</code></h3>
+<p class="ref-help">Scan exactly bound raw text; incomplete coverage is UNKNOWN.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--request</code></td><td>required option</td><td>Selected secret-gate request JSON.</td></tr>
+<tr><td><code>--scanner-binary</code></td><td>optional</td><td>Absolute pinned local Gitleaks executable.</td></tr>
+<tr><td><code>--scanner-config</code></td><td>optional</td><td>Absolute pinned standalone configuration.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit metadata-only receipt.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-pr">
+<h3><code>vstd gate pr</code></h3>
+<p class="ref-help">Bounded metadata diagnostics, or explicitly selected versioned PRDEL exact-source checks.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--contract</code></td><td>optional</td><td>Select the versioned exact-source PRDEL contract; explicit --base and --commit/--head required. Ordinary --file/--text remains bounded metadata diagnostics. (one of: verifier-prdel-1, verifier-prdel-2, verifier-prdel-shard-description-1)</td></tr>
+<tr><td><code>--file, -f</code></td><td>optional</td><td>Path to pull-request description markdown file.</td></tr>
+<tr><td><code>--text, -t</code></td><td>optional</td><td>Raw pull-request description markdown text.</td></tr>
+<tr><td><code>--commit, -c, --head</code></td><td>optional</td><td>Explicit reviewed head for a versioned PRDEL contract; a selected Git revision is resolved to an exact local commit.</td></tr>
+<tr><td><code>--base</code></td><td>optional</td><td>Explicit review base required by a versioned PRDEL contract; resolves to an exact local commit.</td></tr>
+<tr><td><code>--generate</code></td><td>optional</td><td>Compile supported exact-source facts; generation exits 0 when produced, independently of remaining gate obligations.</td></tr>
+<tr><td><code>--template</code></td><td>optional</td><td>With --generate, retain the unfilled manual template fallback.</td></tr>
+<tr><td><code>--compilation</code></td><td>optional</td><td>With --generate, include versioned rule support, bounds and residuals around the document.</td></tr>
+<tr><td><code>--definition</code></td><td>optional</td><td>With --generate, select versioned authored definitions; intent remains separate from checked source facts.</td></tr>
+<tr><td><code>--document</code></td><td>optional</td><td>Machine-readable PRDEL document; can be used without --file/--text.</td></tr>
+<tr><td><code>--requirements</code></td><td>optional</td><td>Explicit selected requirements file; requires --requirements-digest.</td></tr>
+<tr><td><code>--requirements-digest</code></td><td>optional</td><td>Expected selected requirements digest; binds bytes, not authority.</td></tr>
+<tr><td><code>--evidence</code></td><td>optional</td><td>Selected retained execution evidence file; requires --evidence-digest.</td></tr>
+<tr><td><code>--evidence-digest</code></td><td>optional</td><td>Expected selected evidence digest; execution must still be checked.</td></tr>
+<tr><td><code>--replay-plan</code></td><td>optional</td><td>Version-two only: exact replay-plan JSON selecting fixed pytest node identifiers; requires --replay-plan-digest.</td></tr>
+<tr><td><code>--replay-plan-digest</code></td><td>optional</td><td>Version-two only: expected lowercase SHA-256 of replay-plan bytes.</td></tr>
+<tr><td><code>--prdel-max-nodes</code></td><td>optional</td><td>Version-two graph node limit (default 10000; fixed cap 200000).</td></tr>
+<tr><td><code>--prdel-max-edges</code></td><td>optional</td><td>Version-two graph edge/frontier limit (default 20000; cap 400000).</td></tr>
+<tr><td><code>--prdel-max-operations</code></td><td>optional</td><td>Version-two graph operation limit (default 200000; cap 50000000).</td></tr>
+<tr><td><code>--prdel-max-output-bytes</code></td><td>optional</td><td>Version-two graph output limit (default 8388608; cap 33554432).</td></tr>
+<tr><td><code>--compare-document</code></td><td>optional</td><td>Compare a pinned branch PRDEL document after recomputing its exact source graph; repeatable, at most 32. Produces undelivered preventative notices.</td></tr>
+<tr><td><code>--render</code></td><td>optional</td><td>Render portable source-bound Markdown; --json also carries the separate report. Does not grant clearance.</td></tr>
+<tr><td><code>--impact-dag</code></td><td>optional</td><td>Render the retained impact graph as a Mermaid directed acyclic graph (DAG).</td></tr>
+<tr><td><code>--output, -o</code></td><td>optional</td><td>Write generated document, report or rendering using Unicode Transformation Format, 8-bit (UTF-8) and line feed (LF) endings.</td></tr>
+<tr><td><code>--root</code></td><td>optional</td><td>Repository root (default: current directory). [default: .]</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit JSON output.</td></tr>
+<tr><td><code>--manifest</code></td><td>optional</td><td>With the sharded contract, select the immutable compilation manifest file.</td></tr>
+<tr><td><code>--manifest-digest</code></td><td>optional</td><td>Externally selected manifest SHA-256, lowercase hexadecimal.</td></tr>
+<tr><td><code>--shard</code></td><td>optional</td><td>Select each immutable shard file in exact order; repeatable.</td></tr>
+<tr><td><code>--shard-digest</code></td><td>optional</td><td>Externally selected SHA-256 for each ordered shard; repeatable.</td></tr>
+<tr><td><code>--source-digest</code></td><td>optional</td><td>Externally selected exact source digest for the sharded contract.</td></tr>
+<tr><td><code>--compilation-residuals</code></td><td>optional</td><td>Select the complete required compilation residual inventory as JSON.</td></tr>
+<tr><td><code>--packet-budget-bytes</code></td><td>optional</td><td>Explicit aggregate packet allocation within the retained-source receiver profile; required by the sharded contract.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-paths">
+<h3><code>vstd gate paths</code></h3>
+<p class="ref-help">Scan for forbidden local absolute paths.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>target</code></td><td>positional</td><td>Target directory or file to scan (default: current directory). [default: .]</td></tr>
+<tr><td><code>--exclude</code></td><td>optional</td><td>Glob pattern to exclude.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit JSON output.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-ast">
+<h3><code>vstd gate ast</code></h3>
+<p class="ref-help">Detect selected loop/allocation source patterns; does not prove termination or enforce resource limits.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>target</code></td><td>positional</td><td>Target directory or python file (default: current directory). [default: .]</td></tr>
+<tr><td><code>--max-iterations</code></td><td>optional</td><td>Maximum allowable loop bound (default: 1,000,000). [default: 1000000]</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit JSON output.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-boundary">
+<h3><code>vstd gate boundary</code></h3>
+<p class="ref-help">Parameterized boundary leak detector.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>target</code></td><td>positional</td><td>Target file, directory, or archive to scan. [default: .]</td></tr>
+<tr><td><code>--forbidden</code></td><td>optional</td><td>Forbidden terms/patterns to forbid.</td></tr>
+<tr><td><code>--forbidden-file</code></td><td>optional</td><td>File with forbidden terms (one per line).</td></tr>
+<tr><td><code>--no-secrets</code></td><td>optional</td><td>Disable secret token scanning.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit JSON output.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gate-attest">
+<h3><code>vstd gate attest</code></h3>
+<p class="ref-help">Record supplied run metadata with digest integrity or optional shared-key authentication; does not verify execution.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--workflow</code></td><td>optional</td><td>Workflow name. [default: ci]</td></tr>
+<tr><td><code>--run-id</code></td><td>optional</td><td>Pipeline run reference. [default: 1]</td></tr>
+<tr><td><code>--run-number</code></td><td>optional</td><td>Pipeline run number. [default: 1]</td></tr>
+<tr><td><code>--job</code></td><td>optional</td><td>Pipeline job name. [default: conformance-gate]</td></tr>
+<tr><td><code>--actor</code></td><td>optional</td><td>Actor name. [default: ci-runner]</td></tr>
+<tr><td><code>--sha</code></td><td>optional</td><td>Commit hash reference. [default: 0000000000000000000000000000000000000000]</td></tr>
+<tr><td><code>--ref</code></td><td>optional</td><td>Git ref. [default: refs/heads/main]</td></tr>
+<tr><td><code>--event-name</code></td><td>optional</td><td>Event name. [default: push]</td></tr>
+<tr><td><code>--status</code></td><td>optional</td><td>Pipeline run outcome (default: PASS). (one of: PASS, FAIL) [default: PASS]</td></tr>
+<tr><td><code>--key</code></td><td>optional</td><td>Optional secret key for HMAC-SHA256 signature.</td></tr>
+<tr><td><code>--key-env</code></td><td>optional</td><td>Read the shared authentication key from this environment variable.</td></tr>
+<tr><td><code>--verify</code></td><td>optional</td><td>Verify an existing continuous integration (CI) attestation receipt file.</td></tr>
+<tr><td><code>--output, -o</code></td><td>optional</td><td>File path to write receipt JSON.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit JSON output to stdout.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-current-object">
+<h3><code>vstd current-object</code></h3>
+<p class="ref-help">Replay an explicitly selected current OBJECT objective.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-current-object-catalog">
+<h3><code>vstd current-object catalog</code></h3>
+<p class="ref-help">List registered native current-object objectives; no profile claim.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--inventory</code></td><td>optional</td><td>Include the complete 234-slot applicability and objective inventory.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-current-object-check">
+<h3><code>vstd current-object check</code></h3>
+<p class="ref-help">Read-only native replay under an external route and policy.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>certificate</code></td><td>positional</td><td>Local complete canonical certificate file.</td></tr>
+<tr><td><code>--semantic-version</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--objective</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--represented-kind</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>Independently selected expected request JSON file.</td></tr>
+<tr><td><code>--policy</code></td><td>required option</td><td>Independently selected policy JSON file.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-operations">
+<h3><code>vstd operations</code></h3>
+<p class="ref-help">Export finite native replay metadata as JSON; no replay or admission.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-operations-catalog">
+<h3><code>vstd operations catalog</code></h3>
+<p class="ref-help">Enumerate one explicitly selected semantic family.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--semantic-version</code></td><td>optional</td><td>[default: verifier-current-object-obligations-1]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-operations-lookup">
+<h3><code>vstd operations lookup</code></h3>
+<p class="ref-help">Describe one exact registered replay and its source pins.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--semantic-version</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--objective</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--represented-kind</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--expected-descriptor-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--expected-mechanism-digest</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-operations-schema">
+<h3><code>vstd operations schema</code></h3>
+<p class="ref-help">Export the actual packaged descriptor or lookup schema.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>schema_version</code></td><td>positional</td><td>(one of: verifier-native-replay-operation-descriptor-1, verifier-native-replay-operation-lookup-1)</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish">
+<h3><code>vstd polish</code></h3>
+<p class="ref-help">Assess declared object wiring and polishing gaps.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-polish-1">
+<h3><code>vstd polish 1</code></h3>
+<p class="ref-help">Attempt complete Tier 1 mechanics across the repository/package estate.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--union-authority</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--union-contributions</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--union-authority-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--application-authority-assessment</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--application-authority-assessment-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--complete-tier-ledger</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--complete-tier-ledger-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--complete-self-representation</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--complete-self-representation-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--source-root</code></td><td>optional</td><td>[default: .]</td></tr>
+<tr><td><code>--complete-tier-evidence-manifest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--complete-tier-evidence-manifest-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--evidence-replay-mechanism-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--selection-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--candidate-estate-repository</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--candidate-estate-revision</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--candidate-estate-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--candidate-estate-applicability-ledger</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--candidate-estate-applicability-ledger-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--candidate-estate-authority-policy</code></td><td>optional</td><td>Independently selected estate-authority policy JSON.</td></tr>
+<tr><td><code>--candidate-estate-authority-policy-digest</code></td><td>optional</td><td>Expected SHA-256 digest of the authority policy bytes.</td></tr>
+<tr><td><code>--candidate-estate-authority-receipt</code></td><td>optional</td><td>Configured-key estate-authority receipt JSON.</td></tr>
+<tr><td><code>--candidate-estate-authority-receipt-digest</code></td><td>optional</td><td>Expected SHA-256 digest of the authority receipt bytes.</td></tr>
+<tr><td><code>--candidate-estate-authority-mechanism-digest</code></td><td>optional</td><td>Expected installed estate-authority mechanism digest.</td></tr>
+<tr><td><code>--candidate-estate-authority-operation-revision-digest</code></td><td>optional</td><td>Pinned authority operation revision digest.</td></tr>
+<tr><td><code>--candidate-estate-authority-instruction-revision-digest</code></td><td>optional</td><td>Pinned authority instruction revision digest.</td></tr>
+<tr><td><code>--candidate-estate-authority-context-revision-digest</code></td><td>optional</td><td>Pinned authority context revision digest.</td></tr>
+<tr><td><code>--candidate-estate-authority-subject-digest</code></td><td>optional</td><td>Expected digest of the exact estate-authority subject.</td></tr>
+<tr><td><code>--candidate-estate-authority-evaluation-time</code></td><td>optional</td><td>Pinned Unix evaluation time for authority freshness.</td></tr>
+<tr><td><code>--candidate-estate-authority-minimum-status-sequence</code></td><td>optional</td><td>Minimum accepted authority status sequence.</td></tr>
+<tr><td><code>--candidate-estate-evidence-manifest</code></td><td>optional</td><td>Exact per-candidate semantic-evidence manifest JSON.</td></tr>
+<tr><td><code>--candidate-estate-evidence-manifest-digest</code></td><td>optional</td><td>Expected digest of the canonical evidence manifest.</td></tr>
+<tr><td><code>--candidate-estate-evidence-mechanism-digest</code></td><td>optional</td><td>Expected installed per-candidate replay mechanism digest.</td></tr>
+<tr><td><code>--candidate-estate-evidence-selection</code></td><td>optional</td><td>Repeatable configured-key replay selection JSON; provide one for each independently replayed candidate.</td></tr>
+<tr><td><code>--candidate-estate-evidence-artifact</code></td><td>optional</td><td>Repeatable JSON carrying candidate_id and base64 native evidence bytes for applicable estate candidates.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-2">
+<h3><code>vstd polish 2</code></h3>
+<p class="ref-help">Run Tier 2 dynamics after a mechanically replayed Tier 1 PASS.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--union-authority</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--union-contributions</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--union-authority-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--application-authority-assessment</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--application-authority-assessment-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--complete-tier-ledger</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--complete-tier-ledger-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--complete-self-representation</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--complete-self-representation-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--source-root</code></td><td>optional</td><td>[default: .]</td></tr>
+<tr><td><code>--complete-tier-evidence-manifest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--complete-tier-evidence-manifest-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--evidence-replay-mechanism-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--tier1-report</code></td><td>optional</td><td>Retained full Tier 1 JSON report; at most 16 MiB including any final newline.</td></tr>
+<tr><td><code>--tier1-report-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--progression-selection</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--bundle</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--policy</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--artifacts</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--progression-selection-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--progression-mechanism-digest</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-report">
+<h3><code>vstd polish report</code></h3>
+<p class="ref-help">Display retained unresolved findings and compare selected attempts without running checks.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>report</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--previous</code></td><td>optional</td><td>Previous carried report; absent findings require explicit comparable PASS observations to be fixed.</td></tr>
+<tr><td><code>--history</code></td><td>optional</td><td>Earlier carried report in caller-selected order; repeat up to sixteen times.</td></tr>
+<tr><td><code>--related</code></td><td>optional</td><td>Related current report; repeat up to sixteen times. These are not prior attempts.</td></tr>
+<tr><td><code>--required-report-contract</code></td><td>optional</td><td>Independently selected required report family; completeness covers only this explicit finite list.</td></tr>
+<tr><td><code>--required-stage</code></td><td>optional</td><td>Required report family and stage identifier (ID), supplied as FAMILY:ID, with an explicit required executed PASS; omission and deselection remain unmet.</td></tr>
+<tr><td><code>--time</code></td><td>optional</td><td>Exact TIME file to observe; OPEN or malformed status remains a diagnostic failure, absent bytes remain unassessed.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-application">
+<h3><code>vstd polish application</code></h3>
+<p class="ref-help">Replay the separately versioned historical ten-tier application contract; use core-application for the current nine-tier core.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-polish-application-assess">
+<h3><code>vstd polish application assess</code></h3>
+<p class="ref-help">Evaluate exact application release inputs.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>selection</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--membership</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--source-manifest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--operation-definitions</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--contexts</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--requirements</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--artifacts</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--shards</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--selection-digest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--mechanism-digest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-application-check">
+<h3><code>vstd polish application check</code></h3>
+<p class="ref-help">Recompute an application release assessment.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>selection</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--assessment</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--membership</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--source-manifest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--operation-definitions</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--contexts</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--requirements</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--artifacts</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--shards</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--selection-digest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--mechanism-digest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-core-application">
+<h3><code>vstd polish core-application</code></h3>
+<p class="ref-help">Replay the current nine-tier core application contract; absent authority or Security-9 inputs remain UNKNOWN and deny release.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-polish-core-application-assess">
+<h3><code>vstd polish core-application assess</code></h3>
+<p class="ref-help">Evaluate exact application release inputs.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>selection</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--membership</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--source-manifest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--operation-definitions</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--contexts</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--requirements</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--artifacts</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--shards</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--selection-digest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--mechanism-digest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--full-gate-selection</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--full-gate-selection-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-core-application-check">
+<h3><code>vstd polish core-application check</code></h3>
+<p class="ref-help">Recompute an application release assessment.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>selection</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--assessment</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--membership</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--source-manifest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--operation-definitions</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--contexts</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--requirements</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--artifacts</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--shards</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--selection-digest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--mechanism-digest</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--full-gate-selection</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--full-gate-selection-digest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-catalog">
+<h3><code>vstd polish catalog</code></h3>
+<p class="ref-help">Show installed routes and outstanding closure gates.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--inventory</code></td><td>optional</td><td>Include the complete 234-slot applicability and objective inventory.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-assess">
+<h3><code>vstd polish assess</code></h3>
+<p class="ref-help">Replay a retained bundle against an external request.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>bundle</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--contract-version</code></td><td>optional</td><td>Select the exact bundle/request contract; version 2 has explicit resource limits. (one of: 1, 2) [default: 1]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-coverage">
+<h3><code>vstd polish coverage</code></h3>
+<p class="ref-help">Replay obligations against a separately pinned requirements inventory.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>bundle</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--requirements</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--requirements-digest</code></td><td>required option</td><td>Independently selected exact inventory byte digest (sha256:...).</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--contract-version</code></td><td>optional</td><td>(one of: 1, 2) [default: 1]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-check">
+<h3><code>vstd polish check</code></h3>
+<p class="ref-help">Recompute a stored assessment against exact inputs.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>assessment</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--bundle</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td></td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+<tr><td><code>--contract-version</code></td><td>optional</td><td>Select the exact assessment and retained input contract. (one of: 1, 2) [default: 1]</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-polish-prepare">
+<h3><code>vstd polish prepare</code></h3>
+<p class="ref-help">Prepare selected source, explanations and optional quality checks.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>artifact</code></td><td>positional</td><td>Ordinary artifact; the workflow format selects files in a directory.</td></tr>
+<tr><td><code>--report-format</code></td><td>optional</td><td>Select the workflow report or the existing gates preparation contract. (one of: verifier-polish-workflow-report-1, verifier-polish-preparation-1) [default: verifier-polish-workflow-report-1]</td></tr>
+<tr><td><code>--normalize-text</code></td><td>optional</td><td>With verifier-polish-preparation-1, select the existing source/prose text fix.</td></tr>
+<tr><td><code>--dry-run</code></td><td>optional</td><td>With verifier-polish-preparation-1, inspect without applying changes.</td></tr>
+<tr><td><code>--policy</code></td><td>optional</td><td>Separately selected closed workflow policy.</td></tr>
+<tr><td><code>--policy-digest</code></td><td>optional</td><td>Exact selected policy byte digest (sha256:...).</td></tr>
+<tr><td><code>--definition</code></td><td>optional</td><td>Canonical versioned authored explanation definitions.</td></tr>
+<tr><td><code>--quality-profile</code></td><td>optional</td><td>Opt-in independently selected quality profile.</td></tr>
+<tr><td><code>--quality-profile-digest</code></td><td>optional</td><td>Exact selected quality profile byte digest.</td></tr>
+<tr><td><code>--requirements</code></td><td>optional</td><td>Independent requirements for committed explanations.</td></tr>
+<tr><td><code>--requirements-digest</code></td><td>optional</td><td>Exact independently selected requirement byte digest.</td></tr>
+<tr><td><code>--git-root</code></td><td>optional</td><td>Repository containing exact committed explanation source.</td></tr>
+<tr><td><code>--base</code></td><td>optional</td><td>Exact committed explanation base.</td></tr>
+<tr><td><code>--commit</code></td><td>optional</td><td>Exact committed explanation head or later association commit.</td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>External directory for immutable bundles, attempts and apply plans.</td></tr>
+<tr><td><code>--resume</code></td><td>optional</td><td>Prior retained attempt or bundle; rechecks all selected stages.</td></tr>
+<tr><td><code>--apply</code></td><td>optional</td><td>Explicitly apply successful staged comment bytes using a retained recovery plan.</td></tr>
+<tr><td><code>--recover</code></td><td>optional</td><td>Recover a retained local apply plan after comparing current bytes.</td></tr>
+<tr><td><code>--associate</code></td><td>optional</td><td>Compare a retained bundle manifest with the exact later whole Git tree.</td></tr>
+<tr><td><code>--rollback</code></td><td>optional</td><td>With --recover, restore retained prior bytes unless a later edit intervened.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-security">
+<h3><code>vstd security</code></h3>
+<p class="ref-help">Replay bounded dangerous-pathway records; grant no publication authority.</p>
+<p class="ref-none">No arguments; this command only groups subcommands.</p>
+</article>
+<article class="ref-item" id="cli-vstd-security-catalog">
+<h3><code>vstd security catalog</code></h3>
+<p class="ref-help">Describe the installed mechanical dialect; select no host policy.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-security-pathway-check">
+<h3><code>vstd security pathway-check</code></h3>
+<p class="ref-help">Recheck one retained pathway certificate and external request.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>certificate</code></td><td>positional</td><td>Canonical pathway certificate JSON file.</td></tr>
+<tr><td><code>--request</code></td><td>required option</td><td>Independently selected canonical request JSON file.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-security-aggregate">
+<h3><code>vstd security aggregate</code></h3>
+<p class="ref-help">Recheck one retained host-selected aggregate assessment.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>assessment</code></td><td>positional</td><td>Canonical aggregate assessment JSON file.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-gates">
+<h3><code>vstd gates</code></h3>
+<p class="ref-help">Run all applicable shipped gates on an exact artifact snapshot.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>artifact</code></td><td>positional</td><td></td></tr>
+<tr><td><code>--catalog</code></td><td>optional</td><td>List every installed gate and native replay route.</td></tr>
+<tr><td><code>--polish-report</code></td><td>optional</td><td>Exact preparation report. Workflow reports require a separately selected replay contract.</td></tr>
+<tr><td><code>--preparation-contract</code></td><td>optional</td><td>Separately selected verifier-gates-workflow-preparation-contract-1 bytes.</td></tr>
+<tr><td><code>--preparation-contract-digest</code></td><td>optional</td><td>Exact independently selected preparation contract digest (sha256:...).</td></tr>
+<tr><td><code>--git-root</code></td><td>optional</td><td>Git object source for explicitly selected committed preparation analysis.</td></tr>
+<tr><td><code>--policy</code></td><td>optional</td><td>External bounded gate policy; omitted selects installed defaults.</td></tr>
+<tr><td><code>--dependency-bundle</code></td><td>optional</td><td>Exact versioned certificate claim graph; produces clearance version 2.</td></tr>
+<tr><td><code>--dependency-policy</code></td><td>optional</td><td>Independently selected approved profile and exact claim bindings.</td></tr>
+<tr><td><code>--check</code></td><td>optional</td><td>Independently replay an existing clearance under the selected policy.</td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>Create a new clearance outside the selected artifact.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td></td></tr>
+</tbody></table>
 </article>
 <article class="ref-item" id="cli-vstd-demo">
 <h3><code>vstd demo</code></h3>
@@ -198,7 +804,7 @@
 </article>
 <article class="ref-item" id="cli-vstd-inspect">
 <h3><code>vstd inspect</code></h3>
-<p class="ref-help">Inspect a generic-run or VSTD-Graph receipt; validate and report VSTD-3.</p>
+<p class="ref-help">Inspect a generic-run or GRAPH receipt; validate and report VSTD-3.</p>
 <table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>receipt</code></td><td>positional</td><td>Receipt directory or receipt.json.</td></tr>
 <tr><td><code>--json</code></td><td>optional</td><td></td></tr>
@@ -225,7 +831,7 @@
 </article>
 <article class="ref-item" id="cli-vstd-data">
 <h3><code>vstd data</code></h3>
-<p class="ref-help">Inspect a stored VSTD-Graph hypergraph.</p>
+<p class="ref-help">Inspect a stored GRAPH hypergraph.</p>
 <p class="ref-none">No arguments; this command only groups subcommands.</p>
 </article>
 <article class="ref-item" id="cli-vstd-data-trace">
@@ -599,6 +1205,49 @@
 <tr><td><code>--credential-file</code></td><td>optional</td><td></td></tr>
 <tr><td><code>--transmit</code></td><td>optional</td><td>Perform authenticated Claim Garden submission; requires --credential-file and exactly one lineage selector.</td></tr>
 </tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-publish">
+<h3><code>vstd publish</code></h3>
+<p class="ref-help">Submit a preflighted claim and receipt for authenticated storage and human review.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>receipt</code></td><td>positional</td><td>Path to receipt.json, claim packet JSON, or directory containing receipt and claim.</td></tr>
+<tr><td><code>--claim</code></td><td>optional</td><td>Optional path to separate claim JSON if not bundled or co-located with receipt.</td></tr>
+<tr><td><code>--endpoint</code></td><td>optional</td><td>Target Claim Garden HTTPS origin (default: https://claimgarden.com). [default: https://claimgarden.com]</td></tr>
+<tr><td><code>--publisher-id</code></td><td>optional</td><td>Registered publisher:sha256 identity submitting this claim (not the receipt notary).</td></tr>
+<tr><td><code>--credential-file</code></td><td>optional</td><td>Publisher credential file containing the required bearer access token.</td></tr>
+<tr><td><code>--expected-head</code></td><td>optional</td><td>Reserved silo-lineage option; rejected for claim storage.</td></tr>
+<tr><td><code>--genesis</code></td><td>optional</td><td>Reserved silo-lineage option; rejected for claim storage.</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit canonical JSON result instead of formatted text.</td></tr>
+<tr><td><code>--sim-artifact</code></td><td>optional</td><td>Treat the positional file as a bare SIM artifact for Claim Garden quarantine.</td></tr>
+<tr><td><code>--sim-request</code></td><td>optional</td><td>Independently selected native SIM request JSON file.</td></tr>
+<tr><td><code>--sim-policy</code></td><td>optional</td><td>Independently selected native SIM policy JSON file.</td></tr>
+<tr><td><code>--source-digest</code></td><td>optional</td><td>Expected SHA-256 digest of exact bare SIM upload bytes.</td></tr>
+<tr><td><code>--gated</code></td><td>optional</td><td>Prepare or submit native evidence bound to a local gate receipt.</td></tr>
+<tr><td><code>--artifact</code></td><td>optional</td><td>Full native evidence bundle JSON file.</td></tr>
+<tr><td><code>--request</code></td><td>optional</td><td>External native request JSON file.</td></tr>
+<tr><td><code>--certificate</code></td><td>optional</td><td>Native domain certificate JSON file.</td></tr>
+<tr><td><code>--policy</code></td><td>optional</td><td>Independently selected native policy JSON file.</td></tr>
+<tr><td><code>--manifest</code></td><td>optional</td><td>Selected gate pipeline manifest JSON file.</td></tr>
+<tr><td><code>--dry-run</code></td><td>optional</td><td>Prepare locally; read no credentials and perform no transport.</td></tr>
+<tr><td><code>--output</code></td><td>optional</td><td>Create a new prepared envelope file during --gated --dry-run; never overwrite.</td></tr>
+<tr><td><code>--private-review-consent</code></td><td>optional</td><td>Consent to private retention and charged assessment for human review.</td></tr>
+<tr><td><code>--expected-checker-coordinate</code></td><td>optional</td><td>Optional expected host deployment SHA-256 digest from account inspection.</td></tr>
+<tr><td><code>--facet-inventory</code></td><td>optional</td><td>Independent exact namespace facet inventory for local clearance preparation.</td></tr>
+<tr><td><code>--facet-specification</code></td><td>optional</td><td>Independent versioned abstract facet and interaction requirements.</td></tr>
+<tr><td><code>--facet-policy</code></td><td>optional</td><td>Independent exact facet inventory/specification/native-rule admission policy.</td></tr>
+<tr><td><code>--dependency-policy</code></td><td>optional</td><td>Independent host-selected certificate dependency profile policy for clearance preparation.</td></tr>
+<tr><td><code>--clearance</code></td><td>optional</td><td>Independently replay automatic-gates clearance before local publication preparation.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="cli-vstd-account">
+<h3><code>vstd account</code></h3>
+<p class="ref-help">Inspect authenticated Claim Garden linkage, byte quota and host coordinates.</p>
+<table><thead><tr><th>Argument</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>--publisher-id</code></td><td>required option</td><td>Registered publisher:sha256 identity.</td></tr>
+<tr><td><code>--credential-file</code></td><td>required option</td><td>Publisher bearer credential file.</td></tr>
+<tr><td><code>--endpoint</code></td><td>optional</td><td>Target Claim Garden HTTPS origin. [default: https://claimgarden.com]</td></tr>
+<tr><td><code>--json</code></td><td>optional</td><td>Emit account JSON.</td></tr>
+</tbody></table>
 </article></div>
       </div>
     </section>
@@ -624,7 +1273,8 @@
 <p class="ref-help">Result of independently recomputing a frozen artifact and its seals.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/artifact_control/__init__.py"><code>verifier.artifact_control</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-ArtifactVerification.sealed"><td><code>sealed (property)</code></td><td>Report whether this verification result's state is SEALED.</td></tr>
+<tr id="api-ArtifactVerification.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the observed freeze, guard, seal, anchor, errors, and warnings.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-AssuranceLedger">
@@ -633,32 +1283,33 @@
 <p class="ref-help">Append-only current-state overlay for an immutable provenance graph.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>admissibility_blocking_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td>Return conflicts whose effect still blocks a clean TRUST route.</td></tr>
-<tr><td><code>compose_guilt(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, localization_event_digest: 'str', responsibility_component_digest: 'str', applicability_component_digest: 'str', violation_component_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compose technical GUILT from three exact, separately earned components.</td></tr>
-<tr><td><code>current_status(self, artifact_id: 'str') -&gt; 'ArtifactStatus'</code></td><td></td></tr>
-<tr><td><code>current_transformation_status(self, transformation_id: 'str') -&gt; 'str'</code></td><td>Return a transformation's additive current status projection.</td></tr>
-<tr><td><code>current_trust_events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return recursively current edge-local TRUST records.</td></tr>
-<tr><td><code>diagnose(self, kind: 'DiagnosticKind', ancestor_id: 'str', descendant_id: 'str', proposition: 'Optional[BoundProposition]', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compute BLAME, or fail closed for legacy opaque GUILT calls.</td></tr>
-<tr><td><code>establish_guilt_components(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', responsibility_proposition: 'BoundProposition', applicability_proposition: 'BoundProposition', violation_proposition: 'BoundProposition', *, localization_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, AssuranceEvent, AssuranceEvent]'</code></td><td>Run one compound mechanism and retain three separately bound results.</td></tr>
-<tr><td><code>establish_obligation_applicability(self, artifact_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate whether one exact obligation applies to one exact artifact.</td></tr>
-<tr><td><code>establish_obligation_violation(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, localization_event_digest: 'str', applicability_component_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate violation after exact applicability and deviation localization.</td></tr>
-<tr><td><code>establish_responsibility(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, localization_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate one separately bound material-contribution component.</td></tr>
-<tr><td><code>events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td></td></tr>
-<tr><td><code>impacted_descendants(self, artifact_id: 'str') -&gt; 'tuple[str, ...]'</code></td><td>Return the deduplicated recorded forward impact set, not a verdict.</td></tr>
-<tr><td><code>localize_cause(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, rust_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Bind one ancestor to one exact passing descendant-deviation event.</td></tr>
-<tr><td><code>materialize_current_graph(self) -&gt; 'ProvenanceHypergraph'</code></td><td>Create a derived current view; never mutate the historical graph.</td></tr>
-<tr><td><code>project_challenges(self, challenges: 'ChallengeLedger', *, recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Project challenge state into an additive current Graph overlay.</td></tr>
-<tr><td><code>record_conflict(self, conflict: 'ConflictRecord', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Add mechanism-established current conflict evidence without rewriting Graph.</td></tr>
-<tr><td><code>record_rot(self, artifact_id: 'str', resulting_status: 'ArtifactStatus', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
-<tr><td><code>record_rust(self, descendant_id: 'str', deviation: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
-<tr><td><code>record_status_projection(self, artifact_id: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Record a mechanism-checked current-status projection additively.</td></tr>
-<tr><td><code>record_trust(self, target_id: 'str', source_ids: 'Iterable[str]', proposition: 'BoundProposition', *, transformation_id: 'str', prerequisite_trust_event_digests: 'Iterable[str]' = (), session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td></td></tr>
-<tr><td><code>resolutions(self) -&gt; 'tuple[ConflictResolution, ...]'</code></td><td></td></tr>
-<tr><td><code>resolve_conflict(self, conflict_id: 'str', selected_value: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'ConflictResolution'</code></td><td>Adjudicate one value without equating selection with admissibility.</td></tr>
-<tr><td><code>rust_concentration(self) -&gt; 'tuple[StructuralConcentration, ...]'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>unresolved_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td></td></tr>
-<tr><td><code>verify_hash_chain(self) -&gt; 'bool'</code></td><td></td></tr>
+<tr id="api-AssuranceLedger.admissibility_blocking_conflicts"><td><code>admissibility_blocking_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td>Return conflicts whose effect still blocks a clean TRUST route.</td></tr>
+<tr id="api-AssuranceLedger.compose_guilt"><td><code>compose_guilt(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, localization_event_digest: 'str', responsibility_component_digest: 'str', applicability_component_digest: 'str', violation_component_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compose technical GUILT from three exact, separately earned components.</td></tr>
+<tr id="api-AssuranceLedger.current_status"><td><code>current_status(self, artifact_id: 'str') -&gt; 'ArtifactStatus'</code></td><td>Return the most degraded recorded status for an artifact, or UNKNOWN when it is absent.</td></tr>
+<tr id="api-AssuranceLedger.current_transformation_status"><td><code>current_transformation_status(self, transformation_id: 'str') -&gt; 'str'</code></td><td>Return a transformation's additive current status projection.</td></tr>
+<tr id="api-AssuranceLedger.current_trust_events"><td><code>current_trust_events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return recursively current edge-local TRUST records.</td></tr>
+<tr id="api-AssuranceLedger.diagnose"><td><code>diagnose(self, kind: 'DiagnosticKind', ancestor_id: 'str', descendant_id: 'str', proposition: 'Optional[BoundProposition]', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'DiagnosticAttribution'</code></td><td>Compute BLAME, or fail closed for legacy opaque GUILT calls.</td></tr>
+<tr id="api-AssuranceLedger.establish_guilt_components"><td><code>establish_guilt_components(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', responsibility_proposition: 'BoundProposition', applicability_proposition: 'BoundProposition', violation_proposition: 'BoundProposition', *, localization_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, AssuranceEvent, AssuranceEvent]'</code></td><td>Run one compound mechanism and retain three separately bound results.</td></tr>
+<tr id="api-AssuranceLedger.establish_obligation_applicability"><td><code>establish_obligation_applicability(self, artifact_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate whether one exact obligation applies to one exact artifact.</td></tr>
+<tr id="api-AssuranceLedger.establish_obligation_violation"><td><code>establish_obligation_violation(self, ancestor_id: 'str', descendant_id: 'str', obligation: 'ObligationCoordinate', proposition: 'BoundProposition', *, localization_event_digest: 'str', applicability_component_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate violation after exact applicability and deviation localization.</td></tr>
+<tr id="api-AssuranceLedger.establish_responsibility"><td><code>establish_responsibility(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, localization_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate one separately bound material-contribution component.</td></tr>
+<tr id="api-AssuranceLedger.events"><td><code>events(self) -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Return an immutable snapshot of recorded assurance events.</td></tr>
+<tr id="api-AssuranceLedger.graph_digest"><td><code>graph_digest (property)</code></td><td>Return the digest captured for the historical Graph at ledger creation.</td></tr>
+<tr id="api-AssuranceLedger.impacted_descendants"><td><code>impacted_descendants(self, artifact_id: 'str') -&gt; 'tuple[str, ...]'</code></td><td>Return the deduplicated recorded forward impact set, not a verdict.</td></tr>
+<tr id="api-AssuranceLedger.localize_cause"><td><code>localize_cause(self, ancestor_id: 'str', descendant_id: 'str', proposition: 'BoundProposition', *, rust_event_digest: 'str', session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Bind one ancestor to one exact passing descendant-deviation event.</td></tr>
+<tr id="api-AssuranceLedger.materialize_current_graph"><td><code>materialize_current_graph(self) -&gt; 'ProvenanceHypergraph'</code></td><td>Create a derived current view; never mutate the historical graph.</td></tr>
+<tr id="api-AssuranceLedger.project_challenges"><td><code>project_challenges(self, challenges: 'ChallengeLedger', *, recorded_at: 'str') -&gt; 'tuple[AssuranceEvent, ...]'</code></td><td>Project challenge state into an additive current Graph overlay.</td></tr>
+<tr id="api-AssuranceLedger.record_conflict"><td><code>record_conflict(self, conflict: 'ConflictRecord', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Add mechanism-established current conflict evidence without rewriting Graph.</td></tr>
+<tr id="api-AssuranceLedger.record_rot"><td><code>record_rot(self, artifact_id: 'str', resulting_status: 'ArtifactStatus', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate an exact current-status proposition and append a strictly degrading ROT event.</td></tr>
+<tr id="api-AssuranceLedger.record_rust"><td><code>record_rust(self, descendant_id: 'str', deviation: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Evaluate a descendant deviation and record diagnostic backward reachability, not causal attribution.</td></tr>
+<tr id="api-AssuranceLedger.record_status_projection"><td><code>record_status_projection(self, artifact_id: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Record a mechanism-checked current-status projection additively.</td></tr>
+<tr id="api-AssuranceLedger.record_trust"><td><code>record_trust(self, target_id: 'str', source_ids: 'Iterable[str]', proposition: 'BoundProposition', *, transformation_id: 'str', prerequisite_trust_event_digests: 'Iterable[str]' = (), session: 'VerificationSession', recorded_at: 'str') -&gt; 'AssuranceEvent'</code></td><td>Check exact transformation inputs, current admissibility, and prerequisites before evaluating and appending a TRUST event.</td></tr>
+<tr id="api-AssuranceLedger.resolutions"><td><code>resolutions(self) -&gt; 'tuple[ConflictResolution, ...]'</code></td><td>Return an immutable snapshot of recorded conflict resolutions.</td></tr>
+<tr id="api-AssuranceLedger.resolve_conflict"><td><code>resolve_conflict(self, conflict_id: 'str', selected_value: 'str', proposition: 'BoundProposition', *, session: 'VerificationSession', recorded_at: 'str') -&gt; 'ConflictResolution'</code></td><td>Adjudicate one value without equating selection with admissibility.</td></tr>
+<tr id="api-AssuranceLedger.rust_concentration"><td><code>rust_concentration(self) -&gt; 'tuple[StructuralConcentration, ...]'</code></td><td>Count distinct passing RUST origins reaching each ancestor; this is diagnostic, not causal strength.</td></tr>
+<tr id="api-AssuranceLedger.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the historical Graph, events, resolutions, and digest of the current view.</td></tr>
+<tr id="api-AssuranceLedger.unresolved_conflicts"><td><code>unresolved_conflicts(self) -&gt; 'tuple[ConflictRecord, ...]'</code></td><td>Return conflict records that have no recorded resolution.</td></tr>
+<tr id="api-AssuranceLedger.verify_hash_chain"><td><code>verify_hash_chain(self) -&gt; 'bool'</code></td><td>Check event order and predecessor digests; this alone does not replay mechanisms or authenticate actors.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-BoundProposition">
@@ -667,8 +1318,37 @@
 <p class="ref-help">Exact proposition, evidence, mechanism, trust-root, and bound binding.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-BoundProposition.digest"><td><code>digest(self) -&gt; 'str'</code></td><td>Return the canonical digest of this proposition's serialized binding.</td></tr>
+<tr id="api-BoundProposition.from_dict"><td><code>from_dict(data: 'Mapping[str, Any]') -&gt; "'BoundProposition'"</code></td><td>Reconstruct a bound proposition and its evidence bounds from a mapping.</td></tr>
+<tr id="api-BoundProposition.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the exact subject, mechanism, evidence, trust roots, bounds, and parameters of this proposition.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-CertificationError">
+<h3><code>CertificationError</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>CertificationError</code></pre>
+<p class="ref-help">Malformed, substituted, or unreplayable grounded certification input.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
+
+</article>
+<article class="ref-item" id="api-CertificationPolicy">
+<h3><code>CertificationPolicy</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>CertificationPolicy(admissions: 'Mapping[str, MechanismAdmission]', max_evidence_items: 'int' = 512, max_evidence_bytes: 'int' = 8388608, max_certificate_bytes: 'int' = 16777216, catalog: 'str' = &lt;factory&gt;, specification: 'str' = &lt;factory&gt;) -&gt; None</code></pre>
+<p class="ref-help">External mechanism admission and resource policy, not certificate authority.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr id="api-CertificationPolicy.digest"><td><code>digest(self) -&gt; 'str'</code></td><td>Return the canonical digest of this policy's serialized fields.</td></tr>
+<tr id="api-CertificationPolicy.from_dict"><td><code>from_dict(value: 'Any') -&gt; 'CertificationPolicy'</code></td><td>Parse a versioned policy, rejecting unknown coordinates and out-of-range resource bounds.</td></tr>
+<tr id="api-CertificationPolicy.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize admitted obligations, resource ceilings, and catalogue and specification digests.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-CertificationRequest">
+<h3><code>CertificationRequest</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>CertificationRequest(claim_id: 'str', binding: 'ClaimBinding', target_profile: 'int', obligations: 'Mapping[str, BoundProposition]') -&gt; None</code></pre>
+<p class="ref-help">Exact claim and individual evidence propositions; no supplied outcomes.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr id="api-CertificationRequest.from_dict"><td><code>from_dict(value: 'Any') -&gt; 'CertificationRequest'</code></td><td>Parse a versioned request, rejecting unknown or out-of-target obligation coordinates.</td></tr>
+<tr id="api-CertificationRequest.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the requested claim binding, target profile, and bound obligations.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-ControlSurfaceContext">
@@ -677,7 +1357,7 @@
 <p class="ref-help">External planning context; only schema and interaction mode affect matches.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-ControlSurfaceContext.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize interaction mode, domain tags, operating regime, consequences, and authority requirements.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-DecisionCertificate">
@@ -686,9 +1366,9 @@
 <p class="ref-help">Canonical grounded decision certificate (GDC) blocks for the bounded checker.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/certificate.py"><code>verifier.core.certificate</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>without_hints(self) -&gt; "'DecisionCertificate'"</code></td><td>Hint-stripped form.</td></tr>
+<tr id="api-DecisionCertificate.digest"><td><code>digest(self) -&gt; 'str'</code></td><td>Return the canonical digest of this certificate's serialized fields, including hints.</td></tr>
+<tr id="api-DecisionCertificate.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the certificate header, formula, grounding, decision block, and hints.</td></tr>
+<tr id="api-DecisionCertificate.without_hints"><td><code>without_hints(self) -&gt; "'DecisionCertificate'"</code></td><td>Hint-stripped form.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-EvidenceBindingError">
@@ -704,7 +1384,7 @@
 <p class="ref-help">Resource ceilings enforced before invoking a domain mechanism.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, int]'</code></td><td></td></tr>
+<tr id="api-EvidenceBounds.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, int]'</code></td><td>Serialize the item-count and byte-count ceilings for bound evidence.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-EvidenceStore">
@@ -713,10 +1393,10 @@
 <p class="ref-help">In-memory content-addressed evidence store with collision/fork refusal.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>add(self, payload: 'bytes') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>export_base64(self, references: 'Sequence[str]') -&gt; 'dict[str, str]'</code></td><td>Export exact evidence bytes for portable, offline mechanism replay.</td></tr>
-<tr><td><code>import_base64(self, payloads: 'Mapping[str, str]') -&gt; 'None'</code></td><td>Import a portable bundle and refuse every reference/byte mismatch.</td></tr>
-<tr><td><code>resolve(self, reference: 'str') -&gt; 'bytes'</code></td><td></td></tr>
+<tr id="api-EvidenceStore.add"><td><code>add(self, payload: 'bytes') -&gt; 'str'</code></td><td>Retain exact payload bytes and return their content reference, rejecting other types or a digest collision.</td></tr>
+<tr id="api-EvidenceStore.export_base64"><td><code>export_base64(self, references: 'Sequence[str]') -&gt; 'dict[str, str]'</code></td><td>Export exact evidence bytes for portable, offline mechanism replay.</td></tr>
+<tr id="api-EvidenceStore.import_base64"><td><code>import_base64(self, payloads: 'Mapping[str, str]') -&gt; 'None'</code></td><td>Import a portable bundle and refuse every reference/byte mismatch.</td></tr>
+<tr id="api-EvidenceStore.resolve"><td><code>resolve(self, reference: 'str') -&gt; 'bytes'</code></td><td>Return retained bytes only when the reference exists and the bytes still match its digest.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-GeometryLoadError">
@@ -732,6 +1412,16 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/catalog.py"><code>verifier.interoperability.catalog</code></a></p>
 <p class="ref-help">Members: <code>STATIC, OFFLINE_REPLAY, SIMULATION, LIVE_READ_ONLY, LIVE_MUTATING</code></p>
 </article>
+<article class="ref-item" id="api-MechanismAdmission">
+<h3><code>MechanismAdmission</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>MechanismAdmission(mechanism_id: 'str', mechanism_digest: 'str', trust_roots: 'tuple[str, ...]') -&gt; None</code></pre>
+<p class="ref-help">Checker-selected executable and trust roots for one exact obligation.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr id="api-MechanismAdmission.from_dict"><td><code>from_dict(value: 'Any') -&gt; 'MechanismAdmission'</code></td><td>Parse a mechanism admission with exact required fields and normalized digest.</td></tr>
+<tr id="api-MechanismAdmission.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the admitted mechanism identifier, normalized digest, and declared trust roots.</td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="api-MechanismDecision">
 <h3><code>MechanismDecision</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>MechanismDecision(outcome: 'MechanismOutcome', details: 'str', observations: 'Mapping[str, Any]' = &lt;factory&gt;) -&gt; None</code></pre>
@@ -745,14 +1435,34 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <p class="ref-help">Members: <code>PASS, FAIL, UNKNOWN</code></p>
 </article>
+<article class="ref-item" id="api-NativeCertificationMechanism">
+<h3><code>NativeCertificationMechanism</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>NativeCertificationMechanism()</code></pre>
+<p class="ref-help">Execute bounded claim-record, geometry and decision-certificate checks.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/certification_mechanisms.py"><code>verifier.core.certification_mechanisms</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr id="api-NativeCertificationMechanism.evaluate"><td><code>evaluate(self, binding: 'BoundProposition', evidence: 'Sequence[bytes]') -&gt; 'MechanismDecision'</code></td><td>Check one supported native obligation against retained evidence; unsupported inputs stay UNKNOWN.</td></tr>
+<tr id="api-NativeCertificationMechanism.mechanism_digest"><td><code>mechanism_digest (property)</code></td><td>Return a digest binding the listed native source modules to their current file bytes.</td></tr>
+</tbody></table>
+</article>
+<article class="ref-item" id="api-NativeDomainAdapter">
+<h3><code>NativeDomainAdapter</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>NativeDomainAdapter(domain: 'str', policy: 'dict', *, _budget: 'Budget | None' = None, _nesting: 'int' = 0) -&gt; 'None'</code></pre>
+<p class="ref-help">Executable mechanism for one domain; registration supplies no implicit authority.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr id="api-NativeDomainAdapter.evaluate"><td><code>evaluate(self, binding: 'BoundProposition', evidence: 'Sequence[bytes]') -&gt; 'MechanismDecision'</code></td><td>Replay one domain obligation against its bound bundle and policy, distinguishing unavailable from refuted evidence.</td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="api-ObligationCoordinate">
 <h3><code>ObligationCoordinate</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>ObligationCoordinate(obligation_id: 'str' = '', content_digest: 'str' = '', scope: 'Mapping[str, str]' = &lt;factory&gt;, assumptions: 'tuple[str, ...]' = (), exclusions: 'tuple[str, ...]' = ()) -&gt; None</code></pre>
 <p class="ref-help">Exact technical obligation and the declared scope in which it applies.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-ObligationCoordinate.digest"><td><code>digest(self) -&gt; 'str'</code></td><td>Return the canonical digest of this obligation coordinate's serialized fields.</td></tr>
+<tr id="api-ObligationCoordinate.from_dict"><td><code>from_dict(data: 'Mapping[str, Any]') -&gt; "'ObligationCoordinate'"</code></td><td>Reconstruct an obligation coordinate, requiring its scope to be a mapping.</td></tr>
+<tr id="api-ObligationCoordinate.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the obligation identifier, content digest, scope, assumptions, and exclusions.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-PlatformComparisonResult">
@@ -761,7 +1471,8 @@
 <p class="ref-help">Machine-readable diagnostic result; this object is not a VSTD receipt.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/platform_comparison.py"><code>verifier.core.platform_comparison</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-PlatformComparisonResult.exit_code"><td><code>exit_code (property)</code></td><td>Map PASS to zero, CONFLICTED or INVALID to one, and other statuses to two.</td></tr>
+<tr id="api-PlatformComparisonResult.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the bounded diagnostic, compared platforms, differences, errors, and claim boundary.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-PlatformComparisonStatus">
@@ -770,28 +1481,40 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/platform_comparison.py"><code>verifier.core.platform_comparison</code></a></p>
 <p class="ref-help">Members: <code>PASS, CONFLICTED, NOT_ESTABLISHED, INVALID</code></p>
 </article>
+<article class="ref-item" id="api-ProfileObligation">
+<h3><code>ProfileObligation</code> <span class="ref-tag">class</span></h3>
+<pre class="ref-signature"><code>ProfileObligation(profile: 'int', index: 'int', name: 'str', requirement: 'str', depends_on: 'tuple[str, ...]', source: 'str') -&gt; None</code></pre>
+<p class="ref-help">A separately checked proposition with explicit prerequisite obligations.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/profile_obligations.py"><code>verifier.core.profile_obligations</code></a></p>
+<table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
+<tr id="api-ProfileObligation.id"><td><code>id (property)</code></td><td>Return the numbered profile and index as a dotted obligation identifier.</td></tr>
+<tr id="api-ProfileObligation.predicate"><td><code>predicate (property)</code></td><td>Return the predicate name, using the VSTD-4 rung form for profile four.</td></tr>
+<tr id="api-ProfileObligation.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize this obligation with its dependency list, identifier, and predicate.</td></tr>
+</tbody></table>
+</article>
 <article class="ref-item" id="api-ProvenanceHypergraph">
 <h3><code>ProvenanceHypergraph</code> <span class="ref-tag">class</span></h3>
 <pre class="ref-signature"><code>ProvenanceHypergraph() -&gt; 'None'</code></pre>
 <p class="ref-help">N-ary Hypergraph structure for dataset, training, and artifact lineage.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/models.py"><code>verifier.data.models</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>add_artifact(self, artifact: 'ArtifactNode') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>add_conflict(self, conflict: 'ConflictRecord') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>add_contributor(self, contributor: 'ContributorSpec') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>add_rights(self, rights: 'RightsSpec') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>add_transformation(self, transform: 'TransformationHyperedge') -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>ancestors(self, artifact_ids: 'Iterable[str]') -&gt; 'set[str]'</code></td><td>Backward reachability closure across transformation hyperedges.</td></tr>
-<tr><td><code>blast_radius(self, revoked_artifact_id: 'str') -&gt; 'list[str]'</code></td><td>Compute the forward blast radius of affected downstream artifacts when one node is revoked.</td></tr>
-<tr><td><code>compute_completeness(self) -&gt; 'CompletenessMetrics'</code></td><td></td></tr>
-<tr><td><code>descendants(self, artifact_ids: 'Iterable[str]') -&gt; 'set[str]'</code></td><td>Forward reachability closure across transformation hyperedges.</td></tr>
-<tr><td><code>has_conflict(self, subject_id: 'str') -&gt; 'bool'</code></td><td></td></tr>
-<tr><td><code>incoming_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that produce artifact_id as an output.</td></tr>
-<tr><td><code>outgoing_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that consume artifact_id as an input.</td></tr>
-<tr><td><code>root_sources(self) -&gt; 'set[str]'</code></td><td>Artifacts with zero incoming hyperedges (genesis roots).</td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>validate_structure(self, *, allow_legacy_identifier_overlap: 'bool' = False) -&gt; 'list[str]'</code></td><td>Return deterministic errors for the implemented graph surface.</td></tr>
-<tr><td><code>verify_acyclicity(self, artifact_ids: 'Optional[Iterable[str]]' = None) -&gt; 'bool'</code></td><td>Check whether all or a selected artifact-induced subgraph contains cycles.</td></tr>
+<tr id="api-ProvenanceHypergraph.add_artifact"><td><code>add_artifact(self, artifact: 'ArtifactNode') -&gt; 'str'</code></td><td>Add an artifact by unique identifier, keeping artifact and transformation identifiers disjoint.</td></tr>
+<tr id="api-ProvenanceHypergraph.add_conflict"><td><code>add_conflict(self, conflict: 'ConflictRecord') -&gt; 'str'</code></td><td>Add a conflict record by unique identifier and return that identifier.</td></tr>
+<tr id="api-ProvenanceHypergraph.add_contributor"><td><code>add_contributor(self, contributor: 'ContributorSpec') -&gt; 'str'</code></td><td>Add a contributor by unique identifier and return that identifier.</td></tr>
+<tr id="api-ProvenanceHypergraph.add_rights"><td><code>add_rights(self, rights: 'RightsSpec') -&gt; 'str'</code></td><td>Add a rights record by unique identifier and return that identifier.</td></tr>
+<tr id="api-ProvenanceHypergraph.add_transformation"><td><code>add_transformation(self, transform: 'TransformationHyperedge') -&gt; 'str'</code></td><td>Add a transformation by unique identifier, keeping transformation and artifact identifiers disjoint.</td></tr>
+<tr id="api-ProvenanceHypergraph.ancestors"><td><code>ancestors(self, artifact_ids: 'Iterable[str]') -&gt; 'set[str]'</code></td><td>Backward reachability closure across transformation hyperedges.</td></tr>
+<tr id="api-ProvenanceHypergraph.blast_radius"><td><code>blast_radius(self, revoked_artifact_id: 'str') -&gt; 'list[str]'</code></td><td>Compute the forward blast radius of affected downstream artifacts when one node is revoked.</td></tr>
+<tr id="api-ProvenanceHypergraph.compute_completeness"><td><code>compute_completeness(self) -&gt; 'CompletenessMetrics'</code></td><td>Compute declared-field coverage and lineage depth; digest presence does not rehash artifact bytes.</td></tr>
+<tr id="api-ProvenanceHypergraph.descendants"><td><code>descendants(self, artifact_ids: 'Iterable[str]') -&gt; 'set[str]'</code></td><td>Forward reachability closure across transformation hyperedges.</td></tr>
+<tr id="api-ProvenanceHypergraph.from_dict"><td><code>from_dict(data: 'Mapping[str, Any]', *, allow_legacy_identifier_overlap: 'bool' = True) -&gt; "'ProvenanceHypergraph'"</code></td><td>Decode stored Graph bytes without rewriting their identifier semantics.</td></tr>
+<tr id="api-ProvenanceHypergraph.has_conflict"><td><code>has_conflict(self, subject_id: 'str') -&gt; 'bool'</code></td><td>Report whether any recorded conflict names this subject; resolution state is not considered.</td></tr>
+<tr id="api-ProvenanceHypergraph.incoming_hyperedges"><td><code>incoming_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that produce artifact_id as an output.</td></tr>
+<tr id="api-ProvenanceHypergraph.outgoing_hyperedges"><td><code>outgoing_hyperedges(self, artifact_id: 'str') -&gt; 'list[TransformationHyperedge]'</code></td><td>Hyperedges that consume artifact_id as an input.</td></tr>
+<tr id="api-ProvenanceHypergraph.root_sources"><td><code>root_sources(self) -&gt; 'set[str]'</code></td><td>Artifacts with zero incoming hyperedges (genesis roots).</td></tr>
+<tr id="api-ProvenanceHypergraph.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize recorded artifacts, transformations, contributors, rights, and conflicts.</td></tr>
+<tr id="api-ProvenanceHypergraph.validate_structure"><td><code>validate_structure(self, *, allow_legacy_identifier_overlap: 'bool' = False) -&gt; 'list[str]'</code></td><td>Return deterministic errors for the implemented graph surface.</td></tr>
+<tr id="api-ProvenanceHypergraph.verify_acyclicity"><td><code>verify_acyclicity(self, artifact_ids: 'Optional[Iterable[str]]' = None) -&gt; 'bool'</code></td><td>Check whether all or a selected artifact-induced subgraph contains cycles.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-ReproducibilityLevel">
@@ -802,12 +1525,12 @@
 </article>
 <article class="ref-item" id="api-SurfaceAnalysis">
 <h3><code>SurfaceAnalysis</code> <span class="ref-tag">class</span></h3>
-<pre class="ref-signature"><code>SurfaceAnalysis(geometry_id: 'str', geometry_digest: 'str', context: 'ControlSurfaceContext', validity_errors: 'tuple[str, ...]', ordinary_closed: 'bool', self_closed: 'bool', ordinary_blockers: 'tuple[str, ...]', self_closure_blockers: 'tuple[str, ...]', holes: 'tuple[SurfaceHole, ...]', scope: 'str' = 'MODELED_SURFACE_ONLY', input_mode: 'str' = 'TYPED_VERIFICATION_GEOMETRY_ONLY', strict_wire_loading_status: 'str' = 'SUPPORTED', claim_boundary: 'str' = 'Derived only from the supplied VSTD-2 geometry. It does not establish that the declared surface, coordinates, ontology, or evidence are complete. Permission does not establish artifact awareness; withholding direct access does not establish non-inferability. This operation does not establish confidentiality of awareness.', schema_version: 'str' = 'VSTD-SURFACE-ANALYSIS-1.0') -&gt; None</code></pre>
+<pre class="ref-signature"><code>SurfaceAnalysis(geometry_id: 'str', geometry_digest: 'str', context: 'ControlSurfaceContext', validity_errors: 'tuple[str, ...]', ordinary_closed: 'bool', self_closed: 'bool', ordinary_blockers: 'tuple[str, ...]', self_closure_blockers: 'tuple[str, ...]', holes: 'tuple[SurfaceHole, ...]', scope: 'str' = 'MODELED_SURFACE_ONLY', input_mode: 'str' = 'TYPED_VERIFICATION_GEOMETRY_ONLY', strict_wire_loading_status: 'str' = 'SUPPORTED', claim_boundary: 'str' = 'Derived only from the supplied VSTD-2 geometry. It does not establish that the declared surface, coordinates, ontology, or evidence are complete. Permission does not establish artifact awareness; withholding direct access does not establish non-inferability. This operation does not establish confidentiality of awareness.', schema_version: 'str' = 'verifier-surface-analysis-1') -&gt; None</code></pre>
 <p class="ref-help">Deterministic report over only the supplied, declared geometry.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>canonical_json_bytes(self) -&gt; 'bytes'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-SurfaceAnalysis.canonical_json_bytes"><td><code>canonical_json_bytes(self) -&gt; 'bytes'</code></td><td>Return canonical JSON bytes for this surface analysis's serialized fields.</td></tr>
+<tr id="api-SurfaceAnalysis.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the geometry assessment, validity errors, closure blockers, holes, and claim boundary.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-SurfaceAnalysisError">
@@ -823,7 +1546,8 @@
 <p class="ref-help">One structured diagnostic derived from an existing geometry blocker.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-SurfaceHole.native_state"><td><code>native_state (property)</code></td><td>Compatibility spelling for callers that describe statuses as states.</td></tr>
+<tr id="api-SurfaceHole.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize a detected hole with its native state, blocking effects, and required relations.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-SurfaceHoleKind">
@@ -838,10 +1562,10 @@
 <p class="ref-help">A finite verification geometry and its higher-order audit surface.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry.py"><code>verifier.core.geometry</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>assess_closure(self) -&gt; 'ClosureAssessment'</code></td><td>Assess declared closure and higher-order self-closure separately.</td></tr>
-<tr><td><code>canonical_digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>validate(self) -&gt; 'list[str]'</code></td><td>Return structural and epistemic errors; an empty list means valid.</td></tr>
+<tr id="api-VerificationGeometry.assess_closure"><td><code>assess_closure(self) -&gt; 'ClosureAssessment'</code></td><td>Assess declared closure and higher-order self-closure separately.</td></tr>
+<tr id="api-VerificationGeometry.canonical_digest"><td><code>canonical_digest(self) -&gt; 'str'</code></td><td>Return the SHA-256 hex digest of the geometry's sorted compact JSON bytes.</td></tr>
+<tr id="api-VerificationGeometry.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the geometry's declared coordinates and relations as JSON-compatible values.</td></tr>
+<tr id="api-VerificationGeometry.validate"><td><code>validate(self) -&gt; 'list[str]'</code></td><td>Return structural and epistemic errors; an empty list means valid.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-VerificationSession">
@@ -850,9 +1574,10 @@
 <p class="ref-help">Resolve evidence and rerun only explicitly registered mechanisms.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/evidence.py"><code>verifier.core.evidence</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>evaluate(self, binding: 'BoundProposition') -&gt; 'EvaluatedProposition'</code></td><td></td></tr>
-<tr><td><code>evaluate_compound(self, bindings: 'Sequence[BoundProposition]') -&gt; 'tuple[EvaluatedProposition, ...]'</code></td><td>Run one compound mechanism invocation over separately bound propositions.</td></tr>
-<tr><td><code>register(self, mechanism: 'VerificationMechanism') -&gt; 'None'</code></td><td></td></tr>
+<tr id="api-VerificationSession.evaluate"><td><code>evaluate(self, binding: 'BoundProposition') -&gt; 'EvaluatedProposition'</code></td><td>Evaluate a bound proposition against registered mechanism and retained evidence; unmet prerequisites yield UNKNOWN.</td></tr>
+<tr id="api-VerificationSession.evaluate_compound"><td><code>evaluate_compound(self, bindings: 'Sequence[BoundProposition]') -&gt; 'tuple[EvaluatedProposition, ...]'</code></td><td>Run one compound mechanism invocation over separately bound propositions.</td></tr>
+<tr id="api-VerificationSession.register"><td><code>register(self, mechanism: 'VerificationMechanism') -&gt; 'None'</code></td><td>Register a mechanism by identifier and digest, refusing substitution under an existing identifier.</td></tr>
+<tr id="api-VerificationSession.registered_mechanisms"><td><code>registered_mechanisms(self) -&gt; 'tuple[VerificationMechanism, ...]'</code></td><td>Snapshot caller-registered capabilities for an isolated evidence replay.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-VerificationVerdict">
@@ -867,11 +1592,11 @@
 <p class="ref-help">Mutable in-memory model of a canonically digested VSTD-1 claim receipt.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>compute_and_set_digest(self) -&gt; 'str'</code></td><td></td></tr>
-<tr><td><code>get_stable_payload(self) -&gt; 'dict[str, Any]'</code></td><td>Extract only deterministic, location-independent fields for canonical hashing.</td></tr>
-<tr><td><code>save_to_directory(self, out_dir: 'Path') -&gt; 'Path'</code></td><td></td></tr>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
-<tr><td><code>verify_digest_integrity(self) -&gt; 'bool'</code></td><td></td></tr>
+<tr id="api-VstdReceipt.compute_and_set_digest"><td><code>compute_and_set_digest(self) -&gt; 'str'</code></td><td>Compute and store the digest of the receipt's stable payload; return that digest.</td></tr>
+<tr id="api-VstdReceipt.get_stable_payload"><td><code>get_stable_payload(self) -&gt; 'dict[str, Any]'</code></td><td>Extract only deterministic, location-independent fields for canonical hashing.</td></tr>
+<tr id="api-VstdReceipt.save_to_directory"><td><code>save_to_directory(self, out_dir: 'Path') -&gt; 'Path'</code></td><td>Write the receipt, claim, file manifest, optional log, and report under the output directory.</td></tr>
+<tr id="api-VstdReceipt.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the receipt and compute its stable-payload digest first when absent.</td></tr>
+<tr id="api-VstdReceipt.verify_digest_integrity"><td><code>verify_digest_integrity(self) -&gt; 'bool'</code></td><td>Compare the stored digest with the stable payload's recomputed digest, without verifying the claim.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-WitnessBundle">
@@ -880,7 +1605,8 @@
 <p class="ref-help">Claim-bound identities, ordered separation assertions, and corroborations.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/witness.py"><code>verifier.core.witness</code></a></p>
 <table><thead><tr><th>Method</th><th>Summary</th></tr></thead><tbody>
-<tr><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td></td></tr>
+<tr id="api-WitnessBundle.from_dict"><td><code>from_dict(data: 'Mapping[str, Any]') -&gt; "'WitnessBundle'"</code></td><td>Reconstruct a witness bundle from its witness, independence, and corroboration mappings.</td></tr>
+<tr id="api-WitnessBundle.to_dict"><td><code>to_dict(self) -&gt; 'dict[str, Any]'</code></td><td>Serialize the claim binding, witness identities, independence assertions, and corroborations.</td></tr>
 </tbody></table>
 </article>
 <article class="ref-item" id="api-analyze_verification_surface">
@@ -890,11 +1616,25 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/interoperability/control_surface.py"><code>verifier.interoperability.control_surface</code></a></p>
 
 </article>
+<article class="ref-item" id="api-assess_grounded_certification">
+<h3><code>assess_grounded_certification</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>assess_grounded_certification(request: 'CertificationRequest', *, policy: 'CertificationPolicy', session: 'VerificationSession') -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Execute each admitted obligation and derive cumulative certification.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
+
+</article>
 <article class="ref-item" id="api-assess_witness_corroboration">
 <h3><code>assess_witness_corroboration</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>assess_witness_corroboration(entry: 'EvidenceBoundDepthResult', bundle: 'WitnessBundle', *, session: 'VerificationSession') -&gt; 'WitnessCorroborationResult'</code></pre>
 <p class="ref-help">Recheck VSTD-5 entry, separation evidence, and corroboration evidence.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/witness.py"><code>verifier.core.witness</code></a></p>
+
+</article>
+<article class="ref-item" id="api-build_domain_certificate">
+<h3><code>build_domain_certificate</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>build_domain_certificate(request: 'dict', evidence: 'dict', *, policy: 'dict') -&gt; 'dict'</code></pre>
+<p class="ref-help">Execute every requested prerequisite with content-addressed evidence.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
 
 </article>
 <article class="ref-item" id="api-build_evidence_bound_graph_level_record">
@@ -909,6 +1649,13 @@
 <pre class="ref-signature"><code>build_evidence_bound_vstd4_receipt(result: 'EvidenceBoundDepthResult', *, receipt_id: 'str', claim_id: 'str', binding: 'ClaimBinding', prerequisite_evidence: 'Mapping[int, BoundProposition]', rung_evidence: 'Mapping[str, BoundProposition]', session: 'VerificationSession', status: 'str' = 'VALID') -&gt; 'dict[str, object]'</code></pre>
 <p class="ref-help">Serialize every input needed to rerun an evidence-bound VSTD-4 result.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
+
+</article>
+<article class="ref-item" id="api-build_grounded_certificate">
+<h3><code>build_grounded_certificate</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>build_grounded_certificate(request: 'CertificationRequest', *, policy: 'CertificationPolicy', session: 'VerificationSession') -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Build a fresh portable certificate by executing, never accepting a result.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
 
 </article>
 <article class="ref-item" id="api-build_vstd5_receipt">
@@ -953,6 +1700,27 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/receipt.py"><code>verifier.core.receipt</code></a></p>
 
 </article>
+<article class="ref-item" id="api-domain_catalog">
+<h3><code>domain_catalog</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>domain_catalog(include_accountable: 'bool' = False) -&gt; 'dict'</code></pre>
+<p class="ref-help">Describe all native domain propositions, scopes and cumulative prerequisites.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/catalog.py"><code>verifier.domains.catalog</code></a></p>
+
+</article>
+<article class="ref-item" id="api-domain_policy">
+<h3><code>domain_policy</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>domain_policy(*, trust_roots: 'list[str]', witness_keys: 'dict | None' = None, max_operations: 'int' = 1000000, max_items: 'int' = 4096, max_evidence_bytes: 'int' = 4194304, max_tolerance: 'float' = 1e-08) -&gt; 'dict'</code></pre>
+<p class="ref-help">Create a checker-selected policy; never derive roots from a certificate.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
+
+</article>
+<article class="ref-item" id="api-domain_request">
+<h3><code>domain_request</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>domain_request(evidence: 'dict', *, target_depth: 'int | None' = None) -&gt; 'dict'</code></pre>
+<p class="ref-help">Bind a consumer-selected subject, artifact and complete evidence inventory.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
+
+</article>
 <article class="ref-item" id="api-establish_graph_level">
 <h3><code>establish_graph_level</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>establish_graph_level(graph: 'ProvenanceHypergraph', *, collection_id: 'str', members: 'Sequence[str]', object_evidence: 'Mapping[str, BoundProposition]', edge_evidence: 'Mapping[str, BoundProposition]', session: 'VerificationSession', binding: 'ClaimBinding') -&gt; 'EvidenceBoundGraphLevelResult'</code></pre>
@@ -988,11 +1756,25 @@
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/geometry_io.py"><code>verifier.core.geometry_io</code></a></p>
 
 </article>
+<article class="ref-item" id="api-obligation_catalog">
+<h3><code>obligation_catalog</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>obligation_catalog() -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Return the fixed object-axis catalogue; no supplied ratings or verdicts.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/profile_obligations.py"><code>verifier.core.profile_obligations</code></a></p>
+
+</article>
 <article class="ref-item" id="api-recheck_assurance_log">
 <h3><code>recheck_assurance_log</code> <span class="ref-tag">function</span></h3>
 <pre class="ref-signature"><code>recheck_assurance_log(payload: 'Mapping[str, Any]', *, mechanisms: 'Iterable[VerificationMechanism]') -&gt; 'AssuranceLedger'</code></pre>
 <p class="ref-help">Rebuild and replay a portable assurance log from its embedded bytes.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/data/assurance.py"><code>verifier.data.assurance</code></a></p>
+
+</article>
+<article class="ref-item" id="api-recheck_domain_certificate">
+<h3><code>recheck_domain_certificate</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>recheck_domain_certificate(certificate: 'dict', *, expected_request: 'dict', policy: 'dict') -&gt; 'dict'</code></pre>
+<p class="ref-help">Replay against external intent; return REJECTED for substitution or forged output.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/domains/certification.py"><code>verifier.domains.certification</code></a></p>
 
 </article>
 <article class="ref-item" id="api-recheck_evidence_bound_graph_level_record">
@@ -1007,6 +1789,13 @@
 <pre class="ref-signature"><code>recheck_evidence_bound_vstd4_receipt(receipt: 'Mapping[str, object]', *, mechanisms: 'Sequence[VerificationMechanism]') -&gt; 'EvidenceBoundDepthResult'</code></pre>
 <p class="ref-help">Reconstruct evidence bytes and rerun an evidence-bound VSTD-4 receipt.</p>
 <p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/depth.py"><code>verifier.core.depth</code></a></p>
+
+</article>
+<article class="ref-item" id="api-recheck_grounded_certificate">
+<h3><code>recheck_grounded_certificate</code> <span class="ref-tag">function</span></h3>
+<pre class="ref-signature"><code>recheck_grounded_certificate(certificate: 'Mapping[str, Any]', *, policy: 'CertificationPolicy', mechanisms: 'Sequence[VerificationMechanism]', expected_request_digest: 'str') -&gt; 'dict[str, Any]'</code></pre>
+<p class="ref-help">Rehash and rerun under an external policy; reject a changed carried result.</p>
+<p class="ref-source">Defined in <a href="https://github.com/TimeLordRaps/verifier/blob/main/src/verifier/core/grounded_certification.py"><code>verifier.core.grounded_certification</code></a></p>
 
 </article>
 <article class="ref-item" id="api-recheck_vstd5_receipt">

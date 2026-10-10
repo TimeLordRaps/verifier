@@ -97,6 +97,23 @@ def test_negative_wire_corpus_is_bounded_exact_and_canonical() -> None:
         assert 0 < len(case["claim_boundary"].encode("utf-8")) <= 512
 
 
+def test_retained_corpus_covers_assessment_vocabulary_and_duplicate_relation() -> None:
+    cases = {case["case_id"]: case for case in _load_corpus()["cases"]}
+    expected = {
+        "assessment-reconstructibility-invalid": ("ASSESSMENT", "reconstructibility", "INVALID"),
+        "assessment-derivation-closure-conflicted": ("ASSESSMENT", "derivation_closure", "CONFLICTED"),
+        "assessment-derivation-closure-unknown": ("ASSESSMENT", "derivation_closure", "UNKNOWN"),
+        "assessment-self-derivability-invalid": ("ASSESSMENT", "self_derivability", "INVALID"),
+    }
+    for case_id, (target, field, retired_result) in expected.items():
+        assert cases[case_id]["target"] == target
+        assert cases[case_id]["record"][field] == retired_result
+    duplicate = cases["commit-duplicate-canonical-relation"]
+    assert duplicate["target"] == "COMMIT"
+    relations = duplicate["record"]["relations"]
+    assert len(relations) == 2 and relations[0] == relations[1]
+
+
 @pytest.mark.parametrize("case", _load_corpus()["cases"], ids=lambda case: case["case_id"])
 def test_public_decoders_and_materializer_reject_every_negative_case(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, case: dict[str, Any],
@@ -117,6 +134,7 @@ def test_public_decoders_and_materializer_reject_every_negative_case(
         materialize_silo_transfer(record, destination)
 
     dispatch: dict[str, Callable[[dict[str, Any], Path], object]] = {
+        "ASSESSMENT": lambda record, _destination: network.SiloAssessment.from_dict(record),
         "AUTHORITY_MODEL": lambda record, _destination: AuthorityModel.from_dict(record),
         "COMMIT": lambda record, _destination: SiloCommit.from_dict(record),
         "OBJECT": lambda record, _destination: ObjectRecord.from_dict(record),

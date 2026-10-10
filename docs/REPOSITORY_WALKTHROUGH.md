@@ -30,7 +30,7 @@ The current repository may contain additions beyond the latest package release.
 | Surface | Location | What to use it for |
 |---|---|---|
 | Normative profile meaning | `standard/` | Requirements, vocabulary, claim boundaries |
-| Installed specifications | `src/verifier/specifications/` | Byte-identical packaged copies of applicable standard files |
+| Installed specifications | `src/verifier/standard/` | Byte-identical packaged copies of applicable standard files |
 | Runtime | `src/verifier/` | Implemented mechanisms and public exports |
 | command-line interface (CLI) | `src/verifier/runtime/public_cli.py` | Arguments and dispatch from `vstd` |
 | Examples | `examples/` | Bounded demonstrations and input artifacts |

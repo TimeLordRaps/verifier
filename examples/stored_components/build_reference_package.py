@@ -1,4 +1,5 @@
-"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD);
+ZIP archive format (ZIP).
 
 Capture explicitly scoped public source bytes in a nonexecuting component package.
 """
@@ -6,16 +7,24 @@ Capture explicitly scoped public source bytes in a nonexecuting component packag
 from __future__ import annotations
 
 import argparse
+import hashlib
+from io import BytesIO
+import json
 import os
 from pathlib import Path, PurePosixPath
 import stat
 import subprocess
 from typing import Sequence
+from zipfile import ZIP_STORED, ZipFile, ZipInfo
 
 from verifier.interoperability import catalog as catalog_module
 from verifier.interoperability import reference_catalog as reference_module
 from verifier.interoperability.storage import (
     ImplementationBinding,
+    MAX_PACKAGE_ITEMS,
+    COMPONENT_PACKAGE_SCHEMA_VERSION,
+    COMPONENT_PACKAGE_V2_SCHEMA_VERSION,
+    MAX_PACKAGE_V2_ARTIFACTS,
     PackageArtifact,
     PackageDependency,
     StoredComponentPackage,
@@ -26,10 +35,65 @@ from verifier.interoperability.storage import (
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE_SUFFIXES = {".py", ".json", ".md"}
 FIXED_FILES = {"pyproject.toml", "LICENSE", "NOTICE", "README.md"}
+# Keep the previously reviewed hardware source directly addressable.
+DIRECT_SOURCE_FILES = {"src/verifier/domains/hardware.py"}
 PUBLIC_REMOTES = {
     "https://github.com/TimeLordRaps/verifier.git",
     "https://github.com/TimeLordRaps/verifier",
 }
+SOURCE_ARCHIVE_PATH = "source-archive/exact-public-source.zip"
+
+
+def _source_archive(captured: dict[str, bytes], archived_paths: set[str]) -> bytes:
+    """Bind the full inventory while retaining non-direct bytes in an inert ZIP."""
+    output = BytesIO()
+    seen_casefold: set[str] = set()
+    manifest: list[dict[str, str | int]] = []
+    for name, content in sorted(captured.items()):
+        if name not in FIXED_FILES and not _source_path(name):
+            raise ValueError("source archive contains a path outside the public inventory")
+        PackageArtifact(name, "text/plain", b"")  # Check portable stored paths.
+        if name.casefold() in seen_casefold:
+            raise ValueError("source archive contains case-colliding paths")
+        seen_casefold.add(name.casefold())
+        manifest.append({"path": name, "size_bytes": len(content),
+                         "sha256": hashlib.sha256(content).hexdigest(),
+                         "location": "ARCHIVE" if name in archived_paths else "DIRECT"})
+    if not archived_paths or not archived_paths <= captured.keys():
+        raise ValueError("source archive requires a nonempty captured remainder")
+    manifest_bytes = json.dumps(
+        {"schema_version": "verifier-reference-source-archive-1", "files": manifest},
+        sort_keys=True, separators=(",", ":"), ensure_ascii=True,
+    ).encode("ascii")
+    with ZipFile(output, "w", compression=ZIP_STORED, allowZip64=False) as archive:
+        for name, content in [("source-inventory.json", manifest_bytes),
+                              *((path, captured[path]) for path in sorted(archived_paths))]:
+            entry = ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            entry.compress_type = ZIP_STORED
+            entry.create_system = 3
+            entry.external_attr = 0o100644 << 16
+            archive.writestr(entry, content)
+    return output.getvalue()
+
+
+def _direct_source_paths(captured: dict[str, bytes], registry: object) -> set[str]:
+    """Keep public contracts and declared entrypoints directly addressable."""
+    direct = set(FIXED_FILES)
+    direct.update(
+        name for name in captured
+        if name in DIRECT_SOURCE_FILES
+        or (name.startswith("src/verifier/domains/") and name.count("/") == 3 and name.endswith(".py"))
+        or (name.startswith("src/verifier/") and name.endswith((".json", ".md")))
+    )
+    for component in registry.components:
+        module_name = component.implementation_ref.split(":", 1)[0]
+        module_path = "src/" + module_name.replace(".", "/")
+        candidates = (module_path + ".py", module_path + "/__init__.py")
+        selected = next((name for name in candidates if name in captured), None)
+        if selected is None:
+            raise ValueError("a reference component has no retained implementation module")
+        direct.add(selected)
+    return direct
 
 
 def _git(root: Path, *arguments: str) -> bytes:
@@ -121,9 +185,13 @@ def _capture_snapshot(
 
 
 def build_package(
-    source_root: Path, package_version: str, include_untracked: Sequence[str] = ()
+    source_root: Path, package_version: str, include_untracked: Sequence[str] = (), *,
+    package_schema_version: str = COMPONENT_PACKAGE_V2_SCHEMA_VERSION
 ) -> StoredComponentPackage:
     """Retain bytes, not an installed runtime or independently qualified verifier."""
+    if package_schema_version not in (COMPONENT_PACKAGE_SCHEMA_VERSION, COMPONENT_PACKAGE_V2_SCHEMA_VERSION):
+        raise ValueError("unsupported reference package schema version")
+    artifact_maximum = MAX_PACKAGE_V2_ARTIFACTS if package_schema_version == COMPONENT_PACKAGE_V2_SCHEMA_VERSION else MAX_PACKAGE_ITEMS
     captured, head, dirty = _capture_snapshot(source_root, include_untracked)
     for module in (catalog_module, reference_module):
         expected_path = "src/" + module.__name__.replace(".", "/") + ".py"
@@ -131,19 +199,26 @@ def build_package(
             raise ValueError("captured catalog source differs from the exporting Python environment")
     registry = reference_module.reference_component_registry()
     family_count = len({family for component in registry.components for family in component.verifier_family_ids})
-    source_paths = tuple(name for name in captured if name.startswith("src/verifier/"))
-    for component in registry.components:
-        module_name = component.implementation_ref.split(":", 1)[0]
-        module_path = "src/" + module_name.replace(".", "/")
-        if not any(name in captured for name in (module_path + ".py", module_path + "/__init__.py")):
-            raise ValueError("a reference component has no retained implementation module")
+    direct_paths = _direct_source_paths(captured, registry)
+    if len(captured) <= artifact_maximum:
+        selected_content = dict(captured)
+        archived = False
+    else:
+        selected_content = {name: captured[name] for name in sorted(direct_paths)}
+        selected_content[SOURCE_ARCHIVE_PATH] = _source_archive(captured, set(captured) - direct_paths)
+        archived = True
+    if len(selected_content) > artifact_maximum:
+        raise ValueError("direct contract and implementation artifacts exceed the package item bound")
+    source_paths = tuple(name for name in selected_content
+                         if name.startswith("src/verifier/") or name == SOURCE_ARCHIVE_PATH)
     artifacts = tuple(
         PackageArtifact(
             path=name,
-            media_type="application/json" if name.endswith(".json") else "text/plain",
+            media_type=("application/zip" if name == SOURCE_ARCHIVE_PATH else
+                        "application/json" if name.endswith(".json") else "text/plain"),
             content=content,
         )
-        for name, content in captured.items()
+        for name, content in selected_content.items()
     )
     dependencies = (
         PackageDependency("python-runtime", "Python >=3.10; runtime not included", ("pyproject.toml",)),
@@ -161,17 +236,21 @@ def build_package(
         description=(
             f"Public source snapshot; Git HEAD {head}; working tree dirty={str(dirty).lower()}. "
             "Captured bytes, not HEAD alone, identify this snapshot. "
-            f"{len(registry.components)} first-party entrypoints across {family_count} grouping labels, not independent integrations. "
-            "Not a wheel, installation archive, runtime, or conformance result. "
-            "Dependency closure NOT_ESTABLISHED; native runtime dependencies are not bundled."
+            + ("An inert deterministic archive manifests every selected public source byte; "
+               "it and direct artifacts together retain the exact source inventory. " if archived else "")
+            + f"{len(registry.components)} first-party entrypoints across {family_count} grouping labels, not independent integrations. "
+            + "Not a wheel, installation archive, runtime, or conformance result. "
+            + "Dependency closure NOT_ESTABLISHED; native runtime dependencies are not bundled."
         ),
         registry=registry,
+        schema_version=package_schema_version,
         artifacts=artifacts,
         implementations=tuple(
             ImplementationBinding(
                 component_id=component.component_id,
                 implementation_ref=component.implementation_ref,
                 artifact_paths=source_paths,
+                schema_version=package_schema_version,
                 dependency_ids=tuple(dependency.dependency_id for dependency in dependencies),
             )
             for component in registry.components
@@ -186,9 +265,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--source-root", type=Path, default=ROOT)
     parser.add_argument("--package-version", required=True)
     parser.add_argument("--include-untracked", action="append", default=[])
+    parser.add_argument("--package-schema-version", choices=(COMPONENT_PACKAGE_SCHEMA_VERSION, COMPONENT_PACKAGE_V2_SCHEMA_VERSION), default=COMPONENT_PACKAGE_V2_SCHEMA_VERSION)
     arguments = parser.parse_args(argv)
     try:
-        package = build_package(arguments.source_root, arguments.package_version, arguments.include_untracked)
+        package = build_package(arguments.source_root, arguments.package_version, arguments.include_untracked, package_schema_version=arguments.package_schema_version)
         save_component_package(package, arguments.output)
     except (OSError, ValueError) as exc:
         parser.exit(2, f"Package export refused: {exc}\n")

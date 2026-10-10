@@ -1,0 +1,11 @@
+{
+  "schema_version": "verifier-explanation-definitions-1",
+  "definitions": [{
+    "id": "example.increment",
+    "target": {"path": "demo.py", "symbol": "increment"},
+    "intent": "Keep an illustrative arithmetic function small enough to inspect.",
+    "requirement_ids": [],
+    "invariants": ["Authored intent: increment a supported input by one."],
+    "limits": ["This declaration supplies no execution evidence or unrestricted behavioral proof."]
+  }]
+}

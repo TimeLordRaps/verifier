@@ -1,6 +1,6 @@
 """Terminology: Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
-Executable VSTD-Graph artifact-state propagation.
+Executable GRAPH artifact-state propagation.
 
 ``TRUST`` is mechanism-earned forward artifact support. ``RUST`` is reverse
 diagnostic traversal from a verified descendant deviation toward recorded
@@ -13,6 +13,8 @@ a current Graph view, preserve conflict resolutions as new records, deduplicate
 support and reachability, compute structural RUST concentration, and perform
 bounded artifact-relative diagnostic attribution.  RUST reachability alone
 never establishes falsity, causality, blame, guilt, or responsibility.
+Graph-dependent event creation and impact projection refuse a Graph whose bytes
+differ from the digest captured when the ledger was created.
 """
 
 from __future__ import annotations
@@ -374,7 +376,7 @@ class DiagnosticAttribution:
 class AssuranceLedger:
     """Append-only current-state overlay for an immutable provenance graph."""
 
-    FORMAT = "VSTD-GRAPH-ASSURANCE-1"
+    FORMAT = "verifier-graph-assurance-1"
 
     def __init__(self, graph: ProvenanceHypergraph) -> None:
         errors = graph.validate_structure()
@@ -393,6 +395,10 @@ class AssuranceLedger:
     @property
     def graph_digest(self) -> str:
         return self._graph_digest
+
+    def _require_historical_graph_unchanged(self) -> None:
+        if canonical_digest(self.graph.to_dict()) != self.graph_digest:
+            raise AssuranceFlowError("historical Graph changed after ledger creation")
 
     def events(self) -> tuple[AssuranceEvent, ...]:
         return tuple(self._events)
@@ -413,7 +419,9 @@ class AssuranceLedger:
         evidence_payloads: Mapping[str, str],
         attributes: Optional[Mapping[str, Any]] = None,
     ) -> AssuranceEvent:
+        self._require_historical_graph_unchanged()
         sources = tuple(sorted(set(source_ids)))
+        self._require_historical_graph_unchanged()
         semantic_key = (
             kind.value,
             subject_id,
@@ -432,6 +440,7 @@ class AssuranceLedger:
                 tuple(sorted((k, v) for k, v in event.attributes.items() if k != "binding_digest")),
             )
             if semantic_key == other_key:
+                self._require_historical_graph_unchanged()
                 return event
         previous = "" if not self._events else self._events[-1].digest()
         combined_attributes = dict(attributes or {})
@@ -454,6 +463,7 @@ class AssuranceLedger:
             previous,
             combined_attributes,
         )
+        self._require_historical_graph_unchanged()
         self._events.append(event)
         return event
 
@@ -530,6 +540,7 @@ class AssuranceLedger:
 
     def impacted_descendants(self, artifact_id: str) -> tuple[str, ...]:
         """Return the deduplicated recorded forward impact set, not a verdict."""
+        self._require_historical_graph_unchanged()
         if artifact_id not in self.graph.artifacts:
             raise AssuranceFlowError(f"unknown impact origin {artifact_id}")
         return tuple(sorted(self.graph.descendants((artifact_id,)) - {artifact_id}))
@@ -672,6 +683,7 @@ class AssuranceLedger:
         recorded_at: str,
     ) -> tuple[AssuranceEvent, ...]:
         """Project challenge state into an additive current Graph overlay."""
+        self._require_historical_graph_unchanged()
         projected: list[AssuranceEvent] = []
         mechanism = ChallengeProjectionMechanism()
         for artifact_id in sorted(self.graph.artifacts):
@@ -720,6 +732,7 @@ class AssuranceLedger:
         recorded_at: str,
     ) -> AssuranceEvent:
         """Record a mechanism-checked current-status projection additively."""
+        self._require_historical_graph_unchanged()
         if artifact_id not in self.graph.artifacts:
             raise AssuranceFlowError(f"unknown status projection subject {artifact_id}")
         if (
@@ -754,6 +767,7 @@ class AssuranceLedger:
         recorded_at: str,
     ) -> AssuranceEvent:
         """Add mechanism-established current conflict evidence without rewriting Graph."""
+        self._require_historical_graph_unchanged()
         if (
             conflict.subject_id not in self.graph.artifacts
             and conflict.subject_id not in self.graph.transformations
@@ -811,6 +825,7 @@ class AssuranceLedger:
         recorded_at: str,
     ) -> ConflictResolution:
         """Adjudicate one value without equating selection with admissibility."""
+        self._require_historical_graph_unchanged()
         conflict = self._conflicts.get(conflict_id)
         if conflict is None:
             raise AssuranceFlowError(f"unknown conflict {conflict_id}")
@@ -851,7 +866,6 @@ class AssuranceLedger:
             recorded_at,
             evaluation,
         )
-        self._resolutions[resolution.resolution_id] = resolution
         self._append(
             kind=AssuranceEventKind.CONFLICT_RESOLUTION,
             subject_id=conflict.subject_id,
@@ -867,6 +881,7 @@ class AssuranceLedger:
                 "resolution_id": resolution.resolution_id,
             },
         )
+        self._resolutions[resolution.resolution_id] = resolution
         return resolution
 
     def record_trust(
@@ -880,11 +895,11 @@ class AssuranceLedger:
         session: VerificationSession,
         recorded_at: str,
     ) -> AssuranceEvent:
+        self._require_historical_graph_unchanged()
         sources = tuple(sorted(set(source_ids)))
         if not sources:
             raise AssuranceFlowError("TRUST requires at least one recorded source")
-        if canonical_digest(self.graph.to_dict()) != self.graph_digest:
-            raise AssuranceFlowError("historical Graph changed after ledger creation")
+        self._require_historical_graph_unchanged()
         if target_id not in self.graph.artifacts:
             raise AssuranceFlowError(f"unknown TRUST target {target_id}")
         transform = self.graph.transformations.get(transformation_id)
@@ -921,6 +936,7 @@ class AssuranceLedger:
             )
 
         prerequisite_digests = tuple(sorted(set(prerequisite_trust_event_digests)))
+        self._require_historical_graph_unchanged()
         current_by_digest = {
             event.digest(): event for event in self.current_trust_events()
         }
@@ -984,6 +1000,7 @@ class AssuranceLedger:
         session: VerificationSession,
         recorded_at: str,
     ) -> AssuranceEvent:
+        self._require_historical_graph_unchanged()
         if artifact_id not in self.graph.artifacts:
             raise AssuranceFlowError(f"unknown ROT subject {artifact_id}")
         current = self.current_status(artifact_id)
@@ -1018,6 +1035,7 @@ class AssuranceLedger:
         session: VerificationSession,
         recorded_at: str,
     ) -> AssuranceEvent:
+        self._require_historical_graph_unchanged()
         if descendant_id not in self.graph.artifacts:
             raise AssuranceFlowError(f"unknown RUST origin {descendant_id}")
         if (
@@ -1066,6 +1084,7 @@ class AssuranceLedger:
         recorded_at: str,
     ) -> AssuranceEvent:
         """Bind one ancestor to one exact passing descendant-deviation event."""
+        self._require_historical_graph_unchanged()
         if ancestor_id not in self.graph.ancestors((descendant_id,)) - {descendant_id}:
             raise AssuranceFlowError("causal candidate is not a recorded ancestor")
         rust_event = next(
@@ -1175,6 +1194,7 @@ class AssuranceLedger:
         recorded_at: str,
     ) -> AssuranceEvent:
         """Evaluate one separately bound material-contribution component."""
+        self._require_historical_graph_unchanged()
 
         localization = self._require_localization(
             ancestor_id, descendant_id, localization_event_digest
@@ -1219,6 +1239,7 @@ class AssuranceLedger:
         recorded_at: str,
     ) -> AssuranceEvent:
         """Evaluate whether one exact obligation applies to one exact artifact."""
+        self._require_historical_graph_unchanged()
 
         if artifact_id not in self.graph.artifacts:
             raise AssuranceFlowError(f"unknown obligation subject {artifact_id}")
@@ -1260,6 +1281,7 @@ class AssuranceLedger:
         recorded_at: str,
     ) -> AssuranceEvent:
         """Evaluate violation after exact applicability and deviation localization."""
+        self._require_historical_graph_unchanged()
 
         localization = self._require_localization(
             ancestor_id, descendant_id, localization_event_digest
@@ -1328,6 +1350,7 @@ class AssuranceLedger:
         recorded_at: str,
     ) -> tuple[AssuranceEvent, AssuranceEvent, AssuranceEvent]:
         """Run one compound mechanism and retain three separately bound results."""
+        self._require_historical_graph_unchanged()
 
         localization = self._require_localization(
             ancestor_id, descendant_id, localization_event_digest
@@ -1402,6 +1425,16 @@ class AssuranceLedger:
                 violation_proposition,
             )
         )
+        # Export every component before committing any member of this required group.
+        # Evidence exporters are caller supplied and may synchronously observe or mutate
+        # the Graph; refusing after an earlier append would leave an unreplayable prefix.
+        staged_evidence_payloads: list[Mapping[str, str]] = []
+        for evaluation in evaluations:
+            payloads = session.evidence.export_base64(evaluation.evidence_refs)
+            self._require_historical_graph_unchanged()
+            staged_evidence_payloads.append(payloads)
+        self._require_historical_graph_unchanged()
+
         responsibility = self._append(
             kind=AssuranceEventKind.RESPONSIBILITY_COMPONENT,
             subject_id=ancestor_id,
@@ -1410,9 +1443,7 @@ class AssuranceLedger:
             binding=responsibility_proposition.to_dict(),
             recorded_at=recorded_at,
             evaluation=evaluations[0],
-            evidence_payloads=session.evidence.export_base64(
-                evaluations[0].evidence_refs
-            ),
+            evidence_payloads=staged_evidence_payloads[0],
             attributes={
                 **responsibility_expected,
                 "compound_group_digest": compound_group_digest,
@@ -1427,9 +1458,7 @@ class AssuranceLedger:
             binding=applicability_proposition.to_dict(),
             recorded_at=recorded_at,
             evaluation=evaluations[1],
-            evidence_payloads=session.evidence.export_base64(
-                evaluations[1].evidence_refs
-            ),
+            evidence_payloads=staged_evidence_payloads[1],
             attributes={
                 **applicability_expected,
                 "compound_group_digest": compound_group_digest,
@@ -1444,9 +1473,7 @@ class AssuranceLedger:
             binding=violation_proposition.to_dict(),
             recorded_at=recorded_at,
             evaluation=evaluations[2],
-            evidence_payloads=session.evidence.export_base64(
-                evaluations[2].evidence_refs
-            ),
+            evidence_payloads=staged_evidence_payloads[2],
             attributes={
                 **violation_expected,
                 "applicability_component_digest": applicability.digest(),
@@ -1476,6 +1503,7 @@ class AssuranceLedger:
         reputation, automatic legal liability, innocence, exoneration, obligation
         satisfaction, or absence of hidden contributors.
         """
+        self._require_historical_graph_unchanged()
 
         component_digests = (
             responsibility_component_digest,
@@ -1652,6 +1680,7 @@ class AssuranceLedger:
         proposition cannot substitute for separately bound responsibility,
         applicability, and violation evaluations.
         """
+        self._require_historical_graph_unchanged()
         requested_localization_digest = ""
         if proposition is not None and isinstance(proposition.expected, Mapping):
             requested_localization_digest = str(
@@ -1762,7 +1791,7 @@ def recheck_assurance_log(
 ) -> AssuranceLedger:
     """Rebuild and replay a portable assurance log from its embedded bytes."""
     if payload.get("schema_version") != AssuranceLedger.FORMAT:
-        raise AssuranceFlowError("not a VSTD-Graph assurance log")
+        raise AssuranceFlowError("not a GRAPH assurance log")
     graph_data = payload.get("historical_graph")
     events_data = payload.get("events")
     if not isinstance(graph_data, Mapping) or not isinstance(events_data, list):

@@ -1,0 +1,76 @@
+{
+  "schema_version": "verifier-prdel-manifest-selection-1",
+  "candidate_status": "DEVELOPMENT_CANDIDATE",
+  "authority_scope": "VERIFIER_PRDEL_IMPLEMENTATION_METADATA",
+  "selection_reason": "Manifest version 2 preserves the exact ordinary compiled obligation and record vector. The dual reader retains the historical sorted version-1 invariant without casting it as version-2 ordered-vector equivalence.",
+  "predecessor_selection": {
+    "receiving_relation_commitment": {
+      "bytes": 28097,
+      "sha256": "34ed3ba8fa45be87c7087a9d062ece1909c704b8bf1c07eb95d6d4354f518be9"
+    },
+    "handoff_commitment": {
+      "bytes": 54565,
+      "sha256": "1db712862b3857f81615b09f95944c9d9ff16b325bde762dba1fa0e1a6885003"
+    },
+    "producer_source_coordinate": {
+      "repository": "https://github.com/TimeLordRaps/verifier.git",
+      "head": "20b2a7bc58d2c39e074de044fc20fee915e0230e",
+      "tree": "8f665500bc48149fa7cc519abb0387ae49c4c972",
+      "scope": "SELECTED_PATHS_ONLY",
+      "working_tree_completeness": "UNKNOWN"
+    },
+    "reviewed_predecessor_schema_inventory": {
+      "count": 50,
+      "canonicalization": "UTF-8 JSON array of lexicographically sorted schema names with separators comma and colon",
+      "sha256": "53e71ddf55d60df5d49b3e5f43aeffcd949f86e2fab7e5902e36b19a956dcb32"
+    },
+    "selected_schemas": [
+      {
+        "name": "verifier-prdel-compilation-shards-1.schema.json",
+        "producer_path": "src/verifier/schemas/verifier-prdel-compilation-shards-1.schema.json",
+        "tracked_at_producer_head": true,
+        "bytes": 6568,
+        "sha256": "46ea7241a6f2f35c98401096b0be19d10d34f6f2ae42083dec3e65b034576536"
+      },
+      {
+        "name": "verifier-prdel-shard-description-1.schema.json",
+        "producer_path": "src/verifier/schemas/verifier-prdel-shard-description-1.schema.json",
+        "tracked_at_producer_head": false,
+        "bytes": 9313,
+        "sha256": "e93b3223143e82e3528d3666a42bef55b812ad76e1d9cb2d8117d41d1908e86f"
+      }
+    ],
+    "excluded_test_only_schema": {
+      "name": "spacetime-context-extension-1.schema.json",
+      "sha256": "97345bb1997b9abeaae4b5048de4f748cc5ab24a303638cbd1f38412c056b9b6",
+      "package_admitted": false
+    }
+  },
+  "successor_selection": {
+    "relation": "ORDER_PRESERVING_WIRE_SUCCESSOR",
+    "schema_name": "verifier-prdel-compilation-shards-2.schema.json",
+    "schema_path": "src/verifier/schemas/verifier-prdel-compilation-shards-2.schema.json",
+    "schema_sha256": "19bc1cce0f855aa051be2cb6c9d230336d8a9f1de8e3187079434d355d5a38a7",
+    "schema_id": "https://timelordraps.github.io/verifier/schemas/verifier-prdel-compilation-shards-2.schema.json",
+    "runtime_path": "src/verifier/runtime/prdel_shards.py",
+    "runtime_sha256": "d38cf3dec0dc19d00c49c16d6ef0a5664bd2ac2b85be7204f23d08029fe127f3",
+    "logical_validator_path": "src/verifier/runtime/prdel.py",
+    "logical_validator_sha256": "967058635650d7386dab91fe3f085686813f6886d02bd0d1fe396fb8fd392759",
+    "specification_path": "src/verifier/standard/PRDEL_SHARDS.md",
+    "specification_sha256": "ca43ee89bca606d06a8569ebad26768e691a1bb177761e94eca449e2fe410b5e"
+  },
+  "compatibility_review": {
+    "owner_proposal_sha256": "dc7e8918f6220b0ccde853a17ec576d8819dd067a86932ee48ceb1a7758daf20",
+    "independent_review_manifest_sha256": "938713db04ce96385bb81122a634ad895cd8f0c8508dca34505d048bd1761a67",
+    "independent_review_sha256": "ce8eb4d6add54a5315f25fc3f0e2d5bede043e09a182e86d0cad547179a128a8",
+    "qualification_scope": "BOUNDED_DUAL_WIRE_COMPATIBILITY_ONLY",
+    "finance_native_credit": "NOT_ESTABLISHED"
+  },
+  "defect_evidence": {
+    "static_finding_sha256": "fe0e08fcf7440bc20f8a70e4aa05e571b81e2d8e77081bffd82ea0bde9490bfc",
+    "upstream_need_sha256": "d41ff333f5b0c0b033d60508c47fefaf9681bb14c31f86881d1c29c4aeb8bb75",
+    "repair_patch_sha256": "64cd7c36d3e99abbba1551f097ea1d6d178551f305568838be58e75688137a1a"
+  },
+  "semantic_completeness": "UNKNOWN",
+  "release_authorized": false
+}

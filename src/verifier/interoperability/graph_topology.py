@@ -26,8 +26,8 @@ from verifier.data import models as _models
 from verifier.data.models import ProvenanceHypergraph
 
 
-GRAPH_TOPOLOGY_SCHEMA_VERSION = "VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1"
-GRAPH_TOPOLOGY_REPORT_SCHEMA_VERSION = "VSTD-GRAPH-TOPOLOGY-REPORT-EXPERIMENTAL-0.1"
+GRAPH_TOPOLOGY_SCHEMA_VERSION = "verifier-graph-topology-experimental-1"
+GRAPH_TOPOLOGY_REPORT_SCHEMA_VERSION = "verifier-graph-topology-report-experimental-1"
 SUPPORTED_CONSTRAINT_LOGIC = "classical-boolean-equations-v1"
 MAX_GRAPH_NODES = 4096
 MAX_GRAPH_TRANSFORMATIONS = 4096

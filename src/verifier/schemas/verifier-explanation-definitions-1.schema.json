@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-explanation-definitions-1.schema.json",
+  "title": "Canonical authored explanation definitions, version 1",
+  "description": "Authored intent is separate from checked source facts and later commit bindings. Schema validity does not prove intent, invariants, requirement authority, execution, or completeness. Runtime also enforces unique identifiers/portable targets and a one-mebibyte canonical byte bound.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "definitions"],
+  "properties": {
+    "schema_version": {"const": "verifier-explanation-definitions-1"},
+    "definitions": {"type": "array", "maxItems": 1000, "items": {"$ref": "#/$defs/definition"}}
+  },
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "text": {"type": "string", "maxLength": 8192},
+    "nonemptyText": {"type": "string", "minLength": 1, "maxLength": 8192, "pattern": "\\S"},
+    "definition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "target", "intent", "requirement_ids", "invariants", "limits"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "target": {
+          "type": "object", "additionalProperties": false, "required": ["path", "symbol"],
+          "properties": {
+            "path": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Runtime admits only portable relative path components, without traversal, normalized components, control characters or reserved device names."},
+            "symbol": {"type": ["string", "null"], "minLength": 1, "maxLength": 512, "description": "Null targets a module; a string is a dotted lexical Python declaration name, validated with Unicode identifier rules."}
+          }
+        },
+        "intent": {"$ref": "#/$defs/text"},
+        "requirement_ids": {"type": "array", "maxItems": 128, "uniqueItems": true, "items": {"$ref": "#/$defs/identifier"}},
+        "invariants": {"type": "array", "maxItems": 128, "uniqueItems": true, "items": {"$ref": "#/$defs/nonemptyText"}},
+        "limits": {"type": "array", "maxItems": 128, "uniqueItems": true, "items": {"$ref": "#/$defs/nonemptyText"}}
+      }
+    }
+  }
+}

@@ -221,4 +221,4 @@ def test_current_wire_identifiers_and_profile_discriminators() -> None:
     assert _load("vstd2_receipt.json")["properties"]["schema_version"]["const"] == "VSTD-2"
     assert _load("vstd_graph_receipt.json")["properties"]["schema_version"][
         "enum"
-    ] == ["VSTD-DATA-0.1"]
+    ] == ["verifier-data-1"]

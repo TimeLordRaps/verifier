@@ -1,6 +1,6 @@
-"""Terminology: continuous integration (CI); identifier (ID);
-JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256);
-uniform resource locator (URL);
+"""Terminology: central processing unit (CPU); continuous integration (CI);
+identifier (ID); JavaScript Object Notation (JSON); operating system (OS);
+Secure Hash Algorithm 256-bit (SHA-256); uniform resource locator (URL);
 Verifier Standard (VSTD).
 
 Tests for exact-head pull-request policy evidence.
@@ -68,6 +68,35 @@ def _body_template(*, head: str = HEAD, base: str = BASE, manifest: dict[str, ob
     evidence_digest = _module()._canonical_json_sha256(evidence)
     omissions = evidence["skip_observation_omissions"]
     omission_summary = ",".join(omissions) if omissions else "NONE"
+    is_disclosed = disposition == "DISCLOSED"
+    rubric_checklist = (
+        "- [x] `OS_CAPABILITY_GUARD`: OS-specific capability, privilege, or filesystem primitive unavailable.\n"
+        "- [ ] `OPTIONAL_DEPENDENCY_ABSENT`: Missing optional package extra or native binding.\n"
+        "- [ ] `EXTERNAL_SERVICE_BOUNDARY`: Live external network service or endpoint excluded in offline test execution.\n"
+        "- [ ] `ARCHITECTURAL_PLATFORM_UNSUPPORTED`: Hardware CPU architecture or endianness unsupported on runner.\n"
+        "- [ ] `HARDWARE_DEVICE_UNAVAILABLE`: Physical hardware, HSM, or accelerator unavailable.\n"
+        "- [ ] `PRIVILEGE_OR_CREDENTIAL_BOUNDARY`: Administrative/root rights or production secrets intentionally withheld.\n"
+        "- [ ] `PERFORMANCE_OR_DURATION_EXCLUSION`: Long-duration stress, soak, or benchmark test excluded from fast gate.\n"
+        "- [ ] `QUARANTINED_DEFECT`: Confirmed upstream or tracked defect with an active issue URL.\n"
+        "- [ ] `NOT_APPLICABLE`: Zero tests were skipped or omitted."
+        if is_disclosed
+        else
+        "- [ ] `OS_CAPABILITY_GUARD`: OS-specific capability, privilege, or filesystem primitive unavailable.\n"
+        "- [ ] `OPTIONAL_DEPENDENCY_ABSENT`: Missing optional package extra or native binding.\n"
+        "- [ ] `EXTERNAL_SERVICE_BOUNDARY`: Live external network service or endpoint excluded in offline test execution.\n"
+        "- [ ] `ARCHITECTURAL_PLATFORM_UNSUPPORTED`: Hardware CPU architecture or endianness unsupported on runner.\n"
+        "- [ ] `HARDWARE_DEVICE_UNAVAILABLE`: Physical hardware, HSM, or accelerator unavailable.\n"
+        "- [ ] `PRIVILEGE_OR_CREDENTIAL_BOUNDARY`: Administrative/root rights or production secrets intentionally withheld.\n"
+        "- [ ] `PERFORMANCE_OR_DURATION_EXCLUSION`: Long-duration stress, soak, or benchmark test excluded from fast gate.\n"
+        "- [ ] `QUARANTINED_DEFECT`: Confirmed upstream or tracked defect with an active issue URL.\n"
+        "- [x] `NOT_APPLICABLE`: Zero tests were skipped or omitted."
+    )
+    inventory = (
+        "| tests.test_example::test_skip | OS_CAPABILITY_GUARD | Bounded capability guard | Non-conforming platform skipped |"
+        if is_disclosed
+        else
+        "| None | N/A | Zero tests skipped | N/A |"
+    )
     return f"""## Promotion record
 
 - Final head commit: `{head}`
@@ -85,6 +114,18 @@ def _body_template(*, head: str = HEAD, base: str = BASE, manifest: dict[str, ob
 
 - [ACCEPTED] Newcomer clarity without weakened maturity or claim boundaries — accepted.
 - [ACCEPTED] Bounded advisory disposition — accepted.
+
+## Test skip rubric disclosure
+
+### Rubric checklist
+
+{rubric_checklist}
+
+### Skipped test inventory
+
+| Test coordinate / pattern | Rubric category | Exact technical reason | Claim consequence |
+|---|---|---|---|
+{inventory}
 
 ## Checklist
 
@@ -143,7 +184,7 @@ def _comment(body: str, *, association: str = "OWNER") -> dict[str, object]:
         "html_url": ACCEPTANCE_URL,
         "author_association": association,
         "user": {"login": "maintainer"},
-        "body": f"VSTD-HUMAN-ACCEPTANCE: {HEAD} {digest}",
+        "body": f"acceptance-clearance: {HEAD} {digest}",
     }
 
 
@@ -281,7 +322,7 @@ def test_mid_run_review_withdrawal_is_rejected_by_complete_reconfirmation() -> N
         "author_association": "OWNER",
         "state": "CHANGES_REQUESTED",
         "commit_id": HEAD,
-        "body": f"VSTD-HUMAN-ACCEPTANCE: {HEAD} {digest}",
+        "body": f"acceptance-clearance: {HEAD} {digest}",
     }]
     with pytest.raises(_module().PullRequestPolicyError, match="current state requests changes"):
         _module().confirm_current_evidence(
@@ -301,7 +342,7 @@ def test_trusted_review_requires_marker_for_exact_record() -> None:
         "author_association": "COLLABORATOR",
         "state": "APPROVED",
         "commit_id": HEAD,
-        "body": f"VSTD-HUMAN-ACCEPTANCE: {HEAD} {digest}",
+        "body": f"acceptance-clearance: {HEAD} {digest}",
     }
     result = _module().validate(
         _event(body),
@@ -323,7 +364,7 @@ def test_same_reviewer_later_state_revokes_approval(later_state: str, message: s
     digest = _module().promotion_record_sha256(body)
     common = {"user": {"login": "reviewer"}, "author_association": "COLLABORATOR", "commit_id": HEAD}
     reviews = [
-        {**common, "id": 1, "html_url": ACCEPTANCE_URL, "state": "APPROVED", "body": f"VSTD-HUMAN-ACCEPTANCE: {HEAD} {digest}"},
+        {**common, "id": 1, "html_url": ACCEPTANCE_URL, "state": "APPROVED", "body": f"acceptance-clearance: {HEAD} {digest}"},
         {**common, "id": 2, "html_url": ACCEPTANCE_URL + "-withdrawn", "state": later_state, "body": "withdrawn"},
     ]
     with pytest.raises(_module().PullRequestPolicyError, match=message):
@@ -557,6 +598,7 @@ def test_expected_reports_match_repository_check_matrix_exactly() -> None:
             ("coverage", "python-3.12", "coverage-tests.xml"),
             ("scitt-crypto", "python-3.12", "scitt-crypto.xml"),
             ("artifact-seal", "python-3.12", "artifact-seal.xml"),
+            ("logits-constraints", "python-3.12", "logits-constraints.xml"),
             ("installed-composition", "python-3.12", "installed-composition-contracts.xml"),
         ]
     )
@@ -569,7 +611,7 @@ def test_manifest_builder_produces_valid_canonical_artifact(tmp_path: Path) -> N
     body = _body(manifest=manifest, disposition="NONE")
     result = _validate(body, manifest=manifest)
     assert result["test_evidence_manifest_sha256"] == _module()._canonical_json_sha256(manifest)
-    assert result["test_evidence_total_tests"] == 12
+    assert result["test_evidence_total_tests"] == 13
     assert result["test_evidence_total_skipped"] == 0
     assert result["test_evidence_skip_observation_omission_count"] == 0
 
@@ -594,6 +636,7 @@ def test_installed_composition_report_is_retained_and_downloaded_for_both_policy
     for job in ("evaluate-policy", "evaluate-merge-group"):
         commands = "\n".join(step.get("run", "") for step in policy["jobs"][job]["steps"])
         assert '--pattern "installed-composition-contracts-$RUN_ID-$RUN_ATTEMPT-*"' in commands
+        assert '--pattern "logits-constraints-$RUN_ID-$RUN_ATTEMPT-*"' in commands
 
 
 def test_trusted_workflow_never_checks_out_pull_request_code() -> None:
@@ -636,3 +679,166 @@ def test_pull_request_body_has_an_independent_byte_ceiling(
             repository_run=_run(),
             test_evidence_manifest=_manifest(),
         )
+
+
+def test_policy_validates_test_skip_rubric_fields_in_promotion_record() -> None:
+    result = _validate(_body())
+    assert result["test_skip_rubric_categories"] == ["OS_CAPABILITY_GUARD"]
+    assert result["test_skip_rubric_not_applicable"] is False
+
+
+def test_policy_rejects_missing_test_skip_rubric_section() -> None:
+    body = _body()
+    start = body.index("## Test skip rubric disclosure")
+    end = body.index("## Checklist")
+    stripped = body[:start] + body[end:]
+    with pytest.raises(_module().PullRequestPolicyError, match="missing or empty section: Test skip rubric disclosure"):
+        _validate(stripped)
+
+
+def test_policy_rejects_not_applicable_when_skips_are_recorded() -> None:
+    body = _body()
+    mutated = body.replace("- [ ] `NOT_APPLICABLE`", "- [x] `NOT_APPLICABLE`")
+    with pytest.raises(_module().PullRequestPolicyError, match="NOT_APPLICABLE cannot be checked when tests are skipped"):
+        _validate(mutated)
+
+
+def test_policy_rejects_disclosed_skips_without_checked_rubric_category() -> None:
+    body = _body()
+    mutated = body.replace("- [x] `OS_CAPABILITY_GUARD`", "- [ ] `OS_CAPABILITY_GUARD`")
+    with pytest.raises(_module().PullRequestPolicyError, match="at least one formal rubric category must be checked"):
+        _validate(mutated)
+
+
+def test_policy_rejects_skip_category_checked_when_zero_skips() -> None:
+    manifest = _manifest(skipped=0)
+    body = _body(manifest=manifest, disposition="NONE")
+    mutated = body.replace("- [ ] `OS_CAPABILITY_GUARD`", "- [x] `OS_CAPABILITY_GUARD`")
+    with pytest.raises(_module().PullRequestPolicyError, match="no skip category may be checked when zero tests are skipped"):
+        _validate(mutated, manifest=manifest)
+
+
+def test_policy_rejects_not_applicable_unchecked_when_zero_skips() -> None:
+    manifest = _manifest(skipped=0)
+    body = _body(manifest=manifest, disposition="NONE")
+    mutated = body.replace("- [x] `NOT_APPLICABLE`", "- [ ] `NOT_APPLICABLE`")
+    with pytest.raises(_module().PullRequestPolicyError, match="NOT_APPLICABLE must be checked when zero tests are skipped"):
+        _validate(mutated, manifest=manifest)
+
+
+def test_policy_rejects_unresolved_placeholder_in_skip_rubric() -> None:
+    body = _body()
+    mutated = body.replace("tests.test_example::test_skip", "TODO: name test here")
+    with pytest.raises(_module().PullRequestPolicyError, match="section is unresolved: Test skip rubric disclosure"):
+        _validate(mutated)
+
+
+def test_policy_rejects_disclosed_skips_with_placeholder_inventory() -> None:
+    body = _body()
+    mutated = body.replace(
+        "| tests.test_example::test_skip | OS_CAPABILITY_GUARD | Bounded capability guard | Non-conforming platform skipped |",
+        "| None (or list skipped tests) | N/A | N/A | N/A |",
+    )
+    with pytest.raises(
+        _module().PullRequestPolicyError,
+        match="skipped test inventory contains unresolved template placeholder",
+    ):
+        _validate(mutated)
+
+
+def test_policy_rejects_disclosed_skips_with_empty_inventory() -> None:
+    body = _body()
+    mutated = body.replace(
+        "| tests.test_example::test_skip | OS_CAPABILITY_GUARD | Bounded capability guard | Non-conforming platform skipped |\n",
+        "",
+    )
+    with pytest.raises(
+        _module().PullRequestPolicyError,
+        match="skipped test inventory table must not be empty",
+    ):
+        _validate(mutated)
+
+
+def test_policy_rejects_inventory_category_not_checked_in_rubric() -> None:
+    body = _body()
+    mutated = body.replace(
+        "| tests.test_example::test_skip | OS_CAPABILITY_GUARD | Bounded capability guard | Non-conforming platform skipped |",
+        "| tests.test_example::test_skip | OPTIONAL_DEPENDENCY_ABSENT | Bounded dependency absent | Feature skipped |",
+    )
+    with pytest.raises(
+        _module().PullRequestPolicyError,
+        match="rubric category OPTIONAL_DEPENDENCY_ABSENT in inventory is not checked",
+    ):
+        _validate(mutated)
+
+
+def test_policy_rejects_checked_rubric_category_not_in_inventory() -> None:
+    body = _body()
+    mutated = body.replace(
+        "- [ ] `OPTIONAL_DEPENDENCY_ABSENT`",
+        "- [x] `OPTIONAL_DEPENDENCY_ABSENT`",
+    )
+    with pytest.raises(
+        _module().PullRequestPolicyError,
+        match="checked rubric categories do not match categories in skipped test inventory",
+    ):
+        _validate(mutated)
+
+
+def test_policy_rejects_unrecognized_inventory_category() -> None:
+    body = _body()
+    mutated = body.replace(
+        "| tests.test_example::test_skip | OS_CAPABILITY_GUARD | Bounded capability guard | Non-conforming platform skipped |",
+        "| tests.test_example::test_skip | INVALID_CATEGORY | Bounded capability guard | Non-conforming platform skipped |",
+    )
+    with pytest.raises(
+        _module().PullRequestPolicyError,
+        match="unrecognized rubric category in skipped test inventory",
+    ):
+        _validate(mutated)
+
+
+def test_policy_rejects_missing_technical_reason_or_consequence() -> None:
+    body = _body()
+    mutated = body.replace(
+        "| tests.test_example::test_skip | OS_CAPABILITY_GUARD | Bounded capability guard | Non-conforming platform skipped |",
+        "| tests.test_example::test_skip | OS_CAPABILITY_GUARD | N/A | Non-conforming platform skipped |",
+    )
+    with pytest.raises(
+        _module().PullRequestPolicyError,
+        match="technical reason missing or unresolved",
+    ):
+        _validate(mutated)
+
+
+def test_policy_rejects_inventory_itemized_when_zero_skips() -> None:
+    manifest = _manifest(skipped=0)
+    body = _body(manifest=manifest, disposition="NONE")
+    mutated = body.replace(
+        "| None | N/A | Zero tests skipped | N/A |",
+        "| tests.test_example::test_skip | OS_CAPABILITY_GUARD | Reason | Consequence |",
+    )
+    with pytest.raises(
+        _module().PullRequestPolicyError,
+        match="cannot itemize skipped tests when zero tests are skipped",
+    ):
+        _validate(mutated, manifest=manifest)
+
+
+def test_policy_binds_inventory_in_promotion_record() -> None:
+    module = _module()
+    body = _body()
+    record = module.promotion_record(body)
+    assert len(record["test_skip_rubric"]["inventory"]) == 1
+    item = record["test_skip_rubric"]["inventory"][0]
+    assert item["coordinate"] == "tests.test_example::test_skip"
+    assert item["rubric_category"] == "OS_CAPABILITY_GUARD"
+
+    # Mutating the reason in the inventory table changes the digest
+    mutated = body.replace(
+        "Bounded capability guard",
+        "Different capability guard explanation",
+    )
+    assert module.promotion_record_sha256(mutated) != module.promotion_record_sha256(body)
+
+

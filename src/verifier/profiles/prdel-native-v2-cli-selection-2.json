@@ -1,0 +1,60 @@
+{
+  "schema_version": "verifier-prdel-native-v2-cli-selection-2",
+  "candidate_status": "DEVELOPMENT_CANDIDATE",
+  "authority_scope": "VERIFIER_PRDEL_IMPLEMENTATION_METADATA",
+  "selection_scope": "DEPENDENT_IMPLEMENTATION_COORDINATE_ONLY",
+  "implementation_coordinate": {
+    "schema_version": "verifier-prdel-v2-implementation-coordinate-1",
+    "algorithm": "SHA256_CANONICAL_JSON_LF",
+    "member_scope": "EXACT_EXECUTABLE_CHECKER_SCHEMA_MEMBERS",
+    "profile_and_receipt_bytes_excluded": true,
+    "member_count": 28,
+    "sha256": "ed9b5e6b2eaeb4a8e6ac2173d81ab12f9c4ebf65f3db44d1e2955bce124d974d"
+  },
+  "native_profile": {
+    "path": "src/verifier/profiles/prdel-native-v2-selection-2.json",
+    "bytes": 7932,
+    "sha256": "21e9f5aa9179d46bfffd0266ab0e8e5e9b8128eb16e2a0489cccc410632e5add"
+  },
+  "specifications": [
+    {
+      "path": "src/verifier/standard/PRDEL_NATIVE_V2_COORDINATES.md",
+      "bytes": 3446,
+      "sha256": "9dd52e393d4fb05a881a188fb8e97b5b1d65471c2b86e86446624f5a94a57428"
+    },
+    {
+      "path": "src/verifier/standard/PRDEL_NATIVE_V2_CLI.md",
+      "bytes": 5684,
+      "sha256": "3a41eaa456a628e19e2fefb68e44463cc966c4ac4f218ce414b2e731fa5a7407"
+    }
+  ],
+  "capabilities": {
+    "render_explicit_v2_document": "SELECTED",
+    "validate_complete_private_v2_shards": "SELECTED",
+    "independent_bounded_replay": "SELECTED",
+    "closed_catalogue_frontier_resolvers": "SELECTED",
+    "rule_compilation": "UNSUPPORTED_UNKNOWN",
+    "authored_definitions": "UNSUPPORTED_UNKNOWN",
+    "preventative_comparison": "UNSUPPORTED_UNKNOWN",
+    "impact_dag": "UNSUPPORTED_UNKNOWN",
+    "frontier_discharge": "UNSUPPORTED_UNKNOWN",
+    "core_registration": "OUT_OF_SCOPE"
+  },
+  "release_subject_contract": {
+    "schema_version": "verifier-prdel-v2-release-subject-2",
+    "selection": "EXTERNAL_HOST_REQUIRED",
+    "candidate_self_selection": false,
+    "missing_selection_status": "UNKNOWN",
+    "source_binding": "EXACT_LOCAL_BASE_AND_HEAD_REQUIRED",
+    "description_binding": "EXACT_BYTES_AND_PRODUCTION_GATE_REQUIRED"
+  },
+  "semantic_completeness": "UNKNOWN",
+  "release_authorized": false,
+  "claim_boundary": "The CLI profile binds the same implementation coordinate A and the exact native r2 profile. Its exact bytes require separate host selection through release-subject coordinate B. Unsupported capabilities remain UNKNOWN; no coordinate grants release authority.",
+  "release_dependencies": [
+    "EXTERNAL_HOST_RELEASE_SUBJECT_SELECTION_REQUIRED",
+    "PACKAGED_SCHEMA_INVENTORY_OWNER_ADMISSION_REQUIRED",
+    "FULL_APPLICABLE_TEST_AND_RELEASE_EVIDENCE_REQUIRED",
+    "HUMAN_ACCEPTANCE_AND_RELEASE_AUTHORITY_REQUIRED"
+  ]
+}

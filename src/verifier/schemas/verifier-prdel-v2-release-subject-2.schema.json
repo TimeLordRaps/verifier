@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-prdel-v2-release-subject-2.schema.json",
+  "title": "PRDEL version-two externally selected release subject",
+  "description": "Development-candidate host selection binding the observed PRDEL implementation coordinate, exact profile bytes, local Git base/head, and exact release-description bytes. Conformance does not authorize release.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "candidate_status",
+    "implementation_coordinate",
+    "profiles",
+    "source",
+    "description",
+    "declared_metadata"
+  ],
+  "properties": {
+    "schema_version": {"const": "verifier-prdel-v2-release-subject-2"},
+    "candidate_status": {"const": "DEVELOPMENT_CANDIDATE"},
+    "implementation_coordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "algorithm", "member_scope", "profile_and_receipt_bytes_excluded", "member_count", "sha256"],
+      "properties": {
+        "schema_version": {"const": "verifier-prdel-v2-implementation-coordinate-1"},
+        "algorithm": {"const": "SHA256_CANONICAL_JSON_LF"},
+        "member_scope": {"const": "EXACT_EXECUTABLE_CHECKER_SCHEMA_MEMBERS"},
+        "profile_and_receipt_bytes_excluded": {"const": true},
+        "member_count": {"type": "integer", "minimum": 1, "maximum": 10000},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {"$ref": "#/$defs/nativeProfile"},
+        {"$ref": "#/$defs/cliProfile"}
+      ],
+      "items": false
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_commit", "head_commit"],
+      "properties": {
+        "base_commit": {"$ref": "#/$defs/commit"},
+        "head_commit": {"$ref": "#/$defs/commit"}
+      }
+    },
+    "description": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bytes", "sha256"],
+      "properties": {
+        "bytes": {"type": "integer", "minimum": 0, "maximum": 67108864},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "declared_metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ancestor_coordinate_sha256", "accepted_overlay_patch_sha256", "semantic_completeness", "release_authorized"],
+      "properties": {
+        "ancestor_coordinate_sha256": {"$ref": "#/$defs/sha256"},
+        "accepted_overlay_patch_sha256": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/sha256"}
+        },
+        "semantic_completeness": {"const": "UNKNOWN"},
+        "release_authorized": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "bytes", "sha256"],
+      "properties": {
+        "kind": {"type": "string"},
+        "path": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "bytes": {"type": "integer", "minimum": 1, "maximum": 2097152},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "nativeProfile": {
+      "allOf": [
+        {"$ref": "#/$defs/profile"},
+        {"properties": {"kind": {"const": "NATIVE_V2"}, "path": {"const": "src/verifier/profiles/prdel-native-v2-selection-2.json"}}}
+      ]
+    },
+    "cliProfile": {
+      "allOf": [
+        {"$ref": "#/$defs/profile"},
+        {"properties": {"kind": {"const": "NATIVE_V2_CLI"}, "path": {"const": "src/verifier/profiles/prdel-native-v2-cli-selection-2.json"}}}
+      ]
+    }
+  }
+}

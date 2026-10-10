@@ -28,9 +28,13 @@ from verifier.data.models import ArtifactStatus, ProvenanceHypergraph
 
 
 class PolicyEncodingError(RuntimeError):
-    """The CNF encoding and the direct computation disagree about a policy.
+    """A policy cannot be safely encoded, or its CNF and direct computation disagree.
 
-    This used to be impossible to observe. Each verifier below computed
+    It is raised before any verdict when the graph is structurally invalid or a
+    CNF leaves a variable it declares unbound: both let a policy PASS on
+    nothing.
+
+    Disagreement used to be impossible to observe. Each verifier below computed
     ``passed = bool(sat and not violations)`` -- hedging the SAT result against
     a Python list comprehension, so the operative verdict came from the list and
     the certificate was decoration. If the encoding and the list ever diverged,
@@ -142,7 +146,47 @@ def ground_policy_cnf(
         }
         groundings.append(ClauseGrounding(position, rule.rule_id, bindings, clause_subjects))
 
+    _require_every_variable_bound(groundings, subjects)
     return Grounding(variables, tuple(groundings), POLICY_RULES)
+
+
+_FACT_RULES = (RULE_MEMBER_SATISFIES.rule_id, RULE_MEMBER_VIOLATES.rule_id)
+
+
+def _require_every_variable_bound(
+    groundings: Sequence[ClauseGrounding], subjects: Mapping[int, tuple[str, str]]
+) -> None:
+    """Refuse a CNF that says less than its variable map.
+
+    Every clause shape above is sound on its own, and a CNF missing one still
+    certifies PASS: an unasserted target is satisfied by making it false, and a
+    member with no fact clause, or one the target never requires, takes
+    whatever value passes. The encoders emit the target once and each member
+    once per rule, so any other count is an encoding bug.
+    """
+    asserted = sum(1 for g in groundings if g.rule_id == RULE_ASSERT_TARGET.rule_id)
+    if asserted != 1:
+        raise PolicyEncodingError(
+            f"the target is asserted by {asserted} clauses, not exactly one, so a "
+            "PASS would not be a statement about the target"
+        )
+    for index, (subject, predicate) in sorted(subjects.items()):
+        if index == 1:
+            continue
+        required = sum(
+            1
+            for g in groundings
+            if g.rule_id == RULE_TARGET_REQUIRES.rule_id and g.bindings["member"] == index
+        )
+        facts = sum(
+            1 for g in groundings if g.rule_id in _FACT_RULES and g.bindings["member"] == index
+        )
+        if required != 1 or facts != 1:
+            raise PolicyEncodingError(
+                f"variable {index} ({predicate} of {subject}) is required by {required} "
+                f"clauses and fixed by {facts} fact clauses; each must be exactly one, "
+                "or the policy can PASS without deciding that member"
+            )
 
 
 def _policy_binding(
@@ -244,6 +288,49 @@ class PolicyEvaluationResult:
         }
 
 
+def _refuse_undecidable(
+    graph: ProvenanceHypergraph, target_artifact_id: str, policy_id: str, policy_name: str
+) -> Optional[PolicyEvaluationResult]:
+    """Stop a policy from certifying a lineage the graph does not record.
+
+    An empty or dangling lineage makes every policy below vacuously true. A
+    structurally invalid graph raises, mirroring
+    ``verifier.data.graph_level._require_valid_graph_structure`` rather than
+    calling it, for the rung 4.7 reason that module gives. A target the graph
+    does not contain is INDETERMINATE: the question is well formed, but the
+    graph holds nothing to decide it with.
+    """
+    errors = graph.validate_structure()
+    if errors:
+        raise PolicyEncodingError(
+            f"{policy_id} requires a structurally valid provenance graph: " + "; ".join(errors)
+        )
+    if target_artifact_id in graph.artifacts:
+        return None
+    return _indeterminate(
+        policy_id,
+        policy_name,
+        target_artifact_id,
+        f"{target_artifact_id} is not an artifact of this graph, so no lineage is "
+        "recorded for it and the policy has nothing to decide.",
+    )
+
+
+def _indeterminate(
+    policy_id: str, policy_name: str, target_artifact_id: str, reason: str
+) -> PolicyEvaluationResult:
+    return PolicyEvaluationResult(
+        policy_id=policy_id,
+        policy_name=policy_name,
+        target_artifact_id=target_artifact_id,
+        passed=False,
+        verdict=VerificationVerdict.INDETERMINATE,
+        clauses=[],
+        variable_map={},
+        explanation=f"Indeterminate: {reason}",
+    )
+
+
 class ProvenancePolicyVerifier:
     """Encodes provenance graph invariants into SAT formulas and verifies them using MinimalIndependentDPLL."""
 
@@ -252,6 +339,11 @@ class ProvenancePolicyVerifier:
         graph: ProvenanceHypergraph,
         target_artifact_id: str,
     ) -> PolicyEvaluationResult:
+        refused = _refuse_undecidable(
+            graph, target_artifact_id, "POL-NO-REVOKED-ANCESTORS", "Zero Revoked Ancestors Invariant"
+        )
+        if refused is not None:
+            return refused
         ancestors = graph.ancestors([target_artifact_id])
         revoked_nodes = []
 
@@ -324,6 +416,14 @@ class ProvenancePolicyVerifier:
         target_artifact_id: str,
     ) -> PolicyEvaluationResult:
         """Fail closed unless every recorded ancestor is explicitly ``VALID``."""
+        refused = _refuse_undecidable(
+            graph,
+            target_artifact_id,
+            "POL-ALL-ANCESTORS-VALID",
+            "All Recorded Ancestors Explicitly Valid",
+        )
+        if refused is not None:
+            return refused
         ancestors = graph.ancestors([target_artifact_id])
         inadmissible = [
             artifact_id
@@ -383,8 +483,23 @@ class ProvenancePolicyVerifier:
         target_artifact_id: str,
         approved_spdx_licenses: Sequence[str] = ("CC-BY-4.0", "CC-BY-NC-4.0", "MIT", "Apache-2.0"),
     ) -> PolicyEvaluationResult:
+        refused = _refuse_undecidable(
+            graph, target_artifact_id, "POL-APPROVED-LICENSES", "Approved Source Licenses Invariant"
+        )
+        if refused is not None:
+            return refused
         ancestors = graph.ancestors([target_artifact_id])
         roots = [a_id for a_id in ancestors if a_id in graph.root_sources()]
+        if not roots:
+            # Reachable on a valid graph only through a cycle: every ancestor is
+            # some transformation's output, so no source licence is recorded.
+            return _indeterminate(
+                "POL-APPROVED-LICENSES",
+                "Approved Source Licenses Invariant",
+                target_artifact_id,
+                f"no ancestor of {target_artifact_id} is a root source, so no source "
+                "licence is recorded and approval cannot follow from zero sources.",
+            )
         unapproved = []
 
         for r_id in roots:

@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-prdel-compilation-shards-1.schema.json",
+  "title": "Pull Request Domain Explanation Language (PRDEL) bounded compilation shards",
+  "description": "Separate bounded retention wires only; exact independent replay and unresolved findings govern compilation status. No gate or publication clearance.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "document_header",
+        "compilation_header",
+        "selected_source_ids",
+        "obligation_ids",
+        "shards",
+        "partition_operations",
+        "max_artifact_bytes",
+        "scope",
+        "gate_status"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "verifier-prdel-compilation-manifest-1"
+        },
+        "document_header": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schema_version",
+            "binding",
+            "requirements",
+            "impact_graph",
+            "evidence"
+          ],
+          "properties": {
+            "schema_version": {
+              "$ref": "verifier-prdel-1.schema.json#/properties/schema_version"
+            },
+            "binding": {
+              "$ref": "verifier-prdel-1.schema.json#/properties/binding"
+            },
+            "requirements": {
+              "$ref": "verifier-prdel-1.schema.json#/properties/requirements"
+            },
+            "impact_graph": {
+              "$ref": "verifier-prdel-1.schema.json#/properties/impact_graph"
+            },
+            "evidence": {
+              "$ref": "verifier-prdel-1.schema.json#/properties/evidence"
+            }
+          }
+        },
+        "compilation_header": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schema_version",
+            "binding",
+            "definitions",
+            "definition_digest",
+            "rule_catalogue",
+            "rule_results",
+            "residuals",
+            "status",
+            "operation_status",
+            "gate_status",
+            "scope",
+            "counters",
+            "limits"
+          ],
+          "properties": {
+            "schema_version": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/schema_version"
+            },
+            "binding": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/binding"
+            },
+            "definitions": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/definitions"
+            },
+            "definition_digest": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/definition_digest"
+            },
+            "rule_catalogue": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/rule_catalogue"
+            },
+            "rule_results": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/rule_results"
+            },
+            "residuals": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/residuals"
+            },
+            "status": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/status"
+            },
+            "operation_status": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/operation_status"
+            },
+            "gate_status": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/gate_status"
+            },
+            "scope": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/scope"
+            },
+            "counters": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/counters"
+            },
+            "limits": {
+              "$ref": "verifier-prdel-compilation-1.schema.json#/properties/limits"
+            }
+          }
+        },
+        "selected_source_ids": {
+          "type": "array",
+          "maxItems": 40000,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "obligation_ids": {
+          "type": "array",
+          "maxItems": 40000,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "shards": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40000,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "index",
+              "sha256",
+              "bytes",
+              "obligation_ids"
+            ],
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 33554432
+              },
+              "obligation_ids": {
+                "type": "array",
+                "maxItems": 40000,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "partition_operations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200000
+        },
+        "max_artifact_bytes": {
+          "const": 33554432
+        },
+        "scope": {
+          "const": "EXPLANATION_COMPILATION_ONLY"
+        },
+        "gate_status": {
+          "const": "NOT_ASSESSED"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "binding",
+        "index",
+        "source_obligations",
+        "records"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "verifier-prdel-document-shard-1"
+        },
+        "binding": {
+          "$ref": "verifier-prdel-1.schema.json#/$defs/binding"
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_obligations": {
+          "$ref": "verifier-prdel-1.schema.json#/properties/source_obligations"
+        },
+        "records": {
+          "$ref": "verifier-prdel-1.schema.json#/properties/records"
+        }
+      }
+    }
+  ]
+}

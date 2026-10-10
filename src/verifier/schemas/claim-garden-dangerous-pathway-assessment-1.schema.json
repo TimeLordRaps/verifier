@@ -1,0 +1,201 @@
+{
+  "$comment": "ClaimGarden host-selected aggregate interoperability object. Native validation cannot set publication_authority to anything except NOT_ESTABLISHED.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/claim-garden-dangerous-pathway-assessment-1.schema.json",
+  "title": "ClaimGarden dangerous-pathway assessment version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "artifact_digest", "derived_surface_digest",
+    "source_coordinate_digest", "dependency_inventory_digest", "object_kind",
+    "namespace_digest", "polish_receipt_digest", "ordinary_polish", "risk_policy_digest",
+    "threat_catalog_digest", "threat_catalog_version", "pathway_search_scope_digest",
+    "operating_envelope_digest", "reviewer_policy_digest", "invalidator_policy_digest",
+    "capability_inventory_digest", "catalog_entry_digests", "pathways", "components",
+    "interactions", "predecessor", "r2_evidence", "aggregate", "review", "invalidators",
+    "status", "claim_boundary", "assessment_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "claim-garden-dangerous-pathway-assessment-1"},
+    "artifact_digest": {"$ref": "#/$defs/digest"},
+    "derived_surface_digest": {"$ref": "#/$defs/digest"},
+    "source_coordinate_digest": {"$ref": "#/$defs/digest"},
+    "dependency_inventory_digest": {"$ref": "#/$defs/digest"},
+    "object_kind": {"$ref": "#/$defs/objectKind"},
+    "namespace_digest": {"$ref": "#/$defs/digest"},
+    "polish_receipt_digest": {"$ref": "#/$defs/digest"},
+    "ordinary_polish": {
+      "type": "array", "minItems": 5, "maxItems": 5,
+      "items": {"$ref": "#/$defs/polishTier"}
+    },
+    "risk_policy_digest": {"$ref": "#/$defs/digest"},
+    "threat_catalog_digest": {"$ref": "#/$defs/digest"},
+    "threat_catalog_version": {"type": "string", "minLength": 1, "maxLength": 256},
+    "pathway_search_scope_digest": {"$ref": "#/$defs/digest"},
+    "operating_envelope_digest": {"$ref": "#/$defs/digest"},
+    "reviewer_policy_digest": {"$ref": "#/$defs/digest"},
+    "invalidator_policy_digest": {"$ref": "#/$defs/digest"},
+    "capability_inventory_digest": {"$ref": "#/$defs/digest"},
+    "catalog_entry_digests": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"$ref": "#/$defs/digest"}},
+    "pathways": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"$ref": "verifier-dangerous-pathway-certificate-1.schema.json"}},
+    "components": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/component"}},
+    "interactions": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/interaction"}},
+    "predecessor": {"$ref": "#/$defs/predecessor"},
+    "r2_evidence": {"$ref": "#/$defs/r2Evidence"},
+    "aggregate": {"$ref": "#/$defs/aggregate"},
+    "review": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/review"}},
+    "invalidators": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/invalidator"}},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 1024},
+    "assessment_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "objectKind": {
+      "enum": ["ACTOR", "AGENT", "ARCH", "BENCH", "BOT", "COLLECTIVE", "DATA", "ENV", "EVENT", "GRAPH", "HARDWARE", "HARNESS", "HUMAN", "HYPER", "IDENTITY", "MODEL", "OBJECT", "OWNER", "RECEIPT", "ROLE", "SIM", "SPACE", "TIME", "TOKEN", "TRAIN", "VERIFIER"]
+    },
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+    "polishTier": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tier", "tier_name", "status", "receipt_digest"],
+      "properties": {
+        "tier": {"type": "integer", "minimum": 1, "maximum": 5},
+        "tier_name": {"enum": ["FACETS", "DYNAMICS", "STATICS", "CLOSURE", "INDEPENDENCE"]},
+        "status": {"$ref": "#/$defs/status"},
+        "receipt_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "r2Evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["capability_observation", "catalog_coverage", "operating_envelope", "invalidator_coverage", "composition_coverage"],
+      "properties": {
+        "capability_observation": {"$ref": "#/$defs/capabilityObservation"},
+        "catalog_coverage": {"$ref": "#/$defs/catalogCoverage"},
+        "operating_envelope": {"$ref": "#/$defs/envelopeCoverage"},
+        "invalidator_coverage": {"$ref": "#/$defs/invalidatorCoverage"},
+        "composition_coverage": {"$ref": "#/$defs/compositionCoverage"}
+      }
+    },
+    "capabilityObservation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["inventory_digest", "observer_mechanism_digest", "observer_certificate_digest", "observer_replay_digest", "status", "generalizable_tooling", "risk_floor"],
+      "properties": {
+        "inventory_digest": {"$ref": "#/$defs/digest"},
+        "observer_mechanism_digest": {"$ref": "#/$defs/digest"},
+        "observer_certificate_digest": {"$ref": "#/$defs/digest"},
+        "observer_replay_digest": {"$ref": "#/$defs/digest"},
+        "status": {"$ref": "#/$defs/status"},
+        "generalizable_tooling": {"enum": ["PRESENT", "ABSENT", "UNKNOWN"]},
+        "risk_floor": {"enum": ["R2_PENDING", "R2", "R3"]}
+      }
+    },
+    "catalogCoverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["catalog_digest", "catalog_version", "search_scope_digest", "entry_inventory_digest", "entry_count", "coverage_evidence_digest", "status", "scope_claim"],
+      "properties": {
+        "catalog_digest": {"$ref": "#/$defs/digest"},
+        "catalog_version": {"type": "string", "minLength": 1, "maxLength": 256},
+        "search_scope_digest": {"$ref": "#/$defs/digest"},
+        "entry_inventory_digest": {"$ref": "#/$defs/digest"},
+        "entry_count": {"type": "integer", "minimum": 1, "maximum": 4096},
+        "coverage_evidence_digest": {"$ref": "#/$defs/digest"},
+        "status": {"$ref": "#/$defs/status"},
+        "scope_claim": {"const": "PINNED_CATALOG_ONLY"}
+      }
+    },
+    "envelopeCoverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["envelope_digest", "replay_digest", "status"],
+      "properties": {
+        "envelope_digest": {"$ref": "#/$defs/digest"},
+        "replay_digest": {"$ref": "#/$defs/digest"},
+        "status": {"$ref": "#/$defs/status"}
+      }
+    },
+    "invalidatorCoverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_digest", "inventory_digest", "coverage_evidence_digest", "status"],
+      "properties": {
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "inventory_digest": {"$ref": "#/$defs/digest"},
+        "coverage_evidence_digest": {"$ref": "#/$defs/digest"},
+        "status": {"$ref": "#/$defs/status"}
+      }
+    },
+    "compositionCoverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["component_inventory_digest", "interaction_inventory_digest", "coverage_evidence_digest", "status"],
+      "properties": {
+        "component_inventory_digest": {"$ref": "#/$defs/digest"},
+        "interaction_inventory_digest": {"$ref": "#/$defs/digest"},
+        "coverage_evidence_digest": {"$ref": "#/$defs/digest"},
+        "status": {"$ref": "#/$defs/status"}
+      }
+    },
+    "component": {
+      "type": "object", "additionalProperties": false,
+      "required": ["component_id", "digest", "risk_class"],
+      "properties": {
+        "component_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "digest": {"$ref": "#/$defs/digest"},
+        "risk_class": {"enum": ["R2_PENDING", "R2", "R3"]}
+      }
+    },
+    "interaction": {
+      "type": "object", "additionalProperties": false,
+      "required": ["interaction_id", "component_ids", "amplification_status", "counterexample_search_digest"],
+      "properties": {
+        "interaction_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "component_ids": {"type": "array", "minItems": 2, "maxItems": 4096, "items": {"type": "string", "minLength": 1, "maxLength": 256}},
+        "amplification_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "counterexample_search_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+      }
+    },
+    "predecessor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_digest", "derived_surface_digest", "assessment_digest", "risk_class"],
+      "properties": {
+        "artifact_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "derived_surface_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "assessment_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "risk_class": {"anyOf": [{"type": "null"}, {"enum": ["R2_PENDING", "R2", "R3"]}]}
+      }
+    },
+    "aggregate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["risk_class", "assurance_level", "security_outcome", "maximum_release_scope", "security_tier", "security_tier_name", "security_tier_status", "publication_authority"],
+      "properties": {
+        "risk_class": {"enum": ["R2_PENDING", "R2", "R3"]},
+        "assurance_level": {"enum": ["SEC0_UNASSESSED", "SEC1_INVENTORY_BOUND", "SEC2_PATHWAYS_REPLAYED", "SEC3_INDEPENDENTLY_REFUTED", "SEC4_CONTINUOUSLY_GOVERNED"]},
+        "security_outcome": {"enum": ["ESTABLISHED", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "maximum_release_scope": {"enum": ["DENY", "RECEIPT_ONLY", "METADATA_ONLY", "BOUNDED_INTERFACE"]},
+        "security_tier": {"const": 9},
+        "security_tier_name": {"const": "SECURITY"},
+        "security_tier_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "publication_authority": {"const": "NOT_ESTABLISHED"}
+      }
+    },
+    "review": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reviewer_id_digest", "role_digest", "conflict_check_digest", "mechanism_digest", "review_digest", "review_status", "conflict_status"],
+      "properties": {
+        "reviewer_id_digest": {"$ref": "#/$defs/digest"},
+        "role_digest": {"$ref": "#/$defs/digest"},
+        "conflict_check_digest": {"$ref": "#/$defs/digest"},
+        "mechanism_digest": {"$ref": "#/$defs/digest"},
+        "review_digest": {"$ref": "#/$defs/digest"},
+        "review_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "conflict_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]}
+      }
+    },
+    "invalidator": {
+      "type": "object", "additionalProperties": false,
+      "required": ["invalidator_id", "digest", "status"],
+      "properties": {
+        "invalidator_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "digest": {"$ref": "#/$defs/digest"},
+        "status": {"enum": ["ACTIVE", "CLEARED", "UNKNOWN"]}
+      }
+    }
+  }
+}

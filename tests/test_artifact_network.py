@@ -93,7 +93,7 @@ def _complete_silo(
 ) -> tuple[ContentAddressedStore, SiloCommit]:
     store = ContentAddressedStore(tmp_path / ("hostile" if hostile else "silo"))
     ground = store.add_object(b"declared ground", "text/plain", "ground", "GROUND-1")
-    mechanism = store.add_object(self_derivation_mechanism_bytes(), "application/json", "derivation-mechanism", "VSTD-SELF-DERIVATION-MECHANISM-0.1")
+    mechanism = store.add_object(self_derivation_mechanism_bytes(), "application/json", "derivation-mechanism", "verifier-self-derivation-mechanism-1")
     result = store.add_object(b"bounded result", "application/json", "self-derivation-status", "RESULT-1")
     evidence_paths = (
         "evidence/ground-self.json", "evidence/derivation-reflexivity.json",
@@ -103,13 +103,13 @@ def _complete_silo(
     evidence_records = tuple(
         store.add_object(
             canonical_bytes({
-                "schema_version": "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+                "schema_version": "verifier-self-derivation-evidence-1",
                 "predicate": predicate,
                 "subject_path": "result.json",
                 "mechanism_digest": mechanism.object_digest,
             }),
             "application/json", "self-derivation-evidence",
-            "VSTD-SELF-DERIVATION-EVIDENCE-0.1",
+            "verifier-self-derivation-evidence-1",
         )
         for predicate in predicates
     )
@@ -336,11 +336,11 @@ def test_authority_withdrawal_requires_exact_model_and_actor_binding(
         closure_status="OPEN", residual_obligations=("unrelated open branch",),
     )
     if binding == "model_version":
-        hostile = replace(hostile, authority_axiom_agency_version="VSTD-AUTHORITY-AXIOM-AGENCY-9")
+        hostile = replace(hostile, authority_axiom_agency_version="verifier-authority-axiom-agency-9")
     elif binding == "model_digest":
         hostile = replace(hostile, authority_axiom_agency_digest="sha256:" + "0" * 64)
     elif binding == "actor_scope_version":
-        hostile = replace(hostile, actor_scope_version="VSTD-AUTHORITY-ACTOR-SCOPE-9")
+        hostile = replace(hostile, actor_scope_version="verifier-authority-actor-scope-9")
     elif binding == "actor_scope_digest":
         hostile = replace(hostile, actor_scope_digest="sha256:" + "0" * 64)
     elif binding == "transition_scope":
@@ -350,7 +350,7 @@ def test_authority_withdrawal_requires_exact_model_and_actor_binding(
         hostile = replace(hostile, states=(replace(hostile.states[0], local_authority_additions=(addition,)), hostile.states[1]))
     candidate = _replace_authority_model(store, commit, hostile)
     if binding == "commit_version":
-        candidate = replace(candidate, authority_axiom_agency_version="VSTD-AUTHORITY-AXIOM-AGENCY-9")
+        candidate = replace(candidate, authority_axiom_agency_version="verifier-authority-axiom-agency-9")
     elif binding == "commit_digest":
         candidate = replace(candidate, authority_axiom_agency_digest="sha256:" + "0" * 64)
     assert assess_silo(candidate, store).authority_axiom_agency == "UNKNOWN"
@@ -851,7 +851,7 @@ def test_incomplete_member_binding_cannot_claim_composed_grounding(tmp_path: Pat
 def test_unknown_agency_binding_blocks_composition_without_calling_it_a_removal(tmp_path: Path) -> None:
     first_store, first = _complete_silo(tmp_path / "first")
     second_store, second = _complete_silo(tmp_path / "second")
-    unknown = replace(second, authority_axiom_agency_version="VSTD-AUTHORITY-AXIOM-AGENCY-9")
+    unknown = replace(second, authority_axiom_agency_version="verifier-authority-axiom-agency-9")
     assessment = assess_silo(unknown, second_store)
     assert assessment.authority_axiom_agency == "UNKNOWN"
     result = assess_composition((first, unknown), (first_store, second_store))
@@ -885,7 +885,7 @@ def test_arbitrary_mechanism_or_evidence_substitution_cannot_establish_self_deri
     )
     assert assess_silo(substituted, store).self_derivability == "NOT_ESTABLISHED"
 
-    arbitrary_evidence = store.add_object(b"{}", "application/json", "self-derivation-evidence", "VSTD-SELF-DERIVATION-EVIDENCE-0.1")
+    arbitrary_evidence = store.add_object(b"{}", "application/json", "self-derivation-evidence", "verifier-self-derivation-evidence-1")
     census = tuple(
         replace(entry, object_record=arbitrary_evidence) if entry.path == "evidence/ground-self.json" else entry
         for entry in commit.census
@@ -1267,7 +1267,7 @@ def test_transfer_rejects_noncanonical_json_before_writing(tmp_path: Path) -> No
     destination = tmp_path / "noncanonical"
     with pytest.raises(NetworkError, match="canonical JSON"):
         materialize_silo_transfer(json.dumps(transfer, indent=2).encode(), destination)
-    duplicate_key = b'{"schema_version":"VSTD-SILO-TRANSFER-0.1",' + canonical_bytes(transfer)[1:]
+    duplicate_key = b'{"schema_version":"verifier-silo-transfer-1",' + canonical_bytes(transfer)[1:]
     with pytest.raises(NetworkError, match="duplicate JSON key"):
         materialize_silo_transfer(duplicate_key, destination)
     assert not destination.exists()
@@ -1462,6 +1462,153 @@ def test_wire_from_dict_rejects_member_orders_that_typescript_rejects(
         AuthorityModel.from_dict(reversed_states)
 
 
+def test_silo_commit_rejects_duplicate_canonical_relations(tmp_path: Path) -> None:
+    _, commit = _complete_silo(tmp_path)
+    jsonschema = pytest.importorskip("jsonschema")
+    relation = ArtifactRelation(
+        relation_type="EVIDENCES",
+        source_path="ground.txt",
+        target_path="result.json",
+        mechanism_path="mechanism.bin",
+        semantic_coordinate="claim:bounded-result",
+    )
+
+    with pytest.raises(NetworkError, match="duplicate canonical records"):
+        replace(commit, relations=(relation, relation))
+
+    wire = commit.to_dict()
+    wire["relations"] = [relation.to_dict(), relation.to_dict()]
+    schema = json.loads(
+        Path("src/verifier/schemas/verifier-artifact-network-1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    relation_schema = schema["$defs"]["commit"]["properties"]["relations"]
+    assert relation_schema["uniqueItems"] is True
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.Draft202012Validator(schema).validate(wire)
+
+
+def test_silo_commit_orders_equal_key_relations_by_canonical_record_bytes(tmp_path: Path) -> None:
+    _, commit = _complete_silo(tmp_path)
+    first = ArtifactRelation("EVIDENCES", "ground.txt", "result.json", "mechanism.bin", "claim:a")
+    second = ArtifactRelation("EVIDENCES", "ground.txt", "result.json", "mechanism.bin", "claim:b")
+
+    forward = replace(commit, relations=(first, second))
+    backward = replace(commit, relations=(second, first))
+
+    assert forward.relations == backward.relations == (first, second)
+    assert forward.to_dict() == backward.to_dict()
+    assert canonical_bytes(forward.to_dict()) == canonical_bytes(backward.to_dict())
+
+
+def test_silo_commit_keeps_type_source_target_as_primary_relation_order(tmp_path: Path) -> None:
+    _, commit = _complete_silo(tmp_path)
+    checks = ArtifactRelation("CHECKS", "ground.txt", "result.json", "result.json", "claim:c")
+    evidences = ArtifactRelation("EVIDENCES", "ground.txt", "result.json", "evidence/ground-self.json", "claim:e")
+    # The canonical record bytes order these two the other way round (the mechanism path
+    # sorts first there), so this distinguishes the primary key from the tiebreak.
+    assert canonical_bytes(evidences.to_dict()) < canonical_bytes(checks.to_dict())
+
+    ordered = replace(commit, relations=(evidences, checks))
+
+    assert ordered.relations == (checks, evidences)
+    assert [item["relation_type"] for item in ordered.to_dict()["relations"]] == ["CHECKS", "EVIDENCES"]
+
+
+def test_silo_commit_rejects_untyped_relations_without_attribute_errors(tmp_path: Path) -> None:
+    _, commit = _complete_silo(tmp_path)
+
+    with pytest.raises(NetworkError, match="typed relations"):
+        replace(commit, relations=({"relation_type": "EVIDENCES"},))
+
+
+ASSESSMENT_RESULT_VOCABULARY = {
+    "reconstructibility": ("COMPLETE", "INCOMPLETE"),
+    "derivation_closure": ("CLOSED", "OPEN"),
+    "self_derivability": ("ESTABLISHED", "NOT_ESTABLISHED"),
+    "completeness": ("COMPLETE", "INCOMPLETE", "UNKNOWN"),
+    "silo_grounding": ("ESTABLISHED", "NOT_ESTABLISHED", "UNKNOWN"),
+    "authority_axiom_agency": ("PRESERVED", "VIOLATED", "UNKNOWN"),
+}
+
+
+def _assessment_wire() -> dict[str, object]:
+    return SiloAssessment(
+        reconstructibility="COMPLETE",
+        derivation_closure="CLOSED",
+        self_derivability="ESTABLISHED",
+        completeness="COMPLETE",
+        completeness_kind="SILO_CENSUS",
+        silo_grounding="ESTABLISHED",
+        authority_axiom_agency="PRESERVED",
+        reasons=(),
+    ).to_dict()
+
+
+def test_assessment_schemas_and_decoder_share_every_result_value() -> None:
+    jsonschema = pytest.importorskip("jsonschema")
+    standalone = json.loads(
+        Path("src/verifier/schemas/verifier-silo-assessment-1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    combined = json.loads(
+        Path("src/verifier/schemas/verifier-artifact-network-1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assessment_definition = combined["$defs"]["assessment"]
+
+    for field, expected in ASSESSMENT_RESULT_VOCABULARY.items():
+        assert tuple(standalone["properties"][field]["enum"]) == expected
+        assert tuple(assessment_definition["properties"][field]["enum"]) == expected
+        for result in expected:
+            wire = _assessment_wire()
+            wire[field] = result
+            jsonschema.Draft202012Validator(standalone).validate(wire)
+            jsonschema.Draft202012Validator(assessment_definition).validate(wire)
+            assert SiloAssessment.from_dict(wire).to_dict() == wire
+        outside = _assessment_wire()
+        outside[field] = "OUTSIDE_VOCABULARY"
+        with pytest.raises(NetworkError, match=f"unsupported {field} result"):
+            SiloAssessment.from_dict(outside)
+
+
+@pytest.mark.parametrize(
+    ("field", "retired_result"),
+    [
+        ("reconstructibility", "INVALID"),
+        ("derivation_closure", "CONFLICTED"),
+        ("derivation_closure", "UNKNOWN"),
+        ("self_derivability", "INVALID"),
+    ],
+)
+def test_assessment_schemas_and_decoder_reject_results_outside_narrow_vocabulary(
+    field: str, retired_result: str,
+) -> None:
+    jsonschema = pytest.importorskip("jsonschema")
+    standalone = json.loads(
+        Path("src/verifier/schemas/verifier-silo-assessment-1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    combined = json.loads(
+        Path("src/verifier/schemas/verifier-artifact-network-1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    wire = _assessment_wire()
+    wire[field] = retired_result
+
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.Draft202012Validator(standalone).validate(wire)
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.Draft202012Validator(combined["$defs"]["assessment"]).validate(wire)
+    with pytest.raises(NetworkError, match=f"unsupported {field} result"):
+        SiloAssessment.from_dict(wire)
+
+
 def test_assessment_receipt_binds_exact_commit_and_mechanism(tmp_path: Path) -> None:
     store, commit = _complete_silo(tmp_path)
     receipt = build_silo_assessment_receipt(commit, store)
@@ -1504,18 +1651,18 @@ def test_published_schema_accepts_canonical_record_variants(tmp_path: Path) -> N
         (DirectoryEntry(publisher.publisher_id, head.canonical_digest(), "https://publisher.invalid/silo/", "LISTED"),),
         key, 0, None, "2026-09-08T00:00:00Z",
     )
-    schema = json.loads(Path("standard/schemas/vstd-artifact-network-0.1.schema.json").read_text(encoding="utf-8"))
+    schema = json.loads(Path("src/verifier/schemas/verifier-artifact-network-1.schema.json").read_text(encoding="utf-8"))
     validator = jsonschema.Draft202012Validator(schema)
     receipt = build_silo_assessment_receipt(commit, store)
     authority_model = network_module._load_authority_model(commit, store)
     assert authority_model is not None
     for record in (commit.census[0].object_record, authority_model, commit, head, publisher, continuity, directory, receipt):
         validator.validate(record.to_dict())
-    for schema_path in Path("standard/schemas").glob("vstd-*0.1.schema.json"):
+    for schema_path in Path("src/verifier/schemas").glob("vstd-*0.1.schema.json"):
         jsonschema.Draft202012Validator.check_schema(json.loads(schema_path.read_text(encoding="utf-8")))
-    mechanism_schema = json.loads(Path("standard/schemas/vstd-self-derivation-mechanism-0.1.schema.json").read_text(encoding="utf-8"))
+    mechanism_schema = json.loads(Path("src/verifier/schemas/verifier-self-derivation-mechanism-1.schema.json").read_text(encoding="utf-8"))
     jsonschema.Draft202012Validator(mechanism_schema).validate(json.loads(self_derivation_mechanism_bytes()))
-    transfer_schema = json.loads(Path("standard/schemas/vstd-silo-transfer-0.1.schema.json").read_text(encoding="utf-8"))
+    transfer_schema = json.loads(Path("src/verifier/schemas/verifier-silo-transfer-1.schema.json").read_text(encoding="utf-8"))
     registry = referencing.Registry().with_resource(
         schema["$id"], referencing.Resource.from_contents(schema)
     )
@@ -1785,5 +1932,5 @@ def test_cli_local_publish_inspect_export_rebuild_and_push_contract(tmp_path: Pa
     capsys.readouterr()
     assert main(["network", "push", str(destination), "--endpoint", "https://hub.invalid/v1/pushes"]) == 0
     push = json.loads(capsys.readouterr().out)
-    assert push["schema_version"] == "VSTD-PUSH-REQUEST-0.1"
+    assert push["schema_version"] == "verifier-push-request-1"
     assert push["transport_performed"] is False

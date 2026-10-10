@@ -5,6 +5,8 @@ Enforce newcomer-readable acronym expansion across Verifier Standard (VSTD) pros
 
 from __future__ import annotations
 
+import functools
+import os
 from pathlib import Path
 import re
 import sys
@@ -44,29 +46,30 @@ def public_reader_files() -> list[Path]:
     """Return standalone prose and source surfaces, excluding generated dependency data."""
 
     files: list[Path] = []
-    for path in ROOT.rglob("*"):
-        if not path.is_file() or any(
-            part in IGNORED_PARTS for part in path.relative_to(ROOT).parts
-        ):
-            continue
-        if path == GLOSSARY:
-            continue
-        if (
-            path.suffix.lower() in SOURCE_SUFFIXES | DOCUMENT_SUFFIXES
-            or _is_schema(path)
-            or _is_issue_form(path)
-            or path.name == ".zenodo.json"
-        ):
-            files.append(path)
+    for directory, subdirectories, names in os.walk(ROOT):
+        subdirectories[:] = [name for name in subdirectories if name not in IGNORED_PARTS]
+        for name in names:
+            path = Path(directory) / name
+            if name in IGNORED_PARTS or not path.is_file() or path == GLOSSARY:
+                continue
+            if (
+                path.suffix.lower() in SOURCE_SUFFIXES | DOCUMENT_SUFFIXES
+                or _is_schema(path)
+                or _is_issue_form(path)
+                or path.name == ".zenodo.json"
+            ):
+                files.append(path)
     return sorted(files)
 
 
+@functools.lru_cache(maxsize=None)
 def _term_pattern(term: str) -> re.Pattern[str]:
     return re.compile(
         rf"(?<![A-Za-z0-9_-]){re.escape(term)}s?(?![A-Za-z0-9_-])"
     )
 
 
+@functools.lru_cache(maxsize=None)
 def _definition_pattern(expansion: str, term: str) -> re.Pattern[str]:
     """Match a definition even when Markdown wraps it across physical lines, contains backticks, or uses plurals."""
 
@@ -78,7 +81,7 @@ def _definition_pattern(expansion: str, term: str) -> re.Pattern[str]:
 
 def _required_terms(text: str, expansions: dict[str, str]) -> set[str]:
     candidate_terms = {
-        term for term in expansions if _term_pattern(term).search(text) is not None
+        term for term in expansions if term in text and _term_pattern(term).search(text) is not None
     }
     # To prevent false positives where an acronym only appears inside
     # another acronym's definition (e.g. within compound definitions),
