@@ -82,14 +82,14 @@ _EXPECTED_OWNED_CONTENT_DIGESTS = {
     "vstd-documentation-claim-boundary-policy": "sha256:e6f33e93a20c836c1e9d5030e696d511cec3a31678828c0a6dc9c79bd4a7bfc0",
     "vstd-documentation-control-domain-candidates": "sha256:b2ffe45908cd26e31078a879b893d821ac949a68605e1ca4c49546418f2c92a3",
     "vstd-documentation-core-architecture": "sha256:9368221858875b42175327b6f56e7514b24df7a8c47964f378812b58715483cc",
-    "vstd-documentation-derived-metadata": "sha256:1f1d0448a10146c89657c2b055515292b0ef65dcb355b12b3fd7c34d4a6150b1",
+    "vstd-documentation-derived-metadata": "sha256:fa6b4fdcc5871a97624ca2b121c100248665796d194404e68ee61edd88148cc2",
     "vstd-documentation-environment-graph-architecture": "sha256:d1cbdf64b6cda7cbca8bcf177d25b040a11f50f39b272864ecfc6a48b6d7f8b4",
     "vstd-documentation-hosting-protocol": "sha256:823325026b58ad9427e8e7e9e49e20b209b8fef92b5aeee7b90c2dc99420fb66",
     "vstd-documentation-local-tool-protocols": "sha256:3eb478bb6512dd162a6328408cc71e50b7a57b4252ec7b480b7189f0a9ea935f",
     "vstd-documentation-reader-reference": "sha256:4357dae1040931623703ce64b0493c15bb2e1959722260291637a380f61e400b",
     "vstd-documentation-remote-submission-protocols": "sha256:3b75111826e881cb3f3eba525fd002d3128f0b7e1206197ff89b5f8d4055ddeb",
     "vstd-documentation-user-navigation": "sha256:8e435cb2b41617e1bb4c396ec389f3a8369a786545cb7943ede2dbe88037151c",
-    "vstd-generated-distribution-metadata": "sha256:ebe9410b2153ea617dfcfbb4a7b8a55dab0b7ec23c3471d36775044054ca0409",
+    "vstd-generated-distribution-metadata": "sha256:c3d82d89ee1d266d10b3fe2c31b6a9498c28e3193e62c2796dd48825d4d86920",
     "vstd-github-contribution-form-policy": "sha256:79c375851d9cc9268c8ca2d685edaa957382b603130731ec40e19dbfc993037a",
     "vstd-github-documentation-deployment-protocol": "sha256:db812ea395dfc5ba070140617a7ad2938242d7256861d692da3cdac1459f07ca",
     "vstd-github-external-link-policy": "sha256:cb514417e6575f2452b744d511f247dd4dfa26670373f064a7f8b08f08d2de0d",
@@ -115,7 +115,7 @@ _EXPECTED_OWNED_CONTENT_DIGESTS = {
     "vstd-retained-object-facet-requests": "sha256:6c0b379ffbdedc409d8bf412aee5db4397158f8f7d938eff30a70656b5f9d293",
     "vstd-retained-typed-facet-certificates": "sha256:be28fd23ca1a704b07f71a3a41e171d5cadd6e43448e322d1f2a5b3fb6157c1f",
     "vstd-retained-typed-facet-requests": "sha256:d53e547964384c02f4980b810c5612cae9b44253ef397bb4c3e88386ecca9341",
-    "vstd-root-uv-dependency-resolution": "sha256:f809440f9ac9468ee222a542d556d16add90078622057bdbd98474404c3d8c82",
+    "vstd-root-uv-dependency-resolution": "sha256:f1197ce9867f3fabd810bf932a6321c4f0eb9b92a4e1ef9ad809fc7bff7a56d0",
 }
 # A DOES_NOT_APPLY decision additionally depends on the exact project-local
 # source closure screened for counterexamples.  Pin that closure independently;

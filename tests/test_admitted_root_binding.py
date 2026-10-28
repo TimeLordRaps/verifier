@@ -12,6 +12,7 @@ from __future__ import annotations
 import ctypes
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 from types import ModuleType
@@ -65,6 +66,8 @@ def modules() -> tuple[ModuleType, ModuleType, ModuleType]:
 
 
 def _kernel32() -> Any:
+    if os.name != "nt":
+        pytest.skip("OS_CAPABILITY_GUARD: this test requires native Windows root handles")
     kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
     kernel32.CreateFileW.argtypes = [
         ctypes.c_wchar_p,
@@ -737,6 +740,7 @@ class _FunctionDouble:
         return self.action(*args)
 
 
+@pytest.mark.skipif(os.name != "nt", reason="OS_CAPABILITY_GUARD: Windows handle identity is unavailable")
 def test_mocked_non_disk_directory_is_refused_before_admission_commit(
     modules: tuple[ModuleType, ModuleType, ModuleType],
     monkeypatch: pytest.MonkeyPatch,

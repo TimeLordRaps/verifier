@@ -1,4 +1,7 @@
 
+[:python_version < "3.11"]
+tomli>=2.0.1
+
 [constraints]
 llguidance==1.8.0
 torch>=2.2

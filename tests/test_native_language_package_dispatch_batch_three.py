@@ -18,7 +18,10 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
-import tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
 import zipfile
 
 import pytest

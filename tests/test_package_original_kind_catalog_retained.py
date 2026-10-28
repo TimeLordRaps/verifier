@@ -35,8 +35,8 @@ from verifier.runtime.package_semantic_ownership import SEMANTIC_OWNERSHIP_SPECS
 
 
 ROOT = Path(__file__).parents[1]
-PINNED_APPLIES = 655
-PINNED_DOES_NOT_APPLY = 20
+PINNED_APPLIES = 657
+PINNED_DOES_NOT_APPLY = 18
 PINNED_UNRESOLVED = 0
 # A cited line that is only a label, comment or import carries no semantics of the kind.
 REFERENT_ONLY_LINE = re.compile(
@@ -114,6 +114,15 @@ def test_architecture_retains_obligations_for_unclosed_evaluation(kind, boundary
     assert event.line == 624
     assert "VerificationSession.evaluate" in event.reason
     assert boundary in event.reason
+
+
+@pytest.mark.parametrize("kind", ["ACTOR", "OWNER"])
+def test_hypergraph_retains_obligations_for_unclosed_evaluation(kind):
+    question = next(q for q in _rows_by_id()["vstd-hypergraph"].questions if q.kind == kind)
+    assert question.status == APPLIES
+    assert question.path == "src/verifier/domains/contracts/hyper_closure.py"
+    assert question.line == 387
+    assert "VerificationSession.evaluate" in question.reason
 
 
 def test_every_source_bound_cell_cites_an_owned_nonblank_line():

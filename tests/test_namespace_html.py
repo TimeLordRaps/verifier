@@ -19,6 +19,13 @@ from verifier.runtime.tier_zero_profile import value_digest
 from test_namespace_admission import save
 
 
+def test_unknown_declaration_callback_preserves_unsupported_markup_gap() -> None:
+    source = "<![bogus]><script>hidden()</script>"
+    parser = namespace_html._Census("index.html", source, {})
+    parser.unknown_decl("bogus")
+    assert any(row["code"] == "NAMESPACE_HTML_PARSE_UNAVAILABLE" for row in parser.gaps)
+
+
 @pytest.fixture
 def javascript_parser() -> None:
     for name, version in (("tree-sitter", "0.25.2"), ("tree-sitter-javascript", "0.25.0")):

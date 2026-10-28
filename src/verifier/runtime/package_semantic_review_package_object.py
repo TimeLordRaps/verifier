@@ -45,7 +45,10 @@ import os
 from pathlib import Path
 import posixpath
 import re
-import tomllib
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
 from typing import Any, Mapping
 
 from verifier.runtime import package_semantic_review_operations as _shared

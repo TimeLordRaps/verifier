@@ -517,7 +517,7 @@ SOURCE_DIGESTS: dict[str, str] = {
     "src/verifier/domains/contracts/collective_lifecycle.py": "sha256:73085730c3176295ed294bc2345048cb05c518113f95db1fb59b385859ef2495",
     "src/verifier/domains/contracts/bench_attempts.py": "sha256:040defe90c721f33a41e75510bf562dfd564c9f32b62009ed43efd14ece47176",
     "src/verifier/domains/contracts/bench_checks.py": "sha256:3826e27fba32889349b989be5e6362bcc5a04ddce8aa897e1243b31bc13a4e5a",
-    "src/verifier/domains/contracts/bench_checks_projection.py": "sha256:8b0de5fd0cfc765c9b01ade9c0dacb9e873e561a97a5b033908bca494403e1f9",
+    "src/verifier/domains/contracts/bench_checks_projection.py": "sha256:6d642695777878a8e437e07bb7e68bf282975f14dd04daeef3a6e67dfa726cb6",
     "src/verifier/domains/contracts/human_no_composition.py": "sha256:22dc7a5a736671c0ae2d3082df9e24864633854c052e811ae8ea85991326a816",
     "src/verifier/domains/contracts/human_population_declaration.py": "sha256:5e1fdde605ca886b670c0744ea7e3e4497750a770bfdff373633fe5579ff4e85",
     "src/verifier/domains/contracts/human_template_irreversibility.py": "sha256:a45f84bf6cf8f02d3937124e57b18ff404df1b9d6fe39b10e2581607a97dab75",

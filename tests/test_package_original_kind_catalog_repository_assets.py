@@ -137,12 +137,12 @@ REVIEWED_CONTENT_REFRESH = {
         },
     },
     "vstd-generated-distribution-metadata": {
-        "digest": "sha256:ebe9410b2153ea617dfcfbb4a7b8a55dab0b7ec23c3471d36775044054ca0409",
+        "digest": "sha256:c3d82d89ee1d266d10b3fe2c31b6a9498c28e3193e62c2796dd48825d4d86920",
         "applies": (("DATA", "primary"),),
         "files": {
             "src/verifier_standard.egg-info/PKG-INFO": (
-                79637,
-                "935a25523923764ed90f3dcadb6cef4952988839557a308b13ecee133bb56334",
+                79690,
+                "9ad4c551539fc99978e203fe33841fc1c6c9ef716acfb1aad5066fc24353107f",
                 ("Metadata-Version: 2.4", "Name: verifier-standard", 'Requires-Dist: cryptography==50.0.0; extra == "test"'),
             ),
             "src/verifier_standard.egg-info/SOURCES.txt": (
@@ -151,8 +151,8 @@ REVIEWED_CONTENT_REFRESH = {
                 ("src/verifier/runtime/package_semantic_ownership_repository_assets.py",),
             ),
             "src/verifier_standard.egg-info/requires.txt": (
-                686,
-                "7b2d1431734bbbb76a92bfa3e930fe5ebb206b748d5b83d42332bb25fb370eae",
+                727,
+                "e0cf4eddf9327c7230dbcca83a7ce0cf042cb6975c959f6cfaf84a2178478a8f",
                 (
                     "[discovery-javascript]",
                     "[discovery-rust]",

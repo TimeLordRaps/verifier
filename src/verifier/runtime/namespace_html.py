@@ -243,7 +243,12 @@ class _Census(html.parser.HTMLParser):
         self.gap("NAMESPACE_HTML_TEMPLATE_UNRESOLVED", "Processing instructions may generate additional source interfaces.")
 
     def unknown_decl(self, data: str) -> None:
-        self.gap("NAMESPACE_HTML_PARSE_UNRESOLVED", "An unknown markup declaration is not evidence of absent interfaces.")
+        line, column = self.getpos()
+        offset = self.line_offsets[line - 1] + column
+        if self.source.startswith("<![", offset):
+            self.gap("NAMESPACE_HTML_PARSE_UNAVAILABLE", "An unsupported markup declaration cannot establish complete source tokenization.")
+        else:
+            self.gap("NAMESPACE_HTML_PARSE_UNRESOLVED", "An unknown markup declaration is not evidence of absent interfaces.")
 
     def finish(self) -> None:
         self.feed(self.source)

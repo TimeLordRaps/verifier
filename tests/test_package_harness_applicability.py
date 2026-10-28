@@ -347,7 +347,7 @@ def test_advance_requires_the_explicit_select_and_refresh_pair(
 
 
 def test_migration_installed_latest_harness_advance_is_exact() -> None:
-    """The reviewed adopted-reason source-AST refresh is installed.
+    """The reviewed TOML compatibility source-AST refresh is installed.
 
     Partial, forged, and future candidates remain refused in the migration tests.
     """
@@ -370,7 +370,7 @@ def test_migration_installed_latest_harness_advance_is_exact() -> None:
     launches = destination["payload"]["direct_launch_denominator"]["launches"]
     assert len(launches) == 45
     assert migration.value_digest(launches) == (
-        migration._PACKAGE_HARNESS_ADOPTED_REASON_TRANSITION[
+        migration._PACKAGE_HARNESS_TOML_COMPATIBILITY_TRANSITION[
             "refreshed"
         ]
     )

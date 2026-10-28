@@ -800,6 +800,16 @@ _PACKAGE_HARNESS_ADOPTED_REASON_TRANSITION = {
         "src/verifier/runtime/tier_zero.py|scope=<module>.<locals>._node_structural_reconciliation|callee=subprocess.run|ordinal=1": "sha256:afa546b95d121ab730fc3c21798663ac95e7f6ba6bdcca7c8a8a4655fedc919d",
     },
 }
+_PACKAGE_HARNESS_TOML_COMPATIBILITY_TRANSITION = {
+    "prior": "sha256:9a776b64935f2dc4f734d800b7024745743efa0a514ba0786e959cc9a88ed434",
+    "catalog": "sha256:76ed0e7b4eab967d2e6ad43dbbb54e8292bcad351b5008d3421ed68ec450e373",
+    "observed": "sha256:7aa42a80f6ddbe310f455188ccc44c0efdbfc010b1bf692fe7af7d4e026a38f2",
+    "refreshed": "sha256:76ed0e7b4eab967d2e6ad43dbbb54e8292bcad351b5008d3421ed68ec450e373",
+    "removed": {}, "added": {}, "call_changed": {}, "annotation_changed": {},
+    "source_only": {
+        "src/verifier/runtime/self_polish_estate.py|scope=<module>.<locals>._run_git|callee=subprocess.run|ordinal=1": "sha256:42c355ff0a4160d9d900b7a7f226aa4009979e17af6d8c4ca0440c5e82be8e50",
+    },
+}
 _PACKAGE_HARNESS_SCOPE_TRANSITIONS = (
     _PACKAGE_HARNESS_SCOPE_TRANSITION,
     _PACKAGE_HARNESS_REASONING_SCOPE_TRANSITION,
@@ -819,6 +829,7 @@ _PACKAGE_HARNESS_SCOPE_TRANSITIONS = (
     _PACKAGE_HARNESS_MANIFEST_RETRY_LIMIT_TRANSITION,
     _PACKAGE_HARNESS_PRDEL_LARGE_ARTIFACT_TRANSITION,
     _PACKAGE_HARNESS_ADOPTED_REASON_TRANSITION,
+    _PACKAGE_HARNESS_TOML_COMPATIBILITY_TRANSITION,
 )
 
 

@@ -83,7 +83,7 @@ EXPECTED_DIGESTS = {
     C + "collective_lifecycle.py": "73085730c3176295ed294bc2345048cb05c518113f95db1fb59b385859ef2495",
     C + "bench_attempts.py": "040defe90c721f33a41e75510bf562dfd564c9f32b62009ed43efd14ece47176",
     C + "bench_checks.py": "3826e27fba32889349b989be5e6362bcc5a04ddce8aa897e1243b31bc13a4e5a",
-    C + "bench_checks_projection.py": "8b0de5fd0cfc765c9b01ade9c0dacb9e873e561a97a5b033908bca494403e1f9",
+    C + "bench_checks_projection.py": "6d642695777878a8e437e07bb7e68bf282975f14dd04daeef3a6e67dfa726cb6",
     C + "human_no_composition.py": "22dc7a5a736671c0ae2d3082df9e24864633854c052e811ae8ea85991326a816",
     C + "human_population_declaration.py": "5e1fdde605ca886b670c0744ea7e3e4497750a770bfdff373633fe5579ff4e85",
     C + "human_template_irreversibility.py": "a45f84bf6cf8f02d3937124e57b18ff404df1b9d6fe39b10e2581607a97dab75",

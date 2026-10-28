@@ -2769,6 +2769,9 @@ wheels = [
 name = "verifier-standard"
 version = "2.0.0"
 source = { editable = "." }
+dependencies = [
+    { name = "tomli", marker = "python_full_version < '3.11'" },
+]
 
 [package.optional-dependencies]
 constraints = [
@@ -2848,6 +2851,7 @@ requires-dist = [
     { name = "pyyaml", marker = "extra == 'test'", specifier = ">=6.0" },
     { name = "pyyaml", marker = "extra == 'yaml'", specifier = ">=6.0" },
     { name = "scitt-cose", marker = "extra == 'scitt'", specifier = "==0.2.2" },
+    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.1" },
     { name = "torch", marker = "extra == 'constraints'", specifier = ">=2.2" },
     { name = "torch", marker = "extra == 'torch'", specifier = ">=2.2" },
     { name = "transformers", marker = "extra == 'constraints'" },
