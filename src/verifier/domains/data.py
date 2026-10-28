@@ -1,8 +1,15 @@
-"""Dataset integrity and lineage (DATA) over retained records, not external ancestry."""
+"""Dataset integrity, lineage and statistics (DATA) over retained records.
+
+JavaScript Object Notation (JSON). Counts and class fractions are dimensionless;
+Shannon entropy and its selected absolute tolerance use bits per observation.
+Retained statistics establish no external ancestry or population representativeness.
+"""
 from __future__ import annotations
 
+import math
+
 from verifier.core.certificate import canonical_bytes
-from .common import Budget, Refuted, Unavailable, digest, integer, merkle_root, need, obj, same, seq, text
+from .common import Budget, Refuted, Unavailable, close, digest, integer, merkle_root, need, number, obj, same, seq, text
 
 
 def inventory(artifact: dict, inputs: dict, budget: Budget) -> dict:
@@ -24,6 +31,8 @@ def inventory(artifact: dict, inputs: dict, budget: Budget) -> dict:
 
 
 def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
+    if type(check) is not str or check not in ("inventory", "schema", "lineage", "splits", "overlap"):
+        raise Unavailable("unsupported dataset check")
     shards = inventory(artifact, inputs, budget)
     records = [r for rows in shards.values() for r in rows]
     if check == "schema":
@@ -133,3 +142,54 @@ def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
                     if left == right or overlap > threshold:
                         raise Refuted("retained training/evaluation text overlap exceeds bound")
     return {"shards": len(shards), "records": len(records)}
+
+
+def distribution(artifact: dict, inputs: dict, budget: Budget, *,
+                 entropy_tolerance_bits: float) -> dict:
+    """Rehash every selected shard and count canonical values without label aliases."""
+    tolerance = number(entropy_tolerance_bits)
+    if not 0 <= tolerance <= 1e-9:
+        raise Refuted("unsupported entropy tolerance in bits")
+    shards = inventory(artifact, inputs, budget)
+    records = [row for key in sorted(shards) for row in shards[key]]
+    if not records:
+        raise Unavailable("no retained records to describe")
+    declared = obj(need(artifact, "distribution"))
+    if not declared:
+        raise Unavailable("no selected distribution fields")
+    if len(declared) > budget.max_items:
+        raise Unavailable("distribution field bound exhausted")
+    observed = {}
+    for field in sorted(declared):
+        text(field)
+        summary = obj(declared[field], {"cardinality", "classes", "entropy_bits"})
+        counts: dict[bytes, int] = {}
+        values = {}
+        budget.tick(len(records))
+        for row in records:
+            if field not in obj(row):
+                raise Refuted("selected field absent from a retained record")
+            key = canonical_bytes(row[field])
+            counts[key] = counts.get(key, 0) + 1
+            values[key] = row[field]
+        same(len(counts), integer(summary["cardinality"]), "recomputed cardinality differs")
+        declared_counts = {}
+        for entry in seq(summary["classes"], budget, nonempty=False):
+            entry = obj(entry, {"value", "count"})
+            key = canonical_bytes(entry["value"])
+            if key in declared_counts:
+                raise Refuted("duplicate declared distribution class")
+            declared_counts[key] = integer(entry["count"], 1)
+        if declared_counts != counts:
+            raise Refuted("recomputed exact class inventory or count differs")
+        total = len(records)
+        entropy = math.fsum(-(count / total) * math.log2(count / total)
+                            for _, count in sorted(counts.items()))
+        close(entropy, summary["entropy_bits"], tolerance, "recomputed entropy differs")
+        observed[field] = {
+            "cardinality": len(counts), "entropy_bits": entropy,
+            "classes": [{"value": values[key], "count": count,
+                         "balance_numerator": count, "balance_denominator": total}
+                        for key, count in sorted(counts.items())],
+        }
+    return {"fields": observed, "records": len(records)}

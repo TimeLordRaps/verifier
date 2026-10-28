@@ -1,0 +1,865 @@
+{
+  "$defs": {
+    "base_record": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "HUMAN",
+            "ACTOR",
+            "COLLECTIVE",
+            "ROLE",
+            "IDENTITY",
+            "OWNER",
+            "HARDWARE",
+            "RECEIPT",
+            "OBJECT",
+            "GRAPH",
+            "SPACE",
+            "TIME",
+            "EVENT",
+            "ENV",
+            "DATA",
+            "VERIFIER",
+            "BENCH",
+            "ARCH",
+            "TRAIN",
+            "HYPER",
+            "MODEL",
+            "HARNESS",
+            "AGENT",
+            "SIM",
+            "BOT",
+            "TOKEN"
+          ]
+        },
+        "object_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "operands": {
+          "additionalProperties": {
+            "items": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 4096,
+            "type": "array"
+          },
+          "maxProperties": 4096,
+          "propertyNames": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "payload": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "object_id",
+        "kind",
+        "payload",
+        "operands"
+      ],
+      "type": "object"
+    },
+    "binding": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 4096,
+          "type": "array"
+        },
+        "computational_model": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "domain": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "implementation_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "input_size_definition": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "operation": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "verifier-spacetime-computation-binding-1"
+        },
+        "unit": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "implementation_digest",
+        "operation",
+        "input_size_definition",
+        "computational_model",
+        "assumptions",
+        "run_id",
+        "domain",
+        "unit",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "budget": {
+      "additionalProperties": false,
+      "properties": {
+        "limit": {
+          "$ref": "#/$defs/rational"
+        },
+        "schema_version": {
+          "const": "verifier-deny-before-charge-policy-1"
+        }
+      },
+      "required": [
+        "limit",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "context": {
+      "additionalProperties": false,
+      "properties": {
+        "domain": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "TIME",
+            "SPACE"
+          ]
+        },
+        "object_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "object_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "profile": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "role": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "kind",
+        "object_id",
+        "object_digest",
+        "domain",
+        "profile"
+      ],
+      "type": "object"
+    },
+    "context_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "contexts": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "context": {
+                "$ref": "#/$defs/context"
+              },
+              "operation_id": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation_id",
+              "context"
+            ],
+            "type": "object"
+          },
+          "maxItems": 4096,
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "verifier-execution-time-context-policy-1"
+        }
+      },
+      "required": [
+        "contexts",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "contextual_collection": {
+      "additionalProperties": false,
+      "properties": {
+        "objects": {
+          "items": {
+            "$ref": "#/$defs/contextual_object"
+          },
+          "maxItems": 256,
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "verifier-contextual-namespace-composition-1"
+        }
+      },
+      "required": [
+        "objects",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "contextual_object": {
+      "additionalProperties": false,
+      "properties": {
+        "contexts": {
+          "items": {
+            "$ref": "#/$defs/context"
+          },
+          "maxItems": 4096,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "record": {
+          "$ref": "#/$defs/base_record"
+        },
+        "schema_version": {
+          "const": "verifier-contextual-namespace-object-1"
+        }
+      },
+      "required": [
+        "record",
+        "contexts",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "cost": {
+      "additionalProperties": false,
+      "properties": {
+        "binding": {
+          "$ref": "#/$defs/binding"
+        },
+        "budget": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/budget"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "complexity": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "records": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "charge": {
+                "$ref": "#/$defs/rational"
+              },
+              "decision": {
+                "enum": [
+                  null,
+                  "ALLOW",
+                  "REFUSE"
+                ]
+              },
+              "input_size": {
+                "maximum": 340282366920938463463374607431768211455,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "operation_id": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation_id",
+              "input_size",
+              "charge",
+              "decision"
+            ],
+            "type": "object"
+          },
+          "maxItems": 4096,
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "verifier-retained-computational-cost-1"
+        }
+      },
+      "required": [
+        "binding",
+        "records",
+        "budget",
+        "complexity",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "mapping": {
+      "additionalProperties": false,
+      "properties": {
+        "collection_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "pieces": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "host_time_id": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "kind": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "pairs": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "host": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "sim": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "sim",
+                    "host"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 4096,
+                "type": "array"
+              },
+              "rollback_from": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "point": {
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "sim_time_id": {
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "sim_time_id",
+                      "point"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "sim_time_id": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "sim_time_id",
+              "host_time_id",
+              "pairs",
+              "rollback_from"
+            ],
+            "type": "object"
+          },
+          "maxItems": 4096,
+          "type": "array"
+        },
+        "run_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "verifier-retained-sim-host-time-mapping-1"
+        },
+        "subject_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "subject_digest",
+        "collection_digest",
+        "run_id",
+        "pieces",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "prerequisites": {
+      "additionalProperties": false,
+      "properties": {
+        "edges": {
+          "items": {
+            "items": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "maxItems": 4096,
+          "type": "array"
+        },
+        "nodes": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 4096,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "schema_version": {
+          "const": "verifier-declared-prerequisite-order-1"
+        }
+      },
+      "required": [
+        "nodes",
+        "edges",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "rational": {
+      "additionalProperties": false,
+      "properties": {
+        "denominator": {
+          "maximum": 340282366920938463463374607431768211455,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "numerator": {
+          "maximum": 340282366920938463463374607431768211455,
+          "minimum": -340282366920938463463374607431768211455,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ],
+      "type": "object"
+    },
+    "space": {
+      "additionalProperties": false,
+      "properties": {
+        "domain": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "frame": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "nodes": {
+          "items": {
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 4096,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "profile": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "relations": {
+          "items": {
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "maxLength": 256,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "target": {
+                    "maxLength": 256,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "target"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "distance": {
+                    "$ref": "#/$defs/rational"
+                  },
+                  "source": {
+                    "maxLength": 256,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "target": {
+                    "maxLength": 256,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "target",
+                  "distance"
+                ],
+                "type": "object"
+              }
+            ]
+          },
+          "maxItems": 4096,
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "verifier-declared-space-capabilities-1"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "profile",
+        "domain",
+        "unit",
+        "frame",
+        "nodes",
+        "relations",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "time": {
+      "additionalProperties": false,
+      "properties": {
+        "branch_id": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "domain": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "epoch": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "order": {
+          "items": {
+            "items": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "maxItems": 4096,
+          "type": "array"
+        },
+        "points": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/rational"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "value"
+            ],
+            "type": "object"
+          },
+          "maxItems": 4096,
+          "type": "array"
+        },
+        "profile": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "resolution": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/rational"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schema_version": {
+          "const": "verifier-declared-time-capabilities-1"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/rational"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "profile",
+        "domain",
+        "unit",
+        "epoch",
+        "resolution",
+        "uncertainty",
+        "run_id",
+        "branch_id",
+        "points",
+        "order",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "trace": {
+      "additionalProperties": false,
+      "properties": {
+        "binding": {
+          "$ref": "#/$defs/binding"
+        },
+        "collection_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "prerequisite_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "records": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "context": {
+                "$ref": "#/$defs/context"
+              },
+              "end": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "operation_id": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              "start": {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation_id",
+              "context",
+              "start",
+              "end"
+            ],
+            "type": "object"
+          },
+          "maxItems": 4096,
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "verifier-retained-execution-time-trace-1"
+        }
+      },
+      "required": [
+        "binding",
+        "prerequisite_digest",
+        "collection_digest",
+        "records",
+        "schema_version"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://timelordraps.github.io/verifier/schemas/spacetime-context-extension-1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/contextual_object"
+    },
+    {
+      "$ref": "#/$defs/contextual_collection"
+    },
+    {
+      "$ref": "#/$defs/time"
+    },
+    {
+      "$ref": "#/$defs/space"
+    },
+    {
+      "$ref": "#/$defs/mapping"
+    },
+    {
+      "$ref": "#/$defs/binding"
+    },
+    {
+      "$ref": "#/$defs/budget"
+    },
+    {
+      "$ref": "#/$defs/cost"
+    },
+    {
+      "$ref": "#/$defs/prerequisites"
+    },
+    {
+      "$ref": "#/$defs/context_policy"
+    },
+    {
+      "$ref": "#/$defs/trace"
+    }
+  ],
+  "title": "Opt-in declared TIME/SPACE contexts, capabilities and retained observations"
+}

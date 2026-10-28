@@ -1,0 +1,1 @@
+{"max_certificate_bytes":8388608,"mechanism_digest":"sha256:a7c3736e7d1e84bb70ed2ff056dc1047eda7d22f61f91ba9724630884ba04b09","mechanism_id":"verifier.current-graph.retained-edge-statics.1","schema_version":"verifier-current-graph-statics-policy-1","trust_roots":["local-manifest-selection-not-external-authority"]}

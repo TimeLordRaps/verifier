@@ -42,10 +42,22 @@ from .models import (
     VSTD3Receipt,
 )
 from .registry import load_builtin_registry
+from .tracers import (
+    ArtifactTraceBinding,
+    HardwareRuntimeCoordinate,
+    SystemEntropyProvider,
+    TraceAction,
+    TraceStatus,
+    TraceVerification,
+    build_hardware_runtime_coordinate,
+    issue_artifact_trace,
+    verify_artifact_trace,
+)
 from .validation import validate_vstd3_receipt
 
 __all__ = [
     "AcceleratorDescriptor",
+    "ArtifactTraceBinding",
     "AccountingEvent",
     "AccountingExactness",
     "AccountingMethod",
@@ -66,6 +78,7 @@ __all__ = [
     "EvidenceSource",
     "FleetManifest",
     "FleetObservation",
+    "HardwareRuntimeCoordinate",
     "LogicalDeviceIdentity",
     "PhysicalDeviceIdentity",
     "SeveredChannelReadViolationError",
@@ -76,9 +89,16 @@ __all__ = [
     "TemporalCombJitterViolationError",
     "TimingVerificationReport",
     "TopologySnapshot",
+    "SystemEntropyProvider",
+    "TraceAction",
+    "TraceStatus",
+    "TraceVerification",
     "VSTD3Receipt",
     "VirtualVSTDAccelerator",
     "evaluate_conformance",
+    "build_hardware_runtime_coordinate",
+    "issue_artifact_trace",
     "load_builtin_registry",
     "validate_vstd3_receipt",
+    "verify_artifact_trace",
 ]

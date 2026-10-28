@@ -32,9 +32,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _private_key(path: Path) -> Path:
-    cryptography = pytest.importorskip("cryptography.hazmat.primitives.serialization")
+    cryptography = pytest.importorskip(
+        "cryptography.hazmat.primitives.serialization",
+        reason="OPTIONAL_DEPENDENCY_ABSENT: cryptography (seal extra) is absent, so the PEM serialization step of the _private_key fixture and every seal_artifact test that calls it stay unexecuted here; the artifact-seal workflow job installs the seal extra and runs this file",
+    )
     ed25519 = pytest.importorskip(
-        "cryptography.hazmat.primitives.asymmetric.ed25519"
+        "cryptography.hazmat.primitives.asymmetric.ed25519",
+        reason="OPTIONAL_DEPENDENCY_ABSENT: cryptography.hazmat.primitives.asymmetric.ed25519 (seal extra) is absent, so Ed25519 key generation in the _private_key fixture and every seal_artifact test that calls it stay unexecuted here; the artifact-seal workflow job installs the seal extra and runs this file",
     )
     key = ed25519.Ed25519PrivateKey.generate()
     path.write_bytes(
@@ -1893,7 +1897,7 @@ def test_unknown_bundle_or_manifest_fields_fail_closed(tmp_path: Path) -> None:
 def test_published_and_packaged_schemas_are_identical_and_accept_emitted_objects(
     tmp_path: Path,
 ) -> None:
-    jsonschema = pytest.importorskip("jsonschema")
+    import jsonschema
     public_path = ROOT / "src/verifier/schemas/artifact-control-1.schema.json"
     packaged_path = ROOT / "src/verifier/artifact_control/artifact-control-1.schema.json"
     assert public_path.read_bytes() == packaged_path.read_bytes()

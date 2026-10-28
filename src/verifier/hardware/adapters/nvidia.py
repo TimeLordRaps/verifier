@@ -1,4 +1,5 @@
-"""Terminology: JavaScript Object Notation (JSON); NVIDIA Management Library (NVML);
+"""Terminology: command-line interface (CLI); JavaScript Object Notation (JSON);
+NVIDIA Management Library (NVML);
 Reference Integrity Manifest (RIM); Security Protocol and Data Model (SPDM);
 Verifier Standard (VSTD).
 
@@ -14,11 +15,15 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
+import tempfile
 
 from ..models import AdapterResult
 from ..registry import AcceleratorRegistry, load_builtin_registry
 from .base import AdapterError, normalize_opaque_vendor_evidence, unsupported_result
 from .generic import GenericFixtureAdapter
+
+# Bound on one read-only nvidia-smi identity query; a hung vendor CLI is recorded as a gap.
+_DISCOVERY_TIMEOUT_SECONDS = 30.0
 
 
 def _profile_for_model(model: str) -> str:
@@ -50,23 +55,38 @@ class NvidiaAdapter:
                 registry=registry,
                 reason="nvidia-smi was not found; no NVIDIA hardware evidence was collected",
             )
-        result = subprocess.run(
-            [
-                executable,
-                "--query-gpu=uuid,name,pci.bus_id,driver_version,vbios_version",
-                "--format=csv,noheader,nounits",
-            ],
-            capture_output=True,
-            check=False,
-        )
-        if result.returncode != 0:
+        # Output goes to a file, not a pipe: a helper that inherits a pipe keeps the post-timeout
+        # communicate() blocked on Windows, which would make the bound above false.
+        with tempfile.TemporaryFile() as captured:
+            try:
+                completed = subprocess.run(
+                    [
+                        executable,
+                        "--query-gpu=uuid,name,pci.bus_id,driver_version,vbios_version",
+                        "--format=csv,noheader,nounits",
+                    ],
+                    stdout=captured,
+                    stderr=subprocess.DEVNULL,
+                    check=False,
+                    timeout=_DISCOVERY_TIMEOUT_SECONDS,
+                )
+            except subprocess.TimeoutExpired:
+                return unsupported_result(
+                    adapter_id=self.adapter_id,
+                    profile_id="nvidia.future",
+                    registry=registry,
+                    reason=f"nvidia-smi discovery timed out after {_DISCOVERY_TIMEOUT_SECONDS:g} seconds",
+                )
+            captured.seek(0)
+            stdout = captured.read()
+        if completed.returncode != 0:
             return unsupported_result(
                 adapter_id=self.adapter_id,
                 profile_id="nvidia.future",
                 registry=registry,
-                reason=f"nvidia-smi discovery failed with exit code {result.returncode}",
+                reason=f"nvidia-smi discovery failed with exit code {completed.returncode}",
             )
-        rows = list(csv.reader(io.StringIO(result.stdout.decode("utf-8", errors="strict"))))
+        rows = list(csv.reader(io.StringIO(stdout.decode("utf-8", errors="strict"))))
         devices = []
         profile_ids: set[str] = set()
         for index, row in enumerate(rows):
@@ -100,7 +120,7 @@ class NvidiaAdapter:
             "boundary_id": "host-visible-nvidia-devices",
             "devices": devices,
         }
-        return self._normalize_payload(payload, result.stdout, registry)
+        return self._normalize_payload(payload, stdout, registry)
 
     def _from_fixture(self, path: Path, registry: AcceleratorRegistry) -> AdapterResult:
         raw = path.read_bytes()

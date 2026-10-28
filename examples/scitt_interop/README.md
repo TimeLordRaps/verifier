@@ -78,6 +78,7 @@ endorsement. The normative wire references are [RFC 9943](https://datatracker.ie
 ```bash
 python examples/scitt_interop/demo.py produce
 python examples/scitt_interop/demo.py verify
+python examples/scitt_interop/demo.py boundary
 ```
 
 The producer writes a deterministic canonical VSTD payload plus real COSE artifacts
@@ -102,10 +103,36 @@ no authority outside this example.
 | `issuer_public.pem` | Public key for offline statement-signature verification. |
 | `log_public.pem` | Public key for offline receipt verification. |
 | `verification_result.json` | Native VSTD candidate-check result, explicit VSTD conformance `NOT_ESTABLISHED`, native SCITT observation, scoped composition, exact installed verifier-runtime coordinates, direct dependency versions, and artifact hashes. The runtime coordinates are verifier observations and are deliberately absent from the producer-signed payload. |
+| `boundary_demo_result.json` | Output of the `boundary` command over the checked-in specimen: the same authentic statement and receipt verified against the bound artifact and against different artifact bytes. |
+
+## Authentic receipt, unsupported proposition demonstration
+
+```bash
+python examples/scitt_interop/demo.py boundary \
+  --output examples/scitt_interop/generated
+```
+
+The command verifies the checked-in Signed Statement and inclusion Receipt twice
+without rewriting `verification_result.json`. The second attempt changes only the
+separately observed artifact bytes; all SCITT evidence bytes and native SCITT results
+remain identical. The exact outcomes are:
+
+| Check | Original artifact | Mutated external artifact |
+|---|---:|---:|
+| Signed Statement signature | PASS | PASS (same original statement) |
+| Inclusion Receipt | PASS | PASS (same original statement) |
+| VSTD exact artifact composition | PASS | **FAIL: artifact binding mismatch** |
+
+The receipt remains authentic for what it actually binds; it cannot be transplanted
+to a different artifact while retaining the computational conclusion. The result
+file records digests of the checked-in specimen, so it is regenerated whenever a new
+specimen is produced.
 
 ## Adversarial coverage
 
-`tests/test_scitt_interop.py` and `tests/test_scitt_crypto_example.py` cover:
+The SCITT-focused tests (`tests/test_scitt_interop.py`,
+`tests/test_scitt_crypto_example.py`, `tests/test_scitt_derived_subjects.py`, and
+`tests/test_scitt_evidence_profiles.py`) cover:
 
 - deterministic serialization and round trips;
 - identity, claim-coordinate, artifact, and payload binding;
@@ -123,10 +150,23 @@ no authority outside this example.
 - the invariant that a composed PASS requires a native VSTD checker result bound to
   the exact embedded receipt;
 - the invariant that the native VSTD payload contains no SCITT issuer, transparency
-  service, registration policy, or registration time.
+  service, registration policy, or registration time;
+- the invariant that an authentic statement and receipt do not support the same
+  computational conclusion for mutated artifact bytes;
+- the Appendix A.1-A.7 vectors of `draft-le-scitt-derived-subjects-00`, as
+  transcribed in the test file (the deterministic-CBOR vectors require the `scitt`
+  extra and are skipped without it);
+- distinct composite `pass`, `warning`, `unknown`, `missing`, `stale`, and
+  `conflict` conditions without conversion to a VSTD verdict;
+- `coverage-reconciliation/2` outcome accounting, `/1` rejection, pinned exclusion,
+  and indeterminate preservation.
 
 Run:
 
 ```bash
-python -m pytest -q tests/test_scitt_interop.py tests/test_scitt_crypto_example.py
+python -m pytest -q \
+  tests/test_scitt_interop.py \
+  tests/test_scitt_crypto_example.py \
+  tests/test_scitt_derived_subjects.py \
+  tests/test_scitt_evidence_profiles.py
 ```

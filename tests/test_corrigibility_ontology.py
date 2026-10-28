@@ -17,6 +17,38 @@ from verifier.corrigibility import (
     compose_agent_ontology,
     compose_bot_ontology,
 )
+from verifier.corrigibility.ontology import ORIGINAL_KIND_ROLE_BOUNDARY
+
+
+def test_original_kind_role_boundary_is_literal_and_complete() -> None:
+    assert ORIGINAL_KIND_ROLE_BOUNDARY == (
+        ("ACTOR", "DOES_NOT_APPLY"),
+        ("AGENT", "APPLIES"),
+        ("ARCH", "APPLIES"),
+        ("BENCH", "DOES_NOT_APPLY"),
+        ("BOT", "APPLIES"),
+        ("COLLECTIVE", "DOES_NOT_APPLY"),
+        ("DATA", "DOES_NOT_APPLY"),
+        ("ENV", "DOES_NOT_APPLY"),
+        ("EVENT", "APPLIES"),
+        ("GRAPH", "DOES_NOT_APPLY"),
+        ("HARDWARE", "DOES_NOT_APPLY"),
+        ("HARNESS", "DOES_NOT_APPLY"),
+        ("HUMAN", "DOES_NOT_APPLY"),
+        ("HYPER", "DOES_NOT_APPLY"),
+        ("IDENTITY", "DOES_NOT_APPLY"),
+        ("MODEL", "DOES_NOT_APPLY"),
+        ("OWNER", "DOES_NOT_APPLY"),
+        ("RECEIPT", "DOES_NOT_APPLY"),
+        ("ROLE", "DOES_NOT_APPLY"),
+        ("SIM", "APPLIES"),
+        ("SPACE", "APPLIES"),
+        ("TIME", "APPLIES"),
+        ("TOKEN", "DOES_NOT_APPLY"),
+        ("TRAIN", "DOES_NOT_APPLY"),
+        ("VERIFIER", "DOES_NOT_APPLY"),
+    )
+    assert len({kind for kind, _status in ORIGINAL_KIND_ROLE_BOUNDARY}) == 25
 
 
 def test_computational_space_propagation_and_isolation() -> None:

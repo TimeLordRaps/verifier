@@ -1,0 +1,93 @@
+{
+  "$comment": "A canonical mechanical pathway result. PASS is not publication authority and CONTAINED_NOT_REFUTED is not refutation.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-dangerous-pathway-certificate-1.schema.json",
+  "title": "Verifier dangerous-pathway certificate version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "request", "request_digest", "artifact_digest",
+    "derived_surface_digest", "source_coordinate_digest", "dependency_inventory_digest",
+    "object_kind", "risk_policy_digest", "threat_catalog_digest",
+    "threat_catalog_version", "pathway_search_scope_digest",
+    "operating_envelope_digest", "capability_inventory_digest",
+    "reviewer_policy_digest", "invalidator_policy_digest", "pathway_id",
+    "catalog_entry_digest", "severity", "applicability", "applicability_evidence_digest",
+    "verdict", "trigger_witness_digest", "required_check_results",
+    "counterexample_search_digest", "mitigation_digests", "residual_risk_digest",
+    "residual_risk_status",
+    "review", "invalidators", "status", "security_outcome", "claim_boundary",
+    "certificate_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "verifier-dangerous-pathway-certificate-1"},
+    "request": {"$ref": "verifier-dangerous-pathway-request-1.schema.json"},
+    "request_digest": {"$ref": "#/$defs/digest"},
+    "artifact_digest": {"$ref": "#/$defs/digest"},
+    "derived_surface_digest": {"$ref": "#/$defs/digest"},
+    "source_coordinate_digest": {"$ref": "#/$defs/digest"},
+    "dependency_inventory_digest": {"$ref": "#/$defs/digest"},
+    "object_kind": {"$ref": "#/$defs/objectKind"},
+    "risk_policy_digest": {"$ref": "#/$defs/digest"},
+    "threat_catalog_digest": {"$ref": "#/$defs/digest"},
+    "threat_catalog_version": {"type": "string", "minLength": 1, "maxLength": 256},
+    "pathway_search_scope_digest": {"$ref": "#/$defs/digest"},
+    "operating_envelope_digest": {"$ref": "#/$defs/digest"},
+    "capability_inventory_digest": {"$ref": "#/$defs/digest"},
+    "reviewer_policy_digest": {"$ref": "#/$defs/digest"},
+    "invalidator_policy_digest": {"$ref": "#/$defs/digest"},
+    "pathway_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "catalog_entry_digest": {"$ref": "#/$defs/digest"},
+    "severity": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+    "applicability": {"enum": ["APPLICABLE", "PROVED_NOT_APPLICABLE", "UNKNOWN"]},
+    "applicability_evidence_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "verdict": {"enum": ["REFUTED_WITHIN_ENVELOPE", "CAPABILITY_REMOVED", "CONTAINED_NOT_REFUTED", "PRESENT", "UNKNOWN"]},
+    "trigger_witness_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "required_check_results": {
+      "type": "array", "minItems": 1, "maxItems": 256,
+      "items": {"$ref": "#/$defs/checkResult"}
+    },
+    "counterexample_search_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "mitigation_digests": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/digest"}},
+    "residual_risk_digest": {"$ref": "#/$defs/digest"},
+    "residual_risk_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+    "review": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/review"}},
+    "invalidators": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/digest"}},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "security_outcome": {"enum": ["ESTABLISHED", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 1024},
+    "certificate_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "objectKind": {
+      "enum": ["ACTOR", "AGENT", "ARCH", "BENCH", "BOT", "COLLECTIVE", "DATA", "ENV", "EVENT", "GRAPH", "HARDWARE", "HARNESS", "HUMAN", "HYPER", "IDENTITY", "MODEL", "OBJECT", "OWNER", "RECEIPT", "ROLE", "SIM", "SPACE", "TIME", "TOKEN", "TRAIN", "VERIFIER"]
+    },
+    "checkResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["check_id", "mechanism_digest", "request_digest", "policy_digest", "certificate_digest", "replay_digest", "status"],
+      "properties": {
+        "check_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "mechanism_digest": {"$ref": "#/$defs/digest"},
+        "request_digest": {"$ref": "#/$defs/digest"},
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "certificate_digest": {"$ref": "#/$defs/digest"},
+        "replay_digest": {"$ref": "#/$defs/digest"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]}
+      }
+    },
+    "review": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reviewer_id_digest", "role_digest", "conflict_check_digest", "mechanism_digest", "review_digest", "review_status", "conflict_status"],
+      "properties": {
+        "reviewer_id_digest": {"$ref": "#/$defs/digest"},
+        "role_digest": {"$ref": "#/$defs/digest"},
+        "conflict_check_digest": {"$ref": "#/$defs/digest"},
+        "mechanism_digest": {"$ref": "#/$defs/digest"},
+        "review_digest": {"$ref": "#/$defs/digest"},
+        "review_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "conflict_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]}
+      }
+    }
+  }
+}

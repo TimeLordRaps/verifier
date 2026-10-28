@@ -109,7 +109,7 @@
         "census": {"type": "array", "minItems": 1, "maxItems": 256, "items": {"$ref": "#/$defs/censusEntry"}},
         "ground_paths": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/path"}},
         "derivations": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/derivation"}},
-        "relations": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/relation"}},
+        "relations": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"$ref": "#/$defs/relation"}},
         "residual_obligations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 4096}},
         "exclusions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 4096}},
         "completeness_kind": {"enum": ["SILO_CENSUS", "DERIVATIONAL_COVERAGE", "SEMANTIC_COVERAGE", "LOGICAL_DECIDABILITY"]},

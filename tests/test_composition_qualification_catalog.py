@@ -7,7 +7,6 @@ correctness, custody, or an atomic filesystem snapshot.
 
 from __future__ import annotations
 
-from importlib import import_module
 import json
 from pathlib import Path
 from typing import Any
@@ -25,6 +24,7 @@ from verifier.interoperability.catalog import (
     InteractionMode,
 )
 from verifier.interoperability.component_index import load_component_index
+from verifier.interoperability import composition_qualification
 from verifier.interoperability.control_surface import (
     CandidateStatus,
     ControlSurfaceContext,
@@ -58,12 +58,14 @@ NATIVE_INPUTS = tuple(sorted((
 NATIVE_OUTPUT = (
     "unversioned composition qualification report retaining legacy and finite assessments"
 )
+_IMPLEMENTATIONS = {
+    "verifier.interoperability.composition_qualification:qualify_silo_composition":
+        composition_qualification.qualify_silo_composition,
+}
 
 
 def _resolve(reference: str) -> object:
-    module_name, separator, attribute = reference.partition(":")
-    assert separator and module_name and attribute
-    return getattr(import_module(module_name), attribute)
+    return _IMPLEMENTATIONS[reference]
 
 
 def _native_inputs(tmp_path: Path) -> tuple[
@@ -176,8 +178,6 @@ def test_qualifier_package_detection_planning_and_readiness_remain_nonexecuting(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from scripts.build_component_index import build
-    from verifier.interoperability import composition_qualification
-
     def forbidden(*args: Any, **kwargs: Any) -> Any:
         raise AssertionError("catalog integration must not execute qualification")
 

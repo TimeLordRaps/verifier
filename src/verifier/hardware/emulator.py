@@ -7,6 +7,7 @@ Executable reference model for the VSTD 3 firmware-accountability contract."""
 from __future__ import annotations
 
 import base64
+import copy
 from dataclasses import dataclass, field, replace
 import hashlib
 from typing import Iterable
@@ -416,36 +417,46 @@ class VirtualVSTDAccelerator:
         timestamp: str,
         anchor_provider: AnchorProvider,
     ) -> AccountingEvent:
-        for execution_id in tuple(sorted(self._active)):
-            self.complete_execution(
-                execution_id,
-                timestamp=timestamp,
-                outcome=ExecutionOutcome.INTERRUPTED,
+        # Reset is one local transition: an unavailable or refusing anchor must
+        # not leave active executions ended while the epoch remains unchanged.
+        # The provider owns any external effects it performs before returning;
+        # this rollback covers the emulator's complete mutable state.
+        prior_state = copy.deepcopy(self.__dict__)
+        try:
+            for execution_id in tuple(sorted(self._active)):
+                self.complete_execution(
+                    execution_id,
+                    timestamp=timestamp,
+                    outcome=ExecutionOutcome.INTERRUPTED,
+                )
+            anchor = self.anchor(anchor_provider, anchored_at=timestamp)
+            prior_event = self._events[-1]
+            prior_epoch = self._epoch
+            self._epoch += 1
+            self._topology_revision = 0
+            reset = ResetEpoch(
+                device_identity_id=self.physical_identity_id,
+                epoch=self._epoch,
+                boot_id=boot_id,
+                reason=reason,
+                prior_epoch=prior_epoch,
+                prior_rolling_root=prior_event.rolling_root,
+                external_anchor_id=anchor.anchor_id,
             )
-        anchor = self.anchor(anchor_provider, anchored_at=timestamp)
-        prior_event = self._events[-1]
-        prior_epoch = self._epoch
-        self._epoch += 1
-        self._topology_revision = 0
-        reset = ResetEpoch(
-            device_identity_id=self.physical_identity_id,
-            epoch=self._epoch,
-            boot_id=boot_id,
-            reason=reason,
-            prior_epoch=prior_epoch,
-            prior_rolling_root=prior_event.rolling_root,
-            external_anchor_id=anchor.anchor_id,
-        )
-        self._resets.append(reset)
-        event = self._append_event(
-            EventType.RESET,
-            execution_id="",
-            partition_id="",
-            timestamp=timestamp,
-            payload={"boot_id": boot_id, "reason": reason, "prior_anchor_id": anchor.anchor_id},
-        )
-        self._remember_topology(timestamp)
-        return event
+            self._resets.append(reset)
+            event = self._append_event(
+                EventType.RESET,
+                execution_id="",
+                partition_id="",
+                timestamp=timestamp,
+                payload={"boot_id": boot_id, "reason": reason, "prior_anchor_id": anchor.anchor_id},
+            )
+            self._remember_topology(timestamp)
+            return event
+        except BaseException:
+            self.__dict__.clear()
+            self.__dict__.update(prior_state)
+            raise
 
     def continuity_record(self) -> ContinuityRecord:
         return ContinuityRecord(

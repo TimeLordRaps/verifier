@@ -36,9 +36,9 @@ Object and Graph axes must also remain visible in the overall release inventory.
 
 ## Intended meta-tier architecture
 
-The same eight general meanings apply separately to computational propositions
+The same nine general meanings apply separately to computational propositions
 and accountability contracts: facets, dynamics, statics, closure, independence,
-privacy, consent and governance. Accountability applications concern authority,
+privacy, consent, governance and security. Accountability applications concern authority,
 responsibility and commitments; their evidence does not become computational
 correctness evidence. The historical adaptation tier is not current independence.
 
@@ -48,9 +48,10 @@ correctness evidence. The historical adaptation tier is not current independence
 | `[OBJECT]-6.m` | Privacy grounding certificates | Existing emission helpers do not establish every privacy grounding proposition |
 | `[OBJECT]-7.m` | Consent structures | Bounded consent admission exists; full coordinate certification is not established |
 | `[OBJECT]-8.m` | Governance and laws | Bounded governance admission exists; the full requested model and law execution are not established |
+| `[OBJECT]-9.m` | Security against exact bounded threats | [RECEIPT-9.1](../src/verifier/standard/CURRENT_RECEIPT_CHAIN.md) replays one selected finite receipt hash chain against externally selected anchors; issuer authenticity, signature validity and complete security-tier conformance remain NOT_ESTABLISHED |
 
 `[OBJECT]` stands for one named object in the VSTD-NAMESPACE; the hyphen separates
-that object from a **positive** meta-tier number 1 through 8. Within each tier, `m`
+that object from a **positive** meta-tier number 1 through 9. Within each tier, `m`
 indexes an internal grounding certificate, starting at 1. These coordinates are
 dimensionless semantic identifiers, not physical units, software versions, or
 negative tier numbers. The maintainer's earlier **Distributed Aggregated
@@ -62,10 +63,11 @@ that governance name to the same shorthand used for a directed acyclic graph.
 ## Explicit specification seams
 
 The current [meta-tier specification](../src/verifier/standard/META_TIERS.md)
-defines the 26-object/eight-tier hierarchy and labels the earlier corroboration
-subgrid as legacy evidence. The retained runtime catalogue still has adaptation
+defines the retained 26-`ObjectKind`/nine-tier native hierarchy within the
+38-kind extensible namespace and labels the earlier corroboration subgrid as
+legacy evidence. The retained runtime catalogue still has adaptation
 at 5 and disclosure at 6. Those results do not discharge new independence,
-full privacy, consent or governance objectives. The dependency-depth computation
+full privacy, consent, governance, or security objectives. The dependency-depth computation
 is distinct from `.m`, the internal objective index. A versioned semantic mapping
 and resulting mechanisms remain required before historical results can support
 new objective claims.
@@ -75,7 +77,7 @@ supplied status snapshot. Its [contract](GOVERNANCE_LEVEL8.md) leaves enforcemen
 unknown. It is not evidence of a distributed governance runtime or executed laws.
 
 Required design and implementation obligations include exact accountability tier
-mapping; certificate propositions and replay for privacy, consent and governance;
+mapping; certificate propositions and replay for privacy, consent, governance, and security;
 membership, aggregation, delegated authority and dissent rules; smart-contract state
 transitions and authorization; execution/consumption receipts; and failure, appeal
 and enforcement boundaries. This list records open obligations, not invented choices

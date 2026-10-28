@@ -11,6 +11,8 @@ required: the commitment seeds the tenure fold and is not opened here.
 """
 from __future__ import annotations
 
+from verifier.core.signature_keys import admit_ed25519_public_key
+
 import base64
 import re
 
@@ -303,6 +305,11 @@ def _signatures(artifact: dict, budget: Budget, held: dict, witness_keys: dict) 
             verifiable.append(token)
     if verifiable:
         try:
+            admitted_keys = {token["issuing_key_id"]: admit_ed25519_public_key(
+                bytes.fromhex(bound[token["issuing_key_id"]])) for token in verifiable}
+        except (ValueError, TypeError) as exc:
+            raise Refuted("token issuing key is inadmissible") from exc
+        try:
             from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
             from cryptography.exceptions import InvalidSignature
         except ImportError as exc:
@@ -311,7 +318,7 @@ def _signatures(artifact: dict, budget: Budget, held: dict, witness_keys: dict) 
             budget.tick()
             preimage = {field: value for field, value in token.items() if field != "signature"}
             try:
-                Ed25519PublicKey.from_public_bytes(bytes.fromhex(bound[token["issuing_key_id"]])).verify(
+                Ed25519PublicKey.from_public_bytes(admitted_keys[token["issuing_key_id"]]).verify(
                     base64.b64decode(token["signature"], validate=True), canonical_bytes(preimage))
             except (ValueError, TypeError, InvalidSignature) as exc:
                 raise Refuted("a token signature does not verify over its canonical preimage: "

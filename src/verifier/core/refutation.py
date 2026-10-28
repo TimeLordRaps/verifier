@@ -114,12 +114,46 @@ class RefutationCertificate:
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> "RefutationCertificate":
+        fields = {
+            "proof_format",
+            "proof",
+            "n_vars",
+            "source_clause_count",
+            "step_count",
+            "max_proof_steps",
+        }
+        if not isinstance(data, Mapping) or set(data) != fields:
+            raise ValueError("refutation certificate requires exact fields")
+        for field in ("n_vars", "source_clause_count", "step_count", "max_proof_steps"):
+            if type(data[field]) is not int or data[field] < 0:
+                raise ValueError(f"{field} must be a non-negative integer")
+        proof = data["proof"]
+        if type(proof) is not list or not proof:
+            raise ValueError("proof must be a nonempty list")
+        if data["step_count"] != len(proof):
+            raise ValueError("declared step_count differs from the proof")
+        if len(proof) > data["max_proof_steps"]:
+            raise ValueError("proof exceeds its declared max_proof_steps")
+        if type(data["proof_format"]) is not str:
+            raise ValueError("proof_format must be text")
+        for index, step in enumerate(proof):
+            if type(step) is not list:
+                raise ValueError(f"proof step {index} must be a list")
+            if any(
+                type(literal) is not int
+                or literal == 0
+                or abs(literal) > data["n_vars"]
+                for literal in step
+            ):
+                raise ValueError(
+                    f"proof step {index} contains a non-integer, zero, or out-of-range literal"
+                )
         return cls(
-            proof=[list(map(int, step)) for step in data["proof"]],
-            n_vars=int(data["n_vars"]),
-            source_clause_count=int(data["source_clause_count"]),
-            max_proof_steps=int(data.get("max_proof_steps", DEFAULT_MAX_PROOF_STEPS)),
-            proof_format=str(data.get("proof_format", REFUTATION_FORMAT)),
+            proof=[list(step) for step in proof],
+            n_vars=data["n_vars"],
+            source_clause_count=data["source_clause_count"],
+            max_proof_steps=data["max_proof_steps"],
+            proof_format=data["proof_format"],
         )
 
 
@@ -200,7 +234,60 @@ class RefutationChecker:
     def check(
         clauses: Sequence[Sequence[int]],
         certificate: RefutationCertificate,
+        *,
+        expected_n_vars: int | None = None,
     ) -> RefutationCheckResult:
+        if type(certificate.n_vars) is not int or certificate.n_vars < 0:
+            return RefutationCheckResult(False, 0, "n_vars must be a non-negative integer")
+        if expected_n_vars is not None:
+            if type(expected_n_vars) is not int or expected_n_vars < 0:
+                return RefutationCheckResult(
+                    False, 0, "externally selected n_vars must be a non-negative integer"
+                )
+            if certificate.n_vars != expected_n_vars:
+                return RefutationCheckResult(
+                    False, 0, "certificate n_vars differs from the externally selected count"
+                )
+        if (
+            type(certificate.source_clause_count) is not int
+            or certificate.source_clause_count < 0
+            or certificate.source_clause_count != len(clauses)
+        ):
+            return RefutationCheckResult(
+                False, 0, "source_clause_count differs from the supplied formula"
+            )
+        if not isinstance(certificate.proof, list):
+            return RefutationCheckResult(False, 0, "proof must be a list")
+        if (
+            type(certificate.max_proof_steps) is not int
+            or certificate.max_proof_steps < 0
+            or len(certificate.proof) > certificate.max_proof_steps
+        ):
+            return RefutationCheckResult(
+                False, 0, "proof exceeds its declared max_proof_steps"
+            )
+        for index, clause in enumerate(clauses):
+            if not isinstance(clause, Sequence) or isinstance(clause, (str, bytes)):
+                return RefutationCheckResult(False, 0, f"source clause {index} is not a sequence")
+            if any(
+                type(literal) is not int
+                or literal == 0
+                or abs(literal) > certificate.n_vars
+                for literal in clause
+            ):
+                return RefutationCheckResult(
+                    False, 0, f"source clause {index} contains an invalid or out-of-range literal"
+                )
+        for index, step in enumerate(certificate.proof):
+            if type(step) is not list or any(
+                type(literal) is not int
+                or literal == 0
+                or abs(literal) > certificate.n_vars
+                for literal in step
+            ):
+                return RefutationCheckResult(
+                    False, index, f"proof step {index} contains an invalid or out-of-range literal"
+                )
         if certificate.proof_format != REFUTATION_FORMAT:
             return RefutationCheckResult(
                 False, 0, f"unsupported proof format {certificate.proof_format!r}"

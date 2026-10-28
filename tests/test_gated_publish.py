@@ -7,7 +7,6 @@ All network responses are injected test values, not observations of a live host.
 
 from __future__ import annotations
 
-import importlib
 import hashlib
 import json
 from pathlib import Path
@@ -19,12 +18,13 @@ import pytest
 from verifier.core.certificate import canonical_bytes
 from verifier.domains.certification import build_domain_certificate, domain_policy, domain_request
 from verifier.domains.common import Budget, digest, merkle_root
-from verifier.runtime.gate_pipeline import run_pipeline
+from verifier.interoperability import gated_publish
 from verifier.interoperability.claim_garden import TransportResponse
+from verifier.runtime.gate_pipeline import run_pipeline
 
 
 def client():
-    return importlib.import_module("verifier.interoperability.gated_publish")
+    return gated_publish
 
 
 def native_files(root: Path, *, value: object = 3, field: str = "integer", include_artifact: bool = True) -> dict:

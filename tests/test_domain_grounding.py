@@ -7,7 +7,6 @@ Terminology: unsatisfiable (UNSAT).
 from __future__ import annotations
 
 from copy import deepcopy
-import importlib.util
 import json
 import os
 from pathlib import Path
@@ -18,6 +17,8 @@ from types import ModuleType
 
 import pytest
 
+from examples import domain_grounding as domain_example
+from scripts import check_pr_description
 from verifier.domains.catalog import CHECKS, COORDINATES
 from verifier.domains.certification import (NativeDomainAdapter, build_domain_certificate,
     domain_policy, domain_request, recheck_domain_certificate)
@@ -29,10 +30,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.fixture(scope="module")
 def example() -> ModuleType:
-    spec = importlib.util.spec_from_file_location("domain_example", ROOT / "examples/domain_grounding.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return domain_example
 
 
 @pytest.fixture(scope="module")
@@ -499,6 +497,29 @@ def test_declared_dependencies_match_established_blocking(bundles: dict, policy:
             assert coordinate not in declared[coordinate], "check cannot depend on itself"
 
 
+def test_a_loop_that_attributes_no_transition_to_the_agent_is_not_established(bundles: dict, policy: dict) -> None:
+    """Every transition declared exogenous leaves the agent answerable for nothing in the loop."""
+    bundle = deepcopy(bundles["BOT"])
+    bundle["artifact"].update(exogenous_transitions=[0, 1], step_map=[])
+    result = assess(bundle, policy)["result"]
+    for coordinate in ("BOT-2.1", "BOT-2.2", "BOT-2.3"):
+        evaluation = result["checks"][coordinate]["evaluation"]
+        assert evaluation["outcome"] == "UNKNOWN", evaluation
+        assert "no simulation transition is attributed to the agent" in evaluation["details"]
+    assert result["status"] == "UNKNOWN"
+    assert result["domain_depth"] == 1
+    # A step map naming records when nothing is attributed contradicts the declaration.
+    bundle["artifact"].update(step_map=[1])
+    assert assess(bundle, policy)["result"]["checks"]["BOT-2.1"]["evaluation"]["outcome"] == "FAIL"
+    # Declaring one transition exogenous stays admissible: the agent answers for the other.
+    bundle["artifact"].update(exogenous_transitions=[0], step_map=[2])
+    result = assess(bundle, policy)["result"]
+    assert result["status"] == "PASS", result
+    observations = result["checks"]["BOT-2.1"]["evaluation"]["observations"]
+    assert observations["attributed_transitions"] == 1
+    assert observations["exogenous_transitions"] == [0]
+
+
 def _resign(example: ModuleType, bundle: dict) -> dict:
     """Re-sign every token under the example key and rebind all three retained digests.
 
@@ -690,17 +711,19 @@ def test_token_readings_that_narrow_or_reach_outside_still_hold(example: ModuleT
 
 def _number_words() -> dict[str, int]:
     """The pull-request gate's vocabulary, so these surfaces and the description read numbers alike."""
-    spec = importlib.util.spec_from_file_location(
-        "check_pr_description", ROOT / "scripts" / "check_pr_description.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return {word: value for value, word in module.NUMBER_WORDS.items()}
+    return {word: value for value, word in check_pr_description.NUMBER_WORDS.items()}
 
 
 NUMBER_WORDS = _number_words()
 ADAPTER_COUNT = re.compile(r"\b(\w+) (?:(?:executable|grounded|native) )*domain adapters\b", re.IGNORECASE)
 CHECK_COUNT = re.compile(r"\b(\d+) (?:(?:cumulative|separate) )*domain checks\b", re.IGNORECASE)
-NAME_LIST = re.compile(r"\bDATA, ENV(?:, [A-Z]+)*,? and [A-Z]+\b")
+NATIVE_NAME_LIST = re.compile(
+    r"(?:\bnative computational adapter inventory is"
+    r"|\btwelve executable domain adapters(?:\s*—|\",\s*\"why\":\s*\")"
+    r"|\bList native)\s*"
+    r"(?P<names>[A-Z]+(?:, [A-Z]+)*,? and [A-Z]+)\b",
+    re.IGNORECASE,
+)
 COUNT_SURFACES = sorted({ROOT / "README.md", ROOT / "CHANGELOG.md", ROOT / "docs/reference.html",
                          *ROOT.glob("docs/**/*.md"), *ROOT.glob("src/verifier/standard/*.md"),
                          *ROOT.glob("src/verifier/runtime/*.py")})
@@ -717,11 +740,46 @@ def _current_prose(path: Path) -> str:
     return " ".join(text.split())
 
 
+def _native_family_enumerations(prose: str) -> tuple[str, ...]:
+    """Return only lists explicitly labelled as the native-domain family inventory."""
+    return tuple(found.group("names") for found in NATIVE_NAME_LIST.finditer(prose))
+
+
+def _assert_native_family_enumerations(prose: str, expected: str, where: str) -> bool:
+    """Reject a wrong labelled native inventory while ignoring unrelated family lists."""
+    found = _native_family_enumerations(prose)
+    for actual in found:
+        assert actual == expected, (where, actual)
+    return bool(found)
+
+
+def test_native_family_enumeration_oracle_is_scoped_and_fail_closed() -> None:
+    names = list(CHECKS)
+    expected = ", ".join(names[:-1]) + " and " + names[-1]
+    unrelated = (
+        "The fixed mapped kinds are ACTOR, ARCH, BENCH, COLLECTIVE, DATA, ENV, "
+        "GRAPH, HARDWARE, HUMAN, IDENTITY, OBJECT, RECEIPT, ROLE, TIME, and TOKEN."
+    )
+    assert _native_family_enumerations(unrelated) == ()
+
+    wrong = "The native computational adapter inventory is DATA, ENV, GRAPH and TOKEN."
+    assert _native_family_enumerations(wrong) == ("DATA, ENV, GRAPH and TOKEN",)
+    with pytest.raises(AssertionError, match="DATA, ENV, GRAPH and TOKEN"):
+        _assert_native_family_enumerations(wrong, expected, "static-wrong-native-list")
+
+    non_data_first_wrong = "List native GRAPH, DATA and TOKEN checks."
+    assert _native_family_enumerations(non_data_first_wrong) == ("GRAPH, DATA and TOKEN",)
+    with pytest.raises(AssertionError, match="GRAPH, DATA and TOKEN"):
+        _assert_native_family_enumerations(
+            non_data_first_wrong, expected, "static-non-data-first-wrong-native-list"
+        )
+
+
 def test_every_published_adapter_and_check_count_is_measured() -> None:
     """A count of the adapters, their checks or their names is read back from CHECKS.
 
-    The scan is generic, so a surface nobody remembers is covered too; the reach
-    assertions stop it from passing vacuously when a phrasing changes.
+    Counts remain generic. Family lists must carry an explicit native-domain label;
+    the reach assertions stop the scoped scan from passing vacuously.
     """
     names = list(CHECKS)
     enumeration = ", ".join(names[:-1]) + " and " + names[-1]
@@ -738,8 +796,7 @@ def test_every_published_adapter_and_check_count_is_measured() -> None:
         for found in CHECK_COUNT.finditer(prose):
             assert int(found.group(1)) == total, (where, found.group(0))
             totalled.add(where)
-        for found in NAME_LIST.finditer(prose):
-            assert found.group(0) == enumeration, (where, found.group(0))
+        if _assert_native_family_enumerations(prose, enumeration, where):
             listed.add(where)
     assert {"README.md", "CHANGELOG.md", "docs/GROUNDED_CERTIFICATION.md", "docs/QUICKSTART.md",
             "src/verifier/runtime/accessibility_cli.py"} <= counted, counted

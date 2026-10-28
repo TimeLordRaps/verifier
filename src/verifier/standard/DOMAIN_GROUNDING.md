@@ -175,7 +175,9 @@ retained records, each on a channel inside the agent's observation ceiling; the 
 each aligned invocation MUST equal the simulation's own observation projection of the state it
 reached, and its retained input MUST equal the action the simulation replayed. A simulation
 transition that no retained record accounts for is `FAIL` unless the contract declares it
-exogenous, in which case it is named and excluded from what the agent is answerable for.
+exogenous, in which case it is named and excluded from what the agent is answerable for. A loop
+in which every transition is declared exogenous is `UNKNOWN`: like a simulation that retains no
+transition, it leaves no evidence that the agent drove the simulation at all.
 
 Environment separation is declared, not measured. `distinct` requires the two bound environment
 certificates to name different subjects, retain different software inventories, and share no

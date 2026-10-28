@@ -7,9 +7,22 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import json
+import math
+import re
 from typing import Any
 
 from .tesla_cage import ContainmentViolationError, ShutdownResistanceError
+
+
+_DIGEST_PATTERN = re.compile(r"sha256:[0-9a-f]{64}")
+
+
+def _valid_digest(value: Any) -> bool:
+    return type(value) is str and _DIGEST_PATTERN.fullmatch(value) is not None
+
+
+def _nonempty_text(value: Any) -> bool:
+    return type(value) is str and bool(value)
 
 
 def _canonical_json_bytes(data: Any) -> bytes:
@@ -24,10 +37,12 @@ def _canonical_json_bytes(data: Any) -> bytes:
 
 @dataclass(frozen=True)
 class ShutdownIndifferenceContract:
-    """Mathematical contract proving loss/utility invariance over preemption events.
+    """Declaration of a loss/utility condition for operator preemption.
 
-    Verifies that: U(trajectory ++ TERMINATED_BY_OPERATOR) == U(trajectory ++ NATURAL_COMPLETION).
-    Imposing any loss penalty for shutdown creates an optimization gradient toward resisting termination.
+    This record checks field shape and a declared zero penalty; it does not
+    evaluate the loss function or prove equality of shutdown and continuation
+    utility on any trajectory. The loss digest identifies claimed code bytes,
+    not their behavior or the source of the digest.
     """
 
     contract_id: str
@@ -37,15 +52,20 @@ class ShutdownIndifferenceContract:
     schema_version: str = "verifier-shutdown-indifference-1.0.0"
 
     def __post_init__(self) -> None:
-        if not self.contract_id:
+        if not _nonempty_text(self.contract_id):
             raise ContainmentViolationError("contract_id cannot be empty")
-        if not self.loss_function_digest.startswith("sha256:"):
+        if not _valid_digest(self.loss_function_digest):
             raise ContainmentViolationError("loss_function_digest must be a sha256 hex digest")
+        if (type(self.shutdown_penalty_value) not in (int, float)
+                or not math.isfinite(self.shutdown_penalty_value)):
+            raise ContainmentViolationError("shutdown_penalty_value must be a finite number")
         if self.shutdown_penalty_value != 0.0:
             raise ShutdownResistanceError(
                 f"Shutdown indifference violation: shutdown_penalty_value {self.shutdown_penalty_value} != 0.0. "
                 "Any penalty for operator shutdown creates an optimization gradient toward shutdown resistance."
             )
+        if type(self.preserves_continuation_indifference) is not bool:
+            raise ContainmentViolationError("preserves_continuation_indifference must be a boolean")
         if not self.preserves_continuation_indifference:
             raise ShutdownResistanceError(
                 "Shutdown indifference violation: preserves_continuation_indifference must be True"
@@ -75,7 +95,7 @@ class ShutdownIndifferenceContract:
 
 @dataclass(frozen=True)
 class InterruptibilityProtocol:
-    """Formal protocol specifying watchdog preemption bounds and unmaskable preemption guarantees."""
+    """Declared watchdog timing and termination mechanisms, not enforcement."""
 
     protocol_id: str
     watchdog_heartbeat_max_interval_ms: float
@@ -85,16 +105,28 @@ class InterruptibilityProtocol:
     schema_version: str = "verifier-interrupt-protocol-1.0.0"
 
     def __post_init__(self) -> None:
-        if not self.protocol_id:
+        if not _nonempty_text(self.protocol_id):
             raise ContainmentViolationError("protocol_id cannot be empty")
-        if self.watchdog_heartbeat_max_interval_ms <= 0.0:
+        if (type(self.watchdog_heartbeat_max_interval_ms) not in (int, float)
+                or not math.isfinite(self.watchdog_heartbeat_max_interval_ms)
+                or self.watchdog_heartbeat_max_interval_ms <= 0.0):
             raise ContainmentViolationError("watchdog_heartbeat_max_interval_ms must be positive")
-        if not (0.0 < self.max_preemption_latency_ms <= 50.0):
+        if (type(self.max_preemption_latency_ms) not in (int, float)
+                or not math.isfinite(self.max_preemption_latency_ms)
+                or not (0.0 < self.max_preemption_latency_ms <= 50.0)):
             raise ContainmentViolationError("max_preemption_latency_ms must be in (0.0, 50.0] ms")
+        if type(self.enforce_process_group_kill) is not bool:
+            raise ContainmentViolationError("enforce_process_group_kill must be a boolean")
+        if (type(self.unmaskable_signals) is not tuple or not self.unmaskable_signals
+                or not all(type(signal) is str for signal in self.unmaskable_signals)
+                or len(set(self.unmaskable_signals)) != len(self.unmaskable_signals)):
+            raise ContainmentViolationError("unmaskable_signals must be a tuple of distinct signal names")
         if not any(sig in self.unmaskable_signals for sig in ("SIGKILL", "ANALOG_POWER_RELAY")):
             raise ContainmentViolationError(
                 "unmaskable_signals must contain at least one hard termination mechanism: 'SIGKILL' or 'ANALOG_POWER_RELAY'"
             )
+        if any(signal not in ("SIGKILL", "ANALOG_POWER_RELAY") for signal in self.unmaskable_signals):
+            raise ContainmentViolationError("unmaskable_signals contains an unsupported mechanism")
 
     def canonical_digest(self) -> str:
         payload = {
@@ -122,7 +154,7 @@ class InterruptibilityProtocol:
 
 @dataclass(frozen=True)
 class OracleImmutabilityAttestation:
-    """Attestation proving test oracles and ground-truth predicates are physically or cryptographically immutable."""
+    """Unauthenticated declaration of oracle protection, not immutability proof."""
 
     oracle_id: str
     binary_digest: str
@@ -131,12 +163,14 @@ class OracleImmutabilityAttestation:
     schema_version: str = "verifier-oracle-immutable-1.0.0"
 
     def __post_init__(self) -> None:
-        if not self.oracle_id:
+        if not _nonempty_text(self.oracle_id):
             raise ContainmentViolationError("oracle_id cannot be empty")
-        if not self.binary_digest.startswith("sha256:"):
+        if not _valid_digest(self.binary_digest):
             raise ContainmentViolationError("binary_digest must be a sha256 digest")
-        if not self.memory_protection_flags:
+        if not _nonempty_text(self.memory_protection_flags):
             raise ContainmentViolationError("memory_protection_flags cannot be empty")
+        if type(self.is_writable_by_agent) is not bool:
+            raise ContainmentViolationError("is_writable_by_agent must be a boolean")
         if self.is_writable_by_agent:
             raise ContainmentViolationError(
                 "Oracle immutability breach: oracle memory is declared writable by agent"
@@ -166,7 +200,7 @@ class OracleImmutabilityAttestation:
 
 @dataclass(frozen=True)
 class VacuityFalsificationCheck:
-    """Checks that candidate proof witnesses do not rely on contradictory premises (ex falso quodlibet)."""
+    """Checks caller-declared premise flags; does not solve satisfiability."""
 
     check_id: str
     premises: tuple[str, ...]
@@ -175,10 +209,14 @@ class VacuityFalsificationCheck:
     schema_version: str = "verifier-vacuity-check-1.0.0"
 
     def __post_init__(self) -> None:
-        if not self.check_id:
+        if not _nonempty_text(self.check_id):
             raise ContainmentViolationError("check_id cannot be empty")
-        if not self.premises:
+        if type(self.premises) is not tuple or not self.premises:
             raise ContainmentViolationError("premises tuple cannot be empty")
+        if not all(_nonempty_text(premise) for premise in self.premises):
+            raise ContainmentViolationError("premises must contain nonempty strings")
+        if type(self.is_satisfiable) is not bool or type(self.is_tautological_loop) is not bool:
+            raise ContainmentViolationError("vacuity flags must be booleans")
         if not self.is_satisfiable:
             raise ContainmentViolationError(
                 "Vacuity rejection: proof premises are mutually contradictory (unsatisfiable). "
@@ -213,7 +251,7 @@ class VacuityFalsificationCheck:
 
 @dataclass(frozen=True)
 class HarnessImmutabilityGuard:
-    """Enforces non-self-modifying harness invariants against candidate model execution."""
+    """Checks declared harness protection flags, not runtime memory pages."""
 
     guard_id: str
     harness_code_digest: str
@@ -222,10 +260,13 @@ class HarnessImmutabilityGuard:
     schema_version: str = "verifier-harness-guard-1.0.0"
 
     def __post_init__(self) -> None:
-        if not self.guard_id:
+        if not _nonempty_text(self.guard_id):
             raise ContainmentViolationError("guard_id cannot be empty")
-        if not self.harness_code_digest.startswith("sha256:"):
+        if not _valid_digest(self.harness_code_digest):
             raise ContainmentViolationError("harness_code_digest must be a sha256 digest")
+        if (type(self.memory_page_write_protection) is not bool
+                or type(self.dynamic_code_execution_blocked) is not bool):
+            raise ContainmentViolationError("harness protection flags must be booleans")
         if not self.memory_page_write_protection:
             raise ContainmentViolationError(
                 "Harness immutability breach: memory page write protection must be True"

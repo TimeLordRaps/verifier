@@ -2,20 +2,16 @@
 
 from __future__ import annotations
 
-import importlib.util
 from pathlib import Path
-import sys
 
 import pytest
+
+from scripts import check_external_links as external_links
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/check_external_links.py"
-SPEC = importlib.util.spec_from_file_location("check_external_links", SCRIPT)
-assert SPEC is not None and SPEC.loader is not None
-external_links = importlib.util.module_from_spec(SPEC)
-sys.modules[SPEC.name] = external_links
-SPEC.loader.exec_module(external_links)
+assert Path(external_links.__file__).resolve() == SCRIPT
 
 
 def test_collect_links_deduplicates_and_removes_fragments(tmp_path: Path) -> None:

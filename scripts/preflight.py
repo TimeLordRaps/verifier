@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
-"""Terminology: continuous integration (CI); GNU Privacy Guard (GPG); operating system (OS);
-pull request (PR); uniform resource locator (URL); Verifier Standard (VSTD).
+"""Terminology: continuous integration (CI); GNU Privacy Guard (GPG);
+Java unit test report format (JUnit); operating system (OS); pull request (PR);
+uniform resource locator (URL); Verifier Standard (VSTD).
 
-Preflight flight check: prevent all preventable CI failures locally before git push."""
+Check declared local gates before git push. Normal preflight exits 0 for passed
+local checks, 1 for a failed check, and 2 when the pull-request description is
+unavailable or its result cannot be established. Passing local checks grants no
+push authority and does not replace the strict pre-push or hosted gates.
+"""
 
 from __future__ import annotations
 
@@ -13,6 +18,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 import threading
 
 try:
@@ -86,19 +92,27 @@ def check_git_signatures(rev_range: str | None = None) -> bool:
     cmd = ["git", "log", rev_range, "--format=%H%x00%G?%x00%an%x00%s"]
     code, stdout, stderr = _run_command(cmd)
     if code != 0:
-        print(f"[SIGNATURE GATE] WARNING: Unable to inspect commit range '{rev_range}': {stderr}")
-        return True
+        print(f"[SIGNATURE GATE] FAIL: Unable to inspect commit range '{rev_range}': {stderr}")
+        print("  Signature status was not established, so the range cannot be cleared.")
+        return False
 
     if not stdout:
+        code, count, stderr = _run_command(["git", "rev-list", "--count", rev_range])
+        if code != 0 or count.strip() != "0":
+            print(f"[SIGNATURE GATE] FAIL: No signature rows were returned for '{rev_range}', but its commit "
+                  f"count is not established as zero ({count.strip() or stderr or 'no output'}).")
+            return False
         print(f"[SIGNATURE GATE] PASS: No unpushed commits in range '{rev_range}'.")
         return True
 
     lines = stdout.splitlines()
     unsigned: list[tuple[str, str, str, str]] = []
+    unparsed = 0
     checked = 0
     for line in lines:
         parts = line.split("\x00")
         if len(parts) != 4:
+            unparsed += 1
             continue
         commit_hash, sig_status, author, subject = parts
         checked += 1
@@ -122,6 +136,11 @@ def check_git_signatures(rev_range: str | None = None) -> bool:
         print("  Every commit entering main must be GPG signed to pass branch protection.")
         print("  Re-sign single commit: git commit --amend -S --no-edit")
         print("  Re-sign branch:        git rebase origin/main --exec 'git commit --amend -S --no-edit'")
+        return False
+
+    if unparsed:
+        print(f"[SIGNATURE GATE] FAIL: {unparsed} log row(s) in {rev_range} could not be parsed as "
+              "signature records, so their signature status was not established.")
         return False
 
     print(f"[SIGNATURE GATE] PASS: All {checked} commit(s) in {rev_range} have verified GPG signatures.")
@@ -150,8 +169,9 @@ def check_presentation_gate() -> bool:
     """Run presentation, documentation, boundary leaks, and public estate sync checks."""
     script = ROOT / "scripts" / "check_presentation.py"
     if not script.exists():
-        print(f"[PRESENTATION GATE] SKIPPED: {script} not found.")
-        return True
+        print(f"[PRESENTATION GATE] FAIL: {script} not found, so the presentation, boundary and estate "
+              "sync checks did not run.")
+        return False
     code, stdout, stderr = _run_command([sys.executable, str(script)])
     if code != 0:
         print(f"[PRESENTATION GATE] FAIL: check_presentation.py failed:")
@@ -244,7 +264,18 @@ def check_schema_inventory() -> bool:
         "-k",
         "schema",
     ]
-    code, stdout, stderr = _run_command(cmd)
+    nested_env = None
+    if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
+        plugins = [
+            name.strip()
+            for name in os.environ.get("PYTEST_PLUGINS", "").split(",")
+            if name.strip()
+        ]
+        if "pytest_timeout" not in plugins:
+            plugins.append("pytest_timeout")
+        nested_env = {"PYTEST_PLUGINS": ",".join(plugins)}
+
+    code, stdout, stderr = _run_command(cmd, env=nested_env)
     if code != 0:
         print(f"[SCHEMA INVENTORY] FAIL: Schema/packaged specification tests failed:")
         print(stdout or stderr)
@@ -312,7 +343,14 @@ def classify_skip_reason(reason: str) -> str:
 
 
 def audit_test_skips(output: str) -> tuple[bool, dict[str, int], list[tuple[str, str]]]:
-    """Parse pytest skip output and audit against the rubric to prevent skip slippage."""
+    """Reject unaccounted skips and every xfail/xpass suppression.
+
+    The skip rubric can classify an unrun capability boundary.  It cannot turn
+    an expected failure into passing coverage.  Pytest does not emit xfail or
+    xpass detail under every reporting flag, so both detail lines and terminal
+    summary counts are inspected.  Summary-only suppression counts remain an
+    actionable discrepancy instead of being reported as a clean run.
+    """
     counts: dict[str, int] = {category: 0 for category in TEST_SKIP_RUBRIC_CATEGORIES}
     unclassified: list[tuple[str, str]] = []
 
@@ -330,40 +368,98 @@ def audit_test_skips(output: str) -> tuple[bool, dict[str, int], list[tuple[str,
         else:
             unclassified.append((loc, reason))
 
-    total_parsed = sum(counts.values()) + len(unclassified)
+    # Keep the skip denominator separate.  Xfail/xpass findings added below
+    # must never make a missing SKIPPED detail line look accounted for.
+    parsed_skip_count = sum(counts.values()) + len(unclassified)
+
+    xfail_pattern = re.compile(r"^XFAIL\s+([^\r\n]+)$", re.MULTILINE)
+    xpass_pattern = re.compile(r"^XPASS\s+([^\r\n]+)$", re.MULTILINE)
+    xfail_details = xfail_pattern.findall(output)
+    xpass_details = xpass_pattern.findall(output)
+    for detail in xfail_details:
+        unclassified.append((
+            "PYTEST_XFAIL_PRESENT",
+            "Expected failure is not passing coverage; fix the underlying test "
+            f"and remove the xfail marker: {detail.strip()}",
+        ))
+    for detail in xpass_details:
+        unclassified.append((
+            "PYTEST_XPASS_PRESENT",
+            "Non-strict XPASS leaves a stale suppression marker; remove the "
+            f"marker and rerun the unsuppressed test: {detail.strip()}",
+        ))
+
+    strict_xpass = re.findall(r"\[XPASS\(strict\)\](?:\s*([^\r\n]*))?", output)
+    for detail in strict_xpass:
+        suffix = f": {detail.strip()}" if detail.strip() else ""
+        unclassified.append((
+            "PYTEST_STRICT_XPASS_PRESENT",
+            "Strict XPASS is a failed stale-suppression gate; remove the marker "
+            "only after the test passes without suppression" + suffix,
+        ))
+
     summary_match = re.search(r"=\s*.*?\b(\d+)\s+skipped\b.*?\s*=", output)
     if not summary_match:
         summary_match = re.search(r"\b(\d+)\s+skipped\b", output)
     if summary_match:
         summary_skips = int(summary_match.group(1))
-        if summary_skips > total_parsed:
+        if summary_skips != parsed_skip_count:
             unclassified.append((
                 "PYTEST_SUMMARY_DISCREPANCY",
-                f"pytest reported {summary_skips} skipped tests, but audit parsed only {total_parsed} skips (unparsed skip slippage)",
+                f"pytest reported {summary_skips} skipped tests, but audit parsed only {parsed_skip_count} skips (unparsed skip slippage)",
+            ))
+
+    for label, detail_count, code in (
+        ("xfailed", len(xfail_details), "PYTEST_XFAIL_SUMMARY_DISCREPANCY"),
+        ("xpassed", len(xpass_details), "PYTEST_XPASS_SUMMARY_DISCREPANCY"),
+    ):
+        summary = re.search(rf"\b(\d+)\s+{label}\b", output)
+        if summary and int(summary.group(1)) != detail_count:
+            unclassified.append((
+                code,
+                f"pytest reported {summary.group(1)} {label} test(s), but the "
+                f"audit observed {detail_count} detail line(s); xfail/xpass "
+                "cannot be omitted from a complete-clean-run claim",
             ))
 
     success = len(unclassified) == 0
     return success, counts, unclassified
 
 
-def check_pr_description() -> bool:
-    """Check that an attached pull-request description still describes this tree.
+def check_pr_description() -> bool | None:
+    """Check the attached description; preserve unavailable evidence as None.
 
-    Runs before push because the description is the artifact a reviewer reads instead
-    of the tree: a push that changes the domains, the counts, the head or the file
-    inventory silently invalidates it. Passing when no description can be read is
-    deliberate; absence of a description is not evidence that it disagrees.
+    The checker can exit successfully without reading a description. Only its
+    explicit machine-readable result establishes agreement. The strict push
+    path separately selects the repository, branch and proposed commit.
     """
     script = ROOT / "scripts" / "check_pr_description.py"
     if not script.exists():
         print("[PR DESCRIPTION GATE] FAIL: scripts/check_pr_description.py is missing")
         return False
-    code, stdout, stderr = _run_command([sys.executable, str(script)])
+    try:
+        code, stdout, stderr = _run_command([sys.executable, str(script), "--json"])
+    except (OSError, subprocess.SubprocessError):
+        print("[PR DESCRIPTION GATE] UNKNOWN: description checker unavailable")
+        return None
     output = (stdout or stderr).strip()
     if output:
         print(output)
     if code != 0:
         print("[PR DESCRIPTION GATE] FAIL: update the description, or the tree, until they agree")
+        return False
+    try:
+        report = json.loads(stdout)
+    except (ValueError, TypeError):
+        report = None
+    if (type(report) is not dict or set(report) != {"status", "findings"}
+            or report["status"] not in ("PASS", "FAIL")
+            or type(report["findings"]) is not list
+            or any(type(finding) is not str for finding in report["findings"])):
+        print("[PR DESCRIPTION GATE] UNKNOWN: no explicit description-check result")
+        return None
+    if report["status"] == "FAIL" or report["findings"]:
+        print("[PR DESCRIPTION GATE] FAIL: the description does not establish agreement")
         return False
     print("[PR DESCRIPTION GATE] PASS")
     return True
@@ -429,7 +525,7 @@ def check_pr_descriptions_for_push(pushes: list[tuple[str, str, str, str]],
     is published. The description therefore has to be revised, and bind the new head,
     before the push: update it first, then push. A pull request that lives in another
     repository (one opened from this repository into an upstream) is not found here;
-    the hosted pr-description workflow runs both checks on it.
+    the hosted pr-description workflow judges it with its own recorded-event checks.
 
     Anything that cannot be answered fails the push. A question gh could not answer
     is not a no.
@@ -462,7 +558,7 @@ def check_pr_descriptions_for_push(pushes: list[tuple[str, str, str, str]],
         return False
 
     script = ROOT / "scripts" / "check_pr_description.py"
-    changed = ROOT / "scripts" / "check_pr_description_changed.py"
+    changed = ROOT / "scripts" / "check_pr_description_revision.py"
     success = True
     for branch, oid in branches:
         try:
@@ -491,7 +587,7 @@ def check_pr_descriptions_for_push(pushes: list[tuple[str, str, str, str]],
                 success = False
             code, stdout, stderr = _run_command([
                 sys.executable, str(script), "--pr", str(number), "--repo", repository,
-                "--commit", oid, "--require-pull-request",
+                "--commit", oid, "--require-pull-request", "--pre-push-pending-run",
             ])
             output = (stdout or stderr).strip()
             if output:
@@ -507,23 +603,37 @@ def check_pr_descriptions_for_push(pushes: list[tuple[str, str, str, str]],
 
 
 def check_test_skips(output: str | None = None) -> bool:
-    """Run skip audit and print classified skip rationale or unclassified slippage."""
+    """Run skip/xfail audit and reject suppression as clean coverage."""
     if output is None:
         cmd = [sys.executable, "-u", "-m", "pytest", "-vv", "-s", "--durations=10", "--timeout=60", "-rs", "tests/"]
         code, stdout, stderr = _run_command(cmd)
+        if code != 0:
+            print(f"[SKIP AUDIT] FAIL: pytest exited with code {code}; skips cannot be audited over a failed run.")
+            return False
         output = stdout + "\n" + stderr
+
+    if not output.strip():
+        print("[SKIP AUDIT] FAIL: the test run produced no output; skips cannot be audited over an empty run.")
+        return False
 
     success, counts, unclassified = audit_test_skips(output)
     total_skips = sum(counts.values()) + len(unclassified)
 
     if not success:
-        print(f"[SKIP AUDIT] FAIL: Found {len(unclassified)} unclassified test skip(s) risking skip slippage:")
+        print(
+            f"[SKIP AUDIT] FAIL: Found {len(unclassified)} unclosed "
+            "skip/xfail/xpass finding(s):"
+        )
         for loc, reason in unclassified:
             print(f"  - [{loc}] {reason}")
         print("\nRemedy:")
         print("  Every skipped test must be justified against docs/TEST_SKIP_RUBRIC.md.")
         print("  Either update the test skip message with a rubric tag like [OS_CAPABILITY_GUARD],")
         print("  or ensure the rationale clearly documents the missing platform capability/dependency.")
+        print(
+            "  XFAIL and XPASS have no passing-coverage rubric: repair the "
+            "underlying behavior, remove the marker, and rerun the test."
+        )
         return False
 
     if total_skips == 0:
@@ -538,17 +648,36 @@ def check_test_skips(output: str | None = None) -> bool:
 
 
 def check_full_test_suite() -> bool:
-    """Run full repository pytest test suite and audit test skips."""
-    cmd = [sys.executable, "-u", "-m", "pytest", "-vv", "-s", "--durations=10", "--timeout=60", "-rs"]
-    code, stdout, stderr = _run_command(cmd)
-    if code != 0:
-        print(f"[TEST SUITE] FAIL: Pytest suite failed:")
-        print(stdout or stderr)
-        return False
-    print("[TEST SUITE] PASS: Full test suite passed.")
-    if stdout:
-        if not check_test_skips(stdout):
+    """Run full repository pytest test suite, audit test skips, and scan its report.
+
+    The hosted base job publishes the suite's JUnit report only once
+    `check_release_boundary.py` passes it, and a report is not the source it came
+    from: a parametrized test's default id is its parameters' own text, so an address
+    joined at run time to keep a test file clean is written into the report whole.
+    The report is therefore written and scanned here too, so that a push is not the
+    first place a leak in the evidence shows.
+    """
+    with tempfile.TemporaryDirectory() as scratch:
+        report = Path(scratch) / "base-contracts.xml"
+        cmd = [sys.executable, "-u", "-m", "pytest", "-vv", "-s", "--durations=10", "--timeout=60", "-rs",
+               "-p", "scripts.pytest_public_evidence", f"--junitxml={report}"]
+        code, stdout, stderr = _run_command(cmd)
+        if code != 0:
+            print(f"[TEST SUITE] FAIL: Pytest suite failed:")
+            print(stdout or stderr)
             return False
+        print("[TEST SUITE] PASS: Full test suite passed.")
+        if stdout:
+            if not check_test_skips(stdout):
+                return False
+        code, stdout, stderr = _run_command(
+            [sys.executable, str(ROOT / "scripts" / "check_release_boundary.py"), str(report)])
+        if code != 0:
+            print("[TEST EVIDENCE] FAIL: the suite's report fails the release boundary the hosted "
+                  "run applies before publishing it:")
+            print(stdout or stderr)
+            return False
+        print("[TEST EVIDENCE] PASS: the suite's report passes the release boundary.")
     return True
 
 
@@ -686,7 +815,8 @@ def main() -> int:
     if not check_schema_inventory():
         success = False
 
-    if not check_pr_description():
+    description = check_pr_description()
+    if description is False:
         success = False
 
     if args.full:
@@ -694,7 +824,13 @@ def main() -> int:
             success = False
 
     if success:
-        print("\n[PREFLIGHT] ALL CHECKS PASSED: Safe to push to remote.")
+        if description is None:
+            print("\n[PREFLIGHT] UNKNOWN: local checks completed; pull-request "
+                  "description agreement is not established. Strict pre-push "
+                  "and hosted gates remain required.")
+            return 2
+        print("\n[PREFLIGHT] LOCAL CHECKS PASSED: push authorization and the "
+              "strict pre-push and hosted gates remain separate requirements.")
         return 0
     else:
         print("\n[PREFLIGHT] PREFLIGHT FAILED: Do not push to remote until resolved.")

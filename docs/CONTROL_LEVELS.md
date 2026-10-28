@@ -71,7 +71,19 @@ helpers with native domain-certificate replay. It binds the entire canonical
 certificate, including its certificate digest, to the action's hexadecimal artifact
 digest. Only `admission == "PASS"` returns an unchanged certificate; other results
 return no emitted certificate. It performs no external action or atomic invocation
-consumption. Its audit receipt requires a separate disclosure review before sharing.
+consumption. The aggregate captures one bounded copy of the plain action,
+certificate, checker policy, disclosure surface/bounds/context, consent and
+governance policy/evidence, and trusted evaluation time before invoking any gate.
+Every gate and the final receipt use those captured values, so a caller edit
+during evaluation cannot relabel a passed receipt. The aggregate text and binary
+value budget is four times the domain certificate's 16 mebibyte limit, allowing
+the complete certificate plus bounded authority inventories. Separate limits
+bound node count, collection width, depth and integer width; the 64 mebibyte
+budget is not a total heap bound. Each underlying verifier keeps its own
+narrower limits. This is a local input snapshot, not an atomic host
+snapshot or a sandbox for arbitrary Python callbacks. An unbounded or non-plain
+input refuses admission; a missing authority or trusted clock retains its
+`UNKNOWN` outcome. Its audit receipt requires a separate disclosure review before sharing.
 The exercised integration is in `tests/test_controlled_emission.py`.
 
 The intended beneficiary is an operator who needs reproducible decisions before

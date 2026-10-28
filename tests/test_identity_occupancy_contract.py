@@ -1,16 +1,15 @@
 """Refute unsupported Verifier Standard (VSTD) identity-role claims."""
 from __future__ import annotations
 
-import importlib
-
 import pytest
 
 from verifier.core.namespace import NamespaceObject, composition_digest
 from verifier.domains.common import Refuted, digest
+from verifier.domains.contracts import identity_occupancy
 
 
 def checker():
-    return importlib.import_module("verifier.domains.contracts.identity_occupancy")
+    return identity_occupancy
 
 
 def specimen(kind: str = "AGENT"):

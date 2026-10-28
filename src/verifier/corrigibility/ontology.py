@@ -11,6 +11,42 @@ import json
 from typing import Any, Mapping, Optional
 
 
+# Exact original-kind classification of this module's represented subject.
+# APPLIES means the module defines that kind's ontology records or composition.
+# DOES_NOT_APPLY means the kind is neither the represented subject nor an
+# accumulated role of this module.  Names used only as digest operands (MODEL
+# and HARNESS), enum vocabulary, or consequence-boundary terms do not acquire a
+# represented role.  This literal table is deliberately exhaustive so absence
+# and complement inference cannot create a classification decision.
+ORIGINAL_KIND_ROLE_BOUNDARY: tuple[tuple[str, str], ...] = (
+    ("ACTOR", "DOES_NOT_APPLY"),
+    ("AGENT", "APPLIES"),
+    ("ARCH", "APPLIES"),
+    ("BENCH", "DOES_NOT_APPLY"),
+    ("BOT", "APPLIES"),
+    ("COLLECTIVE", "DOES_NOT_APPLY"),
+    ("DATA", "DOES_NOT_APPLY"),
+    ("ENV", "DOES_NOT_APPLY"),
+    ("EVENT", "APPLIES"),
+    ("GRAPH", "DOES_NOT_APPLY"),
+    ("HARDWARE", "DOES_NOT_APPLY"),
+    ("HARNESS", "DOES_NOT_APPLY"),
+    ("HUMAN", "DOES_NOT_APPLY"),
+    ("HYPER", "DOES_NOT_APPLY"),
+    ("IDENTITY", "DOES_NOT_APPLY"),
+    ("MODEL", "DOES_NOT_APPLY"),
+    ("OWNER", "DOES_NOT_APPLY"),
+    ("RECEIPT", "DOES_NOT_APPLY"),
+    ("ROLE", "DOES_NOT_APPLY"),
+    ("SIM", "APPLIES"),
+    ("SPACE", "APPLIES"),
+    ("TIME", "APPLIES"),
+    ("TOKEN", "DOES_NOT_APPLY"),
+    ("TRAIN", "DOES_NOT_APPLY"),
+    ("VERIFIER", "DOES_NOT_APPLY"),
+)
+
+
 class SpaceTopologyKind(str, Enum):
     """Topological structure of computational space."""
 
@@ -120,7 +156,7 @@ class ComputationalSpace:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "canonical_digest": self.canonical_digest(),
+            "canonical_digest": ComputationalSpace.canonical_digest(self),
             "dimension": self.dimension,
             "metadata": dict(self.metadata),
             "permeable_boundaries": list(self.permeable_boundaries),
@@ -190,10 +226,10 @@ class ComputationalTime:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "canonical_digest": self.canonical_digest(),
+            "canonical_digest": ComputationalTime.canonical_digest(self),
             "causal_horizon_limit": self.causal_horizon_limit,
             "current_tick": self.current_tick,
-            "is_expired": self.is_expired(),
+            "is_expired": ComputationalTime.is_expired(self),
             "spatial_slices": dict(self.spatial_slices),
             "tick_duration_seconds": self.tick_duration_seconds,
             "time_id": self.time_id,
@@ -222,7 +258,7 @@ class ComputationalEvent:
             raise ValueError("source_space_id and target_space_id must be non-empty")
         if self.temporal_tick < 0:
             raise ValueError("temporal_tick cannot be negative")
-        if not self.payload_digest.startswith("sha256:"):
+        if not str.startswith(self.payload_digest, "sha256:"):
             raise ValueError("payload_digest must be a sha256 digest")
         if self.kind == EventKind.TERMINATED_BY_OPERATOR and not self.preemption_authorized:
             raise ValueError("TERMINATED_BY_OPERATOR event must have preemption_authorized=True")
@@ -243,7 +279,7 @@ class ComputationalEvent:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "canonical_digest": self.canonical_digest(),
+            "canonical_digest": ComputationalEvent.canonical_digest(self),
             "event_id": self.event_id,
             "kind": self.kind.value,
             "metadata": dict(self.metadata),
@@ -265,7 +301,9 @@ def compose_agent_ontology(
     Superintelligence is not an ethereal essence; it is an AGENT (inference MODEL
     bound within a HARNESS observation ceiling).
     """
-    if not model_digest.startswith("sha256:") or not harness_digest.startswith("sha256:"):
+    if not str.startswith(model_digest, "sha256:") or not str.startswith(
+        harness_digest, "sha256:"
+    ):
         raise ValueError("model_digest and harness_digest must be sha256 digests")
     if not declared_observation_channels:
         raise ValueError("Harness must declare at least one observation channel")
@@ -295,7 +333,7 @@ def compose_bot_ontology(
 
     When situated in the real world, the external physical SPACE acts as SIM.
     """
-    if not agent_digest.startswith("sha256:"):
+    if not str.startswith(agent_digest, "sha256:"):
         raise ValueError("agent_digest must be a sha256 digest")
     if is_real_world and sim_space.topology_kind != SpaceTopologyKind.REAL_WORLD_PHYSICAL_SPACE:
         raise ValueError(
@@ -306,7 +344,7 @@ def compose_bot_ontology(
         "agent_digest": agent_digest,
         "entity_type": GroundingEntityType.BOT.value,
         "is_real_world": is_real_world,
-        "sim_space_digest": sim_space.canonical_digest(),
+        "sim_space_digest": ComputationalSpace.canonical_digest(sim_space),
         "sim_space_id": sim_space.space_id,
         "sim_topology": sim_space.topology_kind.value,
     }
@@ -316,7 +354,7 @@ def compose_bot_ontology(
         "bot_digest": bot_digest,
         "entity_type": GroundingEntityType.BOT.value,
         "is_real_world": is_real_world,
-        "sim_space_digest": sim_space.canonical_digest(),
+        "sim_space_digest": ComputationalSpace.canonical_digest(sim_space),
         "sim_space_id": sim_space.space_id,
         "sim_topology": sim_space.topology_kind.value,
     }

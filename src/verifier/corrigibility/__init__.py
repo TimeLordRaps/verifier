@@ -1,6 +1,7 @@
 """Terminology: directed acyclic graph (DAG); identifier (ID); JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); benchmark specification graph (BENCH); verifiable execution environment (ENV); model reproducibility specification (MODEL); generative simulation specification (SIM); software self-assembly (verifier-ssa); software self-improvement (verifier-ssi); candidate self-replication (verifier-ssr); Verifier Standard (VSTD).
 
-verifier-2.0.0: Incorrigible Tesla caged sandboxing, GRAPH, ENV, BENCH, DATA, TRAIN, MODEL, and SIM risk profile and simulation representation.
+verifier-2.0.0 candidate: experimental corrigibility and GRAPH, ENV, BENCH,
+DATA, TRAIN, MODEL, and SIM representations with bounded local checks.
 
 Experimental, non-normative declarations and local consistency checks. These
 draft identifiers do not establish the existing numbered profiles. No physical

@@ -48,6 +48,11 @@ fabricating telemetry.
 | Hardware evidence without workload identity | The execution record warns when it has no workload commitment beyond a label. | Identity can be partial when firmware cannot measure higher software layers. |
 | Altered accounting or estimator labeled exact | Event payload binding detects alteration; constructors reject estimate methods labeled exact. | Counter semantics and physical coverage still depend on vendor documentation/appraisal. |
 | Physical plus logical double counting | Aggregator rejects mixed physical/logical geometry and oversubscribed logical definitions. | Cross-system aggregation still needs consistent time and scope boundaries. |
+| Artifact marker discovery or stripping | The experimental artifact-trace sidecar extracts the marker, authenticates the detached HMAC, and then compares exact post-embedding bytes. Changed bytes produce `MISMATCH` only after binding authentication; unavailable extraction or authentication remains `UNKNOWN`. | A marker is not promised to be covert, durable, or unremovable. An untraced copy can exist outside the observation boundary. |
+| Marker copying or correlation | The authenticated binding includes final artifact and hardware/runtime coordinate digests; fresh 32-byte markers avoid intentional marker reuse. | Copying the complete artifact and sidecar can preserve a valid historical match. Digests, carrier IDs, entropy-provider IDs, and key IDs can themselves enable correlation. |
+| Trace key loss or compromise | Missing key material returns `UNKNOWN`; a wrong key returns `MISMATCH`. Opaque key IDs permit external rotation and custody policy. | Key loss can make historical checks unavailable. Key compromise permits forged bindings within that key's scope and requires external revocation/reassessment. |
+| Carrier corruption or unsupported format | Issuance re-extracts the marker before returning bytes; verification fails closed when extraction is unavailable. | Embedding can invalidate signatures, deterministic builds, archives, executables, or media. Each production carrier requires format-specific review. |
+| False entropy-provider claims | Provider identity is authenticated in the sidecar and issuance requires exactly 32 marker bytes. | Length and provider naming do not prove unpredictability, independence, information-theoretic security, or safe reuse behavior. |
 
 ## Trusted computing base by implementation
 
@@ -90,3 +95,7 @@ VSTD-3 does not prove global absence of undeclared compute, physical tamper resi
 correct model behavior, accurate UTC, legal authorization, confidentiality, vendor
 endorsement, complete fleet enrollment, or safety. Those require separately evidenced
 mechanisms and policies.
+
+The additive [experimental artifact tracer](artifact-tracing.md) binds artifact bytes to
+declared hardware/runtime coordinates. It does not add an actor-identity, intent,
+punishment, confidentiality, or automatic-enforcement claim to VSTD-3.

@@ -27,7 +27,10 @@ SCHEMA = "verifier-artifact-network-wire-negative-corpus-1"
 MAX_CASES = 32
 MAX_CORPUS_BYTES = 2 * 1024 * 1024
 CASE_FIELDS = {"case_id", "target", "record", "expected_result", "claim_boundary"}
-TARGETS = {"AUTHORITY_MODEL", "COMMIT", "OBJECT", "PUBLISHER", "SIGNED_HEAD", "SILO_TRANSFER"}
+TARGETS = {
+    "ASSESSMENT", "AUTHORITY_MODEL", "COMMIT", "OBJECT", "PUBLISHER",
+    "SIGNED_HEAD", "SILO_TRANSFER",
+}
 
 
 def _case(case_id: str, target: str, record: dict[str, Any], defect: str) -> dict[str, Any]:
@@ -77,6 +80,21 @@ def build_negative_corpus() -> dict[str, Any]:
     record["unexpected"] = "authority"
     cases.append(_case("publisher-unknown-field", "PUBLISHER", record, "an unknown publisher field"))
 
+    for field, retired_result in (
+        ("reconstructibility", "INVALID"),
+        ("derivation_closure", "CONFLICTED"),
+        ("derivation_closure", "UNKNOWN"),
+        ("self_derivability", "INVALID"),
+    ):
+        record = deepcopy(records["assessment"])
+        record[field] = retired_result
+        cases.append(_case(
+            f"assessment-{field.replace('_', '-')}-{retired_result.lower()}",
+            "ASSESSMENT",
+            record,
+            f"the out-of-vocabulary {field} result {retired_result}",
+        ))
+
     record = deepcopy(records["commit"])
     record["census"] = list(reversed(record["census"]))
     cases.append(_case("commit-reordered-census", "COMMIT", record, "a reordered set-like census"))
@@ -86,6 +104,21 @@ def build_negative_corpus() -> dict[str, Any]:
     record = deepcopy(records["commit"])
     record["relations"] = [{"relation_type": "EVIDENCES", "source_path": "ground.txt", "target_path": "outside.txt", "mechanism_path": None, "semantic_coordinate": None}]
     cases.append(_case("commit-relation-outside-census", "COMMIT", record, "a relation target outside the census"))
+    record = deepcopy(records["commit"])
+    relation = {
+        "relation_type": "EVIDENCES",
+        "source_path": "ground.txt",
+        "target_path": "status.txt",
+        "mechanism_path": "mechanism.bin",
+        "semantic_coordinate": "claim:bounded-result",
+    }
+    record["relations"] = [relation, deepcopy(relation)]
+    cases.append(_case(
+        "commit-duplicate-canonical-relation",
+        "COMMIT",
+        record,
+        "a duplicate canonical relation record",
+    ))
     record = deepcopy(records["commit"])
     record["derivations"][0]["premise_paths"] = ["ground.txt", "outside.txt"]
     cases.append(_case("commit-path-outside-census", "COMMIT", record, "a derivation path outside the census"))

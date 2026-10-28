@@ -12,6 +12,8 @@ from __future__ import annotations
 import copy
 import pytest
 
+from examples import domain_grounding as domain_example
+
 from verifier.privacy import (
     BudgetExhaustedError,
     CompositionDeltaEvaluator,
@@ -348,20 +350,12 @@ def test_safe_harbor_partition() -> None:
 
 def test_real_domain_certificate_emission_evaluation() -> None:
     """Test Level 6 emission evaluation over an authentic certified DATA specimen."""
-    import importlib.util
-    from pathlib import Path
     from verifier.domains.certification import build_domain_certificate, domain_policy, domain_request
 
-    root = Path(__file__).resolve().parents[1]
-    spec = importlib.util.spec_from_file_location("domain_example", root / "examples/domain_grounding.py")
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-
-    bundles = module.specimens()
+    bundles = domain_example.specimens()
     policy = domain_policy(
         trust_roots=["test:retained-inputs", "test:checker"],
-        witness_keys=module.token_witness_keys(),
+        witness_keys=domain_example.token_witness_keys(),
     )
     req = domain_request(bundles["DATA"], target_depth=2)
     cert = build_domain_certificate(req, bundles["DATA"], policy=policy)

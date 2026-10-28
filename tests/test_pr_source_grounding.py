@@ -1,7 +1,6 @@
 """Source-grounded pull request (PR) coverage, independent omission controls."""
 from __future__ import annotations
 
-import importlib.util
 import hashlib
 import json
 from pathlib import Path
@@ -9,10 +8,10 @@ import subprocess
 
 import pytest
 
+from scripts import check_pr_description as gate
+
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("source_gate", ROOT / "scripts/check_pr_description.py")
-gate = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(gate)
+assert Path(gate.__file__).resolve() == ROOT / "scripts/check_pr_description.py"
 
 
 def git(root, *args):
@@ -47,6 +46,11 @@ def check(repo, body):
     findings = []
     gate.check_source_grounding(body, findings, root=root, base=base)
     return findings
+
+
+def test_repository_manifest_uses_locator_document_shape():
+    document = json.loads((ROOT / "docs/PR_SOURCE_FEATURES.json").read_text(encoding="utf-8"))
+    assert set(document) == {"base", "files"}
 
 
 def test_changed_function_cannot_hide_behind_domain_names(repo):
@@ -97,6 +101,27 @@ def test_manifest_rows_still_reject_source_omission(repo):
     block["manifest"]["sha256"] = hashlib.sha256(raw).hexdigest()
     assert any("missing, stale or extraneous" in finding for finding in check(
         repo, "```vstd-source-features\n" + json.dumps(block) + "\n```"))
+
+
+def test_manifest_and_inline_rows_cover_the_same_inventory_without_duplicates(repo):
+    inventory = gate.source_feature_inventory(repo[0], repo[1])
+    body = manifest_body(repo, inventory)
+    manifest = repo[0] / "docs/PR_SOURCE_FEATURES.json"
+    document = json.loads(manifest.read_text(encoding="utf-8"))
+    selected = document["files"].pop()
+    raw = json.dumps(document, sort_keys=True, separators=(",", ":")).encode()
+    manifest.write_bytes(raw)
+    block = json.loads(body.split("\n", 1)[1].rsplit("\n", 1)[0])
+    block["manifest"]["sha256"] = hashlib.sha256(raw).hexdigest()
+    block["supplemental_files"] = [selected]
+    render = lambda: "```vstd-source-features\n" + json.dumps(block) + "\n```"
+    assert check(repo, render()) == []
+    block["supplemental_files"].append(selected)
+    assert check(repo, render())
+    block["supplemental_files"] = []
+    assert check(repo, render())
+    block["supplemental_files"] = [{**selected, "sha256": "0" * 64}]
+    assert check(repo, render())
 
 
 def test_manifest_commit_mode_ignores_later_uncommitted_edits(repo):
@@ -166,6 +191,30 @@ def test_duplicate_json_keys_and_multiple_blocks_fail(repo):
     body = body_for(inventory)
     assert check(repo, body + "\n" + body)
     assert check(repo, body.replace('"base":', '"base":"forged", "base":', 1))
+
+
+def test_stacked_pull_request_covers_both_review_bases(repo):
+    root, main_base = repo
+    git(root, "add", ".")
+    git(root, "commit", "-m", "release parent")
+    release_base = git(root, "rev-parse", "HEAD")
+    (root / "src/verifier/feature.py").write_text(
+        "def existing():\n    return 3\n\ndef admission():\n    return False\n",
+        encoding="utf-8",
+    )
+    main_block = body_for(gate.source_feature_inventory(root, main_base))
+    release_block = body_for(gate.source_feature_inventory(root, release_base))
+    body = main_block + "\n" + release_block
+
+    for base in (main_base, release_base):
+        findings = []
+        gate.check_source_grounding(body, findings, root=root, base=base)
+        assert findings == []
+
+    stale = release_block.replace('"sha256": "', '"sha256": "0', 1)
+    findings = []
+    gate.check_source_grounding(main_block + "\n" + stale, findings, root=root, base=main_base)
+    assert findings
 
 
 def test_unimplemented_accountability_domain_cannot_be_omitted(tmp_path, monkeypatch):

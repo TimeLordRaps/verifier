@@ -10,6 +10,8 @@ Variable, assignment and operation counts are dimensionless; no physical units.
 """
 from __future__ import annotations
 
+from verifier.core.signature_keys import admit_ed25519_public_key
+
 import hashlib
 from pathlib import Path
 import re
@@ -87,13 +89,17 @@ def evaluate_bootstrap(artifact: dict, inputs: dict, budget: Budget, *, witness_
     if encoded is None:
         raise Unavailable('bootstrap signer is not admitted by checker-selected witness keys')
     try:
+        signing_key = admit_ed25519_public_key(bytes.fromhex(encoded))
+    except (ValueError, TypeError) as exc:
+        raise Refuted("bootstrap signing key is inadmissible") from exc
+    try:
         from cryptography.exceptions import InvalidSignature
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
     except ImportError as exc:
         raise Unavailable('bootstrap signature verification needs the seal optional dependency') from exc
     payload = {k: v for k, v in envelope.items() if k != 'signature'}
     try:
-        Ed25519PublicKey.from_public_bytes(bytes.fromhex(encoded)).verify(bytes.fromhex(signature), canonical_bytes(payload))
+        Ed25519PublicKey.from_public_bytes(signing_key).verify(bytes.fromhex(signature), canonical_bytes(payload))
     except (InvalidSignature, ValueError, TypeError) as exc:
         raise Refuted('bootstrap signature does not bind the admitted request') from exc
     return {'algorithm': 'exhaustive-truth-table-1', 'oracle_digest': oracle_digest(),

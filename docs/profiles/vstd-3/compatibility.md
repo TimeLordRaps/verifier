@@ -6,7 +6,7 @@
 
 VSTD-3 is additive. It does not reinterpret adjacent receipt surfaces. For the current
 wire-identifier table, see
-`../../../standard/WIRE_IDENTIFIERS.md`.
+`../../../src/verifier/standard/WIRE_IDENTIFIERS.md`.
 
 The currently shipped adapter boundary is centralized in
 [`docs/CLAIMS_AND_LIMITS.md`](../../CLAIMS_AND_LIMITS.md#what-the-current-adapters-can-say):

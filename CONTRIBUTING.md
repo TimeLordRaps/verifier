@@ -14,8 +14,8 @@ are useful contributions.
 
 | Change | Primary location | Required companion work |
 |---|---|---|
-| Normative requirement or numbered-profile meaning | `standard/` | Matching installed copy under `src/verifier/standard/`, compatibility analysis, schema/model/runtime review, and falsification test |
-| Frozen identifier or profile dispatch | `standard/WIRE_IDENTIFIERS.md` | Historical-receipt audit; never silently redefine a released value |
+| Normative requirement or numbered-profile meaning | `src/verifier/standard/` | Exact packaged-byte binding to selected source, compatibility analysis, schema/model/runtime review, and falsification test |
+| Frozen identifier or profile dispatch | `src/verifier/standard/WIRE_IDENTIFIERS.md` | Historical-receipt audit; never silently redefine a released value |
 | Published receipt shape | `receipts/schema/` | Typed model, validator, examples, Pages schema route, and adversarial schema tests |
 | Reference implementation | `src/verifier/` | Tests for the exact implemented proposition and failure boundary |
 | Command-line behavior | `src/verifier/runtime/public_cli.py` | Generated reference, installed-wheel smoke, and machine-readable output tests |
@@ -94,8 +94,8 @@ defined until repeatable component baselines justify one.
 
 Pull requests retain the assembled Pages site as a commit-addressed review artifact.
 `documentation-coordinate.json` states its version, release state, source ref, canonical
-base URL, and normative owner. `standard/` remains authoritative; generated Pages output
-is navigation and rendering, not another specification. Published tags and their release
+base URL, and normative owner. `src/verifier/standard/` remains authoritative; generated
+Pages output at `/standard/` is navigation and rendering, not another specification. Published tags and their release
 artifacts are the historical documentation coordinates.
 
 ### Known-good Pages redeployment

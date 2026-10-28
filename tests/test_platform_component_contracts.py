@@ -8,7 +8,6 @@ Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD).
 
 from __future__ import annotations
 
-import importlib.util
 import json
 from pathlib import Path
 
@@ -16,6 +15,7 @@ import pytest
 import yaml
 
 from verifier.interoperability.reference_catalog import reference_component_registry
+from scripts import build_platform_component_report as report_builder
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,14 +37,6 @@ MECHANISM_COMPONENTS = {
     "component:artifact-network-source-grounding-assessor": "tests/test_source_grounding.py",
     "component:artifact-network-source-grounding-receipt-rechecker": "tests/test_source_grounding.py",
 }
-
-SPEC = importlib.util.spec_from_file_location(
-    "build_platform_component_report_test", REPORT_BUILDER_PATH
-)
-assert SPEC is not None and SPEC.loader is not None
-report_builder = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(report_builder)
-
 
 def _manifest() -> dict:
     return report_builder.load_manifest(MANIFEST_PATH)

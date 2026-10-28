@@ -136,7 +136,7 @@ def test_package_schema_requires_exact_nested_keys(
     ("path", "value"),
     (
         (("schema_version",), "VSTD-1"),
-        (("schema_version",), "verifier-component-package-2"),
+        (("schema_version",), "verifier-component-package-3"),
         (("registry", "schema_version"), "verifier-interoperability-catalog-1"),
         (("registry", "components", 0, "kind"), "NATIVE_MAGIC"),
         (("registry", "components", 0, "lifecycle"), "RELEASED"),

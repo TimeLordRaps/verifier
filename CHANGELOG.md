@@ -63,10 +63,39 @@
   contradictory statuses. Receipt integrity does not establish execution authenticity.
   See [gate automation](docs/GATE_AUTOMATION.md).
 
+- Bind into the mechanism digest of `vstd polish` every module that a registered
+  current-object route can execute, and the standard document named for it. Two route
+  modules, five executed helpers, three package initializers and seven standards could
+  change without changing the digest that a polish assessment records. A test now walks
+  the imports of the route table and changes each file in turn, so a route added later
+  must be bound. Digest values of earlier polish assessments no longer match.
+
 The release name centers exact claim/evidence binding, bounded certificate checking,
 and evidence-bound assessment. It does not establish conformance for an artifact or
 declare the experimental mechanisms complete. See the
 [release framing and profile distinctions](docs/V2_CANDIDATE.md#release-name-and-grounded-certification).
+
+### Current kind-specific governance, security and pinned coverage
+
+- Extend the configured signed namespace-admission objective from `OBJECT-8.1`
+  to exact `<kind>-8.1` selection across all 26 admitted kinds. Preserve default
+  OBJECT registration and wire meanings; replay compares canonical values so
+  numeric aliases cannot substitute for selected wire fields. Public keys,
+  quorum policy and evaluation time remain external selections.
+- Add one typed-subject receipt-association objective per kind at `<kind>-9.1`,
+  except `RECEIPT-9.3`. Bind the exact retained subject, sole receipt subject
+  operand and selected native finite-chain entry. Existing receipt-chain and
+  issuer-signature objectives retain their separate meanings.
+- Add `vstd polish coverage` and experimental `assess_polish_inventory` for a
+  separately pinned finite numbered requirements inventory. Match exact subject,
+  applicability, objective, mechanism and evidence selections before deriving
+  declared coverage from native results. Aggregate status remains FAIL or UNKNOWN;
+  inventory authority, exhaustive applicability and polished issuance remain
+  unestablished. Planning slots are not completed tiers.
+- These source and specification changes invalidate selected installed-mechanism
+  bindings; consumers must requalify policies and evidence against the intended
+  artifact. No legal authority, actual enforcement, issuer authenticity from
+  unsigned association or complete tier conformance is implied.
 
 ### Grounded certification across object profiles
 
@@ -81,6 +110,15 @@ declare the experimental mechanisms complete. See the
 - Provide six bounded native adapters and a runnable partial-certification example.
   Other obligations require explicitly admitted domain mechanisms; a registered
   mechanism or complete catalogue is not evidence that those obligations hold.
+
+### A loop that attributes no transition to the agent is `UNKNOWN`
+
+- `exogenous_transitions` could name every simulation transition, leaving an empty step map
+  and a BOT `PASS` that held the agent answerable for nothing. Such a loop now stops at the
+  alignment check (`BOT-2.1`), so observation and actuation stay `UNKNOWN` too. A step map
+  that names records while nothing is attributed still contradicts the declaration and is
+  `FAIL`. `implementation_digest()` moves, so every domain policy issued before this change
+  must be readmitted.
 
 ### Level 6 -- disclosure bounds on every domain object
 
@@ -334,6 +372,51 @@ declare the experimental mechanisms complete. See the
   new or deduplicated storage, and preserve the human-review publication boundary.
 - Preserve zero required runtime dependencies and existing command aliases.
   The draft compatibility identifiers and migration limits are documented.
+- Add the experimental `verifier.environments` namespace: strict definition, instance
+  and run records, nonexecuting binding assessment, explicitly selected evaluation,
+  inert packaging, and three disclosed specimens. No supported top-level export or
+  receipt format changes, and every assessment reports `NOT_ESTABLISHED` conformance.
+  See [environment foundations](docs/ENVIRONMENTS.md).
+
+### Captured provenance omits the producer's local paths and remote credentials
+
+- Newly captured provenance no longer serializes the producer's absolute repository path.
+  `local_repository_path` stays in the record for wire compatibility and now holds the
+  portable root marker `.`.
+- The recorded Git remote origin keeps only scheme, host, port and path. User names,
+  passwords, query strings and fragments are dropped. A remote written as
+  `user@host:path` is recorded as `ssh://host/path`; a local, rooted, network-share or
+  `file:` remote is recorded as `LOCAL_REMOTE_REDACTED`; an address the parser cannot read
+  is recorded as `REMOTE_REDACTED`. Records captured before this change are not rewritten.
+
+### Experimental selected-validation, validation-loop and geometry-constraint modules
+
+- Add experimental direct modules `verifier.interoperability.selected_execution`,
+  `validation_loop` and `geometry_constraints` with runnable examples
+  (`examples/selected_validation`, `examples/geometry_constraints`,
+  `examples/scitt_native_interop`). They are not facade exports and are not part of any
+  tagged release. The recorded Python and Go comparison in the last example covers one
+  fixed corpus and is not an independent-operator result.
+
+### The Pages per-file bound follows the component-package storage limit
+
+- Raise the per-file bound of the Pages builder and of the deployment checker from
+  8,388,608 to 33,554,432 bytes, the size the component-package loader already admits.
+  The stored reference package retains every public source byte, so it grows with the
+  source and had nearly reached the old bound. The total-size and file-count bounds are
+  unchanged, and a new test requires a package at the loader's limit to build and verify.
+
+### Artifact-network wire vocabulary and relation uniqueness
+
+- Narrow the standalone `verifier-silo-assessment-1` schema to the six-axis result
+  vocabulary that the combined schema and the Python decoder already admitted, and
+  retain one rejection case per excluded token in the negative wire corpus. The
+  standalone schema, combined schema and decoder now share one exact narrow result
+  vocabulary. Reject duplicate canonical typed-relation records in `SiloCommit` and
+  in the `verifier-artifact-network-1` schema (`uniqueItems`). Relations with equal
+  type, source and target now order by canonical record bytes instead of input
+  order, so two relation sets that differ only in input order serialize identically.
+  These checks establish only the bounded local rejection behavior they execute.
 
 ## 1.5.0 - 2026-09-18
 

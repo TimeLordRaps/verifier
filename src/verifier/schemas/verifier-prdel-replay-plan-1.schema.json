@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-prdel-replay-plan-1.schema.json",
+  "title": "Verifier PRDEL fixed replay plan, version 1",
+  "description": "Exact-source selection for verifier-controlled pytest replay. The plan carries no command, import, option, or outcome and does not establish test adequacy, runtime correctness, checker independence, whole-estate completeness, or release clearance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "binding", "checks", "frontier_resolutions", "limits"],
+  "properties": {
+    "schema_version": {"const": "verifier-prdel-replay-plan-1"},
+    "binding": {"$ref": "#/$defs/binding"},
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "layer", "obligation_ids", "runner", "nodeids", "selected_files"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$"},
+          "layer": {"enum": ["unit", "integration", "regression", "preventative"]},
+          "obligation_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$"}},
+          "runner": {"const": "pytest-nodeids-1"},
+          "nodeids": {"type": "array", "minItems": 1, "maxItems": 256, "uniqueItems": true, "items": {"type": "string", "pattern": "^tests/[A-Za-z0-9_./-]+\\.py::[A-Za-z_][A-Za-z0-9_]*(?:\\[[A-Za-z0-9_.:/-]+\\])?$"}},
+          "selected_files": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 512,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path", "sha256"],
+              "properties": {
+                "path": {"type": "string", "pattern": "^tests/[A-Za-z0-9_./-]+\\.py$"},
+                "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "frontier_resolutions": {
+      "type": "array",
+      "maxItems": 40000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["frontier_id", "mechanism_id", "source_obligation_ids", "check_ids"],
+        "properties": {
+          "frontier_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$"},
+          "mechanism_id": {"enum": ["exact-json-plus-replay-1", "exact-utf8-plus-replay-1", "selected-replay-1"]},
+          "source_obligation_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$"}},
+          "check_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$"}}
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timeout_seconds", "max_output_bytes", "max_tests", "max_files"],
+      "properties": {
+        "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 120},
+        "max_output_bytes": {"type": "integer", "minimum": 1, "maximum": 2097152},
+        "max_tests": {"type": "integer", "minimum": 1, "maximum": 1024},
+        "max_files": {"type": "integer", "minimum": 1, "maximum": 10000}
+      }
+    }
+  },
+  "$defs": {
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base", "head", "source_digest", "requirements_digest"],
+      "properties": {
+        "base": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+        "head": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+        "source_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "requirements_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

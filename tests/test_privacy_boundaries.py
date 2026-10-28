@@ -5,10 +5,10 @@ These helper checks do not establish registered normative level 6 conformance.
 from __future__ import annotations
 
 import copy
-import importlib.util
-from pathlib import Path
 
 import pytest
+
+from examples import domain_grounding as domain_example
 
 from verifier.privacy import (
     CompositionDeltaEvaluator, ContextualIntegrityEvaluator,
@@ -77,12 +77,7 @@ def test_verdict_without_bound_refuses_instead_of_silently_emitting() -> None:
 @pytest.fixture(scope="module")
 def real_sim() -> tuple[dict, dict, dict]:
     from verifier.domains.certification import build_domain_certificate, domain_policy, domain_request
-    path = Path(__file__).resolve().parents[1] / "examples/domain_grounding.py"
-    spec = importlib.util.spec_from_file_location("privacy_boundary_example", path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    bundle = module.specimens()["SIM"]
+    bundle = domain_example.specimens()["SIM"]
     policy = domain_policy(trust_roots=["test:retained-inputs", "test:checker"])
     request = domain_request(bundle, target_depth=4)
     certificate = build_domain_certificate(request, bundle, policy=policy)
@@ -123,10 +118,22 @@ def test_native_sim_refuses_when_required_proof_cannot_be_disclosed(real_sim: tu
 @pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf")])
 def test_budget_nonfinite_consumption_rejected_without_mutation(value: float) -> None:
     budget = DifferentialPrivacyBudget(1.0, 0.1)
-    before = vars(budget).copy()
+    before = (
+        budget.max_epsilon,
+        budget.max_delta,
+        budget.consumed_epsilon,
+        budget.consumed_delta,
+        budget.emissions_count,
+    )
     with pytest.raises(ValueError):
         budget.consume(value)
-    assert vars(budget) == before
+    assert (
+        budget.max_epsilon,
+        budget.max_delta,
+        budget.consumed_epsilon,
+        budget.consumed_delta,
+        budget.emissions_count,
+    ) == before
 
 
 @pytest.mark.parametrize("kwargs", [

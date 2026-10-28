@@ -3,8 +3,11 @@
 Ed25519 is the Edwards-curve digital signature algorithm with a 255-bit field.
 Signatures bind retained observations to checker-selected keys, not independence.
 State variables and causal time have the units of the supplied model contract.
+Unsupported check selection is unavailable before any evidence is evaluated.
 """
 from __future__ import annotations
+
+from verifier.core.signature_keys import admit_ed25519_public_key
 
 import base64
 from .common import Budget, Refuted, Unavailable, close, digest, expression, need, number, obj, same, seq, text
@@ -20,6 +23,8 @@ def transition(program: dict, state: dict, entropy: object, budget: Budget) -> d
 
 
 def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, witness_keys: dict) -> dict:
+    if type(check) is not str or check not in ("replay", "invariants", "refinement", "channels", "shards"):
+        raise Unavailable("unsupported simulation check")
     program = obj(need(artifact, "transition"))
     states = seq(need(inputs, "states"), budget)
     entropy = seq(need(inputs, "entropy"), budget, nonempty=False)
@@ -117,6 +122,10 @@ def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, witnes
                     if key not in witness_keys:
                         raise Unavailable("external witness key absent")
                     try:
+                        signing_key = admit_ed25519_public_key(bytes.fromhex(witness_keys[key]))
+                    except (ValueError, TypeError) as exc:
+                        raise Refuted("shard signing key is inadmissible") from exc
+                    try:
                         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
                         from cryptography.exceptions import InvalidSignature
                     except ImportError as exc:
@@ -124,7 +133,7 @@ def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, witnes
                     from verifier.core.certificate import canonical_bytes
                     message = {"artifact_digest": digest(artifact), "shard": key, "step": i, "time": times[i], "state": state}
                     try:
-                        Ed25519PublicKey.from_public_bytes(bytes.fromhex(witness_keys[key])).verify(
+                        Ed25519PublicKey.from_public_bytes(signing_key).verify(
                             base64.b64decode(row["signature"], validate=True), canonical_bytes(message))
                     except (ValueError, TypeError, InvalidSignature) as exc:
                         raise Refuted("shard signature does not authenticate its exact coordinate") from exc

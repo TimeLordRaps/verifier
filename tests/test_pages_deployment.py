@@ -6,11 +6,14 @@ Tests for exact-commit Pages promotion evidence.
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import json
 from pathlib import Path
 
 import pytest
+
+from verifier.interoperability.storage import MAX_PACKAGE_BYTES
+from scripts import build_pages as pages_builder
+from scripts import check_pages_deployment as pages_checker
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,21 +21,11 @@ HEAD = "a" * 40
 
 
 def _module():
-    path = ROOT / "scripts" / "check_pages_deployment.py"
-    spec = importlib.util.spec_from_file_location("check_pages_deployment", path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return pages_checker
 
 
 def _build_module():
-    path = ROOT / "scripts" / "build_pages.py"
-    spec = importlib.util.spec_from_file_location("build_pages_manifest", path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return pages_builder
 
 
 def test_deployment_documents_bind_commit_and_index_bytes() -> None:
@@ -409,6 +402,44 @@ def test_manifest_enforces_path_count_and_byte_bounds(
         monkeypatch.setattr(module, "MAX_TOTAL_BYTES", 1)
     with pytest.raises(module.PagesDeploymentError):
         module.validate_manifest(manifest, expected_source_ref=HEAD)
+
+
+def _site_with_package_of(checker, root: Path, size: int) -> None:
+    """Minimal valid site plus one deployed package-sized file of exactly ``size`` bytes."""
+    _minimal_site(checker, root)
+    (root / checker.MANIFEST_PATH).unlink()
+    package = root / "components" / "packages" / "sha256" / f"{'0' * 64}.json"
+    package.parent.mkdir(parents=True)
+    package.write_bytes(b"\0" * size)
+
+
+def test_deployment_builder_and_checker_admit_a_package_at_the_storage_limit(tmp_path: Path) -> None:
+    # The stored component package retains the exact public source, so it grows with the
+    # source. Every package the storage loader admits must therefore also be deployable
+    # and verifiable; a lower deployment bound turns ordinary source growth into a build
+    # failure that no earlier test reports.
+    checker = _module()
+    builder = _build_module()
+    _site_with_package_of(checker, tmp_path, MAX_PACKAGE_BYTES)
+    builder._write_deployment_manifest(tmp_path, source_ref=HEAD)
+    checker.validate_site_directory(tmp_path, expected_source_ref=HEAD)
+
+
+def test_manifest_validation_admits_an_entry_at_the_package_storage_limit(tmp_path: Path) -> None:
+    module = _module()
+    payloads = _minimal_site(module, tmp_path)
+    manifest = module.json.loads(payloads[module.MANIFEST_PATH])
+    manifest["files"][0]["size"] = MAX_PACKAGE_BYTES
+    manifest["total_bytes"] = sum(entry["size"] for entry in manifest["files"])
+    module.validate_manifest(manifest, expected_source_ref=HEAD)
+
+
+def test_deployment_builder_still_refuses_a_file_beyond_the_package_storage_limit(tmp_path: Path) -> None:
+    checker = _module()
+    builder = _build_module()
+    _site_with_package_of(checker, tmp_path, MAX_PACKAGE_BYTES + 1)
+    with pytest.raises(builder.PagesBuildError, match="byte limit"):
+        builder._write_deployment_manifest(tmp_path, source_ref=HEAD)
 
 
 @pytest.mark.parametrize("mutation", ("extra", "changed", "wrong-known-good"))

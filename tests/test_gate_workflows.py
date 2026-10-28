@@ -6,6 +6,7 @@ Command outcomes are distinct from independently replayed domain correctness.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -15,6 +16,20 @@ import time
 import pytest
 
 from verifier.runtime.gate_pipeline import check_pipeline, init_pipeline, plan_pipeline, run_pipeline
+
+
+SOURCE_ROOT = Path(__file__).resolve().parents[1] / "src"
+
+
+@pytest.fixture(autouse=True)
+def _bind_child_cli_to_selected_checkout(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep nested ``python -m verifier`` calls on the source under test."""
+
+    inherited = os.environ.get("PYTHONPATH")
+    selected = str(SOURCE_ROOT)
+    if inherited:
+        selected += os.pathsep + inherited
+    monkeypatch.setenv("PYTHONPATH", selected)
 
 
 def pipeline(root: Path, outcome: str = "UNKNOWN", code: int = 2,

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib
 from copy import deepcopy
 from dataclasses import replace
 from typing import Any
@@ -22,7 +21,7 @@ from verifier.interoperability.network import (
 
 
 def test_stored_formation_inspector_is_available() -> None:
-    module = importlib.import_module("verifier.interoperability.formation_storage")
+    module = storage
     assert callable(module.inspect_silo_formation)
 
 

@@ -70,6 +70,8 @@ record discriminators are `VSTD-ENVIRONMENT-DEFINITION-0.1`,
 experimental wire discriminators quoted for migration, not admitted objects in
 the VSTD-NAMESPACE. Preserving their bytes does not admit an ENVIRONMENT object
 or rename them to a native certificate schema.
+The records, assessment and disclosed specimens are described in
+[environment foundations](ENVIRONMENTS.md).
 The associated `EnvironmentAssessment` explicitly reports `NOT_ESTABLISHED`
 conformance; the definition/instance/run records themselves carry no conformance
 field. They are not native

@@ -180,12 +180,28 @@ Stdlib-purity smoke, mirroring the `stdlib-smoke` CI job:
 PYTHONPATH=src python -S -c "import verifier; from verifier.core.run import load_manifest; print(verifier.__version__)"
 ```
 
-Local release-integrity pair, mirroring the `release-integrity` job:
+Local release checks, mirroring one platform of the `release-integrity` job:
 
 ```bash
-python scripts/release_artifacts.py source --ref HEAD --release ci --output-dir /tmp/vstd-release
-python scripts/release_artifacts.py verify /tmp/vstd-release/verifier-standard-ci.manifest.json
+python -m pip install ".[release]"
+VERSION="$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
+python scripts/release_artifacts.py build --ref HEAD --release "$VERSION" --output-dir /tmp/vstd-release
+python scripts/release_artifacts.py verify "/tmp/vstd-release/verifier-standard-$VERSION.manifest.json"
+python -m twine check /tmp/vstd-release/*.whl /tmp/vstd-release/*.tar.gz
+python scripts/check_release_boundary.py /tmp/vstd-release/*.zip /tmp/vstd-release/*.whl /tmp/vstd-release/*.tar.gz /tmp/vstd-release/*.manifest.json /tmp/vstd-release/*.cdx.json
 ```
+
+CI additionally builds the whole artifact set on Linux, Windows, and macOS and requires every
+resulting byte to match, via `release_artifacts.py compare`. That job is
+`release-reproducibility`. After obtaining the platform directories, its exact local
+comparison is:
+
+```bash
+python scripts/release_artifacts.py compare PATH_TO_LINUX_ARTIFACTS PATH_TO_WINDOWS_ARTIFACTS
+python scripts/release_artifacts.py compare PATH_TO_LINUX_ARTIFACTS PATH_TO_MACOS_ARTIFACTS
+```
+
+The cross-platform result cannot be reproduced from only one local platform.
 
 **No linter, formatter, or typechecker is configured.** There is no ruff, black, mypy,
 flake8, pre-commit, Makefile, or tox. Do not run one, and do not add one unprompted; the
@@ -204,7 +220,8 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 
 ## 4. Layout
 
-- `standard/` — normative numbered-profile documents plus `WIRE_IDENTIFIERS.md`.
+- `src/verifier/standard/` — authoritative specification source files, including
+  normative numbered-profile documents and `WIRE_IDENTIFIERS.md`; packaged directly.
 - `src/verifier/core/` — receipt, checker, certificate, grounding, kernel, evidence-bound
   mechanism execution, witness corroboration, and the
   generic-run capture/facade with planning, validation, inspection, reproduction, and
@@ -212,9 +229,8 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 - `src/verifier/constraints/`, `hardware/`, `layer4/`, `data/` — profile-specific runtime
   surfaces, including additive Graph assurance propagation; `layer4/` is a retained module path.
 - `src/verifier/runtime/` — `public_cli.py` (every CLI entry point) and `demo.py`.
-- `src/verifier/standard/` — byte-identical copies of normative spec files.
-- `receipts/schema/` — receipt JSON Schemas. `standard/schemas/` — strict non-receipt
-  mechanism schemas. `examples/` — supported runnable specimens.
+- `receipts/schema/` — receipt JSON Schemas. `src/verifier/schemas/` — installed
+  strict mechanism schemas. `examples/` — supported runnable specimens.
 - `experiments/` — non-normative roadmap-steering studies with profile manifests, explicit horizons,
   and blockers.
 - `src/verifier/experimental_workflow/` — optional workflow/profile interchange; it
@@ -222,7 +238,8 @@ If that path is not inside this repository, prefix commands with `PYTHONPATH=src
 - `scripts/` — presentation, release-state, artifact, Pages, reference, and experiment-index
   gates, including `check_presentation.py`, `check_time_status.py`,
   `check_terminology.py`, `check_release_metadata.py`, and `release_artifacts.py`.
-- `tests/` — flat `tests/test_*.py`, no `conftest.py`.
+- `tests/` — flat `tests/test_*.py`; the single `conftest.py` restores registry iteration order
+  after `monkeypatch.delitem`.
 
 ## 5. Invariants that must not be refactored away
 
@@ -250,6 +267,12 @@ alias: receipts in the `v0.1.0` and `v0.2.0` release artifacts bind it in falsif
 instructions, so removing it would render already-published refutation steps unrunnable.
 The evidence is the published releases, not a file in the current checkout.
 
+**Numeric package polish.** From a repository root, `vstd polish 1`, `2`, or `3`
+must select that root's `objects.vstd` and assess its package GRAPH through its
+declared VERIFIER. Native specimen diagnostics require `--native-specimens` and
+never establish package conformance. Preserve this distinction in dispatch,
+reports, tests and completion claims; see `standard/PACKAGE_POLISH.md`.
+
 **Wire identifiers.** Current readers dispatch on the exact identifiers and required
 profile discriminators in [`standard/WIRE_IDENTIFIERS.md`](src/verifier/standard/WIRE_IDENTIFIERS.md),
 not on filenames or field resemblance. VSTD-1 and VSTD-2 use their full numbered-profile identifiers;
@@ -257,12 +280,18 @@ do not restore retired partial-profile object identifiers or compatibility reads
 release bytes remain historical facts in their tags and Git history, not active current
 profiles.
 
-**Packaged specification bytes.** Every `standard/*.md` file has a byte-identical
-installed copy under `src/verifier/standard/` so verifier descriptors do not depend
-on a source checkout. `tests/test_packaged_specifications.py` enforces the complete set.
+**Packaged specification bytes.** Authoritative specification files live once under
+`src/verifier/standard/` and are packaged directly, so a verifier descriptor digests the same
+bytes whether or not a source checkout is present. A `standard/` coordinate resolves only to
+the packaged copy, never to a working directory, so a reported specification digest cannot
+depend on where a process was launched. `tests/test_specification_digest_resolution.py` pins
+that behavior; `tests/test_packaged_specifications.py` checks normative contents; release-artifact
+verification binds the complete packaged set and exact bytes to the selected source. The maintainer
+removed the duplicate root tree in commit `6bebabe50a39375adae7d4395a33b46f34db91f0`; published
+`/standard/` routes remain unchanged.
 
 **Schema `$id` is a live route.** Every `receipts/schema/*.json` and
-`standard/schemas/*.json` file must carry
+`src/verifier/schemas/*.json` file must carry
 `"$id": "https://timelordraps.github.io/verifier/schemas/<filename>"`. `scripts/build_pages.py`
 refuses to assemble the site otherwise, and `tests/test_presentation_surface.py` checks that
 each schema deploys byte-identical under that route. Renaming a schema file means updating

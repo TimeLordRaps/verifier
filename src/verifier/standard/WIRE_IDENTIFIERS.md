@@ -179,3 +179,39 @@ A repository release number does not claim conformance to a same-numbered VSTD p
 VSTD-5's reference mechanism is implemented. This project-specification status does not
 claim an external witness, independent implementation, standards-body consensus,
 accreditation, or interoperability deployment.
+
+The separately selected finite [ten-tier progression](CURRENT_TEN_TIER_PROGRESSION.md)
+uses semantic profile `verifier-current-ten-tier-progression-1`, selection
+`verifier-ten-tier-progression-selection-1`, and assessment
+`verifier-ten-tier-progression-assessment-2`. Version 2 binds the exact selected
+subject and selection, including supplied external pins; historical assessment
+version 1 is not silently upgraded. Its native fault-preserving dependency
+assessment is `verifier-certificate-dag-assessment-2`; historical assessment version 1
+and six-tier/nine-tier coordinate meanings remain unchanged. A progression assessment
+is not a certificate of whole-tier conformance or polished-artifact issuance.
+
+
+## Explicit ten-tier native composition and host permission slot
+
+The opt-in native family `verifier-current-ten-tier-object-obligations-1`
+registers `VERIFIER-6.1` and `VERIFIER-10.1` in its separate catalog. The former's closed request, policy,
+evidence and certificate identifiers are
+`verifier-ten-tier-verifier-composed-security-request-1`,
+`verifier-ten-tier-verifier-composed-security-policy-1`,
+`verifier-ten-tier-verifier-composed-security-evidence-1` and
+`verifier-ten-tier-verifier-composed-security-certificate-1`. Context selection
+uses `verifier-ten-tier-verifier-security-context-1`; independent selector bytes
+use `verifier-ten-tier-verifier-security-selection-1`. Finite signed-association
+replay is not full composed-security admission. Historical nine-tier defaults,
+polish contracts and native meanings remain under their original selectors.
+See `SEMANTIC_CONTRACT_SELECTION.md` and `CURRENT_VERIFIER_COMPOSED_SECURITY.md`.
+
+`CURRENT_PERMISSION_SLOT.md` describes a bounded host permission-slot state
+machine and its local observed entry/exit controls. It issues no native
+`VERIFIER-10.1` certificate. The separate [native replacement replay](CURRENT_VERIFIER_REPLACEMENT.md)
+uses `verifier-ten-tier-verifier-replacement-request-1`,
+`verifier-ten-tier-verifier-replacement-policy-1`,
+`verifier-ten-tier-verifier-replacement-evidence-1` and
+`verifier-ten-tier-verifier-replacement-certificate-1`. It rechecks exact finite
+retained authority and observer statements, bytes and lifecycle evidence under
+external admission; complete Corrigibility remains UNKNOWN.

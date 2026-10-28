@@ -41,11 +41,12 @@ def effect_surface(artifact: dict) -> tuple[set[str], set[str]]:
 def transcript(artifact: dict, inputs: dict, instrumented: set[str], budget: Budget) -> list:
     """Re-check every retained record against the declared instrumented surface."""
     records = seq(need(inputs, "records"), budget)
-    if len(records) != need(artifact, "record_count"):
+    count = need(artifact, "record_count")
+    if type(count) is not int or len(records) != count:
         raise Refuted("retained record count differs from the bound transcript")
     for index, record in enumerate(records):
         obj(record, {"index", "channel", "role", "payload", "payload_digest"})
-        if record["index"] != index:
+        if type(record["index"]) is not int or record["index"] != index:
             raise Refuted("transcript indices are not contiguous from zero")
         if text(record["role"]) not in ROLES:
             raise Refuted("unsupported transcript role")
@@ -57,6 +58,8 @@ def transcript(artifact: dict, inputs: dict, instrumented: set[str], budget: Bud
 
 
 def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
+    if type(check) is not str or check not in ("surface", "messages", "tools", "effects", "transcript"):
+        raise Unavailable("unsupported harness check")
     instrumented, gaps = surface(artifact)
     tools = obj(need(artifact, "tools"))
     records = transcript(artifact, inputs, instrumented, budget) if check != "surface" else []

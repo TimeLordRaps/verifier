@@ -1,0 +1,6 @@
+python-sat==1.9.dev15
+networkx==3.5
+numpy==2.3.2
+sympy==1.14.0
+matching==1.4.3
+pytest==8.4.1

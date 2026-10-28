@@ -1,6 +1,6 @@
 # Supply Chain Integrity, Transparency, and Trust (SCITT) semantic boundary for Verifier Standard (VSTD) interoperability
 
-> **Acronyms:** Concise Binary Object Representation (CBOR); CBOR Object Signing and Encryption (COSE); grounded decision certificate (GDC);
+> **Acronyms:** Concise Binary Object Representation (CBOR); Concise Data Definition Language (CDDL); CBOR Object Signing and Encryption (COSE); grounded decision certificate (GDC);
 > JavaScript Object Notation (JSON); Request for Comments (RFC); Secure Hash Algorithm 256-bit (SHA-256);
 > Transparency Service (TS); verifiable data structure proof (VDP); verifiable data structure (VDS);
 > working group (WG).
@@ -209,3 +209,116 @@ The example uses pinned optional libraries to create and verify real COSE bytes 
 an RFC 9162 SHA-256 inclusion receipt in a local one-entry test log. That demonstrates
 the cryptographic boundary but does not represent a production TS, public witness,
 or public anchoring.
+
+## Composite-evidence comparison
+
+The following comparison is against the **individual**, non-adopted
+`draft-nobuo-scitt-composite-evidence-verification-00`, the revision pinned by
+`src/verifier/interoperability/scitt/evidence_profiles.py`. Its CDDL is explicitly
+provisional. The implemented adapter preserves its result code but always returns
+`computational_verdict = NOT_EVALUATED`. The pin identifies the draft text that the
+tests exercise; it is not a statement about later revisions or about the draft's
+current standing.
+
+| Surface | Composite-evidence draft | VSTD / GRAPH | Interoperability rule |
+|---|---|---|---|
+| Statements | Signed Statements and statement-level results | Native receipts/certificates and their bound checker observations | Preserve both native objects and digests; a registered statement is not a checked VSTD receipt. |
+| Evidence bundles | Portable statements, receipts, graph manifest, related bundles, time and digest | Receipt collections and graph artifacts | Do not relabel one bundle format as the other; reference by digest until a profile is agreed. |
+| Relationships | Profile-controlled graph edges and statements-about-statements | Typed provenance/dependency/challenge edges | Edge-name similarity is insufficient; require an explicit relation crosswalk. |
+| Profiles | Named issuer, type, freshness, relationship and conflict policy | Verifier descriptor, supported fragment, policy/evidence roots and bounds | Bind both profile identifiers; neither subsumes the other. |
+| Dependencies | Required statement types and graph edges | Transitive ancestors and required evidence | Missing dependency remains incomplete/UNKNOWN; registration of the remaining graph cannot close it. |
+| Revocation | Proposed revocation statements plus issuer authorization policy | Lifecycle state and graph degradation | Preserve historical inclusion; separately lower current admissibility. |
+| Supersession | Proposed supersession statements | `SUPERSEDED` without automatic truth ordering | Newer is not automatically truer; relying policy must choose. |
+| Conflicts | Explicit `conflict` result under selected policy | `CONFLICTED` where evidence cannot be reconciled | Preserve as distinct from both UNKNOWN and FAIL. |
+| Freshness | `stale` result under profile freshness rules | Time-indexed evidence and graph staleness | A historically valid receipt can coexist with currently stale evidence. |
+| Completeness | Discovery is not assumed complete; unknown/warning unless a profile permits a closed world | Required evidence and bounded dependency checks | State the discovery/closed-world assumption; absence from a bundle is not proof of absence. |
+| Warning | Mandatory profile checks satisfied with a surfaced condition | A warning cannot supply a missing VSTD prerequisite or verdict | Preserve warning; do not promote it to VSTD PASS. |
+| Unknown | Unavailable evidence or unrecognized profile | Bounded inability with reason-bearing certificate/state | Labels are not equivalent; carry cause (`UNAVAILABLE`, `UNSUPPORTED_VERIFIER`, or bounded `NOT_ESTABLISHED`). |
+| Graph degradation | Proposed per-node/edge results and whole-profile outcome | Recomputed lineage, blast radius, and candidate degradation without rewriting history | Report both historical SCITT registration and current VSTD evidence ceiling. |
+| Disclosure-bounded verification | Evidence bundle may be intentionally bounded; completeness policy decides treatment | Claim/bounds/exclusions are first-class | Any undisclosed or undiscoverable requirement stays UNKNOWN; do not infer a closed world. |
+
+### Distinct conditions that must not collapse
+
+| Condition | Safe interoperable representation |
+|---|---|
+| Unavailable evidence | `UNAVAILABLE`; computational verdict not established. |
+| Incomplete evidence | `INCOMPLETE`; required material is missing. |
+| Stale evidence | `STALE`; historical integrity may remain valid. |
+| Conflicting evidence | `CONFLICTED`; do not select a winner silently. |
+| Revoked evidence | `REVOKED`; retain historical inclusion separately. |
+| Unsupported verifier/profile | `UNSUPPORTED_VERIFIER`; do not guess semantics. |
+| Computational budget exhaustion | `BUDGET_EXHAUSTED`; a bounded VSTD UNKNOWN, not a SCITT transport error. |
+| Bounded inability to establish predicate | `BOUNDED_NOT_ESTABLISHED`; no global undecidability claim. |
+| Explicit falsification | `EXPLICITLY_FALSIFIED`; do not weaken to generic unknown. |
+
+`src/verifier/interoperability/scitt/evidence_profiles.py` implements this typed
+boundary and rejects extension result strings rather than guessing.
+
+## Derived Subjects boundary
+
+The implementation is pinned to the individual `draft-le-scitt-derived-subjects-00`
+(`DRAFT_REVISION` in `src/verifier/interoperability/scitt/derived_subjects.py`).
+`tests/test_scitt_derived_subjects.py` exercises the Appendix A.1 through A.7
+known-answer and negative vectors as transcribed there: the JSON vectors always, and
+the deterministic CBOR vectors where the optional `cbor2` dependency of the `scitt`
+extra is installed. The vectors are transcribed constants, not fetched from the draft,
+so a later change to the draft would not be detected by the tests.
+
+The implementation computes:
+
+```text
+Value -> BindingBytes -> SHA-256 ->
+scitt-derived-subject-v1.<unpadded-base64url-digest>
+```
+
+VSTD maps its exact subject string to `content`, uses a fixed mapping context, and
+encodes each `(artifact role, SHA-256 digest)` as a scoped identifier. This gives:
+
+- the same semantic subject/artifact set -> deterministic equal `sub`;
+- a different artifact or role -> different `sub`;
+- ambiguous comparison semantics or an unknown draft/mapping revision ->
+  `NOT_ESTABLISHED`;
+- a malformed value that claims the profile prefix -> input error, not UNKNOWN.
+
+**Exact counterexample to a complete-coordinate mapping:** change only the VSTD
+predicate parameters from `mode=exact` to `mode=prefix`. The subject and artifact
+are still the same, so the Derived Subject `sub` correctly remains equal. The VSTD
+claim coordinate is meaningfully different. Therefore `sub` cannot replace the
+VSTD claim-coordinate binding. The experimental binding carries separate SHA-256
+commitments for `(claim_id, subject, predicate, parameters, artifacts)` and for the
+verification bounds; either change yields `NO_MATCH` even when `sub` is unchanged
+(`test_parameter_change_does_not_redefine_subject_but_full_binding_fails` and
+`test_bound_change_is_not_silently_equivalent`).
+
+This is a useful composition, not a forced equivalence: Derived Subjects groups
+statements about one subject; VSTD still decides which exact computational claim
+and bound were evaluated.
+
+## Transformation and coverage-reconciliation boundary
+
+The implementation is pinned to the individual
+`draft-dogru-scitt-disclosure-evidence-07`:
+
+| Draft state | VSTD-safe interpretation |
+|---|---|
+| `matched` | An item corresponded under the declared mapping/window; not proof either population is complete. |
+| `observed-without-receipt` | Evidence absence; cause is not established. |
+| `receipted-without-observation` | Evidence mismatch; not automatically fraud or a false event. |
+| `excluded` | A pinned pre-comparison decision; visible and reproducible, not justified by its digest. |
+| `indeterminate` | A result that must remain undecided; never a degraded match or percentage. |
+| `invalid-window` | Window evidence is unreliable; no clean result. |
+
+The adapter rejects `coverage-reconciliation/1`: `/1`'s `covered` vocabulary cannot
+be upgraded to `/2`. It verifies counts against non-matched item records and rejects
+`no-exceptions` when any open item exists. Even a valid `/2` `no-exceptions` result
+returns `NOT_EVALUATED` for a VSTD predicate because neither compared population is
+assumed complete.
+
+The adversarial transformation fixture is deliberately simple: a structurally
+valid Transformation Evidence object asserts `mask` for one `customer-id`, while the
+separately observed disclosure still contains the unmasked value. Structural
+validation leaves the transformation at `ISSUER_ASSERTED`. Signing or registering
+the object would not change that, because registration shows what the issuer
+produced, not that the transformation was applied; only a separate byte-level
+verifier could establish that. Thus registered transformation evidence is not
+computational truth or proof of non-exposure.

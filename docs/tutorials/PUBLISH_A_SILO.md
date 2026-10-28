@@ -18,8 +18,11 @@ Retained artifacts are never executed by any command here.
 
 ## Set up
 
+From the v2.0.0 candidate source checkout identified by this site's source
+coordinate, install the optional sealing dependency:
+
 ```bash
-python -m pip install "verifier-standard[seal]==1.5.0"
+python -m pip install ".[seal]"
 openssl genpkey -algorithm Ed25519 -out publisher-private.pem
 ```
 

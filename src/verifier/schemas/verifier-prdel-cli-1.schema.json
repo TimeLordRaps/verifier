@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-prdel-cli-1.schema.json",
+  "title": "Pull Request Domain Explanation Language (PRDEL) command-line interface (CLI) result, version 1",
+  "description": "Validation wrapper preserves nested deterministic report and optional undelivered preventative comparison. Source identities and schema validity alone grant no clearance.",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "status", "report", "findings"],
+  "properties": {
+    "schema_version": {"const": "verifier-prdel-cli-1"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "report": {"type": "object", "required": ["schema_version", "status", "source_grounding_status", "semantic_status", "claim_boundary", "findings"], "properties": {"schema_version": {"const": "verifier-prdel-report-1"}, "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]}, "verdict_scope": {"const": "GATE_OBLIGATION_FULFILLMENT"}, "proposition_truth": {"const": "NOT_INFERRED_FROM_MISSING_EVIDENCE"}, "required_checks_not_run": {"type": "integer", "minimum": 0}, "claim_boundary": {"type": "string"}, "findings": {"type": "array"}}},
+    "findings": {"type": "array", "items": {"type": "string"}},
+    "preventative": {"type": ["object", "null"], "properties": {"schema_version": {"const": "verifier-prdel-preventative-1"}, "delivery": {"const": "NOT_SENT"}, "verdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]}}}
+  }
+}

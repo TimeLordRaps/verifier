@@ -10,13 +10,15 @@ import os
 import subprocess
 import sys
 from copy import deepcopy
-from importlib import import_module, util
+from importlib import util
 from importlib.resources import files
 from pathlib import Path
 
 import pytest
 from jsonschema import Draft202012Validator
 
+from verifier.domains import (collective as collective_domain, human as human_domain,
+                              identity as identity_domain, role as role_domain)
 from verifier.domains.catalog import ALL_CHECKS, ALL_SCOPES, COORDINATES, domain_specification_digest
 from verifier.domains.certification import (
     build_domain_certificate, domain_policy, domain_request, recheck_domain_certificate,
@@ -27,6 +29,12 @@ from test_role_collective_domains import _role, _collective_decisions
 
 
 FAMILY = ("HUMAN", "IDENTITY", "ROLE", "COLLECTIVE")
+DOMAIN_MODULES = {
+    "HUMAN": human_domain,
+    "IDENTITY": identity_domain,
+    "ROLE": role_domain,
+    "COLLECTIVE": collective_domain,
+}
 
 
 @pytest.mark.parametrize("domain", FAMILY)
@@ -35,7 +43,7 @@ def test_accountability_adapter_has_a_bound_native_request(domain: str) -> None:
     assert domain in ALL_SCOPES, domain
     assert len(ALL_CHECKS[domain]) == len(COORDINATES[domain]) > 0
     assert all(coordinate.startswith(domain + "-") for coordinate in COORDINATES[domain])
-    assert hasattr(import_module("verifier.domains." + domain.lower()), "evaluate")
+    assert hasattr(DOMAIN_MODULES[domain], "evaluate")
 
     evidence = {"schema_version": "verifier-domain-evidence-1", "domain": domain,
                 "subject_id": "subject:test", "artifact": {}, "inputs": {}}

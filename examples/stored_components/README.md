@@ -45,6 +45,14 @@ symbolic links and Windows reparse points, including source parent directories. 
 not search other repositories, capture arbitrary working directories, extract archives,
 install dependencies or invoke an implementation entrypoint.
 
+When the inventory exceeds 256 files, public JavaScript Object Notation (JSON) and
+Markdown contracts, declared entrypoint modules and every top-level native
+domain adapter remain direct artifacts. Other captured source bytes
+travel in an inert deterministic archive in the ZIP archive format (ZIP);
+its inventory binds the path, size, digest and direct/archive location of every captured
+file. The direct artifacts and archive together retain the exact source inventory.
+The selected version-2 artifact limit still refuses an oversized mandatory direct set.
+
 All **43 first-party entrypoints across 19 grouping labels** bind to the retained package
 source snapshot. This is not a count of independent native integrations. The snapshot
 includes distinct proof-producer and proof-checker entries, bounded platform comparison,
@@ -136,3 +144,7 @@ do not import through or invoke those entrypoints. A matched candidate remains
 or externally supplied authorization are absent. Neither the catalog nor readiness grants
 authorization, closes ordinary or self-closure geometry, establishes source truth, or turns
 a bounded denominator into a complete account of the real world.
+
+## Versioned reference-source capacity
+
+The reference exporter and component-index builder select `verifier-component-package-2`. It keeps every top-level native domain adapter, public schema/specification and declared entrypoint directly addressable; other source bytes remain exactly bound in the inert archive. Version 2 permits up to 512 artifacts and 512 paths per implementation binding. Other arrays remain limited to 256, decoded content to 16 mebibytes (MiB), and encoded packages to 32 MiB. These are separate bounds. Existing package-v1 constructors and its schema retain all 256-item limits and identical canonical bytes; old readers refuse version 2. The exporter can explicitly select version 1 and refuses a mandatory direct set that exceeds its limit. No truncation, silent downgrade or conformance admission occurs.

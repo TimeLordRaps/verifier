@@ -4,10 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 from pathlib import Path
 import hashlib
-import importlib
-import importlib.util
 import json
-import sys
 
 import pytest
 
@@ -15,24 +12,11 @@ from verifier.core.certificate import canonical_bytes, canonical_digest
 from verifier.core.namespace import NamespaceObject
 from verifier.core.receipt import strict_json_loads
 from verifier.domains.common import Unavailable
+from verifier.domains.contracts import object_grounding as object_grounding_contract
 
 
 def _candidate():
-    name = "verifier.domains.contracts.object_grounding"
-    try:
-        return importlib.import_module(name)
-    except ModuleNotFoundError as exc:
-        if exc.name != name:
-            raise
-    # The scratch candidate is intentionally outside the live package. After
-    # transfer, the ordinary package import above is the production test path.
-    path = Path(__file__).resolve().parents[1] / "src/verifier/domains/contracts/object_grounding.py"
-    spec = importlib.util.spec_from_file_location(name, path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return object_grounding_contract
 
 
 def _model():
@@ -385,23 +369,19 @@ def test_policy_copies_validated_fields_before_source_digest_callback(monkeypatc
 
 
 def test_shape_refusal_precedes_hashing_or_copying_unexpected_keys(monkeypatch):
-    import builtins
     module = _candidate()
     fields = {"only"}
     value = {"first": 1, "second": 2}
-    original_set = builtins.set
     def forbidden_set(*args, **kwargs):
         raise AssertionError("set conversion happened before length rejection")
-    monkeypatch.setattr(builtins, "set", forbidden_set)
-    try:
+    with monkeypatch.context() as patch:
+        patch.setattr("builtins.set", forbidden_set)
         try:
             module._mapping(value, fields, "bounded record")
         except module.CurrentObjectGroundingError as exc:
             assert "fields differ" in str(exc)
         else:
             raise AssertionError("oversized known-field record was accepted")
-    finally:
-        monkeypatch.setattr(builtins, "set", original_set)
 
 
 def test_whitespace_only_policy_root_is_rejected():

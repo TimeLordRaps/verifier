@@ -8,11 +8,13 @@ mechanisms they execute.
 
 from __future__ import annotations
 
+import argparse
 import base64
 from dataclasses import replace
 import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -73,7 +75,7 @@ from verifier.interoperability.claim_garden import (
 
 
 def _private_key(path: Path) -> Path:
-    cryptography = pytest.importorskip("cryptography")
+    cryptography = pytest.importorskip("cryptography", reason="OPTIONAL_DEPENDENCY_ABSENT: cryptography (seal extra) is absent, so the Ed25519 private-key fixture _private_key and every publisher test that calls it stay unexecuted here; the platform-python-contracts workflow job installs the seal extra and runs the complete suite, including this file")
     assert cryptography
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -1199,7 +1201,7 @@ def test_local_transfer_clone_rejects_link_oversize_noncanonical_and_existing_de
 
     def link_lstat(path: Path) -> object:
         if path == simulated_link:
-            return type("LinkStat", (), {"st_mode": 0o120777, "st_file_attributes": 0})()
+            return SimpleNamespace(st_mode=0o120777, st_file_attributes=0)
         return original_lstat(path)
 
     monkeypatch.setattr(Path, "lstat", link_lstat)
@@ -1391,7 +1393,7 @@ def test_export_inventory_rejects_link_or_reparse_entry(monkeypatch: pytest.Monk
         @staticmethod
         def stat(*, follow_symlinks: bool) -> object:
             assert follow_symlinks is False
-            return type("Info", (), {"st_file_attributes": 0})()
+            return SimpleNamespace(st_file_attributes=0)
 
         @staticmethod
         def is_symlink() -> bool:
@@ -1407,9 +1409,12 @@ def test_export_inventory_rejects_link_or_reparse_entry(monkeypatch: pytest.Monk
         def __iter__(self) -> object:
             return iter((LinkEntry(),))
 
-    monkeypatch.setattr(network_module.os, "scandir", lambda _: Scan())
-    with pytest.raises(NetworkError, match="symbolic links or reparse points"):
-        network_module._export_inventory(tmp_path)
+    # network_module.os is the global os module: undo the patch before pytest's own
+    # tmp_path cleanup walks the directory with os.scandir.
+    with monkeypatch.context() as patched:
+        patched.setattr(network_module.os, "scandir", lambda _: Scan())
+        with pytest.raises(NetworkError, match="symbolic links or reparse points"):
+            network_module._export_inventory(tmp_path)
 
 
 def test_unknown_fields_and_nonportable_paths_fail_closed(tmp_path: Path) -> None:
@@ -1462,6 +1467,153 @@ def test_wire_from_dict_rejects_member_orders_that_typescript_rejects(
         AuthorityModel.from_dict(reversed_states)
 
 
+def test_silo_commit_rejects_duplicate_canonical_relations(tmp_path: Path) -> None:
+    _, commit = _complete_silo(tmp_path)
+    import jsonschema
+    relation = ArtifactRelation(
+        relation_type="EVIDENCES",
+        source_path="ground.txt",
+        target_path="result.json",
+        mechanism_path="mechanism.bin",
+        semantic_coordinate="claim:bounded-result",
+    )
+
+    with pytest.raises(NetworkError, match="duplicate canonical records"):
+        replace(commit, relations=(relation, relation))
+
+    wire = commit.to_dict()
+    wire["relations"] = [relation.to_dict(), relation.to_dict()]
+    schema = json.loads(
+        Path("src/verifier/schemas/verifier-artifact-network-1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    relation_schema = schema["$defs"]["commit"]["properties"]["relations"]
+    assert relation_schema["uniqueItems"] is True
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.Draft202012Validator(schema).validate(wire)
+
+
+def test_silo_commit_orders_equal_key_relations_by_canonical_record_bytes(tmp_path: Path) -> None:
+    _, commit = _complete_silo(tmp_path)
+    first = ArtifactRelation("EVIDENCES", "ground.txt", "result.json", "mechanism.bin", "claim:a")
+    second = ArtifactRelation("EVIDENCES", "ground.txt", "result.json", "mechanism.bin", "claim:b")
+
+    forward = replace(commit, relations=(first, second))
+    backward = replace(commit, relations=(second, first))
+
+    assert forward.relations == backward.relations == (first, second)
+    assert forward.to_dict() == backward.to_dict()
+    assert canonical_bytes(forward.to_dict()) == canonical_bytes(backward.to_dict())
+
+
+def test_silo_commit_keeps_type_source_target_as_primary_relation_order(tmp_path: Path) -> None:
+    _, commit = _complete_silo(tmp_path)
+    checks = ArtifactRelation("CHECKS", "ground.txt", "result.json", "result.json", "claim:c")
+    evidences = ArtifactRelation("EVIDENCES", "ground.txt", "result.json", "evidence/ground-self.json", "claim:e")
+    # The canonical record bytes order these two the other way round (the mechanism path
+    # sorts first there), so this distinguishes the primary key from the tiebreak.
+    assert canonical_bytes(evidences.to_dict()) < canonical_bytes(checks.to_dict())
+
+    ordered = replace(commit, relations=(evidences, checks))
+
+    assert ordered.relations == (checks, evidences)
+    assert [item["relation_type"] for item in ordered.to_dict()["relations"]] == ["CHECKS", "EVIDENCES"]
+
+
+def test_silo_commit_rejects_untyped_relations_without_attribute_errors(tmp_path: Path) -> None:
+    _, commit = _complete_silo(tmp_path)
+
+    with pytest.raises(NetworkError, match="typed relations"):
+        replace(commit, relations=({"relation_type": "EVIDENCES"},))
+
+
+ASSESSMENT_RESULT_VOCABULARY = {
+    "reconstructibility": ("COMPLETE", "INCOMPLETE"),
+    "derivation_closure": ("CLOSED", "OPEN"),
+    "self_derivability": ("ESTABLISHED", "NOT_ESTABLISHED"),
+    "completeness": ("COMPLETE", "INCOMPLETE", "UNKNOWN"),
+    "silo_grounding": ("ESTABLISHED", "NOT_ESTABLISHED", "UNKNOWN"),
+    "authority_axiom_agency": ("PRESERVED", "VIOLATED", "UNKNOWN"),
+}
+
+
+def _assessment_wire() -> dict[str, object]:
+    return SiloAssessment(
+        reconstructibility="COMPLETE",
+        derivation_closure="CLOSED",
+        self_derivability="ESTABLISHED",
+        completeness="COMPLETE",
+        completeness_kind="SILO_CENSUS",
+        silo_grounding="ESTABLISHED",
+        authority_axiom_agency="PRESERVED",
+        reasons=(),
+    ).to_dict()
+
+
+def test_assessment_schemas_and_decoder_share_every_result_value() -> None:
+    import jsonschema
+    standalone = json.loads(
+        Path("src/verifier/schemas/verifier-silo-assessment-1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    combined = json.loads(
+        Path("src/verifier/schemas/verifier-artifact-network-1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assessment_definition = combined["$defs"]["assessment"]
+
+    for field, expected in ASSESSMENT_RESULT_VOCABULARY.items():
+        assert tuple(standalone["properties"][field]["enum"]) == expected
+        assert tuple(assessment_definition["properties"][field]["enum"]) == expected
+        for result in expected:
+            wire = _assessment_wire()
+            wire[field] = result
+            jsonschema.Draft202012Validator(standalone).validate(wire)
+            jsonschema.Draft202012Validator(assessment_definition).validate(wire)
+            assert SiloAssessment.from_dict(wire).to_dict() == wire
+        outside = _assessment_wire()
+        outside[field] = "OUTSIDE_VOCABULARY"
+        with pytest.raises(NetworkError, match=f"unsupported {field} result"):
+            SiloAssessment.from_dict(outside)
+
+
+@pytest.mark.parametrize(
+    ("field", "retired_result"),
+    [
+        ("reconstructibility", "INVALID"),
+        ("derivation_closure", "CONFLICTED"),
+        ("derivation_closure", "UNKNOWN"),
+        ("self_derivability", "INVALID"),
+    ],
+)
+def test_assessment_schemas_and_decoder_reject_results_outside_narrow_vocabulary(
+    field: str, retired_result: str,
+) -> None:
+    import jsonschema
+    standalone = json.loads(
+        Path("src/verifier/schemas/verifier-silo-assessment-1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    combined = json.loads(
+        Path("src/verifier/schemas/verifier-artifact-network-1.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    wire = _assessment_wire()
+    wire[field] = retired_result
+
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.Draft202012Validator(standalone).validate(wire)
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.Draft202012Validator(combined["$defs"]["assessment"]).validate(wire)
+    with pytest.raises(NetworkError, match=f"unsupported {field} result"):
+        SiloAssessment.from_dict(wire)
+
+
 def test_assessment_receipt_binds_exact_commit_and_mechanism(tmp_path: Path) -> None:
     store, commit = _complete_silo(tmp_path)
     receipt = build_silo_assessment_receipt(commit, store)
@@ -1491,8 +1643,8 @@ def test_assessment_wire_rejects_retired_property_and_authority_verdicts(tmp_pat
 
 
 def test_published_schema_accepts_canonical_record_variants(tmp_path: Path) -> None:
-    jsonschema = pytest.importorskip("jsonschema")
-    referencing = pytest.importorskip("referencing")
+    import jsonschema
+    import referencing
     key = _private_key(tmp_path / "key.pem")
     new_key = _private_key(tmp_path / "new.pem")
     publisher = publisher_from_private_key(key, "Specimen", "Schema specimen only.")
@@ -1525,8 +1677,14 @@ def test_published_schema_accepts_canonical_record_variants(tmp_path: Path) -> N
 
 
 def test_cli_exposes_complete_alpha_surface() -> None:
-    network = next(action for action in build_parser()._actions if isinstance(action, __import__("argparse")._SubParsersAction)).choices["network"]
-    commands = next(action for action in network._actions if isinstance(action, __import__("argparse")._SubParsersAction)).choices
+    network = next(
+        action for action in build_parser()._actions
+        if isinstance(action, argparse._SubParsersAction)
+    ).choices["network"]
+    commands = next(
+        action for action in network._actions
+        if isinstance(action, argparse._SubParsersAction)
+    ).choices
     assert set(commands) == {"init", "object", "commit", "inspect", "diff", "clone", "compose", "export", "rebuild", "register", "push"}
 
 
@@ -1673,7 +1831,7 @@ def test_cli_push_is_inert_without_transmit_and_authenticated_mode_is_fail_close
 
 
 def test_supported_newcomer_builder_materializes_exact_specimen(tmp_path: Path) -> None:
-    pytest.importorskip("cryptography", reason="signed newcomer materialization verifies an Ed25519 signature")
+    pytest.importorskip("cryptography", reason="OPTIONAL_DEPENDENCY_ABSENT: cryptography (seal extra) is absent, so test_supported_newcomer_builder_materializes_exact_specimen does not verify its Ed25519 signature here; the platform-python-contracts workflow job installs the seal extra and runs the complete suite, including this file")
     builder_path = Path("examples/artifact-network/build_specimen.py")
     specification = importlib.util.spec_from_file_location(
         "artifact_network_newcomer_builder", builder_path

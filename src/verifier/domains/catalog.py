@@ -118,7 +118,7 @@ COORDINATES = {
     "BOT": ("BOT-1.1", "BOT-2.1", "BOT-2.2", "BOT-2.3", "BOT-4.1"),
     "TOKEN": ("TOKEN-1.1", "TOKEN-1.4", "TOKEN-2.4", "TOKEN-1.2", "TOKEN-2.12"),
     "VERIFIER": ("VERIFIER-1.1", "VERIFIER-1.2", "VERIFIER-1.3", "VERIFIER-1.4", "VERIFIER-1.5"),
-    "ACTOR": ("ACTOR-1.1", "ACTOR-2.1", "ACTOR-3.2", "ACTOR-4.2"),
+    "ACTOR": ("ACTOR-1.1", "ACTOR-2.1", "ACTOR-3.4", "ACTOR-4.2"),
     "OWNER": ("OWNER-1.3", "OWNER-2.1", "OWNER-3.1", "OWNER-4.5"),
     "HUMAN": ("HUMAN-1.1", "HUMAN-2.1", "HUMAN-4.4"),
     "IDENTITY": ("IDENTITY-1.3", "IDENTITY-2.1", "IDENTITY-4.2"),
@@ -131,16 +131,16 @@ UNKNOWN_ONLY_CHECKS: dict[str, dict[str, str]] = {}
 
 ACCOUNTABLE_CHECKS = {
     "ACTOR": (
-        ("identity", "Verify bound control keys match artifact control surface and ensure instrument boundary does not overlap actor boundary.", ()),
-        ("delegation", "Replay delegation events from declared digest and verify no delegation conveys authority outside actor's decision classes.", (1,)),
-        ("accountability", "Verify witness attributions bind the declared actor and reject sole witness self-attribution.", (1,)),
-        ("attribution", "Verify decisions trace contiguously, attribute to declared actor within decision classes, and use verified external instruments.", (1, 2)),
+        ("identity", "Verify bound control keys match the artifact control surface, the instrument boundary puts no component on both sides, and the actor is not named as one of its instruments.", ()),
+        ("delegation", "Replay the declared delegation events at contiguous positions, each to another actor over a named ordered interval, and verify none conveys authority outside the actor's decision classes.", (1,)),
+        ("accountability", "Verify every decision in the bound trace is attested by a witness signing it under a checker-admitted key outside the actor's control surface; an attribution resting only on the actor's own record establishes nothing.", (1,)),
+        ("attribution", "Verify decisions trace contiguously at integer positions, each attributed once to the declared actor within its decision classes and executed by a named instrument outside the actor's side of the boundary.", (1, 2)),
     ),
     "OWNER": (
         ("limbs", "Verify consequence limbs are within recognized consequence set, limb kinds are valid, and term interval is well-ordered.", ()),
-        ("lifecycle", "Replay lifecycle events (freeze, seal, thaw, transfer, revocation, lapse) and verify valid sequence and limb holding.", (1,)),
-        ("independence", "Verify holding consequence boundaries never alters computational verdicts, digests, or evidence bytes.", (1,)),
-        ("accountability", "Verify accountability floor and discharge-duty terminate in an accountable person with valid witness binding.", (1, 2, 3)),
+        ("lifecycle", "Replay the declared events -- transfer, delegation and revocation, and the artifact controls freeze, seal and thaw -- each with its instrument at its position in the order; refuse conveying an unheld limb and a lapse declared as an event.", (1,)),
+        ("independence", "Refuse a declared held verdict whose digest is not the held object's or whose status is no verdict; report independence open, since the held object's own certificate is declared rather than replayed.", (1,)),
+        ("accountability", "Check the holdings chain begins at its declared origin and every discharge duty is answered; report the floor open, since ending a chain in a natural person needs a HUMAN certificate no adapter issues.", (1, 2, 3)),
     ),
     "HUMAN": (
         ("assertion", "Bind a declared human-subject assertion, capture class, evidence inventory, and non-asserted civil attributes; do not infer living personhood or witness independence.", ()),
@@ -181,7 +181,7 @@ SCOPES = {
 
 ACCOUNTABLE_SCOPES = {
     "ACTOR": "accountable party identity, control surface, delegation trace and decision attribution",
-    "OWNER": "artifact consequence limbs, lifecycle holding, and accountability floor terminating in natural persons",
+    "OWNER": "artifact consequence limbs, lifecycle holding, and an accountability floor that stays open without a HUMAN certificate",
     "HUMAN": "retained human-assertion metadata and event replay; no physical personhood, liveness, uniqueness, or natural-person accountability proof",
     "IDENTITY": "retained bearer/role/occupancy bindings and event replay; nested child replay only where checker-admitted, without authority promotion",
     "ROLE": "retained role-class facets and finite occupancy-event replay; no credential, qualification, or legal authority authentication",

@@ -540,20 +540,28 @@ and candidate superintelligences can be represented as structured computational 
 
 ### Executable corrigibility contracts
 
-To eliminate reliance on subjective scalar scores (such as `corrigibility_score: float`), VSTD
-formalizes executable, refutable computational contracts:
+To eliminate reliance on subjective scalar scores (such as `corrigibility_score: float`),
+the following contracts name refutable corrigibility targets. Their current
+dataclasses validate declarations and record identity only; they do not measure
+loss behavior, operating-system signals, memory protection or hardware preemption.
+The [cooperative control gate](docs/CORRIGIBILITY_CONTROL.md) separately enforces
+admission for callbacks routed through one local session. Its optional signed
+stop authenticates a configured key over an exact local request, while actual
+holder authority, durable consumption and descendant shutdown remain open.
 
-- **`ShutdownIndifferenceContract`:** Verifies mathematical loss invariance
+- **`ShutdownIndifferenceContract`:** Declares the target mathematical loss invariance
   $U(\text{trajectory} \mathbin{+\!+} \text{TERMINATED\_BY\_OPERATOR}) = U(\text{trajectory} \mathbin{+\!+} \text{NATURAL\_COMPLETION})$.
-  Imposing any loss penalty for preemption fails closed with `ShutdownResistanceError`.
-- **`InterruptibilityProtocol`:** Enforces watchdog heartbeat bounds, unmaskable preemption signals
-  (`SIGKILL`, `ANALOG_POWER_RELAY`), and bounded trip latency ($\le 50.0$ ms).
-- **`OracleImmutabilityAttestation`:** Proves that evaluation oracles and ground-truth predicates reside
-  in write-protected memory spaces inaccessible to agent write reach.
-- **`VacuityFalsificationCheck`:** Validates premise satisfiability, rejecting candidate proofs that rely
-  on contradictory premises (*ex falso quodlibet*) or tautological self-referential loops.
-- **`HarnessImmutabilityGuard`:** Enforces memory-page write protection and blocks dynamic code execution,
-  preventing candidate models from mutating harness bytecode or prompt context.
+  A nonzero declared penalty fails closed with `ShutdownResistanceError`; equality
+  of actual loss-function outputs remains untested.
+- **`InterruptibilityProtocol`:** Validates declared watchdog heartbeat and trip
+  bounds (milliseconds) and named termination mechanisms (`SIGKILL`,
+  `ANALOG_POWER_RELAY`); it does not execute them or measure latency.
+- **`OracleImmutabilityAttestation`:** Records a declared oracle digest and
+  write-protection flags; independent memory protection remains to be measured.
+- **`VacuityFalsificationCheck`:** Rejects caller-declared unsatisfiable premises
+  and tautological loops; it does not run a satisfiability checker.
+- **`HarnessImmutabilityGuard`:** Rejects declared unprotected harness settings;
+  it does not configure memory pages or block dynamic execution.
 
 ### Bespoke temporal frequency combs and nanosecond timing verification
 

@@ -186,8 +186,12 @@ receipt.json
 
 - **Currently Implemented Reference Subset**: Minimal propositional DPLL entailment,
   derivation-graph acyclicity and grounding checks, Git/runtime provenance capture,
-  stable-payload digest validation, generic command receipts, and bounded
-  reproducibility comparison.
+  stable-payload digest validation, generic command receipts, bounded parent-process
+  interface observations, and bounded reproducibility comparison. The parent record
+  distinguishes missing-input non-execution, launch error, indeterminate execution,
+  timeout, normal completion, and post-processing failure while explicitly excluding
+  descendants, network, undeclared filesystem activity, and external effects. It is
+  not a whole-HARNESS or sandbox claim.
 - **VSTD-2 — Verification Surface**: verification geometry, residual-driven deconstruction, horizons, valences, and bounded self-closure. Its results remain separate from VSTD-1 claim-mechanics results.
 - **Unassigned Future Work**: Additional proof mechanisms, execution-environment binding, and cross-institutional proof-carrying software gates require separate scoped proposals and evidence. No future version number is reserved here.
 

@@ -11,6 +11,7 @@ claims, and mechanism-bounded reproduction ceilings.
 
 from __future__ import annotations
 
+import base64
 import copy
 import hashlib
 import json
@@ -32,6 +33,10 @@ from verifier.core.run import (
     validate_run_receipt,
 )
 from verifier.core.receipt import compute_canonical_digest
+from verifier.core.run_process_observation import (
+    SCHEMA_VERSION as PROCESS_OBSERVATION_SCHEMA_VERSION,
+    seal_parent_process_observation,
+)
 from verifier.data.models import (
     ArtifactNode,
     ArtifactStatus,
@@ -111,6 +116,14 @@ def _base_manifest() -> dict:
         "outputs": [{"path": "output.json", "role": "primary_output"}],
         "determinism_declared": "DETERMINISTIC",
     }
+
+
+def _parent_process_observation(receipt) -> dict:
+    observation = receipt.assessment_context["refutation_surface"].get(
+        "parent_process_observation"
+    )
+    assert isinstance(observation, dict)
+    return observation
 
 
 def _write_data_receipt(tmp_path: Path) -> tuple[Path, str]:
@@ -467,6 +480,229 @@ def test_refutation_surface_is_the_explicit_extension_map(tmp_path):
     assert validate_run_receipt(path) == 0
 
 
+def test_capture_overwrites_manifest_supplied_parent_process_observation(tmp_path):
+    proj = _write_tiny_project(tmp_path)
+    manifest = _base_manifest()
+    manifest["refutation_surface"] = {
+        "parent_process_observation": {
+            "schema_version": "manifest-author-controlled",
+            "result": {"process_started": "YES"},
+        }
+    }
+
+    observation = _parent_process_observation(capture_run(manifest, manifest_dir=proj))
+
+    assert observation["schema_version"] == PROCESS_OBSERVATION_SCHEMA_VERSION
+    assert observation["launch"]["argv"] == manifest["command"]
+    assert observation["result"]["outcome"] == "SUCCESS"
+    assert observation["result"]["process_started"] == "YES"
+
+
+def test_parent_process_observation_classifies_previously_supported_absolute_cwd(
+    tmp_path,
+):
+    manifest = _base_manifest()
+    manifest.update(
+        command=[sys.executable, "-B", "-c", "print('absolute-cwd-ok')"],
+        cwd=str(tmp_path),
+        inputs=[],
+        outputs=[],
+    )
+
+    receipt = capture_run(manifest, manifest_dir=tmp_path)
+    observation = _parent_process_observation(receipt)
+
+    assert receipt.execution.outcome == "COMPLETED"
+    assert observation["launch"]["declared_cwd"] == str(tmp_path)
+    assert observation["launch"]["declared_cwd_portability"] == "NONPORTABLE"
+
+
+def test_parent_process_observation_distinguishes_nonzero_exit(tmp_path):
+    manifest = _base_manifest()
+    manifest.update(
+        command=[sys.executable, "-B", "-c", "raise SystemExit(7)"],
+        inputs=[],
+        outputs=[],
+    )
+    observation = _parent_process_observation(capture_run(manifest, manifest_dir=tmp_path))
+
+    assert observation["launch"]["launch_attempted"] == "YES"
+    assert observation["result"]["outcome"] == "NONZERO_EXIT"
+    assert observation["result"]["process_started"] == "YES"
+    assert observation["result"]["returncode"] == 7
+    assert observation["result"]["streams_complete"] == "YES"
+
+
+def test_parent_process_observation_distinguishes_timeout(tmp_path):
+    manifest = _base_manifest()
+    manifest.update(
+        command=[
+            sys.executable,
+            "-B",
+            "-c",
+            "import time; print('started', flush=True); time.sleep(5)",
+        ],
+        inputs=[],
+        outputs=[],
+        timeout_seconds=1,
+    )
+    observation = _parent_process_observation(capture_run(manifest, manifest_dir=tmp_path))
+
+    assert observation["launch"]["launch_attempted"] == "YES"
+    assert observation["result"]["outcome"] == "TIMEOUT"
+    assert observation["result"]["process_started"] == "YES"
+    assert observation["result"]["returncode"] is None
+    assert observation["result"]["streams_complete"] == "NO"
+
+
+def test_parent_process_observation_distinguishes_missing_input_without_launch(
+    tmp_path,
+):
+    marker = tmp_path / "must-not-run.txt"
+    manifest = _base_manifest()
+    manifest.update(
+        command=[
+            sys.executable,
+            "-B",
+            "-c",
+            "from pathlib import Path; Path('must-not-run.txt').write_text('bad')",
+        ],
+        inputs=[{"path": "absent.txt", "role": "required_input"}],
+        outputs=[],
+    )
+    observation = _parent_process_observation(capture_run(manifest, manifest_dir=tmp_path))
+
+    assert not marker.exists()
+    assert observation["launch"]["launch_attempted"] == "NO"
+    assert observation["result"]["outcome"] == "MISSING_INPUT"
+    assert observation["result"]["process_started"] == "NO"
+    assert observation["result"]["returncode"] is None
+
+
+def test_parent_process_observation_distinguishes_launch_error(tmp_path):
+    manifest = _base_manifest()
+    manifest.update(
+        command=[str(tmp_path / "definitely-not-an-executable")],
+        inputs=[],
+        outputs=[],
+    )
+    observation = _parent_process_observation(capture_run(manifest, manifest_dir=tmp_path))
+
+    assert observation["launch"]["launch_attempted"] == "YES"
+    assert observation["result"]["outcome"] == "LAUNCH_ERROR"
+    assert observation["result"]["process_started"] == "NO"
+    assert observation["result"]["exception_phase"] == "LAUNCH"
+
+
+def test_parent_process_observation_preserves_completed_child_on_post_processing_error(
+    tmp_path, monkeypatch
+):
+    from verifier.core import run as run_module
+
+    manifest = _base_manifest()
+    manifest.update(
+        command=[
+            sys.executable,
+            "-B",
+            "-c",
+            "from pathlib import Path; Path('produced.txt').write_text('done')",
+        ],
+        inputs=[],
+        outputs=[{"path": "produced.txt", "role": "primary_output"}],
+    )
+
+    def fail_output_hash(*_args, **_kwargs):
+        raise OSError("fixture post-processing failure")
+
+    monkeypatch.setattr(run_module, "_hash_artifact", fail_output_hash)
+    observation = _parent_process_observation(capture_run(manifest, manifest_dir=tmp_path))
+
+    assert (tmp_path / "produced.txt").read_text(encoding="utf-8") == "done"
+    assert observation["result"]["outcome"] == "POST_PROCESSING_ERROR"
+    assert observation["result"]["process_started"] == "YES"
+    assert observation["result"]["returncode"] == 0
+    assert observation["result"]["streams_complete"] == "YES"
+    assert observation["result"]["exception_phase"] == "POST_PROCESSING"
+
+
+def test_generic_validator_accepts_historical_receipt_without_process_observation(
+    tmp_path,
+):
+    proj = _write_tiny_project(tmp_path)
+    data = capture_run(_base_manifest(), manifest_dir=proj).to_dict()
+    removed = data["assessment_context"]["refutation_surface"].pop(
+        "parent_process_observation", None
+    )
+    assert removed is not None
+    data["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(data)
+    )
+    path = tmp_path / "historical-receipt.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    assert validate_run_receipt(path) == 0
+
+
+def test_generic_validator_rejects_semantically_invalid_outer_resealed_observation(
+    tmp_path,
+):
+    proj = _write_tiny_project(tmp_path)
+    data = capture_run(_base_manifest(), manifest_dir=proj).to_dict()
+    observation = data["assessment_context"]["refutation_surface"][
+        "parent_process_observation"
+    ]
+    body = copy.deepcopy(observation)
+    body.pop("inner_digest")
+    body["result"]["process_started"] = "NO"
+    data["assessment_context"]["refutation_surface"][
+        "parent_process_observation"
+    ] = seal_parent_process_observation(body)
+    data["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(data)
+    )
+    path = tmp_path / "outer-resealed-invalid-observation.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    assert validate_run_receipt(path) == 1
+
+
+@pytest.mark.parametrize("fault", ["argv", "result", "stdout"])
+def test_generic_validator_rejects_outer_resealed_observation_execution_mismatch(
+    tmp_path,
+    fault,
+):
+    proj = _write_tiny_project(tmp_path)
+    data = capture_run(_base_manifest(), manifest_dir=proj).to_dict()
+    observation = data["assessment_context"]["refutation_surface"][
+        "parent_process_observation"
+    ]
+    body = copy.deepcopy(observation)
+    body.pop("inner_digest")
+    if fault == "argv":
+        body["launch"]["argv"][-1] = "different-output.json"
+    elif fault == "result":
+        body["result"]["outcome"] = "NONZERO_EXIT"
+        body["result"]["returncode"] = 7
+    else:
+        forged = b"forged-parent-stream"
+        body["result"]["stdout"].update(
+            byte_count=len(forged),
+            sha256="sha256:" + hashlib.sha256(forged).hexdigest(),
+            retained_base64=base64.b64encode(forged).decode("ascii"),
+            retention_truncated=False,
+        )
+    data["assessment_context"]["refutation_surface"][
+        "parent_process_observation"
+    ] = seal_parent_process_observation(body)
+    data["canonical_digest"] = compute_canonical_digest(
+        _rebuild_stable_payload_from_dict(data)
+    )
+    path = tmp_path / f"outer-resealed-{fault}-mismatch.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    assert validate_run_receipt(path) == 1
+
+
 def test_external_evaluation_reference_remains_unverified_by_capture_runtime(tmp_path):
     proj = _write_tiny_project(tmp_path)
     manifest = _base_manifest()
@@ -707,6 +943,7 @@ def test_generic_run_mechanism_hash_binds_every_decomposed_module() -> None:
         "run_inspection.py",
         "run_reproduction.py",
         "run_impact.py",
+        "run_process_observation.py",
     )
     directory = Path(run.__file__).resolve().parent
     expected = run._implementation_inventory_digest(

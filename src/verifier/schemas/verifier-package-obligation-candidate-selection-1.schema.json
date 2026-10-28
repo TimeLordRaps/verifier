@@ -1,0 +1,333 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-package-obligation-candidate-selection-1.schema.json",
+  "title": "Verifier Standard (VSTD) package candidate obligation-card selection",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "selection_validation_status",
+    "candidate_epistemic_status",
+    "semantic_identity_status",
+    "owner_adoption_status",
+    "normative_closure",
+    "objective_count",
+    "owner_decision_count",
+    "rows",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "verifier-package-obligation-candidate-selection-1"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_SELECTED"]},
+    "selection_validation_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+    "candidate_epistemic_status": {"enum": ["INFERRED", "NOT_ESTABLISHED"]},
+    "semantic_identity_status": {"enum": ["PASS", "NOT_ESTABLISHED"]},
+    "owner_adoption_status": {"const": "NOT_ESTABLISHED"},
+    "normative_closure": {"const": "NOT_ESTABLISHED"},
+    "manifest_name": {"type": "string", "minLength": 1},
+    "manifest_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "card_count": {"type": "integer", "minimum": 0, "maximum": 26},
+    "card_set_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "objective_count": {"type": "integer", "minimum": 0, "maximum": 408},
+    "installed_inventory_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "reason_ledger_selection_status": {"enum": ["PASS", "NOT_SELECTED"]},
+    "reason_ledger_digest": {
+      "type": ["string", "null"],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "reason_identity_count": {"type": "integer", "minimum": 0, "maximum": 408},
+    "reason_slot_identity_count": {"type": "integer", "minimum": 0, "maximum": 234},
+    "reason_disposition_counts": {
+      "type": "object",
+      "properties": {
+        "INFERRED": {"type": "integer", "minimum": 0, "maximum": 408},
+        "NO_REASON_FOUND": {"type": "integer", "minimum": 0, "maximum": 408}
+      },
+      "additionalProperties": false
+    },
+    "repository_realization_binding_status": {
+      "enum": ["PASS", "NOT_ESTABLISHED"]
+    },
+    "repository_realization_claim_status": {
+      "enum": ["UNKNOWN", "NOT_ESTABLISHED"]
+    },
+    "repository_realization_class_counts": {
+      "type": "object",
+      "properties": {
+        "DIRECT": {"type": "integer", "minimum": 0, "maximum": 642},
+        "SPECIALIZATION": {"type": "integer", "minimum": 0, "maximum": 642},
+        "TRANSLATION": {"type": "integer", "minimum": 0, "maximum": 642},
+        "CONDITIONAL": {"type": "integer", "minimum": 0, "maximum": 642},
+        "NOT_APPLICABLE": {"type": "integer", "minimum": 0, "maximum": 642},
+        "UNREALIZED": {"type": "integer", "minimum": 0, "maximum": 642}
+      },
+      "additionalProperties": false
+    },
+    "candidate_rev4_class_counts": {
+      "type": "object",
+      "properties": {
+        "NECESSARY": {"type": "integer", "minimum": 0, "maximum": 408},
+        "CONDITIONALLY_NECESSARY": {"type": "integer", "minimum": 0, "maximum": 408},
+        "REASON_PENDING": {"type": "integer", "minimum": 0, "maximum": 408}
+      },
+      "additionalProperties": false
+    },
+    "candidate_mechanism_counts": {
+      "type": "object",
+      "properties": {
+        "BOUNDED": {"type": "integer", "minimum": 0, "maximum": 408},
+        "COVERS": {"type": "integer", "minimum": 0, "maximum": 408},
+        "DEFECTIVE": {"type": "integer", "minimum": 0, "maximum": 408},
+        "NOT_ASSESSED": {"type": "integer", "minimum": 0, "maximum": 408},
+        "PARTIAL": {"type": "integer", "minimum": 0, "maximum": 408},
+        "UNSOUND": {"type": "integer", "minimum": 0, "maximum": 408}
+      },
+      "additionalProperties": false
+    },
+    "candidate_reason_verdict_counts": {
+      "type": "object",
+      "properties": {
+        "ADEQUATE": {"type": "integer", "minimum": 0, "maximum": 408},
+        "REWRITE": {"type": "integer", "minimum": 0, "maximum": 408}
+      },
+      "additionalProperties": false
+    },
+    "card_question_count": {"type": "integer", "minimum": 0, "maximum": 104},
+    "cross_kind_decision_count": {"type": "integer", "minimum": 0, "maximum": 6},
+    "owner_decision_count": {"type": "integer", "minimum": 0},
+    "owner_decisions": {
+      "type": "array",
+      "maxItems": 110,
+      "items": {"$ref": "#/$defs/ownerDecision"}
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 408,
+      "items": {"$ref": "#/$defs/candidateRow"}
+    },
+    "error": {"type": "string", "minLength": 1},
+    "selection_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "nullableHash": {
+      "type": ["string", "null"],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "condition": {
+      "type": ["object", "null"],
+      "properties": {
+        "type": {"enum": ["presence", "type"]},
+        "required_when": {"type": "string", "minLength": 1},
+        "not_required_because": {"type": "string", "minLength": 1},
+        "if_silent": {"const": "UNKNOWN"},
+        "decided_by": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "required": ["type", "required_when", "not_required_because", "if_silent", "decided_by"],
+      "additionalProperties": false
+    },
+    "ownerDecision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["decision_id", "topic", "scope", "scope_basis", "status"],
+          "properties": {
+            "decision_id": {"pattern": "^CTC-[1-6]$"},
+            "topic": {"type": "string", "minLength": 1},
+            "scope": {"type": "string", "minLength": 1},
+            "scope_basis": {"const": "INFERRED_IMPLEMENTER_MAPPING"},
+            "status": {"const": "NOT_ESTABLISHED"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["decision_id", "object_kind", "question_digest", "scope_basis", "status"],
+          "properties": {
+            "decision_id": {"pattern": "^[A-Z]+-Q[1-4]$"},
+            "object_kind": {"type": "string", "pattern": "^[A-Z]+$"},
+            "question_digest": {"$ref": "#/$defs/hash"},
+            "scope_basis": {"const": "INFERRED_CANDIDATE_CARD_SCOPE"},
+            "status": {"const": "NOT_ESTABLISHED"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "candidateRow": {
+      "type": "object",
+      "required": [
+        "object_kind", "tier", "coordinate", "semantic_version",
+        "proposition_digest", "certificate_schema_version",
+        "checking_mechanism", "scope", "candidate_rev3_class",
+        "candidate_rev4_class", "candidate_condition",
+        "candidate_mechanism_assessment", "candidate_reason_verdict",
+        "candidate_role", "candidate_served_facets", "candidate_failed_tests",
+        "candidate_class_epistemic_type", "candidate_semantic_identity_status",
+        "reason_bound_digest", "reason_text_digest", "reason_source_digest",
+        "reason_disposition", "candidate_row_digest", "candidate_card_digest",
+        "repository_realization_class",
+        "repository_realization_binding_status",
+        "repository_realization_claim_status",
+        "repository_realization_digest",
+        "repository_surface_identity_digest",
+        "repository_mechanism_binding_digest",
+        "owner_disposition_status", "normative_closure", "status"
+      ],
+      "properties": {
+        "object_kind": {"type": "string", "pattern": "^[A-Z]+$"},
+        "tier": {"type": "integer", "minimum": 1, "maximum": 9},
+        "coordinate": {"type": "string", "pattern": "^[A-Z]+-[1-9]\\.[0-9]+$"},
+        "semantic_version": {"type": "string", "minLength": 1},
+        "proposition_digest": {"$ref": "#/$defs/hash"},
+        "certificate_schema_version": {"type": "string", "minLength": 1},
+        "checking_mechanism": {"type": "string", "minLength": 1},
+        "scope": {"type": "string", "minLength": 1},
+        "candidate_rev3_class": {"enum": ["NECESSARY", "CONDITIONALLY_NECESSARY", "REASON_PENDING"]},
+        "candidate_rev4_class": {"enum": ["NECESSARY", "CONDITIONALLY_NECESSARY", "REASON_PENDING"]},
+        "candidate_condition": {"$ref": "#/$defs/condition"},
+        "candidate_mechanism_assessment": {"enum": ["BOUNDED", "COVERS", "DEFECTIVE", "NOT_ASSESSED", "PARTIAL", "UNSOUND"]},
+        "candidate_reason_verdict": {"enum": ["ADEQUATE", "REWRITE"]},
+        "candidate_role": {"enum": ["cross-cutting", "facet", "orphan"]},
+        "candidate_served_facets": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "candidate_failed_tests": {"type": "array", "uniqueItems": true, "items": {"pattern": "^R[1-6]$"}},
+        "candidate_class_epistemic_type": {"const": "INFERRED"},
+        "candidate_semantic_identity_status": {"enum": ["PASS", "NOT_ESTABLISHED"]},
+        "reason_bound_digest": {"$ref": "#/$defs/nullableHash"},
+        "reason_text_digest": {"$ref": "#/$defs/nullableHash"},
+        "reason_source_digest": {"$ref": "#/$defs/nullableHash"},
+        "reason_disposition": {"type": ["string", "null"], "enum": ["INFERRED", "NO_REASON_FOUND", null]},
+        "repository_realization_class": {
+          "type": ["string", "null"],
+          "enum": ["DIRECT", "SPECIALIZATION", "TRANSLATION", "CONDITIONAL", "NOT_APPLICABLE", "UNREALIZED", null]
+        },
+        "repository_realization_binding_status": {"enum": ["PASS", "NOT_ESTABLISHED"]},
+        "repository_realization_claim_status": {"enum": ["UNKNOWN", "NOT_ESTABLISHED"]},
+        "repository_realization_digest": {"$ref": "#/$defs/nullableHash"},
+        "repository_surface_identity_digest": {"$ref": "#/$defs/nullableHash"},
+        "repository_mechanism_binding_digest": {"$ref": "#/$defs/nullableHash"},
+        "candidate_row_digest": {"$ref": "#/$defs/hash"},
+        "candidate_card_digest": {"$ref": "#/$defs/hash"},
+        "owner_disposition_status": {"const": "NOT_ESTABLISHED"},
+        "normative_closure": {"const": "NOT_ESTABLISHED"},
+        "status": {"const": "UNKNOWN"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "PASS"}}},
+      "then": {
+        "required": [
+          "manifest_name",
+          "manifest_digest",
+          "card_count",
+          "card_set_digest",
+          "installed_inventory_digest",
+          "candidate_rev4_class_counts",
+          "candidate_mechanism_counts",
+          "candidate_reason_verdict_counts",
+          "semantic_identity_status",
+          "reason_ledger_selection_status",
+          "reason_ledger_digest",
+          "reason_identity_count",
+          "reason_slot_identity_count",
+          "reason_disposition_counts",
+          "repository_realization_binding_status",
+          "repository_realization_claim_status",
+          "repository_realization_class_counts",
+          "owner_decisions",
+          "selection_digest"
+        ],
+        "properties": {
+          "selection_validation_status": {"const": "PASS"},
+          "candidate_epistemic_status": {"const": "INFERRED"},
+          "card_count": {"const": 26},
+          "objective_count": {"const": 408},
+          "card_question_count": {"const": 104},
+          "cross_kind_decision_count": {"const": 6},
+          "owner_decision_count": {"const": 110},
+          "owner_decisions": {"minItems": 110, "maxItems": 110},
+          "rows": {"minItems": 408, "maxItems": 408}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"semantic_identity_status": {"const": "PASS"}}},
+      "then": {
+        "properties": {
+          "reason_ledger_selection_status": {"const": "PASS"},
+          "reason_ledger_digest": {"$ref": "#/$defs/hash"},
+          "reason_identity_count": {"const": 408},
+          "reason_slot_identity_count": {"const": 234},
+          "repository_realization_binding_status": {"const": "PASS"},
+          "repository_realization_claim_status": {"const": "UNKNOWN"},
+          "rows": {
+            "items": {
+              "allOf": [
+                {"$ref": "#/$defs/candidateRow"},
+                {"properties": {
+                  "candidate_semantic_identity_status": {"const": "PASS"},
+                  "repository_realization_class": {
+                    "enum": ["DIRECT", "SPECIALIZATION", "TRANSLATION", "CONDITIONAL", "NOT_APPLICABLE", "UNREALIZED"]
+                  },
+                  "repository_realization_binding_status": {"const": "PASS"},
+                  "repository_realization_claim_status": {"const": "UNKNOWN"},
+                  "repository_realization_digest": {"$ref": "#/$defs/hash"},
+                  "repository_surface_identity_digest": {"$ref": "#/$defs/hash"},
+                  "repository_mechanism_binding_digest": {"$ref": "#/$defs/hash"}
+                }}
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "FAIL"}}},
+      "then": {
+        "required": ["error"],
+        "properties": {
+          "selection_validation_status": {"const": "FAIL"},
+          "candidate_epistemic_status": {"const": "NOT_ESTABLISHED"},
+          "objective_count": {"const": 0},
+          "owner_decision_count": {"const": 0},
+          "rows": {"maxItems": 0}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "NOT_SELECTED"}}},
+      "then": {
+        "properties": {
+          "selection_validation_status": {"const": "NOT_ESTABLISHED"},
+          "candidate_epistemic_status": {"const": "NOT_ESTABLISHED"},
+          "objective_count": {"const": 0},
+          "owner_decision_count": {"const": 0},
+          "rows": {"maxItems": 0}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "UNKNOWN"}}},
+      "then": {
+        "required": ["error"],
+        "properties": {
+          "selection_validation_status": {"const": "UNKNOWN"},
+          "candidate_epistemic_status": {"const": "NOT_ESTABLISHED"},
+          "objective_count": {"const": 0},
+          "owner_decision_count": {"const": 0},
+          "rows": {"maxItems": 0}
+        }
+      }
+    }
+  ]
+}

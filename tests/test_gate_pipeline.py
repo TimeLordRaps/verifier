@@ -1,6 +1,7 @@
 """Local command-line interface (CLI) pipeline counterexamples; no domain proof."""
 from __future__ import annotations
 
+import argparse
 import json
 import os
 from pathlib import Path
@@ -11,7 +12,7 @@ import time
 import pytest
 
 from verifier.runtime.gate_pipeline import (
-    check_pipeline, init_pipeline, plan_pipeline, run_pipeline,
+    check_pipeline, handle_pipeline_command, init_pipeline, plan_pipeline, run_pipeline,
 )
 
 
@@ -205,3 +206,49 @@ def test_rehashed_overbound_output_cannot_pass_consistency(tmp_path: Path) -> No
     value.pop("receipt_digest"); value["receipt_digest"] = _digest(_canonical(value))
     output.write_text(json.dumps(value))
     assert check_pipeline(output)["status"] == "FAIL"
+
+
+def refuse_relpath_across_mounts(monkeypatch: pytest.MonkeyPatch, start: Path) -> None:
+    """Make os.path.relpath raise for one start directory, as ntpath does across drives or UNC mounts."""
+    real = os.path.relpath
+
+    def relpath(target: str, base: str = os.curdir) -> str:
+        if Path(base) == start:
+            raise ValueError("path is on mount 'E:', start on mount 'C:'")
+        return real(target, base)
+
+    monkeypatch.setattr(os.path, "relpath", relpath)
+
+
+def test_unrelatable_receipt_destination_refuses_before_any_step(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    path = manifest(tmp_path, [[sys.executable, "-c", "open('executed','w').write('ran')"]])
+    output = tmp_path / "receipt.json"
+    refuse_relpath_across_mounts(monkeypatch, tmp_path)
+    with pytest.raises(ValueError) as refusal:
+        run_pipeline(path, output)
+    assert not (tmp_path / "executed").exists()
+    assert not output.exists()
+    assert "same drive or mount" in str(refusal.value)
+
+
+def test_cli_refuses_unrelatable_receipt_destination_before_any_step(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    path = manifest(tmp_path, [[sys.executable, "-c", "open('executed','w').write('ran')"]])
+    output = tmp_path / "receipt.json"
+    refuse_relpath_across_mounts(monkeypatch, tmp_path)
+    status = handle_pipeline_command(argparse.Namespace(pipeline_action="run", path=str(path), output=str(output), json=True))
+    captured = capsys.readouterr()
+    assert not (tmp_path / "executed").exists()
+    assert not output.exists()
+    assert "START" not in captured.err
+    assert status == 1
+    result = json.loads(captured.out)
+    assert result["status"] == "FAIL"
+    assert "same drive or mount" in result["reason"]
+
+
+def test_receipt_manifest_path_is_relative_to_the_receipt_directory(tmp_path: Path) -> None:
+    path = manifest(tmp_path, [[sys.executable, "-c", "pass"]])
+    (tmp_path / "results").mkdir()
+    assert run_pipeline(path, tmp_path / "results" / "receipt.json")["manifest_path"] == "../pipeline.json"
+    assert run_pipeline(path, tmp_path / "receipt.json")["manifest_path"] == "pipeline.json"

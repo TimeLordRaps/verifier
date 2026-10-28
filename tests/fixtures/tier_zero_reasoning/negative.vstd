@@ -1,0 +1,49 @@
+# Wrong reasons, on the real hubs.  Each must be refused with the status its note names: they check
+# the checker.  None may be admitted, so none may contribute a fact.  `because` names text the
+# refusal's detail must contain: a wrong reason refused for some other cause is a checker failure.
+
+reason wrong-type-text
+  claim    type src/verifier/domains/common.py::text:62:42 `value` bytes
+  basis    guard
+  assume   isinstance-means-exact
+  note     expect REFUTED: the guard gives str, not bytes
+  note     because is not the claimed bytes
+
+reason wrong-occurrence-text
+  claim    type src/verifier/domains/common.py::text:62:23 `value` str
+  basis    guard
+  assume   isinstance-means-exact
+  note     expect REFUTED: column 23 is the argument of isinstance, evaluated before any guard holds
+  note     because guards in force: none
+
+reason wrong-line-part
+  claim    type src/verifier/core/namespace.py::_payload_bytes:118 `part` dict
+  basis    guard
+  note     expect STALE: part does not occur at line 118
+  note     because not at line 118
+
+reason uncited-row-matched
+  claim    type src/verifier/core/evidence.py::_normalize_ref:205:24 `matched` stdlib:re.Match
+  basis    assigned
+  basis    guard
+  note     expect REFUTED: the derivation runs the re.compile and fullmatch rows without citing them
+  note     because uses table rows it does not cite
+
+reason toothless-falsifier
+  claim    type src/verifier/core/namespace.py::_payload_bytes:119:60 `part` dict
+  basis    guard
+  falsify  row expect holds
+  note     expect NOT-LOAD-BEARING: a row falsifier with no stdlib basis cannot bite
+  note     because a falsifier did not bite
+
+reason stale-bound-objects
+  claim    type src/verifier/core/namespace.py::composition_digest:254:21 `obj` class:verifier.core.namespace.NamespaceObject
+  basis    annotation src/verifier/core/namespace.py:251
+  bound    sha256:0000000000000000000000000000000000000000000000000000000000000000
+  note     expect STALE: bound to code that is not there
+  note     because the code changed since it was bound
+
+reason malformed-claim
+  claim    type src/verifier/domains/common.py::text:62 `value +` str
+  note     expect MALFORMED: not one Python expression
+  note     because is not one Python expression

@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use Verifier Standard (VSTD) version 2.0.0, cite the exact source coordinate; this is an unreleased release candidate."
+message: "If you use Verifier Standard (VSTD) version 2.0.0, cite the exact source coordinate; this is an unreleased alpha release candidate."
 title: "Verifier Standard (VSTD): Bounded, Refutable Evidence for Computational Claims"
 type: software
 authors:

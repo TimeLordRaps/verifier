@@ -53,10 +53,13 @@ VSTD elevates `UNKNOWN` to a first-class, honorable result:
 
 You do not need complicated tools or heavy frameworks to use VSTD. The reference library has **zero required third-party dependencies**—it runs on standard Python 3.10+.
 
-### Step 1: Install `verifier-standard`
+### Step 1: Install v2.0.0 candidate source
+
+Use the v2.0.0 source checkout identified by the documentation site's source
+coordinate. This version has not been published to the Python Package Index.
 
 ```bash
-python -m pip install "verifier-standard==1.5.0"
+python -m pip install .
 ```
 
 ### Step 2: Inspect the library
@@ -67,7 +70,7 @@ Open a Python interactive shell:
 import verifier
 
 print(verifier.__version__)
-# '1.5.0'
+# Confirm this matches the candidate source coordinate.
 
 print(verifier.__standard__)
 # 'VSTD-5'

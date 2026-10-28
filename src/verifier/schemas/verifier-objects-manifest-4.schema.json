@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-objects-manifest-4.schema.json",
+  "title": "Current package representations with retained historical records",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "profile_id", "profile_digest", "repository", "objects", "obligation_denominator", "surface_rules", "obligation_reason_provider", "node_reconciler", "claim_boundary", "namespace", "representation_updates"],
+  "properties": {
+    "schema_version": {"const": "verifier-objects-manifest-4"},
+    "profile_id": {"$ref": "verifier-objects-manifest-3.schema.json#/properties/profile_id"},
+    "profile_digest": {"$ref": "verifier-objects-manifest-3.schema.json#/properties/profile_digest"},
+    "repository": {"$ref": "verifier-objects-manifest-3.schema.json#/properties/repository"},
+    "objects": {"$ref": "verifier-objects-manifest-3.schema.json#/properties/objects"},
+    "obligation_denominator": {"$ref": "verifier-objects-manifest-3.schema.json#/properties/obligation_denominator"},
+    "surface_rules": {"$ref": "verifier-objects-manifest-3.schema.json#/properties/surface_rules"},
+    "obligation_reason_provider": {"$ref": "verifier-objects-manifest-3.schema.json#/properties/obligation_reason_provider"},
+    "node_reconciler": {"$ref": "verifier-objects-manifest-3.schema.json#/properties/node_reconciler"},
+    "claim_boundary": {"$ref": "verifier-objects-manifest-3.schema.json#/properties/claim_boundary"},
+    "namespace": {"$ref": "verifier-objects-manifest-2.schema.json"},
+    "representation_updates": {
+      "type": "array", "maxItems": 26,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["object_id", "retained_object_digest", "current_object_digest", "reason", "evidence"],
+        "properties": {
+          "object_id": {"type": "string", "minLength": 1, "maxLength": 256},
+          "retained_object_digest": {"$ref": "verifier-objects-manifest-3.schema.json#/$defs/sha256"},
+          "current_object_digest": {"$ref": "verifier-objects-manifest-3.schema.json#/$defs/sha256"},
+          "reason": {"type": "string", "minLength": 1, "maxLength": 8192},
+          "evidence": {"type": "array", "maxItems": 256, "items": {
+            "type": "object", "additionalProperties": false, "required": ["path", "sha256"],
+            "properties": {
+              "path": {"type": "string", "minLength": 1, "maxLength": 1024},
+              "sha256": {"$ref": "verifier-objects-manifest-3.schema.json#/$defs/sha256"}
+            }
+          }}
+        }
+      }
+    }
+  },
+  "description": "Current payload changes require exact old/new record commitments, a reason and source evidence. Runtime validation preserves kinds, operands and the retained obligation denominator. Prior evidence never transfers automatically."
+}

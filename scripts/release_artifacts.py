@@ -23,6 +23,7 @@ import hashlib
 import io
 import json
 import os
+import posixpath
 import re
 import shutil
 import stat
@@ -56,6 +57,14 @@ CONSOLE_SCRIPTS = {
 PACKAGED_SCHEMA_NAMES = frozenset(
     {
         "artifact-control-1.schema.json",
+        "claim-garden-dangerous-pathway-assessment-1.schema.json",
+        "claim-garden-dangerous-pathway-assessment-2.schema.json",
+        "collective_closure_evidence.json",
+        "identity_lifecycle_evidence.json",
+        "identity_presentation_evidence.json",
+        "native-replay-operation-descriptor-1.schema.json",
+        "native-replay-operation-lookup-1.schema.json",
+        "role_closure_evidence.json",
         "graph-topology.schema.json",
         "verifier-aging-token-1.schema.json",
         "verifier-artifact-network-1.schema.json",
@@ -64,16 +73,35 @@ PACKAGED_SCHEMA_NAMES = frozenset(
         "verifier-bounded-completeness-1.schema.json",
         "verifier-component-index-1.schema.json",
         "verifier-component-package-1.schema.json",
+        "verifier-component-package-2.schema.json",
         "verifier-deriver-self-status-1.schema.json",
+        "verifier-dangerous-pathway-certificate-1.schema.json",
+        "verifier-dangerous-pathway-request-1.schema.json",
         "verifier-gate-publication-1.schema.json",
         "verifier-global-cycle-assessment-1.schema.json",
         "verifier-graph-assurance-1.schema.json",
         "verifier-lifetime-token-1.schema.json",
+        "verifier-manifest-object-gate-1.schema.json",
+        "verifier-manifest-package-polish-1.schema.json",
+        "verifier-manifest-package-polish-2.schema.json",
+        "verifier-manifest-package-polish-capacity-2.schema.json",
+        "verifier-manifest-package-polish-publication-rejected-1.schema.json",
+        "verifier-namespace-manifest-3.schema.json",
+        "verifier-objects-manifest-1.schema.json",
+        "verifier-objects-manifest-2.schema.json",
+        "verifier-objects-manifest-3.schema.json",
+        "verifier-objects-manifest-4.schema.json",
+        "verifier-objects-manifest-5.schema.json",
+        "verifier-objects-manifest-6.schema.json",
+        "verifier-package-contract-coverage-1.schema.json",
+        "verifier-package-contract-coverage-2.schema.json",
         "verifier-proposition-transfer-1.schema.json",
         "verifier-push-request-1.schema.json",
         "verifier-relation-boundary-1.schema.json",
         "verifier-risk-profile-2.schema.json",
         "verifier-self-derivation-mechanism-1.schema.json",
+        "verifier-self-polish-native-replay-manifest-2.schema.json",
+        "verifier-self-polish-native-replay-receipt-2.schema.json",
         "verifier-silo-assessment-1.schema.json",
         "verifier-silo-assessment-receipt-1.schema.json",
         "verifier-silo-composition-1.schema.json",
@@ -90,6 +118,26 @@ PACKAGED_SCHEMA_NAMES = frozenset(
         "verifier-domain-evidence-1.schema.json",
         "verifier-domain-certification-1.schema.json",
         "verifier-source-grounding-1.schema.json",
+        "verifier-prdel-1.schema.json",
+        "verifier-prdel-2.schema.json",
+        "verifier-prdel-cli-1.schema.json",
+        "verifier-prdel-cli-2.schema.json",
+        "verifier-prdel-replay-plan-1.schema.json",
+        "verifier-prdel-v2-document-shard-1.schema.json",
+        "verifier-prdel-v2-release-subject-2.schema.json",
+        "verifier-prdel-v2-shard-manifest-1.schema.json",
+        "verifier-prdel-compilation-1.schema.json",
+        "verifier-prdel-compilation-shards-1.schema.json",
+        "verifier-prdel-compilation-shards-2.schema.json",
+        "verifier-prdel-shard-description-1.schema.json",
+        "verifier-explanation-definitions-1.schema.json",
+        "verifier-quality-profile-1.schema.json",
+        "verifier-polish-manifest-refresh-blocked-1.schema.json",
+        "verifier-polish-workflow-policy-1.schema.json",
+        "verifier-polish-preparation-bundle-1.schema.json",
+        "verifier-package-graph-self-polish-assessment-1.schema.json",
+        "verifier-package-graph-self-polish-recheck-1.schema.json",
+        "verifier-package-obligation-candidate-selection-1.schema.json",
         "verifier-typed-formation-1.schema.json",
     }
 )
@@ -530,8 +578,103 @@ def _normalize_sdist(source: Path, destination: Path, epoch: str) -> None:
                         normalized.addfile(member, io.BytesIO(data))
 
 
-def _verify_python_distributions(wheel: Path, sdist: Path, release: str) -> None:
+def _packaged_specifications(source_files: Mapping[str, bytes]) -> dict[str, bytes]:
+    """Select the existing package-data glob from exact independently bound source."""
+    prefix = f"src/{IMPORT_PACKAGE}/standard/"
+    return {
+        path[len(prefix):]: payload for path, payload in source_files.items()
+        if path.startswith(prefix) and path.endswith(".md")
+        and "/" not in path[len(prefix):]
+    }
+
+
+def _reject_specification_aliases(
+    surface: str, names: list[str], prefix: str, expected: Mapping[str, bytes]
+) -> None:
+    """Require one exact spelling for each selected protected specification.
+
+    Case, separators and dot segments can map distinct archive entries to one
+    destination. Wheel purelib/platlib scheme entries can reach that destination
+    too. This protects selected specification paths; it is not an installer or
+    a universal filesystem-name safety assertion for unrelated archive files.
+    """
+    protected = {(prefix + name).casefold(): prefix + name for name in expected}
+    if len(protected) != len(expected):
+        raise ReleaseError("selected source specifications collide under case folding")
+    for raw in names:
+        normalized = posixpath.normpath(raw.replace("\\", "/"))
+        if surface == "wheel":
+            parts = normalized.split("/", 2)
+            if len(parts) == 3 and parts[0].endswith(".data") and parts[1] in {"purelib", "platlib"}:
+                normalized = posixpath.normpath(parts[2])
+        canonical = protected.get(normalized.casefold())
+        if canonical is not None and raw != canonical:
+            raise ReleaseError(
+                f"{surface} noncanonical packaged specification member alias: "
+                f"{raw} aliases {canonical}"
+            )
+
+
+def _verify_specification_bytes(
+    surface: str, observed: Mapping[str, bytes], expected: Mapping[str, bytes]
+) -> None:
+    missing, extra = sorted(set(expected) - set(observed)), sorted(set(observed) - set(expected))
+    if missing or extra:
+        raise ReleaseError(
+            f"{surface} packaged specification inventory differs from selected source; "
+            f"missing: {', '.join(missing)}; unexpected: {', '.join(extra)}"
+        )
+    for name, payload in expected.items():
+        if observed[name] != payload:
+            raise ReleaseError(f"{surface} packaged specification bytes differ from selected source: {name}")
+
+
+def _verify_release_scope(source_files: Mapping[str, bytes], release: str) -> None:
+    """Check the core/work-in-progress (WIP) declaration, never core qualification.
+
+    Unicode Transformation Format, 8-bit (UTF-8), is the specification encoding.
+
+    Historical artifacts without this opt-in scope keep their original contract.
+    A final core version 2 artifact must carry the exact declaration; included WIP
+    source retains all otherwise applicable source and artifact checks.
+    """
+    name = "src/verifier/standard/CORE_V2_RELEASE_SCOPE.md"
+    raw = source_files.get(name)
+    if raw is None:
+        if release == "2.0.0":
+            raise ReleaseError("final core 2.0.0 requires its core/WIP release scope")
+        return
+    if len(raw) > 16 * 1024:
+        raise ReleaseError("core/WIP release scope exceeds its byte bound")
+    declarations = (
+        b"Core release target: `2.0.0`.",
+        b"Core release scope: `verifier-core-release-scope-1`.",
+        b"Core current-object semantics: `verifier-current-object-obligations-1`.",
+        b"Included extension: `verifier-corrigibility-extension-wip-1`.",
+        b"Extension selection schema: `verifier-corrigibility-extension-selection-1`.",
+        b"Extension status: `WIP`.",
+        b"Extension completion: `UNKNOWN`.",
+        b"Extension core gate credit: `NONE`.",
+    )
+    try:
+        raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ReleaseError("core/WIP release scope must be UTF-8 text") from exc
+    lines = raw.splitlines()
+    if any([row for row in lines if row.startswith(line.split(b":", 1)[0] + b":")]
+           != [line] for line in declarations):
+        raise ReleaseError("core/WIP release scope declarations are absent, altered or duplicated")
+    retired = (b"Extension native semantics:", b"Extension progression profile:")
+    if any(row.startswith(retired) for row in lines):
+        raise ReleaseError("core/WIP release scope declarations include retired ten-tier aliases")
+
+
+def _verify_python_distributions(
+    wheel: Path, sdist: Path, release: str, *, source_files: Mapping[str, bytes]
+) -> None:
+    _verify_release_scope(source_files, release)
     expected_name = _canonical_distribution_name(DISTRIBUTION_NAME)
+    expected_specs = _packaged_specifications(source_files)
 
     with zipfile.ZipFile(wheel) as bundle:
         names = bundle.namelist()
@@ -562,6 +705,24 @@ def _verify_python_distributions(wheel: Path, sdist: Path, release: str) -> None
         }
         if wheel_schemas != PACKAGED_SCHEMA_NAMES:
             raise ReleaseError(_schema_inventory_error("wheel", wheel_schemas))
+        spec_prefix = f"{IMPORT_PACKAGE}/standard/"
+        _reject_specification_aliases("wheel", names, spec_prefix, expected_specs)
+        specs = [path for path in names if path.startswith(spec_prefix) and path.endswith(".md")]
+        if len(specs) != len(set(specs)):
+            raise ReleaseError("wheel contains duplicate packaged specification members")
+        spec_names = {path[len(spec_prefix):] for path in specs}
+        if spec_names != set(expected_specs):
+            _verify_specification_bytes("wheel", dict.fromkeys(spec_names, b""), expected_specs)
+        for path in specs:
+            member = bundle.getinfo(path)
+            file_type = stat.S_IFMT(member.external_attr >> 16)
+            if member.is_dir() or member.external_attr & 0x10 or file_type not in {0, stat.S_IFREG}:
+                raise ReleaseError(f"wheel specification is not a regular file: {path}")
+            if member.file_size != len(expected_specs[path[len(spec_prefix):]]):
+                raise ReleaseError(f"wheel packaged specification byte size differs from selected source: {path}")
+        _verify_specification_bytes("wheel", {
+            path[len(spec_prefix):]: bundle.read(path) for path in specs
+        }, expected_specs)
 
     if _canonical_distribution_name(name) != expected_name or version != release:
         raise ReleaseError(
@@ -601,6 +762,25 @@ def _verify_python_distributions(wheel: Path, sdist: Path, release: str) -> None
         }
         if sdist_schemas != PACKAGED_SCHEMA_NAMES:
             raise ReleaseError(_schema_inventory_error("sdist", sdist_schemas))
+        spec_prefix = f"{root}/src/{IMPORT_PACKAGE}/standard/"
+        _reject_specification_aliases("sdist", names, spec_prefix, expected_specs)
+        specs = [member for member in members if member.name.startswith(spec_prefix) and member.name.endswith(".md")]
+        if len(specs) != len({member.name for member in specs}):
+            raise ReleaseError("sdist contains duplicate packaged specification members")
+        spec_names = {member.name[len(spec_prefix):] for member in specs}
+        if spec_names != set(expected_specs):
+            _verify_specification_bytes("sdist", dict.fromkeys(spec_names, b""), expected_specs)
+        observed_specs = {}
+        for member in specs:
+            if not member.isfile():
+                raise ReleaseError(f"sdist specification is not a regular file: {member.name}")
+            if member.size != len(expected_specs[member.name[len(spec_prefix):]]):
+                raise ReleaseError(f"sdist specification byte size differs from selected source: {member.name}")
+            handle = bundle.extractfile(member)
+            if handle is None:
+                raise ReleaseError(f"sdist specification is unreadable: {member.name}")
+            observed_specs[member.name[len(spec_prefix):]] = handle.read()
+        _verify_specification_bytes("sdist", observed_specs, expected_specs)
 
     if (
         _canonical_distribution_name(sdist_name) != expected_name
@@ -616,6 +796,8 @@ def build_source(repo: Path, ref: str, release: str, output_dir: Path) -> tuple[
     repo = repo.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     commit = _resolved_commit(repo, ref)
+    if release == "2.0.0":
+        _verify_release_scope(_git_blob_contents(repo, commit), release)
     prefix = f"{ARCHIVE_STEM}-{release}/"
     archive = output_dir / f"{ARCHIVE_STEM}-{release}.zip"
     manifest_path = output_dir / f"{ARCHIVE_STEM}-{release}.manifest.json"
@@ -776,7 +958,8 @@ def build_all(
         sdist = output_dir / first.name
         shutil.copy2(first, sdist)
 
-    _verify_python_distributions(wheel, sdist, release)
+    # verify_manifest below checks distributions against commit-bound Git source,
+    # preserving one exact source-blob batch instead of a redundant unbound check.
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest["artifacts"][wheel.name] = _file_record(wheel)
     manifest["artifacts"][sdist.name] = _file_record(sdist)
@@ -991,6 +1174,11 @@ def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None =
         )
 
     distribution = manifest.get("distribution")
+    pending_distributions = None
+    wheels = [artifact_dir / name for name in artifacts if name.endswith(".whl")]
+    sdists = [artifact_dir / name for name in artifacts if name.endswith(".tar.gz")]
+    if distribution is None and (wheels or sdists):
+        raise ReleaseError("Python distribution artifacts require a canonical distribution declaration")
     if distribution is not None:
         expected_distribution = {
             "name": DISTRIBUTION_NAME,
@@ -999,14 +1187,12 @@ def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None =
         }
         if distribution != expected_distribution:
             raise ReleaseError("release manifest distribution identity is not canonical")
-        wheels = [artifact_dir / name for name in artifacts if name.endswith(".whl")]
-        sdists = [artifact_dir / name for name in artifacts if name.endswith(".tar.gz")]
         if wheels or sdists:
             if len(wheels) != 1 or len(sdists) != 1:
                 raise ReleaseError(
                     "a Python distribution release must bind one wheel and one sdist"
                 )
-            _verify_python_distributions(wheels[0], sdists[0], str(manifest["release"]))
+            pending_distributions = (wheels[0], sdists[0])
 
     # Derive the archive name from the manifest, not from the current stem: releases
     # published before the package rename bind `verifiable-standard-<release>.zip`
@@ -1026,6 +1212,7 @@ def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None =
         raise ReleaseError("source archive member inventory does not match the manifest")
 
     tracked = _git_blob_contents(repo, commit)
+    _verify_release_scope(tracked, manifest["release"])
     if sorted(tracked) != sorted(inventory):
         raise ReleaseError("source archive file set does not match the bound Git commit")
     with zipfile.ZipFile(archive) as bundle:
@@ -1034,6 +1221,8 @@ def verify_manifest(repo: Path, manifest_path: Path, artifact_dir: Path | None =
             git_bytes = tracked[relative]
             if archive_bytes != git_bytes or _sha256(git_bytes) != expected["sha256"]:
                 raise ReleaseError(f"archive bytes do not match Git blob: {relative}")
+    if pending_distributions is not None:
+        _verify_python_distributions(*pending_distributions, str(manifest["release"]), source_files=tracked)
 
 
 def _parser() -> argparse.ArgumentParser:

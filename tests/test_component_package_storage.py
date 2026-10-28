@@ -256,7 +256,7 @@ def test_malformed_or_ambiguous_transport_rejected(content: bytes, tmp_path: Pat
 
 def test_unknown_package_schema_fails_closed() -> None:
     value = sample_package().to_dict()
-    value["schema_version"] = "verifier-component-package-2"
+    value["schema_version"] = "verifier-component-package-3"
     with pytest.raises(ComponentPackageError, match="schema_version"):
         StoredComponentPackage.from_dict(value)
 

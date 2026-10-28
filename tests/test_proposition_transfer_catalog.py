@@ -9,7 +9,6 @@ from __future__ import annotations
 import base64
 import importlib.resources
 import json
-from importlib import import_module
 from pathlib import Path
 
 import pytest
@@ -40,6 +39,10 @@ COMPONENTS = (
     ("assessor", "assess_transfer", (TRANSFER_SCHEMA,)),
     ("rechecker", "recheck_transfer_receipt", tuple(sorted((TRANSFER_SCHEMA, RECEIPT_SCHEMA)))),
 )
+IMPLEMENTATIONS = {
+    "verifier.interoperability.proposition_transfer:assess_transfer": assess_transfer,
+    "verifier.interoperability.proposition_transfer:recheck_transfer_receipt": recheck_transfer_receipt,
+}
 
 
 def _component_id(role: str) -> str:
@@ -85,8 +88,7 @@ def test_transfer_descriptors_name_exact_native_contracts_and_profile(
     assert "execution" in component.claim_boundary
 
     declaration, receipt, evidence = _fixture()
-    module_name, attribute = component.implementation_ref.split(":")
-    function = getattr(import_module(module_name), attribute)
+    function = IMPLEMENTATIONS[component.implementation_ref]
     actual = function(declaration, evidence) if role == "assessor" else function(declaration, receipt, evidence)
     assert actual["schema_version"] == ASSESSMENT_SCHEMA
     assert actual["conclusion_support"] == "SUPPORTED"

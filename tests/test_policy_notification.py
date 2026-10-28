@@ -3,23 +3,17 @@
 from __future__ import annotations
 
 import copy
-import importlib.util
-from pathlib import Path
 
 import pytest
+from scripts import check_policy_notification as policy_notification
 
 
-ROOT = Path(__file__).resolve().parents[1]
 HEAD, BASE = "a" * 40, "b" * 40
 REPOSITORY = "example/project"
 
 
 def _module():
-    spec = importlib.util.spec_from_file_location("policy_notification", ROOT / "scripts/check_policy_notification.py")
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return policy_notification
 
 
 def _records(kind: str = "pull_request_review") -> tuple[dict, dict]:

@@ -32,16 +32,21 @@ reported as unavailable rather than as a plausible-looking constant."""
 def _source_digest(*candidates: Any) -> str:
     """SHA-256 of the first candidate available in source or an installed wheel.
 
-    Each named candidate is tried as an absolute path, a repository-relative path,
-    and a current-working-directory-relative path. ``standard/`` coordinates also
-    resolve to the byte-identical installed specification copy. This is location
+    An absolute candidate is read as given. Any other candidate is tried as a
+    repository-relative path and then as a current-working-directory-relative path,
+    except that a ``standard/`` coordinate names the normative bytes the package
+    carries and resolves only there, so a reported specification digest cannot
+    depend on the directory a process was launched from. This is location
     resolution, not semantic substitution; callers must name only equivalent sources.
     """
     for candidate in candidates:
         path = Path(candidate)
-        paths = [path] if path.is_absolute() else [_REPO_ROOT / path, Path.cwd() / path]
-        if not path.is_absolute() and path.parts and path.parts[0] == "standard":
-            paths.append(_MODULE_PATH.parents[1] / "standard" / path.name)
+        if path.is_absolute():
+            paths = [path]
+        elif "standard" in path.parts:
+            paths = [_MODULE_PATH.parents[1] / "standard" / path.name]
+        else:
+            paths = [_REPO_ROOT / path, Path.cwd() / path]
         for resolved in paths:
             try:
                 return "sha256:" + hashlib.sha256(resolved.read_bytes()).hexdigest()

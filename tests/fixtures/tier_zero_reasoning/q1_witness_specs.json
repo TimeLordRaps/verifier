@@ -1,0 +1,41 @@
+{
+  "q1-test-real": {
+    "kind": "test",
+    "node": "test_q1_witness.py::test_independent_subject_witness",
+    "producer": "test_q1_witness.py",
+    "subject_path": "q1_subject.py",
+    "subject_qualname": "subject"
+  },
+  "q1-test-no-coverage": {
+    "kind": "test",
+    "node": "test_q1_no_coverage.py::test_passes_without_running_the_subject",
+    "producer": "test_q1_no_coverage.py",
+    "subject_path": "q1_subject.py",
+    "subject_qualname": "subject"
+  },
+  "q1-test-self": {
+    "kind": "test",
+    "node": "test_q1_self_subject.py::test_self_witness",
+    "producer": "test_q1_self_subject.py",
+    "subject_path": "test_q1_self_subject.py",
+    "subject_qualname": "self_subject"
+  },
+  "q1-observer-open": {
+    "kind": "observer",
+    "producer": "__runner__",
+    "subject_path": "q1_subject.py",
+    "subject_qualname": "write_text",
+    "argument": "output-path",
+    "expected_event_class": "filesystem_open",
+    "observable_event_classes": ["filesystem_open"]
+  },
+  "q1-observer-blind": {
+    "kind": "observer",
+    "producer": "__runner__",
+    "subject_path": "q1_subject.py",
+    "subject_qualname": "c_write",
+    "argument": "preopened-fd",
+    "expected_event_class": "filesystem_write",
+    "observable_event_classes": ["filesystem_open"]
+  }
+}

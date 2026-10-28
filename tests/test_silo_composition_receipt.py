@@ -219,8 +219,8 @@ def test_exact_valid_composite_path_is_admissible_and_recheckable(tmp_path: Path
 
 
 def test_published_composition_schemas_validate_runtime_records(tmp_path: Path) -> None:
-    jsonschema = pytest.importorskip("jsonschema")
-    referencing = pytest.importorskip("referencing")
+    import jsonschema
+    import referencing
     first, second, _ = _members(tmp_path)
     declaration = SiloComposition((first[0].canonical_digest(), second[0].canonical_digest()))
     receipt = build_silo_composition_assessment_receipt(declaration, (first, second))

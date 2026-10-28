@@ -38,7 +38,7 @@ def add_certification_parser(subparsers: Any) -> None:
     domain_catalog.add_argument("--json", action="store_true")
     domain_catalog.add_argument("--accountable", action="store_true", help="Include six accountability domains' bounded retained-record checks; no numbered-profile, personhood or authority claim.")
     for name in ("domain-assess", "domain-check"):
-        domain = commands.add_parser(name, help="Execute or replay grounded domain computations under external policy.")
+        domain = commands.add_parser(name, help="Execute or replay legacy domain v1 computations under external policy.")
         domain.add_argument("input", help="Evidence bundle for assess; certificate for check.")
         domain.add_argument("--request", required=True, help="Externally selected domain request.")
         domain.add_argument("--policy", required=True, help="Checker-selected domain policy.")
@@ -152,7 +152,7 @@ def _domain_command(args: argparse.Namespace) -> int:
     if args.json:
         print(json.dumps(emitted, indent=2, sort_keys=True, allow_nan=False))
     else:
-        print(f"[{result['status']}] domain depth {result['domain_depth']}; object profile conformance NOT_ESTABLISHED")
+        print(f"[{result['status']}] verifier-domain-certification-1; domain depth {result['domain_depth']}; object profile conformance NOT_ESTABLISHED")
         for key, row in result.get("checks", {}).items():
             evaluation = row["evaluation"]
             print(f"  {key}: {evaluation['outcome']}; established={row['established']}; {evaluation['details']}")

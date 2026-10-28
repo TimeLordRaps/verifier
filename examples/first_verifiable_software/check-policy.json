@@ -1,0 +1,13 @@
+{
+  "schema_version": "verifier-polish-workflow-policy-1",
+  "input_paths": ["demo.py"],
+  "stages": [
+    {"id":"bind-inputs","selected":true,"required":true,"depends_on":[]},
+    {"id":"validate-definitions","selected":false,"required":false,"depends_on":["bind-inputs"]},
+    {"id":"project-comments","selected":false,"required":false,"depends_on":["validate-definitions"]},
+    {"id":"compile-explanations","selected":false,"required":false,"depends_on":["bind-inputs","validate-definitions"]},
+    {"id":"quality","selected":true,"required":true,"depends_on":["bind-inputs","project-comments"]},
+    {"id":"retain-bundle","selected":true,"required":true,"depends_on":["bind-inputs"]}
+  ],
+  "bounds": {"max_files":8,"max_file_bytes":65536,"max_total_bytes":262144}
+}

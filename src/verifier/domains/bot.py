@@ -37,7 +37,12 @@ def parts(artifact: dict, inputs: dict, mechanism_digest: str, *, policy: dict,
 
 
 def alignment(artifact: dict, bound: dict, budget: Budget) -> dict:
-    """Bind each simulation transition to one retained record; an unattributed one is declared."""
+    """Bind each simulation transition to one retained record; an unattributed one is declared.
+
+    A loop in which no transition is attributed to the agent is `Unavailable`: declaring
+    every transition exogenous, like retaining none, leaves no evidence that the agent
+    drove the simulation at all.
+    """
     entropy = seq(need(bound["world"]["inputs"], "entropy"), budget, nonempty=False)
     records = seq(need(bound["harness"]["inputs"], "records"), budget)
     step_map = seq(need(artifact, "step_map"), budget, nonempty=False)
@@ -51,6 +56,8 @@ def alignment(artifact: dict, bound: dict, budget: Budget) -> dict:
     attributed = [i for i in range(len(entropy)) if i not in named]
     if len(step_map) != len(attributed):
         raise Refuted("step map does not cover every transition the agent is answerable for")
+    if not attributed:
+        raise Unavailable("no simulation transition is attributed to the agent; the loop is not established")
     previous = -1
     for index in step_map:
         if type(index) is not int or not 0 <= index < len(records):
@@ -78,6 +85,8 @@ def loop(check: str, artifact: dict, bound: dict, aligned: dict, budget: Budget)
         initial = need(artifact, "initial_observation_record")
         if type(initial) is not int or not 0 <= initial < len(aligned["records"]):
             raise Refuted("initial observation names no retained record")
+        if text(aligned["records"][initial]["channel"]) not in bound["ceiling"]:
+            raise Unavailable("initial observation lies outside the agent observation ceiling")
         same(aligned["records"][initial]["payload"], observations[0],
              "retained initial observation differs from the simulation projection")
     actions = seq(need(world, "actions"), budget) if check == "actuation" else []
@@ -115,6 +124,8 @@ def containment(artifact: dict, bound: dict, budget: Budget) -> str:
 
 def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, mechanism_digest: str,
              policy: dict, nesting: int = 0) -> dict:
+    if type(check) is not str or check not in ("binding", "alignment", "observation", "actuation", "containment"):
+        raise Unavailable("unsupported bot check")
     bound = parts(artifact, inputs, mechanism_digest, policy=policy, budget=budget, nesting=nesting)
     aligned = {"attributed": [], "exogenous": []}
     if check in ("alignment", "observation", "actuation"):

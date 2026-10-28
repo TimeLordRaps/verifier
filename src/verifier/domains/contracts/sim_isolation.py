@@ -188,6 +188,7 @@ def assess_sim_isolation(evidence: dict, *, expected_binding: dict) -> dict:
         missing_characters = 0
         checked_pairs = 0
         checked_outcomes = 0
+        unsupported_effect = False
         while pending:
             budget.tick()
             state_id = pending.popleft()
@@ -225,7 +226,11 @@ def assess_sim_isolation(evidence: dict, *, expected_binding: dict) -> dict:
                             label = "capability acquisition" if kind == "capability_acquire" else kind.replace("_", " ")
                             raise Refuted(f"represented {label} crosses isolation boundary")
                         if kind not in _INTERNAL_EFFECTS:
-                            raise Unavailable("unsupported transition effect semantics")
+                            # Retain uncertainty without masking a separately
+                            # represented reachable refutation. This does not
+                            # assign semantics to the unsupported effect.
+                            unsupported_effect = True
+                            continue
                         if resource not in capabilities:
                             raise Refuted("effect target capability is not held inside the simulation")
                         if kind in ("receipt_record", "data_record") and hardware[resource] != "storage":
@@ -233,6 +238,8 @@ def assess_sim_isolation(evidence: dict, *, expected_binding: dict) -> dict:
                     if target_id not in scheduled:
                         scheduled.add(target_id)
                         pending.append(target_id)
+        if unsupported_effect:
+            raise Unavailable("unsupported transition effect semantics")
         if missing:
             return _record("UNKNOWN", "reachable state/action transition coverage is incomplete",
                            selected, observed_digest, reachable_states=len(seen),

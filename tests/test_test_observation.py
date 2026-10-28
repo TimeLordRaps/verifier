@@ -143,6 +143,7 @@ def test_every_repository_check_pytest_invocation_retains_skip_evidence() -> Non
         "coverage",
         "installed-wheel-smoke",
         "logits-constraints",
+        "optional-discovery",
         "platform-python-contracts",
         "scitt-crypto",
     }

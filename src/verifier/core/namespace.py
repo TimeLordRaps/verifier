@@ -1,6 +1,9 @@
 """Verifier Standard (VSTD) object identity and finite typed composition.
 
-This foundation uses the maintainer's 26-object hierarchy and eight meta-tiers.
+This foundation implements the retained 26-``ObjectKind`` native hierarchy and
+nine meta-tiers. The installed extensible namespace separately admits 12
+accumulating consequential roles, for 38 kinds in total; generic ``OBJECT``
+labeling never exempts an applicable added-role obligation.
 JavaScript Object Notation (JSON) payloads are immutable canonical bytes. A
 collection commitment binds both records and references; a local object digest
 alone does not bind the objects its operands name. Counts are dimensionless.
@@ -63,6 +66,7 @@ class MetaTier(IntEnum):
     PRIVACY = 6
     CONSENT = 7
     GOVERNANCE = 8
+    SECURITY = 9
 
 
 @dataclass(frozen=True)
@@ -81,7 +85,7 @@ class ObjectCoordinate:
 
     @classmethod
     def parse(cls, value: str) -> ObjectCoordinate:
-        match = re.fullmatch(r"([A-Z]+)-([1-8])\.([1-9][0-9]{0,8})", value)
+        match = re.fullmatch(r"([A-Z]+)-([1-9])\.([1-9][0-9]{0,8})", value)
         if match is None:
             raise ValueError("expected an object, meta-tier and positive objective index")
         return cls(ObjectKind(match[1]), MetaTier(int(match[2])), int(match[3]))
@@ -217,6 +221,43 @@ _SLOTS: dict[str, dict[str, tuple[str, ...]]] = {
     "BOT": {"agent": ("AGENT",), "sim": ("SIM",), "env": ("ENV",)},
 }
 
+# VERIFIER remains a valid leaf for independently executed checkers, while a
+# composed verifier may name its governing HARNESS explicitly.  Keeping this
+# slot typed but optional prevents an unbound generic checker from being cast
+# into a harness relationship and lets the package-level self verifier bind the
+# actual harness Polish requires.
+_OPTIONAL_SLOTS: dict[str, dict[str, tuple[str, ...]]] = {
+    "VERIFIER": {"harness": ("HARNESS",)},
+}
+
+
+def validate_object_layout(item: NamespaceObject) -> None:
+    """Validate one kind's payload and operand shape without resolving targets.
+
+    Whole-graph validation remains responsible for target existence, type
+    compatibility, acyclicity, and graph membership.  This narrower check lets
+    source-ownership catalogs reject typed labels whose required layout was
+    never declared, before a package manifest is generated.
+    """
+    slots = dict(item.operands)
+    kind = item.kind.value
+    if kind == "GRAPH":
+        if set(slots) != {"members"} or not slots["members"]:
+            raise ValueError("typed graph requires nonempty bound members")
+        ObjectKind(item.payload.get("element_kind"))
+        return
+    if kind == "HYPER":
+        if not slots or any(not refs for refs in slots.values()):
+            raise ValueError("relational composition requires named nonempty operands")
+        return
+    expected = _SLOTS.get(kind, {})
+    optional = _OPTIONAL_SLOTS.get(kind, {})
+    allowed = {**expected, **optional}
+    if not set(expected) <= set(slots) <= set(allowed):
+        raise ValueError(f"{kind} operand roles differ from its composition contract")
+    if any(not slots[role] for role in slots):
+        raise ValueError("required operand has no objects")
+
 
 def composition_digest(objects: Sequence[NamespaceObject]) -> str:
     """Bind every supplied record; record order is not a dependency or event order."""
@@ -254,6 +295,7 @@ def _validate(objects: Sequence[NamespaceObject], max_operations: int) -> int:
     dependents: dict[str, set[str]] = {name: set() for name in by_id}
     for item in objects:
         charge()
+        validate_object_layout(item)
         charge(sum(len(targets) for _, targets in item.operands))
         refs = {ref for _, targets in item.operands for ref in targets}
         if refs - by_id.keys():
@@ -301,9 +343,13 @@ def _validate(objects: Sequence[NamespaceObject], max_operations: int) -> int:
                 raise ValueError("relational composition requires named nonempty operands")
             continue
         expected = _SLOTS.get(kind, {})
-        if set(slots) != set(expected):
+        optional = _OPTIONAL_SLOTS.get(kind, {})
+        allowed_slots = {**expected, **optional}
+        if not set(expected) <= set(slots) <= set(allowed_slots):
             raise ValueError(f"{kind} operand roles differ from its composition contract")
-        for role, allowed in expected.items():
+        for role, allowed in allowed_slots.items():
+            if role not in slots:
+                continue
             if not slots[role]:
                 raise ValueError("required operand has no objects")
             for ref in slots[role]:

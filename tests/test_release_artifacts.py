@@ -1,4 +1,5 @@
-"""Terminology: identifier (ID); Verifier Standard (VSTD); ZIP archive format (ZIP).
+"""Terminology: identifier (ID); Unicode Transformation Format, 8-bit (UTF-8);
+Verifier Standard (VSTD); ZIP archive format (ZIP).
 
 The public source archive must bind exact, publicly resolvable Git bytes."""
 
@@ -6,7 +7,6 @@ from __future__ import annotations
 
 import csv
 from datetime import datetime, timezone
-import importlib.util
 import io
 import json
 import subprocess
@@ -16,6 +16,10 @@ from pathlib import Path
 import zipfile
 
 import pytest
+from scripts import classify_release_version as release_version_classifier
+from scripts import check_release_metadata as release_metadata
+from scripts import extract_release_notes as release_notes
+from scripts import release_artifacts
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -25,31 +29,6 @@ TIME_GATE = REPO_ROOT / "scripts" / "check_time_status.py"
 RELEASE_METADATA_GATE = REPO_ROOT / "scripts" / "check_release_metadata.py"
 RELEASE_NOTES = REPO_ROOT / "scripts" / "extract_release_notes.py"
 RELEASE_VERSION_CLASSIFIER = REPO_ROOT / "scripts" / "classify_release_version.py"
-
-SPEC = importlib.util.spec_from_file_location("vstd_release_artifacts", SCRIPT)
-assert SPEC is not None and SPEC.loader is not None
-release_artifacts = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(release_artifacts)
-
-METADATA_SPEC = importlib.util.spec_from_file_location(
-    "vstd_release_metadata", RELEASE_METADATA_GATE
-)
-assert METADATA_SPEC is not None and METADATA_SPEC.loader is not None
-release_metadata = importlib.util.module_from_spec(METADATA_SPEC)
-METADATA_SPEC.loader.exec_module(release_metadata)
-
-NOTES_SPEC = importlib.util.spec_from_file_location("vstd_release_notes", RELEASE_NOTES)
-assert NOTES_SPEC is not None and NOTES_SPEC.loader is not None
-release_notes = importlib.util.module_from_spec(NOTES_SPEC)
-NOTES_SPEC.loader.exec_module(release_notes)
-
-CLASSIFIER_SPEC = importlib.util.spec_from_file_location(
-    "vstd_release_version_classifier", RELEASE_VERSION_CLASSIFIER
-)
-assert CLASSIFIER_SPEC is not None and CLASSIFIER_SPEC.loader is not None
-release_version_classifier = importlib.util.module_from_spec(CLASSIFIER_SPEC)
-CLASSIFIER_SPEC.loader.exec_module(release_version_classifier)
-
 
 def _git_object_fixture(root: Path, files: dict[str, bytes]) -> tuple[Path, str]:
     """Build unreferenced synthetic objects, never a commit in project history."""
@@ -994,3 +973,90 @@ def test_schema_inventory_error_names_the_divergence() -> None:
     assert "present but undeclared: vstd-undeclared-9.schema.json" in message
     assert f"declared but absent: {sample}" in message
     assert "PACKAGED_SCHEMA_NAMES" in message
+
+
+def test_final_core_release_requires_its_explicit_wip_scope() -> None:
+    with pytest.raises(release_artifacts.ReleaseError, match="core/WIP release scope"):
+        release_artifacts._verify_release_scope({}, "2.0.0")
+    release_artifacts._verify_release_scope({}, "1.5.0")
+
+
+def test_distribution_verifier_checks_core_scope_before_opening_artifacts(tmp_path: Path) -> None:
+    with pytest.raises(release_artifacts.ReleaseError, match="core/WIP release scope"):
+        release_artifacts._verify_python_distributions(
+            tmp_path / "absent.whl", tmp_path / "absent.tar.gz", "2.0.0", source_files={})
+
+
+def test_declared_core_wip_scope_keeps_extension_completion_unknown() -> None:
+    name = "src/verifier/standard/CORE_V2_RELEASE_SCOPE.md"
+    raw = (REPO_ROOT / name).read_bytes()
+    release_artifacts._verify_release_scope({name: raw}, "2.0.0")
+    release_artifacts._verify_release_scope({name: raw}, "2.0.0a1")
+
+
+@pytest.mark.parametrize("line", [
+    b"Core release target: `2.0.0`.",
+    b"Core release scope: `verifier-core-release-scope-1`.",
+    b"Included extension: `verifier-corrigibility-extension-wip-1`.",
+    b"Core current-object semantics: `verifier-current-object-obligations-1`.",
+    b"Extension status: `WIP`.",
+    b"Extension selection schema: `verifier-corrigibility-extension-selection-1`.",
+    b"Extension completion: `UNKNOWN`.",
+    b"Extension core gate credit: `NONE`.",
+])
+def test_core_scope_refuses_omitted_altered_or_duplicate_extension_declarations(line: bytes) -> None:
+    name = "src/verifier/standard/CORE_V2_RELEASE_SCOPE.md"
+    raw = (REPO_ROOT / name).read_bytes()
+    assert raw.splitlines().count(line) == 1
+    for contrary in (raw.replace(line, b""), raw.replace(line, line + b" PASS"),
+                     raw + line + b"\n", raw + line.split(b":", 1)[0] + b": `PASS`.\n"):
+        with pytest.raises(release_artifacts.ReleaseError, match="declarations"):
+            release_artifacts._verify_release_scope({name: contrary}, "2.0.0")
+
+
+@pytest.mark.parametrize("suffix", [b"\xff", b"\xc0\x80"])
+def test_core_scope_refuses_invalid_text_after_valid_declarations(suffix: bytes) -> None:
+    name = "src/verifier/standard/CORE_V2_RELEASE_SCOPE.md"
+    raw = (REPO_ROOT / name).read_bytes() + b"\n" + suffix
+    with pytest.raises(release_artifacts.ReleaseError, match="UTF-8"):
+        release_artifacts._verify_release_scope({name: raw}, "2.0.0")
+
+
+def test_core_scope_refuses_a_document_above_its_existing_byte_bound() -> None:
+    name = "src/verifier/standard/CORE_V2_RELEASE_SCOPE.md"
+    raw = (REPO_ROOT / name).read_bytes()
+    assert len(raw) < 16384
+    oversized = raw + b"x" * (16385 - len(raw))
+    with pytest.raises(release_artifacts.ReleaseError, match="byte bound"):
+        release_artifacts._verify_release_scope({name: oversized}, "2.0.0")
+
+
+@pytest.mark.parametrize("before,after", [
+    (b"Core release target: `2.0.0`.", b"Core release target: `2.0.0a1`."),
+    (b"Core current-object semantics: `verifier-current-object-obligations-1`.",
+     b"Core current-object semantics: `verifier-object-obligations-1`."),
+    (b"Extension selection schema: `verifier-corrigibility-extension-selection-1`.",
+     b"Extension selection schema: `verifier-current-ten-tier-progression-1`."),
+    (b"Extension status: `WIP`.", b"Extension status: `COMPLETE`."),
+    (b"Extension completion: `UNKNOWN`.", b"Extension completion: `true`."),
+    (b"Extension core gate credit: `NONE`.", b"Extension core gate credit: `PASS`."),
+])
+def test_core_scope_refuses_stale_semantics_and_completion_value_aliases(
+    before: bytes, after: bytes,
+) -> None:
+    name = "src/verifier/standard/CORE_V2_RELEASE_SCOPE.md"
+    raw = (REPO_ROOT / name).read_bytes()
+    assert raw.splitlines().count(before) == 1
+    with pytest.raises(release_artifacts.ReleaseError, match="declarations"):
+        release_artifacts._verify_release_scope({name: raw.replace(before, after)}, "2.0.0")
+
+
+@pytest.mark.parametrize("retired", [
+    b"Extension native semantics: `verifier-current-ten-tier-object-obligations-1`.",
+    b"Extension progression profile: `verifier-current-ten-tier-progression-1`.",
+])
+def test_core_scope_refuses_retired_ten_tier_extension_aliases(retired: bytes) -> None:
+    name = "src/verifier/standard/CORE_V2_RELEASE_SCOPE.md"
+    raw = (REPO_ROOT / name).read_bytes() + retired + b"\n"
+    with pytest.raises(release_artifacts.ReleaseError, match="retired ten-tier aliases"):
+        release_artifacts._verify_release_scope({name: raw}, "2.0.0")

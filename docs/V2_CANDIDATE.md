@@ -1,9 +1,26 @@
-# Version 2.0.0 candidate boundaries and migration
+# Version 2.0.0 alpha candidate boundaries and migration
 
-Verifier Standard (VSTD) 2.0.0 is **unreleased**. The Python Package Index (PyPI)
+Verifier Standard (VSTD) 2.0.0 is an **unreleased alpha release candidate** for the version 2 target. The Python Package Index (PyPI)
 and GitHub release list were checked on 2026-09-19: the latest published package
 was 1.5.0. Recheck those services before publication; this observation expires
 when either changes. Install a candidate from its reviewed source checkout.
+
+The alpha package is for local domain integration trials and iteration. Complete
+applicable object profiles, authority, public checkability, human acceptance and
+production promotion remain unestablished. A passing bounded native replay or test
+suite does not establish whole-object polish, model correctness or overall safety.
+Final release follows integration trials and the ordinary release gates; no alpha
+label waives a publication gate or authorizes publication.
+
+## Verification-Driven Development (VDD)
+
+Define verification contracts, objectives, obligations, dependencies, evidence and
+interoperability before implementation; implement against them and verify execution.
+This project-agnostic workflow extends test-driven development with explicit claim
+and acceptance boundaries. Preflight validates declarations rather than future
+execution or truth. The [VDD guide](VERIFICATION_DRIVEN_DEVELOPMENT.md) distinguishes
+current interfaces, exact revision bindings, runtime outcomes and separate artifact
+acceptance. It does not complete the candidate's open verification or release gates.
 
 ## Release name and grounded certification
 
@@ -102,6 +119,20 @@ tool unboxing. Risk aggregation never emits `CONTAINED`; its default is
 not observed physical breaches. Risk thresholds are draft policy constants with
 no demonstrated empirical calibration. Refutation records carry caller-reported
 outcomes; no response predicate is executed by the current model helper.
+
+The experimental [cooperative corrigibility gate](CORRIGIBILITY_CONTROL.md)
+rechecks computational evidence, consent, governance, privacy and transparency
+before calling a host-supplied local effect. It latches a stop request, refuses
+new local admissions, records in-flight callbacks and refuses reuse of an
+invocation identifier within one session. An opt-in configured-public-key path
+authenticates an exact signed stop request to this session, process, action,
+policy and bounded time. That does not establish the key holder's human identity
+or actual authority, interrupt an active callback, atomically consume an
+invocation across processes, observe remote effects or establish actual
+post-stop child quiescence. The older
+`ShutdownIndifferenceContract`, `InterruptibilityProtocol`,
+`OracleImmutabilityAttestation`, and `HarnessImmutabilityGuard` validate bounded
+declarations; none proves the physical or mathematical property it names.
 
 ## Compatibility and migration
 

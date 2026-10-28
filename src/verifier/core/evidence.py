@@ -24,10 +24,13 @@ This preserves ordinary canonical values and their types, not an atomic capture
 of concurrently changing inputs or a sandbox for arbitrary Python copy hooks.
 Failure to obtain a digestible snapshot raises EvidenceBindingError before any
 mechanism runs; a mechanism changing its invocation copy yields UNKNOWN.
+Cancellation raised during a mechanism invocation also yields UNKNOWN. Process
+interrupts and exits still propagate; an externally terminated run has no result.
 """
 
 from __future__ import annotations
 
+from asyncio import CancelledError
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
@@ -316,7 +319,7 @@ class VerificationSession:
             decision = mechanism.evaluate(execution_binding, payloads)
             if execution_binding.digest() != binding_digest:
                 return self._unknown(binding, "mechanism changed its binding snapshot", observed_bytes)
-        except Exception as exc:  # A mechanism crash is uncertainty, not a pass.
+        except (Exception, CancelledError) as exc:  # A crash or cancellation is uncertainty.
             return self._unknown(
                 binding,
                 f"mechanism execution failed: {type(exc).__name__}: {exc}",
@@ -442,7 +445,7 @@ class VerificationSession:
             decisions = tuple(evaluator(execution_items, tuple(evidence_sets)))
             if tuple(item.digest() for item in execution_items) != binding_digests:
                 raise EvidenceBindingError("compound mechanism changed a binding snapshot")
-        except Exception as exc:
+        except (Exception, CancelledError) as exc:
             return tuple(
                 self._unknown(
                     item,

@@ -14,6 +14,8 @@ def collect_configuration() -> dict:
 
 
 def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
+    if type(check) is not str or check not in ("closure", "configuration", "resources", "reproduction"):
+        raise Unavailable("unsupported environment check")
     if artifact.get("scope") != "retained-process-observations":
         raise Unavailable("physical attestation and containment require an external qualified mechanism")
     inventory = obj(need(artifact, "files"))
@@ -42,7 +44,9 @@ def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
                 if key in {"memory_bytes", "threads"}:
                     bound, measured = integer(ceiling, 1), integer(row[key])
                 else:
-                    bound, measured = number(ceiling), number(row[key])
+                    number(ceiling); number(row[key])
+                    # Validate finite values without rounding integer seconds for comparison.
+                    bound, measured = ceiling, row[key]
                 if bound <= 0 or not 0 <= measured <= bound:
                     raise Refuted("retained resource measurement exceeds bound")
     elif check == "reproduction":

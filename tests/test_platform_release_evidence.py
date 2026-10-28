@@ -8,7 +8,6 @@ ZIP archive format (ZIP).
 
 from __future__ import annotations
 
-import importlib.util
 import json
 from pathlib import Path
 import subprocess
@@ -16,14 +15,11 @@ import sys
 import zipfile
 
 import pytest
+from scripts import prepare_platform_release_evidence as release_evidence
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "prepare_platform_release_evidence.py"
-SPEC = importlib.util.spec_from_file_location("prepare_platform_release_evidence", SCRIPT)
-assert SPEC is not None and SPEC.loader is not None
-release_evidence = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(release_evidence)
 report_builder = release_evidence.report_builder
 
 SOURCE_COMMIT = "a" * 40

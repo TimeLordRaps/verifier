@@ -1,27 +1,22 @@
 from __future__ import annotations
 
 """Terminology: application programming interface (API);
-uniform resource locator (URL); Verifier Standard (VSTD).
+uniform resource locator (URL); Python Package Index (PyPI); Verifier Standard (VSTD).
 """
 
-import importlib.util
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 import urllib.error
 
 import pytest
+from scripts import check_public_estate_sync as public_estate_sync
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def _load_module():
-    path = ROOT / "scripts/check_public_estate_sync.py"
-    spec = importlib.util.spec_from_file_location("check_public_estate_sync", path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return public_estate_sync
 
 
 def test_mandatory_documentation_coverage_passes_on_repo():
@@ -206,3 +201,143 @@ def test_evaluate_estate_sync_detects_drift(tmp_path: Path):
     assert any("vstd-labs.com hero badge reads" in a for a in eval_res["action_items"])
     assert any("vstd-labs.com demo session pins" in a for a in eval_res["action_items"])
     assert any("claimgarden.com index card footer reads" in a for a in eval_res["action_items"])
+
+
+def test_find_estate_path_prefers_cli_then_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    module = _load_module()
+    cli_dir = tmp_path / "from-cli"
+    env_dir = tmp_path / "from-env"
+    cli_dir.mkdir()
+    env_dir.mkdir()
+    monkeypatch.setenv("ESTATE_TEST_ROOT", str(env_dir))
+
+    assert module.find_estate_path(cli_dir, "ESTATE_TEST_ROOT") == cli_dir
+    assert module.find_estate_path(None, "ESTATE_TEST_ROOT") == env_dir
+    assert module.find_estate_path(tmp_path / "missing", "ESTATE_TEST_ROOT") == env_dir
+
+    monkeypatch.delenv("ESTATE_TEST_ROOT")
+    assert module.find_estate_path(None, "ESTATE_TEST_ROOT") is None
+
+
+def test_evaluate_estate_sync_never_probes_sibling_checkouts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    module = _load_module()
+    # Lay out sibling folders around a stand-in checkout. The script must not discover them.
+    workspace = tmp_path / "workspace"
+    monkeypatch.setattr(module, "ROOT", workspace / "verifier")
+    site = workspace / "website"
+    web = workspace / "claimgarden" / "web"
+    for folder in (module.ROOT, site, web):
+        folder.mkdir(parents=True)
+    (site / "index.html").write_text('<span class="badge badge-accent">v0.0.0 ON PYPI</span>\n', encoding="utf-8")
+    (web / "index.html").write_text('vstd-labs/gdc-sat-kernel <span>v0.0.0</span>', encoding="utf-8")
+    monkeypatch.delenv("VSTD_LABS_ROOT", raising=False)
+    monkeypatch.delenv("CLAIMGARDEN_ROOT", raising=False)
+
+    current_version = module.get_package_version(ROOT)
+    eval_res = module.evaluate_estate_sync(root=ROOT, target_version=current_version, offline=True, target_sync=True)
+    assert eval_res["vstd_labs"] == {"status": "NOT_FOUND"}
+    assert eval_res["claimgarden"] == {"status": "NOT_FOUND"}
+    assert eval_res["action_items"] == []
+    report = module.format_report(eval_res)
+    assert "pass --vstd-labs-dir or set VSTD_LABS_ROOT" in report
+    assert "pass --claimgarden-dir or set CLAIMGARDEN_ROOT" in report
+
+    # Named by the operator, the same folders are inspected.
+    monkeypatch.setenv("VSTD_LABS_ROOT", str(site))
+    monkeypatch.setenv("CLAIMGARDEN_ROOT", str(web))
+    eval_res = module.evaluate_estate_sync(root=ROOT, target_version=current_version, offline=True, target_sync=True)
+    assert eval_res["vstd_labs"]["status"] == "OBSERVED"
+    assert eval_res["vstd_labs"]["path"] == str(site)
+    assert eval_res["claimgarden"]["status"] == "OBSERVED"
+    assert any("vstd-labs.com hero badge reads 'v0.0.0 ON PYPI'" in a for a in eval_res["action_items"])
+    assert any("claimgarden.com index card footer reads 'v0.0.0'" in a for a in eval_res["action_items"])
+
+
+def test_a_directory_with_no_site_files_is_not_observed(tmp_path: Path):
+    module = _load_module()
+    empty = tmp_path / "empty"
+    empty.mkdir()
+
+    assert module.inspect_vstd_labs(empty)["status"] == "NOT_FOUND"
+    assert module.inspect_claimgarden(empty)["status"] == "NOT_FOUND"
+
+    eval_res = module.evaluate_estate_sync(
+        root=ROOT,
+        target_version=module.get_package_version(ROOT),
+        vstd_labs_dir=empty,
+        claimgarden_dir=empty,
+        offline=True,
+        target_sync=True,
+    )
+    assert eval_res["vstd_labs"]["status"] == "NOT_FOUND"
+    assert eval_res["claimgarden"]["status"] == "NOT_FOUND"
+    assert eval_res["action_items"] == []
+
+
+@pytest.mark.parametrize(
+    "files",
+    [
+        {"app.js": "const EMITTED = {};\n"},
+        {"index.html": "<html><body>nothing that names a release</body></html>\n"},
+    ],
+)
+def test_a_site_without_its_version_fields_is_reported_as_drift_not_a_crash(
+    tmp_path: Path, files: dict[str, str]
+):
+    module = _load_module()
+    labs = tmp_path / "website"
+    labs.mkdir()
+    for name, content in files.items():
+        (labs / name).write_text(content, encoding="utf-8")
+
+    eval_res = module.evaluate_estate_sync(
+        root=ROOT,
+        target_version=module.get_package_version(ROOT),
+        vstd_labs_dir=labs,
+        offline=True,
+        target_sync=True,
+    )
+
+    assert eval_res["vstd_labs"]["status"] == "OBSERVED"
+    assert any("hero badge missing version" in a for a in eval_res["action_items"])
+    assert any("metric card missing version" in a for a in eval_res["action_items"])
+    assert not any("'None'" in a for a in eval_res["action_items"])
+
+
+def test_the_report_does_not_call_unobserved_surfaces_clean():
+    module = _load_module()
+    eval_result = {
+        "target_version": "0.0.0",
+        "doc_coverage_status": "PASS",
+        "doc_coverage_errors": [],
+        "pypi": {"status": "SKIPPED_OFFLINE"},
+        "vstd_labs": {"status": "NOT_FOUND"},
+        "claimgarden": {"status": "NOT_FOUND"},
+        "action_items": [],
+    }
+
+    report = module.format_report(eval_result)
+
+    assert "CLEAN for observed surfaces" in report
+    assert "PyPI (SKIPPED_OFFLINE)" in report
+    assert "Company Site (NOT_FOUND)" in report
+    assert "ClaimGarden (NOT_FOUND)" in report
+    assert "No drift detected" not in report
+
+
+def test_the_report_calls_a_fully_observed_estate_clean():
+    module = _load_module()
+    eval_result = {
+        "target_version": "0.0.0",
+        "doc_coverage_status": "PASS",
+        "doc_coverage_errors": [],
+        "pypi": {"status": "OBSERVED", "latest_version": "0.0.0", "release_count": 1},
+        "vstd_labs": {"status": "OBSERVED"},
+        "claimgarden": {"status": "OBSERVED"},
+        "action_items": [],
+    }
+
+    report = module.format_report(eval_result)
+
+    assert "Estate Synchronization: CLEAN (No drift detected)" in report
+    assert "unobserved" not in report

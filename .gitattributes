@@ -7,3 +7,8 @@
 *.yml text eol=lf
 *.cose binary
 *.msgpack binary
+
+# Vendored third-party source is pinned by byte digest (experiments/verifier_guided_sat/selected-tools.lock);
+# store and check it out without line-ending conversion so the pinned bytes survive every platform,
+# and treat its pinned CR-LF line ends as intended rather than as trailing whitespace.
+experiments/verifier_guided_sat/vendor/algotune/** -text whitespace=cr-at-eol

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-polish-preparation-bundle-1.schema.json",
+  "title": "Immutable preparation bundle manifest, version 1",
+  "description": "Manifest identity uses canonical JavaScript Object Notation (JSON) bytes and Secure Hash Algorithm 256-bit (SHA-256). Payload inventory excludes this manifest and operational journals. It binds selected prepared bytes and admitted inputs without publication authority, authenticated execution or complete behavioral qualification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "polished", "promotable", "policy_sha256", "definition_sha256", "quality_profile_sha256", "requirements_sha256", "implementation", "selected_stages", "source", "git_binding", "git_modes", "committed_analysis_binding", "preparation_state", "payload", "claim_boundary"],
+  "properties": {
+    "schema_version": {"const": "verifier-polish-preparation-bundle-1"},
+    "polished": {"const": false},
+    "promotable": {"const": false},
+    "policy_sha256": {"$ref": "#/$defs/digest"},
+    "definition_sha256": {"$ref": "#/$defs/nullableDigest"},
+    "quality_profile_sha256": {"$ref": "#/$defs/nullableDigest"},
+    "requirements_sha256": {"$ref": "#/$defs/nullableDigest"},
+    "implementation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mechanisms", "python_version", "interpreter_sha256", "platform"],
+      "properties": {
+        "mechanisms": {"type": "object", "additionalProperties": {"$ref": "#/$defs/nullableDigest"}},
+        "python_version": {"type": "string"},
+        "interpreter_sha256": {"$ref": "#/$defs/digest"},
+        "platform": {"type": "string"}
+      }
+    },
+    "selected_stages": {"type": "array", "maxItems": 6, "items": {"$ref": "verifier-polish-workflow-policy-1.schema.json#/$defs/stage"}},
+    "source": {"$ref": "#/$defs/inventory"},
+    "git_binding": {
+      "type": "object", "additionalProperties": false, "required": ["base", "head"],
+      "properties": {"base": {"type": ["string", "null"]}, "head": {"type": ["string", "null"]}}
+    },
+    "git_modes": {"type": ["object", "null"], "additionalProperties": {"enum": ["100644", "100755"]}},
+    "committed_analysis_binding": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "required": ["base", "head", "source_digest", "requirements_digest"],
+      "description": "Exact separately assessed committed Pull Request Domain Explanation Language (PRDEL) source; this is not a future prepared commit.",
+      "properties": {
+        "base": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+        "head": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+        "source_digest": {"$ref": "#/$defs/digest"},
+        "requirements_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "preparation_state": {"enum": ["EXACT_SELECTED_COMMIT_BYTES", "PREPARED_PENDING_COMMIT"]},
+    "payload": {"$ref": "#/$defs/inventory"},
+    "claim_boundary": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableDigest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "inventory": {
+      "type": "object", "additionalProperties": false, "required": ["sha256", "files"],
+      "properties": {
+        "sha256": {"$ref": "#/$defs/digest"},
+        "files": {
+          "type": "array", "maxItems": 1100,
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["path", "sha256", "size_bytes"],
+            "properties": {"path": {"type": "string", "minLength": 1, "maxLength": 4096}, "sha256": {"$ref": "#/$defs/digest"}, "size_bytes": {"type": "integer", "minimum": 0, "maximum": 67108864}}
+          }
+        }
+      }
+    }
+  }
+}

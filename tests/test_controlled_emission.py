@@ -1,6 +1,6 @@
 """A real certificate must pass all separately bound emission controls."""
 from copy import deepcopy
-from dataclasses import asdict, replace
+from dataclasses import asdict, fields, is_dataclass, replace
 import hashlib
 import hmac
 import importlib.util
@@ -67,8 +67,227 @@ def example():
 
 
 def evaluate(example, **changes):
-    from verifier.controlled_emission import evaluate_controlled_emission
-    return evaluate_controlled_emission(**{**example, **changes})
+    return candidate().evaluate_controlled_emission(**{**example, **changes})
+
+
+def candidate():
+    import verifier.controlled_emission as module
+    return module
+
+
+def test_aggregate_receipt_uses_admitted_action_snapshot_after_callback_mutation(example, monkeypatch):
+    module = candidate()
+    original = module.EmissionEvaluator.evaluate_emission
+    signed_purpose = example["action"].purpose
+
+    def mutate_after_real_privacy(self, *args, **kwargs):
+        result = original(self, *args, **kwargs)
+        object.__setattr__(example["action"], "purpose", "resale")
+        return result
+
+    monkeypatch.setattr(module.EmissionEvaluator, "evaluate_emission", mutate_after_real_privacy)
+    result = evaluate(example)
+    assert result["admission"] == "PASS"
+    assert result["receipt"]["action"]["purpose"] == signed_purpose
+    assert result["receipt"]["checks"]["governance"]["binding"]["purpose"] == signed_purpose
+    assert example["action"].purpose == "resale"
+
+
+@pytest.mark.parametrize("changed_input", [
+    "action", "consent_policy", "consent_grant", "consent_revocation",
+    "governance_policy", "governance_decision", "governance_status",
+    "privacy_surface", "privacy_bound", "privacy_context",
+])
+def test_all_admission_inputs_are_captured_before_native_callback(example, monkeypatch, changed_input):
+    module = candidate()
+    original = module.recheck_domain_certificate
+    expected_surface_digest = hashlib.sha256(json.dumps(asdict(example["privacy_surface"]),
+        sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+
+    def after_real_native(*args, **kwargs):
+        result = original(*args, **kwargs)
+        assert result["status"] == "PASS"
+        if changed_input == "action":
+            object.__setattr__(example["action"], "purpose", "resale")
+        elif changed_input == "consent_policy":
+            object.__setattr__(example["consent_policy"], "grantor_id", "other-owner")
+        elif changed_input == "consent_grant":
+            example["consent_grants"][0]["purposes"] = ["resale"]
+        elif changed_input == "consent_revocation":
+            example["consent_revocation"]["revoked_grant_ids"] = ["grant-1"]
+        elif changed_input == "governance_policy":
+            object.__setattr__(example["governance_policy"], "operations", ("resale",))
+        elif changed_input == "governance_decision":
+            example["governance_decisions"][0]["binding"]["purpose"] = "resale"
+        elif changed_input == "governance_status":
+            example["governance_status"]["revoked_actors"] = ["board"]
+        elif changed_input == "privacy_surface":
+            object.__setattr__(example["privacy_surface"], "object_name", "BOT")
+        elif changed_input == "privacy_bound":
+            object.__setattr__(example["privacy_bounds"][0], "conditions", (("purpose", "resale"),))
+        elif changed_input == "privacy_context":
+            object.__setattr__(example["privacy_context"].observer, "purpose", "resale")
+        return result
+
+    monkeypatch.setattr(module, "recheck_domain_certificate", after_real_native)
+    result = evaluate(example)
+    assert result["admission"] == "PASS"
+    assert result["receipt"]["action"]["purpose"] == "teaching"
+    assert result["receipt"]["checks"]["privacy"]["input_binding"]["surface_sha256"] == expected_surface_digest
+    assert result["emitted_certificate"] == example["certificate"]
+
+
+def test_checker_policy_is_captured_before_certificate_digest_callback(example, monkeypatch):
+    module = candidate()
+    original = module.canonical_bytes
+    changed = False
+
+    def mutate_after_digest(value):
+        nonlocal changed
+        encoded = original(value)
+        if not changed and type(value) is dict and value.get("schema_version") == "verifier-domain-certification-1":
+            example["certificate_policy"]["trust_roots"][0] = "replacement-root"
+            changed = True
+        return encoded
+
+    monkeypatch.setattr(module, "canonical_bytes", mutate_after_digest)
+    result = evaluate(example)
+    assert changed
+    assert result["admission"] == "PASS"
+    assert result["receipt"]["checks"]["computational_recheck"]["status"] == "PASS"
+
+
+def test_hostile_action_subclass_is_refused_before_field_callback(example):
+    class HostileAction(GovernanceContext):
+        def __getattribute__(self, name):
+            raise AssertionError("hostile action field callback invoked")
+
+    hostile = object.__new__(HostileAction)
+    with pytest.raises(ValueError, match="plain context"):
+        evaluate(example, action=hostile)
+
+
+@pytest.mark.parametrize("field,replacement", [
+    ("consent_grants", ({},) * 10001),
+    ("certificate", {"cycle": None}),
+])
+def test_unbounded_or_cyclic_input_refuses_before_any_gate(example, monkeypatch, field, replacement):
+    module = candidate()
+    if field == "certificate":
+        replacement["cycle"] = replacement
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("gate invoked before bounded input capture")
+
+    monkeypatch.setattr(module, "recheck_domain_certificate", forbidden)
+    result = evaluate(example, **{field: replacement})
+    assert result["admission"] == "REJECTED"
+    assert result["emitted_certificate"] is None
+    assert result["receipt"]["checks"]["binding"] == "INPUT_CAPTURE_REJECTED"
+
+
+def test_hostile_policy_mapping_is_refused_before_iteration(example, monkeypatch):
+    module = candidate()
+
+    class HostileMapping(dict):
+        def items(self):
+            raise AssertionError("hostile mapping items callback invoked")
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("gate invoked before plain input capture")
+
+    monkeypatch.setattr(module, "recheck_domain_certificate", forbidden)
+    result = evaluate(example, certificate_policy=HostileMapping(example["certificate_policy"]))
+    assert result["admission"] == "REJECTED"
+    assert result["receipt"]["checks"]["binding"] == "INPUT_CAPTURE_REJECTED"
+
+
+def test_capture_failure_never_carries_uncaptured_hostile_clock(example, monkeypatch):
+    module = candidate()
+
+    class HostileClock(int):
+        def __str__(self):
+            raise AssertionError("hostile clock serialized")
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("gate invoked before clock capture")
+
+    monkeypatch.setattr(module, "recheck_domain_certificate", forbidden)
+    result = evaluate(example, evaluation_time=HostileClock(200))
+    assert result["admission"] == "REJECTED"
+    assert result["receipt"]["evaluation_time"] is None
+    assert result["receipt"]["checks"]["binding"] == "INPUT_CAPTURE_REJECTED"
+
+
+@pytest.mark.parametrize("field,replacement", [
+    ("certificate", {"nonfinite": float("nan")}),
+    ("certificate_policy", {"unknown": object()}),
+])
+def test_nonfinite_or_custom_input_refuses_before_gate(example, monkeypatch, field, replacement):
+    module = candidate()
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("gate invoked before finite plain input capture")
+
+    monkeypatch.setattr(module, "recheck_domain_certificate", forbidden)
+    result = evaluate(example, **{field: replacement})
+    assert result["admission"] == "REJECTED"
+    assert result["receipt"]["checks"]["binding"] == "INPUT_CAPTURE_REJECTED"
+
+
+def test_hostile_record_subclass_is_refused_before_field_callback(example, monkeypatch):
+    module = candidate()
+
+    class HostileSurface(DisclosureSurface):
+        def __getattribute__(self, name):
+            raise AssertionError("hostile surface field callback invoked")
+
+    hostile = object.__new__(HostileSurface)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("gate invoked before plain record capture")
+
+    monkeypatch.setattr(module, "recheck_domain_certificate", forbidden)
+    result = evaluate(example, privacy_surface=hostile)
+    assert result["admission"] == "REJECTED"
+    assert result["receipt"]["checks"]["binding"] == "INPUT_CAPTURE_REJECTED"
+
+
+def test_one_aggregate_byte_budget_spans_action_clock_and_all_gate_inputs(example, monkeypatch):
+    module = candidate()
+
+    def literal_source_bytes(value):
+        if type(value) is dict:
+            return sum(len(key.encode("utf-8")) + literal_source_bytes(item)
+                       for key, item in value.items())
+        if type(value) in (tuple, list):
+            return sum(literal_source_bytes(item) for item in value)
+        if is_dataclass(value):
+            return sum(literal_source_bytes(getattr(value, field.name))
+                       for field in fields(value))
+        if type(value) is str:
+            return len(value.encode("utf-8"))
+        if type(value) is bytes:
+            return len(value)
+        return 0
+
+    inputs = tuple(example[field] for field in (
+        "action", "evaluation_time", "certificate", "certificate_policy",
+        "privacy_surface", "privacy_bounds", "privacy_context", "consent_policy",
+        "consent_grants", "consent_revocation", "governance_policy",
+        "governance_decisions", "governance_status"))
+    exact = literal_source_bytes(inputs)
+    action_bytes = literal_source_bytes(example["action"])
+    remaining_bytes = exact - action_bytes
+    assert 0 < action_bytes < exact and 0 < remaining_bytes < exact
+    assert max(action_bytes, remaining_bytes) < exact
+    monkeypatch.setattr(module, "_MAX_CAPTURE_BYTES", exact)
+    assert evaluate(example)["admission"] == "PASS"
+    monkeypatch.setattr(module, "_MAX_CAPTURE_BYTES", exact - 1)
+    rejected = evaluate(example)
+    assert rejected["admission"] == "REJECTED"
+    assert rejected["receipt"]["evaluation_time"] == 200
+    assert rejected["receipt"]["checks"]["binding"] == "INPUT_CAPTURE_REJECTED"
 
 
 def test_real_certificate_all_controls_and_determinism(example):

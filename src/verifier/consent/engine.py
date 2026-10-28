@@ -16,7 +16,7 @@ import hmac
 import json
 import math
 import re
-from typing import Any
+from typing import Any, Callable, Protocol
 
 
 class ConsentVerdict(str, Enum):
@@ -329,8 +329,28 @@ _GRANT_FIELDS = {"schema_version", "grant_id", "issuer_id", "actor_id", "object_
                  "allow_delegation", "effect"}
 
 
-def _evaluate(context: ConsentContext, grants: tuple[dict[str, Any], ...], policy: ConsentPolicy | None,
-              revocation: dict[str, Any] | None, evaluation_time: int | None) -> None:
+class _ConsentTerms(Protocol):
+    """Captured authority terms shared by separately versioned authenticators."""
+    policy_id: str
+    grantor_id: str
+    root_key_ids: tuple[str, ...]
+    revocation_key_ids: tuple[str, ...]
+    artifact_bindings: tuple[tuple[str, str], ...]
+    max_revocation_age_seconds: int
+    minimum_revocation_as_of: int
+    max_chain_length: int
+
+
+def _evaluate_authenticated(context: ConsentContext, grants: tuple[dict[str, Any], ...],
+                            policy: _ConsentTerms | None, revocation: dict[str, Any] | None,
+                            evaluation_time: int | None, *,
+                            authenticate: Callable[[Any, Any], tuple[dict[str, Any], str]],
+                            grant_version: str, revocation_version: str) -> None:
+    """Evaluate captured terms with an implementation-selected authenticator.
+
+    This internal seam is not a candidate-selected callback or public plugin hook.
+    Public entry points capture their own typed policy and select fixed wire versions.
+    """
     now = None if evaluation_time is None else _time(evaluation_time)
     for name, value in asdict(context).items():
         _time(value) if name == "timestamp" else _text(value)
@@ -349,7 +369,7 @@ def _evaluate(context: ConsentContext, grants: tuple[dict[str, Any], ...], polic
     # an unknown status root cannot erase an authenticated grant's refutation.
     for envelope in (*grants, *((revocation,) if revocation is not None else ())):
         try:
-            _authenticate(envelope, policy)
+            authenticate(envelope, policy)
         except _Unknown:
             continue
     if not grants:
@@ -357,9 +377,9 @@ def _evaluate(context: ConsentContext, grants: tuple[dict[str, Any], ...], polic
     parents: list[dict[str, Any]] = []
     identifiers: set[str] = set()
     for index, envelope in enumerate(grants):
-        grant, key_id = _authenticate(envelope, policy)
+        grant, key_id = authenticate(envelope, policy)
         _fields(grant, _GRANT_FIELDS)
-        if grant["schema_version"] != "verifier-consent-grant-1":
+        if grant["schema_version"] != grant_version:
             raise _Rejected("unsupported consent grant version")
         for name in ("grant_id", "issuer_id", "actor_id", "object_name", "artifact_digest"):
             _text(grant[name])
@@ -395,9 +415,9 @@ def _evaluate(context: ConsentContext, grants: tuple[dict[str, Any], ...], polic
         raise _Rejected("action actor, recipient, purpose, or operation exceeds consent")
     if revocation is None:
         raise _Unknown("consent revocation evidence is unavailable")
-    state, key_id = _authenticate(revocation, policy)
+    state, key_id = authenticate(revocation, policy)
     _fields(state, {"schema_version", "issuer_id", "policy_id", "as_of", "next_update", "revoked_grant_ids"})
-    if state["schema_version"] != "verifier-consent-revocations-1" or state["policy_id"] != policy.policy_id:
+    if state["schema_version"] != revocation_version or state["policy_id"] != policy.policy_id:
         raise _Rejected("consent revocation policy binding mismatch")
     if key_id not in policy.revocation_key_ids:
         raise _Rejected("consent revocation issuer is not authorized")
@@ -416,6 +436,13 @@ def _evaluate(context: ConsentContext, grants: tuple[dict[str, Any], ...], polic
     if (now >= next_update or now - as_of > policy.max_revocation_age_seconds
             or as_of < policy.minimum_revocation_as_of):
         raise _Unknown("consent revocation freshness is not established")
+
+
+def _evaluate(context: ConsentContext, grants: tuple[dict[str, Any], ...], policy: ConsentPolicy | None,
+              revocation: dict[str, Any] | None, evaluation_time: int | None) -> None:
+    _evaluate_authenticated(context, grants, policy, revocation, evaluation_time,
+        authenticate=_authenticate, grant_version="verifier-consent-grant-1",
+        revocation_version="verifier-consent-revocations-1")
 
 
 def evaluate_consent(context: ConsentContext, grants: tuple[dict[str, Any], ...], *,

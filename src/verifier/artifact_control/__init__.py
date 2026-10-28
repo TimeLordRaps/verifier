@@ -15,6 +15,8 @@ authorization, or actor reputation.
 
 from __future__ import annotations
 
+from verifier.core.signature_keys import admit_ed25519_public_key
+
 import base64
 import hashlib
 import json
@@ -810,10 +812,10 @@ def _verify_seal(
     ):
         raise ArtifactControlError("seal identity does not close the signature-bearing envelope")
     try:
-        Ed25519PublicKey.from_public_bytes(public_raw).verify(
+        Ed25519PublicKey.from_public_bytes(admit_ed25519_public_key(public_raw)).verify(
             signature, _canonical_bytes(_seal_projection(seal))
         )
-    except InvalidSignature as exc:
+    except (InvalidSignature, ValueError) as exc:
         raise ArtifactControlError("self-closing seal signature did not verify") from exc
     return seal_id, key_id
 

@@ -8,7 +8,6 @@ uniform resource locator (URL).
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import io
 import json
 import os
@@ -20,6 +19,8 @@ import zipfile
 
 import pytest
 
+from scripts import build_component_index as component_index_builder
+from scripts import build_pages as pages_builder
 from verifier.interoperability.catalog import (
     ComponentKind,
     ComponentLifecycle,
@@ -39,13 +40,11 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _builder():
-    path = ROOT / "scripts/build_component_index.py"
-    spec = importlib.util.spec_from_file_location("build_component_index_test", path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
+    return component_index_builder
+
+
+def _pages_deployment_file_bound() -> int:
+    return pages_builder.MAX_DEPLOYMENT_FILE_BYTES
 
 
 def _head() -> str:
@@ -71,6 +70,7 @@ def _package(version: str) -> StoredComponentPackage:
         claim_boundary="Declared fixture only; no execution or qualification is established.",
     )
     return StoredComponentPackage(
+        schema_version="verifier-component-package-2",
         package_id="package:static-index-fixture",
         package_version=version,
         publisher="Unsigned fixture declaration",
@@ -80,15 +80,19 @@ def _package(version: str) -> StoredComponentPackage:
         artifacts=(PackageArtifact("src/fixture.py", "text/x-python", b"pass\n"),),
         implementations=(ImplementationBinding(
             descriptor.component_id, descriptor.implementation_ref, ("src/fixture.py",),
+            schema_version="verifier-component-package-2",
         ),),
     )
 
 
 def _use_fixture_exporter(module, monkeypatch: pytest.MonkeyPatch) -> None:
+    def build_package(_root, version, *, package_schema_version):
+        assert package_schema_version == "verifier-component-package-2"
+        return _package(version)
+
     monkeypatch.setattr(
-        module,
-        "_reference_exporter",
-        lambda: SimpleNamespace(build_package=lambda _root, version: _package(version)),
+        module, "_reference_exporter",
+        lambda: SimpleNamespace(build_package=build_package),
     )
     monkeypatch.setattr(module, "_worktree_dirty", lambda: False)
 
@@ -268,14 +272,17 @@ def test_worktree_package_archive_retains_every_public_source_byte(tmp_path: Pat
     artifacts = {item.path: item for item in package.artifacts}
     archive = artifacts["source-archive/exact-public-source.zip"]
     assert archive.media_type == "application/zip"
-    assert len(package.artifacts) <= 256
+    assert package.schema_version == "verifier-component-package-2"
+    assert len(package.artifacts) <= 512
 
-    tracked = subprocess.check_output(["git", "-C", str(ROOT), "ls-files", "-z"])
+    tracked = subprocess.check_output(["git", "-C", str(ROOT), "ls-files", "--cached", "--others", "--exclude-standard", "-z"])
     expected = {
         raw.decode("utf-8") for raw in tracked.split(b"\0") if raw
         and (raw.decode("utf-8") in {"pyproject.toml", "LICENSE", "NOTICE", "README.md"}
              or (raw.startswith(b"src/verifier/")
-                 and Path(raw.decode("utf-8")).suffix in {".py", ".json", ".md"}))
+                    and Path(raw.decode("utf-8")).suffix in {
+                        ".py", ".json", ".md", ".mjs"
+                    }))
     }
     direct_required = {"pyproject.toml", "LICENSE", "NOTICE", "README.md"}
     direct_required.update(
@@ -314,7 +321,11 @@ def test_worktree_package_archive_retains_every_public_source_byte(tmp_path: Pat
     assert all(artifacts[path].content == (ROOT / path).read_bytes() for path in direct_required)
     assert all("source-archive/exact-public-source.zip" in binding.artifact_paths
                for binding in package.implementations)
-    assert (output / entry.package_path).stat().st_size <= 8 * 1024 * 1024
+    package_bytes = (output / entry.package_path).stat().st_size
+    bound = _pages_deployment_file_bound()
+    assert package_bytes <= bound, (
+        f"the stored package is {package_bytes} bytes; the Pages per-file bound is {bound} bytes"
+    )
 
 
 def test_default_worktree_inventory_does_not_admit_an_unreviewed_source(

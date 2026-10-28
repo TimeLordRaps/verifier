@@ -15,6 +15,10 @@ from verifier.core.receipt import (
     compute_canonical_digest,
     strict_json_loads,
 )
+from verifier.core.run_process_observation import (
+    ProcessObservationError,
+    validate_parent_process_observation,
+)
 from verifier.core.run_support import (
     RUN_RECEIPT_KIND,
     RUN_SCHEMA_VERSION,
@@ -24,6 +28,54 @@ from verifier.core.run_support import (
 
 
 _SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
+
+
+def _parent_process_receipt_binding_errors(
+    observation: Mapping[str, Any],
+    execution: Mapping[str, Any],
+) -> list[str]:
+    """Cross-check the inner record against its enclosing execution record."""
+
+    errors: list[str] = []
+    launch = observation["launch"]
+    result = observation["result"]
+    if launch["argv"] != execution.get("command"):
+        errors.append("launch.argv differs from execution.command")
+    if launch["declared_cwd"] != execution.get("cwd"):
+        errors.append("launch.declared_cwd differs from execution.cwd")
+    expected_outcomes = {
+        "SUCCESS": {RunOutcome.COMPLETED.value, RunOutcome.MISSING_OUTPUT.value},
+        "NONZERO_EXIT": {RunOutcome.NONZERO_EXIT.value},
+        "TIMEOUT": {RunOutcome.TIMEOUT.value},
+        # These are typed non-PASS outcomes.  Keep each mapping one-to-one so
+        # incomplete observation cannot be relabelled as a completed run by a
+        # digest-valid enclosing receipt.
+        "OUTPUT_CAP_EXCEEDED": {RunOutcome.OUTPUT_CAP_EXCEEDED.value},
+        "CLEANUP_NOT_ESTABLISHED": {RunOutcome.CLEANUP_NOT_ESTABLISHED.value},
+        "EXIT_STATUS_UNKNOWN": {RunOutcome.EXIT_STATUS_UNKNOWN.value},
+        "LAUNCH_ERROR": {RunOutcome.EXCEPTION.value},
+        "EXECUTION_ERROR": {RunOutcome.EXCEPTION.value},
+        "POST_PROCESSING_ERROR": {RunOutcome.EXCEPTION.value},
+        "MISSING_INPUT": {RunOutcome.MISSING_INPUT.value},
+    }
+    observed_outcome = result.get("outcome")
+    allowed_execution_outcomes = expected_outcomes.get(observed_outcome)
+    if allowed_execution_outcomes is None:
+        errors.append("result.outcome is not recognized for execution binding")
+    elif execution.get("outcome") not in allowed_execution_outcomes:
+        errors.append("result.outcome differs from execution.outcome")
+    if result["returncode"] != execution.get("exit_code"):
+        errors.append("result.returncode differs from execution.exit_code")
+    for stream_name in ("stdout", "stderr"):
+        stream = result[stream_name]
+        if stream["availability"] != "OBSERVED":
+            continue
+        execution_digest = execution.get(f"{stream_name}_sha256")
+        if stream["sha256"] != f"sha256:{execution_digest}":
+            errors.append(
+                f"result.{stream_name}.sha256 differs from execution.{stream_name}_sha256"
+            )
+    return errors
 
 
 def _rebuild_stable_payload_from_dict(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -613,6 +665,24 @@ def _run_payload_errors(data: Mapping[str, Any]) -> list[str]:
                 errors.append(
                     "assessment_context.refutation_surface.falsification_condition must be a string"
                 )
+            process_observation = surface.get("parent_process_observation")
+            if process_observation is not None:
+                try:
+                    validate_parent_process_observation(process_observation)
+                except (ProcessObservationError, TypeError, ValueError) as exc:
+                    errors.append(
+                        "assessment_context.refutation_surface."
+                        f"parent_process_observation is invalid: {exc}"
+                    )
+                else:
+                    for error in _parent_process_receipt_binding_errors(
+                        process_observation,
+                        data.get("execution", {}),
+                    ):
+                        errors.append(
+                            "assessment_context.refutation_surface."
+                            f"parent_process_observation {error}"
+                        )
     return errors
 
 

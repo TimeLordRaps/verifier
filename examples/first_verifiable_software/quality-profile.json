@@ -1,0 +1,11 @@
+{
+  "schema_version":"verifier-quality-profile-1",
+  "sources":["demo.py"],
+  "stages":[
+    {"id":"comment-format","selected":true,"required":true,"backend":"builtin-managed-python-comments-1","tool":null,"config":null},
+    {"id":"lint","selected":false,"required":false,"backend":null,"tool":null,"config":null},
+    {"id":"pretty-format","selected":false,"required":false,"backend":null,"tool":null,"config":null}
+  ],
+  "timeout_seconds":10,
+  "max_output_bytes":4096
+}

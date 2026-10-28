@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-objects-manifest-3.schema.json",
+  "title": "Additive Verifier package object manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "profile_digest",
+    "repository",
+    "objects",
+    "obligation_denominator",
+    "surface_rules",
+    "obligation_reason_provider",
+    "node_reconciler",
+    "claim_boundary",
+    "namespace"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "verifier-objects-manifest-3"
+    },
+    "profile_id": {
+      "const": "vstd-tier-zero-repository-admission-1"
+    },
+    "profile_digest": {
+      "$ref": "#/$defs/sha256"
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "remote",
+        "revision",
+        "source_root"
+      ],
+      "properties": {
+        "remote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+        },
+        "source_root": {
+          "const": "."
+        }
+      }
+    },
+    "objects": {
+      "type": "array",
+      "minItems": 26,
+      "maxItems": 26,
+      "items": {
+        "$ref": "#/$defs/object"
+      }
+    },
+    "obligation_denominator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_version",
+        "slot_count",
+        "route_count",
+        "slot_digest",
+        "route_identity_digest"
+      ],
+      "properties": {
+        "semantic_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "slot_count": {
+          "const": 234
+        },
+        "route_count": {
+          "const": 408
+        },
+        "slot_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "route_identity_digest": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "surface_rules": {
+      "type": "array",
+      "minItems": 23,
+      "maxItems": 23,
+      "items": {
+        "$ref": "#/$defs/surfaceRule"
+      }
+    },
+    "obligation_reason_provider": {
+      "$ref": "#/$defs/selection"
+    },
+    "node_reconciler": {
+      "$ref": "#/$defs/selection"
+    },
+    "claim_boundary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "namespace": {
+      "$ref": "verifier-objects-manifest-2.schema.json"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_id",
+        "object_kind",
+        "role",
+        "edges"
+      ],
+      "properties": {
+        "object_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "object_kind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "edges": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "surfaceRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "disposition",
+        "owner_object_id",
+        "reason"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "disposition": {
+          "enum": [
+            "OWNED",
+            "EXCLUDED",
+            "UNRESOLVED"
+          ]
+        },
+        "owner_object_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 256
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection_status",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "selection_status": {
+          "enum": [
+            "SELECTED",
+            "NOT_SELECTED"
+          ]
+        },
+        "path": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "description": "Retains every version-1 package obligation and adds the version-2 namespace. Runtime validation additionally checks exact graph preservation."
+}

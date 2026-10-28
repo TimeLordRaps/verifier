@@ -1,0 +1,4 @@
+[console_scripts]
+verifiable = verifier.runtime.public_cli:main
+verifier = verifier.runtime.public_cli:main
+vstd = verifier.runtime.public_cli:main

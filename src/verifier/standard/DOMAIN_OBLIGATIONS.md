@@ -26,24 +26,26 @@
 > YAML Ain't Markup Language (YAML);
 > zero-identity zero-knowledge token (TOKEN).
 
-**Status:** project specification (normative for the nineteen domain objects' obligations); retained as a legacy numbered-profile catalogue. Its original propositions remain specified, but they are not current eight-tier certificates without a versioned migration and new evidence.
+**Status:** project specification (normative for the nineteen domain objects' obligations); retained as a legacy numbered-profile catalogue. Its original propositions remain specified, but they are not current nine-tier certificates without a versioned migration and new evidence.
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
 **Date:** 2026-09-27
 
 The current Verifier Standard (VSTD) meta-tier grammar is
-`<object>-<tier>.<m>` for positive tiers 1..8, with `m` an internal grounding
-objective index within its tier. The admitted namespace has 26 object kinds,
-including RECEIPT, GRAPH, OBJECT, SPACE, TIME, EVENT, and ARCH; its current
-tier meanings are facets, dynamics, statics, closure, independence, privacy,
-consent, and governance. See [the architecture](META_TIERS.md) and
-[finite object hierarchy](NAMESPACE_OBJECTS.md).
+`<object>-<tier>.<m>` for positive tiers 1..9, with `m` an internal grounding
+objective index within its tier. The installed extensible namespace has 38 kinds:
+the retained 26 native `ObjectKind` values, including RECEIPT, GRAPH, OBJECT,
+SPACE, TIME, EVENT, and ARCH, plus 12 accumulating consequential roles. Its
+current tier meanings are facets, dynamics, statics, closure, independence,
+privacy, consent, governance, and security. See [the architecture](META_TIERS.md)
+and [finite object hierarchy](NAMESPACE_OBJECTS.md).
 
-This file is the **legacy numbered-profile catalogue** for 19 of those object
-kinds. It contains historical tiers 1..5 and a disclosure extension at 6.
+This file is the **legacy numbered-profile catalogue** for 19 of the retained
+native object kinds. It contains historical tiers 1..5 and a disclosure
+extension at 6.
 Legacy tier 5 is domain adaptation, **not current independence**. Legacy tier 6
-is disclosure, only a partial projection of **current privacy**. Consent at 7
-and governance at 8 have no per-object objectives here. The earlier VSTD axis
+is disclosure, only a partial projection of **current privacy**. Consent at 7,
+governance at 8, and security at 9 have no per-object objectives here. The earlier VSTD axis
 is not an automatically migrated RECEIPT axis, and the earlier GRAPH axis does
 not prove current GRAPH objectives. OBJECT, SPACE, TIME, EVENT, and ARCH have
 no numbered-profile rows here. The exact certificate-index mapping from old
@@ -463,8 +465,10 @@ until the mainstay representation is named, which is what the adaptation registr
 
 ## TRAIN
 
-**TRAIN is a composition, and it is a member of the VSTD-NAMESPACE.** The namespace is
-`VSTD` plus nineteen objects, and TRAIN is one of them -- admitted 2026-09-22. A
+**TRAIN is a composition, and it is a member of the VSTD-NAMESPACE.** The legacy
+domain axis was `VSTD` plus nineteen objects, and TRAIN was one of them -- admitted
+2026-09-22. That historical membership does not limit the current installed
+extensible namespace to those names. A
 training run is `HYPER(VSTD, MODEL, DATA, ENV, SIM, BENCH, GRAPH)` indexed by a
 `GRAPH-1` recorded lineage, where `VSTD` is the model and training-loop algorithms and
 `GRAPH-1` carries the order the data was consumed in -- the one fact no operand states,
@@ -1018,7 +1022,7 @@ numbered-profile mechanism. `TOKEN`'s adapter was written on 2026-09-22, which l
 
 ### BOT-1: Facets
 
-`BOT-1.1` through `BOT-1.5`; topological depth 3; 3 of 5 mechanized.
+`BOT-1.1` through `BOT-1.7`; topological depth 3; 5 of 7 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
@@ -1027,10 +1031,12 @@ numbered-profile mechanism. `TOKEN`'s adapter was written on 2026-09-22, which l
 | BOT-1.3 | Environment bindings | Both environment certificates are re-derived, one per arm of the coupling. | BOT-1.1, BOT-1.2 | binding |
 | BOT-1.4 | Coupling surface | The facets of the coupling itself, rather than of either side, are declared. | BOT-1.3 | none |
 | BOT-1.5 | Operand depths | Each operand's established depth is recorded for the composition ceiling. | BOT-1.3 | none |
+| BOT-1.6 | Current child binding | The actual selected AGENT, SIM, HARNESS and two ENV operands are reconstructed and their retained child certificates are replayed. | BOT-1.1, BOT-1.2, BOT-1.3 | binding |
+| BOT-1.7 | Agency-surface binding | When the admitted object carries BOT agency, the independently selected AGENT-1.8 and BOT-1.6 certificates must name the same actual agent and harness; a source-bound refutation can show that the BOT condition does not apply, while omission or unknown applicability cannot exempt it. | BOT-1.6, AGENT-1.8 | agency:binding |
 
 ### BOT-2: Dynamics
 
-`BOT-2.1` through `BOT-2.5`; topological depth 4; 4 of 5 mechanized.
+`BOT-2.1` through `BOT-2.6`; topological depth 4; 5 of 6 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
@@ -1039,17 +1045,19 @@ numbered-profile mechanism. `TOKEN`'s adapter was written on 2026-09-22, which l
 | BOT-2.3 | Action authenticity | Every replayed action is shown to be one the agent actually invoked. | BOT-2.1 | actuation |
 | BOT-2.4 | One-to-one coupling | No transition lacks a record and no record lacks a transition. | BOT-2.2, BOT-2.3 | alignment |
 | BOT-2.5 | Coupling advance | The coupled run is replayed step by step. | BOT-2.4 | none |
+| BOT-2.6 | Agency-surface trace | When BOT agency applies, independently replay AGENT-2.1, AGENT-2.3 and BOT-2.1 through BOT-2.3 and bind one exact retained decision/action record to its selected simulated effect key. Real physical or financial effects additionally require the ROBOT or FINBOT routes; unknown effect applicability is not exemption. | BOT-1.7, AGENT-2.1, AGENT-2.3, BOT-2.1, BOT-2.2, BOT-2.3 | agency:trace |
 
 ### BOT-3: Statics
 
-`BOT-3.1` through `BOT-3.4`; topological depth 3; 4 of 4 mechanized.
+`BOT-3.1` through `BOT-3.5`; topological depth 3; 2 of 5 mechanized.
 
 | Coordinate | Obligation | Requirement | Depends on | Mechanism |
 |---|---|---|---|---|
 | BOT-3.1 | Inherited ceiling | The observation ceiling exists whatever the agent claims about it. | none | statics:inherited |
-| BOT-3.2 | Coupling latency | The latency and ordering the coupling imposes are probed from the retained action and effect times. | none | statics:latency |
-| BOT-3.3 | Disclosure limit | The information the simulation cannot expose regardless of policy is stated. | BOT-3.1 | statics:disclosure |
-| BOT-3.4 | Policy impotence | The facts above are unchanged when either side's policy is perturbed. | BOT-3.2, BOT-3.3 | statics:impotence |
+| BOT-3.2 | Coupling latency | The latency and ordering the coupling imposes are probed from the retained action and effect times. No current executable mechanism establishes this proposition; it remains `NOT_ESTABLISHED`. | none | none |
+| BOT-3.3 | Disclosure limit | The information the simulation cannot expose regardless of policy is stated. No current executable mechanism establishes this proposition; it remains `NOT_ESTABLISHED`. | BOT-3.1 | none |
+| BOT-3.4 | Policy impotence | The facts above are unchanged when either side's policy is perturbed. No current executable mechanism establishes this proposition; it remains `NOT_ESTABLISHED`. | BOT-3.2, BOT-3.3 | none |
+| BOT-3.5 | Agency operational boundary | When BOT agency applies, the cumulative crosswalk must carry explicit reasons for limit, intervention, recovery and confinement status. The current checker permits only `NOT_ESTABLISHED`, never pulls BOT-4 containment down, and requires accumulated ROBOT or FINBOT Tier-3 routes for selected real physical or financial effects. | BOT-2.6, BOT-3.1 | agency:operational-boundary |
 
 ### BOT-4: Closure
 
@@ -1884,7 +1892,7 @@ none.
 chain within a currently catalogued numbered profile. That graph measure is
 distinct from the `.m` internal grounding certificate index. The older
 depth-lattice model used the depth as an upper bound on `m`; this identity has
-not been justified for the eight-tier architecture and must not be used to
+not been justified for the nine-tier architecture and must not be used to
 reject or certify a coordinate without a registered certificate mapping.
 
 
@@ -1965,6 +1973,16 @@ HARDWARE names the physical-device subject, while its current four native checks
 |---|---|---|---|---|
 | HARDWARE-1.1 | Retained device inventory | Rehash retained device records and validate named kinds and typed integer capacities; physical authenticity and live availability are not established. | none | inventory |
 | HARDWARE-1.2 | Retained containment topology | Every declared containment edge resolves within the bound inventory and the finite graph is acyclic; no undeclared physical topology is inferred. | HARDWARE-1.1 | topology |
+
+The separately versioned current-object route
+`verifier-current-object-obligations-1` / `HARDWARE-1.3` checks one externally
+selected HARDWARE namespace record, its finite typed collection and retained
+device inventory with an exact byte commitment. It is a bounded current
+certificate objective, not a retroactive change to the older two-obligation
+corroboration profile or the legacy domain-certificate wire meaning of
+`HARDWARE-1.1`. Its [contract](CURRENT_HARDWARE_INVENTORY.md) limits a `PASS`
+to retained-record consistency and leaves physical authenticity, live
+availability and whole-tier conformance unestablished.
 
 ### HARDWARE-2: Dynamics
 

@@ -20,10 +20,20 @@ study records, and roadmap-steering investigations.
   detection and exact catalog candidates with zero component execution.
 - [Stored components](stored_components/README.md): retain a public source snapshot and
   consume its catalog for nonexecuting planning.
+- [Selected validation](selected_validation/README.md): experimental follow-on execution
+  of host-approved byte-digest checks, singly or in a bounded two-file loop, with
+  remaining holes preserved and replayed evidence.
+- [Recorded native comparison](scitt_native_interop/README.md): opt-in Python/Go
+  checks of one fixed statement/receipt corpus, retained in a stored package with
+  nonexecuting comparison reconstruction; no independent-operator qualification.
+- [Computational environments](../docs/ENVIRONMENTS.md): package and check disclosed
+  recall, Boolean reasoning, and stateful counter specimens through experimental contracts.
 - [Non-critical compositions](interoperability_compositions/README.md): executable
   proof-producer/checker and adjacent-verifier examples with native results retained.
 - [Graph topology](graph_topology/README.md): simultaneous Boolean equations and explicitly
   declared backward-time relations, with separate bounded consistency results.
+- [Explicit geometry constraints](geometry_constraints/README.md): experimental follow-on
+  solver/proof/checker composition for declared Boolean clauses; no automatic hole closure.
 - [Artifact-network specimen](artifact-network/README.md): deterministically materialize,
   inspect, diff, clone, and compose an exact signed publisher silo without a service.
   The [silo tutorial](../docs/tutorials/PUBLISH_A_SILO.md) builds one from nothing.

@@ -121,8 +121,16 @@ truth or external completeness of the committed model.
 | `UNKNOWN` | Reachable transition coverage is missing, an outcome set is empty, an effect or virtual HARDWARE kind is unsupported, or the operation/item/byte budget is exhausted. |
 
 A `FAIL` in one reached branch is retained even if another reachable pair is
-missing. Unreachable states are counted, while safety is asserted only for the
+missing or a previously checked effect has unsupported semantics. Retained
+transition targets still determine reachability; an unsupported effect is
+never assumed safe and cannot conceal an independently represented reachable
+boundary violation. Without such a reached refutation, an unsupported effect
+remains `UNKNOWN`. Admission and capacity retain precedence: unsupported
+virtual HARDWARE or a byte, item or operation bound can prevent reaching a
+later check. Uncertainty fallback may return zero diagnostic counters after
+work occurred; those counters do not establish that no state was traversed
+or that transition coverage was complete. Unreachable states are counted, while safety is asserted only for the
 reachable set. An unlisted real-world action cannot be discovered from this
 model; the burden of a complete action alphabet and physical isolation remains
 outside this mechanism. This is a finite abstract closure check, not an
-attestation of the executing computer or a SIM-1..8 certificate.
+attestation of the executing computer or a SIM-1..9 certificate.

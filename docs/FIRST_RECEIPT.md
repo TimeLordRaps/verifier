@@ -2,18 +2,14 @@
 
 This walkthrough uses the Verifier Standard (VSTD) generic-run example: a small
 word-frequency computation with declared input and output files. It requires Git
-and the [released package installation](INSTALLATION.md).
+and the [v2.0.0 candidate source installation](INSTALLATION.md).
 
 ## Get the matching example
 
-Use the example from the same release as the installed package:
+Use the example from the same v2.0.0 candidate checkout as the installed source.
+Run the commands below from that checkout's root.
 
-```bash
-git clone --branch v1.5.0 --depth 1 https://github.com/TimeLordRaps/verifier.git verifier-example
-cd verifier-example
-```
-
-This checkout is a release snapshot, not a development branch. The example lives
+The site's source coordinate identifies the candidate revision. The example lives
 under `examples/generic_run/`. Its manifest names the command, inputs, outputs,
 claim scope, limitations, and falsification conditions.
 

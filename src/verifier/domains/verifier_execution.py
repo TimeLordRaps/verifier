@@ -2,7 +2,7 @@
 
 Verifier Standard (VSTD); application programming interface (API); JavaScript
 Object Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); operating system
-(OS). The memory limit rejects allocations above the configured job-wide committed
+(OS); process identifier (PID). The memory limit rejects allocations above the configured job-wide committed
 byte cap; it is not a resident or system-wide memory bound. Post-run peak counters
 are not an admission oracle: they can exceed the limit even when an over-limit
 allocation is denied.
@@ -16,6 +16,17 @@ Only fixed, isolated native proof replay is admitted; submitted commands and cod
 are never executed. This is not a general sandbox or verifier-soundness proof.
 Windows CPython is the only implemented process capability. Trusted local source,
 interpreter and OS integrity are assumptions; source hashes are not authenticity.
+Cleanup retains at most 128 unretired job-member process handles (a dimensionless
+bound). Signaled members absent from the current job membership list are counted
+only after their handles close successfully. The authoritative lifetime aggregate
+must not regress below that observed retired-plus-retained subset; point-in-time
+membership is not a complete per-process lifetime identity census. Cleanup requires
+successful job termination, zero active accounting and a signal for every retained
+handle. A successful membership query with a transient assigned/included count
+disagreement is retried at most four times within 0.05 seconds before any handle
+inventory change. ``owned_job_empty`` names that bounded current cleanup result, not
+historical identity completeness. Zero active accounting alone cannot establish exit
+for a process whose exact handle remains retained.
 The Microsoft contracts are JobObjectExtendedLimitInformation (class 9), job-wide
 committed-memory and kill-on-close flags, and documented ResumeThread semantics:
 https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_extended_limit_information
@@ -42,6 +53,10 @@ MECHANISM = "windows-job-native-kernel-1"
 MAX_PAYLOAD_BYTES = 16 * 1024 * 1024
 MAX_OUTPUT_BYTES = 4 * 1024 * 1024
 MAX_WALL_SECONDS = 60.0
+MAX_OWNED_PROCESSES = 128
+MEMBERSHIP_OBSERVATION_ATTEMPTS = 4
+MEMBERSHIP_OBSERVATION_SECONDS = 0.05
+MEMBERSHIP_RETRY_SECONDS = 0.001
 
 
 def _supported_platform() -> bool:
@@ -82,7 +97,14 @@ class _WindowsJob:
             _fields_ = [("times", ctypes.c_longlong * 4), ("page_faults", w.DWORD),
                         ("total", w.DWORD), ("active", w.DWORD), ("terminated", w.DWORD)]
 
+        class ProcessIds(ctypes.Structure):
+            _fields_ = [("assigned", w.DWORD), ("included", w.DWORD),
+                        ("ids", ctypes.c_size_t * MAX_OWNED_PROCESSES)]
+
         self.ctypes, self.extended_type, self.accounting_type = ctypes, Extended, Accounting
+        self.process_ids_type = ProcessIds
+        self._process_handles: dict[int, int] = {}
+        self._retired_process_count = 0
         self.kernel = kernel = ctypes.WinDLL("kernel32", use_last_error=True)
         signatures = {
             "CreateJobObjectW": ([ctypes.c_void_p, w.LPCWSTR], w.HANDLE),
@@ -91,6 +113,10 @@ class _WindowsJob:
             "AssignProcessToJobObject": ([w.HANDLE, w.HANDLE], w.BOOL),
             "TerminateJobObject": ([w.HANDLE, w.UINT], w.BOOL),
             "ResumeThread": ([w.HANDLE], w.DWORD),
+            "GetProcessId": ([w.HANDLE], w.DWORD),
+            "OpenProcess": ([w.DWORD, w.BOOL, w.DWORD], w.HANDLE),
+            "IsProcessInJob": ([w.HANDLE, w.HANDLE, ctypes.POINTER(w.BOOL)], w.BOOL),
+            "WaitForSingleObject": ([w.HANDLE, w.DWORD], w.DWORD),
             "CloseHandle": ([w.HANDLE], w.BOOL),
         }
         for name, (args, result) in signatures.items():
@@ -110,6 +136,71 @@ class _WindowsJob:
     def assign(self, process_handle: int) -> None:
         if not self.kernel.AssignProcessToJobObject(self.handle, process_handle):
             raise OSError("suspended native child could not join owned job")
+        self._retain_process(int(self.kernel.GetProcessId(process_handle)))
+
+    def _retain_process(self, process_id: int) -> None:
+        from ctypes import wintypes as w
+
+        if process_id <= 0:
+            raise OSError("owned native process identifier unavailable")
+        if process_id in self._process_handles:
+            return
+        if len(self._process_handles) >= MAX_OWNED_PROCESSES:
+            raise OSError("owned native process observation bound exhausted")
+        # Synchronization and limited query rights; never terminate by a PID lookup.
+        handle = self.kernel.OpenProcess(0x00101000, False, process_id)
+        if not handle:
+            raise OSError("owned native process handle observation unavailable")
+        member = w.BOOL()
+        if (not self.kernel.IsProcessInJob(handle, self.handle, self.ctypes.byref(member))
+                or not member.value):
+            self.kernel.CloseHandle(handle)
+            raise OSError("selected process membership differs from owned job")
+        self._process_handles[process_id] = handle
+
+    def _retire_signaled_processes(self, active_process_ids: set[int]) -> None:
+        """Close only proven-exited handles outside the current job member list."""
+
+        retired = getattr(self, "_retired_process_count", 0)
+        for process_id, handle in tuple(self._process_handles.items()):
+            if process_id in active_process_ids:
+                continue
+            signal = self.kernel.WaitForSingleObject(handle, 0)
+            if signal == 258:
+                # Membership and process signaling can change between the two
+                # native observations. Retain the exact handle until exit is proven.
+                continue
+            if signal != 0:
+                raise OSError("owned native process retirement signal unavailable")
+            if not self.kernel.CloseHandle(handle):
+                raise OSError("owned native process retirement handle close unavailable")
+            del self._process_handles[process_id]
+            retired += 1
+            self._retired_process_count = retired
+
+    def _observe_processes(self) -> None:
+        deadline = time.monotonic() + MEMBERSHIP_OBSERVATION_SECONDS
+        for attempt in range(MEMBERSHIP_OBSERVATION_ATTEMPTS):
+            ids = self.process_ids_type()
+            if not self.kernel.QueryInformationJobObject(
+                self.handle, 3, self.ctypes.byref(ids), self.ctypes.sizeof(ids), None
+            ):
+                raise OSError("owned native process membership query unavailable")
+            if (ids.assigned > MAX_OWNED_PROCESSES
+                    or ids.included > MAX_OWNED_PROCESSES):
+                raise OSError("owned native process membership observation incomplete")
+            if ids.assigned == ids.included:
+                break
+            remaining = deadline - time.monotonic()
+            if attempt + 1 == MEMBERSHIP_OBSERVATION_ATTEMPTS or remaining <= 0:
+                raise OSError("owned native process membership observation incomplete")
+            time.sleep(min(MEMBERSHIP_RETRY_SECONDS, remaining))
+        active_process_ids = tuple(int(process_id) for process_id in ids.ids[:ids.included])
+        if len(set(active_process_ids)) != len(active_process_ids):
+            raise OSError("owned native process membership observation incomplete")
+        self._retire_signaled_processes(set(active_process_ids))
+        for process_id in active_process_ids:
+            self._retain_process(int(process_id))
 
     def verify_limits(self) -> dict[str, int]:
         limits = self.extended_type()
@@ -127,24 +218,47 @@ class _WindowsJob:
             raise OSError("native primary thread was not resumed from exactly one suspension")
 
     def stop(self) -> None:
+        deadline = time.monotonic() + 5.0
+        observation_error = None
+        try:
+            self._observe_processes()
+        except OSError as exc:
+            observation_error = exc
         if not self.kernel.TerminateJobObject(self.handle, 1):
             raise OSError("owned native job termination unavailable")
-        deadline = time.monotonic() + 5.0
+        if observation_error is not None:
+            raise observation_error
         while True:
             accounting = self.accounting_type()
             if not self.kernel.QueryInformationJobObject(self.handle, 1, self.ctypes.byref(accounting),
                                                          self.ctypes.sizeof(accounting), None):
                 raise OSError("owned native job termination could not be observed")
-            if accounting.active == 0:
+            observed_lifetime_members = (
+                getattr(self, "_retired_process_count", 0)
+                + len(self._process_handles)
+            )
+            if accounting.total < observed_lifetime_members:
+                raise OSError("owned native job lifetime accounting regressed")
+            signals = [self.kernel.WaitForSingleObject(handle, 0)
+                       for handle in self._process_handles.values()]
+            if any(signal not in (0, 258) for signal in signals):
+                raise OSError("owned native process termination signal unavailable")
+            if accounting.active == 0 and all(signal == 0 for signal in signals):
                 return
             if time.monotonic() >= deadline:
                 raise OSError("owned native job termination deadline exceeded")
             time.sleep(0.01)
 
     def close(self) -> None:
-        if self.handle:
-            self.kernel.CloseHandle(self.handle)
-            self.handle = None
+        try:
+            if self.handle:
+                self.kernel.CloseHandle(self.handle)
+                self.handle = None
+        finally:
+            for handle in self._process_handles.values():
+                self.kernel.CloseHandle(handle)
+            self._process_handles.clear()
+            self._retired_process_count = 0
 
 
 def _run_windows(argv: list[str], payload: bytes, memory_bytes: int, wall_seconds: float) -> dict[str, Any]:
@@ -160,7 +274,12 @@ def _run_windows(argv: list[str], payload: bytes, memory_bytes: int, wall_second
     job = _WindowsJob(memory_bytes)
     process_handle = thread_handle = None
     assigned = False
-    result: dict[str, Any] = {"timed_out": False, "output_exhausted": False, "owned_job_empty": False}
+    result: dict[str, Any] = {
+        "timed_out": False,
+        "output_exhausted": False,
+        "owned_job_empty": False,
+        "lifetime_process_identity_census": "NOT_ESTABLISHED",
+    }
     try:
         with tempfile.TemporaryDirectory(prefix="vstd-native-replay-") as folder:
             root = Path(folder)
@@ -198,10 +317,13 @@ def _run_windows(argv: list[str], payload: bytes, memory_bytes: int, wall_second
                         if remaining <= 0:
                             result["timed_out"] = True
                             break
+                        job._observe_processes()
                         if sum(os.fstat(stream.fileno()).st_size for stream in (outgoing, errors)) > MAX_OUTPUT_BYTES:
                             result["output_exhausted"] = True
                             break
                         if _winapi.WaitForSingleObject(process_handle, 0) == 0:
+                            if time.monotonic() >= deadline:
+                                result["timed_out"] = True
                             break
                         time.sleep(min(0.01, remaining))
                 finally:

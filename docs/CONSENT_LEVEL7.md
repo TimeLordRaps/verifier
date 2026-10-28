@@ -3,9 +3,9 @@
 Verifier Standard (VSTD) meta-tier 7 is the maintainer-requested consent tier.
 Its coordinate form is `[OBJECT]-7.m`: `[OBJECT]` names an object and `m` indexes
 an internal grounding certificate within this positive-numbered tier. Both numbers
-are dimensionless. The existing catalogue has no registered tier-7 certificates. This document
-proposes concrete obligations for that intent. The helper implementation is
-executable; it does not itself register domain certificate obligations, establish
+are dimensionless. The legacy catalogue has no registered tier-7 certificates. This document
+defines the six bounded obligations selected by the separate current-object route.
+The helper implementation does not itself register domain certificate obligations, establish
 full tier conformance, or prove that artificial intelligence (AI) can self-regulate.
 
 The existing holding and consequence boundary (`OWNER`) already includes a
@@ -26,8 +26,14 @@ admission mechanism without changing those existing serialized meanings.
 | 7.5 | Retained admission can be recomputed from bound inputs. | Deterministic receipt; exact full-field comparison after evaluation with independently supplied policy and clock. |
 | 7.6 | Consent does not strengthen a computational verdict. | The input computational verdict is retained unchanged and never used to decide consent. |
 
-These proposed `7.1`–`7.6` rows are candidate obligations, not registered
-`[OBJECT]-7.m` certificates or claims that a domain certificate reaches tier 7.
+The [current consent certificates](../src/verifier/standard/CURRENT_CONSENT_CHECKS.md)
+register these six distinct bounded predicates for each admitted namespace kind;
+this does not establish whole-tier conformance or reinterpret legacy certificates.
+The [distinct stage primitives](../src/verifier/standard/CONSENT_STAGES.md)
+now evaluate separate predicates and their exact reproduction for one configured
+public-key holder. The current certificate route adds exact namespace and collection
+binding and evaluates every independently selected required holder. Completeness
+of that external holder selection remains an explicit assumption.
 Per-coordinate registration, prerequisites and whole-repository checks
 are separate integration gates. A helper `PASS` means only the configured
 mechanism admitted the exact request under its supplied authority assumptions.
@@ -131,7 +137,12 @@ supplied historical clock proves only that historical evaluation, never current
 permission. The supplied computational verdict remains caller input, not a
 computation independently rerun by consent evaluation.
 
-All runtime imports use the standard library. Candidate evidence capture is
+The shared-secret mechanism described here uses only standard-library runtime imports.
+The separate [public-key mechanism](../src/verifier/standard/CONSENT_PUBLIC_ADMISSION.md)
+lazily uses the existing optional cryptography dependency for signature checking;
+its base import remains standard-library-only. Its versioned envelopes cannot be
+substituted for this shared-secret format. Neither helper alone registers the
+six proposed current object objectives. Candidate evidence capture is
 limited to depth 64, 50,000 traversed values, one mebibyte of encoded text,
 10,000 entries per candidate collection and at most 4,096 bits per integer.
 The trusted policy capture admits at most 50,000 combined key, role and

@@ -4,7 +4,7 @@
       "name": "Roost, Tyler"
     }
   ],
-  "description": "Unpublished release-candidate metadata. Version 2.0.0 of a verification-domain language and Python reference implementation that packages bounded computational claims with explicit evidence, checking mechanisms, limits, refutation conditions, provenance, and reproducibility information. It does not replace native domain verifiers or strengthen their results.",
+  "description": "Unpublished alpha release-candidate metadata. Version 2.0.0 of a verification-domain language and Python reference implementation that packages bounded computational claims with explicit evidence, checking mechanisms, limits, refutation conditions, provenance, and reproducibility information. It does not replace native domain verifiers or strengthen their results.",
   "keywords": [
     "verification",
     "provenance",

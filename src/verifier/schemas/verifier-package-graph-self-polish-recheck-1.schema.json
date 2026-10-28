@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-package-graph-self-polish-recheck-1.schema.json",
+  "title": "Verifier Standard (VSTD) package GRAPH self-polish report recheck",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "nullableDigest": {
+      "oneOf": [
+        {"$ref": "#/$defs/digest"},
+        {"type": "null"}
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "rechecked_project_status",
+    "selected_report_digest",
+    "selected_report_bytes_digest",
+    "reported_package_mechanism_digest",
+    "current_package_mechanism_digest",
+    "invalidators",
+    "unknowns",
+    "mechanism_digest",
+    "claim_boundary",
+    "recheck_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "verifier-package-graph-self-polish-recheck-1"
+    },
+    "status": {
+      "enum": ["PASS", "FAIL", "UNKNOWN"]
+    },
+    "rechecked_project_status": {
+      "enum": ["FAIL", "UNKNOWN", null]
+    },
+    "selected_report_digest": {"$ref": "#/$defs/nullableDigest"},
+    "selected_report_bytes_digest": {"$ref": "#/$defs/nullableDigest"},
+    "reported_package_mechanism_digest": {"$ref": "#/$defs/nullableDigest"},
+    "current_package_mechanism_digest": {"$ref": "#/$defs/nullableDigest"},
+    "invalidators": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "unknowns": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "mechanism_digest": {"$ref": "#/$defs/nullableDigest"},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "recheck_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "PASS"}}},
+      "then": {
+        "properties": {
+          "invalidators": {"maxItems": 0},
+          "unknowns": {"maxItems": 0},
+          "rechecked_project_status": {"enum": ["FAIL", "UNKNOWN"]},
+          "selected_report_digest": {"$ref": "#/$defs/digest"},
+          "selected_report_bytes_digest": {"$ref": "#/$defs/digest"},
+          "reported_package_mechanism_digest": {"$ref": "#/$defs/digest"},
+          "current_package_mechanism_digest": {"$ref": "#/$defs/digest"},
+          "mechanism_digest": {"$ref": "#/$defs/digest"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "FAIL"}}},
+      "then": {"properties": {"invalidators": {"minItems": 1}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "UNKNOWN"}}},
+      "then": {
+        "properties": {
+          "invalidators": {"maxItems": 0},
+          "unknowns": {"minItems": 1}
+        }
+      }
+    }
+  ]
+}

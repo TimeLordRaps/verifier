@@ -21,19 +21,6 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _default_paths() -> tuple[tuple[Path, ...], tuple[Path, ...]]:
-    vlt_candidate = ROOT.parent.parent / "".join(["VSTD", "-", "Labs"]) / "website"
-    vlt_paths = (
-        vlt_candidate,
-        ROOT.parent / "website",
-    )
-    cg_paths = (
-        ROOT.parent / "claimgarden" / "web",
-        ROOT.parent.parent / "claimgarden" / "web",
-    )
-    return vlt_paths, cg_paths
-
-
 REQUIRED_DOCUMENTATION_FILES = (
     "docs/index.html",
     "docs/guides.html",
@@ -213,8 +200,13 @@ def fetch_pypi_status(package_name: str = "verifier-standard", timeout: float = 
         }
 
 
-def find_estate_path(configured: Path | None, env_var: str, defaults: tuple[Path, ...]) -> Path | None:
-    """Resolve an estate component path from CLI, environment, or standard locations."""
+def find_estate_path(configured: Path | None, env_var: str) -> Path | None:
+    """Resolve an estate component path from the CLI or the environment.
+
+    The operator names these directories. The script never guesses where other
+    checkouts sit on the machine that runs it, so the published source carries
+    no assumptions about any local layout.
+    """
     if configured and configured.is_dir():
         return configured
     env_val = os.environ.get(env_var)
@@ -222,9 +214,6 @@ def find_estate_path(configured: Path | None, env_var: str, defaults: tuple[Path
         p = Path(env_val)
         if p.is_dir():
             return p
-    for default in defaults:
-        if default.is_dir():
-            return default
     return None
 
 
@@ -233,9 +222,13 @@ def inspect_vstd_labs(website_dir: Path) -> dict[str, Any]:
     index_file = website_dir / "index.html"
     app_file = website_dir / "app.js"
 
+    has_index = index_file.is_file()
+    has_app = app_file.is_file()
+
+    # A directory holding neither file observed nothing, so it is not reported as observed.
     result: dict[str, Any] = {
         "path": str(website_dir),
-        "status": "OBSERVED",
+        "status": "OBSERVED" if (has_index or has_app) else "NOT_FOUND",
         "hero_badge": None,
         "hero_badge_version": None,
         "metric_val": None,
@@ -244,7 +237,10 @@ def inspect_vstd_labs(website_dir: Path) -> dict[str, Any]:
         "app_captured_version": None,
     }
 
-    if index_file.is_file():
+    if not has_index and not has_app:
+        return result
+
+    if has_index:
         content = index_file.read_text(encoding="utf-8")
         badge_match = re.search(r'badge-accent">([^<]+)</span>', content)
         if badge_match:
@@ -266,7 +262,7 @@ def inspect_vstd_labs(website_dir: Path) -> dict[str, Any]:
         if session_match:
             result["session_pinned_version"] = session_match.group(1).strip()
 
-    if app_file.is_file():
+    if has_app:
         app_content = app_file.read_text(encoding="utf-8")
         app_match = re.search(r'verifier-standard==([0-9a-zA-Z._-]+)', app_content)
         if app_match:
@@ -280,14 +276,20 @@ def inspect_claimgarden(web_dir: Path) -> dict[str, Any]:
     index_file = web_dir / "index.html"
     catalog_file = web_dir / "catalog.html"
 
+    has_index = index_file.is_file()
+    has_catalog = catalog_file.is_file()
+
     result: dict[str, Any] = {
         "path": str(web_dir),
-        "status": "OBSERVED",
+        "status": "OBSERVED" if (has_index or has_catalog) else "NOT_FOUND",
         "index_vstd_version": None,
         "catalog_vstd_version": None,
     }
 
-    if index_file.is_file():
+    if not has_index and not has_catalog:
+        return result
+
+    if has_index:
         content = index_file.read_text(encoding="utf-8")
         match = re.search(
             r'vstd-labs/gdc-sat-kernel.*?<span>(v[0-9.]+)</span>',
@@ -297,7 +299,7 @@ def inspect_claimgarden(web_dir: Path) -> dict[str, Any]:
         if match:
             result["index_vstd_version"] = match.group(1)
 
-    if catalog_file.is_file():
+    if has_catalog:
         content = catalog_file.read_text(encoding="utf-8")
         match = re.search(
             r'vstd-labs%2Fgdc-sat-kernel.*?<span>(v[0-9.]+)</span>',
@@ -323,7 +325,6 @@ def evaluate_estate_sync(
     If target_sync is True, evaluates synchronization against target_version.
     Otherwise evaluates against the live published PyPI version (or target_version if PyPI is unavailable).
     """
-    vlt_defaults, cg_defaults = _default_paths()
     doc_errors = check_mandatory_documentation_coverage(root, target_version)
     pypi_data = (
         {"status": "SKIPPED_OFFLINE", "latest_version": None, "release_count": None, "releases": []}
@@ -331,10 +332,10 @@ def evaluate_estate_sync(
         else fetch_pypi_status()
     )
 
-    resolved_labs_path = find_estate_path(vstd_labs_dir, "VSTD_LABS_ROOT", vlt_defaults)
+    resolved_labs_path = find_estate_path(vstd_labs_dir, "VSTD_LABS_ROOT")
     labs_data = inspect_vstd_labs(resolved_labs_path) if resolved_labs_path else {"status": "NOT_FOUND"}
 
-    resolved_cg_path = find_estate_path(claimgarden_dir, "CLAIMGARDEN_ROOT", cg_defaults)
+    resolved_cg_path = find_estate_path(claimgarden_dir, "CLAIMGARDEN_ROOT")
     cg_data = inspect_claimgarden(resolved_cg_path) if resolved_cg_path else {"status": "NOT_FOUND"}
 
     action_items: list[str] = []
@@ -354,25 +355,35 @@ def evaluate_estate_sync(
             )
 
     if labs_data.get("status") == "OBSERVED":
-        hero_badge = labs_data.get("hero_badge", "")
-        if f"v{expected_version}" not in hero_badge:
+        # The inspected keys exist with value None when a page lacks the field, so a
+        # default passed to dict.get() is never used; absence is reported, not iterated.
+        hero_badge = labs_data.get("hero_badge") or ""
+        if hero_badge and f"v{expected_version}" not in hero_badge:
             action_items.append(
                 f"vstd-labs.com hero badge reads '{hero_badge}', expected 'v{expected_version} ON PYPI'"
             )
-        metric_val = labs_data.get("metric_val", "")
-        if f"v{expected_version}" != metric_val:
+        elif not hero_badge:
+            action_items.append(
+                f"vstd-labs.com hero badge missing version, expected 'v{expected_version} ON PYPI'"
+            )
+        metric_val = labs_data.get("metric_val") or ""
+        if metric_val and f"v{expected_version}" != metric_val:
             action_items.append(
                 f"vstd-labs.com metric card reads '{metric_val}', expected 'v{expected_version}'"
             )
-        session_pin = labs_data.get("session_pinned_version", "")
+        elif not metric_val:
+            action_items.append(
+                f"vstd-labs.com metric card missing version, expected 'v{expected_version}'"
+            )
+        session_pin = labs_data.get("session_pinned_version") or ""
         if session_pin and session_pin != expected_version:
             action_items.append(
                 f"vstd-labs.com demo session pins '{session_pin}' (outdated relative to v{expected_version}; re-capture required per RELEASE_UPDATE_CHECKLIST.md)"
             )
 
     if cg_data.get("status") == "OBSERVED":
-        idx_ver = cg_data.get("index_vstd_version", "")
-        cat_ver = cg_data.get("catalog_vstd_version", "")
+        idx_ver = cg_data.get("index_vstd_version") or ""
+        cat_ver = cg_data.get("catalog_vstd_version") or ""
         expected_v = f"v{expected_version}"
         if idx_ver and idx_ver != expected_v:
             action_items.append(
@@ -428,7 +439,7 @@ def format_report(eval_result: dict[str, Any]) -> str:
             f"Session Pin: {labs.get('session_pinned_version')}"
         )
     else:
-        lines.append(f"  Company Site (vstd-labs) : {labs.get('status')}")
+        lines.append(f"  Company Site (vstd-labs) : {labs.get('status')} (pass --vstd-labs-dir or set VSTD_LABS_ROOT)")
 
     cg = eval_result["claimgarden"]
     if cg.get("status") == "OBSERVED":
@@ -437,7 +448,7 @@ def format_report(eval_result: dict[str, Any]) -> str:
             f"Catalog: {cg.get('catalog_vstd_version')}"
         )
     else:
-        lines.append(f"  ClaimGarden (claimgarden): {cg.get('status')}")
+        lines.append(f"  ClaimGarden (claimgarden): {cg.get('status')} (pass --claimgarden-dir or set CLAIMGARDEN_ROOT)")
 
     lines.append("-----------------------------------------------------------------")
     action_items = eval_result.get("action_items", [])
@@ -446,7 +457,22 @@ def format_report(eval_result: dict[str, Any]) -> str:
         for idx, item in enumerate(action_items, 1):
             lines.append(f"  {idx}. {item}")
     else:
-        lines.append("Estate Synchronization: CLEAN (No drift detected)")
+        # No drift can be claimed for a surface that was never compared.
+        unobserved = [
+            f"{label} ({eval_result.get(key, {}).get('status')})"
+            for key, label in (
+                ("pypi", "PyPI"),
+                ("vstd_labs", "Company Site"),
+                ("claimgarden", "ClaimGarden"),
+            )
+            if eval_result.get(key, {}).get("status") != "OBSERVED"
+        ]
+        if unobserved:
+            lines.append(
+                f"Estate Synchronization: CLEAN for observed surfaces (unobserved: {', '.join(unobserved)})"
+            )
+        else:
+            lines.append("Estate Synchronization: CLEAN (No drift detected)")
 
     lines.append("=================================================================")
     return "\n".join(lines)

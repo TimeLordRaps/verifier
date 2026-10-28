@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-self-polish-native-replay-receipt-2.schema.json",
+  "title": "Verifier Self-Polish Native Replay Receipt v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tier", "status", "manifest_digest", "source_coordinate_digest", "registry_digest", "registry_closure_digest", "memberships", "membership_count", "case_count", "invalidators", "polished", "release_authority", "whole_tier_conformance", "receipt_digest"],
+  "properties": {
+    "schema_version": {"const": "verifier-self-polish-native-replay-receipt-2"},
+    "tier": {"enum": [1, 2]},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "manifest_digest": {"type": ["string", "null"]},
+    "source_coordinate_digest": {"type": ["string", "null"]},
+    "registry_digest": {"type": ["string", "null"]},
+    "registry_closure_digest": {"type": ["string", "null"]},
+    "memberships": {"type": "array", "maxItems": 45},
+    "membership_count": {"type": "integer", "minimum": 0, "maximum": 45},
+    "case_count": {"type": "integer", "minimum": 0, "maximum": 135},
+    "invalidators": {"type": "array", "items": {"type": "string"}},
+    "polished": {"const": false},
+    "release_authority": {"const": "NONE"},
+    "whole_tier_conformance": {"const": "NOT_ESTABLISHED"},
+    "receipt_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

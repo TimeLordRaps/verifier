@@ -87,7 +87,7 @@ def test_paths_gate_clean_passes(tmp_path: Path) -> None:
 @pytest.mark.parametrize("path_str,label_substr", [
     ("C:" + "\\Us" + "ers\\alice\\repo\\file.py", "Windows drive path"),
     ("D:" + "/workspace/sub/dir/test.txt", "Windows drive path"),
-    ("\\\\server\\share\\project\\data", "UNC share path"),
+    ("\\\\" + "server\\share\\project\\data", "UNC share path"),
     ("/ho" + "me/developer/code/main.py", "POSIX user home"),
     ("/Us" + "ers/bob/Documents/spec.md", "POSIX user home"),
     ("file:///" + "C:" + "/Us" + "ers/alice/data.json", "Absolute file URI"),
@@ -109,7 +109,7 @@ def test_paths_gate_cli_detects_violation_and_fails_closed(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     bad_file = tmp_path / "leaked_config.yaml"
-    bad_file.write_text("workspace: " + "E:" + "\\projects\\internal\\tool\n", encoding="utf-8")
+    bad_file.write_text("workspace: " + "E:" + "\\" + "projects\\internal\\tool\n", encoding="utf-8")
     exit_code = main(["gate", "paths", str(tmp_path), "--json"])
     assert exit_code == 1
     captured = capsys.readouterr()
@@ -124,7 +124,7 @@ def test_paths_gate_exclude_flag_works(tmp_path: Path) -> None:
     sub = tmp_path / "vendor"
     sub.mkdir()
     bad_file = sub / "vendor_file.txt"
-    bad_file.write_text("C:" + "\\Windows\\system32\n", encoding="utf-8")
+    bad_file.write_text("C:" + "\\" + "Windows\\system32\n", encoding="utf-8")
     # without exclude: fails
     count, violations = run_paths_gate(tmp_path)
     assert len(violations) == 1

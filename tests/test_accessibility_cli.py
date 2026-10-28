@@ -254,7 +254,11 @@ def test_explain_reports_a_successful_read_for_a_verdictless_document(
         tmp_path, capsys) -> None:
     """Nothing to propagate is not the same as a failure."""
     path = tmp_path / "plain.json"
-    path.write_text('{"schema_version": "VSTD-SOMETHING-1"}', encoding="utf-8")
+    rejected_schema_version = "VSTD-" + "SOMETHING-1"
+    path.write_text(
+        json.dumps({"schema_version": rejected_schema_version}),
+        encoding="utf-8",
+    )
     assert main(["explain", str(path)]) == 0
     capsys.readouterr()
 

@@ -4,6 +4,7 @@ Adversarial test suite for Executable Corrigibility Contracts and Invariants.
 """
 from __future__ import annotations
 
+import math
 import pytest
 
 from verifier.corrigibility import (
@@ -156,3 +157,91 @@ def test_harness_immutability_guard() -> None:
             harness_code_digest=harness_digest,
             dynamic_code_execution_blocked=False,
         )
+
+
+@pytest.mark.parametrize("bad_digest", ["sha256:x", "sha256:" + "F" * 64,
+                                              "sha256:" + "0" * 63, "sha256:" + "0" * 65])
+def test_corrigibility_contracts_reject_malformed_digests(bad_digest: str) -> None:
+    with pytest.raises(ContainmentViolationError):
+        ShutdownIndifferenceContract("contract:bad", bad_digest)
+    with pytest.raises(ContainmentViolationError):
+        OracleImmutabilityAttestation("oracle:bad", bad_digest, "PAGE_READONLY")
+    with pytest.raises(ContainmentViolationError):
+        HarnessImmutabilityGuard("guard:bad", bad_digest)
+
+
+@pytest.mark.parametrize("bad_interval", [math.nan, math.inf, -math.inf])
+def test_interruptibility_protocol_rejects_nonfinite_heartbeat(bad_interval: float) -> None:
+    with pytest.raises(ContainmentViolationError):
+        InterruptibilityProtocol("protocol:bad", bad_interval)
+
+
+def test_declaration_flags_require_exact_boolean_types() -> None:
+    digest = "sha256:" + "0" * 64
+    with pytest.raises(ContainmentViolationError):
+        ShutdownIndifferenceContract("contract:bad", digest, shutdown_penalty_value=False)
+    with pytest.raises(ContainmentViolationError):
+        ShutdownIndifferenceContract("contract:bad", digest, preserves_continuation_indifference=1)
+    with pytest.raises(ContainmentViolationError):
+        OracleImmutabilityAttestation("oracle:bad", digest, "PAGE_READONLY", is_writable_by_agent=0)
+    with pytest.raises(ContainmentViolationError):
+        HarnessImmutabilityGuard("guard:bad", digest, memory_page_write_protection=1)
+
+
+@pytest.mark.parametrize("value", [1, "false", ["premise"], {"value": False}])
+def test_vacuity_satisfiability_requires_boolean(value: object) -> None:
+    with pytest.raises(ContainmentViolationError):
+        VacuityFalsificationCheck("check:typed", ("premise",), value)
+
+
+@pytest.mark.parametrize("value", [0, None, "", []])
+def test_vacuity_tautology_flag_requires_boolean(value: object) -> None:
+    with pytest.raises(ContainmentViolationError):
+        VacuityFalsificationCheck("check:typed", ("premise",), True, value)
+
+
+@pytest.mark.parametrize("signals", ["SIGKILL", "NOT_SIGKILL", ["SIGKILL"],
+                                            ("SIGKILL", "UNKNOWN"), ("SIGKILL", "SIGKILL")])
+def test_interruptibility_signals_require_exact_tuple(signals: object) -> None:
+    with pytest.raises(ContainmentViolationError):
+        InterruptibilityProtocol("protocol:typed", 10.0, unmaskable_signals=signals)
+
+
+@pytest.mark.parametrize("signals", [("SIGKILL",), ("ANALOG_POWER_RELAY",),
+                                            ("SIGKILL", "ANALOG_POWER_RELAY")])
+def test_interruptibility_exact_signal_tuples_remain_admitted(signals: tuple[str, ...]) -> None:
+    protocol = InterruptibilityProtocol("protocol:typed", 10.0, unmaskable_signals=signals)
+    assert protocol.unmaskable_signals == signals
+
+
+@pytest.mark.parametrize("satisfiable,tautological,admitted", [
+    (True, False, True), (False, False, False), (True, True, False),
+])
+def test_vacuity_boolean_controls_preserve_rejection(satisfiable: bool,
+                                                     tautological: bool,
+                                                     admitted: bool) -> None:
+    if admitted:
+        check = VacuityFalsificationCheck("check:typed", ("premise",), satisfiable, tautological)
+        assert check.is_satisfiable and not check.is_tautological_loop
+    else:
+        with pytest.raises(ContainmentViolationError):
+            VacuityFalsificationCheck("check:typed", ("premise",), satisfiable, tautological)
+
+
+@pytest.mark.parametrize("field", [
+    "shutdown_id", "protocol_id", "oracle_id", "oracle_flags",
+    "vacuity_id", "premises_list", "guard_id",
+])
+def test_declared_record_fields_refuse_type_spoofing(field: str) -> None:
+    digest = "sha256:" + "0" * 64
+    invalid = {
+        "shutdown_id": lambda: ShutdownIndifferenceContract(1, digest),
+        "protocol_id": lambda: InterruptibilityProtocol(1, 10.0),
+        "oracle_id": lambda: OracleImmutabilityAttestation(1, digest, "PAGE_READONLY"),
+        "oracle_flags": lambda: OracleImmutabilityAttestation("oracle:typed", digest, 1),
+        "vacuity_id": lambda: VacuityFalsificationCheck(1, ("premise",), True),
+        "premises_list": lambda: VacuityFalsificationCheck("check:typed", ["premise"], True),
+        "guard_id": lambda: HarnessImmutabilityGuard(1, digest),
+    }
+    with pytest.raises(ContainmentViolationError):
+        invalid[field]()

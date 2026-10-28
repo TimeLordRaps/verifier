@@ -57,10 +57,17 @@ jobs:
           python -B -m verifier gate run examples/gate_pipeline.json --output gate-receipt.json --json
           python -B -m verifier gate check gate-receipt.json --manifest examples/gate_pipeline.json --json
       - name: Run the streamed bounded suite and retain skip evidence
+        run: |
+          set -o pipefail
+          python -u -m pytest -vv -s --durations=10 --timeout=60 -rsxX \
+            -p scripts.pytest_public_evidence \
+            --junitxml=base-contracts.xml \
+            2>&1 | tee base-contracts.pytest.txt
+      - name: Reject unclassified skips and expected-failure suppressions
+        if: always()
         run: >-
-          python -u -m pytest -vv -s --durations=10 --timeout=60
-          -p scripts.pytest_public_evidence
-          --junitxml=base-contracts.xml
+          python -c "from pathlib import Path; from scripts.preflight import check_test_skips;
+          raise SystemExit(0 if check_test_skips(Path('base-contracts.pytest.txt').read_text(encoding='utf-8', errors='replace')) else 1)"
       - name: Require a public boundary check for the test evidence
         id: base-evidence-boundary
         if: always()
@@ -233,6 +240,51 @@ jobs:
         with:
           name: logits-constraints-${{ github.run_id }}-${{ github.run_attempt }}-python-3.12
           path: logits-constraints.xml
+          if-no-files-found: error
+          retention-days: 30
+
+  optional-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install ".[test,discovery-javascript,discovery-rust,discovery-shell,discovery-workflows]"
+      - name: Require the optional-parser and omission preventive regression path
+        run: |
+          set -o pipefail
+          python -c "import tree_sitter, tree_sitter_javascript, tree_sitter_rust, tree_sitter_bash, yaml"
+          python -u -m pytest -vv -s --durations=10 --timeout=60 -rsxX \
+            -p scripts.pytest_public_evidence \
+            --junitxml=optional-discovery.xml \
+            tests/test_namespace_javascript.py \
+            tests/test_namespace_systems.py \
+            tests/test_namespace_documents.py \
+            tests/test_namespace_html.py \
+            tests/test_polish0_interface_adversary.py \
+            2>&1 | tee optional-discovery.pytest.txt
+      - name: Reject optional-discovery suppressions
+        if: always()
+        run: >-
+          python -c "from pathlib import Path; from scripts.preflight import check_test_skips;
+          raise SystemExit(0 if check_test_skips(Path('optional-discovery.pytest.txt').read_text(encoding='utf-8', errors='replace')) else 1)"
+      - name: Require a public boundary check for the optional-discovery test evidence
+        id: optional-discovery-evidence-boundary
+        if: always()
+        run: python scripts/check_release_boundary.py optional-discovery.xml
+      - name: Publish skipped optional-discovery tests and reasons in the run summary
+        if: always() && steps.optional-discovery-evidence-boundary.outcome == 'success'
+        run: >-
+          python scripts/summarize_test_skips.py optional-discovery.xml
+          --coordinate python-3.12
+          --append-output "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always() && steps.optional-discovery-evidence-boundary.outcome == 'success'
+        with:
+          name: optional-discovery-${{ github.run_id }}-${{ github.run_attempt }}-python-3.12
+          path: optional-discovery.xml
           if-no-files-found: error
           retention-days: 30
 
@@ -416,9 +468,11 @@ jobs:
         run: |
           OPENSSL_PREFIX="$(brew --prefix openssl@3)"
           test -d "$OPENSSL_PREFIX/include/openssl"
+          test -x "$OPENSSL_PREFIX/bin/openssl"
+          export PATH="$OPENSSL_PREFIX/bin:$PATH"
           rustc --version
           clang --version
-          "$OPENSSL_PREFIX/bin/openssl" version
+          openssl version
           {
             echo "OPENSSL_DIR=$OPENSSL_PREFIX"
             echo "OPENSSL_STATIC=1"
@@ -625,7 +679,7 @@ jobs:
   # This identifier remains stable because main branch protection requires it.
   conformance-gate:
     if: always()
-    needs: [coordinate, base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, logits-constraints, release-integrity, release-reproducibility, platform-comparability-observation, platform-comparability, platform-python-contracts, installed-wheel-smoke, presentation, codeql]
+    needs: [coordinate, base, coverage, stdlib-smoke, scitt-crypto, artifact-seal, logits-constraints, optional-discovery, release-integrity, release-reproducibility, platform-comparability-observation, platform-comparability, platform-python-contracts, installed-wheel-smoke, presentation, codeql]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -638,6 +692,7 @@ jobs:
           SCITT: ${{ needs.scitt-crypto.result }}
           ARTIFACT_SEAL: ${{ needs.artifact-seal.result }}
           LOGITS_CONSTRAINTS: ${{ needs.logits-constraints.result }}
+          OPTIONAL_DISCOVERY: ${{ needs.optional-discovery.result }}
           RELEASE: ${{ needs.release-integrity.result }}
           REPRODUCIBLE: ${{ needs.release-reproducibility.result }}
           PLATFORM_OBSERVATIONS: ${{ needs.platform-comparability-observation.result }}
@@ -654,6 +709,7 @@ jobs:
           test "$SCITT" = success
           test "$ARTIFACT_SEAL" = success
           test "$LOGITS_CONSTRAINTS" = success
+          test "$OPTIONAL_DISCOVERY" = success
           test "$RELEASE" = success
           test "$REPRODUCIBLE" = success
           test "$PLATFORM_OBSERVATIONS" = success

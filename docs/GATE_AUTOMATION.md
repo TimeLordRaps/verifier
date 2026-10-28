@@ -114,8 +114,11 @@ Executable paths and captured output may disclose local context. No numbered
 profile conformance or domain correctness follows from a passing pipeline.
 
 The carried manifest locator is relative to the receipt. It never authorizes a
-read outside the receipt directory. For relocated receipts or a manifest in an
-ancestor directory, supply the explicit current coordinate:
+read outside the receipt directory. A receipt destination that cannot be related
+to the manifest by a relative path, such as one on a different drive or mount,
+is refused by `run` before any step executes and leaves no file. For relocated
+receipts or a manifest in an ancestor directory, supply the explicit current
+coordinate:
 
 ```sh
 vstd gate check results/gate_receipt.json --manifest gate_pipeline.json --json

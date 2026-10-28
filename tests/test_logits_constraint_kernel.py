@@ -1,4 +1,5 @@
-"""Terminology: JavaScript Object Notation (JSON); Verifier Standard (VSTD).
+"""Terminology: continuous integration (CI); JavaScript Object Notation (JSON);
+Verifier Standard (VSTD).
 
 Real logits-level constraint tests against llguidance, not an engine simulation."""
 
@@ -120,7 +121,7 @@ def test_transformers_callable_tracks_one_sequence_and_masks_scores(backend: LLG
 
 
 def test_callable_runs_inside_transformers_logits_processor_list(backend: LLGuidanceBackend) -> None:
-    transformers = pytest.importorskip("transformers", reason="use a host runtime that already provides transformers")
+    transformers = pytest.importorskip("transformers", reason="OPTIONAL_DEPENDENCY_ABSENT: the LogitsProcessorList integration needs transformers, declared by the constraints extra; the logits-constraints CI job installs it")
     compiled = backend.compile(ConstraintSpec("letter", ConstraintKind.REGEX, "a"))
     processor = SingleSequenceLogitsProcessor(compiled)
     processors = transformers.LogitsProcessorList([processor])

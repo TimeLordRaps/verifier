@@ -2,17 +2,17 @@
 from __future__ import annotations
 
 import hashlib
-import importlib
 
 import pytest
 
 from verifier.core.certificate import canonical_bytes
 from verifier.core.namespace import NamespaceObject, ObjectKind, composition_digest
 from verifier.domains.common import Unavailable
+from verifier.domains.contracts import object_grounding as object_grounding_contract
 
 
 def _module():
-    return importlib.import_module("verifier.domains.contracts.object_grounding")
+    return object_grounding_contract
 
 
 def _objects(iso: bytes):

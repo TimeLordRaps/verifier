@@ -32,19 +32,29 @@ def _selected_id(value: str, label: str) -> None:
 
 
 def _leaves(index: dict[str, NamespaceObject], item: NamespaceObject,
-            role: str) -> list[NamespaceObject]:
+            role: str, remaining: list[int] | None = None) -> list[NamespaceObject] | None:
     """Expand one role after exact finite composition has already passed."""
-    pending = list(dict(item.operands)[role])
+    targets = dict(item.operands)[role]
+    if remaining is not None and len(targets) > remaining[0]:
+        return None
+    pending = list(targets)
     seen: set[str] = set()
     leaves: dict[str, NamespaceObject] = {}
     while pending:
+        if remaining is not None:
+            if remaining[0] < 1:
+                return None
+            remaining[0] -= 1
         identifier = pending.pop()
         if identifier in seen:
             continue
         seen.add(identifier)
         child = index[identifier]
         if child.kind == ObjectKind.GRAPH:
-            pending.extend(dict(child.operands)["members"])
+            members = dict(child.operands)["members"]
+            if remaining is not None and len(pending) + len(members) > remaining[0]:
+                return None
+            pending.extend(members)
         else:
             leaves[identifier] = child
     return [leaves[key] for key in sorted(leaves)]
@@ -53,7 +63,12 @@ def _leaves(index: dict[str, NamespaceObject], item: NamespaceObject,
 def assess_identity_occupancy(objects: Sequence[NamespaceObject], *, identity_id: str,
                               collective_id: str, expected_digest: str | None,
                               expected_evidence_digest: str | None,
-                              evidence: dict[str, Any] | None) -> dict[str, Any]:
+                              evidence: dict[str, Any] | None,
+                              max_objects: int = DEFAULT_MAX_OBJECTS,
+                              max_operations: int = 100000,
+                              max_payload_bytes: int = 8 * 1024 * 1024,
+                              max_reference_bytes: int = 8 * 1024 * 1024,
+                              max_relation_steps: int = 100000) -> dict[str, Any]:
     """Check an exact declared ACTOR, ROLE, COLLECTIVE and evidence binding.
 
     A PASS is only a finite declared relation. The caller selects complete
@@ -63,11 +78,17 @@ def assess_identity_occupancy(objects: Sequence[NamespaceObject], *, identity_id
     """
     _selected_id(identity_id, "IDENTITY")
     _selected_id(collective_id, "COLLECTIVE")
+    if type(max_relation_steps) is not int or max_relation_steps < 1:
+        raise ValueError("identity relation bound must be a positive integer")
+    remaining = [max_relation_steps]
     # Use the same immutable collection for composition replay and relation
     # inspection. A caller can mutate its list after one checker call returns.
-    if isinstance(objects, (list, tuple)) and len(objects) <= DEFAULT_MAX_OBJECTS:
+    if (isinstance(objects, (list, tuple)) and type(max_objects) is int
+            and len(objects) <= max_objects):
         objects = tuple(objects)
-    composition = assess_composition(objects, expected_digest=expected_digest)
+    composition = assess_composition(objects, expected_digest=expected_digest,
+        max_objects=max_objects, max_operations=max_operations,
+        max_payload_bytes=max_payload_bytes, max_reference_bytes=max_reference_bytes)
 
     def result(status: str, reason: str, **facts: str) -> dict[str, Any]:
         record: dict[str, Any] = {
@@ -128,15 +149,22 @@ def assess_identity_occupancy(objects: Sequence[NamespaceObject], *, identity_id
     if identity.payload["binding_evidence_digest"] != expected_evidence_digest:
         return result("FAIL", "IDENTITY object binds different evidence bytes")
 
-    actors = _leaves(index, identity, "actor")
-    roles = _leaves(index, identity, "role")
+    actors = _leaves(index, identity, "actor", remaining)
+    roles = _leaves(index, identity, "role", remaining)
+    if actors is None or roles is None:
+        return result("UNKNOWN", "identity relation traversal bound exhausted")
     if len(actors) != 1 or len(roles) != 1:
         return result("FAIL", "one IDENTITY instance requires one ACTOR and one ROLE")
     actor, role = actors[0], roles[0]
-    if role.object_id not in {item.object_id for item in _leaves(index, collective, "roles")}:
+    members = _leaves(index, collective, "roles", remaining)
+    representations = _leaves(index, actor, "representation", remaining)
+    roots = _leaves(index, actor, "root_human", remaining)
+    if members is None or representations is None or roots is None:
+        return result("UNKNOWN", "identity relation traversal bound exhausted")
+    if role.object_id not in {item.object_id for item in members}:
         return result("FAIL", "ROLE is not a member of the selected COLLECTIVE")
-    represented = _leaves(index, actor, "representation")[0]
-    root = _leaves(index, actor, "root_human")[0]
+    represented = representations[0]
+    root = roots[0]
     required = {
         "identity_id": identity.object_id, "actor_id": actor.object_id,
         "role_id": role.object_id, "collective_id": collective.object_id,
@@ -161,7 +189,9 @@ def assess_identity_occupancy(objects: Sequence[NamespaceObject], *, identity_id
     if scope not in admitted:
         return result("FAIL", "IDENTITY scope is outside the declared ROLE scopes")
     if represented.kind == ObjectKind.BOT:
-        simulations = _leaves(index, represented, "sim")
+        simulations = _leaves(index, represented, "sim", remaining)
+        if simulations is None:
+            return result("UNKNOWN", "identity relation traversal bound exhausted")
         if scope not in {"simulation:" + item.object_id for item in simulations}:
             return result("FAIL", "BOT identity scope is outside its bound SIM")
     return result("PASS", "exact finite actor-role declaration and scope checked",
@@ -175,12 +205,20 @@ def recheck_identity_occupancy(assessment: dict[str, Any],
                                objects: Sequence[NamespaceObject], *, identity_id: str,
                                collective_id: str, expected_digest: str | None,
                                expected_evidence_digest: str | None,
-                               evidence: dict[str, Any] | None) -> dict[str, Any]:
+                               evidence: dict[str, Any] | None,
+                               max_objects: int = DEFAULT_MAX_OBJECTS,
+                               max_operations: int = 100000,
+                               max_payload_bytes: int = 8 * 1024 * 1024,
+                               max_reference_bytes: int = 8 * 1024 * 1024,
+                               max_relation_steps: int = 100000) -> dict[str, Any]:
     """Recompute every field; a self-consistent carried digest is insufficient."""
     reproduced = assess_identity_occupancy(
         objects, identity_id=identity_id, collective_id=collective_id,
         expected_digest=expected_digest,
-        expected_evidence_digest=expected_evidence_digest, evidence=evidence)
+        expected_evidence_digest=expected_evidence_digest, evidence=evidence,
+        max_objects=max_objects, max_operations=max_operations,
+        max_payload_bytes=max_payload_bytes, max_reference_bytes=max_reference_bytes,
+        max_relation_steps=max_relation_steps)
     if type(assessment) is not dict or len(assessment) != len(reproduced):
         raise Refuted("identity assessment shape differs")
     if set(assessment) != set(reproduced):

@@ -1,0 +1,24 @@
+reason q1-test-real
+  claim    external q1-subject effects computation
+  falsify  test q1-test-real expect holds
+  note     independent pytest witness with subject coverage
+
+reason q1-test-no-coverage
+  claim    external q1-subject effects computation
+  falsify  test q1-test-no-coverage expect holds
+  note     passing without subject coverage is unknown
+
+reason q1-test-self
+  claim    external q1-self-subject effects computation
+  falsify  test q1-test-self expect holds
+  note     a self witness is not tier-five independent
+
+reason q1-observer-open
+  claim    external q1-subject effects filesystem-write
+  falsify  observe q1-observer-open expect holds
+  note     audit-hook observer sees the open event
+
+reason q1-observer-blind
+  claim    external q1-subject effects filesystem-write
+  falsify  observe q1-observer-blind expect holds
+  note     audit-hook observer cannot see the C write event class

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-manifest-object-gate-1.schema.json",
+  "title": "One source-bound manifest object and obligation gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "object_id", "obligation_id", "obligation_name", "selection", "manifest_digest", "source_coordinate", "mechanism_digest", "runtime_source_binding", "instance", "facet_replay", "findings", "rerun_argv", "rerun_working_directory", "post_replay_source_recapture", "post_replay_manifest_recapture", "polished", "release_authorized", "claim_boundary", "report_digest"],
+  "properties": {
+    "execution_observations": {"type": "array", "items": {"type": "object", "required": ["schema_version", "observation_digest"]}},
+    "schema_version": {"const": "verifier-manifest-object-gate-1"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "object_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "obligation_id": {"type": "string", "minLength": 1, "maxLength": 512},
+    "obligation_name": {"type": ["string", "null"]},
+    "selection": {"type": ["object", "null"]},
+    "manifest_digest": {"$ref": "#/$defs/nullableDigest"},
+    "source_coordinate": {"type": ["object", "null"]},
+    "mechanism_digest": {"$ref": "#/$defs/nullableDigest"},
+    "runtime_source_binding": {"type": ["object", "null"]},
+    "instance": {"type": ["object", "null"]},
+    "facet_replay": {"type": ["object", "null"]},
+    "kind_requirements": {"type": "object", "required": ["status", "objects", "source_census_digest", "consequence_graph", "claim_boundary"]},
+    "admission_context": {"type": "object", "required": ["report_digest", "status", "scope"]},
+    "findings": {"type": "array", "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scope", "object_id", "object_kind", "coordinate", "obligation_id", "obligation_name", "semantic_version", "gate_id", "status", "code", "reason", "explanation", "next_action", "rerun_argv"],
+      "properties": {
+        "scope": {"enum": ["object", "repository"]},
+        "object_id": {"type": ["string", "null"]}, "object_kind": {"type": ["string", "null"]},
+        "coordinate": {"type": ["string", "null"]}, "obligation_id": {"type": ["string", "null"]},
+        "obligation_name": {"type": ["string", "null"]}, "semantic_version": {"type": ["string", "null"]},
+        "gate_id": {"type": "string", "minLength": 1}, "status": {"enum": ["FAIL", "UNKNOWN"]},
+        "code": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1}, "explanation": {"type": "string", "minLength": 1},
+        "next_action": {"type": "string", "minLength": 1},
+        "rerun_argv": {"type": ["array", "null"], "items": {"type": "string"}}
+      }
+    }},
+    "rerun_argv": {"type": "array", "items": {"type": "string"}},
+    "rerun_working_directory": {"const": "selected repository root"},
+    "post_replay_source_recapture": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+    "post_replay_manifest_recapture": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+    "polished": {"const": false}, "release_authorized": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1}, "report_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "nullableDigest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+  }
+}

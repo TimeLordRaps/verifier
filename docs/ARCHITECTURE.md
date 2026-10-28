@@ -5,7 +5,9 @@
 > Supply Chain Integrity, Transparency, and Trust (SCITT); Verifier Standard (VSTD);
 > zero-identity/zero-knowledge (ZIZK).
 
-**Status:** implementation and ownership map; normative meaning remains in `standard/`
+**Status:** implementation and ownership map; normative meaning remains in
+`src/verifier/standard/`. Table labels such as `standard/VSTD-1.md` retain specification
+identifiers and published routes; the source files live under that authoritative directory
 
 TRUST is mechanism-earned forward artifact support; ROT is typed, time-indexed
 degradation of current admissibility; and RUST is inverse-TRUST diagnostic traversal
@@ -28,7 +30,7 @@ shape only; a passing validator establishes only its named implemented checks.
 | Coordinate | Normative source | Runtime owner | Published shape | Primary tests |
 |---|---|---|---|---|
 | VSTD-1 claim receipt | `standard/VSTD-1.md` | `verifier.core.receipt`, `verifier.core.checker` | `vstd1_receipt.json` | `test_independent_checker.py`, `test_vstd_schemas.py` |
-| VSTD-1 generic run | `standard/VSTD-1.md` | `verifier.core.run` capture/facade plus `run_planning`, `run_validation`, `run_inspection`, `run_reproduction`, `run_impact`, and the additive `platform_comparison` diagnostic | `vstd1_generic_run_receipt.json`; the comparison report is not a receipt | `test_generic_run.py`, `test_platform_comparison.py` |
+| VSTD-1 generic run | `standard/VSTD-1.md` | `verifier.core.run` capture/facade plus `run_planning`, `run_validation`, `run_inspection`, `run_reproduction`, `run_impact`, bounded `run_process_observation`, and the additive `platform_comparison` diagnostic | `vstd1_generic_run_receipt.json`; the comparison report is not a receipt | `test_generic_run.py`, `test_run_process_observation.py`, `test_platform_comparison.py` |
 | VSTD-2 | `standard/VSTD-2.md` | `verifier.core.geometry` | `vstd2_receipt.json` | `test_verification_geometry.py` |
 | VSTD-3 | `standard/VSTD-3.md` | `verifier.hardware` | `vstd3_receipt.json`, `vstd3_accelerator_profile.json` | `test_vstd3_schema.py`, hardware tests |
 | VSTD-4 | `standard/VSTD-4.md` | certificate/kernel checks plus candidate and evidence-bound paths in `verifier.core.depth` / `verifier.core.evidence` | `vstd4_certificate.json`, `vstd4_receipt.json` | `test_gdc_certificate.py`, `test_vstd4_depth.py`, `test_evidence_bound_assurance.py` |
@@ -240,9 +242,11 @@ retired pre-current-profile field arrangements.
 
 ## Installed specification ownership
 
-Every `standard/*.md` file has a byte-identical installed resource under
-`src/verifier/standard/`. Verifier descriptors use those resources when no source
-checkout is present. The installed-wheel gate runs outside the checkout and rejects an
+Authoritative specifications live once under `src/verifier/standard/` and are packaged
+directly. The maintainer removed the duplicate root tree in commit
+`6bebabe50a39375adae7d4395a33b46f34db91f0`; published `/standard/` routes remain unchanged.
+Release verification checks the complete installed specification set and exact bytes
+against the selected source. Descriptors use those resources without a source checkout. The installed-wheel gate runs outside the checkout and rejects an
 unavailable specification digest.
 
 The artifact-control schema has a byte-identical installed copy under
@@ -297,6 +301,24 @@ The comparator also binds normalized machine family so the current hosted Linux,
 and Intel macOS observation isolates the operating-system dimension more narrowly. It
 does not attest native execution, virtual-machine identity, semantic correctness,
 universal portability, or actor independence, and it does not create a new receipt schema.
+
+New captures reserve `refutation_surface.parent_process_observation` for a
+capture-owned parent-interface record. Manifest content under that key is overwritten.
+The record separates no launch due to a missing declared input, launch error, unknown
+execution error, timeout, nonzero exit, success, and post-processing failure after a
+completed child. It binds the argument vector, declared cwd, timeout, return code, and
+parent-captured stream facts inside the receipt digest. A declared cwd is classified as
+portable-relative or nonportable without silently changing the generic runner's prior
+cwd behavior. Validation checks the record's closed shape, inner digest, fixed claim
+boundary, and cross-field state semantics. Historical receipts without this additive
+record remain valid.
+
+This is deliberately not a whole-HARNESS observation. Inherited environment and stdin,
+process identifiers and trees, descendants, network activity, undeclared filesystem
+activity, and external effects remain explicit gaps. Consequently a language adapter's
+captured parent process does not establish that its compiler or target descendants ran,
+nor does the record establish confinement, sandboxing, actor identity, or semantic
+correctness.
 
 Closure coordinates identify assessment questions; they are not containers for generic
 verification context. The neutral container must not generate profile-numbered binding

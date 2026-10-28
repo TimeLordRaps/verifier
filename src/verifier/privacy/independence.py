@@ -58,15 +58,39 @@ def assert_verdict_independence(
     if "result" in original_cert and isinstance(original_cert["result"], dict):
         orig_res = original_cert["result"]
         red_res = redacted_cert.get("result", {})
+        if not isinstance(red_res, dict):
+            raise MalformedRedactionError(
+                "Result verdict container was removed or changed by redaction"
+            )
         if orig_res.get("status") != red_res.get("status"):
             raise MalformedRedactionError(
                 f"Result status moved from {orig_res.get('status')!r} to {red_res.get('status')!r} by redaction"
             )
+        # The native single-object result carries its own evaluation outcome in
+        # addition to status. Redaction must preserve both verdict projections.
+        orig_evaluation = orig_res.get("evaluation")
+        if isinstance(orig_evaluation, dict) and "outcome" in orig_evaluation:
+            red_evaluation = red_res.get("evaluation")
+            if (not isinstance(red_evaluation, dict)
+                    or "outcome" not in red_evaluation
+                    or orig_evaluation["outcome"] != red_evaluation["outcome"]):
+                raise MalformedRedactionError(
+                    "Result evaluation outcome moved or was removed by redaction"
+                )
+
         orig_checks = orig_res.get("checks", {})
         red_checks = red_res.get("checks", {})
         for check_id, check_data in orig_checks.items():
             if isinstance(check_data, dict):
                 orig_out = check_data.get("evaluation", {}).get("outcome")
+                if orig_out is not None:
+                    if not isinstance(red_checks, dict):
+                        raise MalformedRedactionError("Check verdict map was removed or changed by redaction")
+                    red_check = red_checks.get(check_id, {})
+                    if not isinstance(red_check, dict):
+                        raise MalformedRedactionError(f"Check {check_id} verdict container was removed or changed by redaction")
+                    if not isinstance(red_check.get("evaluation", {}), dict):
+                        raise MalformedRedactionError(f"Check {check_id} evaluation was removed or changed by redaction")
                 red_out = red_checks.get(check_id, {}).get("evaluation", {}).get("outcome")
                 if orig_out != red_out:
                     raise MalformedRedactionError(
@@ -90,6 +114,8 @@ def assert_verdict_independence(
         # Check nested tier structure
         if tier_key in original_cert and isinstance(original_cert[tier_key], dict):
             orig_sub = original_cert[tier_key].get("verdict")
+            if orig_sub is not None and not isinstance(redacted_cert.get(tier_key, {}), dict):
+                raise MalformedRedactionError(f"Tier {tier} verdict container was removed or changed by redaction")
             red_sub = redacted_cert.get(tier_key, {}).get("verdict")
             if orig_sub is not None and orig_sub != red_sub:
                 raise MalformedRedactionError(
@@ -106,6 +132,8 @@ def assert_verdict_independence(
             if len(parts) == 2 and parts[0].isdigit():
                 tier_num = int(parts[0])
                 if 1 <= tier_num <= 5:
+                    if not isinstance(red_results, dict):
+                        raise MalformedRedactionError("Obligation verdict map was removed or changed by redaction")
                     red_r = red_results.get(req_id)
                     if orig_r != red_r:
                         raise MalformedRedactionError(

@@ -1,0 +1,155 @@
+{
+  "changed_frozen_files": {
+    "AlgoTuneTasks/__init__.py": {
+      "change": "source-visible namespace required by the exact retained AlgoTune task imports",
+      "current": "sha256:d1a44f20bce0a4db0964124013f887d8d1bf97453f6a5087f893d7b7429c0441",
+      "previous": "ABSENT_FROM_PREVIOUS_FROZEN_DENOMINATOR"
+    },
+    "AlgoTuneTasks/base.py": {
+      "change": "minimal source-visible Task and register_task compatibility surface replacing runtime module synthesis",
+      "current": "sha256:67dd27baff0ce7e215886c7be12b00f3b17f8d051114ad35409ae03236ce9775",
+      "previous": "ABSENT_FROM_PREVIOUS_FROZEN_DENOMINATOR"
+    },
+    "PREREGISTRATION.md": {
+      "change": "Acronyms blockquote inserted after the title",
+      "current": "sha256:df70019c80f267a49c964aeb7fde460e3424e49e26f65afc13f9fbb25267c0a4",
+      "previous": "sha256:bb853e9314752d1f313039f578b957f63fa57a82e0564d81fe83cd5240211f5a"
+    },
+    "RESEARCH.md": {
+      "change": "Acronyms blockquote inserted after the title",
+      "current": "sha256:2f38e0169d5d307c46e744ecb139871c6c8b9145b0806ef9eeef6fe53b9d9078",
+      "previous": "sha256:0431a241881d369b30b86ed8cc3677e410e5646b1bdf0af372c39c83de0edc8b"
+    },
+    "metrics.schema.json": {
+      "change": "annotation-only top-level description added; no validation keyword changed",
+      "current": "sha256:b6df7c6413ea1c68cdb731a53381dba1e723c0f16be0e52c0414aa39bfbb7767",
+      "previous": "sha256:29ff0f25c9589bd4c4e4f841d822b64c2bd7cd8b574b97a0daefad8d2a066746"
+    },
+    "verifier_guided_sat/benchmark.py": {
+      "change": "leading Acronyms comment block; comment lines lie outside the Python syntax tree and outside the engineering-surface line count",
+      "current": "sha256:c2676ee3a61ded6fd18475fee769077289cb6ddff2efeeabb7328baadbf12048",
+      "previous": "sha256:d1868b73132b9a878786e0c2bd6bc5b85d8188268215df3222471dd0edb7c15c"
+    },
+    "verifier_guided_sat/canonical.py": {
+      "change": "leading Acronyms comment block; comment lines lie outside the Python syntax tree and outside the engineering-surface line count",
+      "current": "sha256:241fdd1d836046383521d1ce868d9753687df1aa42745a80de1f60ff12fc7186",
+      "previous": "sha256:22c35f92b505b1f70717b7b95e381e64264e86a86d00f93405baf110fd14de94"
+    },
+    "verifier_guided_sat/external_verifiers.py": {
+      "change": "runtime module synthesis was replaced by exact source-visible imports and the selected experiment root is now bound before loading; verifier contract digests remain unchanged",
+      "current": "sha256:7b3e9a95713a698c63654e2197fa6709c1d748611ef104bc6c1f94fedc0df460",
+      "previous": "sha256:fd7e017309c8d24213fd4cbcd16d2e4ee7abe70005f385f7d75ad7bfa4dd55dc"
+    },
+    "verifier_guided_sat/freeze.py": {
+      "change": "the two source-visible AlgoTune compatibility files were added to the frozen denominator",
+      "current": "sha256:51bee8cfbfa7e5c4ec7ff0356f02df5a7b59c433061e7397773afa2afcc1a4a3",
+      "previous": "sha256:1c796fefdd14691ff4fb1f60a636cc5cd4c0691c4ca78e543213203a47437286"
+    },
+    "verifier_guided_sat/harness.py": {
+      "change": "leading Acronyms comment block; comment lines lie outside the Python syntax tree and outside the engineering-surface line count",
+      "current": "sha256:0e0fd2bc6055a80e85cc2f8d9279962168e7850661b7142cda78ec47901d7677",
+      "previous": "sha256:d46f4478262d53418162f2ddc1c6f0e841f23beab31e227ee7c81132b74cdf46"
+    },
+    "verifier_guided_sat/independent_validation.py": {
+      "change": "leading Acronyms comment block; comment lines lie outside the Python syntax tree and outside the engineering-surface line count",
+      "current": "sha256:d56bb8fd4bcc9041f59020a705dd9dd36532403e7e470cb990245992e92957a3",
+      "previous": "sha256:d197db2d03e6f1d5ddf1341283b786c781591cdf85d014c86f4c5bb2351f34a3"
+    },
+    "verifier_guided_sat/lm_backend.py": {
+      "change": "leading Acronyms comment block; comment lines lie outside the Python syntax tree and outside the engineering-surface line count",
+      "current": "sha256:65fc54faf518e40eb1a0ec817189a396acd68c6699e8462f3f03f3eaace71eb4",
+      "previous": "sha256:54b08ec0e2825418675de51126f638209d992f88571f02a463b4bb1016b89af6"
+    },
+    "verifier_guided_sat/result_validator.py": {
+      "change": "leading Acronyms comment block; comment lines lie outside the Python syntax tree and outside the engineering-surface line count",
+      "current": "sha256:54539fb0caad6a8ee218e9e05ed12795a70ca25c4159aa6177edb6f237cba3ad",
+      "previous": "sha256:9e5d7bd935f3797666637164aab33c6d79edbb6d95f76341fd13929d5ef3ae00"
+    },
+    "verifier_guided_sat/route.py": {
+      "change": "leading Acronyms comment block; comment lines lie outside the Python syntax tree and outside the engineering-surface line count",
+      "current": "sha256:c877ce889baed24c1b676d99a997660d00c24a0828ad39eb9a44115f20f0851d",
+      "previous": "sha256:3887ba25ba9d8c28a7ae1ff3a968354c6cce7ac1852aec5f23c124124bfd70d8"
+    },
+    "verifier_guided_sat/sat_backend.py": {
+      "change": "leading Acronyms comment block; comment lines lie outside the Python syntax tree and outside the engineering-surface line count",
+      "current": "sha256:96ec2984917af36e85783f7e0a738e116a5cc751f70de7ed947fc68de33684ae",
+      "previous": "sha256:4b14a7f8f684665fbdfb58ab89f0b29ccc45696a4e2f309ec826abda85ba5af3"
+    },
+    "verifier_guided_sat/vstd_binding.py": {
+      "change": "leading Acronyms comment block; comment lines lie outside the Python syntax tree and outside the engineering-surface line count; plus the module docstring and two error-message strings, where the former VSTD-prefixed graph name became provenance hypergraph (the namespace gate rejects that prefix on a current name)",
+      "current": "sha256:b0484a2bc039be55560247bd88ab51cb72d228d1b0aae4453ae17c16769b92a3",
+      "previous": "sha256:a22774f9e8098a948af39c54c988aec95e286765972fd9d9d6b22cf8fbfd878d"
+    }
+  },
+  "current": {
+    "cause": "Before any held-out live evaluation, runtime module synthesis was replaced by exact source-visible imports, selected-root binding was added, and the two compatibility sources were added to the frozen denominator. The three verifier contract digests and all preregistered measurement and solver pins remain unchanged.",
+    "freeze_date_utc": "2026-10-14",
+    "freeze_digest": "sha256:d1ea211530c5c13568b155630d2db32e9f9fa5ee43fc223773fa204dbab81056",
+    "freeze_state": "FROZEN_BEFORE_HELD_OUT",
+    "held_out_live_evaluation_started": false,
+    "live_trial_count": 0
+  },
+  "lineage_version": "vgsat-freeze-lineage-0.1",
+  "previous": [
+    {
+      "evidence": "The complete 2026-10-03 manifest remains digest-addressed; its external verifier source was recovered byte-for-byte from retained worktrees before the source-visible import refactor. No held-out live evaluation had started.",
+      "freeze_date_utc": "2026-10-03",
+      "freeze_digest": "sha256:685db0205e191462f7830379f94733c94c48847c56ad30e6c1c66602db3883c5",
+      "role": "immediately preceding pre-held-out freeze"
+    },
+    {
+      "evidence": "Every pin reproduced byte for byte in the carried tree before any edit, and the forty-four experiment tests passed against the current repository sources.",
+      "freeze_date_utc": "2026-08-24",
+      "freeze_digest": "sha256:ad3cf35cbcb6f785a5b9ee0b9090036c7e58ebe040f7b74cb58ab216c62df74b",
+      "role": "freeze manifest of record in the authored worktree"
+    },
+    {
+      "evidence": "No preserved freeze manifest reproduces it, and the authored blocked result failed validate_result against the authored manifest, so the citation was already stale. Origin UNKNOWN.",
+      "freeze_date_utc": "UNKNOWN",
+      "freeze_digest": "sha256:bfea7838f05e8a06b0cb6545e10d251aedc09c8f71c80567e1489f7bef8f3ea2",
+      "role": "digest cited by PUBLIC_RESULT.md and results/live-blocked.json in the authored worktree"
+    }
+  ],
+  "python_syntax_tree": {
+    "differs": {
+      "verifier_guided_sat/external_verifiers.py": "dynamic module installation and file-location execution were replaced by exact imports plus selected-root binding",
+      "verifier_guided_sat/freeze.py": "two source-visible compatibility files were added to FROZEN_FILES",
+      "verifier_guided_sat/vstd_binding.py": "three string constants only: the module docstring and two error messages"
+    },
+    "identical": [
+      "verifier_guided_sat/benchmark.py",
+      "verifier_guided_sat/canonical.py",
+      "verifier_guided_sat/harness.py",
+      "verifier_guided_sat/independent_validation.py",
+      "verifier_guided_sat/lm_backend.py",
+      "verifier_guided_sat/result_validator.py",
+      "verifier_guided_sat/route.py",
+      "verifier_guided_sat/sat_backend.py"
+    ],
+    "method": "ast.dump comparison; the 2026-10-14 source-visible import changes were compared against the exact preceding-freeze bytes recovered from a retained worktree"
+  },
+  "unchanged_frozen_files": {
+    "development-noise.json": "sha256:b8299ba370673f29523c7b58401d80201a434fbe5162e7ce7acb66783ab84632",
+    "instances/manifest.json": "sha256:8c263da9b2e9618728d3e09abd69379cac84f008a9b9de855be5341683327ad6",
+    "prompts/arm_b.txt": "sha256:ce3ab64ca10264bebd21ec74e46dfee78b9e708c9e9823e47465031000714c6c",
+    "prompts/arm_c.txt": "sha256:cb8d35be1479a67194aea1a3b1ce1cf69c5d89b074ec86086c854d1e0789c302",
+    "prompts/system.txt": "sha256:c971c8a98780fe79194001fd0a9ad0b291d1f4c2cb1f23afb879c3fc7e791f58",
+    "requirements-experiment.txt": "sha256:a15feeb32b718b95225a18fa5d5b8044bf4bacf636e29915376ea0e9654f2da4",
+    "selected-tools.lock": "sha256:c6ff85f3d65f06cf82d72812b0599dcb554c4a7715be45c3bad76bce1d276489",
+    "verifier_guided_sat/analysis.py": "sha256:1dc64d7565c0323c4647e63863f50465056c3102f54ea3319adf6f93685fd28a",
+    "verifier_guided_sat/baselines.py": "sha256:b361a3dad813d7e4c2f94c7db18d448d26f97bbf127ac21a0dcefa286a13218c",
+    "verifier_guided_sat/contracts.py": "sha256:dd106dfcce0ea0c9a7e86393e4c21dacc4df02c191d189fef65e794f36f72928",
+    "verifier_guided_sat/instances.py": "sha256:77b6ecddc7b2988233b45d7be0cb8c91fa93ccd814c7581edd9262ccbdeaebec",
+    "verifier_guided_sat/metrics.py": "sha256:51e9dfac10a9071a356c96a4ccf25ba7462b07d14bff409ba5c8a4b167e0ce3c",
+    "verifier_guided_sat/noise.py": "sha256:04e455f533c77565b5922aac1578290af0e9e76b9fb39ff6dbe27955840810f3",
+    "verifier_guided_sat/prompts.py": "sha256:3d08ccb15da9c72b267899069afa356fae82736b9de25bd022ad51436611600a",
+    "verifier_guided_sat/reserve_verifiers.py": "sha256:5e61cd6157b660632af425928d7c2371e27bdb7a50595b43e09a1f3dce796358"
+  },
+  "unchanged_pins": [
+    "generic_code_changed_after_live_held_out_start",
+    "solver_configuration_digest",
+    "success_threshold",
+    "timing_procedure",
+    "verifier_contract_digests"
+  ]
+}

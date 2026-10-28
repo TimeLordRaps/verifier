@@ -22,6 +22,9 @@ from verifier.interoperability import reference_catalog as reference_module
 from verifier.interoperability.storage import (
     ImplementationBinding,
     MAX_PACKAGE_ITEMS,
+    COMPONENT_PACKAGE_SCHEMA_VERSION,
+    COMPONENT_PACKAGE_V2_SCHEMA_VERSION,
+    MAX_PACKAGE_V2_ARTIFACTS,
     PackageArtifact,
     PackageDependency,
     StoredComponentPackage,
@@ -30,8 +33,10 @@ from verifier.interoperability.storage import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE_SUFFIXES = {".py", ".json", ".md"}
+SOURCE_SUFFIXES = {".py", ".json", ".md", ".mjs"}
 FIXED_FILES = {"pyproject.toml", "LICENSE", "NOTICE", "README.md"}
+# Keep the previously reviewed hardware source directly addressable.
+DIRECT_SOURCE_FILES = {"src/verifier/domains/hardware.py"}
 PUBLIC_REMOTES = {
     "https://github.com/TimeLordRaps/verifier.git",
     "https://github.com/TimeLordRaps/verifier",
@@ -76,11 +81,9 @@ def _direct_source_paths(captured: dict[str, bytes], registry: object) -> set[st
     direct = set(FIXED_FILES)
     direct.update(
         name for name in captured
-        if name.startswith("src/verifier/") and (
-            name.endswith((".json", ".md"))
-            or (name.startswith("src/verifier/domains/")
-                and name.count("/") == 3 and name.endswith(".py"))
-        )
+        if name in DIRECT_SOURCE_FILES
+        or (name.startswith("src/verifier/domains/") and name.count("/") == 3 and name.endswith(".py"))
+        or (name.startswith("src/verifier/") and name.endswith((".json", ".md")))
     )
     for component in registry.components:
         module_name = component.implementation_ref.split(":", 1)[0]
@@ -182,9 +185,13 @@ def _capture_snapshot(
 
 
 def build_package(
-    source_root: Path, package_version: str, include_untracked: Sequence[str] = ()
+    source_root: Path, package_version: str, include_untracked: Sequence[str] = (), *,
+    package_schema_version: str = COMPONENT_PACKAGE_V2_SCHEMA_VERSION
 ) -> StoredComponentPackage:
     """Retain bytes, not an installed runtime or independently qualified verifier."""
+    if package_schema_version not in (COMPONENT_PACKAGE_SCHEMA_VERSION, COMPONENT_PACKAGE_V2_SCHEMA_VERSION):
+        raise ValueError("unsupported reference package schema version")
+    artifact_maximum = MAX_PACKAGE_V2_ARTIFACTS if package_schema_version == COMPONENT_PACKAGE_V2_SCHEMA_VERSION else MAX_PACKAGE_ITEMS
     captured, head, dirty = _capture_snapshot(source_root, include_untracked)
     for module in (catalog_module, reference_module):
         expected_path = "src/" + module.__name__.replace(".", "/") + ".py"
@@ -193,14 +200,14 @@ def build_package(
     registry = reference_module.reference_component_registry()
     family_count = len({family for component in registry.components for family in component.verifier_family_ids})
     direct_paths = _direct_source_paths(captured, registry)
-    if len(captured) <= MAX_PACKAGE_ITEMS:
+    if len(captured) <= artifact_maximum:
         selected_content = dict(captured)
         archived = False
     else:
         selected_content = {name: captured[name] for name in sorted(direct_paths)}
         selected_content[SOURCE_ARCHIVE_PATH] = _source_archive(captured, set(captured) - direct_paths)
         archived = True
-    if len(selected_content) > MAX_PACKAGE_ITEMS:
+    if len(selected_content) > artifact_maximum:
         raise ValueError("direct contract and implementation artifacts exceed the package item bound")
     source_paths = tuple(name for name in selected_content
                          if name.startswith("src/verifier/") or name == SOURCE_ARCHIVE_PATH)
@@ -236,12 +243,14 @@ def build_package(
             + "Dependency closure NOT_ESTABLISHED; native runtime dependencies are not bundled."
         ),
         registry=registry,
+        schema_version=package_schema_version,
         artifacts=artifacts,
         implementations=tuple(
             ImplementationBinding(
                 component_id=component.component_id,
                 implementation_ref=component.implementation_ref,
                 artifact_paths=source_paths,
+                schema_version=package_schema_version,
                 dependency_ids=tuple(dependency.dependency_id for dependency in dependencies),
             )
             for component in registry.components
@@ -256,9 +265,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--source-root", type=Path, default=ROOT)
     parser.add_argument("--package-version", required=True)
     parser.add_argument("--include-untracked", action="append", default=[])
+    parser.add_argument("--package-schema-version", choices=(COMPONENT_PACKAGE_SCHEMA_VERSION, COMPONENT_PACKAGE_V2_SCHEMA_VERSION), default=COMPONENT_PACKAGE_V2_SCHEMA_VERSION)
     arguments = parser.parse_args(argv)
     try:
-        package = build_package(arguments.source_root, arguments.package_version, arguments.include_untracked)
+        package = build_package(arguments.source_root, arguments.package_version, arguments.include_untracked, package_schema_version=arguments.package_schema_version)
         save_component_package(package, arguments.output)
     except (OSError, ValueError) as exc:
         parser.exit(2, f"Package export refused: {exc}\n")

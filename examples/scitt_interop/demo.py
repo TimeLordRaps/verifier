@@ -22,6 +22,7 @@ import hashlib
 import importlib.metadata as importlib_metadata
 import inspect
 import json
+import tempfile
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
@@ -91,15 +92,31 @@ def _implementation_coordinates(
 ) -> tuple[dict[str, Any], list[dict[str, str]]]:
     """Observe and strictly qualify the external runtime used by this process."""
 
-    distributions: dict[str, importlib_metadata.Distribution] = {}
-    for name, expected_version in EXPECTED_NATIVE_DISTRIBUTIONS.items():
-        try:
-            distribution = importlib_metadata.distribution(name)
-        except importlib_metadata.PackageNotFoundError as exc:
-            raise RuntimeError(
-                f"required native distribution {name}=={expected_version} is not installed"
-            ) from exc
-        metadata_name = distribution.metadata.get("Name")
+    try:
+        scitt_distribution = importlib_metadata.distribution("scitt-cose")
+        cbor_distribution = importlib_metadata.distribution("cbor2")
+        cryptography_distribution = importlib_metadata.distribution("cryptography")
+    except ImportError as exc:
+        raise RuntimeError("required native distribution is not installed") from exc
+
+    distribution_rows = (
+        (
+            "scitt-cose",
+            scitt_distribution.metadata.get("Name"),
+            scitt_distribution.version,
+        ),
+        (
+            "cbor2",
+            cbor_distribution.metadata.get("Name"),
+            cbor_distribution.version,
+        ),
+        (
+            "cryptography",
+            cryptography_distribution.metadata.get("Name"),
+            cryptography_distribution.version,
+        ),
+    )
+    for name, metadata_name, observed_version in distribution_rows:
         if (
             not isinstance(metadata_name, str)
             or _canonical_distribution_name(metadata_name)
@@ -109,33 +126,35 @@ def _implementation_coordinates(
                 f"native distribution metadata name mismatch for {name!r}: "
                 f"{metadata_name!r}"
             )
-        if distribution.version != expected_version:
+        expected_version = EXPECTED_NATIVE_DISTRIBUTIONS[name]
+        if observed_version != expected_version:
             raise RuntimeError(
                 f"native distribution version mismatch for {name}: expected "
-                f"{expected_version}, observed {distribution.version}"
+                f"{expected_version}, observed {observed_version}"
             )
-        distributions[name] = distribution
 
-    module_version = getattr(scitt_cose, "__version__", None)
+    module_version = scitt_cose.__version__
     if module_version != EXPECTED_NATIVE_DISTRIBUTIONS["scitt-cose"]:
         raise RuntimeError(
             "scitt_cose module version does not match the required scitt-cose "
             f"distribution version: {module_version!r}"
         )
-    providers = importlib_metadata.packages_distributions().get("scitt_cose", [])
-    if [_canonical_distribution_name(item) for item in providers] != ["scitt-cose"]:
-        raise RuntimeError(
-            "scitt_cose import package is not mapped uniquely to the scitt-cose "
-            f"distribution: {providers!r}"
+    scitt_files = tuple(scitt_distribution.files or ())
+    cbor_files = tuple(cbor_distribution.files or ())
+    cryptography_files = tuple(cryptography_distribution.files or ())
+    installed_files = {"scitt-cose": set(), "cbor2": set(), "cryptography": set()}
+    for item in scitt_files:
+        installed_files["scitt-cose"].add(
+            Path(scitt_distribution.locate_file(item)).resolve()
         )
-
-    installed_files = {
-        name: {
-            Path(distribution.locate_file(item)).resolve()
-            for item in (distribution.files or ())
-        }
-        for name, distribution in distributions.items()
-    }
+    for item in cbor_files:
+        installed_files["cbor2"].add(
+            Path(cbor_distribution.locate_file(item)).resolve()
+        )
+    for item in cryptography_files:
+        installed_files["cryptography"].add(
+            Path(cryptography_distribution.locate_file(item)).resolve()
+        )
     imported_modules = (
         ("scitt_cose", scitt_cose, "scitt-cose"),
         ("cbor2", cbor2, "cbor2"),
@@ -143,14 +162,13 @@ def _implementation_coordinates(
         ("cryptography Ed25519", ed25519, "cryptography"),
     )
     for label, module, distribution_name in imported_modules:
-        source = getattr(module, "__file__", None)
+        source = module.__file__
         if source is None or Path(source).resolve() not in installed_files[distribution_name]:
             raise RuntimeError(
                 f"imported {label} module is not supplied by the installed "
                 f"{distribution_name} distribution"
             )
 
-    distribution = distributions["scitt-cose"]
     rendered_entrypoints: dict[str, str] = {}
     for name, entrypoint in sorted(entrypoints.items()):
         source = inspect.getsourcefile(entrypoint)
@@ -166,7 +184,7 @@ def _implementation_coordinates(
     verifier_runtime = {
         "coordinate_status": "MATCHED",
         "distribution_name": "scitt-cose",
-        "distribution_version": distribution.version,
+        "distribution_version": scitt_distribution.version,
         "import_package": "scitt_cose",
         "module_version": module_version,
         "verification_entrypoints": [
@@ -186,12 +204,12 @@ def _implementation_coordinates(
     dependencies = [
         {
             "distribution_name": "cbor2",
-            "distribution_version": distributions["cbor2"].version,
+            "distribution_version": cbor_distribution.version,
             "role": "Concise Binary Object Representation codec",
         },
         {
             "distribution_name": "cryptography",
-            "distribution_version": distributions["cryptography"].version,
+            "distribution_version": cryptography_distribution.version,
             "role": "Edwards-curve Digital Signature Algorithm primitives",
         },
     ]
@@ -486,7 +504,13 @@ def produce(
     return verify(output)
 
 
-def verify(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
+def verify(
+    output: Path,
+    *,
+    vstd_budget: int = 100,
+    artifact_path: Path = ARTIFACT,
+    write_result: bool = True,
+) -> dict[str, Any]:
     crypto = _crypto()
     payload_bytes = (output / "vstd_scitt_payload.json").read_bytes().rstrip(b"\n")
     payload = VstdScittPayload.from_bytes(payload_bytes)
@@ -583,14 +607,19 @@ def verify(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
         payload,
         vstd_observation,
         observation,
-        artifact_digests={"primary": _sha256(ARTIFACT.read_bytes())},
+        artifact_digests={"primary": _sha256(artifact_path.read_bytes())},
         accepted_issuers=[ISSUER],
     )
-    expected_composition = {
-        KernelOutcome.ACCEPTED: "PASS",
-        KernelOutcome.REFUSED: "UNKNOWN",
-        KernelOutcome.REJECTED: "FAIL",
-    }[vstd_result.outcome]
+    expected_composition = (
+        "FAIL"
+        if _sha256(artifact_path.read_bytes())
+        != payload.coordinates.artifact_digests["primary"]
+        else {
+            KernelOutcome.ACCEPTED: "PASS",
+            KernelOutcome.REFUSED: "UNKNOWN",
+            KernelOutcome.REJECTED: "FAIL",
+        }[vstd_result.outcome]
+    )
     if composition.status.value != expected_composition:
         raise RuntimeError(f"composition failed: {composition}")
 
@@ -609,13 +638,84 @@ def verify(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
         "direct_runtime_dependencies": crypto["direct_runtime_dependencies"],
         "scitt_as_vstd_evidence": scitt_as_vstd_evidence,
         "composition": composition.to_dict(),
-        "artifact_sha256": _sha256(ARTIFACT.read_bytes()),
+        "artifact_sha256": _sha256(artifact_path.read_bytes()),
         "payload_sha256": _sha256(payload_bytes),
         "statement_sha256": _sha256(statement),
         "receipt_sha256": _sha256(scitt_receipt),
         "transparent_statement_sha256": _sha256(transparent),
     }
-    (output / "verification_result.json").write_text(
+    if write_result:
+        (output / "verification_result.json").write_text(
+            json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+    return result
+
+
+def boundary_demo(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
+    """Show that authentic registration cannot transfer to different bytes.
+
+    The same signed statement and inclusion receipt are verified twice: once
+    against the bound artifact and once against separately observed artifact
+    bytes that differ.  Neither pass rewrites ``verification_result.json``.
+    """
+
+    original = verify(output, vstd_budget=vstd_budget, write_result=False)
+    with tempfile.TemporaryDirectory(prefix="vstd-scitt-boundary-") as directory:
+        mutated_artifact = Path(directory) / "artifact.txt"
+        mutated_artifact.write_bytes(ARTIFACT.read_bytes() + b"MUTATION")
+        mutated = verify(
+            output,
+            vstd_budget=vstd_budget,
+            artifact_path=mutated_artifact,
+            write_result=False,
+        )
+
+    same_scitt_evidence = all(
+        original[key] == mutated[key]
+        for key in (
+            "payload_sha256",
+            "statement_sha256",
+            "receipt_sha256",
+            "transparent_statement_sha256",
+            "scitt_observation",
+        )
+    )
+    result = {
+        "demonstration": "authentic-receipt-unsupported-proposition/1",
+        "checks": {
+            "scitt_signature_and_inclusion_receipt_original": "PASS",
+            "scitt_signature_and_inclusion_receipt_after_external_artifact_mutation": "PASS",
+            "scitt_evidence_bytes_identical": same_scitt_evidence,
+            "vstd_original_exact_artifact_composition": original["composition"]["status"],
+            "vstd_mutated_artifact_composition": mutated["composition"]["status"],
+        },
+        "original": {
+            "artifact_sha256": original["artifact_sha256"],
+            "composition": original["composition"],
+        },
+        "mutated": {
+            "artifact_sha256": mutated["artifact_sha256"],
+            "composition": mutated["composition"],
+        },
+        "unchanged_scitt": {
+            "payload_sha256": original["payload_sha256"],
+            "statement_sha256": original["statement_sha256"],
+            "receipt_sha256": original["receipt_sha256"],
+            "native_result": original["scitt_observation"]["native_result"],
+        },
+        "conclusion": (
+            "The signed statement and inclusion receipt remain authentic for the "
+            "original statement. They do not establish the attempted proposition "
+            "about different artifact bytes; exact VSTD composition rejects it."
+        ),
+    }
+    if not same_scitt_evidence:
+        raise RuntimeError("boundary demonstration changed SCITT evidence bytes")
+    if result["checks"]["vstd_original_exact_artifact_composition"] != "PASS":
+        raise RuntimeError("boundary demonstration original case did not pass")
+    if result["checks"]["vstd_mutated_artifact_composition"] != "FAIL":
+        raise RuntimeError("boundary demonstration mutation was not rejected")
+    (output / "boundary_demo_result.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     return result
@@ -623,15 +723,16 @@ def verify(output: Path, *, vstd_budget: int = 100) -> dict[str, Any]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("produce", "verify"))
+    parser.add_argument("command", choices=("produce", "verify", "boundary"))
     parser.add_argument("--output", type=Path, default=HERE / "generated")
     parser.add_argument("--vstd-budget", type=int, default=100)
     args = parser.parse_args()
-    result = (
-        produce(args.output)
-        if args.command == "produce"
-        else verify(args.output, vstd_budget=args.vstd_budget)
-    )
+    if args.command == "produce":
+        result = produce(args.output)
+    elif args.command == "verify":
+        result = verify(args.output, vstd_budget=args.vstd_budget)
+    else:
+        result = boundary_demo(args.output, vstd_budget=args.vstd_budget)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 

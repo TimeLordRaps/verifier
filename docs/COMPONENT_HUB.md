@@ -37,8 +37,8 @@ expected index or package digest through a separately trusted release, commit, s
 statement, or other explicit continuity mechanism when whole-site substitution matters.
 Changing a locator without checking the expected digest does not preserve identity.
 
-When the public source inventory exceeds the stored package's 256-artifact limit,
-the exporter retains metadata, declared entrypoint modules, native domain adapters
+For public source inventories larger than 256 files, the reference exporter
+selects version 2 and retains metadata, declared entrypoint modules, native domain adapters
 and public schema/specification files directly. Remaining source bytes are stored
 in `source-archive/exact-public-source.zip`, using ZIP archive format (ZIP) without
 compression or executable extraction. Its canonical `source-inventory.json`
@@ -105,3 +105,7 @@ The current documentation and schema canonical URLs remain under
 move their canonical identity. A future Cloudflare-hosted hub may serve the same generated
 index bytes under a separately declared deployment coordinate without changing what those
 bytes establish.
+
+## Versioned reference-source capacity
+
+The reference exporter and component-index builder select `verifier-component-package-2`. It keeps every top-level native domain adapter, public schema/specification and declared entrypoint directly addressable; other source bytes remain exactly bound in the inert archive. Version 2 permits up to 512 artifacts and 512 paths per implementation binding. Other arrays remain limited to 256, decoded content to 16 mebibytes (MiB), and encoded packages to 32 MiB. These are separate bounds. Existing package-v1 constructors and its schema retain all 256-item limits and identical canonical bytes; old readers refuse version 2. The exporter can explicitly select version 1 and refuses a mandatory direct set that exceeds its limit. No truncation, silent downgrade or conformance admission occurs.

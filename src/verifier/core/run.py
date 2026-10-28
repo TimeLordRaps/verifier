@@ -1,5 +1,6 @@
-"""Terminology: JavaScript Object Notation (JSON); Boolean satisfiability problem (SAT);
+"""Terminology: application programming interface (API); JavaScript Object Notation (JSON); Boolean satisfiability problem (SAT);
 Secure Hash Algorithm 256-bit (SHA-256); Verifier Standard (VSTD);
+signal kill (SIGKILL);
 YAML Ain't Markup Language (YAML).
 
 Generic computational run receipt capture for VSTD-1.
@@ -39,7 +40,9 @@ Design commitments (do not weaken without updating tests + docs):
 from __future__ import annotations
 
 import hashlib
+import inspect
 import json
+import os
 import platform as _platform
 import subprocess
 import time
@@ -55,6 +58,22 @@ from verifier.core.provenance import (
     sha256_file,
 )
 from verifier.core.receipt import compute_canonical_digest
+from verifier.core import owned_process as _owned_process
+from verifier.core.run_process_observation import (
+    ParentProcessLaunch,
+    begin_parent_process_observation,
+    observe_cleanup_not_established,
+    observe_completed_process,
+    observe_exit_status_unknown,
+    observe_indeterminate_execution_error,
+    observe_launch_error,
+    observe_missing_input_no_launch,
+    observe_output_cap_exceeded,
+    observe_post_processing_error,
+    observe_timeout,
+    prepare_parent_process_observation,
+    recheck_parent_process_observation,
+)
 from verifier.core.reproducibility import ReproducibilityLevel
 from verifier.core.run_support import (
     PLATFORM_COMPARISON_ENVIRONMENT_BINDING_VERSION,
@@ -68,6 +87,15 @@ from verifier.core.run_planning import _validated_command, describe_run_plan, lo
 
 _SNIPPET_LIMIT = 4000
 _DEFAULT_TIMEOUT_SECONDS = 300
+# Per-stream capture bound. A stream that reaches it is a non-PASS, never a
+# truncated completion. Overshoot is bounded by one poll interval of child writes.
+_OUTPUT_CAPTURE_LIMIT_BYTES = 16 * 1024 * 1024
+_TREE_CLEANUP_SECONDS = 5.0
+_POLL_SECONDS = 0.01
+
+_CLEANUP_CONFIRMED = "CONFIRMED"
+_CLEANUP_NOT_CONFIRMED = "NOT_CONFIRMED"
+_CLEANUP_UNKNOWN = "UNKNOWN"
 
 
 def _digest_if_available(path: Path, label: str, *alternatives: Path) -> str:
@@ -99,6 +127,7 @@ def _assessment_context(
     *,
     falsification_condition: str,
     runtime: RuntimeEnvironment | None = None,
+    parent_process_observation: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Serialize bounded generic-run mechanism and refutation context."""
     raw_bounds = manifest.get("resource_bounds", {})
@@ -123,6 +152,9 @@ def _assessment_context(
     if raw_surface is not None and not isinstance(raw_surface, Mapping):
         raise RunError("refutation_surface must be an object")
     surface = dict(raw_surface or {})
+    # This reserved record is capture-owned. A manifest may not impersonate the
+    # parent process interface merely by supplying data under the same name.
+    surface.pop("parent_process_observation", None)
     surface.setdefault("admissible_refutations", [])
     surface.setdefault("excluded_claims", ["PHYSICAL_WORLD_COMPLETENESS"])
     surface.setdefault("falsification_condition", falsification_condition)
@@ -144,6 +176,17 @@ def _assessment_context(
             "platform_machine": runtime.platform_machine,
         }
         surface["platform_comparability"] = bound_declaration
+    if parent_process_observation is not None:
+        # Detach nested caller-owned containers before the record becomes part
+        # of the canonical stable payload.
+        surface["parent_process_observation"] = json.loads(
+            json.dumps(
+                parent_process_observation,
+                ensure_ascii=False,
+                allow_nan=False,
+                separators=(",", ":"),
+            )
+        )
 
     here = Path(__file__).resolve()
     implementation_modules = tuple(
@@ -156,6 +199,8 @@ def _assessment_context(
             "run_inspection.py",
             "run_reproduction.py",
             "run_impact.py",
+            "run_process_observation.py",
+            "owned_process.py",
         )
     )
     specification = here.parents[3] / "standard" / "VSTD-1.md"
@@ -187,6 +232,124 @@ def _now_utc() -> str:
 
 def _sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def _checked_parent_process_observation(
+    record: dict[str, Any],
+    launch: ParentProcessLaunch,
+) -> dict[str, Any]:
+    """Recheck capture-owned state before it enters the receipt digest."""
+
+    recheck_parent_process_observation(
+        record,
+        bound_inner_digest=record["inner_digest"],
+        expected_launch=launch,
+    )
+    return record
+
+
+_OwnedRun = _owned_process.OwnedProcessResult
+
+
+class _UncertainOwnedRun(Exception):
+    """Control flow only: an owned run ended without an attestable exit status."""
+
+    def __init__(self, owned: _OwnedRun) -> None:
+        super().__init__(owned.status)
+        self.owned = owned
+
+
+# These zero-argument compatibility factories are deliberate test seams.  The
+# implementation remains centralized in core.owned_process.
+def _WindowsOwnedTree() -> _owned_process.WindowsOwnedTree:
+    return _owned_process.WindowsOwnedTree(_TREE_CLEANUP_SECONDS)
+
+
+def _PosixOwnedTree() -> _owned_process.PosixOwnedTree:
+    return _owned_process.PosixOwnedTree(_TREE_CLEANUP_SECONDS)
+
+
+def _poll_pause() -> None:
+    time.sleep(_POLL_SECONDS)
+
+
+def _await_child_end(tree: Any, out_path: Path, err_path: Path, deadline: float) -> str:
+    """Compatibility seam for deterministic outcome-order tests."""
+
+    return _owned_process._await_child_end(
+        tree,
+        out_path,
+        err_path,
+        deadline,
+        _OUTPUT_CAPTURE_LIMIT_BYTES,
+        _OUTPUT_CAPTURE_LIMIT_BYTES,
+        _poll_pause,
+    )
+
+
+def _confirm_owned_tree_empty(tree: Any) -> str:
+    """Compatibility seam that retains injectable cleanup uncertainty tests."""
+
+    return _owned_process._confirm_empty(tree, _TREE_CLEANUP_SECONDS, _POLL_SECONDS)
+
+
+class _RunTreeAdapter:
+    """Adapt historical four-argument test trees to the shared six-argument API."""
+
+    def __init__(self, tree: Any) -> None:
+        self._tree = tree
+
+    def launch(self, argv: tuple[str, ...], cwd: Path, environment: Mapping[str, str],
+               stdin: Any, stdout: Any, stderr: Any) -> None:
+        parameter_count = len(inspect.signature(self._tree.launch).parameters)
+        if parameter_count == 4:
+            self._tree.launch(argv, cwd, stdout, stderr)
+        else:
+            self._tree.launch(argv, cwd, environment, stdin, stdout, stderr)
+
+    def direct_child_exited(self) -> bool:
+        return self._tree.direct_child_exited()
+
+    def returncode(self) -> int | None:
+        return self._tree.returncode()
+
+    def terminate_owned(self) -> bool:
+        return self._tree.terminate_owned()
+
+    def owned_members_remain(self) -> bool | None:
+        return self._tree.owned_members_remain()
+
+    def close(self) -> None:
+        self._tree.close()
+
+
+def _run_owned_process(argv: tuple[str, ...], cwd: Path, timeout_seconds: int) -> _OwnedRun:
+    """Use the shared tree owner while preserving generic-run observation seams."""
+
+    def factory(_cleanup_seconds: float) -> _RunTreeAdapter:
+        tree = _WindowsOwnedTree() if os.name == "nt" else _PosixOwnedTree()
+        return _RunTreeAdapter(tree)
+
+    try:
+        return _owned_process.run_owned_process(
+            argv,
+            cwd=cwd,
+            environment=dict(os.environ),
+            stdin=b"",
+            timeout_seconds=timeout_seconds,
+            stdout_limit=_OUTPUT_CAPTURE_LIMIT_BYTES,
+            stderr_limit=_OUTPUT_CAPTURE_LIMIT_BYTES,
+            cleanup_seconds=_TREE_CLEANUP_SECONDS,
+            poll_seconds=_POLL_SECONDS,
+            tree_factory=factory,
+            poll_callback=_poll_pause,
+            confirm_empty=_confirm_owned_tree_empty,
+            wait_for_end=lambda tree, out_path, err_path, deadline, *_unused: (
+                _await_child_end(tree, out_path, err_path, deadline)
+            ),
+        )
+    except _owned_process.OwnedProcessAbort as aborted:
+        raise aborted.cause.with_traceback(aborted.cause.__traceback__) from None
 
 
 @dataclass(frozen=True)
@@ -783,12 +946,38 @@ def capture_run(
     determinism = str(manifest.get("determinism_declared", DeterminismDeclaration.UNKNOWN.value)).upper()
     seed_declared = manifest.get("seed")
     seed_str = None if seed_declared is None else str(seed_declared)
+    try:
+        timeout_seconds = int(
+            manifest.get("timeout_seconds", _DEFAULT_TIMEOUT_SECONDS)
+        )
+    except (TypeError, ValueError) as exc:
+        raise RunError("timeout_seconds must be a positive integer") from exc
+    if timeout_seconds <= 0:
+        raise RunError("timeout_seconds must be a positive integer")
 
     started_at = _now_utc()
     start_perf = time.perf_counter()
+    process_observation: dict[str, Any]
 
     if missing_inputs:
         # Fail closed: do not execute the command against an incomplete input set.
+        try:
+            planned = prepare_parent_process_observation(
+                argv=command_tuple,
+                declared_cwd=str(cwd_rel),
+                resolved_cwd=cwd,
+                timeout_seconds=timeout_seconds,
+                shell=False,
+                capture_output=True,
+            )
+        except ValueError as exc:
+            raise RunError(
+                "cwd must be a portable relative path for process observation"
+            ) from exc
+        process_observation = _checked_parent_process_observation(
+            observe_missing_input_no_launch(planned),
+            planned,
+        )
         ended_at = _now_utc()
         execution = ExecutionRecord(
             command=command_tuple,
@@ -812,96 +1001,132 @@ def capture_run(
             for o in declared_outputs
         )
     else:
-        try:
-            protected_paths = _find_protected_substrate_paths()
-            substrate_mtimes: dict[Path, int] = {}
-            for prot in protected_paths:
-                if prot.is_dir():
-                    for p in prot.rglob("*.py"):
-                        try:
-                            substrate_mtimes[p] = p.stat().st_mtime_ns
-                        except OSError:
-                            pass
-                elif prot.is_file():
+        # Establish substrate state before the launch binding. If this setup
+        # cannot be read, fail rather than claiming that a process was attempted.
+        protected_paths = _find_protected_substrate_paths()
+        substrate_mtimes: dict[Path, int] = {}
+        for prot in protected_paths:
+            if prot.is_dir():
+                for p in prot.rglob("*.py"):
                     try:
-                        substrate_mtimes[prot] = prot.stat().st_mtime_ns
+                        substrate_mtimes[p] = p.stat().st_mtime_ns
                     except OSError:
                         pass
-
-            proc = subprocess.run(
-                list(command_tuple),
-                cwd=str(cwd),
-                capture_output=True,
-                timeout=int(manifest.get("timeout_seconds", _DEFAULT_TIMEOUT_SECONDS)),
-                shell=False,
-            )
-            elapsed_ms = (time.perf_counter() - start_perf) * 1000.0
-            ended_at = _now_utc()
-
-            for p, original_mtime in substrate_mtimes.items():
+            elif prot.is_file():
                 try:
-                    if p.stat().st_mtime_ns != original_mtime:
-                        raise RunError(
-                            f"Substrate breach: verifier-standard file '{p.name}' was modified during execution"
-                        )
-                except OSError as exc:
-                    raise RunError(
-                        f"Substrate breach: verifier-standard file '{p.name}' was altered during execution"
-                    ) from exc
+                    substrate_mtimes[prot] = prot.stat().st_mtime_ns
+                except OSError:
+                    pass
 
-            stdout_bytes, stderr_bytes = proc.stdout or b"", proc.stderr or b""
-            output_refs = tuple(
-                _hash_artifact(manifest_dir, str(o["path"]), str(o.get("role", "output")))
-                for o in declared_outputs
+        try:
+            launch = begin_parent_process_observation(
+                argv=command_tuple,
+                declared_cwd=str(cwd_rel),
+                resolved_cwd=cwd,
+                timeout_seconds=timeout_seconds,
+                shell=False,
+                capture_output=True,
             )
-            missing_outputs = [o for o in output_refs if not o.present]
-            if proc.returncode != 0:
-                outcome = RunOutcome.NONZERO_EXIT
-            elif missing_outputs:
-                outcome = RunOutcome.MISSING_OUTPUT
+        except ValueError as exc:
+            raise RunError(
+                "cwd must be a portable relative path for process observation"
+            ) from exc
+
+        try:
+            owned = _run_owned_process(command_tuple, cwd, timeout_seconds)
+            # Every owned ending that does not attest a clean exit is one typed non-PASS.
+            # An exit status is attested only when the owned tree is confirmed empty.
+            if (
+                owned.status in {"TIMEOUT", "OUTPUT_CAP"}
+                or owned.cleanup != _CLEANUP_CONFIRMED
+                or owned.returncode is None
+            ):
+                raise _UncertainOwnedRun(owned)
+        except _UncertainOwnedRun as uncertain:
+            # Typed non-PASS: no clean exit is attested. The primary ending names the
+            # outcome; owned-tree cleanup travels in its own observed field.
+            owned_run = uncertain.owned
+            stdout_snippet = owned_run.stdout.decode("utf-8", errors="replace")[:_SNIPPET_LIMIT]
+            stderr_snippet = owned_run.stderr.decode("utf-8", errors="replace")[:_SNIPPET_LIMIT]
+            if owned_run.status == "TIMEOUT":
+                outcome = RunOutcome.TIMEOUT
+                process_observation = observe_timeout(
+                    launch,
+                    subprocess.TimeoutExpired(
+                        list(command_tuple),
+                        timeout_seconds,
+                        output=owned_run.stdout,
+                        stderr=owned_run.stderr,
+                    ),
+                    owned_tree_cleanup=owned_run.cleanup,
+                )
+                # TIMEOUT keeps its historical receipt shape: no stream snippets.
+                stdout_snippet = ""
+                stderr_snippet = f"TIMEOUT after {timeout_seconds}s"
+            elif owned_run.status == "OUTPUT_CAP":
+                outcome = RunOutcome.OUTPUT_CAP_EXCEEDED
+                process_observation = observe_output_cap_exceeded(
+                    launch,
+                    stdout=owned_run.stdout,
+                    stderr=owned_run.stderr,
+                    owned_tree_cleanup=owned_run.cleanup,
+                )
+                stderr_snippet = (
+                    stderr_snippet
+                    + f"\nOUTPUT_CAP_EXCEEDED: a stream reached {_OUTPUT_CAPTURE_LIMIT_BYTES} bytes"
+                )[-_SNIPPET_LIMIT:]
+            elif owned_run.cleanup != _CLEANUP_CONFIRMED:
+                outcome = RunOutcome.CLEANUP_NOT_ESTABLISHED
+                process_observation = observe_cleanup_not_established(
+                    launch,
+                    stdout=owned_run.stdout,
+                    stderr=owned_run.stderr,
+                    owned_tree_cleanup=owned_run.cleanup,
+                )
+                stderr_snippet = (
+                    stderr_snippet + f"\nCLEANUP_NOT_ESTABLISHED: owned tree {owned_run.cleanup}"
+                )[-_SNIPPET_LIMIT:]
             else:
-                outcome = RunOutcome.COMPLETED
-            execution = ExecutionRecord(
-                command=command_tuple,
-                cwd=str(cwd_rel),
-                started_at_utc=started_at,
-                ended_at_utc=ended_at,
-                elapsed_ms=elapsed_ms,
-                exit_code=proc.returncode,
-                outcome=outcome.value,
-                python_version=_platform.python_version(),
-                platform_system=_platform.system(),
-                determinism_declared=determinism,
-                seed_declared=seed_str,
-                stdout_sha256=_sha256_bytes(stdout_bytes),
-                stderr_sha256=_sha256_bytes(stderr_bytes),
-                stdout_snippet=stdout_bytes.decode("utf-8", errors="replace")[:_SNIPPET_LIMIT],
-                stderr_snippet=stderr_bytes.decode("utf-8", errors="replace")[:_SNIPPET_LIMIT],
+                outcome = RunOutcome.EXIT_STATUS_UNKNOWN
+                process_observation = observe_exit_status_unknown(
+                    launch,
+                    stdout=owned_run.stdout,
+                    stderr=owned_run.stderr,
+                    owned_tree_cleanup=owned_run.cleanup,
+                )
+                stderr_snippet = (
+                    stderr_snippet + "\nEXIT_STATUS_UNKNOWN: no return code observed"
+                )[-_SNIPPET_LIMIT:]
+            process_observation = _checked_parent_process_observation(
+                process_observation,
+                launch,
             )
-        except subprocess.TimeoutExpired as exc:
-            elapsed_ms = (time.perf_counter() - start_perf) * 1000.0
             execution = ExecutionRecord(
                 command=command_tuple,
                 cwd=str(cwd_rel),
                 started_at_utc=started_at,
                 ended_at_utc=_now_utc(),
-                elapsed_ms=elapsed_ms,
+                elapsed_ms=(time.perf_counter() - start_perf) * 1000.0,
                 exit_code=None,
-                outcome=RunOutcome.TIMEOUT.value,
+                outcome=outcome.value,
                 python_version=_platform.python_version(),
                 platform_system=_platform.system(),
                 determinism_declared=determinism,
                 seed_declared=seed_str,
-                stdout_sha256=_sha256_bytes(exc.stdout or b""),
-                stderr_sha256=_sha256_bytes(exc.stderr or b""),
-                stdout_snippet="",
-                stderr_snippet=f"TIMEOUT after {manifest.get('timeout_seconds', _DEFAULT_TIMEOUT_SECONDS)}s",
+                stdout_sha256=_sha256_bytes(owned_run.stdout),
+                stderr_sha256=_sha256_bytes(owned_run.stderr),
+                stdout_snippet=stdout_snippet,
+                stderr_snippet=stderr_snippet,
             )
             output_refs = tuple(
                 ArtifactRef(path=str(o["path"]), role=str(o.get("role", "output")), present=False)
                 for o in declared_outputs
             )
-        except Exception as exc:  # noqa: BLE001 - deliberately broad: any failure must still receipt
+        except (FileNotFoundError, PermissionError) as exc:
+            process_observation = _checked_parent_process_observation(
+                observe_launch_error(launch, exc),
+                launch,
+            )
             execution = ExecutionRecord(
                 command=command_tuple,
                 cwd=str(cwd_rel),
@@ -923,6 +1148,133 @@ def capture_run(
                 ArtifactRef(path=str(o["path"]), role=str(o.get("role", "output")), present=False)
                 for o in declared_outputs
             )
+        except Exception as exc:  # noqa: BLE001 - process creation is not established
+            process_observation = _checked_parent_process_observation(
+                observe_indeterminate_execution_error(launch, exc),
+                launch,
+            )
+            execution = ExecutionRecord(
+                command=command_tuple,
+                cwd=str(cwd_rel),
+                started_at_utc=started_at,
+                ended_at_utc=_now_utc(),
+                elapsed_ms=(time.perf_counter() - start_perf) * 1000.0,
+                exit_code=None,
+                outcome=RunOutcome.EXCEPTION.value,
+                python_version=_platform.python_version(),
+                platform_system=_platform.system(),
+                determinism_declared=determinism,
+                seed_declared=seed_str,
+                stdout_sha256=_sha256_bytes(b""),
+                stderr_sha256=_sha256_bytes(b""),
+                stdout_snippet="",
+                stderr_snippet=f"EXCEPTION: {type(exc).__name__}: {exc}",
+            )
+            output_refs = tuple(
+                ArtifactRef(path=str(o["path"]), role=str(o.get("role", "output")), present=False)
+                for o in declared_outputs
+            )
+        else:
+            # Reached only for a child that exited on its own with confirmed-empty owned
+            # cleanup and an observed return code; every other ending was typed above.
+            elapsed_ms = (time.perf_counter() - start_perf) * 1000.0
+            ended_at = _now_utc()
+            stdout_bytes, stderr_bytes = owned.stdout, owned.stderr
+            process_observation = _checked_parent_process_observation(
+                observe_completed_process(
+                    launch,
+                    returncode=owned.returncode,
+                    stdout=stdout_bytes,
+                    stderr=stderr_bytes,
+                    owned_tree_cleanup=owned.cleanup,
+                ),
+                launch,
+            )
+            try:
+                for p, original_mtime in substrate_mtimes.items():
+                    try:
+                        if p.stat().st_mtime_ns != original_mtime:
+                            raise RunError(
+                                f"Substrate breach: verifier-standard file '{p.name}' was modified during execution"
+                            )
+                    except OSError as exc:
+                        raise RunError(
+                            f"Substrate breach: verifier-standard file '{p.name}' was altered during execution"
+                        ) from exc
+
+                output_refs = tuple(
+                    _hash_artifact(
+                        manifest_dir,
+                        str(o["path"]),
+                        str(o.get("role", "output")),
+                    )
+                    for o in declared_outputs
+                )
+                missing_outputs = [o for o in output_refs if not o.present]
+            except Exception as exc:  # noqa: BLE001 - preserve the completed child
+                process_observation = _checked_parent_process_observation(
+                    observe_post_processing_error(
+                        launch,
+                        returncode=owned.returncode,
+                        stdout=stdout_bytes,
+                        stderr=stderr_bytes,
+                        error=exc,
+                        owned_tree_cleanup=owned.cleanup,
+                    ),
+                    launch,
+                )
+                execution = ExecutionRecord(
+                    command=command_tuple,
+                    cwd=str(cwd_rel),
+                    started_at_utc=started_at,
+                    ended_at_utc=ended_at,
+                    elapsed_ms=elapsed_ms,
+                    exit_code=owned.returncode,
+                    outcome=RunOutcome.EXCEPTION.value,
+                    python_version=_platform.python_version(),
+                    platform_system=_platform.system(),
+                    determinism_declared=determinism,
+                    seed_declared=seed_str,
+                    stdout_sha256=_sha256_bytes(stdout_bytes),
+                    stderr_sha256=_sha256_bytes(stderr_bytes),
+                    stdout_snippet=stdout_bytes.decode("utf-8", errors="replace")[:_SNIPPET_LIMIT],
+                    stderr_snippet=(
+                        stderr_bytes.decode("utf-8", errors="replace")[:_SNIPPET_LIMIT]
+                        + f"\nPOST_PROCESSING_EXCEPTION: {type(exc).__name__}: {exc}"
+                    )[-_SNIPPET_LIMIT:],
+                )
+                output_refs = tuple(
+                    ArtifactRef(
+                        path=str(o["path"]),
+                        role=str(o.get("role", "output")),
+                        present=False,
+                    )
+                    for o in declared_outputs
+                )
+            else:
+                if owned.returncode != 0:
+                    outcome = RunOutcome.NONZERO_EXIT
+                elif missing_outputs:
+                    outcome = RunOutcome.MISSING_OUTPUT
+                else:
+                    outcome = RunOutcome.COMPLETED
+                execution = ExecutionRecord(
+                    command=command_tuple,
+                    cwd=str(cwd_rel),
+                    started_at_utc=started_at,
+                    ended_at_utc=ended_at,
+                    elapsed_ms=elapsed_ms,
+                    exit_code=owned.returncode,
+                    outcome=outcome.value,
+                    python_version=_platform.python_version(),
+                    platform_system=_platform.system(),
+                    determinism_declared=determinism,
+                    seed_declared=seed_str,
+                    stdout_sha256=_sha256_bytes(stdout_bytes),
+                    stderr_sha256=_sha256_bytes(stderr_bytes),
+                    stdout_snippet=stdout_bytes.decode("utf-8", errors="replace")[:_SNIPPET_LIMIT],
+                    stderr_snippet=stderr_bytes.decode("utf-8", errors="replace")[:_SNIPPET_LIMIT],
+                )
 
     execution_completed = execution.outcome == RunOutcome.COMPLETED.value
     output_digests_recorded = bool(output_refs) and all(o.present for o in output_refs)
@@ -1013,6 +1365,7 @@ def capture_run(
                 claim_block.get("falsification_condition", "")
             ),
             runtime=source_state.runtime,
+            parent_process_observation=process_observation,
         ),
     )
     receipt.compute_and_set_digest()

@@ -1,4 +1,8 @@
-"""Model reproducibility specification (MODEL): inference, metrics and finite probes."""
+"""Model reproducibility specification (MODEL): inference, metrics and finite probes.
+
+Numerical replay uses ordered Python binary64; selected metric thresholds retain
+their exact parsed numeric values rather than rounding away bound violations.
+"""
 from __future__ import annotations
 
 from .common import Budget, Refuted, Unavailable, close, digest, expression, need, number, obj, same, seq, unique
@@ -6,6 +10,8 @@ from .numerical import forward, network, vector
 
 
 def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
+    if type(check) is not str or check not in ("artifacts", "tensors", "inference", "evaluation", "challenges"):
+        raise Unavailable("unsupported model check")
     architecture = obj(need(inputs, "architecture"))
     weights = seq(need(inputs, "weights"), budget)
     same(digest(architecture), need(artifact, "architecture_digest"), "architecture differs")
@@ -56,7 +62,9 @@ def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
             measured = {"mean_squared_error": squared, "mean_absolute_error": absolute, "accuracy": correct}[metric]/count
             close(measured, need(inputs, "metric_value"), tolerance, "reported metric differs")
             bounds = obj(need(artifact, "metric_bounds"), {"minimum", "maximum"})
-            if not number(bounds["minimum"]) <= measured <= number(bounds["maximum"]):
+            number(bounds["minimum"])
+            number(bounds["maximum"])
+            if not bounds["minimum"] <= measured <= bounds["maximum"]:
                 raise Refuted("recomputed metric outside contract")
             result["metric_value"] = measured
         return result

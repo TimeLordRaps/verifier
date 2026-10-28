@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vstd-language-runners"
+version = "0.1.0"
+description = "Explicit native language process adapters for Verifier Standard"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.entry-points."verifier.language_runners"]
+javascript = "vstd_languages:command"
+c = "vstd_languages:command"
+cpp = "vstd_languages:command"
+java = "vstd_languages:command"
+rust = "vstd_languages:command"
+perl = "vstd_languages:command"
+sql = "vstd_languages:command"
+fortran = "vstd_languages:command"
+php = "vstd_languages:command"
+lisp = "vstd_languages:command"
+prolog = "vstd_languages:command"
+csharp = "vstd_languages:command"
+go = "vstd_languages:command"
+r = "vstd_languages:command"
+swift = "vstd_languages:command"
+julia = "vstd_languages:command"
+cobol = "vstd_languages:command"
+object-pascal = "vstd_languages:command"
+ada = "vstd_languages:command"
+objective-c = "vstd_languages:command"
+assembly = "vstd_languages:command"
+visual-basic = "vstd_languages:command"
+scratch = "vstd_languages:command"
+matlab = "vstd_languages:command"
+sas = "vstd_languages:command"
+

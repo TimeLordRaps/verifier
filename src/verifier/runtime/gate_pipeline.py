@@ -1,7 +1,8 @@
 """Local Verifier Standard (VSTD) command-line interface (CLI) automation.
 
 JavaScript Object Notation (JSON) receipts bind selected bytes with Secure Hash
-Algorithm 256-bit (SHA-256); signal kill (SIGKILL). They establish no numbered-profile conformance,
+Algorithm 256-bit (SHA-256); signal kill (SIGKILL). They establish no numbered-profile
+conformance,
 authenticity, sandboxing, complete dependency closure, or domain correctness.
 Deadlines use seconds; output limits use bytes. Commands are explicit authority.
 """
@@ -227,8 +228,15 @@ def _windows_job(process: subprocess.Popen[bytes]) -> Callable[[], None]:
     return stop
 
 
-def _command(argv: list[str], root: Path, deadline: float, maximum: int,
-             progress: Callable[[str], None]) -> dict[str, Any]:
+def _command(
+    argv: list[str],
+    root: Path,
+    deadline: float,
+    maximum: int,
+    progress: Callable[[str], None],
+    *,
+    env: dict[str, str] | None = None,
+) -> dict[str, Any]:
     buffers = [bytearray(), bytearray()]
     lock = threading.Lock()
     exceeded = threading.Event()
@@ -256,22 +264,36 @@ def _command(argv: list[str], root: Path, deadline: float, maximum: int,
             read_failed.set()
         finally:
             stream.close()
+
     try:
-        process = subprocess.Popen(argv, cwd=root, shell=False, stdin=subprocess.DEVNULL,
-                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                   start_new_session=os.name != "nt",
-                                   creationflags=0x00000004 | 0x08000000 if os.name == "nt" else 0)
+        process = subprocess.Popen(
+            argv,
+            cwd=root,
+            shell=False,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=env,
+            start_new_session=os.name != "nt",
+            creationflags=0x00000004 | 0x08000000 if os.name == "nt" else 0,
+        )
         if os.name == "nt":
             stop = _windows_job(process)
         else:
+
             def stop_group() -> None:
                 try:
                     os.killpg(process.pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
+
             stop = stop_group
-        for stream, target, channel in zip((process.stdout, process.stderr), buffers, ("stdout", "stderr")):
-            reader = threading.Thread(target=read, args=(stream, target, channel), daemon=True)
+        for stream, target, channel in zip(
+            (process.stdout, process.stderr), buffers, ("stdout", "stderr")
+        ):
+            reader = threading.Thread(
+                target=read, args=(stream, target, channel), daemon=True
+            )
             reader.start()
             readers.append(reader)
         next_update = time.monotonic() + 5
@@ -301,15 +323,28 @@ def _command(argv: list[str], root: Path, deadline: float, maximum: int,
                 code = process.wait(timeout=5)
                 for reader in readers:
                     reader.join(timeout=2)
-                cleanup = ("OWNED_TREE_TERMINATED" if os.name == "nt" else "OWNED_GROUP_SIGNALLED") if not any(reader.is_alive() for reader in readers) else "UNKNOWN"
+                cleanup = (
+                    (
+                        "OWNED_TREE_TERMINATED"
+                        if os.name == "nt"
+                        else "OWNED_GROUP_SIGNALLED"
+                    )
+                    if not any(reader.is_alive() for reader in readers)
+                    else "UNKNOWN"
+                )
             except (OSError, subprocess.TimeoutExpired):
                 cleanup = "UNKNOWN"
     if exceeded.is_set():
         status = "OUTPUT_LIMIT"
     if cleanup == "UNKNOWN" or read_failed.is_set():
         status = "ERROR"
-    return {"status": status, "exit_code": code, "stdout": buffers[0].decode("utf-8", "replace"),
-            "stderr": buffers[1].decode("utf-8", "replace"), "cleanup": cleanup}
+    return {
+        "status": status,
+        "exit_code": code,
+        "stdout": buffers[0].decode("utf-8", "replace"),
+        "stderr": buffers[1].decode("utf-8", "replace"),
+        "cleanup": cleanup,
+    }
 
 
 def _verdict(step: dict[str, Any], result: dict[str, Any]) -> str:
@@ -364,6 +399,11 @@ def run_pipeline(manifest_path: str | Path, output: str | Path, *,
         raise ValueError("receipt destination must be new with existing parent")
     if destination.parent.resolve() != destination.parent:
         raise ValueError("linked receipt parent unsupported")
+    # Relating the manifest to the receipt directory can fail across drives or mounts; refuse before any step runs.
+    try:
+        manifest_relative = os.path.relpath(path, destination.parent).replace("\\", "/")
+    except ValueError as error:
+        raise ValueError("manifest and receipt destination must be on the same drive or mount") from error
     initial = _inventory(root, value["inputs"], destination)
     executables = _executables(value, root)
     manifest_digest = _digest(_read(path))
@@ -398,7 +438,7 @@ def run_pipeline(manifest_path: str | Path, output: str | Path, *,
             final, unchanged = [], False
         receipt = {"schema_version": RECEIPT, "claim_boundary": BOUNDARY,
                    "manifest": value, "manifest_digest": manifest_digest,
-                   "manifest_path": os.path.relpath(path, destination.parent).replace("\\", "/"),
+                   "manifest_path": manifest_relative,
                    "mechanism_digest": mechanism_digest, "python": sys.version, "platform": sys.platform,
                    "inputs": initial, "final_inputs": final, "executables": executables,
                    "inputs_unchanged": unchanged, "steps": results,

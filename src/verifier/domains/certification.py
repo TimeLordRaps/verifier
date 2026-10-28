@@ -7,7 +7,7 @@ or Graph numbered-profile verdict. Portable results are recomputed, not trusted.
 from __future__ import annotations
 
 import hashlib
-from importlib import import_module, metadata, resources
+from importlib import metadata, resources
 import re
 import sys
 from typing import Any, Sequence
@@ -16,6 +16,26 @@ from verifier.core.certificate import canonical_bytes
 from verifier.core.evidence import (BoundProposition, EvidenceBounds, EvidenceStore,
     MechanismDecision, MechanismOutcome, VerificationSession)
 from verifier.core.receipt import strict_json_loads
+from . import (
+    actor as _actor,
+    agent as _agent,
+    bench as _bench,
+    bot as _bot,
+    collective as _collective,
+    data as _data,
+    env as _env,
+    hardware as _hardware,
+    harness as _harness,
+    human as _human,
+    identity as _identity,
+    model as _model,
+    owner as _owner,
+    role as _role,
+    sim as _sim,
+    token as _token,
+    train as _train,
+    verifier as _verifier,
+)
 from .catalog import ALL_CHECKS, ALL_SCOPES, CHECKS, COORDINATES, SCOPES, domain_specification_digest
 from .common import Budget, Refuted, Unavailable, digest, inspect_structure, integer, need, number, obj, same, text
 
@@ -52,12 +72,35 @@ _INPUT_FIELDS = {
     "BOT": "agent_certificate sim_certificate agent_environment_certificate sim_environment_certificate",
     "TOKEN": "tokens epochs statuses",
     "ACTOR": "control_keys delegation_events witness_attributions decisions",
-    "OWNER": "events held_verdict holdings_chain answering_duties accountability_witnesses",
+    "OWNER": "events held_verdict holdings_chain answering_duties",
     "HUMAN": "evidence_records events",
     "IDENTITY": "bearer_certificate role_certificate occupancy_evidence events",
     "ROLE": "occupancy_events",
     "COLLECTIVE": "role_graph role_decisions collective_decisions",
     "VERIFIER": "toolchain soundness_claims runs measurements bootstrap_receipt self_attestation resource_execution",
+}
+
+# Domain selection is finite and installed. An explicit callable table keeps a
+# request value from becoming an unrestricted Python module import surface.
+_DOMAIN_EVALUATORS = {
+    "ACTOR": _actor.evaluate,
+    "AGENT": _agent.evaluate,
+    "BENCH": _bench.evaluate,
+    "BOT": _bot.evaluate,
+    "COLLECTIVE": _collective.evaluate,
+    "DATA": _data.evaluate,
+    "ENV": _env.evaluate,
+    "HARDWARE": _hardware.evaluate,
+    "HARNESS": _harness.evaluate,
+    "HUMAN": _human.evaluate,
+    "IDENTITY": _identity.evaluate,
+    "MODEL": _model.evaluate,
+    "OWNER": _owner.evaluate,
+    "ROLE": _role.evaluate,
+    "SIM": _sim.evaluate,
+    "TOKEN": _token.evaluate,
+    "TRAIN": _train.evaluate,
+    "VERIFIER": _verifier.evaluate,
 }
 
 
@@ -95,7 +138,7 @@ def _hash(value: Any) -> str:
 def implementation_digest() -> str:
     dependencies = {}
     for package, names in (("verifier.domains", ("__init__", "catalog", "common", "certification", "hardware", "data", "env", "bench", "numerical", "train", "model", "sim", "harness", "agent", "bot", "token", "actor", "owner", "human", "identity", "role", "collective", "verifier", "verifier_bootstrap", "verifier_execution")),
-                           ("verifier.core", ("certificate", "evidence", "receipt", "kernel", "grounding", "depth"))):
+                           ("verifier.core", ("certificate", "evidence", "receipt", "checker", "provenance", "kernel", "grounding", "depth", "signature_keys"))):
         for name in names:
             dependencies[package+"."+name] = hashlib.sha256(resources.files(package).joinpath(name+".py").read_bytes()).hexdigest()
     try:
@@ -218,12 +261,14 @@ class NativeDomainAdapter:
                         raise Refuted("negative numerical tolerance")
                     if tolerance > self.policy["max_tolerance"]:
                         raise Unavailable("requested numerical tolerance exceeds checker policy")
-            module = import_module("verifier.domains."+self.domain.lower())
-            kwargs = {"witness_keys": self.policy["witness_keys"]} if self.domain in ("SIM", "TOKEN", "VERIFIER") else {}
+            kwargs = {"witness_keys": self.policy["witness_keys"]} if self.domain in ("SIM", "TOKEN", "VERIFIER", "ACTOR") else {}
             if self.domain in ("AGENT", "BOT", "IDENTITY"):
                 kwargs = {"mechanism_digest": self.mechanism_digest, "policy": self.policy,
                           "nesting": self._nesting}
-            observed = module.evaluate(names[binding.predicate], artifact, bundle["inputs"], budget, **kwargs)
+            observed = _DOMAIN_EVALUATORS[self.domain](
+                names[binding.predicate], artifact, bundle["inputs"], budget,
+                **kwargs,
+            )
             observed["operations"] = budget.used - before
             return MechanismDecision(MechanismOutcome.PASS, "bound domain computation reproduced", observed)
         except Unavailable as exc:

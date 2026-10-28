@@ -13,7 +13,6 @@ be badly rated as a collection.
 from __future__ import annotations
 
 from dataclasses import replace
-import importlib
 
 import pytest
 
@@ -51,8 +50,6 @@ from verifier.data.models import (
     TransformationType,
 )
 from verifier.data.policy import ProvenancePolicyVerifier
-
-graph_module = importlib.import_module("verifier.data.graph_level")
 
 BUDGET = 10_000
 
@@ -388,7 +385,9 @@ def test_the_weakest_condition_decides_not_the_average():
 
 def test_encoding_divergence_raises_with_a_certificate_attached(monkeypatch):
     """The failure an encoding bug produces: the two opinions come apart."""
-    monkeypatch.setattr(graph_module, "holds_at", lambda items, level: False)
+    monkeypatch.setitem(
+        certify_graph_cnf.__globals__, "holds_at", lambda items, level: False
+    )
 
     items = obligations(_graph(), _collection())
     with pytest.raises(GraphEncodingError) as excinfo:
@@ -416,7 +415,9 @@ def test_solver_divergence_is_caught_before_the_direct_check(monkeypatch):
         def solve(self):
             return False, {}
 
-    monkeypatch.setattr(graph_module, "MinimalIndependentDPLL", ContrarySolver)
+    monkeypatch.setitem(
+        certify_graph_cnf.__globals__, "MinimalIndependentDPLL", ContrarySolver
+    )
 
     items = obligations(_graph(), _collection())
     with pytest.raises(GraphEncodingError, match="separately implemented solver said False"):

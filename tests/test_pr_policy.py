@@ -8,12 +8,12 @@ Tests for exact-head pull-request policy evidence.
 
 from __future__ import annotations
 
-import importlib.util
-from functools import lru_cache
 from pathlib import Path
 
 import pytest
 import yaml
+
+from scripts import check_pr_policy
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,13 +25,9 @@ RUN_ID = "123"
 ACCEPTANCE_URL = "https://github.com/TimeLordRaps/verifier/pull/34#issuecomment-1"
 
 
-@lru_cache(maxsize=1)
 def _module():
-    spec = importlib.util.spec_from_file_location("check_pr_policy", SCRIPT)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    assert Path(check_pr_policy.__file__).resolve() == SCRIPT
+    return check_pr_policy
 
 
 def _manifest(*, skipped: int = 1) -> dict[str, object]:

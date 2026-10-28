@@ -183,3 +183,59 @@ def test_child_envelope_is_checked_after_rehashing(specimens: dict, field: str) 
     bundle["artifact"]["harness_certificate_digest"] = digest(child)
     result = build_domain_certificate(domain_request(bundle), bundle, policy=policy())["result"]
     assert result["status"] == "FAIL", result
+
+
+BINDINGS = [("AGENT", "harness"), ("BOT", "agent"), ("BOT", "sim"),
+            ("BOT", "agent_environment"), ("BOT", "sim_environment")]
+
+
+def rebind(bundle: dict, key: str, certificate: dict) -> dict:
+    """Retain `certificate` in the binding slot `key` and name it in the artifact by digest."""
+    bundle = deepcopy(bundle)
+    bundle["inputs"][key + "_certificate"] = certificate
+    bundle["artifact"][key + "_certificate_digest"] = digest(certificate)
+    return bundle
+
+
+@pytest.mark.parametrize("domain,key", BINDINGS)
+def test_a_bound_certificate_from_another_mechanism_is_unknown(specimens: dict, domain: str, key: str) -> None:
+    """A child sealed under another mechanism digest is unsupported, never replayed as this checker's."""
+    bound = deepcopy(specimens[domain]["inputs"][key + "_certificate"])
+    bound["mechanism_digest"] = "sha256:" + "1" * 64
+    resign(bound)
+    bundle = rebind(specimens[domain], key, bound)
+    result = build_domain_certificate(domain_request(bundle), bundle, policy=policy())["result"]
+    evaluation = result["checks"][domain + "-1.1"]["evaluation"]
+    assert evaluation["outcome"] == "UNKNOWN", evaluation
+    assert "different mechanism" in evaluation["details"]
+    assert result["status"] == "UNKNOWN"
+    assert result["domain_depth"] == 0
+
+
+def test_a_binding_slot_refuses_another_domain_before_replaying_it(specimens: dict,
+                                                                  monkeypatch: pytest.MonkeyPatch) -> None:
+    """A BOT retained in the agent slot is refused by its domain and never replayed, so binding cannot recurse."""
+    from verifier.domains import certification
+
+    replayed: list[str] = []
+    original = certification._build_domain_certificate
+
+    def counting(request: dict, evidence: dict, *, policy: dict, budget: object = None, nesting: int = 0) -> dict:
+        if nesting:
+            replayed.append(request["domain"])
+        return original(request, evidence, policy=policy, budget=budget, nesting=nesting)
+
+    monkeypatch.setattr(certification, "_build_domain_certificate", counting)
+    admitted = policy()
+    bot = specimens["BOT"]
+    loop = build_domain_certificate(domain_request(bot), bot, policy=admitted)
+    assert loop["result"]["status"] == "PASS"
+    assert replayed, "an honest BOT replays its bound parts"
+    replayed.clear()
+    bundle = rebind(bot, "agent", loop)
+    result = build_domain_certificate(domain_request(bundle), bundle, policy=admitted)["result"]
+    evaluation = result["checks"]["BOT-1.1"]["evaluation"]
+    assert evaluation["outcome"] == "FAIL", evaluation
+    assert "different domain" in evaluation["details"]
+    assert result["status"] == "FAIL"
+    assert replayed == []

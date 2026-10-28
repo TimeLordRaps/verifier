@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-prdel-v2-shard-manifest-1.schema.json",
+  "title": "Private PRDEL v2 shard manifest",
+  "description": "Transport-only development contract. Integrity and exact replay do not promote an UNKNOWN graph or establish correctness, completeness, safety, or release clearance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_header",
+    "logical_document_sha256",
+    "logical_document_bytes",
+    "logical_obligation_ids",
+    "selected_source_ids",
+    "analysis_limits",
+    "shards",
+    "max_artifact_bytes",
+    "max_packet_bytes",
+    "aggregate_packet_bytes",
+    "scope",
+    "gate_status"
+  ],
+  "properties": {
+    "schema_version": {"const": "verifier-prdel-v2-shard-manifest-1"},
+    "document_header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "binding", "requirements", "impact_graph", "evidence"],
+      "properties": {
+        "schema_version": {"const": "verifier-prdel-2"},
+        "binding": {"$ref": "#/$defs/binding"},
+        "requirements": {"type": "object"},
+        "impact_graph": {
+          "type": "object",
+          "required": ["schema_version", "status", "bounds", "binding"],
+          "properties": {
+            "schema_version": {"const": "verifier-prdel-impact-2"},
+            "status": {"enum": ["BOUNDED_ANALYSIS_COMPLETE", "UNKNOWN"]},
+            "bounds": {"$ref": "#/$defs/analysisLimits"},
+            "binding": {"$ref": "#/$defs/binding"}
+          }
+        },
+        "evidence": {"type": "array", "maxItems": 40000}
+      }
+    },
+    "logical_document_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "logical_document_bytes": {"type": "integer", "minimum": 1, "maximum": 67108864},
+    "logical_obligation_ids": {"type": "array", "minItems": 1, "maxItems": 40000, "uniqueItems": true, "items": {"type": "string"}},
+    "selected_source_ids": {"type": "array", "minItems": 1, "maxItems": 40000, "uniqueItems": true, "items": {"type": "string"}},
+    "analysis_limits": {"$ref": "#/$defs/analysisLimits"},
+    "shards": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["index", "start", "count", "sha256", "bytes", "obligation_ids"],
+        "properties": {
+          "index": {"type": "integer", "minimum": 0},
+          "start": {"type": "integer", "minimum": 0},
+          "count": {"type": "integer", "minimum": 1, "maximum": 40000},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "bytes": {"type": "integer", "minimum": 1, "maximum": 33554432},
+          "obligation_ids": {"type": "array", "minItems": 1, "maxItems": 40000, "uniqueItems": true, "items": {"type": "string"}}
+        }
+      }
+    },
+    "max_artifact_bytes": {"type": "integer", "minimum": 1, "maximum": 33554432},
+    "max_packet_bytes": {"type": "integer", "minimum": 1, "maximum": 67108864},
+    "aggregate_packet_bytes": {"type": "integer", "minimum": 1, "maximum": 67108864},
+    "scope": {"const": "V2_MANUAL_TEMPLATE_TRANSPORT_ONLY"},
+    "gate_status": {"const": "NOT_ASSESSED"}
+  },
+  "$defs": {
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base", "head", "source_digest", "requirements_digest"],
+      "properties": {
+        "base": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+        "head": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+        "source_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "requirements_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "analysisLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_nodes", "max_edges", "max_operations", "max_output_bytes"],
+      "properties": {
+        "max_nodes": {"type": "integer", "minimum": 1, "maximum": 40000},
+        "max_edges": {"type": "integer", "minimum": 1, "maximum": 200000},
+        "max_operations": {"type": "integer", "minimum": 1, "maximum": 20000000},
+        "max_output_bytes": {"type": "integer", "minimum": 1, "maximum": 33554432}
+      }
+    }
+  }
+}

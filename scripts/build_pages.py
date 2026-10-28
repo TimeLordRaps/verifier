@@ -9,13 +9,18 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.util
 import json
 from pathlib import Path
 import re
 import shutil
-import sys
 import tempfile
+
+try:
+    from scripts import build_component_index as component_index_builder
+    from scripts import build_docs as documentation_builder
+except ImportError:  # Direct ``python scripts/...`` execution.
+    import build_component_index as component_index_builder
+    import build_docs as documentation_builder
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,7 +31,9 @@ CANONICAL_BASE_URL = "https://timelordraps.github.io/verifier/"
 DEPLOYMENT_MANIFEST_PATH = "deployment-manifest.json"
 DEPLOYMENT_MANIFEST_SCHEMA = "verifier-pages-deployment-manifest-1"
 MAX_DEPLOYMENT_FILES = 4096
-MAX_DEPLOYMENT_FILE_BYTES = 8 * 1024 * 1024
+# A deployed file may be as large as the largest stored component package the loader admits
+# (MAX_PACKAGE_BYTES in verifier.interoperability.storage); tests bind the two together.
+MAX_DEPLOYMENT_FILE_BYTES = 32 * 1024 * 1024
 MAX_DEPLOYMENT_TOTAL_BYTES = 64 * 1024 * 1024
 MAX_DEPLOYMENT_PATH_BYTES = 512
 CRITICAL_DEPLOYMENT_PATHS = (
@@ -48,42 +55,24 @@ class PagesBuildError(RuntimeError):
 
 
 def _build_documentation(output: Path, *, source_ref: str) -> tuple[Path, ...]:
-    path = ROOT / "scripts/build_docs.py"
-    spec = importlib.util.spec_from_file_location("vstd_build_docs", path)
-    if spec is None or spec.loader is None:
-        raise PagesBuildError("cannot load scripts/build_docs.py")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
     try:
-        spec.loader.exec_module(module)
-        return module.build(output, source_ref=source_ref)
+        return documentation_builder.build(output, source_ref=source_ref)
     except Exception as exc:
         raise PagesBuildError(f"documentation rendering failed: {exc}") from exc
-    finally:
-        sys.modules.pop(spec.name, None)
 
 
 def _build_component_index(output: Path, *, source_ref: str) -> tuple[Path, ...]:
-    path = ROOT / "scripts/build_component_index.py"
-    spec = importlib.util.spec_from_file_location("vstd_build_component_index", path)
-    if spec is None or spec.loader is None:
-        raise PagesBuildError("cannot load scripts/build_component_index.py")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
     try:
-        spec.loader.exec_module(module)
         component_source_ref = (
             source_ref if re.fullmatch(r"[0-9a-fA-F]{40}", source_ref) else "WORKTREE"
         )
-        return module.build(
+        return component_index_builder.build(
             output,
             source_ref=component_source_ref,
             base_url=CANONICAL_BASE_URL,
         )
     except Exception as exc:
         raise PagesBuildError(f"component-index generation failed: {exc}") from exc
-    finally:
-        sys.modules.pop(spec.name, None)
 
 
 def _documentation_coordinate(source_ref: str) -> dict[str, str | int]:

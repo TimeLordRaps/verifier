@@ -463,7 +463,6 @@
               "inputs": {
                 "additionalProperties": false,
                 "properties": {
-                  "accountability_witnesses": {},
                   "answering_duties": {},
                   "events": {},
                   "held_verdict": {},

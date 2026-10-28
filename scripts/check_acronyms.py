@@ -6,6 +6,7 @@ Enforce newcomer-readable acronym expansion across Verifier Standard (VSTD) pros
 from __future__ import annotations
 
 import functools
+import os
 from pathlib import Path
 import re
 import sys
@@ -45,21 +46,32 @@ def public_reader_files() -> list[Path]:
     """Return standalone prose and source surfaces, excluding generated dependency data."""
 
     files: list[Path] = []
-    for path in ROOT.rglob("*"):
-        if not path.is_file() or any(
-            part in IGNORED_PARTS for part in path.relative_to(ROOT).parts
-        ):
-            continue
-        if path == GLOSSARY:
-            continue
-        if (
-            path.suffix.lower() in SOURCE_SUFFIXES | DOCUMENT_SUFFIXES
-            or _is_schema(path)
-            or _is_issue_form(path)
-            or path.name == ".zenodo.json"
-        ):
-            files.append(path)
+    for directory, subdirectories, names in os.walk(ROOT):
+        subdirectories[:] = [name for name in subdirectories if name not in IGNORED_PARTS]
+        for name in names:
+            path = Path(directory) / name
+            if name in IGNORED_PARTS or not path.is_file() or path == GLOSSARY:
+                continue
+            if (
+                path.suffix.lower() in SOURCE_SUFFIXES | DOCUMENT_SUFFIXES
+                or _is_schema(path)
+                or _is_issue_form(path)
+                or path.name == ".zenodo.json"
+            ):
+                files.append(path)
     return sorted(files)
+
+
+def _public_reader_text(path: Path) -> str:
+    """Return readable source while excluding generated binary-data literals."""
+    text = path.read_text(encoding="utf-8")
+    marker = "\n_PAYLOAD_B85 = (\n"
+    if path.suffix == ".py" and marker in text:
+        start = text.index(marker) + 1
+        end = text.find("\n)\n", start)
+        if end >= 0:
+            text = text[:start] + "_PAYLOAD_B85 = <generated-data>\n" + text[end + 3:]
+    return text
 
 
 @functools.lru_cache(maxsize=None)
@@ -105,7 +117,7 @@ def validate_repo() -> list[str]:
     expansions = load_expansions()
     errors: list[str] = []
     for path in public_reader_files():
-        text = path.read_text(encoding="utf-8")
+        text = _public_reader_text(path)
         for term in sorted(_required_terms(text, expansions)):
             definition = f"{expansions[term]} ({term})"
             definition_match = _definition_pattern(expansions[term], term).search(text)

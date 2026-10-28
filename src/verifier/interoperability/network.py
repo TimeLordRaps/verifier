@@ -17,6 +17,8 @@ paths; dispensable artifacts may participate when derived from admitted ground.
 
 from __future__ import annotations
 
+from verifier.core.signature_keys import admit_ed25519_public_key
+
 import base64
 from dataclasses import dataclass
 import hashlib
@@ -38,7 +40,7 @@ OBJECT_SCHEMA = "verifier-object-1"
 COMMIT_SCHEMA = "verifier-silo-commit-1"
 HEAD_SCHEMA = "verifier-signed-head-1"
 PUBLISHER_SCHEMA = "verifier-publisher-1"
-KEY_CONTINUITY_SCHEMA = "verifier-key-continuity-1"
+KEY_CONTINUITY_SCHEMA = "verifier-" + "key-continuity-1"
 DIRECTORY_SCHEMA = "verifier-directory-snapshot-1"
 EXPORT_SCHEMA = "verifier-silo-export-1"
 TRANSFER_SCHEMA = "verifier-silo-transfer-1"
@@ -71,6 +73,15 @@ SELF_DERIVATION_EVIDENCE_SCHEMA = "verifier-self-derivation-evidence-1"
 SELF_DERIVATION_MECHANISM_SCHEMA = "verifier-self-derivation-mechanism-1"
 AUTHORITY_MODEL_SCHEMA = "verifier-authority-model-1"
 SUPPORTED_RELATION_STRENGTHS = ("DERIVES",)
+
+_SILO_ASSESSMENT_RESULT_VOCABULARY = {
+    "reconstructibility": ("COMPLETE", "INCOMPLETE"),
+    "derivation_closure": ("CLOSED", "OPEN"),
+    "self_derivability": ("ESTABLISHED", "NOT_ESTABLISHED"),
+    "completeness": ("COMPLETE", "INCOMPLETE", "UNKNOWN"),
+    "silo_grounding": ("ESTABLISHED", "NOT_ESTABLISHED", "UNKNOWN"),
+    "authority_axiom_agency": ("PRESERVED", "VIOLATED", "UNKNOWN"),
+}
 
 AUTHORITY_AXIOM_AGENCY = (
     "CHALLENGE_WITH_COUNTEREVIDENCE",
@@ -725,10 +736,22 @@ class SiloCommit:
         if len(derivations) != len(set(item.target_path for item in derivations)):
             raise NetworkError("derivation targets must be unique")
         object.__setattr__(self, "derivations", derivations)
-        relations = tuple(sorted(self.relations, key=lambda item: (item.relation_type, item.source_path, item.target_path)))
+        relations = tuple(self.relations)
         if len(relations) > MAX_ENTRIES or not all(isinstance(item, ArtifactRelation) for item in relations):
             raise NetworkError("relations must contain at most 256 typed relations")
-        object.__setattr__(self, "relations", relations)
+        encoded_relations = tuple((canonical_bytes(item.to_dict()), item) for item in relations)
+        if len({raw for raw, _ in encoded_relations}) != len(encoded_relations):
+            raise NetworkError("relations must not contain duplicate canonical records")
+        object.__setattr__(
+            self,
+            "relations",
+            tuple(
+                item for _, item in sorted(
+                    encoded_relations,
+                    key=lambda pair: (pair[1].relation_type, pair[1].source_path, pair[1].target_path, pair[0]),
+                )
+            ),
+        )
         object.__setattr__(self, "residual_obligations", _unique((_text(item, "residual obligation") for item in self.residual_obligations), "residual_obligations"))
         object.__setattr__(self, "exclusions", _unique((_text(item, "census exclusion") for item in self.exclusions), "exclusions"))
         if self.completeness_kind not in {"SILO_CENSUS", "DERIVATIONAL_COVERAGE", "SEMANTIC_COVERAGE", "LOGICAL_DECIDABILITY"}:
@@ -1043,8 +1066,8 @@ def verify_head(head: SignedHead, publisher: PublisherRecord) -> None:
     if head.publisher_id != publisher.publisher_id or head.key_id not in publisher.active_key_ids:
         raise NetworkError("head key is not active for its publisher")
     try:
-        PublicKey.from_public_bytes(_canonical_b64(head.public_key_base64url, 32, "public_key_base64url")).verify(_canonical_b64(head.signature_base64url, 64, "signature_base64url"), canonical_bytes(head.signing_dict()))
-    except InvalidSignature as exc:
+        PublicKey.from_public_bytes(admit_ed25519_public_key(_canonical_b64(head.public_key_base64url, 32, "public_key_base64url"))).verify(_canonical_b64(head.signature_base64url, 64, "signature_base64url"), canonical_bytes(head.signing_dict()))
+    except (InvalidSignature, ValueError) as exc:
         raise NetworkError("signed head signature did not verify") from exc
 
 
@@ -1080,9 +1103,9 @@ def verify_key_continuity(record: KeyContinuityRecord, expected_previous_key_id:
         raise NetworkError("continuity record does not start from the expected active key")
     payload = canonical_bytes(record.signing_dict())
     try:
-        PublicKey.from_public_bytes(old_raw).verify(_canonical_b64(record.old_signature_base64url, 64, "old_signature_base64url"), payload)
-        PublicKey.from_public_bytes(new_raw).verify(_canonical_b64(record.new_signature_base64url, 64, "new_signature_base64url"), payload)
-    except InvalidSignature as exc:
+        PublicKey.from_public_bytes(admit_ed25519_public_key(old_raw)).verify(_canonical_b64(record.old_signature_base64url, 64, "old_signature_base64url"), payload)
+        PublicKey.from_public_bytes(admit_ed25519_public_key(new_raw)).verify(_canonical_b64(record.new_signature_base64url, 64, "new_signature_base64url"), payload)
+    except (InvalidSignature, ValueError) as exc:
         raise NetworkError("key continuity requires valid old-key and new-key signatures") from exc
     return digest_bytes(new_raw)
 
@@ -1120,8 +1143,8 @@ def sign_directory_snapshot(entries: Sequence[DirectoryEntry], private_key_path:
 def verify_directory_snapshot(snapshot: SignedDirectorySnapshot) -> None:
     InvalidSignature, _, (_, PublicKey) = _crypto()
     try:
-        PublicKey.from_public_bytes(_canonical_b64(snapshot.public_key_base64url, 32, "public_key_base64url")).verify(_canonical_b64(snapshot.signature_base64url, 64, "signature_base64url"), canonical_bytes(snapshot.signing_dict()))
-    except InvalidSignature as exc:
+        PublicKey.from_public_bytes(admit_ed25519_public_key(_canonical_b64(snapshot.public_key_base64url, 32, "public_key_base64url"))).verify(_canonical_b64(snapshot.signature_base64url, 64, "signature_base64url"), canonical_bytes(snapshot.signing_dict()))
+    except (InvalidSignature, ValueError) as exc:
         raise NetworkError("directory snapshot signature did not verify") from exc
 
 
@@ -1146,20 +1169,11 @@ class SiloAssessment:
         value = _strict(value, fields, "silo assessment")
         if value["schema_version"] != ASSESSMENT_SCHEMA:
             raise NetworkError("unsupported silo assessment schema_version")
-        if value["reconstructibility"] not in {"COMPLETE", "INCOMPLETE"}:
-            raise NetworkError("unsupported reconstructibility result")
-        if value["derivation_closure"] not in {"CLOSED", "OPEN"}:
-            raise NetworkError("unsupported derivation_closure result")
-        if value["self_derivability"] not in {"ESTABLISHED", "NOT_ESTABLISHED"}:
-            raise NetworkError("unsupported self_derivability result")
-        if value["completeness"] not in {"COMPLETE", "INCOMPLETE", "UNKNOWN"}:
-            raise NetworkError("unsupported completeness result")
+        for field, vocabulary in _SILO_ASSESSMENT_RESULT_VOCABULARY.items():
+            if value[field] not in vocabulary:
+                raise NetworkError(f"unsupported {field} result")
         if value["completeness_kind"] not in {"SILO_CENSUS", "DERIVATIONAL_COVERAGE", "SEMANTIC_COVERAGE", "LOGICAL_DECIDABILITY"}:
             raise NetworkError("unsupported completeness_kind")
-        if value["silo_grounding"] not in {"ESTABLISHED", "NOT_ESTABLISHED", "UNKNOWN"}:
-            raise NetworkError("unsupported silo_grounding result")
-        if value["authority_axiom_agency"] not in {"PRESERVED", "VIOLATED", "UNKNOWN"}:
-            raise NetworkError("unsupported authority_axiom_agency result")
         record = cls(
             reconstructibility=value["reconstructibility"],
             derivation_closure=value["derivation_closure"],

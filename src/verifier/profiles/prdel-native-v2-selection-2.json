@@ -1,0 +1,218 @@
+{
+  "schema_version": "verifier-prdel-native-v2-selection-2",
+  "candidate_status": "DEVELOPMENT_CANDIDATE",
+  "authority_scope": "VERIFIER_PRDEL_IMPLEMENTATION_METADATA",
+  "selection_scope": "EXACT_IMPLEMENTATION_MEMBERS_ONLY",
+  "implementation_coordinate": {
+    "schema_version": "verifier-prdel-v2-implementation-coordinate-1",
+    "algorithm": "SHA256_CANONICAL_JSON_LF",
+    "member_scope": "EXACT_EXECUTABLE_CHECKER_SCHEMA_MEMBERS",
+    "profile_and_receipt_bytes_excluded": true,
+    "member_count": 28,
+    "sha256": "bd581c90cf4e6e466ce8bf0f59b10b26c5a3af7c7297eb7c0de21da29aec83e3"
+  },
+  "implementation_inventory": [
+    {
+      "path": "scripts/build_component_index.py",
+      "kind": "CHECKER",
+      "bytes": 30145,
+      "sha256": "568df945b9e997ab9c19a862ba4cbfc03317c39682fa432504c6fe1466e69ac7"
+    },
+    {
+      "path": "scripts/check_pr_description.py",
+      "kind": "CHECKER",
+      "bytes": 53135,
+      "sha256": "50b14f5397539739e712d3e48c0c3fd7dbd61fd7abe3f9ab1afac6606e8f3cc7"
+    },
+    {
+      "path": "scripts/check_prdel_v2_selection.py",
+      "kind": "CHECKER",
+      "bytes": 14742,
+      "sha256": "58f2a11755e9ad33b04cb5b7c096e411d65e8f2ef45b6bf524d50a8d8b57ad19"
+    },
+    {
+      "path": "scripts/check_prdel_v2_selection_r2.py",
+      "kind": "CHECKER",
+      "bytes": 34251,
+      "sha256": "ecdf2335ab684780e34ed666c8d92514bfb2bc30b052fcd28bb801b9c8dae123"
+    },
+    {
+      "path": "src/verifier/runtime/gate.py",
+      "kind": "EXECUTABLE",
+      "bytes": 106455,
+      "sha256": "944105d4c12e4a0465301e7c52717a4042ab167e6139d231db6e96dab5d60f67"
+    },
+    {
+      "path": "src/verifier/runtime/prdel.py",
+      "kind": "EXECUTABLE",
+      "bytes": 99325,
+      "sha256": "3cbee89fc9fa6c7372b7a90bfa98b90b2717e4436ec87e82cd27faa937efdd0b"
+    },
+    {
+      "path": "src/verifier/runtime/prdel_coverage.py",
+      "kind": "EXECUTABLE",
+      "bytes": 46975,
+      "sha256": "3a6b30f3e1b374bb54013f7f2ac3e27a294a9ee5d5ed8d79ac1be2f15bc643ac"
+    },
+    {
+      "path": "src/verifier/runtime/prdel_evidence.py",
+      "kind": "EXECUTABLE",
+      "bytes": 24782,
+      "sha256": "c777c20300db63c849bb68d2a00b7ee61057c41f01167208b5718dba05631e23"
+    },
+    {
+      "path": "src/verifier/runtime/prdel_graph.py",
+      "kind": "EXECUTABLE",
+      "bytes": 57744,
+      "sha256": "5e18b7f2e5b0b9e47e211ae72ae2fc1cd68df6845d5610f03684beba1dcde4cc"
+    },
+    {
+      "path": "src/verifier/runtime/prdel_rules.py",
+      "kind": "EXECUTABLE",
+      "bytes": 34293,
+      "sha256": "f490a27dd4b2bf5da5c994199a77be17b3266e8e2428b0fad729dc2ba3bd8be2"
+    },
+    {
+      "path": "src/verifier/runtime/prdel_v2_shards.py",
+      "kind": "EXECUTABLE",
+      "bytes": 26392,
+      "sha256": "1ac48d9cfae380f039b1de19bdc3a6f43becfb504a7445f49455baacc3466786"
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-2.schema.json",
+      "kind": "SCHEMA",
+      "bytes": 8095,
+      "sha256": "ac81b17b8c42cbd8cbfa2a285b09f9466d990967a5963fd3a4076ca5bfee58d1"
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-cli-2.schema.json",
+      "kind": "SCHEMA",
+      "bytes": 3750,
+      "sha256": "5aabec8efff97fa7b10450c06e71003ee8bae1ea2ea3afc3556b292ab7583355"
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-replay-plan-1.schema.json",
+      "kind": "SCHEMA",
+      "bytes": 4033,
+      "sha256": "57e3a93ba9903869dab0a93773a41b2bda40221f625f40dd1a273dfd1ad572cf"
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-v2-document-shard-1.schema.json",
+      "kind": "SCHEMA",
+      "bytes": 1420,
+      "sha256": "a71bf08e46d85c5cb645ecea1b5b9f2752872f8a403c4a6409caeb753e693e33"
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-v2-release-subject-2.schema.json",
+      "kind": "SCHEMA",
+      "bytes": 3914,
+      "sha256": "ff6ae310bb0fea81113d538cacb1e60c959c30309488726f2bcef68b6204854a"
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-v2-shard-manifest-1.schema.json",
+      "kind": "SCHEMA",
+      "bytes": 4374,
+      "sha256": "6836d67d191981d9fd523a82c09a1007dee97d0bc6ce48b6ffe0fec2f121e087"
+    },
+    {
+      "path": "tests/test_prdel_frontier_redefinition.py",
+      "kind": "CHECKER",
+      "bytes": 1743,
+      "sha256": "f3d4fe5a3161f00f8f0f66f1c74f002d36fe3772e3ae2a06b64cfa349e9d3cbd"
+    },
+    {
+      "path": "tests/test_prdel_graph_budget.py",
+      "kind": "CHECKER",
+      "bytes": 5848,
+      "sha256": "58d3b5737800666220e4b350372fbe811335dfb1adb7b71ded476d50a4d705d6"
+    },
+    {
+      "path": "tests/test_prdel_graph_source_bound.py",
+      "kind": "CHECKER",
+      "bytes": 9462,
+      "sha256": "f037598c81c96a1c546be6a449fcb5d0cbe44e936dffe5e3b90918570b63bfa8"
+    },
+    {
+      "path": "tests/test_prdel_graph_variadic_annotations.py",
+      "kind": "CHECKER",
+      "bytes": 3500,
+      "sha256": "872f600a359647b22f62dd01b7633431fb8f267437381199122ab4e9a023f7b4"
+    },
+    {
+      "path": "tests/test_prdel_large_window.py",
+      "kind": "CHECKER",
+      "bytes": 7846,
+      "sha256": "bc2fd4f4a071810bc22383f828b722d90b482d0628406a895c06afada370c53f"
+    },
+    {
+      "path": "tests/test_prdel_v2_cli_overlay.py",
+      "kind": "CHECKER",
+      "bytes": 16135,
+      "sha256": "35d371c7d10d64ec58545b01168c804352d1b231b8faffb3834685327064b2f0"
+    },
+    {
+      "path": "tests/test_prdel_v2_evidence_replay.py",
+      "kind": "CHECKER",
+      "bytes": 20800,
+      "sha256": "15ac2c917d0446256f0875b347eedc1807b2326a3633b4246b0cc5a1492ea6e3"
+    },
+    {
+      "path": "tests/test_prdel_v2_native.py",
+      "kind": "CHECKER",
+      "bytes": 18519,
+      "sha256": "4aefbf68a5c4b73bf5ba8b79814c978c855a0efc01c159a60297ea2b981712a5"
+    },
+    {
+      "path": "tests/test_prdel_v2_selection.py",
+      "kind": "CHECKER",
+      "bytes": 5807,
+      "sha256": "2c4177a5ba6254040288366b72aead50b9f2f1818ad67d7ebd69e488e01ed2ce"
+    },
+    {
+      "path": "tests/test_prdel_v2_selection_r2.py",
+      "kind": "CHECKER",
+      "bytes": 21596,
+      "sha256": "4a1d816aea3956126ef6aaca6df94fadf14f68700ef2d0c0b598412cbeaba716"
+    },
+    {
+      "path": "tests/test_prdel_v2_shards.py",
+      "kind": "CHECKER",
+      "bytes": 15417,
+      "sha256": "c84e69999d4c7164bfd7e1d2c0782e749252805bd067978ed203f94c30878bbe"
+    }
+  ],
+  "specifications": [
+    {
+      "path": "src/verifier/standard/PRDEL_NATIVE_V2_COORDINATES.md",
+      "bytes": 3446,
+      "sha256": "9dd52e393d4fb05a881a188fb8e97b5b1d65471c2b86e86446624f5a94a57428"
+    },
+    {
+      "path": "src/verifier/standard/PRDEL_NATIVE_V2.md",
+      "bytes": 6497,
+      "sha256": "8662c515155ea2107a72a65fdacc70b1d12a6b146dc533213d270eab1dc3491e"
+    }
+  ],
+  "legacy_compatibility": {
+    "path": "src/verifier/profiles/prdel-native-v2-selection-1.json",
+    "sha256": "c44b538287aaf79d5f3b12d948355cbe2cb9174a7038475e576361261923b3cf",
+    "meaning": "RETAINED_ANCESTOR_SELECTION_PROFILE"
+  },
+  "release_subject_contract": {
+    "schema_version": "verifier-prdel-v2-release-subject-2",
+    "selection": "EXTERNAL_HOST_REQUIRED",
+    "candidate_self_selection": false,
+    "missing_selection_status": "UNKNOWN",
+    "source_binding": "EXACT_LOCAL_BASE_AND_HEAD_REQUIRED",
+    "description_binding": "EXACT_BYTES_AND_PRODUCTION_GATE_REQUIRED"
+  },
+  "semantic_completeness": "UNKNOWN",
+  "release_authorized": false,
+  "claim_boundary": "Coordinate A binds only the exact declared executable, checker and schema members. Profile, specification and receipt bytes remain outside A and require the external host-selected release-subject coordinate B. Neither coordinate establishes semantic completeness, correctness, safety, human acceptance or release authority.",
+  "release_dependencies": [
+    "EXTERNAL_HOST_RELEASE_SUBJECT_SELECTION_REQUIRED",
+    "PACKAGED_SCHEMA_INVENTORY_OWNER_ADMISSION_REQUIRED",
+    "FULL_APPLICABLE_TEST_AND_RELEASE_EVIDENCE_REQUIRED",
+    "HUMAN_ACCEPTANCE_AND_RELEASE_AUTHORITY_REQUIRED"
+  ]
+}

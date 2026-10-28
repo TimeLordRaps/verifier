@@ -5,7 +5,10 @@ verdicts at computational tiers 1–5. `[OBJECT]-6.m` names an internal groundin
 certificate in the positive-numbered privacy meta-tier. Its current disclosure-only
 projection is represented by per-object rows in
 [`DOMAIN_OBLIGATIONS.md`](../src/verifier/standard/DOMAIN_OBLIGATIONS.md).
-Those normative rows remain **UNKNOWN** with no registered mechanism. The existing
+Those legacy normative rows remain **UNKNOWN** with no registered mechanism.
+The separate current [full-record disclosure objective](../src/verifier/standard/CURRENT_PRIVACY_CHECKS.md)
+registers `<kind>-6.7` for each current kind; it does not discharge legacy 6.1
+through 6.6 or establish full privacy-tier conformance. The existing
 `verifier.privacy` helper package is a separate experimental surface; passing its
 tests does not mechanize every object-specific disclosure or composition obligation.
 

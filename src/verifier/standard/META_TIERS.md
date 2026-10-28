@@ -1,4 +1,4 @@
-# The Verifier Standard (VSTD) meta-tier grid — eight-tier architecture and measured corroboration subgrid
+# The Verifier Standard (VSTD) meta-tier grid — nine-tier architecture and measured corroboration subgrid
 
 > **Acronyms:** computational model architecture (ARCH); benchmark specification graph (BENCH); dataset integrity and lineage (DATA);
 > directed acyclic graph (DAG); generative simulation specification (SIM); object composition specification (HYPER);
@@ -8,12 +8,12 @@
 > Supply-chain Levels for Software Artifacts (SLSA); Verifier Standard (VSTD);
 > verifiable execution environment (ENV).
 
-**Status:** project specification; the 26-object, eight-tier contract below governs new coordinates. The retained five-tier depth lattice is historical evidence, not a current certificate catalogue.
+**Status:** project specification; the retained 26-`ObjectKind`, nine-tier contract below governs native coordinates. The installed extensible namespace admits 38 kinds: those 26 retained native kinds plus 12 accumulating consequential roles. The retained five-tier depth lattice is historical evidence, not a current certificate catalogue.
 **Editor:** TimeLordRaps
 **License:** Apache-2.0
 **Date:** 2026-09-27
 
-Identifier form, for every object: `<object>-<tier>.<m>`, tier one of 1..8, `m` an
+Identifier form, for every object: `<object>-<tier>.<m>`, tier one of 1..9, `m` an
 internal grounding certificate index within that tier. The hyphen separates an
 object name from a **positive** tier number; it is not a minus sign. Both numbers
 are one-indexed and dimensionless. A certificate has its own proposition,
@@ -48,20 +48,28 @@ match the convention breaks every reader that pins the string.
 
 ## Current namespace census
 
-The Verifier Standard (VSTD) admits these **26** object kinds. `OBJECT` is both an
-admitted base kind and the placeholder in `<object>-<tier>.<m>`; the placeholder
-may be replaced only by an admitted kind. The VSTD-NAMESPACE itself is not an
-object. Names and finite structural relations are implemented by
+The installed extensible Verifier Standard (VSTD) namespace admits **38** kinds:
+26 retained native `ObjectKind` values and 12 accumulating consequential roles.
+`OBJECT` is both a retained native base kind and the placeholder in
+`<object>-<tier>.<m>`; using that generic label never removes an applicable role
+or its obligations. The VSTD-NAMESPACE itself is not an object. Native names and
+finite structural relations are implemented by
 [`NAMESPACE_OBJECTS.md`](NAMESPACE_OBJECTS.md) and `verifier.core.namespace`;
-admission and structural composition do not certify any object's behavior.
+the added roles are admitted by the package namespace contracts. Admission and
+structural composition do not certify any object's behavior.
 
-| Earlier source | Current objects | Count | Migration boundary |
+| Retained native source | Current native objects | Count | Migration boundary |
 |---|---|---:|---|
 | Accountability domain catalogue | `HUMAN`, `ACTOR`, `COLLECTIVE`, `ROLE`, `IDENTITY`, `OWNER` | 6 | Earlier authority and role-branch propositions require explicit remapping. |
 | Computational domain catalogue | `HARDWARE`, `ENV`, `DATA`, `VERIFIER`, `BENCH`, `TRAIN`, `HYPER`, `MODEL`, `HARNESS`, `AGENT`, `SIM`, `BOT`, `TOKEN` | 13 | Earlier numbered-profile mechanisms retain their original propositions. |
 | Graph axis | `GRAPH` | 1 | Historical Graph coordinates and wire readers remain distinct. |
 | Former VSTD object axis | `RECEIPT` | 1 | Conceptual object rename only; historical VSTD coordinates and receipt bytes are not renamed. |
-| Newly admitted kinds | `OBJECT`, `SPACE`, `TIME`, `EVENT`, `ARCH` | 5 | Structural admission does not register certificates. |
+| Retained native additions | `OBJECT`, `SPACE`, `TIME`, `EVENT`, `ARCH` | 5 | Structural admission does not register certificates. |
+
+The 12 added roles are LEDGER, TRANSACTION, ASSET, MARKET, MEASUREMENT, SENSOR,
+CONTROLLER, ACTUATOR, PROTOCOL, POLICY, ROBOT, and FINBOT. Roles accumulate when
+their conditions hold; generic `OBJECT`, `BOT`, or simulation labeling is not an
+exemption.
 
 The current structural relation is **ACTOR as a decision maker represented by
 HUMAN, AGENT, or BOT and rooted in a responsible HUMAN**. IDENTITY binds an ACTOR
@@ -75,9 +83,12 @@ have their finite operand contracts in `NAMESPACE_OBJECTS.md`. These are
 representation and checking obligations, not a grant of authority, a claim that
 an event occurred, or proof of physical isolation.
 
-The eight general meta-tiers apply separately to **every** admitted object. The
-same number does not make a computational proposition and an accountability
-proposition interchangeable. The indices are dimensionless.
+The nine general meta-tier questions apply separately to **every** admitted
+object through its selected semantic family. The retained native grid below has
+26 rows; an added consequential role does not silently become a native
+`ObjectKind` row or escape its package obligations. The same number does not make
+a computational proposition and an accountability proposition interchangeable.
+The indices are dimensionless.
 
 | Tier | Current meaning | Required question |
 |---|---|---|
@@ -89,15 +100,26 @@ proposition interchangeable. The indices are dimensionless.
 | 6 | **Privacy** | What information may be observed or emitted, by whom, and under which bound? |
 | 7 | **Consent** | Whose consent is required, to what action, in what scope and interval, and how is revocation checked? |
 | 8 | **Governance** | Which applicable governance decisions, laws or rules, and ethical or moral boundaries constrain this object; who has authority to select them; and how are they enforced and contested? Distributed Aggregated Governance and smart contracts are possible mechanisms, not the whole tier. |
+| 9 | **Security** | Against which explicitly bounded adversarial or failure conditions must this object's execution, evidence, information, availability or enforcement remain protected, and which trusted mechanism detects or refuses a violation? |
+
+Security is above governance in the meta-tier order but remains a separate question.
+A security result cannot grant governance authority, supply consent, waive privacy,
+or upgrade a computational verdict. Governance admission cannot establish a
+security property. A security claim requires its own exact threat model, trusted
+roots, scope, mechanism and falsifier; a hash, signature or parser acceptance alone
+does not establish one.
 
 `<object>-<tier>.<m>` addresses the **m-th internal grounding objective** of that
 object and tier; `m` is not an obligation count, topological depth, adaptation
 index, or implementation version. Registering an objective requires an exact
 proposition, typed operands, prerequisites, checking mechanism, evidence and
 provenance, assumptions, exclusions, a falsifying counterexample, and a bounded
-PASS/FAIL/UNKNOWN result. The 26 by 8 grid has 208 object-tier **slots**, not
-208 implemented objectives or certificates. A parsed address does not register
-an objective. Missing mechanisms and evidence remain UNKNOWN.
+PASS/FAIL/UNKNOWN result. The retained native 26 by 9 grid has 234 object-tier **slots**, not
+234 implemented objectives or certificates. A parsed address does not register
+an objective. The registered [RECEIPT-9.1](CURRENT_RECEIPT_CHAIN.md) certificate
+replays one selected finite receipt hash chain against externally selected anchors.
+It does not establish issuer authenticity, signature validity or complete security-tier
+conformance, which remains NOT_ESTABLISHED. Missing mechanisms and evidence remain UNKNOWN.
 
 No legacy numbered-profile PASS transfers to a current meta-tier certificate by
 matching spelling or tier number. In particular, legacy domain adaptation at
@@ -116,12 +138,13 @@ Everything from this heading through the measured grid below records the
 earlier five-tier corroboration catalogue and its partial sixth-tier
 disclosure extension. Its numeric counts, dependency depths, named obligations,
 and historical receipt semantics remain evidence about **that catalogue only**.
-They do not redefine the current 26-object hierarchy or certify current
+They do not redefine either the retained 26-kind native hierarchy or the current
+38-kind extensible namespace, and they do not certify current
 independence, privacy, consent, or governance. The six identity/accountability
 objects below include a superseded ACTOR representation; their current
 obligations must be separately rewritten and mechanized.
 
-## Eight meta-tiers and the measured five-tier corroboration subgrid
+## Nine meta-tiers and the measured five-tier corroboration subgrid
 
 The retained computational catalogue asked the following questions at tiers 1–5.
 Accountability objects have distinct authority, responsibility and commitment
@@ -138,13 +161,16 @@ numbering is not evidence that the two interpretations are equivalent.
 | 6 | **Legacy disclosure bounds**, a partial projection of current privacy rather than complete privacy grounding certificates. |
 | 7 | **Consent structures**. Per-object grounding certificates are not registered. |
 | 8 | **Governance and laws**: Distributed Aggregated Governance and smart contracts. Per-object grounding certificates are not registered. |
+| 9 | **Security**: Explicitly bounded adversarial and failure protections. Per-object grounding certificates are not registered. |
 
 Only tiers 1–6 appear in the present domain-obligation catalogue; tiers 7 and 8 are not registered.
+The legacy catalogue registers no tier-9 objective or certificate. The separately
+versioned current RECEIPT-9.1 route above does not establish security conformance.
 The two older specification axes catalogue tiers 1–5 only. The existing
 privacy, consent and governance helpers check narrower admission contracts and
-cannot be cast into complete tier-6/7/8 certificates. [OPEN] The exact per-object
+cannot be cast into complete tier-6/7/8/9 certificates. [OPEN] The exact per-object
 certificate propositions, dependency indices, and compatibility migration for
-tiers 6–8 have not been specified or validated.
+tiers 6–9 have not been specified or validated.
 
 **The current computational tiers 1–5 corroborate; the current level-6 rows disclose.** Every
 tier from 1 to 5 is a rung on a corroboration ladder: it is evidence that raises what the
@@ -188,7 +214,7 @@ five tiers exactly, and predate the generalization:
 
 These two axes predate the domain-object catalogue and anchor its computational
 tiers 1–5. They do not establish that accountability objects have the same tier
-semantics, or that the eight-tier architecture is already catalogued.
+semantics, or that the nine-tier architecture is already catalogued.
 
 ---
 
@@ -430,6 +456,12 @@ model *of* and does not get to choose.
 **SIM-4** — closure: complete aligned shard coverage, bound cross-shard relations,
 signatures where required, the condition under which the retained trajectory accounts for
 the whole simulated surface with no unattributed transition.
+
+The current [finite state-partition accounting](CURRENT_SIM_SURFACE_PARTITION.md)
+route selects `SIM-4.4` under `verifier-current-object-obligations-1`. It accounts
+for an externally declared finite root/shard state partition and binds every
+retained mapped transition to its replayed expression. It excludes hidden runtime
+state and does not close this entire tier. Legacy coordinate meanings are retained.
 
 **SIM-5** — the interaction surface `BOT-5` sits over. Gymnasium, MuJoCo, FMI,
 Modelica and SPICE inferred upward; `open-battery-sim` and `open-motor-sim` are the first
@@ -894,7 +926,7 @@ static needs a different kind of evidence from a dynamic.
 ## The cardinality of the grid
 
 One hundred five cells is the shape of the currently measured tiers-1–5 subgrid,
-not the shape of the full eight-tier architecture. Each cell has an obligation
+not the shape of the full nine-tier architecture. Each cell has an obligation
 topology. Write `i` for the depth of one cell's module topology; the following
 product is the old model's formal depth-vector count, **not** a count of
 grounding certificates or currently reachable verification states:
@@ -979,7 +1011,7 @@ The free product counts depth vectors under the old model. It is not the
 number of registered internal grounding certificates or current verification
 states. Its reachability calculation assumes a **topological ordering** of
 the catalogued obligations and cross-profile prerequisites; that assumption
-does not define the eight-tier certificate registry.
+does not define the nine-tier certificate registry.
 
 **Within the old computational subgrid, the five tiers form one chain, not five free coordinates.** A numbered
 profile is cumulative — profile `N` requires its named coordinate and every earlier
@@ -1153,4 +1185,4 @@ VERIFIER is a verifier artifact whose identity and retained native decision proo
 
 ## HARDWARE — retained physical-device records
 
-HARDWARE has four native routes: inventory, containment topology, exclusive reservation accounting and measurement envelopes. They validate retained records with typed capacities and declared clocks. Physical identity, fresh availability, sensor accuracy, isolation and financial authority remain unestablished; tiers 3–5 are explicitly UNKNOWN. Legacy hardware accountability receipts keep their existing wire format and do not silently become this native domain. See [the exact obligations](DOMAIN_OBLIGATIONS.md#hardware-1-facets).
+HARDWARE has four legacy domain routes: inventory, containment topology, exclusive reservation accounting and measurement envelopes. They validate retained records with typed capacities and declared clocks. The separate current-object `HARDWARE-1.3` route binds a selected namespace record, collection and retained inventory under an explicit semantic version; it does not alter the older corroboration-profile counts or alias legacy `HARDWARE-1.1`. Physical identity, fresh availability, sensor accuracy, isolation and financial authority remain unestablished; tiers 3–5 are explicitly UNKNOWN. Legacy hardware accountability receipts keep their existing wire format and do not silently become this native domain. See [the exact obligations](DOMAIN_OBLIGATIONS.md#hardware-1-facets) and [the current inventory contract](CURRENT_HARDWARE_INVENTORY.md).

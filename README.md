@@ -13,7 +13,7 @@
 </div>
 
 > **Acronyms used below:** accessible pointed graph (APG); Anti-Foundation Axiom (AFA);
-> application programming interface (API); artificial intelligence (AI);
+> abstract syntax tree (AST); application programming interface (API); artificial intelligence (AI);
 > Boolean satisfiability problem (SAT); central processing unit (CPU); command-line interface (CLI);
 > Concise Binary Object Representation (CBOR); continuous integration (CI); conjunctive normal form (CNF);
 > CBOR Object Signing and Encryption (COSE); deletion resolution asymmetric tautology (DRAT);
@@ -55,6 +55,22 @@ or external adoption is claimed. See [current maturity](#current-maturity) and
 [Implementation reference](https://timelordraps.github.io/verifier/reference.html) ·
 [Report an ambiguity or counterexample](https://github.com/TimeLordRaps/verifier/issues/new/choose) ·
 [Report a vulnerability privately](SECURITY.md)
+
+## Verification-Driven Development (VDD)
+
+Define the intended verification contracts, objectives, obligations, dependencies,
+evidence and interoperability before implementation. Implement against those
+contracts, then verify execution and assess the resulting artifact under separately
+selected acceptance requirements. Verification-Driven Development (VDD) extends
+test-driven development with exact claim boundaries, evidence and prerequisite closure.
+
+Preflight checks concern the declared plan and its closure, authority requirements
+and evidence expectations. They do not verify future execution or truth. Keep
+`PASS`, `FAIL` and `UNKNOWN` bound to exact revisions and checking mechanisms;
+runtime verification and artifact acceptance remain separate. Consumers build
+their orchestration around these project-agnostic contracts. See the
+[workflow and bounded worked example](docs/VERIFICATION_DRIVEN_DEVELOPMENT.md)
+for the current interfaces and their limits.
 
 ## 30–60 second demonstration
 
@@ -235,16 +251,19 @@ Three rules prevent most misreadings:
 ### How VSTD identifiers are named
 
 The current object hierarchy uses `<OBJECT>-<tier>.<m>`: an admitted object,
-a positive meta-tier from 1 through 8, and an objective index starting at 1.
+a positive meta-tier from 1 through 9, and an objective index starting at 1.
 For example, `SIM-3.6` names objective six within simulation meta-tier three.
 Neither index is a software version, dependency depth, or a count of adapters.
 Indices are dimensionless.
 
-The 26 admitted kinds are HUMAN, ACTOR, COLLECTIVE, ROLE, IDENTITY, OWNER,
+The retained native typed representation has 26 kinds: HUMAN, ACTOR, COLLECTIVE, ROLE, IDENTITY, OWNER,
 HARDWARE, RECEIPT, OBJECT, GRAPH, SPACE, TIME, EVENT, ENV, DATA, VERIFIER,
 BENCH, ARCH, TRAIN, HYPER, MODEL, HARNESS, AGENT, SIM, BOT and TOKEN.
 ARCH means computational model architecture. RECEIPT is the object name;
-Verifier Standard (VSTD) remains the standard's name.
+Verifier Standard (VSTD) remains the standard's name. Current repository admission
+adds twelve refinements for 38 installed kinds; see
+[extensible admission](src/verifier/standard/EXTENSIBLE_NAMESPACE.md). Its additional
+roles do not reinterpret the native records or establish complete kind conformance.
 
 | Meta-tier | General meaning for each object |
 |---:|---|
@@ -256,6 +275,7 @@ Verifier Standard (VSTD) remains the standard's name.
 | 6 | Privacy |
 | 7 | Consent |
 | 8 | Governance |
+| 9 | Security |
 
 An ACTOR represents HUMAN, AGENT or BOT with an explicit responsible HUMAN root.
 IDENTITY binds ACTOR to ROLE. The [finite object contract](src/verifier/standard/NAMESPACE_OBJECTS.md)
@@ -267,13 +287,71 @@ The numbered object and Graph profiles described above retain their original
 propositions. The [legacy domain catalogue](src/verifier/standard/DOMAIN_OBLIGATIONS.md)
 also retains its adaptation tier 5 and disclosure tier 6. Those results do not
 become current independence or privacy certificates by matching a number.
-The [eight-tier architecture](src/verifier/standard/META_TIERS.md) records the
+The [nine-tier architecture](src/verifier/standard/META_TIERS.md) records the
 remaining semantic migration and unimplemented objectives explicitly.
 
 A coordinate names a proposition, not a verdict. A parsed address, catalogue row,
 or structural PASS does not establish a certificate. Computational claims and
 accountability contracts each require their own bound evidence and mechanism;
 missing evidence or mechanisms remain UNKNOWN.
+
+`vstd current-object catalog --json` lists the installed explicitly versioned
+native objectives; `vstd current-object check` replays one under a consumer-selected
+request and policy. Objective entries, the 234 kind/tier planning slots and actual
+certificate instances are different counts. A primary registered objective does
+not complete its tier. `vstd polish assess` checks declared wiring and available
+certificates, and `vstd polish check` recomputes a retained assessment. The
+[polished-artifact contract](src/verifier/standard/POLISHED_ARTIFACTS.md) defines the
+remaining closure gates: this implementation does not yet issue polished artifacts.
+
+[Signed namespace admission](src/verifier/standard/CURRENT_OBJECT_GOVERNANCE.md)
+selects `<kind>-8.1` for every admitted kind under external public-key, quorum and
+revocation policies. [Typed-subject receipt association](src/verifier/standard/CURRENT_SUBJECT_SECURITY.md)
+selects `<kind>-9.1`, except `RECEIPT-9.3`, for one exact retained subject and
+finite chain entry. These propositions do not establish legal authority, actual
+enforcement, issuer authenticity or complete governance and security tiers.
+
+`vstd polish coverage` compares a separately pinned
+[finite numbered inventory](src/verifier/standard/POLISH_REQUIREMENTS.md) and
+replays its selected evidence. The caller supplies the expected inventory digest
+independently. Declared coverage PASS remains separate from aggregate UNKNOWN,
+unestablished inventory authority, open required slots and polished issuance.
+
+The [declared structural-facet certificates](src/verifier/standard/CURRENT_TYPED_FACETS.md)
+check the kind-specific operand contracts of all 26 kinds against exact retained
+records and selected collections. These bounded structure checks do not complete
+the facets tiers, establish domain-specific payload truth or grant authority.
+The [identity scope certificate](src/verifier/standard/CURRENT_IDENTITY_SCOPE.md)
+adds `IDENTITY-3.1` for exact declared role membership and scope admission; actual
+occupancy and authority remain separate obligations.
+The [retained dataset certificates](src/verifier/standard/CURRENT_DATA_CHECKS.md)
+add five selected native inventory, schema, lineage, split and text-overlap checks;
+external origin, population quality and complete dataset coverage remain unestablished.
+The [retained environment certificates](src/verifier/standard/CURRENT_ENV_CHECKS.md)
+add four selected software, configuration, resource-observation and execution-record
+checks; live attestation, actual reruns and physical isolation remain unestablished.
+The [retained benchmark certificates](src/verifier/standard/CURRENT_BENCH_CHECKS.md)
+bind problems, execute selected built-in oracles, compare retained resource ceilings
+and recompute weighted scores; external validity and measurement authenticity remain
+unestablished. The [retained training certificates](src/verifier/standard/CURRENT_TRAIN_CHECKS.md)
+bind actual architecture, batch, loss and event operands and check configuration,
+checkpoint bytes, numerical replay, updates and lineage; actual execution and
+complete training history remain unestablished. The [retained model certificates](src/verifier/standard/CURRENT_MODEL_CHECKS.md)
+check bound artifacts, dense tensors, inference, metrics and finite probes with
+exact training-checkpoint and operand relationships; deployment, generalization
+and hardware authenticity remain unestablished. The [retained harness certificates](src/verifier/standard/CURRENT_HARNESS_CHECKS.md)
+check declared observation channels, messages, complete tool-record pairing, retained
+effects and transcript commitments; actual execution and recorder authenticity remain
+unestablished. The [retained agent certificates](src/verifier/standard/CURRENT_AGENT_CHECKS.md)
+check observation ceilings, declared decisions, actions, outcomes and support references
+with exact model, harness and environment context; internal deliberation and statement
+truth remain unestablished. The [retained BOT certificates](src/verifier/standard/CURRENT_BOT_CHECKS.md)
+check exact agent/simulation/environment bindings, attributed transitions, retained
+observations and actions, and declared environment separation; actual invocation
+and physical containment remain unestablished. The [full-record disclosure certificates](src/verifier/standard/CURRENT_PRIVACY_CHECKS.md)
+add one selected predicate per kind for complete namespace records under declared
+field bounds and observer facts. They do not authenticate observers or establish
+permission to publish their retained witnesses.
 
 Serialized receipt identifiers select a reader and schema under
 [WIRE_IDENTIFIERS.md](src/verifier/standard/WIRE_IDENTIFIERS.md). For example,
@@ -460,6 +538,215 @@ alias because historical receipts may bind it in falsification instructions.
 
 An unrelated PyPI distribution named `verifier` exports the same top-level Python
 import. Do not co-install it with `verifier-standard`.
+
+### Repository admission and object labeling
+
+After installing this source checkout into your development environment, run
+`vstd template` in a Git repository to create
+a draft `objects.vstd`, then `vstd polish 0` to see the next exact object,
+obligation, reason, and evidence requirement. `vstd template --json` previews the
+draft without writing; existing manifests are never overwritten.
+
+The current admission namespace contains 38 kinds: the retained 26 plus
+`LEDGER`, `TRANSACTION`, `ASSET`, `MARKET`, `MEASUREMENT`, `SENSOR`, `CONTROLLER`,
+`ACTUATOR`, `PROTOCOL`, `POLICY`, `ROBOT`, and `FINBOT`. Each addition has three
+reasoned Tier-0 admission declarations. Separately, all 38 kinds have explicit
+installed source-package variant profiles through Tiers 1--3: the core 26 bind
+113 behavioral and 78 source-adaptation coordinates, while the added 12 bind 54
+behavioral and 36 source-adaptation coordinates. Those 281 coordinates are a
+bounded contract for Verifier's installed package variant, not universal kind
+conformance. Local extensions and other unprofiled variants remain `UNKNOWN`.
+Labeling source-declared roles as `OBJECT` does not remove their necessary
+obligations. Name-based suggestions remain uncertain until reasoned applicability
+is supplied. Every obligation needs a standard reason, repository-specific reason,
+named contract answers, and current-source evidence. Admission or bounded profile
+PASS does not establish financial correctness, physical safety, simulation
+confinement, external authority, release or deployment.
+BOT, ROBOT and FINBOT roles can accumulate: a simulation label is not an exemption
+from physical or financial consequences. Discovery observes declarations, not
+actual effect reachability. Python definition and explicit export-alias discovery
+are implemented, including bounded literal lazy dispatch and local target bindings;
+unsupported languages remain `UNKNOWN`. Independent declaration reconciliation
+requires Node, while the Python package retains zero required dependencies.
+See [extensible admission and contributor boundaries](src/verifier/standard/EXTENSIBLE_NAMESPACE.md).
+
+Verifier's own root uses the version-5 manifest, preserving the version-4
+current-representation contract under the larger bounded transport and structure
+profile, with retained historical records. `vstd polish 0` checks
+both the retained package contract (26 core kinds, 234 kind-tier slots and 408
+route memberships) and exact namespace ownership/classification, through the
+declared `verifier-core-self` on `vstd-package-graph`. Neither check replaces the
+other. Tiers 1--3 select this same expanded graph and evaluate the 38 explicit
+installed variant profiles cumulatively. The historical 408 memberships are not
+the current 281-coordinate profile denominator; local or otherwise unprofiled
+variants remain `UNKNOWN` rather than inheriting a package-variant PASS.
+
+The local invocation `LEDGER`/`TRANSACTION` variant additionally has six bounded
+fresh-execution checks through tier 3: record identity, invocation accounting,
+read-only recovery, input preconditions, commit boundaries, and replay/epoch
+handling. An explicit `execution_checks` selection binds the object's owned source
+to the installed implementation before temporary-database execution. These checks
+do not establish full-kind coverage, monetary correctness or power-loss durability.
+See [selection and exact obligation identifiers](src/verifier/standard/PACKAGE_POLISH.md#selected-fresh-local-ledger-and-transaction-executions).
+
+The reviewed TOKEN implementation can be selected with `--select-token-asset`
+for three fresh `ASSET-1.1`, `ASSET-2.1`, and `ASSET-3.1` routes. They replay
+identity/units/precision, lifecycle boundaries, and finite encumbrance
+reconciliation. Issuer authority, signature validity, real custody, holding
+completeness, redemption, application enforcement, supply conservation and
+backing remain `NOT_ESTABLISHED`.
+
+The reviewed reference emulator can be selected with `--select-emulator-control`
+for six cumulative `CONTROLLER-1.1`--`3.1` and `ACTUATOR-1.1`--`3.1` routes. Fresh
+isolated workers exercise command/feedback binding, finite timing and capacity,
+rollback, simulated effects, saturation and input interlocks. This is simulated
+software evidence only; it proves no physical effect, physical stability,
+attestation or safe-state behavior.
+
+MARKET, ROBOT and FINBOT have nine retained routes, one per kind per tier, through
+the `verifier-retained-added-kind-behavioral-1` adapter. Exact manifest-selected
+request, policy, certificate and owned source bytes replay through their installed
+checkers, bound to the current object and collection. The replay never actuates
+hardware, submits an order or moves money, and does not establish venue or legal
+authority, physical safety, real settlement, real balances, external confinement
+or runtime correspondence. A missing selection or exact source-bound refutation
+remains `UNKNOWN`.
+
+Default root `vstd polish 0`, `1`, `2`, and `3` first inspect whether Verifier's
+own `objects.vstd` still represents the current exact source. When a recognized
+Verifier root has drifted, the installed refresh controller retains the prior
+bytes and transaction receipts outside the repository, refuses semantic
+weakening, atomically replaces the manifest, and only then starts the assessor.
+Reviewed applicability and obligation evidence is additionally bound by a
+manifest-owned source-semantic profile. Python and stub sources use a
+location-free standard-library AST digest, so comments, formatting and line
+movement can rebind automatically; other languages remain byte-exact until a
+selected language parser provides a narrower equivalence. A semantic change
+returns `MANIFEST_REFRESH_REVIEW_REQUIRED` with the exact path, object,
+classification and obligation identifiers instead of inheriting an old review.
+For the selected Verifier-self HARNESS denominator, this includes automatic
+comment/format/line-coordinate rebinding only when the complete launch set, each
+call AST, the whole-source AST, and all reviewed reasons and gaps remain unchanged.
+Semantic launch-source changes stop before publication for explicit review.
+The complete GRAPH payload also binds the non-manifest source-census coordinate;
+when it still matches, preflight validates the selected manifest bridge and skips
+the full remigration replay. Graph size therefore does not add a repeated replay
+cost to an unchanged checkout.
+For package-root GRAPH-3.1, polish validates the exact six-field current root,
+complete current collection and owned-source representation update, then
+deterministically projects only the registered four-field statics payload. It
+constructs and rechecks the native request, installed policy, evidence and
+certificate in memory instead of reusing retained GRAPH artifacts. The receipt
+binds the original and projected digests and states that this installed replay is
+not external authority, source authenticity or whole-tier conformance.
+Before returning `CURRENT`, the fast path recaptures the source coordinate and
+manifest bytes. The manifest remains a maintainer-authored declaration: a valid
+manual manifest-only edit is assessed by polish, not silently regenerated when
+the represented source coordinate itself is unchanged.
+Publication serializes cooperating `vstd` writers with an external exclusive
+lock, fsyncs the candidate before its final source/target recapture, preserves a
+competing target, and records `PUBLISHED_STALE` rather than claiming success if
+source changes after replacement. This is not an operating-system compare-and-
+swap against arbitrary uncooperative writers in the final replacement window.
+Use `--manifest-refresh check` for a read-only drift gate. Cancelled, native-
+specimen, legacy package-graph, and alternate Tier-0-manifest paths do not write.
+An explicit relative, absolute or same-file spelling of the root `objects.vstd`
+still selects refresh and assessment of the canonical root path.
+Refresh is a source-binding transaction, not admission or PASS.
+
+For explicit maintainer migration, `python scripts/migrate_package_manifest.py`
+still previews by default. `--write --backup <path-outside-repository>` preserves
+the prior bytes before replacement. `--select-harness-launch-profile` performs the
+one-time reviewed bootstrap into the HARNESS payload; ordinary later polish runs
+refresh its safe source coordinates without that flag.
+When an intentionally reviewed direct-launch call changes, update the exact
+source-owned frozen catalog and combine `--select-harness-launch-profile
+--refresh-reviewed --advance-harness-launch-profile`. The separate advance flag
+is never recovered by automatic refresh; without it, changed call semantics or
+a catalog that does not exactly match current source remain fail-closed.
+`--select-source-semantic-profile` is the explicit one-time review boundary for
+the current reviewed source meanings; automatic runs preserve but cannot create
+or semantically advance that selection. It produces a **draft**, not PASS: unsupported
+language or dynamic-interface discovery and unanswered applicability remain blockers.
+`--retire-package-graph-instance-check` is the separate explicit transition from
+the package root's historical GRAPH-3.1 artifact selection to the fresh
+source-bound adapter. Preview must report exactly that one transition. Retirement
+fails closed unless the enriched root payload, source bindings and refreshed
+owned-source representation update validate; it leaves the artifact files and all
+other selections untouched. The option is not an automatic refresh step or a
+generic GRAPH-selection replacement.
+
+### Runners and optional OpenShell sandbox
+
+Python is the default runner, not a restriction on the language-neutral standard.
+Optional source discovery is separate from process execution. Install
+`python -m pip install "verifier-standard[discovery-javascript]"` to add isolated
+Tree-sitter JavaScript declaration discovery to `vstd template` and admission.
+The base remains dependency-free. Unsupported dynamic interfaces remain explicit
+gaps; see [source coverage boundaries](src/verifier/standard/EXTENSIBLE_NAMESPACE.md#optional-javascript-syntax-coverage).
+Markup elements, attributes and embedded-code boundaries are inventoried without
+rendering; [template and browser limitations](src/verifier/standard/EXTENSIBLE_NAMESPACE.md#markup-and-embedded-code-coverage)
+remain explicit. Plain markup requires no additional dependency.
+Vector documents receive explicit source/embedded-script coverage too. Install
+`python -m pip install "verifier-standard[discovery-workflows]"` for isolated
+workflow declarations and bound command text; see [executable document limits](src/verifier/standard/EXTENSIBLE_NAMESPACE.md#vector-and-workflow-documents).
+Discovery never runs a workflow, downloads an action, or equates command ownership
+with complete interpreter or generated-interface coverage.
+For Rust or Bash/sh source, install the optional `discovery-rust` or
+`discovery-shell` extra. These inventory individual declarations, methods, fields,
+re-export names, shell functions and command sites without compiling or executing
+the subject. [Macro and dynamic-shell limits](src/verifier/standard/EXTENSIBLE_NAMESPACE.md#optional-rust-and-shell-syntax-coverage)
+remain explicit; source discovery is separate from process-runner support.
+The basic runner captures a trusted process; **it is not a sandbox**. Debuggers can
+supply observations, but cannot by themselves prove coverage, correctness or isolation.
+
+```bash
+vstd runner detect . --json
+vstd runner run main.py --trusted-local --json
+python -m pip install ./extensions/languages
+vstd runner run main.js --language javascript --trusted-local --json
+```
+
+The separately installable language package contains eleven native adapters:
+Node.js JavaScript, GCC C17/C++17, Java 11+ source launch, Rust 2021, Perl, SQLite,
+GNU Fortran 2018, PHP command-line scripts, Steel Bank Common Lisp (SBCL), and
+SWI-Prolog. Install the required toolchain separately. Other catalog targets
+remain unimplemented; an available adapter is not a qualified obligation checker.
+Compiled language specimens are opt-in in the repository test suite: set
+`VSTD_RUN_NATIVE_TOOLCHAINS=1` only when temporary compiler outputs are intended.
+
+**OpenShell is an optional extension**, not a base dependency. Install the local
+adapter with `python -m pip install ./extensions/openshell`; install NVIDIA OpenShell
+0.1.3 separately. The adapter requires an explicitly named gateway, a digest-pinned
+workload image, bounded resources, a scope reason, and a lifecycle policy. It never
+falls back to host execution. MODEL, AGENT, BOT and SIM live specimens have passed
+on one selected WSL 2/Docker configuration, including denial controls and owned
+cleanup. Rerun them on each selected host; this is not general isolation or object
+conformance. Contract tests with a simulated gateway are not sandbox evidence.
+Only this optional path emits an OpenShell execution environment (ENV) object,
+with its canonical digest, observed runtime/policy and source-bound `env` operand
+binding. ENV obligation conformance remains `UNKNOWN`; the basic runner neither
+loads this projection nor acquires an OpenShell requirement.
+
+```bash
+vstd runner run main.py --object-kind MODEL --sandbox openshell \
+  --sandbox-config openshell.json --json
+python -m vstd_openshell.live --config openshell.json --output openshell-results
+```
+
+For Windows, run the adapter **inside a working Windows Subsystem for Linux
+(WSL) 2 distribution with verified Docker Desktop access** (normal distro integration
+or the explicitly scoped shared-socket route documented below).
+NVIDIA marks this platform experimental. Follow the
+[setup, configuration, live tests and footprint instructions](src/verifier/standard/LANGUAGE_RUNNERS.md#openshell-setup-and-live-validation).
+The three OpenShell 0.1.3 Linux/amd64 images total about 78.3 MB of compressed
+layers before shared-layer deduplication; workload images, unpacked disk usage and
+runtime storage are additional. This is not an installed-size estimate.
+
+Containerization plus enforced filesystem, network, identity and resource policies
+is the intended boundary above trusted-local execution. A container alone is not
+that entire boundary. MODEL corrigibility, BOT/SIM bindings and SIM continuity need
+their own evidence; neither a debugger nor OpenShell automatically discharges them.
 
 ### Freeze, seal, verify, and thaw an artifact
 

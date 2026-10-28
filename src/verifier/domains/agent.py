@@ -41,6 +41,8 @@ def witnessed(bound: dict, index: object, budget: Budget) -> dict:
 
 def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, mechanism_digest: str,
              policy: dict, nesting: int = 0) -> dict:
+    if type(check) is not str or check not in ("harness", "trajectory", "actions", "outcomes", "claims"):
+        raise Unavailable("unsupported agent check")
     bound = ceiling(artifact, inputs, mechanism_digest, policy=policy, budget=budget, nesting=nesting)
     steps, actions = [], []
     if check != "harness":
@@ -48,7 +50,7 @@ def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget, *, mechan
         same(digest(steps), need(artifact, "steps_digest"), "trajectory differs")
         for index, step in enumerate(steps):
             obj(step, {"index", "record", "decision"})
-            if step["index"] != index:
+            if type(step["index"]) is not int or step["index"] != index:
                 raise Refuted("trajectory indices are not contiguous from zero")
             text(step["decision"])
             witnessed(bound, step["record"], budget)

@@ -7,7 +7,6 @@ dimensionless retained strings, not external facts or authority grants.
 
 from __future__ import annotations
 
-import importlib
 import json
 from collections.abc import Mapping
 from copy import deepcopy
@@ -19,6 +18,7 @@ from verifier.interoperability.network import (
     CensusEntry, ObjectRecord, SelfDerivationRecord, SiloCommit,
     canonical_bytes, digest_bytes,
 )
+from verifier.interoperability import proposition_transfer
 
 
 RULE_PROFILE = {
@@ -73,7 +73,7 @@ def _fixture() -> tuple[dict[str, Any], dict[str, bytes]]:
 
 
 def test_false_premise_survives_missing_commit_and_cannot_support_conclusion() -> None:
-    checker = importlib.import_module("verifier.interoperability.proposition_transfer")
+    checker = proposition_transfer
     declaration, evidence = _fixture()
     first = declaration["premises"][0]
     first["parameters"]["allowed_items"] = []
@@ -88,7 +88,7 @@ def test_false_premise_survives_missing_commit_and_cannot_support_conclusion() -
 
 
 def _checker() -> Any:
-    return importlib.import_module("verifier.interoperability.proposition_transfer")
+    return proposition_transfer
 
 
 def _wire(declaration: dict[str, Any]) -> bytes:

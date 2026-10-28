@@ -106,7 +106,7 @@ def test_checked_in_fixture_is_canonical() -> None:
 
 
 def test_checked_in_fixture_matches_cryptographic_regeneration() -> None:
-    pytest.importorskip("cryptography", reason="fixture freshness regenerates Ed25519 keys and signatures")
+    pytest.importorskip("cryptography", reason="OPTIONAL_DEPENDENCY_ABSENT: cryptography (seal extra) is absent, so the checked-in silo composition fixture is not regenerated from Ed25519 keys and signatures here and test_checked_in_fixture_matches_cryptographic_regeneration stays unexecuted; the platform-python-contracts workflow job installs the seal extra and runs the complete suite, including this file")
     assert _load() == build_fixture()
 
 

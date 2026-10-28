@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/collective_closure_evidence.json",
+  "title": "Fixed-membership collective point-decision closure evidence",
+  "description": "Structural grammar only; native recheck enforces independent exact selection, child replay, component closure and budgets.",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "static_certificate", "role_certificates", "protocol", "decisions"],
+  "properties": {
+    "schema_version": {"const": "verifier-current-collective-closure-evidence-1"},
+    "static_certificate": {"type": ["string", "null"], "contentEncoding": "base64"},
+    "role_certificates": {"type": ["object", "null"], "maxProperties": 256, "additionalProperties": {"type": ["string", "null"], "contentEncoding": "base64"}},
+    "protocol": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/protocol"}]},
+    "decisions": {"type": ["array", "null"], "maxItems": 4096, "items": {"$ref": "#/$defs/decision"}}
+  },
+  "$defs": {
+    "name": {"type": "string", "minLength": 1, "maxLength": 256},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "instant": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "edge": {"type": "object", "additionalProperties": false, "required": ["source_role", "target_role"], "properties": {"source_role": {"$ref": "#/$defs/name"}, "target_role": {"$ref": "#/$defs/name"}}},
+    "class": {
+      "type": "object", "additionalProperties": false,
+      "required": ["decision_class", "required_roles", "countersign", "distinct_actors", "distinct_root_humans"],
+      "properties": {
+        "decision_class": {"$ref": "#/$defs/name"},
+        "required_roles": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"$ref": "#/$defs/name"}},
+        "countersign": {"type": "array", "maxItems": 4096, "uniqueItems": true, "items": {"$ref": "#/$defs/edge"}},
+        "distinct_actors": {"type": "boolean"}, "distinct_root_humans": {"type": "boolean"}
+      }
+    },
+    "protocol": {"type": "object", "additionalProperties": false, "required": ["schema_version", "classes"], "properties": {"schema_version": {"const": "verifier-current-collective-point-decision-protocol-1"}, "classes": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"$ref": "#/$defs/class"}}}},
+    "component": {"type": "object", "additionalProperties": false, "required": ["role_id", "decision_id"], "properties": {"role_id": {"$ref": "#/$defs/name"}, "decision_id": {"$ref": "#/$defs/name"}}},
+    "decision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["position", "decision_id", "time_us", "decision_class", "content_digest", "components"],
+      "properties": {
+        "position": {"type": "integer", "minimum": 0, "maximum": 4095},
+        "decision_id": {"$ref": "#/$defs/name"}, "time_us": {"$ref": "#/$defs/instant"},
+        "decision_class": {"$ref": "#/$defs/name"}, "content_digest": {"$ref": "#/$defs/digest"},
+        "components": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/component"}}
+      }
+    }
+  }
+}

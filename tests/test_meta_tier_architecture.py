@@ -31,16 +31,21 @@ def test_current_tiers_do_not_promote_old_adaptation_or_disclosure() -> None:
     )[0]
     meanings = {
         int(number): meaning
-        for number, meaning in re.findall(r"^\| ([1-8]) \| \*\*([^*]+)\*\* \|", current, re.M)
+        for number, meaning in re.findall(r"^\| ([1-9]) \| \*\*([^*]+)\*\* \|", current, re.M)
     }
     assert meanings == {
         1: "Facets", 2: "Dynamics", 3: "Statics", 4: "Closure",
         5: "Independence", 6: "Privacy", 7: "Consent", 8: "Governance",
+        9: "Security",
     }
     assert {tier.value: tier.name.title() for tier in MetaTier} == meanings
     assert "No legacy numbered-profile PASS transfers" in current
     assert "legacy domain adaptation" in current
     assert "legacy disclosure" in current
+    assert "Security is above governance" in current
+    assert "[RECEIPT-9.1](CURRENT_RECEIPT_CHAIN.md)" in current
+    assert "issuer authenticity, signature validity or complete security-tier" in current
+    assert "conformance, which remains NOT_ESTABLISHED" in current
 
 
 def test_legacy_actor_definition_is_explicitly_superseded() -> None:

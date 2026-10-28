@@ -1,5 +1,6 @@
-"""Terminology: continuous integration (CI); GNU Privacy Guard (GPG); operating system (OS);
-pull request (PR); Verifier Standard (VSTD).
+"""Terminology: continuous integration (CI); GNU Privacy Guard (GPG);
+Java unit test report format (JUnit); operating system (OS); pull request (PR);
+Verifier Standard (VSTD).
 
 Verify that local preflight checks catch defects before remote push."""
 
@@ -11,12 +12,70 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts import preflight
+
+
+def _ci_job(name: str) -> dict:
+    workflow = yaml.safe_load(
+        (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    )
+    return workflow["jobs"][name]
+
+
+def _job_commands(job: dict) -> str:
+    return "\n".join(str(step.get("run", "")) for step in job["steps"])
+
+
+@pytest.mark.parametrize(
+    ("job_name", "report_stem"),
+    (("base", "base-contracts"), ("optional-discovery", "optional-discovery")),
+)
+def test_protected_ci_audits_the_same_pytest_output_it_publishes(
+    job_name: str,
+    report_stem: str,
+) -> None:
+    """Hosted suppression prevention consumes the actual protected test run.
+
+    Summarizing JUnit skip elements is not sufficient: pytest serializes expected
+    failures as skipped elements too.  The preflight audit must therefore inspect
+    the verbose ``-r`` terminal evidence that distinguishes skip, xfail and xpass.
+    """
+    job = _ci_job(job_name)
+    commands = _job_commands(job)
+
+    assert job_name in _ci_job("conformance-gate")["needs"]
+    assert f"--junitxml={report_stem}.xml" in commands
+    assert "-rsxX" in commands
+    assert f"{report_stem}.pytest.txt" in commands
+    assert "from scripts.preflight import check_test_skips" in commands
+    assert f"check_test_skips(Path('{report_stem}.pytest.txt').read_text" in commands
+
+
+def test_optional_discovery_runs_every_declared_parser_fixture_suite() -> None:
+    job = _ci_job("optional-discovery")
+    commands = _job_commands(job)
+
+    for extra in (
+        "discovery-javascript",
+        "discovery-rust",
+        "discovery-shell",
+        "discovery-workflows",
+    ):
+        assert extra in commands
+    for test_file in (
+        "tests/test_namespace_javascript.py",
+        "tests/test_namespace_systems.py",
+        "tests/test_namespace_documents.py",
+        "tests/test_namespace_html.py",
+        "tests/test_polish0_interface_adversary.py",
+    ):
+        assert test_file in commands
 
 
 def test_stdlib_smoke_conforms() -> None:
@@ -64,9 +123,47 @@ def test_nested_test_commands_are_verbose_and_bounded(check, monkeypatch: pytest
         return 0, "1 passed", ""
     monkeypatch.setattr(preflight, "_run_command", observe)
     assert check()
-    assert len(commands) == 1
-    assert {"-u", "-vv", "-s", "--durations=10", "--timeout=60"} <= set(commands[0])
-    assert not {"-q", "-qq"} & set(commands[0])
+    tests = [command for command in commands if "pytest" in command]
+    assert len(tests) == 1
+    assert {"-u", "-vv", "-s", "--durations=10", "--timeout=60"} <= set(tests[0])
+    assert not {"-q", "-qq"} & set(tests[0])
+
+
+def _suite_with_boundary(monkeypatch: pytest.MonkeyPatch, boundary_code: int) -> list[list[str]]:
+    commands: list[list[str]] = []
+
+    def observe(command, **kwargs):
+        commands.append(command)
+        if "pytest" in command:
+            return 0, "1 passed", ""
+        return boundary_code, "", "[BOUNDARY FAIL] email address in base-contracts.xml"
+
+    monkeypatch.setattr(preflight, "_run_command", observe)
+    return commands
+
+
+def test_the_suite_report_is_scanned_as_the_hosted_run_scans_it(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """The hosted base job fails when its JUnit report fails the release boundary.
+
+    A parametrized id is written into the report as its parameters' text, so a test
+    file the source scan passes can still produce a report the release boundary
+    rejects; that is how a head passed preflight and failed ten hosted jobs.
+    """
+    commands = _suite_with_boundary(monkeypatch, 0)
+    assert preflight.check_full_test_suite()
+    suite, boundary = commands
+    assert "scripts.pytest_public_evidence" in suite
+    (report,) = [argument.split("=", 1)[1] for argument in suite
+                 if argument.startswith("--junitxml=")]
+    assert boundary[1:] == [str(preflight.ROOT / "scripts" / "check_release_boundary.py"), report]
+
+
+def test_a_report_the_release_boundary_rejects_fails_preflight(
+        monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    _suite_with_boundary(monkeypatch, 1)
+    assert not preflight.check_full_test_suite()
+    assert "[TEST EVIDENCE] FAIL" in capsys.readouterr().out
 
 
 def test_git_signatures_on_head_or_range() -> None:
@@ -75,7 +172,8 @@ def test_git_signatures_on_head_or_range() -> None:
 
 @pytest.mark.timeout(180)
 def test_preflight_main_execution() -> None:
-    assert preflight.main() in (0, 1)
+    # An unavailable attached description is UNKNOWN, distinct from a failed check.
+    assert preflight.main() in (0, 1, 2)
 
 
 def test_classify_skip_reason_rubric_tags() -> None:
@@ -155,6 +253,135 @@ def test_audit_test_skips_detects_summary_count_discrepancy() -> None:
     assert any("pytest reported 39 skipped tests, but audit parsed only 5" in item[1] for item in unclassified)
 
 
+def test_audit_test_skips_rejects_summary_that_undercounts_details() -> None:
+    sample_output = (
+        "SKIPPED [2] tests/test_links.py:12: OS_CAPABILITY_GUARD: symlink unavailable\n"
+        "=========================== 8 passed, 1 skipped in 0.10s ===========================\n"
+    )
+
+    success, counts, unclassified = preflight.audit_test_skips(sample_output)
+
+    assert success is False
+    assert counts["OS_CAPABILITY_GUARD"] == 2
+    assert any(item[0] == "PYTEST_SUMMARY_DISCREPANCY" for item in unclassified)
+
+
+def test_audit_test_skips_rejects_xfailed_test_as_unclosed_suppression(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    sample_output = (
+        "XFAIL tests/test_policy.py::test_required_behavior - known defect\n"
+        "==================== 8 passed, 1 xfailed in 0.10s ====================\n"
+    )
+
+    success, counts, unclassified = preflight.audit_test_skips(sample_output)
+
+    assert success is False
+    assert sum(counts.values()) == 0
+    assert any(item[0] == "PYTEST_XFAIL_PRESENT" for item in unclassified)
+    assert preflight.check_test_skips(sample_output) is False
+    rendered = capsys.readouterr().out
+    assert "complete clean run" not in rendered
+    assert "XFAIL and XPASS have no passing-coverage rubric" in rendered
+
+
+def test_audit_test_skips_rejects_non_strict_xpass() -> None:
+    sample_output = (
+        "XPASS tests/test_policy.py::test_required_behavior - defect unexpectedly passed\n"
+        "==================== 8 passed, 1 xpassed in 0.10s ====================\n"
+    )
+
+    success, counts, unclassified = preflight.audit_test_skips(sample_output)
+
+    assert success is False
+    assert sum(counts.values()) == 0
+    assert any(item[0] == "PYTEST_XPASS_PRESENT" for item in unclassified)
+
+
+def test_audit_test_skips_rejects_strict_xpass_failure() -> None:
+    sample_output = (
+        "FAILED tests/test_policy.py::test_required_behavior\n"
+        "[XPASS(strict)] known defect\n"
+        "==================== 1 failed, 8 passed in 0.10s ====================\n"
+    )
+
+    success, counts, unclassified = preflight.audit_test_skips(sample_output)
+
+    assert success is False
+    assert sum(counts.values()) == 0
+    assert any(item[0] == "PYTEST_STRICT_XPASS_PRESENT" for item in unclassified)
+
+
+def test_audit_test_skips_preserves_skip_counts_while_rejecting_xfail() -> None:
+    sample_output = (
+        "SKIPPED [2] tests/test_links.py:12: OS_CAPABILITY_GUARD: symlink unavailable\n"
+        "XFAIL tests/test_policy.py::test_required_behavior - known defect\n"
+        "==================== 8 passed, 2 skipped, 1 xfailed in 0.10s ====================\n"
+    )
+
+    success, counts, unclassified = preflight.audit_test_skips(sample_output)
+
+    assert success is False
+    assert counts["OS_CAPABILITY_GUARD"] == 2
+    assert any(item[0] == "PYTEST_XFAIL_PRESENT" for item in unclassified)
+
+
+def test_xfail_finding_cannot_mask_a_missing_skip_detail() -> None:
+    sample_output = (
+        "SKIPPED [1] tests/test_links.py:12: OS_CAPABILITY_GUARD: symlink unavailable\n"
+        "XFAIL tests/test_policy.py::test_required_behavior - known defect\n"
+        "==================== 8 passed, 2 skipped, 1 xfailed in 0.10s ====================\n"
+    )
+
+    success, counts, unclassified = preflight.audit_test_skips(sample_output)
+
+    assert success is False
+    assert counts["OS_CAPABILITY_GUARD"] == 1
+    assert any(item[0] == "PYTEST_XFAIL_PRESENT" for item in unclassified)
+    assert any(item[0] == "PYTEST_SUMMARY_DISCREPANCY" for item in unclassified)
+
+
+@pytest.mark.parametrize(
+    "sample_output,code",
+    (
+        (
+            "==================== 8 passed, 1 xfailed in 0.10s ====================\n",
+            "PYTEST_XFAIL_SUMMARY_DISCREPANCY",
+        ),
+        (
+            "==================== 8 passed, 1 xpassed in 0.10s ====================\n",
+            "PYTEST_XPASS_SUMMARY_DISCREPANCY",
+        ),
+        (
+            "XFAIL tests/test_policy.py::test_required_behavior - known defect\n",
+            "PYTEST_XFAIL_PRESENT",
+        ),
+    ),
+)
+def test_audit_test_skips_rejects_truncated_suppression_reporting(
+    sample_output: str,
+    code: str,
+) -> None:
+    success, _, unclassified = preflight.audit_test_skips(sample_output)
+
+    assert success is False
+    assert any(item[0] == code for item in unclassified)
+
+
+def test_audit_test_skips_accepts_a_clean_pytest_run() -> None:
+    sample_output = (
+        "tests/test_policy.py::test_required_behavior PASSED\n"
+        "==================== 9 passed in 0.10s ====================\n"
+    )
+
+    success, counts, unclassified = preflight.audit_test_skips(sample_output)
+
+    assert success is True
+    assert sum(counts.values()) == 0
+    assert unclassified == []
+    assert preflight.check_test_skips(sample_output) is True
+
+
 
 # --- The pull-request description gate before a push -------------------------------
 
@@ -189,7 +416,7 @@ def _fake_github(monkeypatch: pytest.MonkeyPatch, pulls_by_branch: dict[str, lis
             if gh_status:
                 return gh_status, "", "gh: Bad credentials (401)"
             return 0, json.dumps(pulls_by_branch.get(cmd[cmd.index("--head") + 1], [])), ""
-        if str(cmd[1]).endswith("check_pr_description_changed.py"):
+        if str(cmd[1]).endswith("check_pr_description_revision.py"):
             number = cmd[cmd.index("--pr") + 1]
             return (1 if number in unrevised else 0), "[PR DESCRIPTION CHANGE] stub", ""
         if str(cmd[1]).endswith("check_pr_description.py"):
@@ -227,7 +454,7 @@ def test_a_push_under_another_name_is_checked_against_the_pull_request_it_moves(
     checked = [cmd for cmd in calls if str(cmd[1]).endswith("check_pr_description.py")]
     assert len(checked) == 1
     assert {"--pr", "7", "--repo", OWNER_REPOSITORY, "--commit", PUSHED,
-            "--require-pull-request"} <= set(checked[0])
+            "--require-pull-request", "--pre-push-pending-run"} <= set(checked[0])
 
 
 def test_a_description_that_binds_the_pushed_commit_passes(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -247,7 +474,7 @@ def test_a_push_whose_description_was_not_revised_is_refused(monkeypatch: pytest
                          unrevised=frozenset({"7"}))
     assert not preflight.check_pr_descriptions_for_push(
         [("refs/heads/feature", PUSHED, "refs/heads/feature", BEFORE)], ["origin", PUSH_URL])
-    (revision,) = [cmd for cmd in calls if str(cmd[1]).endswith("check_pr_description_changed.py")]
+    (revision,) = [cmd for cmd in calls if str(cmd[1]).endswith("check_pr_description_revision.py")]
     assert {"--pr", "7", "--repo", OWNER_REPOSITORY} <= set(revision)
     assert "--head" not in revision and "--body" not in revision  # the live description, current head
     assert any(str(cmd[1]).endswith("check_pr_description.py") for cmd in calls)
@@ -331,6 +558,9 @@ def test_a_push_to_an_unknown_repository_fails(monkeypatch: pytest.MonkeyPatch) 
 AT = "@"
 
 
+# Named, never left to the default: a default id is the parameter's own text, and ids
+# are written into the test evidence, which the release boundary scans like any other
+# published text. Three of these addresses would reach it joined.
 @pytest.mark.parametrize(("url", "expected"), [
     ("https://github.com/Owner/verifier.git", OWNER_REPOSITORY),
     ("https://github.com/Owner/verifier", OWNER_REPOSITORY),

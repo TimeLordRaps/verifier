@@ -6,6 +6,8 @@ from .numerical import configuration, flatten, loss_gradient, network, update, v
 
 
 def evaluate(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
+    if type(check) is not str or check not in ("configuration", "checkpoints", "training", "updates", "lineage"):
+        raise Unavailable("unsupported training check")
     config = obj(need(artifact, "configuration"))
     configuration(config)
     if check == "configuration":

@@ -5,10 +5,7 @@ from copy import deepcopy
 from pathlib import Path
 import base64
 import hashlib
-import importlib
-import importlib.util
 import json
-import sys
 
 import pytest
 
@@ -16,22 +13,11 @@ from verifier.core.certificate import canonical_bytes, canonical_digest
 from verifier.core.evidence import EvidenceStore
 from verifier.core.namespace import NamespaceObject, assess_composition, composition_digest
 from verifier.domains.common import Refuted, Unavailable
+from verifier.domains.contracts import hyper_closure as hyper_closure_contract
 
 
 def candidate():
-    name = "verifier.domains.contracts.hyper_closure"
-    try:
-        return importlib.import_module(name)
-    except ModuleNotFoundError as exc:
-        if exc.name != name:
-            raise
-    path = Path(__file__).resolve().parents[1] / "src/verifier/domains/contracts/hyper_closure.py"
-    spec = importlib.util.spec_from_file_location(name, path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return hyper_closure_contract
 
 
 def specimen():

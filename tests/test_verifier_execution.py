@@ -181,6 +181,29 @@ def test_real_wall_watchdog_terminates_owned_descendant() -> None:
 
 
 @WINDOWS
+def test_more_than_128_sequential_owned_children_preserve_the_active_bound() -> None:
+    from verifier.domains.verifier_execution import _run_windows
+
+    program = (
+        "import subprocess,sys\n"
+        "for _ in range(140):\n"
+        " child=subprocess.Popen([sys.executable,'-I','-S','-c',"
+        "'import time;time.sleep(0.05)'])\n"
+        " if child.wait() != 0: raise SystemExit(2)\n"
+        "print(140)\n"
+    )
+    result = _run_windows(
+        [sys.executable, "-I", "-S", "-B", "-u", "-c", program],
+        b"",
+        256 * 1024 * 1024,
+        30.0,
+    )
+    assert result["stdout"].strip() == b"140"
+    assert result["exit_code"] == 0
+    assert result["owned_job_empty"] is True
+
+
+@WINDOWS
 def test_limit_query_failure_never_resumes_child(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     from verifier.domains import verifier_execution as execution
     marker = tmp_path / "unexpected-execution"

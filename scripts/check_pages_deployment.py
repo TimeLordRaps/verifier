@@ -35,7 +35,9 @@ MANIFEST_SCHEMA = "verifier-pages-deployment-manifest-1"
 REPOSITORY_CHECKS_WORKFLOW_PATH = ".github/workflows/ci.yml"
 MAX_MANIFEST_BYTES = 4 * 1024 * 1024
 MAX_RESPONSE_BYTES = 8 * 1024 * 1024
-MAX_FILE_BYTES = 8 * 1024 * 1024
+# A deployed file may be as large as the largest stored component package the loader admits
+# (MAX_PACKAGE_BYTES in verifier.interoperability.storage); tests bind the two together.
+MAX_FILE_BYTES = 32 * 1024 * 1024
 MAX_TOTAL_BYTES = 64 * 1024 * 1024
 MAX_FILES = 4096
 MAX_PATH_BYTES = 512

@@ -5,7 +5,7 @@ occupancy. `verifier.domains.contracts.identity_occupancy` checks one selected
 IDENTITY in an exact, caller-selected collection of namespace objects. This
 new contract does not reinterpret historical `verifier.domains.identity`
 receipts or silently promote legacy `IDENTITY-*.m` results to the current
-eight-tier object hierarchy. All counts and identifiers here are dimensionless.
+nine-tier object hierarchy. All counts and identifiers here are dimensionless.
 
 The checker requires exactly one ACTOR and one ROLE reachable from the selected
 IDENTITY. The ACTOR represents exactly one HUMAN, AGENT or BOT, with an explicit
@@ -43,5 +43,14 @@ Even at `PASS`, human authenticity, actual occupancy or liveness, delegated
 role authority, retained evidence resolution, privacy, consent, governance,
 and each object's numbered-profile conformance remain `NOT_ESTABLISHED`.
 The digest commitments select and replay bytes; they do not authenticate their
-source. A current `[OBJECT]-1..8.m` grounding certificate requires its own
-registered proposition, mechanism, independent evidence, and replay.
+source. A current `[OBJECT]-1..9.m` grounding certificate requires its own
+registered proposition, mechanism, independent evidence, and replay. The separate
+[current IDENTITY-3.1 certificate](CURRENT_IDENTITY_SCOPE.md) supplies that selection
+for this finite declared relation, without changing historical identity receipts.
+
+Callers may select positive integer composition limits for object count, composition
+operations, payload bytes and reference bytes. A separate `max_relation_steps` limit
+counts popped operand references across all identity relation expansions, including
+repeated visits. Exhaustion produces UNKNOWN. Defaults retain the existing composition
+limits and allow 100,000 relation steps; these counters are dimensionless and do not
+measure machine instructions or wall-clock execution time.

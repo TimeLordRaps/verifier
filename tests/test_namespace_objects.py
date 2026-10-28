@@ -2,13 +2,15 @@
 from __future__ import annotations
 
 from dataclasses import replace
-import importlib
 
 import pytest
 
+from verifier.core import namespace as namespace_contract
+from verifier.domains.contracts import accountability
+
 
 def namespace():
-    return importlib.import_module("verifier.core.namespace")
+    return namespace_contract
 
 
 def test_exact_names_and_general_meta_tier_meanings():
@@ -22,16 +24,24 @@ def test_exact_names_and_general_meta_tier_meanings():
     assert {tier.value: tier.name for tier in module.MetaTier} == {
         1: "FACETS", 2: "DYNAMICS", 3: "STATICS", 4: "CLOSURE",
         5: "INDEPENDENCE", 6: "PRIVACY", 7: "CONSENT", 8: "GOVERNANCE",
+        9: "SECURITY",
     }
     coordinate = module.ObjectCoordinate.parse("SIM-3.6")
     assert coordinate.object_kind.value == "SIM"
     assert coordinate.tier.value == 3
     assert coordinate.objective == 6
     assert str(coordinate) == "SIM-3.6"
+    security_coordinate = module.ObjectCoordinate.parse("RECEIPT-9.1")
+    assert security_coordinate.object_kind.value == "RECEIPT"
+    assert security_coordinate.tier is module.MetaTier.SECURITY
+    assert security_coordinate.objective == 1
+    assert str(security_coordinate) == "RECEIPT-9.1"
 
 
-@pytest.mark.parametrize("value", ["SIM-0.1", "SIM-9.1", "SIM-3.0", "SIM-3.m",
-                                      "SIM-03.1", "SIM-3.01", "VSTD-1.1", "ABSENT-1.1"])
+@pytest.mark.parametrize("value", ["SIM-0.1", "SIM-10.1", "SIM--9.1", "SIM-9.0",
+                                      "SIM-9.01", "SIM-3.0", "SIM-3.m", "SIM-03.1",
+                                      "SIM-3.01", "VSTD-1.1", "ABSENT-1.1",
+                                      "GOVERNANCE-9.1"])
 def test_coordinate_rejects_unknown_and_legacy_names(value):
     with pytest.raises(ValueError):
         namespace().ObjectCoordinate.parse(value)
@@ -89,6 +99,25 @@ def test_full_composition_is_order_independent_and_bounded_structural_only():
     assert result.object_profile_conformance == "NOT_ESTABLISHED"
     assert result.scope == "finite typed object composition"
     assert assess(objects, max_objects=2).verdict.value == "UNKNOWN"
+
+
+def test_verifier_may_bind_one_typed_governing_harness() -> None:
+    make = namespace().NamespaceObject.create
+    objects = specimen()
+    index = next(
+        position
+        for position, item in enumerate(objects)
+        if item.object_id == "verifier"
+    )
+    objects[index] = make(
+        "verifier", "VERIFIER", {}, {"harness": ["harness"]}
+    )
+
+    assert assess(objects).verdict.value == "PASS"
+    objects[index] = make(
+        "verifier", "VERIFIER", {}, {"harness": ["data"]}
+    )
+    assert assess(objects).verdict.value == "FAIL"
 
 
 def test_typed_nested_graph_can_replace_an_environment_but_not_an_architecture():
@@ -202,8 +231,7 @@ def ownership_specimen(actor_kind, realm):
 
 
 def ownership(objects, evidence=None, binding=None):
-    module = importlib.import_module("verifier.domains.contracts.accountability")
-    return module.assess_hardware_ownership(
+    return accountability.assess_hardware_ownership(
         objects, owner_id="owner", expected_digest=namespace().composition_digest(objects),
         isolation_evidence=evidence, isolation_binding=binding)
 

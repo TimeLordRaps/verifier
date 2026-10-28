@@ -27,6 +27,18 @@ moving an export to another host preserves their identity-bearing digests.
 | `silo_grounding` | Whether the silo is connected through necessary, retained derivations to the exact authority axiom agency coordinate and a closed, completely enumerated finite authority model. This does not establish that reachable states preserve the ground actions. |
 | `authority_axiom_agency` | Whether the finite-model interpreter establishes the ground-level action floor across every declared reachable state. |
 
+The authoritative wire vocabulary is deliberately narrow:
+`reconstructibility` is `COMPLETE` or `INCOMPLETE`; `derivation_closure` is
+`CLOSED` or `OPEN`; `self_derivability` is `ESTABLISHED` or
+`NOT_ESTABLISHED`; `completeness` is `COMPLETE`, `INCOMPLETE`, or `UNKNOWN`;
+`silo_grounding` is `ESTABLISHED`, `NOT_ESTABLISHED`, or `UNKNOWN`; and
+`authority_axiom_agency` is `PRESERVED`, `VIOLATED`, or `UNKNOWN`. The
+standalone schema, combined schema, and Python decoder admit exactly these
+values. Malformed records are rejected; `INVALID` and `CONFLICTED` are not
+six-axis assessment results, and `UNKNOWN` appears only on the three axes that
+can preserve insufficient evidence without mischaracterizing a closed binary
+check.
+
 Self-derivation never implies completeness. The alpha mechanism can establish
 only `SILO_CENSUS`. `DERIVATIONAL_COVERAGE`, `SEMANTIC_COVERAGE`, and
 `LOGICAL_DECIDABILITY` remain `UNKNOWN` until separately registered mechanisms
@@ -161,7 +173,10 @@ artifact does not supply decryption material or make unavailable bytes present.
   kind, coverage universe, self-derivation record, and authority axiom agency.
   Typed `EVIDENCES`, `CHECKS`, `REFUTES`, `CHALLENGES`, `SUPERSEDES`,
   and `REVOKES` relations retain exact source, target, mechanism, and optional
-  semantic coordinates; text difference alone never establishes contradiction.
+  semantic coordinates. Relation records are unique and ordered by relation type,
+  source path and target path, with ties ordered by canonical record bytes;
+  repeating an identical relation is rejected rather than silently changing
+  cardinality. Text difference alone never establishes contradiction.
 - `verifier-signed-head-1` binds a sequence and commit to an Ed25519 signing key.
 - `verifier-publisher-1` derives publisher identity from a genesis key. It proves
   no real-world identity, authorship, independence, correctness, or reputation.

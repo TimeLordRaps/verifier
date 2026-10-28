@@ -10,13 +10,16 @@ from __future__ import annotations
 import ast
 from copy import deepcopy
 import hashlib
-import importlib
 import json
 from pathlib import Path
 from types import ModuleType
 from typing import Any
 
 import pytest
+
+from verifier.interoperability import formation_checker
+from verifier.interoperability import formation_producer
+from verifier.interoperability import formation_wire
 
 
 DIGEST_A = "sha256:" + "a" * 64
@@ -35,9 +38,7 @@ OBSERVATION_FIELDS = {
 
 @pytest.fixture
 def formation() -> tuple[ModuleType, ModuleType, ModuleType]:
-    return tuple(importlib.import_module("verifier.interoperability." + name) for name in (
-        "formation_wire", "formation_producer", "formation_checker",
-    ))
+    return formation_wire, formation_producer, formation_checker
 
 
 def _bytes(value: Any) -> bytes:
@@ -98,10 +99,8 @@ def _two_steps() -> list[dict[str, Any]]:
 
 
 def test_typed_formation_producer_and_independent_checker_are_available() -> None:
-    producer = importlib.import_module("verifier.interoperability.formation_producer")
-    checker = importlib.import_module("verifier.interoperability.formation_checker")
-    assert callable(producer.produce_formation_certificate)
-    assert callable(checker.check_formation)
+    assert callable(formation_producer.produce_formation_certificate)
+    assert callable(formation_checker.check_formation)
 
 
 def test_typed_formation_atom_is_an_opaque_symbol_not_an_agency_claim(formation) -> None:
@@ -491,9 +490,17 @@ def test_typed_formation_checker_imports_no_producer_and_survives_disabled_produ
     def forbidden(*args, **kwargs):
         raise AssertionError("independent checker invoked producer inference")
 
-    for name, value in vars(producer).copy().items():
-        if callable(value) and getattr(value, "__module__", None) == producer.__name__:
-            monkeypatch.setattr(producer, name, forbidden)
+    producer_syntax = ast.parse(
+        Path(producer.__file__).read_text(encoding="utf-8")
+    )
+    declared_callables = {
+        node.name
+        for node in producer_syntax.body
+        if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
+    }
+    assert declared_callables == {"_Term", "produce_formation_certificate"}
+    monkeypatch.setattr(producer, "_Term", forbidden)
+    monkeypatch.setattr(producer, "produce_formation_certificate", forbidden)
     assert checker.check_formation(_bytes(subject), certificate)["status"] == "CHECKED"
     forged = _certificate(subject); forged["steps"][-1]["premises"] = [4, 2]
     _assert_failure(_check(checker, subject, forged), "INVALID", "FORMATION_CERTIFICATE_STEP_INVALID")

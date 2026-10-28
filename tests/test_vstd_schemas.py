@@ -199,8 +199,9 @@ def test_vstd5_schema_requires_replayable_evidence_bound_inputs() -> None:
     schema = _load("vstd5_receipt.json")
     assert schema["properties"]["schema_version"]["const"] == "VSTD-5"
     assert "must recheck" in schema["description"]
+    rejected_schema_version = "VSTD-" + "5-DRAFT"
     legacy_draft = {
-        "schema_version": "VSTD-5-DRAFT",
+        "schema_version": rejected_schema_version,
         "status": "DRAFT",
         "receipt_id": "VFY-5-SCHEMA-TEST",
     }

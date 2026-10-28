@@ -33,7 +33,7 @@ from dataclasses import dataclass
 import math
 from typing import Any, Callable
 
-from verifier.core.certificate import canonical_digest
+from verifier.core.certificate import canonical_bytes, canonical_digest
 from .common import (Budget, Refuted, Unavailable, close, digest, integer, need, number,
                      obj, same, seq, text)
 
@@ -238,10 +238,15 @@ def _data(check: str, artifact: dict, inputs: dict, budget: Budget) -> dict:
             obj(summary, {"cardinality", "balance", "entropy_bits"})
             budget.tick(len(rows))
             counts: dict[str, int] = {}
+            distinct: set[bytes] = set()
             for record in rows:
-                value = canonical_key(need(record, field))
-                counts[value] = counts.get(value, 0) + 1
-            same(len(counts), summary["cardinality"], "recomputed cardinality differs")
+                value = need(record, field)
+                distinct.add(canonical_bytes(value))
+                label = canonical_key(value)
+                counts[label] = counts.get(label, 0) + 1
+            same(len(distinct), summary["cardinality"], "recomputed cardinality differs")
+            if len(counts) != len(distinct):
+                raise Unavailable("ambiguous legacy distribution class labels")
             balance = {k: counts[k] / len(rows) for k in sorted(counts)}
             same(sorted(balance), sorted(obj(summary["balance"])), "recomputed class inventory differs")
             for key, share in balance.items():

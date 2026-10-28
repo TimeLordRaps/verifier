@@ -1,0 +1,116 @@
+{
+  "schema_version": "verifier-prdel-native-v2-cli-selection-1",
+  "candidate_status": "DEVELOPMENT_CANDIDATE",
+  "authority_scope": "VERIFIER_PRDEL_IMPLEMENTATION_METADATA",
+  "selection_scope": "DEPENDENT_EXACT_PATH_OVERLAY_ONLY",
+  "target_source_coordinate": {
+    "kind": "NON_GIT_SNAPSHOT_AGGREGATE",
+    "sha256": "2312413c8610fc0e4a7f8fd147e3af4ac8c5d6e557ea77bfaadbd3261e6ecade",
+    "working_tree_completeness": "UNKNOWN"
+  },
+  "parent_selection": {
+    "path": "prdel-v2-selection-overlay-20261008-r1/src/verifier/profiles/prdel-native-v2-selection-1.json",
+    "sha256": "7e2fade8c841873478c1e9066fc38b2b3653b5d12fb11d7688f7adc9483411d1",
+    "status": "REQUIRED_EXACT_DEPENDENCY"
+  },
+  "selected_specification": {
+    "path": "src/verifier/standard/PRDEL_NATIVE_V2_CLI.md",
+    "bytes": 4142,
+    "sha256": "9e913c5690216e5f3f2b8848c37aaf8e84a8c451f05304dd884466e4f8d309f9"
+  },
+  "projected_inventory": [
+    {
+      "path": "src/verifier/runtime/gate.py",
+      "role": "native_v2_cli_render_and_shard_dispatch",
+      "origin": "TARGET_REPLACEMENT",
+      "base_bytes": 89960,
+      "base_sha256": "cebd217824149258f20016d4f014c18cd441c52cd74e27cdd619d4582f07d438",
+      "selected_bytes": 101070,
+      "selected_sha256": "ccb7391da8a8925c7b20f39744eee4321ef5258054b2d09922f8f603d8805462",
+      "selected_symbols": [
+        "_handle_prdel_v2_command",
+        "_validate_prdel_v2_shard_selection",
+        "_emit_prdel_v2_report"
+      ],
+      "limits": [
+        "Reads retain the existing 33554432-byte artifact and 67108864-byte aggregate ceilings.",
+        "Unimplemented compilation, definitions, comparison, impact-DAG and frontier discharge remain UNKNOWN."
+      ]
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-cli-2.schema.json",
+      "role": "native_v2_cli_operation_schema",
+      "origin": "TARGET_REPLACEMENT",
+      "base_bytes": 1425,
+      "base_sha256": "f9d0aa1699aff5343956ee1ead24f21b079959a6534e9e8e662a7449811233bb",
+      "selected_bytes": 3750,
+      "selected_sha256": "5aabec8efff97fa7b10450c06e71003ee8bae1ea2ea3afc3556b292ab7583355"
+    },
+    {
+      "path": "src/verifier/runtime/prdel.py",
+      "role": "existing_native_v2_render_and_logical_validation",
+      "origin": "UNCHANGED_TARGET_DEPENDENCY",
+      "bytes": 88416,
+      "sha256": "b0110f2f33b3bae5a8bf1e10eb0fdddd0537dd2af9b0df70e572b701728f05e0",
+      "selected_symbols": [
+        "render_prdel_v2",
+        "evaluate_description_v2"
+      ]
+    },
+    {
+      "path": "src/verifier/runtime/prdel_v2_shards.py",
+      "role": "existing_native_v2_shard_validation",
+      "origin": "UNCHANGED_TARGET_DEPENDENCY",
+      "bytes": 25964,
+      "sha256": "e3ab26d6cb08082e05892f8ed00dc5c6345aee6098a16f958d1d550c469de90d",
+      "selected_symbols": [
+        "reconstruct_prdel_v2_document",
+        "validate_prdel_v2_shards"
+      ]
+    },
+    {
+      "path": "src/verifier/standard/PRDEL_NATIVE_V2_CLI.md",
+      "role": "dependent_cli_capability_specification",
+      "origin": "OVERLAY_ADDITION",
+      "bytes": 4142,
+      "sha256": "9e913c5690216e5f3f2b8848c37aaf8e84a8c451f05304dd884466e4f8d309f9"
+    },
+    {
+      "path": "tests/test_prdel_v2_cli_overlay.py",
+      "role": "focused_retained_fixture_refutation_surface",
+      "origin": "OVERLAY_ADDITION",
+      "bytes": 14862,
+      "sha256": "fbbb30872d37dacc723779567286036f78cde28d660dcbbf7b3f65808ea19cd6"
+    }
+  ],
+  "compatibility_boundary": {
+    "unchanged_target_functions": [
+      "run_prdel_gate",
+      "_handle_prdel_shard_command",
+      "_handle_prdel_command",
+      "add_gate_parsers",
+      "handle_gate_command"
+    ],
+    "legacy_manifest_v2_selection_sha256": "41a9387521882b91e736079172cc42d1570841cbb530165cb7939db237ec4875",
+    "v1_fallback_permitted": false
+  },
+  "capabilities": {
+    "render_explicit_v2_document": "SELECTED",
+    "validate_complete_private_v2_shards": "SELECTED",
+    "rule_compilation": "UNSUPPORTED_UNKNOWN",
+    "authored_definitions": "UNSUPPORTED_UNKNOWN",
+    "preventative_comparison": "UNSUPPORTED_UNKNOWN",
+    "impact_dag": "UNSUPPORTED_UNKNOWN",
+    "frontier_discharge": "UNSUPPORTED_UNKNOWN",
+    "core_registration": "OUT_OF_SCOPE"
+  },
+  "semantic_completeness": "UNKNOWN",
+  "release_authorized": false,
+  "claim_boundary": "Exact dependent development-candidate CLI wiring only; no full-suite, whole-estate completeness, runtime correctness, human acceptance, release authorization, model correctness, or overall safety claim.",
+  "release_dependencies": [
+    "PARENT_NATIVE_V2_SELECTION_MUST_BE_ADOPTED_EXACTLY",
+    "PACKAGED_SCHEMA_AND_RELEASE_INVENTORY_OWNER_ADMISSION_REQUIRED",
+    "FULL_APPLICABLE_TEST_AND_RELEASE_EVIDENCE_REQUIRED",
+    "HUMAN_ACCEPTANCE_AND_RELEASE_AUTHORITY_REQUIRED"
+  ]
+}
