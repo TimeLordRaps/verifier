@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "source_files": {
+    "src/verifier/artifact_control/__init__.py": {
+      "ArtifactVerification.sealed": "Report whether this verification result's state is SEALED.",
+      "ArtifactVerification.to_dict": "Serialize the observed freeze, guard, seal, anchor, errors, and warnings."
+    },
+    "src/verifier/core/certificate.py": {
+      "DecisionCertificate.digest": "Return the canonical digest of this certificate's serialized fields, including hints.",
+      "DecisionCertificate.to_dict": "Serialize the certificate header, formula, grounding, decision block, and hints."
+    },
+    "src/verifier/core/certification_mechanisms.py": {
+      "NativeCertificationMechanism.evaluate": "Check one supported native obligation against retained evidence; unsupported inputs stay UNKNOWN.",
+      "NativeCertificationMechanism.mechanism_digest": "Return a digest binding the listed native source modules to their current file bytes."
+    },
+    "src/verifier/core/evidence.py": {
+      "BoundProposition.digest": "Return the canonical digest of this proposition's serialized binding.",
+      "BoundProposition.from_dict": "Reconstruct a bound proposition and its evidence bounds from a mapping.",
+      "BoundProposition.to_dict": "Serialize the exact subject, mechanism, evidence, trust roots, bounds, and parameters of this proposition.",
+      "EvidenceBounds.to_dict": "Serialize the item-count and byte-count ceilings for bound evidence.",
+      "EvidenceStore.add": "Retain exact payload bytes and return their content reference, rejecting other types or a digest collision.",
+      "EvidenceStore.resolve": "Return retained bytes only when the reference exists and the bytes still match its digest.",
+      "VerificationSession.evaluate": "Evaluate a bound proposition against registered mechanism and retained evidence; unmet prerequisites yield UNKNOWN.",
+      "VerificationSession.register": "Register a mechanism by identifier and digest, refusing substitution under an existing identifier."
+    },
+    "src/verifier/core/geometry.py": {
+      "VerificationGeometry.canonical_digest": "Return the SHA-256 hex digest of the geometry's sorted compact JSON bytes.",
+      "VerificationGeometry.to_dict": "Serialize the geometry's declared coordinates and relations as JSON-compatible values."
+    },
+    "src/verifier/core/grounded_certification.py": {
+      "CertificationPolicy.digest": "Return the canonical digest of this policy's serialized fields.",
+      "CertificationPolicy.from_dict": "Parse a versioned policy, rejecting unknown coordinates and out-of-range resource bounds.",
+      "CertificationPolicy.to_dict": "Serialize admitted obligations, resource ceilings, and catalogue and specification digests.",
+      "CertificationRequest.from_dict": "Parse a versioned request, rejecting unknown or out-of-target obligation coordinates.",
+      "CertificationRequest.to_dict": "Serialize the requested claim binding, target profile, and bound obligations.",
+      "MechanismAdmission.from_dict": "Parse a mechanism admission with exact required fields and normalized digest.",
+      "MechanismAdmission.to_dict": "Serialize the admitted mechanism identifier, normalized digest, and declared trust roots."
+    },
+    "src/verifier/core/platform_comparison.py": {
+      "PlatformComparisonResult.exit_code": "Map PASS to zero, CONFLICTED or INVALID to one, and other statuses to two.",
+      "PlatformComparisonResult.to_dict": "Serialize the bounded diagnostic, compared platforms, differences, errors, and claim boundary."
+    },
+    "src/verifier/core/profile_obligations.py": {
+      "ProfileObligation.id": "Return the numbered profile and index as a dotted obligation identifier.",
+      "ProfileObligation.predicate": "Return the predicate name, using the VSTD-4 rung form for profile four.",
+      "ProfileObligation.to_dict": "Serialize this obligation with its dependency list, identifier, and predicate."
+    },
+    "src/verifier/core/receipt.py": {
+      "VstdReceipt.compute_and_set_digest": "Compute and store the digest of the receipt's stable payload; return that digest.",
+      "VstdReceipt.save_to_directory": "Write the receipt, claim, file manifest, optional log, and report under the output directory.",
+      "VstdReceipt.to_dict": "Serialize the receipt and compute its stable-payload digest first when absent.",
+      "VstdReceipt.verify_digest_integrity": "Compare the stored digest with the stable payload's recomputed digest, without verifying the claim."
+    },
+    "src/verifier/core/witness.py": {
+      "WitnessBundle.from_dict": "Reconstruct a witness bundle from its witness, independence, and corroboration mappings.",
+      "WitnessBundle.to_dict": "Serialize the claim binding, witness identities, independence assertions, and corroborations."
+    },
+    "src/verifier/data/assurance.py": {
+      "AssuranceLedger.current_status": "Return the most degraded recorded status for an artifact, or UNKNOWN when it is absent.",
+      "AssuranceLedger.events": "Return an immutable snapshot of recorded assurance events.",
+      "AssuranceLedger.graph_digest": "Return the digest captured for the historical Graph at ledger creation.",
+      "AssuranceLedger.record_rot": "Evaluate an exact current-status proposition and append a strictly degrading ROT event.",
+      "AssuranceLedger.record_rust": "Evaluate a descendant deviation and record diagnostic backward reachability, not causal attribution.",
+      "AssuranceLedger.record_trust": "Check exact transformation inputs, current admissibility, and prerequisites before evaluating and appending a TRUST event.",
+      "AssuranceLedger.resolutions": "Return an immutable snapshot of recorded conflict resolutions.",
+      "AssuranceLedger.rust_concentration": "Count distinct passing RUST origins reaching each ancestor; this is diagnostic, not causal strength.",
+      "AssuranceLedger.to_dict": "Serialize the historical Graph, events, resolutions, and digest of the current view.",
+      "AssuranceLedger.unresolved_conflicts": "Return conflict records that have no recorded resolution.",
+      "AssuranceLedger.verify_hash_chain": "Check event order and predecessor digests; this alone does not replay mechanisms or authenticate actors.",
+      "ObligationCoordinate.digest": "Return the canonical digest of this obligation coordinate's serialized fields.",
+      "ObligationCoordinate.from_dict": "Reconstruct an obligation coordinate, requiring its scope to be a mapping.",
+      "ObligationCoordinate.to_dict": "Serialize the obligation identifier, content digest, scope, assumptions, and exclusions."
+    },
+    "src/verifier/data/models.py": {
+      "ProvenanceHypergraph.add_artifact": "Add an artifact by unique identifier, keeping artifact and transformation identifiers disjoint.",
+      "ProvenanceHypergraph.add_conflict": "Add a conflict record by unique identifier and return that identifier.",
+      "ProvenanceHypergraph.add_contributor": "Add a contributor by unique identifier and return that identifier.",
+      "ProvenanceHypergraph.add_rights": "Add a rights record by unique identifier and return that identifier.",
+      "ProvenanceHypergraph.add_transformation": "Add a transformation by unique identifier, keeping transformation and artifact identifiers disjoint.",
+      "ProvenanceHypergraph.compute_completeness": "Compute declared-field coverage and lineage depth; digest presence does not rehash artifact bytes.",
+      "ProvenanceHypergraph.has_conflict": "Report whether any recorded conflict names this subject; resolution state is not considered.",
+      "ProvenanceHypergraph.to_dict": "Serialize recorded artifacts, transformations, contributors, rights, and conflicts."
+    },
+    "src/verifier/domains/certification.py": {
+      "NativeDomainAdapter.evaluate": "Replay one domain obligation against its bound bundle and policy, distinguishing unavailable from refuted evidence."
+    },
+    "src/verifier/interoperability/control_surface.py": {
+      "ControlSurfaceContext.to_dict": "Serialize interaction mode, domain tags, operating regime, consequences, and authority requirements.",
+      "SurfaceAnalysis.canonical_json_bytes": "Return canonical JSON bytes for this surface analysis's serialized fields.",
+      "SurfaceAnalysis.to_dict": "Serialize the geometry assessment, validity errors, closure blockers, holes, and claim boundary.",
+      "SurfaceHole.to_dict": "Serialize a detected hole with its native state, blocking effects, and required relations."
+    }
+  }
+}

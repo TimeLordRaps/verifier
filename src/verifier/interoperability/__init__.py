@@ -56,6 +56,7 @@ from .geometry_conflicts import (
 from .reference_catalog import reference_component_registry
 from .storage import (
     COMPONENT_PACKAGE_SCHEMA_VERSION,
+    COMPONENT_PACKAGE_V2_SCHEMA_VERSION,
     ComponentPackageError,
     ImplementationBinding,
     PackageArtifact,
@@ -71,6 +72,7 @@ __all__ = [
     "CandidateExecutionDeclaration",
     "CatalogError",
     "COMPONENT_PACKAGE_SCHEMA_VERSION",
+    "COMPONENT_PACKAGE_V2_SCHEMA_VERSION",
     "ComponentAvailability",
     "ComponentKind",
     "ComponentLifecycle",

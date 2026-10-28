@@ -1,5 +1,5 @@
 """Terminology: Advanced Micro Devices (AMD); application-specific integrated circuit (ASIC);
-JavaScript Object Notation (JSON); system management interface (SMI);
+command-line interface (CLI); JavaScript Object Notation (JSON); system management interface (SMI);
 universally unique identifier (UUID); Verifier Standard (VSTD).
 
 AMD SMI/ROCm discovery and offline evidence normalization."""
@@ -12,11 +12,15 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
+import tempfile
 
 from ..models import AdapterResult
 from ..registry import AcceleratorRegistry, load_builtin_registry
 from .base import AdapterError, normalize_opaque_vendor_evidence, unsupported_result
 from .nvidia import _InMemoryGenericAdapter
+
+# Bound on one read-only amd-smi static query; a hung vendor CLI is recorded as a gap.
+_DISCOVERY_TIMEOUT_SECONDS = 30.0
 
 
 def _profile_for_model(model: str) -> str:
@@ -84,18 +88,35 @@ class AmdAdapter:
                 registry=registry,
                 reason="amd-smi was not found; no AMD hardware evidence was collected",
             )
-        result = subprocess.run(
-            [executable, "static", "--json"], capture_output=True, check=False
-        )
-        if result.returncode != 0:
+        # Output goes to a file, not a pipe: a helper that inherits a pipe keeps the post-timeout
+        # communicate() blocked on Windows, which would make the bound above false.
+        with tempfile.TemporaryFile() as captured:
+            try:
+                completed = subprocess.run(
+                    [executable, "static", "--json"],
+                    stdout=captured,
+                    stderr=subprocess.DEVNULL,
+                    check=False,
+                    timeout=_DISCOVERY_TIMEOUT_SECONDS,
+                )
+            except subprocess.TimeoutExpired:
+                return unsupported_result(
+                    adapter_id=self.adapter_id,
+                    profile_id="amd.cdna-future",
+                    registry=registry,
+                    reason=f"amd-smi discovery timed out after {_DISCOVERY_TIMEOUT_SECONDS:g} seconds",
+                )
+            captured.seek(0)
+            stdout = captured.read()
+        if completed.returncode != 0:
             return unsupported_result(
                 adapter_id=self.adapter_id,
                 profile_id="amd.cdna-future",
                 registry=registry,
-                reason=f"amd-smi discovery failed with exit code {result.returncode}",
+                reason=f"amd-smi discovery failed with exit code {completed.returncode}",
             )
         try:
-            payload = json.loads(result.stdout)
+            payload = json.loads(stdout)
         except json.JSONDecodeError as exc:
             raise AdapterError(f"amd-smi returned malformed JSON: {exc}") from exc
         if not isinstance(payload, dict):
@@ -130,7 +151,7 @@ class AmdAdapter:
         }
         return _InMemoryGenericAdapter(
             payload=generic,
-            raw=result.stdout,
+            raw=stdout,
             registry=registry,
             adapter_id=self.adapter_id,
         ).discover()

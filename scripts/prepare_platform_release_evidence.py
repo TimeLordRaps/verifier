@@ -15,31 +15,22 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.util
 import json
 from pathlib import Path
 import re
-import sys
 from typing import Any
 import zipfile
 
 try:
     from scripts.classify_release_version import classify_release_version
-except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
+    from scripts import build_platform_component_report as report_builder
+except ImportError:  # Direct ``python scripts/...`` execution.
     from classify_release_version import classify_release_version
+    import build_platform_component_report as report_builder
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT_BUILDER_PATH = Path(__file__).with_name("build_platform_component_report.py")
-_REPORT_SPEC = importlib.util.spec_from_file_location(
-    "vstd_platform_component_report_builder", REPORT_BUILDER_PATH
-)
-assert _REPORT_SPEC is not None and _REPORT_SPEC.loader is not None
-report_builder = importlib.util.module_from_spec(_REPORT_SPEC)
-_REPORT_SPEC.loader.exec_module(report_builder)
-
-
-BUNDLE_SCHEMA_VERSION = "VSTD-PLATFORM-RELEASE-EVIDENCE-1"
+BUNDLE_SCHEMA_VERSION = "verifier-platform-release-evidence-1"
 BUNDLE_CLAIM_BOUNDARY = (
     "This bundle preserves the exact raw environment records, JUnit documents, "
     "and reconstructed component reports from one successful hosted run at the "

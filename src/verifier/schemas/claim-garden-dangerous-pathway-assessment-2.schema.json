@@ -1,0 +1,162 @@
+{
+  "$comment": "Assessment v2 replays a complete prior v2 assessment, derives its static scope, and keeps host catalog, time, reviewer, publication and distribution authority unestablished.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/claim-garden-dangerous-pathway-assessment-2.schema.json",
+  "title": "ClaimGarden dangerous-pathway assessment version 2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "mechanism_digest", "artifact_digest", "derived_surface_digest",
+    "source_coordinate_digest", "dependency_inventory_digest",
+    "source_inventory_digest", "package_inventory_digest", "object_kind",
+    "namespace_digest", "assessment_scope_digest", "polish_receipt_digest",
+    "ordinary_polish", "risk_policy_digest", "threat_catalog_digest",
+    "threat_catalog_version", "pathway_search_scope_digest",
+    "operating_envelope_digest", "reviewer_policy_digest",
+    "invalidator_policy_digest", "capability_inventory_digest",
+    "catalog_manifest", "pathways", "components", "interactions",
+    "predecessor_assessment", "predecessor_assessment_digest",
+    "predecessor_replay_digest", "r2_evidence", "evidence_artifact_manifest",
+    "aggregate", "review",
+    "invalidators", "status", "claim_boundary", "assessment_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "claim-garden-dangerous-pathway-assessment-2"},
+    "mechanism_digest": {"$ref": "#/$defs/digest"},
+    "artifact_digest": {"$ref": "#/$defs/digest"},
+    "derived_surface_digest": {"$ref": "#/$defs/digest"},
+    "source_coordinate_digest": {"$ref": "#/$defs/digest"},
+    "dependency_inventory_digest": {"$ref": "#/$defs/digest"},
+    "source_inventory_digest": {"$ref": "#/$defs/digest"},
+    "package_inventory_digest": {"$ref": "#/$defs/digest"},
+    "object_kind": {"$ref": "#/$defs/objectKind"},
+    "namespace_digest": {"$ref": "#/$defs/digest"},
+    "assessment_scope_digest": {"$ref": "#/$defs/digest"},
+    "polish_receipt_digest": {"$ref": "#/$defs/digest"},
+    "ordinary_polish": {
+      "type": "array", "minItems": 5, "maxItems": 5,
+      "items": {"$ref": "claim-garden-dangerous-pathway-assessment-1.schema.json#/$defs/polishTier"}
+    },
+    "risk_policy_digest": {"$ref": "#/$defs/digest"},
+    "threat_catalog_digest": {"$ref": "#/$defs/digest"},
+    "threat_catalog_version": {"type": "string", "minLength": 1, "maxLength": 256},
+    "pathway_search_scope_digest": {"$ref": "#/$defs/digest"},
+    "operating_envelope_digest": {"$ref": "#/$defs/digest"},
+    "reviewer_policy_digest": {"$ref": "#/$defs/digest"},
+    "invalidator_policy_digest": {"$ref": "#/$defs/digest"},
+    "capability_inventory_digest": {"$ref": "#/$defs/digest"},
+    "catalog_manifest": {
+      "type": "array", "minItems": 1, "maxItems": 4096,
+      "items": {"$ref": "#/$defs/catalogEntry"}
+    },
+    "pathways": {
+      "type": "array", "maxItems": 4096,
+      "items": {"$ref": "verifier-dangerous-pathway-certificate-1.schema.json"}
+    },
+    "components": {
+      "type": "array", "maxItems": 4096,
+      "items": {"$ref": "claim-garden-dangerous-pathway-assessment-1.schema.json#/$defs/component"}
+    },
+    "interactions": {
+      "type": "array", "maxItems": 4096,
+      "items": {"$ref": "claim-garden-dangerous-pathway-assessment-1.schema.json#/$defs/interaction"}
+    },
+    "predecessor_assessment": {
+      "oneOf": [{"type": "null"}, {"$ref": "#"}]
+    },
+    "predecessor_assessment_digest": {"$ref": "#/$defs/nullableDigest"},
+    "predecessor_replay_digest": {"$ref": "#/$defs/nullableDigest"},
+    "r2_evidence": {
+      "$ref": "claim-garden-dangerous-pathway-assessment-1.schema.json#/$defs/r2Evidence"
+    },
+    "evidence_artifact_manifest": {
+      "type": "array", "maxItems": 4096,
+      "items": {"$ref": "#/$defs/evidenceArtifactReference"}
+    },
+    "aggregate": {"$ref": "#/$defs/aggregateV2"},
+    "review": {
+      "type": "array", "maxItems": 64,
+      "items": {"$ref": "claim-garden-dangerous-pathway-assessment-1.schema.json#/$defs/review"}
+    },
+    "invalidators": {
+      "type": "array", "maxItems": 4096,
+      "items": {"$ref": "claim-garden-dangerous-pathway-assessment-1.schema.json#/$defs/invalidator"}
+    },
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 1024},
+    "assessment_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "nullableDigest": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      ]
+    },
+    "objectKind": {
+      "enum": ["ACTOR", "AGENT", "ARCH", "BENCH", "BOT", "COLLECTIVE", "DATA", "ENV", "EVENT", "GRAPH", "HARDWARE", "HARNESS", "HUMAN", "HYPER", "IDENTITY", "MODEL", "OBJECT", "OWNER", "RECEIPT", "ROLE", "SIM", "SPACE", "TIME", "TOKEN", "TRAIN", "VERIFIER"]
+    },
+    "evidenceArtifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "contributor_id", "contributor_kind", "artifact_id",
+        "artifact_digest", "replayer_id"
+      ],
+      "properties": {
+        "schema_version": {"const": "verifier-dangerous-pathway-evidence-reference-1"},
+        "contributor_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "contributor_kind": {
+          "enum": [
+            "SOURCE_INVENTORY", "PACKAGE_INVENTORY", "PATHWAY_APPLICABILITY",
+            "PATHWAY_VERDICT", "CHECK_RESULT", "COUNTEREXAMPLE_SEARCH",
+            "RESIDUAL_RISK", "POLISH_TIER", "REVIEWER_IDENTITY",
+            "REVIEWER_CONFLICT", "REVIEW_RESULT", "CAPABILITY_OBSERVATION",
+            "CATALOG_COVERAGE", "OPERATING_ENVELOPE", "INTERACTION",
+            "COMPOSITION_COVERAGE", "INVALIDATOR", "INVALIDATOR_COVERAGE"
+          ]
+        },
+        "artifact_id": {
+          "type": "string", "pattern": "^urn:sha256:[0-9a-f]{64}$"
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "replayer_id": {"type": "string", "minLength": 1, "maxLength": 256}
+      }
+    },
+    "catalogEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pathway_id", "catalog_entry_digest", "severity"],
+      "properties": {
+        "pathway_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "catalog_entry_digest": {"$ref": "#/$defs/digest"},
+        "severity": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]}
+      }
+    },
+    "aggregateV2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk_class", "assurance_level", "security_outcome", "security_eligibility",
+        "maximum_release_scope", "publication_authority", "catalog_authority",
+        "assessment_time_authority", "reviewer_authority", "security_tier",
+        "security_tier_name", "security_tier_status"
+      ],
+      "properties": {
+        "risk_class": {"enum": ["R2_PENDING", "R2", "R3"]},
+        "assurance_level": {"enum": ["SEC0_UNASSESSED", "SEC1_INVENTORY_BOUND", "SEC2_PATHWAYS_REPLAYED", "SEC3_INDEPENDENTLY_REFUTED", "SEC4_CONTINUOUSLY_GOVERNED"]},
+        "security_outcome": {"enum": ["ESTABLISHED", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "security_eligibility": {"enum": ["DENY", "ELIGIBLE_FOR_SEPARATE_PUBLICATION_AUTHORIZATION"]},
+        "maximum_release_scope": {"enum": ["DENY", "RECEIPT_ONLY", "METADATA_ONLY", "BOUNDED_INTERFACE"]},
+        "publication_authority": {"const": "NOT_ESTABLISHED"},
+        "catalog_authority": {"const": "UNKNOWN"},
+        "assessment_time_authority": {"const": "UNKNOWN"},
+        "reviewer_authority": {"const": "NOT_ESTABLISHED"},
+        "security_tier": {"const": 9},
+        "security_tier_name": {"const": "SECURITY"},
+        "security_tier_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]}
+      }
+    }
+  }
+}

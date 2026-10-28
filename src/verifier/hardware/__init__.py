@@ -3,6 +3,23 @@
 VSTD 3 accelerator-accountability reference implementation."""
 
 from .conformance import ConformanceProfile, evaluate_conformance
+from .diode_emulator import (
+    DIODE_EMULATOR_DISCLAIMER_DIGEST,
+    DIODE_EMULATOR_DISCLAIMER_TEXT,
+    EmulatedDiodeAttestationReceipt,
+    SeveredChannelReadViolationError,
+    SoftwareOneWayDataDiodeEmulator,
+)
+from .time_comb import (
+    BespokeTemporalComb,
+    CovertTimingChannelBreachError,
+    CovertTimingChannelDetector,
+    SoftwareTemporalCombEmulator,
+    TemporalCombAttestation,
+    TemporalCombError,
+    TemporalCombJitterViolationError,
+    TimingVerificationReport,
+)
 from .emulator import VirtualVSTDAccelerator
 from .models import (
     AcceleratorDescriptor,
@@ -25,30 +42,63 @@ from .models import (
     VSTD3Receipt,
 )
 from .registry import load_builtin_registry
+from .tracers import (
+    ArtifactTraceBinding,
+    HardwareRuntimeCoordinate,
+    SystemEntropyProvider,
+    TraceAction,
+    TraceStatus,
+    TraceVerification,
+    build_hardware_runtime_coordinate,
+    issue_artifact_trace,
+    verify_artifact_trace,
+)
 from .validation import validate_vstd3_receipt
 
 __all__ = [
     "AcceleratorDescriptor",
+    "ArtifactTraceBinding",
     "AccountingEvent",
     "AccountingExactness",
     "AccountingMethod",
     "AccountingQuantity",
+    "BespokeTemporalComb",
     "Capability",
     "ConformanceProfile",
     "ClaimEvaluation",
     "ClaimKind",
     "ClaimStatus",
     "ContinuityRecord",
+    "CovertTimingChannelBreachError",
+    "CovertTimingChannelDetector",
+    "DIODE_EMULATOR_DISCLAIMER_DIGEST",
+    "DIODE_EMULATOR_DISCLAIMER_TEXT",
+    "EmulatedDiodeAttestationReceipt",
     "EvidenceGap",
     "EvidenceSource",
     "FleetManifest",
     "FleetObservation",
+    "HardwareRuntimeCoordinate",
     "LogicalDeviceIdentity",
     "PhysicalDeviceIdentity",
+    "SeveredChannelReadViolationError",
+    "SoftwareOneWayDataDiodeEmulator",
+    "SoftwareTemporalCombEmulator",
+    "TemporalCombAttestation",
+    "TemporalCombError",
+    "TemporalCombJitterViolationError",
+    "TimingVerificationReport",
     "TopologySnapshot",
+    "SystemEntropyProvider",
+    "TraceAction",
+    "TraceStatus",
+    "TraceVerification",
     "VSTD3Receipt",
     "VirtualVSTDAccelerator",
     "evaluate_conformance",
+    "build_hardware_runtime_coordinate",
+    "issue_artifact_trace",
     "load_builtin_registry",
     "validate_vstd3_receipt",
+    "verify_artifact_trace",
 ]

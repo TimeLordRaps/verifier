@@ -9,7 +9,6 @@ from __future__ import annotations
 import base64
 import importlib.resources
 import json
-from importlib import import_module
 from pathlib import Path
 
 import pytest
@@ -34,12 +33,16 @@ from verifier.interoperability.storage import load_component_package
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PROFILE_PATH = "src/verifier/profiles/proposition-transfer-rule-0.1.json"
-PROFILE_DIGEST = "sha256:0d26f06addc32e61e0ba68a466b4721db6a8ad2a46021c96f226da7d91b410bd"
+PROFILE_PATH = "src/verifier/profiles/proposition-transfer-rule-1.json"
+PROFILE_DIGEST = "sha256:b4cf102904ff248c048d947b093ae3d89deb4ca16582a8f3744ac7f7f3d1a58c"
 COMPONENTS = (
     ("assessor", "assess_transfer", (TRANSFER_SCHEMA,)),
     ("rechecker", "recheck_transfer_receipt", tuple(sorted((TRANSFER_SCHEMA, RECEIPT_SCHEMA)))),
 )
+IMPLEMENTATIONS = {
+    "verifier.interoperability.proposition_transfer:assess_transfer": assess_transfer,
+    "verifier.interoperability.proposition_transfer:recheck_transfer_receipt": recheck_transfer_receipt,
+}
 
 
 def _component_id(role: str) -> str:
@@ -60,7 +63,7 @@ def _fixture(case_id: str = "two_source_union") -> tuple[bytes, bytes, dict[str,
 
 
 def test_compiled_profile_has_an_exact_inert_packaged_mirror() -> None:
-    artifact = importlib.resources.files("verifier").joinpath("profiles/proposition-transfer-rule-0.1.json")
+    artifact = importlib.resources.files("verifier").joinpath("profiles/proposition-transfer-rule-1.json")
     assert artifact.read_bytes() == rule_profile_bytes()
     assert digest_bytes(artifact.read_bytes()) == PROFILE_DIGEST
     assert '"profiles/*.json"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
@@ -85,8 +88,7 @@ def test_transfer_descriptors_name_exact_native_contracts_and_profile(
     assert "execution" in component.claim_boundary
 
     declaration, receipt, evidence = _fixture()
-    module_name, attribute = component.implementation_ref.split(":")
-    function = getattr(import_module(module_name), attribute)
+    function = IMPLEMENTATIONS[component.implementation_ref]
     actual = function(declaration, evidence) if role == "assessor" else function(declaration, receipt, evidence)
     assert actual["schema_version"] == ASSESSMENT_SCHEMA
     assert actual["conclusion_support"] == "SUPPORTED"

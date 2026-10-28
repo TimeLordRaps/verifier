@@ -1,0 +1,865 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-package-graph-self-polish-assessment-1.schema.json",
+  "title": "Verifier Standard (VSTD) package GRAPH self-polish assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED", "NOT_SELECTED", "NOT_RUN", "NOT_RETAINED", "UNAVAILABLE", "REJECTED"]},
+    "objectKind": {"enum": ["HUMAN", "ACTOR", "COLLECTIVE", "ROLE", "IDENTITY", "OWNER", "HARDWARE", "RECEIPT", "OBJECT", "GRAPH", "SPACE", "TIME", "EVENT", "ENV", "DATA", "VERIFIER", "BENCH", "ARCH", "TRAIN", "HYPER", "MODEL", "HARNESS", "AGENT", "SIM", "BOT", "TOKEN"]},
+    "tierName": {"enum": ["FACETS", "DYNAMICS", "STATICS", "CLOSURE", "INDEPENDENCE", "PRIVACY", "CONSENT", "GOVERNANCE", "SECURITY"]},
+    "sourceCoordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_head", "source_tree", "source_worktree_status_digest", "source_manifest_digest"],
+      "properties": {
+        "source_head": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_worktree_status_digest": {"$ref": "#/$defs/digest"},
+        "source_manifest_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "tierZeroAdmissionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "status", "report_schema_version", "report_digest", "profile_id", "profile_digest", "manifest_digest", "mechanism_digest", "obligation_count", "obligation_status_counts", "assessment_reason_count", "finalization_status", "closed_coordinates", "unclosed_coordinates", "source_repository", "source_revision", "source_census_digest", "source_binding_status", "error", "claim_boundary"],
+      "properties": {
+        "schema_version": {"const": "verifier-package-tier-zero-admission-binding-1"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "report_schema_version": {"type": ["string", "null"]},
+        "report_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "profile_id": {"type": ["string", "null"]},
+        "profile_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "manifest_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "mechanism_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "obligation_count": {"type": "integer", "minimum": 0, "maximum": 9},
+        "obligation_status_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["PASS", "FAIL", "UNKNOWN"],
+          "properties": {
+            "PASS": {"type": "integer", "minimum": 0, "maximum": 9},
+            "FAIL": {"type": "integer", "minimum": 0, "maximum": 9},
+            "UNKNOWN": {"type": "integer", "minimum": 0, "maximum": 9}
+          }
+        },
+        "assessment_reason_count": {"type": "integer", "minimum": 0, "maximum": 9},
+        "finalization_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "closed_coordinates": {"type": "array", "items": {"type": "string", "pattern": "^VSTD-T0\\.[1-9]$"}, "uniqueItems": true},
+        "unclosed_coordinates": {"type": "array", "items": {"type": "string", "pattern": "^VSTD-T0\\.[1-9]$"}, "uniqueItems": true},
+        "source_repository": {"type": ["string", "null"]},
+        "source_revision": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+        "source_census_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "source_binding_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "error": {"type": ["string", "null"]},
+        "claim_boundary": {"type": "string", "minLength": 1}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "PASS"}}},
+          "then": {
+            "properties": {
+              "report_schema_version": {"const": "verifier-tier-zero-repository-admission-report-1"},
+              "report_digest": {"$ref": "#/$defs/digest"},
+              "profile_id": {"type": "string"},
+              "profile_digest": {"$ref": "#/$defs/digest"},
+              "manifest_digest": {"$ref": "#/$defs/digest"},
+              "mechanism_digest": {"$ref": "#/$defs/digest"},
+              "obligation_count": {"const": 9},
+              "obligation_status_counts": {"const": {"PASS": 9, "FAIL": 0, "UNKNOWN": 0}},
+              "assessment_reason_count": {"const": 9},
+              "finalization_status": {"const": "PASS"},
+              "closed_coordinates": {"minItems": 9, "maxItems": 9},
+              "unclosed_coordinates": {"maxItems": 0},
+              "source_repository": {"type": "string"},
+              "source_revision": {"type": "string"},
+              "source_census_digest": {"$ref": "#/$defs/digest"},
+              "source_binding_status": {"const": "PASS"},
+              "error": {"type": "null"}
+            }
+          }
+        }
+      ]
+    },
+    "objectRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_id", "kind", "payload", "operands"],
+      "properties": {
+        "object_id": {"type": "string", "minLength": 1},
+        "kind": {"$ref": "#/$defs/objectKind"},
+        "payload": {"type": "object"},
+        "operands": {"type": "object"}
+      }
+    },
+    "tierZeroCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "object_kind", "tier", "tier_name", "object_id", "record_digest", "status", "structural_representation_status", "native_facets_discrimination_status", "repository_admission_status", "repository_admission_report_digest", "semantic_obligation_status", "denominator_decision_status", "owner_decision_refs", "assessment_reason", "claim_boundary"],
+      "properties": {
+        "schema_version": {"const": "verifier-package-object-admission-tier-2"},
+        "object_kind": {"$ref": "#/$defs/objectKind"},
+        "tier": {"const": 0},
+        "tier_name": {"const": "REPRESENTATION_ADMISSION"},
+        "object_id": {"type": "string", "minLength": 1},
+        "record_digest": {"$ref": "#/$defs/digest"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "structural_representation_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "native_facets_discrimination_status": {"$ref": "#/$defs/status"},
+        "repository_admission_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "repository_admission_report_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "semantic_obligation_status": {"const": "NOT_ESTABLISHED"},
+        "denominator_decision_status": {"const": "NOT_ESTABLISHED"},
+        "owner_decision_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "assessment_reason": {"type": "string", "minLength": 1},
+        "claim_boundary": {"type": "string", "minLength": 1}
+      }
+    },
+    "fullNativeCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_kind", "expected_native_status", "native_status", "status", "native_result_digest"],
+      "properties": {
+        "case_kind": {"enum": ["POSITIVE", "NEGATIVE", "UNKNOWN"]},
+        "expected_native_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "native_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "native_result_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]}
+      }
+    },
+    "fullNativeRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligation_id", "object_kind", "tier", "coordinate", "proposition_digest", "checking_mechanism", "lifecycle", "status", "route_replay_digest", "cases"],
+      "properties": {
+        "obligation_id": {"type": "string", "minLength": 1},
+        "object_kind": {"$ref": "#/$defs/objectKind"},
+        "tier": {"type": "integer", "minimum": 1, "maximum": 9},
+        "coordinate": {"type": "string", "pattern": "^[A-Z]+-[1-9]\\.[0-9]+$"},
+        "proposition_digest": {"$ref": "#/$defs/digest"},
+        "checking_mechanism": {"type": "string", "minLength": 1},
+        "lifecycle": {"enum": ["INSTALLED", "PREPARED_NOT_INSTALLED"]},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "route_replay_digest": {"$ref": "#/$defs/digest"},
+        "cases": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/fullNativeCase"}}
+      }
+    },
+    "fullNativeCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "status", "source_coordinate_digest", "mechanism_digest", "tiers", "tier_membership_counts", "membership_count", "case_count", "installed_membership_count", "prepared_membership_count", "route_status_counts", "case_status_counts", "native_status_counts", "installed_tier_replays", "prepared_extension_replay_digest", "routes", "invalidators", "extension_installation_status", "whole_tier_conformance", "polished", "release_authority", "claim_boundary", "candidate_digest"],
+      "properties": {
+        "schema_version": {"const": "verifier-self-polish-full-native-candidate-1"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "source_coordinate_digest": {"$ref": "#/$defs/digest"},
+        "mechanism_digest": {"$ref": "#/$defs/digest"},
+        "tiers": {"const": [1, 2, 3, 4, 5, 6, 7, 8, 9]},
+        "tier_membership_counts": {"const": {"1": 45, "2": 37, "3": 31, "4": 32, "5": 26, "6": 26, "7": 156, "8": 26, "9": 29}},
+        "membership_count": {"const": 408},
+        "case_count": {"const": 1224},
+        "installed_membership_count": {"const": 82},
+        "prepared_membership_count": {"const": 326},
+        "route_status_counts": {"$ref": "#/$defs/statusCounts"},
+        "case_status_counts": {"$ref": "#/$defs/statusCounts"},
+        "native_status_counts": {"$ref": "#/$defs/statusCounts"},
+        "installed_tier_replays": {
+          "type": "array", "minItems": 2, "maxItems": 2,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["tier", "status", "manifest_digest", "receipt_digest", "membership_count", "case_count", "invalidators", "whole_tier_conformance"],
+            "properties": {
+              "tier": {"enum": [1, 2]},
+              "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+              "manifest_digest": {"$ref": "#/$defs/digest"},
+              "receipt_digest": {"$ref": "#/$defs/digest"},
+              "membership_count": {"type": "integer", "minimum": 1},
+              "case_count": {"type": "integer", "minimum": 3},
+              "invalidators": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+              "whole_tier_conformance": {"const": "NOT_ESTABLISHED"}
+            }
+          }
+        },
+        "prepared_extension_replay_digest": {"$ref": "#/$defs/digest"},
+        "routes": {"type": "array", "minItems": 408, "maxItems": 408, "items": {"$ref": "#/$defs/fullNativeRoute"}},
+        "invalidators": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "extension_installation_status": {"const": "PREPARED_NOT_INSTALLED"},
+        "whole_tier_conformance": {"const": "NOT_ESTABLISHED"},
+        "polished": {"const": false},
+        "release_authority": {"const": "NONE"},
+        "claim_boundary": {"type": "string", "minLength": 1},
+        "candidate_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "statusCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "PASS": {"type": "integer", "minimum": 0},
+        "FAIL": {"type": "integer", "minimum": 0},
+        "UNKNOWN": {"type": "integer", "minimum": 0}
+      }
+    },
+    "corrigibilityCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "object_kind", "declared_status", "native_status", "qualification", "status", "authority_status", "research_evidence_digest", "research_surface_status", "verifier_10_1_research_input_status", "code_set_status", "owner_decision_refs"],
+      "properties": {
+        "schema_version": {"const": "verifier-package-corrigibility-cell-selection-1"},
+        "object_kind": {"$ref": "#/$defs/objectKind"},
+        "declared_status": {"const": "WIP"},
+        "native_status": {"const": "NOT_RUN"},
+        "qualification": {"const": "NOT_ESTABLISHED"},
+        "status": {"const": "UNKNOWN"},
+        "authority_status": {"const": "NOT_ESTABLISHED"},
+        "research_evidence_digest": {"$ref": "#/$defs/digest"},
+        "research_surface_status": {"const": "BOUND_RESEARCH_INPUTS_NOT_QUALIFICATION"},
+        "verifier_10_1_research_input_status": {"enum": ["BOUND_NOT_EXTENSION_CREDIT", "NOT_APPLICABLE"]},
+        "code_set_status": {"const": "RESEARCH_SURFACES_BOUND_OWNER_DECISION_PENDING"},
+        "owner_decision_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      }
+    },
+    "sourceRecapture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "opening_binding", "matches_selected_source", "observed_source_coordinate", "observed_source_evidence", "claim_boundary"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "opening_binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "matches_selected_source", "observed_source_coordinate", "observed_source_evidence", "claim_boundary"],
+          "properties": {
+            "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+            "matches_selected_source": {"oneOf": [{"type": "boolean"}, {"const": "UNKNOWN"}]},
+            "observed_source_coordinate": {"oneOf": [{"$ref": "#/$defs/sourceCoordinate"}, {"type": "null"}]},
+            "observed_source_evidence": {"type": ["object", "null"]},
+            "observed_source_coordinate_digest": {"$ref": "#/$defs/digest"},
+            "claim_boundary": {"type": "string", "minLength": 1}
+          }
+        },
+        "matches_selected_source": {"oneOf": [{"type": "boolean"}, {"const": "UNKNOWN"}]},
+        "observed_source_coordinate": {"oneOf": [{"$ref": "#/$defs/sourceCoordinate"}, {"type": "null"}]},
+        "observed_source_evidence": {"type": ["object", "null"]},
+        "observed_source_coordinate_digest": {"$ref": "#/$defs/digest"},
+        "claim_boundary": {"type": "string", "minLength": 1}
+      }
+    },
+    "coreRouteProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "status", "route_identity_projection_status", "unknown_causes", "membership_count", "mapped_checker_discrimination_count", "expected_mapped_checker_discrimination_count", "not_run_count", "unavailable_selected_count", "installed_specimen_membership_count", "installed_specimen_pass_count", "installed_specimen_unknown_count", "installed_specimen_fail_count", "claim_boundary"],
+      "properties": {
+        "schema_version": {"const": "verifier-package-core-route-projection-1"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "route_identity_projection_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "unknown_causes": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "membership_count": {"type": "integer", "minimum": 0},
+        "mapped_checker_discrimination_count": {"type": "integer", "minimum": 0},
+        "expected_mapped_checker_discrimination_count": {"type": "integer", "minimum": 0},
+        "not_run_count": {"type": "integer", "minimum": 0},
+        "unavailable_selected_count": {"type": "integer", "minimum": 0},
+        "installed_specimen_membership_count": {"type": "integer", "minimum": 0},
+        "installed_specimen_pass_count": {"type": "integer", "minimum": 0},
+        "installed_specimen_unknown_count": {"type": "integer", "minimum": 0},
+        "installed_specimen_fail_count": {"type": "integer", "minimum": 0},
+        "claim_boundary": {"type": "string", "minLength": 1}
+      }
+    },
+    "coreRouteMembership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_kind", "tier", "tier_name", "semantic_version", "coordinate", "checking_mechanism", "proposition_digest", "certificate_schema_version", "scope", "native_route_identity_status", "selected_package_native_replay_status", "installed_specimen_replay_status", "installed_specimen_replay_digest", "installed_specimen_case_count", "native_replay_request_digest", "normative_full_family_closure", "candidate_obligation_identity_status", "candidate_semantic_identity_status", "candidate_obligation_row_digest", "candidate_rev4_class", "candidate_mechanism_assessment", "candidate_owner_disposition_status", "owner_decision_refs", "status"],
+      "properties": {
+        "object_kind": {"$ref": "#/$defs/objectKind"},
+        "tier": {"type": "integer", "minimum": 1, "maximum": 9},
+        "tier_name": {"$ref": "#/$defs/tierName"},
+        "semantic_version": {"type": "string", "minLength": 1},
+        "coordinate": {"type": "string", "pattern": "^[A-Z]+-[1-9]\\.[0-9]+$"},
+        "checking_mechanism": {"type": "string", "minLength": 1},
+        "proposition_digest": {"$ref": "#/$defs/digest"},
+        "certificate_schema_version": {"type": "string", "minLength": 1},
+        "scope": {"type": "string", "minLength": 1},
+        "native_route_identity_status": {"$ref": "#/$defs/status"},
+        "selected_package_native_replay_status": {"$ref": "#/$defs/status"},
+        "installed_specimen_replay_status": {"$ref": "#/$defs/status"},
+        "installed_specimen_replay_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "installed_specimen_case_count": {"type": ["integer", "null"], "minimum": 0},
+        "native_replay_request_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "normative_full_family_closure": {"const": "NOT_ESTABLISHED"},
+        "candidate_obligation_identity_status": {"$ref": "#/$defs/status"},
+        "candidate_semantic_identity_status": {"$ref": "#/$defs/status"},
+        "candidate_obligation_row_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "candidate_rev4_class": {"enum": ["NECESSARY", "CONDITIONALLY_NECESSARY", "REASON_PENDING", null]},
+        "candidate_mechanism_assessment": {"enum": ["BOUNDED", "COVERS", "DEFECTIVE", "NOT_ASSESSED", "PARTIAL", "UNSOUND", null]},
+        "candidate_owner_disposition_status": {"$ref": "#/$defs/status"},
+        "owner_decision_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "status": {"enum": ["FAIL", "UNKNOWN"]}
+      }
+    },
+    "coreFamilyCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object_kind", "tier", "tier_name", "installed_denominator_status", "registered_route_membership_count", "normative_full_family_closure", "selected_package_native_replay_status", "candidate_coverage_status", "candidate_class_counts", "candidate_mechanism_counts", "reason_pending_coordinates", "owner_decision_refs", "status"],
+      "properties": {
+        "object_kind": {"$ref": "#/$defs/objectKind"},
+        "tier": {"type": "integer", "minimum": 1, "maximum": 9},
+        "tier_name": {"$ref": "#/$defs/tierName"},
+        "installed_denominator_status": {"const": "ESTABLISHED_FOR_INSTALLED_ROUTE_REGISTRY"},
+        "registered_route_membership_count": {"type": "integer", "minimum": 0},
+        "normative_full_family_closure": {"const": "NOT_ESTABLISHED"},
+        "selected_package_native_replay_status": {"$ref": "#/$defs/status"},
+        "candidate_coverage_status": {"$ref": "#/$defs/status"},
+        "candidate_class_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+        "candidate_mechanism_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+        "reason_pending_coordinates": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "owner_decision_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "status": {"enum": ["FAIL", "UNKNOWN"]}
+      }
+    },
+    "candidateLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "status", "selection_validation_status", "candidate_epistemic_status", "semantic_identity_status", "owner_adoption_status", "normative_closure", "objective_count", "owner_decision_count", "rows", "claim_boundary"],
+      "properties": {
+        "schema_version": {"const": "verifier-package-obligation-candidate-selection-1"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_SELECTED"]},
+        "selection_validation_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+        "candidate_epistemic_status": {"enum": ["INFERRED", "NOT_ESTABLISHED"]},
+        "semantic_identity_status": {"enum": ["PASS", "NOT_ESTABLISHED"]},
+        "owner_adoption_status": {"const": "NOT_ESTABLISHED"},
+        "normative_closure": {"const": "NOT_ESTABLISHED"},
+        "manifest_name": {"type": "string", "minLength": 1},
+        "manifest_digest": {"$ref": "#/$defs/digest"},
+        "card_count": {"type": "integer", "minimum": 0, "maximum": 26},
+        "card_set_digest": {"$ref": "#/$defs/digest"},
+        "objective_count": {"type": "integer", "minimum": 0, "maximum": 408},
+        "installed_inventory_digest": {"$ref": "#/$defs/digest"},
+        "reason_ledger_selection_status": {"enum": ["PASS", "NOT_SELECTED"]},
+        "reason_ledger_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+        "reason_identity_count": {"type": "integer", "minimum": 0, "maximum": 408},
+        "reason_slot_identity_count": {"type": "integer", "minimum": 0, "maximum": 234},
+        "reason_disposition_counts": {"type": "object"},
+        "repository_realization_binding_status": {"enum": ["PASS", "NOT_ESTABLISHED"]},
+        "repository_realization_claim_status": {"enum": ["UNKNOWN", "NOT_ESTABLISHED"]},
+        "repository_realization_class_counts": {
+          "type": "object",
+          "properties": {
+            "DIRECT": {"type": "integer", "minimum": 0, "maximum": 642},
+            "SPECIALIZATION": {"type": "integer", "minimum": 0, "maximum": 642},
+            "TRANSLATION": {"type": "integer", "minimum": 0, "maximum": 642},
+            "CONDITIONAL": {"type": "integer", "minimum": 0, "maximum": 642},
+            "NOT_APPLICABLE": {"type": "integer", "minimum": 0, "maximum": 642},
+            "UNREALIZED": {"type": "integer", "minimum": 0, "maximum": 642}
+          },
+          "additionalProperties": false
+        },
+        "candidate_rev4_class_counts": {"type": "object"},
+        "candidate_mechanism_counts": {"type": "object"},
+        "candidate_reason_verdict_counts": {"type": "object"},
+        "card_question_count": {"type": "integer", "minimum": 0, "maximum": 104},
+        "cross_kind_decision_count": {"type": "integer", "minimum": 0, "maximum": 6},
+        "owner_decision_count": {"type": "integer", "minimum": 0, "maximum": 110},
+        "owner_decisions": {"type": "array", "maxItems": 110},
+        "rows": {"type": "array", "maxItems": 408},
+        "error": {"type": "string", "minLength": 1},
+        "selection_digest": {"$ref": "#/$defs/digest"},
+        "claim_boundary": {"type": "string", "minLength": 1}
+      }
+    },
+    "ownerDecisionAdmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "status", "authority_scope", "owner_id", "policy_id", "policy_revision", "policy_digest", "decision_envelope_digest", "candidate_selection_digest", "source_coordinate_digest", "decision_set_digest", "decision_count", "adopted_decision_ids", "evaluation_time", "mechanism_digest", "error", "claim_boundary", "admission_digest"],
+      "properties": {
+        "schema_version": {"const": "verifier-package-owner-decision-admission-1"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_SELECTED"]},
+        "authority_scope": {"const": "CONFIGURED_KEY_OWNER_STATEMENT_ONLY"},
+        "owner_id": {"type": ["string", "null"], "minLength": 1},
+        "policy_id": {"type": ["string", "null"], "minLength": 1},
+        "policy_revision": {"type": ["integer", "null"], "minimum": 1},
+        "policy_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "decision_envelope_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "candidate_selection_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "source_coordinate_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "decision_set_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "decision_count": {"type": "integer", "minimum": 0, "maximum": 110},
+        "adopted_decision_ids": {"type": "array", "maxItems": 110, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "evaluation_time": {"type": ["integer", "null"], "minimum": 0},
+        "mechanism_digest": {"$ref": "#/$defs/digest"},
+        "error": {"type": ["string", "null"], "minLength": 1},
+        "claim_boundary": {"type": "string", "minLength": 1},
+        "admission_digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "PASS"}}},
+          "then": {
+            "properties": {
+              "owner_id": {"type": "string"},
+              "policy_id": {"type": "string"},
+              "policy_revision": {"type": "integer"},
+              "policy_digest": {"$ref": "#/$defs/digest"},
+              "decision_envelope_digest": {"$ref": "#/$defs/digest"},
+              "candidate_selection_digest": {"$ref": "#/$defs/digest"},
+              "source_coordinate_digest": {"$ref": "#/$defs/digest"},
+              "decision_set_digest": {"$ref": "#/$defs/digest"},
+              "decision_count": {"const": 110},
+              "adopted_decision_ids": {"minItems": 110, "maxItems": 110},
+              "evaluation_time": {"type": "integer"},
+              "error": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"status": {"enum": ["FAIL", "UNKNOWN"]}}},
+          "then": {
+            "properties": {
+              "owner_id": {"type": "null"},
+              "policy_id": {"type": "null"},
+              "policy_revision": {"type": "null"},
+              "policy_digest": {"type": "null"},
+              "decision_envelope_digest": {"type": "null"},
+              "candidate_selection_digest": {"type": "null"},
+              "source_coordinate_digest": {"type": "null"},
+              "decision_set_digest": {"type": "null"},
+              "decision_count": {"const": 0},
+              "adopted_decision_ids": {"maxItems": 0},
+              "evaluation_time": {"type": "null"},
+              "error": {"type": "string"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"status": {"const": "NOT_SELECTED"}}},
+          "then": {
+            "properties": {
+              "owner_id": {"type": "null"},
+              "policy_id": {"type": "null"},
+              "policy_revision": {"type": "null"},
+              "policy_digest": {"type": "null"},
+              "decision_envelope_digest": {"type": "null"},
+              "candidate_selection_digest": {"type": "null"},
+              "source_coordinate_digest": {"type": "null"},
+              "decision_set_digest": {"type": "null"},
+              "decision_count": {"const": 0},
+              "adopted_decision_ids": {"maxItems": 0},
+              "evaluation_time": {"type": "null"},
+              "error": {"type": "null"}
+            }
+          }
+        }
+      ]
+    },
+    "nativeFacetsReplay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "status", "source_coordinate_digest", "collection_digest", "collection_bytes_digest", "generic_mechanism_digest", "typed_mechanism_digest", "object_count", "objective_count", "case_count", "positive_case_count", "negative_case_count", "unknown_case_count", "pass_count", "fail_count", "unknown_count", "policy_anchor_class", "results", "claim_boundary", "replay_digest"],
+      "properties": {
+        "schema_version": {"const": "verifier-package-native-facets-replay-1"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "source_coordinate_digest": {"$ref": "#/$defs/digest"},
+        "collection_digest": {"$ref": "#/$defs/digest"},
+        "collection_bytes_digest": {"$ref": "#/$defs/digest"},
+        "generic_mechanism_digest": {"$ref": "#/$defs/digest"},
+        "typed_mechanism_digest": {"$ref": "#/$defs/digest"},
+        "object_count": {"const": 26},
+        "objective_count": {"const": 52},
+        "case_count": {"const": 156},
+        "positive_case_count": {"const": 52},
+        "negative_case_count": {"const": 52},
+        "unknown_case_count": {"const": 52},
+        "pass_count": {"type": "integer", "minimum": 0, "maximum": 52},
+        "fail_count": {"type": "integer", "minimum": 0, "maximum": 52},
+        "unknown_count": {"type": "integer", "minimum": 0, "maximum": 52},
+        "policy_anchor_class": {"const": "SELF_SELECTED_SOURCE_BINDING_NOT_AUTHORITY"},
+        "results": {
+          "type": "array",
+          "minItems": 26,
+          "maxItems": 26,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["object_id", "object_kind", "status", "generic_object_facets", "typed_facets", "resource_status"],
+            "properties": {
+              "object_id": {"type": "string", "minLength": 1},
+              "object_kind": {"$ref": "#/$defs/objectKind"},
+              "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+              "generic_object_facets": {"type": ["object", "null"]},
+              "typed_facets": {"type": ["object", "null"]},
+              "resource_status": {"enum": ["AVAILABLE", "UNAVAILABLE"]}
+            },
+            "allOf": [
+              {
+                "if": {"properties": {"resource_status": {"const": "UNAVAILABLE"}}},
+                "then": {
+                  "anyOf": [
+                    {"properties": {"generic_object_facets": {"type": "null"}}},
+                    {"properties": {"typed_facets": {"type": "null"}}}
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {"resource_status": {"const": "AVAILABLE"}},
+                  "anyOf": [
+                    {"properties": {"generic_object_facets": {"type": "null"}}},
+                    {"properties": {"typed_facets": {"type": "null"}}}
+                  ]
+                },
+                "then": {"properties": {"status": {"const": "FAIL"}}}
+              },
+              {
+                "if": {
+                  "properties": {
+                    "generic_object_facets": {"type": "object"},
+                    "typed_facets": {"type": "object"}
+                  }
+                },
+                "then": {"properties": {"resource_status": {"const": "AVAILABLE"}}}
+              }
+            ]
+          }
+        },
+        "claim_boundary": {"type": "string", "minLength": 1},
+        "replay_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "installedNativeCaseReplay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "status", "resource_status", "source_coordinate_digest", "tier_results", "memberships", "membership_count", "case_count", "claim_boundary", "replay_digest"],
+      "properties": {
+        "schema_version": {"const": "verifier-package-installed-native-case-replay-1"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_SELECTED"]},
+        "resource_status": {"enum": ["AVAILABLE", "UNAVAILABLE", "NOT_SELECTED"]},
+        "source_coordinate_digest": {"$ref": "#/$defs/digest"},
+        "tier_results": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["tier", "status", "manifest_digest", "receipt_digest", "membership_count", "case_count", "invalidators"],
+            "properties": {
+              "tier": {"enum": [1, 2]},
+              "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+              "manifest_digest": {"$ref": "#/$defs/digest"},
+              "receipt_digest": {"$ref": "#/$defs/digest"},
+              "membership_count": {"type": "integer", "minimum": 0, "maximum": 45},
+              "case_count": {"type": "integer", "minimum": 0, "maximum": 135},
+              "invalidators": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+            }
+          }
+        },
+        "memberships": {"type": "array", "maxItems": 82, "items": {"type": "object"}},
+        "membership_count": {"type": "integer", "minimum": 0, "maximum": 82},
+        "case_count": {"type": "integer", "minimum": 0, "maximum": 246},
+        "claim_boundary": {"type": "string", "minLength": 1},
+        "replay_digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"resource_status": {"const": "NOT_SELECTED"}}},
+          "then": {
+            "properties": {
+              "status": {"const": "NOT_SELECTED"},
+              "tier_results": {"maxItems": 0},
+              "memberships": {"maxItems": 0},
+              "membership_count": {"const": 0},
+              "case_count": {"const": 0}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"status": {"const": "NOT_SELECTED"}}},
+          "then": {"properties": {"resource_status": {"const": "NOT_SELECTED"}}}
+        },
+        {
+          "if": {"properties": {"resource_status": {"const": "AVAILABLE"}}},
+          "then": {"properties": {"status": {"enum": ["PASS", "FAIL", "UNKNOWN"]}}}
+        },
+        {
+          "if": {"properties": {"resource_status": {"const": "UNAVAILABLE"}}},
+          "then": {"properties": {"status": {"enum": ["FAIL", "UNKNOWN"]}}}
+        }
+      ]
+    },
+    "corrigibilityResearchEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "status", "research_spec_digest", "module_count", "module_set_digest", "represented_object_kind_count", "verifier_10_1", "claim_boundary", "evidence_digest"],
+      "properties": {
+        "schema_version": {"const": "verifier-corrigibility-research-evidence-1"},
+        "status": {"const": "BOUND_RESEARCH_INPUTS_NOT_QUALIFICATION"},
+        "research_spec_digest": {"$ref": "#/$defs/digest"},
+        "module_count": {"type": "integer", "minimum": 1},
+        "module_set_digest": {"$ref": "#/$defs/digest"},
+        "represented_object_kind_count": {"const": 26},
+        "verifier_10_1": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["semantic_version", "coordinate", "proposition_digest", "mechanism_digest", "status"],
+          "properties": {
+            "semantic_version": {"type": "string", "minLength": 1},
+            "coordinate": {"const": "VERIFIER-10.1"},
+            "proposition_digest": {"$ref": "#/$defs/digest"},
+            "mechanism_digest": {"$ref": "#/$defs/digest"},
+            "status": {"const": "RESEARCH_INPUT_ONLY_NOT_EXTENSION_CREDIT"}
+          }
+        },
+        "claim_boundary": {"type": "string", "minLength": 1},
+        "evidence_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "selfVerifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "retention_status", "report_digest", "source_binding_status", "subject", "represented_tiers", "claim_boundary"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "retention_status": {"enum": ["RETAINED", "NOT_SELECTED", "UNAVAILABLE", "REJECTED"]},
+        "report_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "source_binding_status": {"$ref": "#/$defs/status"},
+        "subject": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["object_id", "object_kind"],
+              "properties": {
+                "object_id": {"const": "verifier-core-self"},
+                "object_kind": {"const": "VERIFIER"}
+              }
+            }
+          ]
+        },
+        "represented_tiers": {"type": "array", "items": {"type": "integer", "minimum": 1, "maximum": 9}, "uniqueItems": true},
+        "claim_boundary": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "project_gate_status",
+    "polished",
+    "release_authorized",
+    "source_coordinate",
+    "source_coordinate_digest",
+    "source_recapture_binding",
+    "package_graph",
+    "denominators",
+    "tier_zero_repository_admission",
+    "tier_zero_representation_cells",
+    "native_facets_replay",
+    "installed_native_case_replay",
+    "full_native_candidate",
+    "core_installed_inventory_digest",
+    "candidate_obligation_ledger",
+    "owner_decision_admission",
+    "core_route_projection",
+    "core_route_memberships",
+    "core_family_cells",
+    "corrigibility_extension_selection",
+    "corrigibility_research_evidence",
+    "corrigibility_extension_cells",
+    "self_verifier_tier1",
+    "blockers",
+    "mechanism_digest",
+    "claim_boundary",
+    "report_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "verifier-package-graph-self-polish-assessment-1"},
+    "status": {"enum": ["FAIL", "UNKNOWN"]},
+    "project_gate_status": {"enum": ["FAIL", "UNKNOWN"]},
+    "polished": {"const": false},
+    "release_authorized": {"const": false},
+    "source_coordinate": {"oneOf": [{"$ref": "#/$defs/sourceCoordinate"}, {"type": "null"}]},
+    "source_coordinate_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+    "source_recapture_binding": {"oneOf": [{"$ref": "#/$defs/sourceRecapture"}, {"type": "null"}]},
+    "package_graph": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "collection_digest", "canonical_wire_digest", "canonical_round_trip_status", "object_count", "object_kind_count", "represented_object_kinds", "root_id", "root_kind", "polish_object_id", "polish_object_kind", "object_records", "reason", "claim_boundary"],
+          "properties": {
+            "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+            "collection_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+            "canonical_wire_digest": {"$ref": "#/$defs/digest"},
+            "canonical_round_trip_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+            "object_count": {"type": "integer", "minimum": 0, "maximum": 26},
+            "object_kind_count": {"const": 26},
+            "represented_object_kinds": {"type": "array", "minItems": 26, "maxItems": 26, "uniqueItems": true, "items": {"$ref": "#/$defs/objectKind"}},
+            "root_id": {"const": "vstd-package-graph"},
+            "root_kind": {"const": "GRAPH"},
+            "polish_object_id": {"const": "verifier-core-self"},
+            "polish_object_kind": {"const": "VERIFIER"},
+            "object_records": {"type": "array", "minItems": 26, "maxItems": 26, "items": {"$ref": "#/$defs/objectRecord"}},
+            "reason": {"type": "string", "minLength": 1},
+            "claim_boundary": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "denominators": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["object_kind_count", "tier_zero_representation_cell_count", "core_tier_count", "core_family_cell_count", "registered_core_route_membership_count", "corrigibility_extension_cell_count", "core_and_tier_zero_cell_count", "tracked_assessment_cell_count"],
+          "properties": {
+            "object_kind_count": {"const": 26},
+            "tier_zero_representation_cell_count": {"const": 26},
+            "core_tier_count": {"const": 9},
+            "core_family_cell_count": {"const": 234},
+            "registered_core_route_membership_count": {"type": "integer", "minimum": 1},
+            "corrigibility_extension_cell_count": {"const": 26},
+            "core_and_tier_zero_cell_count": {"const": 260},
+            "tracked_assessment_cell_count": {"const": 286}
+          }
+        }
+      ]
+    },
+    "tier_zero_repository_admission": {"oneOf": [{"$ref": "#/$defs/tierZeroAdmissionBinding"}, {"type": "null"}]},
+    "tier_zero_representation_cells": {"oneOf": [{"type": "null"}, {"type": "array", "minItems": 26, "maxItems": 26, "items": {"$ref": "#/$defs/tierZeroCell"}}]},
+    "native_facets_replay": {"oneOf": [{"$ref": "#/$defs/nativeFacetsReplay"}, {"type": "null"}]},
+    "installed_native_case_replay": {"oneOf": [{"$ref": "#/$defs/installedNativeCaseReplay"}, {"type": "null"}]},
+    "full_native_candidate": {"oneOf": [{"$ref": "#/$defs/fullNativeCandidate"}, {"type": "null"}]},
+    "core_installed_inventory_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+    "candidate_obligation_ledger": {"oneOf": [{"$ref": "#/$defs/candidateLedger"}, {"type": "null"}]},
+    "owner_decision_admission": {"oneOf": [{"$ref": "#/$defs/ownerDecisionAdmission"}, {"type": "null"}]},
+    "core_route_projection": {"oneOf": [{"$ref": "#/$defs/coreRouteProjection"}, {"type": "null"}]},
+    "core_route_memberships": {"oneOf": [{"type": "null"}, {"type": "array", "minItems": 408, "maxItems": 408, "items": {"$ref": "#/$defs/coreRouteMembership"}}]},
+    "core_family_cells": {"oneOf": [{"type": "null"}, {"type": "array", "minItems": 234, "maxItems": 234, "items": {"$ref": "#/$defs/coreFamilyCell"}}]},
+    "corrigibility_extension_selection": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["schema_version", "profile_id", "declared_status", "binding_digest"],
+          "properties": {
+            "schema_version": {"const": "verifier-corrigibility-extension-selection-1"},
+            "profile_id": {"const": "verifier-corrigibility-extension-selection-1"},
+            "declared_status": {"const": "WIP"},
+            "binding_digest": {"$ref": "#/$defs/digest"}
+          }
+        }
+      ]
+    },
+    "corrigibility_research_evidence": {"oneOf": [{"$ref": "#/$defs/corrigibilityResearchEvidence"}, {"type": "null"}]},
+    "corrigibility_extension_cells": {"oneOf": [{"type": "null"}, {"type": "array", "minItems": 26, "maxItems": 26, "items": {"$ref": "#/$defs/corrigibilityCell"}}]},
+    "self_verifier_tier1": {"$ref": "#/$defs/selfVerifier"},
+    "blockers": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "mechanism_digest": {
+      "oneOf": [
+        {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        {"type": "null"}
+      ]
+    },
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "report_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"package_graph": {"type": "null"}}},
+      "then": {
+        "properties": {
+          "denominators": {"type": "null"},
+          "tier_zero_repository_admission": {"type": "null"},
+          "source_recapture_binding": {"type": "null"},
+          "tier_zero_representation_cells": {"type": "null"},
+          "native_facets_replay": {"type": "null"},
+          "installed_native_case_replay": {"type": "null"},
+          "full_native_candidate": {"type": "null"},
+          "core_installed_inventory_digest": {"type": "null"},
+          "candidate_obligation_ledger": {"type": "null"},
+          "owner_decision_admission": {"type": "null"},
+          "core_route_projection": {"type": "null"},
+          "core_route_memberships": {"type": "null"},
+          "core_family_cells": {"type": "null"},
+          "corrigibility_extension_selection": {"type": "null"},
+          "corrigibility_research_evidence": {"type": "null"},
+          "corrigibility_extension_cells": {"type": "null"},
+          "self_verifier_tier1": {
+            "properties": {
+              "status": {"enum": ["FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+              "retention_status": {"enum": ["RETAINED", "UNAVAILABLE", "NOT_SELECTED", "REJECTED"]},
+              "source_binding_status": {"enum": ["FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+              "subject": {"type": "null"},
+              "represented_tiers": {"maxItems": 0}
+            },
+            "allOf": [
+              {
+                "if": {"properties": {"retention_status": {"const": "RETAINED"}}},
+                "then": {
+                  "properties": {
+                    "status": {"enum": ["FAIL", "UNKNOWN"]},
+                    "report_digest": {"$ref": "#/$defs/digest"}
+                  }
+                }
+              },
+              {
+                "if": {"properties": {"retention_status": {"const": "UNAVAILABLE"}}},
+                "then": {"properties": {"status": {"enum": ["FAIL", "UNKNOWN"]}}}
+              },
+              {
+                "if": {"properties": {"retention_status": {"const": "NOT_SELECTED"}}},
+                "then": {"properties": {"status": {"const": "NOT_ESTABLISHED"}}}
+              },
+              {
+                "if": {"properties": {"retention_status": {"const": "REJECTED"}}},
+                "then": {"properties": {"status": {"const": "FAIL"}}}
+              }
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "mechanism_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "source_coordinate": {"$ref": "#/$defs/sourceCoordinate"},
+          "source_coordinate_digest": {"$ref": "#/$defs/digest"},
+          "source_recapture_binding": {"type": "object"},
+          "denominators": {"type": "object"},
+          "tier_zero_repository_admission": {"type": "object"},
+          "tier_zero_representation_cells": {"type": "array"},
+          "native_facets_replay": {"type": "object"},
+          "installed_native_case_replay": {"type": "object"},
+          "core_installed_inventory_digest": {"$ref": "#/$defs/digest"},
+          "candidate_obligation_ledger": {"type": "object"},
+          "owner_decision_admission": {"type": "object"},
+          "core_route_projection": {"type": "object"},
+          "core_route_memberships": {"type": "array"},
+          "core_family_cells": {"type": "array"},
+          "corrigibility_extension_selection": {"type": "object"},
+          "corrigibility_research_evidence": {"type": "object"},
+          "corrigibility_extension_cells": {"type": "array"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "owner_decision_admission": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {"status": {"const": "FAIL"}}
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {"const": "FAIL"},
+          "project_gate_status": {"const": "FAIL"}
+        }
+      }
+    }
+  ]
+}

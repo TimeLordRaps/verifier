@@ -8,19 +8,52 @@ from __future__ import annotations
 
 import hashlib
 import json
-from importlib import import_module
 from inspect import signature
 from pathlib import Path
 from typing import get_origin, get_type_hints
 
 import pytest
 
+import verifier.artifact_control as artifact_control_module
+import verifier.core.checker as core_checker
+import verifier.core.depth as core_depth
+import verifier.core.evidence as core_evidence
+import verifier.core.geometry_io as core_geometry_io
+import verifier.core.kernel as core_kernel
+import verifier.core.platform_comparison as core_platform_comparison
+import verifier.core.refutation as core_refutation
+import verifier.core.run_validation as core_run_validation
+import verifier.core.witness as core_witness
+import verifier.data.assurance as data_assurance
+import verifier.data.policy as data_policy
+import verifier.data.receipt as data_receipt
+import verifier.hardware.validation as hardware_validation
+import verifier.interoperability.authority_composition as authority_composition
+import verifier.interoperability.bounded_completeness as bounded_completeness
+import verifier.interoperability.composition_qualification as composition_qualification
+import verifier.interoperability.deriver_self_status as deriver_self_status
+import verifier.interoperability.formation_checker as formation_checker
+import verifier.interoperability.formation_mechanism as formation_mechanism
+import verifier.interoperability.formation_producer as formation_producer
+import verifier.interoperability.formation_receipt as formation_receipt
+import verifier.interoperability.global_cycle_assessment as global_cycle_assessment
+import verifier.interoperability.graph_topology as graph_topology
+import verifier.interoperability.network as network
+import verifier.interoperability.proposition_transfer as proposition_transfer
+import verifier.interoperability.relation_boundary as relation_boundary
+import verifier.interoperability.runtime_authority_correspondence as runtime_authority_correspondence
+import verifier.interoperability.scitt.adapter as scitt_adapter
+import verifier.interoperability.source_grounding as source_grounding
+import verifier.interoperability.untraversable as untraversable
 from verifier.artifact_control import ArtifactVerification
 from verifier.core.geometry import VerificationGeometry
 from verifier.core.geometry_io import GeometryLoadError
 from verifier.core.kernel import KernelOutcome, KernelResult
 from verifier.core.witness import WitnessCorroborationResult, WitnessResultStatus
 from verifier.data.assurance import AssuranceFlowError, AssuranceLedger
+from verifier.data.graph_level import (
+    recheck_evidence_bound_graph_level_record as recheck_graph_level_record,
+)
 from verifier.data.models import ProvenanceHypergraph
 from verifier.interoperability import ComponentKind, ComponentLifecycle, InteractionMode
 from verifier.interoperability.network import (
@@ -33,13 +66,97 @@ from verifier.interoperability.reference_catalog import (
 )
 
 
+_REFERENCE_IMPLEMENTATIONS = {
+    "verifier.artifact_control:verify_frozen_artifact":
+        artifact_control_module.verify_frozen_artifact,
+    "verifier.core.checker:IndependentAuditor.audit_claim_derivation":
+        core_checker.IndependentAuditor.audit_claim_derivation,
+    "verifier.core.depth:recheck_evidence_bound_vstd4_receipt":
+        core_depth.recheck_evidence_bound_vstd4_receipt,
+    "verifier.core.geometry_io:load_verification_geometry":
+        core_geometry_io.load_verification_geometry,
+    "verifier.core.kernel:check": core_kernel.check,
+    "verifier.core.platform_comparison:compare_platform_run_receipts":
+        core_platform_comparison.compare_platform_run_receipts,
+    "verifier.core.refutation:ProofProducingDPLL.solve":
+        core_refutation.ProofProducingDPLL.solve,
+    "verifier.core.refutation:RefutationChecker.check":
+        core_refutation.RefutationChecker.check,
+    "verifier.core.run_validation:validate_run_receipt":
+        core_run_validation.validate_run_receipt,
+    "verifier.core.witness:recheck_vstd5_receipt":
+        core_witness.recheck_vstd5_receipt,
+    "verifier.data.assurance:recheck_assurance_log":
+        data_assurance.recheck_assurance_log,
+    "verifier.data.graph_level:recheck_evidence_bound_graph_level_record":
+        recheck_graph_level_record,
+    "verifier.data.policy:ProvenancePolicyVerifier":
+        data_policy.ProvenancePolicyVerifier,
+    "verifier.data.receipt:validate_data_receipt":
+        data_receipt.validate_data_receipt,
+    "verifier.hardware.validation:validate_vstd3_receipt":
+        hardware_validation.validate_vstd3_receipt,
+    "verifier.interoperability.authority_composition:assess_authority_composition":
+        authority_composition.assess_authority_composition,
+    "verifier.interoperability.bounded_completeness:assess_bounded_completeness":
+        bounded_completeness.assess_bounded_completeness,
+    "verifier.interoperability.bounded_completeness:recheck_bounded_completeness_receipt":
+        bounded_completeness.recheck_bounded_completeness_receipt,
+    "verifier.interoperability.composition_qualification:qualify_silo_composition":
+        composition_qualification.qualify_silo_composition,
+    "verifier.interoperability.deriver_self_status:recheck_deriver_self_status":
+        deriver_self_status.recheck_deriver_self_status,
+    "verifier.interoperability.deriver_self_status:record_deriver_session":
+        deriver_self_status.record_deriver_session,
+    "verifier.interoperability.formation_checker:check_formation":
+        formation_checker.check_formation,
+    "verifier.interoperability.formation_mechanism:FormationPathCertificateMechanism.evaluate":
+        formation_mechanism.FormationPathCertificateMechanism.evaluate,
+    "verifier.interoperability.formation_producer:produce_formation_certificate":
+        formation_producer.produce_formation_certificate,
+    "verifier.interoperability.formation_receipt:recheck_formation_receipt":
+        formation_receipt.recheck_formation_receipt,
+    "verifier.interoperability.global_cycle_assessment:assess_global_cycles":
+        global_cycle_assessment.assess_global_cycles,
+    "verifier.interoperability.global_cycle_assessment:recheck_global_cycle_receipt":
+        global_cycle_assessment.recheck_global_cycle_receipt,
+    "verifier.interoperability.graph_topology:analyze_graph_topology":
+        graph_topology.analyze_graph_topology,
+    "verifier.interoperability.network:SiloComposition.from_dict":
+        network.SiloComposition.from_dict,
+    "verifier.interoperability.network:build_silo_composition_assessment_receipt":
+        network.build_silo_composition_assessment_receipt,
+    "verifier.interoperability.network:materialize_silo_transfer":
+        network.materialize_silo_transfer,
+    "verifier.interoperability.network:recheck_silo_composition_assessment_receipt":
+        network.recheck_silo_composition_assessment_receipt,
+    "verifier.interoperability.proposition_transfer:assess_transfer":
+        proposition_transfer.assess_transfer,
+    "verifier.interoperability.proposition_transfer:recheck_transfer_receipt":
+        proposition_transfer.recheck_transfer_receipt,
+    "verifier.interoperability.relation_boundary:qualify_relation_boundary":
+        relation_boundary.qualify_relation_boundary,
+    "verifier.interoperability.relation_boundary:recheck_relation_boundary_receipt":
+        relation_boundary.recheck_relation_boundary_receipt,
+    "verifier.interoperability.runtime_authority_correspondence:build_runtime_authority_correspondence_receipt":
+        runtime_authority_correspondence.build_runtime_authority_correspondence_receipt,
+    "verifier.interoperability.runtime_authority_correspondence:recheck_runtime_authority_correspondence_receipt":
+        runtime_authority_correspondence.recheck_runtime_authority_correspondence_receipt,
+    "verifier.interoperability.scitt.adapter:compose_results":
+        scitt_adapter.compose_results,
+    "verifier.interoperability.scitt.adapter:consume_scitt_evidence":
+        scitt_adapter.consume_scitt_evidence,
+    "verifier.interoperability.source_grounding:qualify_source_grounding":
+        source_grounding.qualify_source_grounding,
+    "verifier.interoperability.source_grounding:recheck_source_grounding_receipt":
+        source_grounding.recheck_source_grounding_receipt,
+    "verifier.interoperability.untraversable:analyze_untraversability":
+        untraversable.analyze_untraversability,
+}
+
+
 def _resolve(reference: str) -> object:
-    module_name, separator, attribute_path = reference.partition(":")
-    assert separator and module_name and attribute_path
-    value: object = import_module(module_name)
-    for attribute in attribute_path.split("."):
-        value = getattr(value, attribute)
-    return value
+    return _REFERENCE_IMPLEMENTATIONS[reference]
 
 
 def test_reference_catalog_has_nineteen_explicit_families_and_real_entry_points() -> None:
@@ -52,6 +169,9 @@ def test_reference_catalog_has_nineteen_explicit_families_and_real_entry_points(
 
     assert registry.registry_version == REFERENCE_CATALOG_VERSION
     assert len(registry.components) == 43
+    assert set(_REFERENCE_IMPLEMENTATIONS) == {
+        component.implementation_ref for component in registry.components
+    }
     assert len(families) == 19
     assert families == {
         "artifact-control",
@@ -218,19 +338,15 @@ def test_mechanism_obligation_descriptors_are_role_accurate_and_exactly_matchabl
 
 
 def test_mechanism_obligation_profile_digests_match_current_native_profiles() -> None:
-    source = import_module("verifier.interoperability.source_grounding")
-    relation = import_module("verifier.interoperability.relation_boundary")
-    deriver = import_module("verifier.interoperability.deriver_self_status")
-    completeness = import_module("verifier.interoperability.bounded_completeness")
-    runtime = import_module("verifier.interoperability.runtime_authority_correspondence")
     registry = reference_component_registry()
     expected = {
-        "vstd-source-grounding": source.source_grounding_mechanism_profile_digest(),
-        "vstd-relation-boundary": relation.relation_boundary_mechanism_profile_digest(),
+        "vstd-source-grounding": source_grounding.source_grounding_mechanism_profile_digest(),
+        "vstd-relation-boundary": relation_boundary.relation_boundary_mechanism_profile_digest(),
         "vstd-deriver-self-status": "sha256:"
-        + hashlib.sha256(deriver.checker_profile_bytes()).hexdigest(),
-        "vstd-bounded-completeness": completeness.mechanism_profile_digest(),
-        "vstd-runtime-authority": runtime.runtime_authority_profile_digest(),
+        + hashlib.sha256(deriver_self_status.checker_profile_bytes()).hexdigest(),
+        "vstd-bounded-completeness": bounded_completeness.mechanism_profile_digest(),
+        "vstd-runtime-authority":
+            runtime_authority_correspondence.runtime_authority_profile_digest(),
     }
 
     for component in registry.components:
@@ -274,115 +390,115 @@ def test_only_native_parsers_declare_serialized_schema_acceptance() -> None:
 
     assert declared == {
         "component:artifact-bundle-verifier": (
-            "VSTD-ARTIFACT-FREEZE-1",
-            "VSTD-ARTIFACT-SEAL-1",
+            "verifier-artifact-freeze-1",
+            "verifier-artifact-seal-1",
         ),
         "component:artifact-network-transfer-materializer": (
-            "VSTD-SILO-TRANSFER-0.1",
+            "verifier-silo-transfer-1",
         ),
         "component:artifact-network-authority-composition-assessor": (
-            "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
+            "verifier-finite-authority-composition-1",
         ),
         "component:artifact-network-bounded-completeness-assessor": (
-            "VSTD-BOUNDED-COMPLETENESS-0.1",
-            "VSTD-BOUNDED-COMPLETENESS-DENOMINATOR-0.1",
-            "VSTD-BOUNDED-COMPLETENESS-OBSERVATIONS-0.1",
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+            "verifier-bounded-completeness-1",
+            "verifier-bounded-completeness-denominator-1",
+            "verifier-bounded-completeness-observations-1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-receipt-1",
         ),
         "component:artifact-network-bounded-completeness-receipt-rechecker": (
-            "VSTD-BOUNDED-COMPLETENESS-0.1",
-            "VSTD-BOUNDED-COMPLETENESS-DENOMINATOR-0.1",
-            "VSTD-BOUNDED-COMPLETENESS-OBSERVATIONS-0.1",
-            "VSTD-BOUNDED-COMPLETENESS-RECEIPT-0.1",
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+            "verifier-bounded-completeness-1",
+            "verifier-bounded-completeness-denominator-1",
+            "verifier-bounded-completeness-observations-1",
+            "verifier-bounded-completeness-receipt-1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-receipt-1",
         ),
         "component:artifact-network-finite-composition-qualifier": (
-            "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
-            "VSTD-SILO-COMMIT-0.1",
+            "verifier-finite-authority-composition-1",
+            "verifier-silo-commit-1",
         ),
         "component:artifact-network-composition-declaration-decoder": (
-            "VSTD-SILO-COMPOSITION-0.1",
+            "verifier-silo-composition-1",
         ),
         "component:artifact-network-composition-receipt-rechecker": (
-            "VSTD-SILO-COMPOSITION-ASSESSMENT-RECEIPT-0.1",
+            "verifier-silo-composition-assessment-receipt-1",
         ),
         "component:artifact-network-deriver-self-status-rechecker": (
-            "VSTD-DERIVER-SELF-STATUS-0.1",
-            "VSTD-DERIVER-SELF-STATUS-RECEIPT-0.1",
+            "verifier-deriver-self-status-1",
+            "verifier-deriver-self-status-receipt-1",
         ),
         "component:artifact-network-deriver-session-recorder": (
-            "VSTD-DERIVER-SELF-STATUS-0.1",
+            "verifier-deriver-self-status-1",
         ),
         "component:artifact-network-proposition-transfer-assessor": (
-            "VSTD-PROPOSITION-TRANSFER-0.1",
+            "verifier-proposition-transfer-1",
         ),
         "component:artifact-network-proposition-transfer-rechecker": (
-            "VSTD-PROPOSITION-TRANSFER-0.1",
-            "VSTD-PROPOSITION-TRANSFER-RECEIPT-0.1",
+            "verifier-proposition-transfer-1",
+            "verifier-proposition-transfer-receipt-1",
         ),
         "component:artifact-network-global-cycle-assessor": (
-            "VSTD-CYCLE-RELATION-SEMANTICS-0.1",
-            "VSTD-GLOBAL-CYCLE-ASSESSMENT-0.1",
-            "VSTD-RELATION-BOUNDARY-RECEIPT-0.1",
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+            "verifier-cycle-relation-semantics-1",
+            "verifier-global-cycle-assessment-1",
+            "verifier-relation-boundary-receipt-1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-receipt-1",
         ),
         "component:artifact-network-global-cycle-receipt-rechecker": (
-            "VSTD-CYCLE-RELATION-SEMANTICS-0.1",
-            "VSTD-GLOBAL-CYCLE-ASSESSMENT-0.1",
-            "VSTD-GLOBAL-CYCLE-ASSESSMENT-RECEIPT-0.1",
-            "VSTD-RELATION-BOUNDARY-RECEIPT-0.1",
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+            "verifier-cycle-relation-semantics-1",
+            "verifier-global-cycle-assessment-1",
+            "verifier-global-cycle-assessment-receipt-1",
+            "verifier-relation-boundary-receipt-1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-receipt-1",
         ),
         "component:artifact-network-relation-boundary-assessor": (
-            "VSTD-RELATION-BOUNDARY-0.1",
-            "VSTD-RELATION-BOUNDARY-EVIDENCE-0.1",
+            "verifier-relation-boundary-1",
+            "verifier-relation-boundary-evidence-1",
         ),
         "component:artifact-network-relation-boundary-receipt-rechecker": (
-            "VSTD-RELATION-BOUNDARY-0.1",
-            "VSTD-RELATION-BOUNDARY-EVIDENCE-0.1",
-            "VSTD-RELATION-BOUNDARY-RECEIPT-0.1",
+            "verifier-relation-boundary-1",
+            "verifier-relation-boundary-evidence-1",
+            "verifier-relation-boundary-receipt-1",
         ),
         "component:artifact-network-runtime-authority-correspondence-assessor": (
-            "VSTD-AUTHORITY-MODEL-0.1",
-            "VSTD-DERIVER-SELF-STATUS-0.1",
-            "VSTD-DERIVER-SELF-STATUS-RECEIPT-0.1",
-            "VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-0.1",
-            "VSTD-RUNTIME-AUTHORITY-TRACE-0.1",
+            "verifier-authority-model-1",
+            "verifier-deriver-self-status-1",
+            "verifier-deriver-self-status-receipt-1",
+            "verifier-runtime-authority-correspondence-1",
+            "verifier-runtime-authority-trace-1",
         ),
         "component:artifact-network-runtime-authority-correspondence-receipt-rechecker": (
-            "VSTD-RUNTIME-AUTHORITY-CORRESPONDENCE-RECEIPT-0.1",
+            "verifier-runtime-authority-correspondence-receipt-1",
         ),
         "component:artifact-network-source-grounding-assessor": (
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-CERTIFICATE-0.1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-certificate-1",
         ),
         "component:artifact-network-source-grounding-receipt-rechecker": (
-            "VSTD-SOURCE-GROUNDING-0.1",
-            "VSTD-SOURCE-GROUNDING-CERTIFICATE-0.1",
-            "VSTD-SOURCE-GROUNDING-RECEIPT-0.1",
+            "verifier-source-grounding-1",
+            "verifier-source-grounding-certificate-1",
+            "verifier-source-grounding-receipt-1",
         ),
         "component:artifact-network-typed-formation-checker": (
-            "VSTD-TYPED-FORMATION-0.1",
-            "VSTD-TYPED-FORMATION-CERTIFICATE-0.1",
+            "verifier-typed-formation-1",
+            "verifier-typed-formation-certificate-1",
         ),
         "component:artifact-network-typed-formation-producer": (
-            "VSTD-TYPED-FORMATION-0.1",
+            "verifier-typed-formation-1",
         ),
         "component:artifact-network-typed-formation-receipt-rechecker": (
-            "VSTD-SILO-COMMIT-0.1",
-            "VSTD-SILO-FORMATION-RECEIPT-0.1",
-            "VSTD-SILO-FORMATION-SELECTION-0.1",
+            "verifier-silo-commit-1",
+            "verifier-silo-formation-receipt-1",
+            "verifier-silo-formation-selection-1",
         ),
         "component:generic-run-validator": ("VSTD-1",),
         "component:platform-run-comparator": ("VSTD-1",),
         "component:vstd-graph-assurance-rechecker": (
-            "VSTD-GRAPH-ASSURANCE-1",
+            "verifier-graph-assurance-1",
         ),
-        "component:vstd-graph-receipt-validator": ("VSTD-DATA-0.1",),
+        "component:vstd-graph-receipt-validator": ("verifier-data-1",),
         "component:vstd2-geometry-loader": ("VSTD-2",),
         "component:vstd4-evidence-rechecker": ("VSTD-4",),
         "component:vstd5-witness-rechecker": ("VSTD-5",),
@@ -489,9 +605,9 @@ def test_graph_topology_metadata_declares_typed_experimental_bounded_analysis() 
     assert component.accepted_schema_ids == ()
     assert component.planning_surface_schema_ids == ("VSTD-2",)
     assert component.emitted_schema_ids == (
-        "VSTD-GRAPH-TOPOLOGY-REPORT-EXPERIMENTAL-0.1",
+        "verifier-graph-topology-report-experimental-1",
     )
-    assert component.native_versions == ("VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1",)
+    assert component.native_versions == ("verifier-graph-topology-experimental-1",)
     assert component.native_inputs == (
         "max_assignments bound",
         "typed GraphTopologyContract",
@@ -514,31 +630,28 @@ def test_graph_topology_metadata_declares_typed_experimental_bounded_analysis() 
 
 
 def test_graph_topology_metadata_matches_the_native_callable_contract() -> None:
-    topology = import_module("verifier.interoperability.graph_topology")
     component = reference_component_registry().get("component:graph-topology-analyzer")
     analyzer = _resolve(component.implementation_ref)
 
     assert get_type_hints(analyzer) == {
         "graph": ProvenanceHypergraph,
-        "contract": topology.GraphTopologyContract,
+        "contract": graph_topology.GraphTopologyContract,
         "max_assignments": int,
-        "return": topology.GraphTopologyReport,
+        "return": graph_topology.GraphTopologyReport,
     }
     assert signature(analyzer).parameters["max_assignments"].default == 4096
-    assert component.native_outputs == (topology.GraphTopologyReport.__name__,)
-    assert component.native_versions == (topology.GRAPH_TOPOLOGY_SCHEMA_VERSION,)
+    assert component.native_outputs == (graph_topology.GraphTopologyReport.__name__,)
+    assert component.native_versions == (graph_topology.GRAPH_TOPOLOGY_SCHEMA_VERSION,)
     assert component.emitted_schema_ids == (
-        topology.GRAPH_TOPOLOGY_REPORT_SCHEMA_VERSION,
+        graph_topology.GRAPH_TOPOLOGY_REPORT_SCHEMA_VERSION,
     )
     assert component.native_result_vocabulary == tuple(
-        sorted(status.value for status in topology.GraphTopologyStatus)
+        sorted(status.value for status in graph_topology.GraphTopologyStatus)
     )
-    assert topology.SUPPORTED_CONSTRAINT_LOGIC == "classical-boolean-equations-v1"
+    assert graph_topology.SUPPORTED_CONSTRAINT_LOGIC == "classical-boolean-equations-v1"
 
 
 def test_untraversability_metadata_matches_the_native_callable_contract() -> None:
-    evidence = import_module("verifier.core.evidence")
-    untraversable = import_module("verifier.interoperability.untraversable")
     component = reference_component_registry().get(
         "component:composed-untraversability-analyzer"
     )
@@ -557,7 +670,7 @@ def test_untraversability_metadata_matches_the_native_callable_contract() -> Non
     assert get_type_hints(analyzer) == {
         "graph": ProvenanceHypergraph,
         "contract": untraversable.UntraversableContract,
-        "session": evidence.VerificationSession,
+        "session": core_evidence.VerificationSession,
         "return": untraversable.UntraversabilityReport,
     }
     assert component.native_versions == (
@@ -589,7 +702,7 @@ def test_untraversability_metadata_matches_the_native_callable_contract() -> Non
         ({}, ("component:composed-untraversability-analyzer",)),
         ({"relation_id": "relation:composed-Untraversability"}, ()),
         ({"mechanism_id": "mechanism:composed-untraversability"}, ()),
-        ({"schema_id": "VSTD-UNTRAVERSABLE-EXPERIMENTAL-0.1"}, ()),
+        ({"schema_id": "verifier-untraversable-experimental-1"}, ()),
         ({"interaction_mode": InteractionMode.SIMULATION}, ()),
     ),
     ids=("exact", "relation-case", "mechanism-near-miss", "native-schema", "mode"),
@@ -662,8 +775,8 @@ def test_artifact_network_composition_planning_matches_only_exact_capabilities(
         ({"mechanism_id": "mechanism:graph-topology"}, ()),
         ({"mechanism_id": "mechanism:vstd4-grounded-certificate-check"}, ()),
         ({"interaction_mode": InteractionMode.OFFLINE_REPLAY}, ()),
-        ({"schema_id": "VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1"}, ()),
-        ({"schema_id": "VSTD-DATA-0.1"}, ()),
+        ({"schema_id": "verifier-graph-topology-experimental-1"}, ()),
+        ({"schema_id": "verifier-data-1"}, ()),
     ),
     ids=("exact", "relation-case", "mechanism-near-miss", "other-constraint",
          "mode", "stored-contract-not-planning-schema", "graph-not-planning-schema"),
@@ -735,7 +848,7 @@ def test_schema_parsers_and_artifact_verifier_fail_closed_on_representative_inpu
     assurance_callable = _resolve(
         registry.get("component:vstd-graph-assurance-rechecker").implementation_ref
     )
-    with pytest.raises(AssuranceFlowError, match="not a VSTD-Graph assurance log"):
+    with pytest.raises(AssuranceFlowError, match="not a GRAPH assurance log"):
         assurance_callable({"schema_version": "NOT-ASSURANCE"}, mechanisms=())
 
     artifact_callable = _resolve(

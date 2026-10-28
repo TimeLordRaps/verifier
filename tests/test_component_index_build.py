@@ -8,16 +8,19 @@ uniform resource locator (URL).
 from __future__ import annotations
 
 import hashlib
-import importlib.util
+import io
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
 from types import SimpleNamespace
+import zipfile
 
 import pytest
 
+from scripts import build_component_index as component_index_builder
+from scripts import build_pages as pages_builder
 from verifier.interoperability.catalog import (
     ComponentKind,
     ComponentLifecycle,
@@ -37,13 +40,11 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _builder():
-    path = ROOT / "scripts/build_component_index.py"
-    spec = importlib.util.spec_from_file_location("build_component_index_test", path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
+    return component_index_builder
+
+
+def _pages_deployment_file_bound() -> int:
+    return pages_builder.MAX_DEPLOYMENT_FILE_BYTES
 
 
 def _head() -> str:
@@ -69,6 +70,7 @@ def _package(version: str) -> StoredComponentPackage:
         claim_boundary="Declared fixture only; no execution or qualification is established.",
     )
     return StoredComponentPackage(
+        schema_version="verifier-component-package-2",
         package_id="package:static-index-fixture",
         package_version=version,
         publisher="Unsigned fixture declaration",
@@ -78,15 +80,19 @@ def _package(version: str) -> StoredComponentPackage:
         artifacts=(PackageArtifact("src/fixture.py", "text/x-python", b"pass\n"),),
         implementations=(ImplementationBinding(
             descriptor.component_id, descriptor.implementation_ref, ("src/fixture.py",),
+            schema_version="verifier-component-package-2",
         ),),
     )
 
 
 def _use_fixture_exporter(module, monkeypatch: pytest.MonkeyPatch) -> None:
+    def build_package(_root, version, *, package_schema_version):
+        assert package_schema_version == "verifier-component-package-2"
+        return _package(version)
+
     monkeypatch.setattr(
-        module,
-        "_reference_exporter",
-        lambda: SimpleNamespace(build_package=lambda _root, version: _package(version)),
+        module, "_reference_exporter",
+        lambda: SimpleNamespace(build_package=build_package),
     )
     monkeypatch.setattr(module, "_worktree_dirty", lambda: False)
 
@@ -232,13 +238,14 @@ def test_builder_main_reports_bounded_refusal_without_traceback(
     assert "Traceback" not in output.err
 
 
-def test_worktree_index_retains_reviewed_proposition_transfer_sources(tmp_path: Path) -> None:
+def test_worktree_index_retains_reviewed_hardware_and_proposition_transfer_sources(tmp_path: Path) -> None:
     module = _builder()
     required = {
+        "src/verifier/domains/hardware.py",
         "src/verifier/interoperability/proposition_transfer.py",
-        "src/verifier/profiles/proposition-transfer-rule-0.1.json",
-        "src/verifier/schemas/vstd-proposition-transfer-0.1.schema.json",
-        "src/verifier/specifications/PROPOSITION_TRANSFER.md",
+        "src/verifier/profiles/proposition-transfer-rule-1.json",
+        "src/verifier/schemas/verifier-proposition-transfer-1.schema.json",
+        "src/verifier/standard/PROPOSITION_TRANSFER.md",
     }
     output = tmp_path / "components"
 
@@ -253,6 +260,72 @@ def test_worktree_index_retains_reviewed_proposition_transfer_sources(tmp_path: 
     assert required <= set(module.REVIEWED_CANDIDATE_SOURCE_PATHS)
     coordinate = json.loads((output / "deployment-coordinate.json").read_text(encoding="utf-8"))
     assert coordinate["source_ref"] == "WORKTREE"
+
+
+def test_worktree_package_archive_retains_every_public_source_byte(tmp_path: Path) -> None:
+    module = _builder()
+    output = tmp_path / "components"
+    module.build(output, source_ref="WORKTREE")
+    index = load_component_index(output / "index.json")
+    entry = index.packages[0]
+    package = load_component_package(output / entry.package_path, expected_digest=entry.package_sha256)
+    artifacts = {item.path: item for item in package.artifacts}
+    archive = artifacts["source-archive/exact-public-source.zip"]
+    assert archive.media_type == "application/zip"
+    assert package.schema_version == "verifier-component-package-2"
+    assert len(package.artifacts) <= 512
+
+    tracked = subprocess.check_output(["git", "-C", str(ROOT), "ls-files", "--cached", "--others", "--exclude-standard", "-z"])
+    expected = {
+        raw.decode("utf-8") for raw in tracked.split(b"\0") if raw
+        and (raw.decode("utf-8") in {"pyproject.toml", "LICENSE", "NOTICE", "README.md"}
+             or (raw.startswith(b"src/verifier/")
+                    and Path(raw.decode("utf-8")).suffix in {
+                        ".py", ".json", ".md", ".mjs"
+                    }))
+    }
+    direct_required = {"pyproject.toml", "LICENSE", "NOTICE", "README.md"}
+    direct_required.update(
+        path for path in expected if path.startswith("src/verifier/") and (
+            path.endswith((".json", ".md"))
+            or (path.startswith("src/verifier/domains/")
+                and path.count("/") == 3 and path.endswith(".py"))
+        )
+    )
+    for component in package.registry.components:
+        module = "src/" + component.implementation_ref.split(":", 1)[0].replace(".", "/")
+        direct_required.add(next(path for path in (module + ".py", module + "/__init__.py")
+                                 if path in expected))
+    with zipfile.ZipFile(io.BytesIO(archive.content)) as bundled:
+        assert bundled.namelist() == ["source-inventory.json", *sorted(expected - direct_required)]
+        manifest_bytes = bundled.read("source-inventory.json")
+        manifest = json.loads(manifest_bytes)
+        assert manifest_bytes == json.dumps(manifest, sort_keys=True, separators=(",", ":"),
+                                           ensure_ascii=True).encode("ascii")
+        assert manifest == {
+            "schema_version": "verifier-reference-source-archive-1",
+            "files": [
+                {"path": path, "size_bytes": len((ROOT / path).read_bytes()),
+                 "sha256": hashlib.sha256((ROOT / path).read_bytes()).hexdigest(),
+                 "location": "DIRECT" if path in direct_required else "ARCHIVE"}
+                for path in sorted(expected)
+            ],
+        }
+        for item in bundled.infolist():
+            assert item.compress_type == zipfile.ZIP_DEFLATED
+            assert item.date_time == (1980, 1, 1, 0, 0, 0)
+            assert ".." not in Path(item.filename).parts
+            if item.filename != "source-inventory.json":
+                assert bundled.read(item) == (ROOT / item.filename).read_bytes()
+    assert set(artifacts) == direct_required | {"source-archive/exact-public-source.zip"}
+    assert all(artifacts[path].content == (ROOT / path).read_bytes() for path in direct_required)
+    assert all("source-archive/exact-public-source.zip" in binding.artifact_paths
+               for binding in package.implementations)
+    package_bytes = (output / entry.package_path).stat().st_size
+    bound = _pages_deployment_file_bound()
+    assert package_bytes <= bound, (
+        f"the stored package is {package_bytes} bytes; the Pages per-file bound is {bound} bytes"
+    )
 
 
 def test_default_worktree_inventory_does_not_admit_an_unreviewed_source(

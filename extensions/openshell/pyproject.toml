@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vstd-openshell"
+version = "0.1.0"
+description = "Optional NVIDIA OpenShell 0.1.3 transport for Verifier Standard"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.entry-points."verifier.sandbox_backends"]
+openshell = "vstd_openshell:run"
+

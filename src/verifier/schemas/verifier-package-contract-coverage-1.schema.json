@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-package-contract-coverage-1.schema.json",
+  "title": "Verifier Standard (VSTD) internal package contract coverage assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "through_tier", "registry_digest", "collection_digest", "source_census_digest", "verifier_id", "expected_instance_count", "observed_instance_count", "denominator_status", "finite_check_status", "status", "normative_coverage", "contracts", "findings", "claim_boundary", "assessment_digest"],
+  "properties": {
+    "schema_version": {"const": "verifier-package-contract-coverage-1"},
+    "through_tier": {"type": "integer", "enum": [1, 2, 3]},
+    "registry_digest": {"$ref": "#/$defs/digest"},
+    "collection_digest": {"$ref": "#/$defs/digest"},
+    "source_census_digest": {"$ref": "#/$defs/digest"},
+    "verifier_id": {"$ref": "#/$defs/text"},
+    "expected_instance_count": {"type": "integer", "minimum": 0},
+    "observed_instance_count": {"type": "integer", "minimum": 0},
+    "denominator_status": {"enum": ["PASS", "FAIL"]},
+    "finite_check_status": {"$ref": "#/$defs/verdict"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "normative_coverage": {"enum": ["PASS", "NOT_ESTABLISHED"]},
+    "contracts": {"type": "array", "items": {"$ref": "#/$defs/contract"}},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "claim_boundary": {"$ref": "#/$defs/text"},
+    "assessment_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "text": {"type": "string", "minLength": 1},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "verdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "argv": {"type": "array", "items": {"type": "string"}, "minItems": 6, "maxItems": 6},
+    "packageArgv": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "prefixItems": [{"const": "vstd"}, {"const": "polish"}, {"enum": ["1", "2", "3"]}]
+    },
+    "clause": {
+      "type": "object", "additionalProperties": false,
+      "required": ["obligation_id", "coordinate", "tier", "semantic_version", "proposition_digest", "reason", "exact_claim", "checking_mechanism", "status", "result_digest", "rerun_argv"],
+      "properties": {
+        "obligation_id": {"$ref": "#/$defs/text"},
+        "coordinate": {"$ref": "#/$defs/text"},
+        "tier": {"type": "integer", "enum": [1, 2, 3]},
+        "semantic_version": {"$ref": "#/$defs/text"},
+        "proposition_digest": {"$ref": "#/$defs/digest"},
+        "reason": {"$ref": "#/$defs/text"},
+        "exact_claim": {"$ref": "#/$defs/text"},
+        "checking_mechanism": {"$ref": "#/$defs/text"},
+        "status": {"$ref": "#/$defs/verdict"},
+        "result_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "rerun_argv": {"$ref": "#/$defs/argv"}
+      }
+    },
+    "residual": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source", "source_id", "reason", "status", "question", "mechanism", "boundary"],
+      "properties": {
+        "source": {"enum": ["installed-kind-contract", "native-slot-planning-context", "admission-contract-semantic-remainder"]},
+        "source_id": {"$ref": "#/$defs/text"},
+        "reason": {"$ref": "#/$defs/text"},
+        "status": {"const": "UNKNOWN"},
+        "question": {"$ref": "#/$defs/text"},
+        "mechanism": {"type": "null"},
+        "boundary": {"$ref": "#/$defs/text"}
+      }
+    },
+    "contract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["object_id", "object_digest", "kind", "kind_requirement", "finite_check_status", "clauses", "residual_requirements", "status"],
+      "properties": {
+        "object_id": {"$ref": "#/$defs/text"},
+        "object_digest": {"$ref": "#/$defs/digest"},
+        "kind": {"$ref": "#/$defs/text"},
+        "kind_requirement": {
+          "type": "object", "additionalProperties": false,
+          "required": ["kind", "declared", "necessity", "reasons", "source_census_digest"],
+          "properties": {
+            "kind": {"$ref": "#/$defs/text"},
+            "declared": {"type": "boolean"},
+            "necessity": {"enum": ["NECESSARY", "CONDITIONAL_UNRESOLVED"]},
+            "reasons": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}},
+            "source_census_digest": {"$ref": "#/$defs/digest"}
+          }
+        },
+        "finite_check_status": {"$ref": "#/$defs/verdict"},
+        "clauses": {"type": "array", "items": {"$ref": "#/$defs/clause"}},
+        "residual_requirements": {"type": "array", "minItems": 0, "items": {"$ref": "#/$defs/residual"}},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]}
+      }
+    },
+    "finding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "status", "object_id", "coordinate", "obligation_id", "explanation", "rerun_argv"],
+      "properties": {
+        "code": {"$ref": "#/$defs/text"},
+        "status": {"const": "FAIL"},
+        "object_id": {"$ref": "#/$defs/text"},
+        "coordinate": {"$ref": "#/$defs/text"},
+        "obligation_id": {"type": ["string", "null"]},
+        "explanation": {"$ref": "#/$defs/text"},
+        "rerun_argv": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/argv"}, {"$ref": "#/$defs/packageArgv"}]}
+      }
+    }
+  }
+}

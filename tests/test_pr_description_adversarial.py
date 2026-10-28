@@ -5,7 +5,6 @@ Terminology: JavaScript Object Notation (JSON). No live services are used.
 from __future__ import annotations
 
 import copy
-import importlib.util
 import io
 import json
 from pathlib import Path
@@ -14,6 +13,7 @@ import zipfile
 
 import pytest
 import yaml
+from scripts import check_pr_description_changed as history_gate
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = "Example/project"
@@ -23,10 +23,7 @@ BASE = "c" * 40
 
 @pytest.fixture
 def gate():
-    spec = importlib.util.spec_from_file_location("independent_history", ROOT / "scripts/check_pr_description_changed.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return history_gate
 
 
 def test_raw_description_is_not_in_runner_printed_workflow_fields():

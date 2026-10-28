@@ -6,11 +6,13 @@ from __future__ import annotations
 
 import hashlib
 import platform
+import re
 import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
+from urllib.parse import urlsplit, urlunsplit
 
 
 @dataclass(frozen=True)
@@ -92,6 +94,52 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+_WINDOWS_ABSOLUTE = re.compile(r"^[A-Za-z]:[\\/]")
+_SCP_REMOTE = re.compile(r"^[^/@:]+@([^:]+):(.+)$")
+
+
+def portable_remote_origin(remote: str) -> str:
+    """Return a credential-free, non-local repository identifier.
+
+    A receipt is expected to move outside the machine that produced it. Raw Git
+    remotes may contain web credentials, remote-shell user names, query tokens, or a
+    local filesystem path. None is required to identify the repository, and serializing
+    it would turn provenance capture into a secret- and path-disclosure mechanism.
+
+    Network addresses retain scheme, host, optional port, and path. A remote written
+    as ``user@host:path`` becomes a host/path identifier. Local, rooted,
+    network-share and ``file:`` remotes are deliberately represented only as
+    ``LOCAL_REMOTE_REDACTED``. A network address the parser cannot read becomes
+    ``REMOTE_REDACTED``; it never raises, so one malformed remote cannot discard the
+    commit and branch of the same record.
+    """
+    value = remote.strip()
+    if not value:
+        return ""
+    if _WINDOWS_ABSOLUTE.match(value) or value.startswith(("/", "\\", "file:")):
+        return "LOCAL_REMOTE_REDACTED"
+
+    scp_match = _SCP_REMOTE.fullmatch(value)
+    if scp_match:
+        host, path = scp_match.groups()
+        return f"ssh://{host}/{path.lstrip('/')}"
+
+    if "://" not in value:
+        return value
+    try:
+        parsed = urlsplit(value)
+        host = parsed.hostname or ""
+        if not host:
+            return "LOCAL_REMOTE_REDACTED"
+        port = parsed.port
+    except ValueError:
+        return "REMOTE_REDACTED"
+    if ":" in host:
+        host = f"[{host}]"
+    netloc = host if port is None else f"{host}:{port}"
+    return urlunsplit((parsed.scheme, netloc, parsed.path, "", ""))
+
+
 def discover_git_provenance(repo_dir: Path) -> GitProvenance:
     """Discover git commit, branch, and working-tree dirtiness dynamically."""
     if not repo_dir.exists():
@@ -145,7 +193,9 @@ def discover_git_provenance(repo_dir: Path) -> GitProvenance:
             text=True,
             check=False,
         )
-        remote_url = remote_res.stdout.strip() if remote_res.returncode == 0 else ""
+        remote_url = portable_remote_origin(
+            remote_res.stdout if remote_res.returncode == 0 else ""
+        )
 
         # Status / dirty check
         status_res = subprocess.run(
@@ -161,6 +211,7 @@ def discover_git_provenance(repo_dir: Path) -> GitProvenance:
         is_dirty = False
 
         if status_res.returncode == 0 and status_res.stdout:
+            is_dirty = True
             for line in status_res.stdout.strip().splitlines():
                 if not line:
                     continue
@@ -170,7 +221,6 @@ def discover_git_provenance(repo_dir: Path) -> GitProvenance:
                     untracked_files.append(fname)
                 else:
                     dirty_files.append(fname)
-                    is_dirty = True
 
         return GitProvenance(
             commit_sha=commit_sha,
@@ -226,7 +276,10 @@ def capture_provenance(
     return ProvenanceRecord(
         target_name=target_name,
         portable_repository_id=portable_id,
-        local_repository_path=str(repo_dir.resolve()),
+        # The absolute producer path is neither portable evidence nor needed to
+        # reproduce the repository coordinate. Keep the field for wire compatibility
+        # while serializing the portable root marker instead.
+        local_repository_path=".",
         git=git_prov,
         runtime=runtime_env,
         captured_at_utc=captured_at,

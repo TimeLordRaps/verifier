@@ -28,15 +28,44 @@ ROOT = Path(__file__).resolve().parents[1]
 SITE = "https://verifier-standard.com/"
 OLD_SITE = "https://timelordraps.github.io/verifier/"
 REPOSITORY = "https://github.com/TimeLordRaps/verifier"
-RELEASE = "1.4.0"
+RELEASE = "1.5.0"
 RELEASE_TAG = "v" + RELEASE
-RELEASE_COMMIT = "93cccdd89923092bdac51a84fa0a9855a7ef5f34"
+RELEASE_COMMIT = "117ab2b1d92eb6f72b06386b88a8f9b02ff1d55a"
 RELEASE_PATH = "releases/" + RELEASE + "/"
 ASSETS = ROOT / "scripts" / "portal"
+_VSTD_TEMPLATE_BINDING = re.compile(
+    r"<!--\s*vstd-template-binding\s+\{.*?\}\s*-->\s*", re.DOTALL
+)
+
+
+# Documentation builds use local tools and require no provider credentials.
+_BUILD_ENVIRONMENT_NAMES = (
+    "SYSTEMROOT", "WINDIR", "COMSPEC", "PATH", "PATHEXT", "TEMP", "TMP",
+    "USERPROFILE", "APPDATA", "LOCALAPPDATA", "PROGRAMDATA",
+    "LANG", "LC_ALL", "TZ", "SOURCE_DATE_EPOCH", "PYTHONUTF8",
+    "PYTHONIOENCODING",
+)
+
+
+def build_environment(source: Path) -> dict[str, str]:
+    """Pass only local build settings; never copy the inherited environment."""
+    environment = {
+        "PYTHONPATH": str(source / "src"),
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "PIP_NO_INDEX": "1",
+        "PIP_CONFIG_FILE": os.devnull,
+        "GIT_TERMINAL_PROMPT": "0",
+    }
+    for name in _BUILD_ENVIRONMENT_NAMES:
+        value = os.environ.get(name)
+        if value is not None:
+            environment[name] = value
+    return environment
 
 
 def run(arguments: list[str], *, cwd: Path = ROOT) -> str:
-    return subprocess.run(arguments, cwd=cwd, check=True, capture_output=True,
+    return subprocess.run(arguments, cwd=cwd, env=build_environment(cwd), check=True, capture_output=True,
                           text=True, encoding="utf-8", timeout=90).stdout.strip()
 
 
@@ -61,7 +90,7 @@ def heading_text(markup: str) -> str:
 
 def assemble(source: Path, output: Path, source_ref: str) -> None:
     print(f"[PORTAL] Assemble documentation at {source_ref}", flush=True)
-    environment = dict(os.environ, PYTHONPATH=str(source / "src"))
+    environment = build_environment(source)
     subprocess.run([sys.executable, "-u", "scripts/build_reference.py", "--check"],
                    cwd=source, env=environment, check=True, timeout=60)
     subprocess.run([sys.executable, "-u", "scripts/build_pages.py", "--output",
@@ -94,7 +123,7 @@ def discard_release(destination: Path) -> None:
     """Remove the release worktree and its registration, ignoring absence."""
 
     subprocess.run(["git", "worktree", "remove", "--force", str(destination)],
-                   cwd=ROOT, capture_output=True, text=True, timeout=60)
+                   cwd=ROOT, env=build_environment(ROOT), capture_output=True, text=True, timeout=60)
     subprocess.run(["git", "worktree", "prune"], cwd=ROOT,
                    capture_output=True, text=True, timeout=60)
 
@@ -142,10 +171,45 @@ def navigation(prefix: str, output: Path) -> list[tuple[str, list[tuple[str, str
     def route(path: str) -> str:
         return prefix + path if (output / (prefix + path)).exists() else path
 
-    return [
+    if not prefix:
+        return [
+            ("Start here", [("Introduction", "index.html"),
+                            ("Install v2.0.0 candidate source", "docs/INSTALLATION.html"),
+                            ("Your first receipt", "docs/FIRST_RECEIPT.html"),
+                            ("Typical use cases", "docs/USE_CASES.html")]),
+            ("v2.0.0 source reference", [("Commands", "reference.html#cli"),
+                                        ("Python exports", "reference.html#api"),
+                                        ("Python API guide", "docs/PYTHON_API_GUIDE.html"),
+                                        ("API stability", "docs/API_STABILITY.html")]),
+            ("Version 2.0.0 candidate", [
+                ("Candidate scope and migration", "docs/V2_CANDIDATE.html"),
+                ("Grounded certification", "docs/GROUNDED_CERTIFICATION.html"),
+                ("Gate automation", "docs/GATE_AUTOMATION.html"),
+                ("Open contradictions", "project/TIME.html"),
+            ]),
+            ("Tutorials", [("Seal an artifact", "docs/tutorials/SEAL_AN_ARTIFACT.html"),
+                           ("Publish a silo", "docs/tutorials/PUBLISH_A_SILO.html")]),
+            ("Understand the model", [("Concepts & precedents", "docs/CONCEPTS_AND_PRECEDENTS.html"),
+                                      ("Claims & limits", "docs/CLAIMS_AND_LIMITS.html"),
+                                      ("Numbered profiles", "standard/index.html"),
+                                      ("All guides", "guides.html")]),
+            ("Work in the repository", [("Repository walkthrough", "docs/REPOSITORY_WALKTHROUGH.html"),
+                                        ("Component catalog", "components/index.html"),
+                                        ("Architecture", "docs/ARCHITECTURE.html"),
+                                        ("Experiments", "experiments/index.html")]),
+            ("Published archive · " + RELEASE, [("Release introduction", RELEASE_PATH + "index.html"),
+                                                ("Release commands", RELEASE_PATH + "reference.html#cli"),
+                                                ("Release Python exports", RELEASE_PATH + "reference.html#api")]),
+            ("Contribute", [("Contribution guidelines", "project/CONTRIBUTING.html"),
+                            ("Security reporting", "project/SECURITY.html"),
+                            ("Roadmap", "project/ROADMAP.html"),
+                            ("Changelog", "project/CHANGELOG.html")]),
+        ]
+
+    groups = [
         ("Start here", [("Introduction", prefix + "index.html"),
-                         ("Install Verifier", "docs/INSTALLATION.html"),
-                         ("Your first receipt", "docs/FIRST_RECEIPT.html"),
+                         ("Install Verifier", route("docs/INSTALLATION.html")),
+                         ("Your first receipt", route("docs/FIRST_RECEIPT.html")),
                          ("Typical use cases", route("docs/USE_CASES.html"))]),
         ("Tutorials", [("Seal an artifact", route("docs/tutorials/SEAL_AN_ARTIFACT.html")),
                        ("Publish a silo", route("docs/tutorials/PUBLISH_A_SILO.html")),
@@ -167,10 +231,21 @@ def navigation(prefix: str, output: Path) -> list[tuple[str, list[tuple[str, str
                         ("Roadmap", "project/ROADMAP.html"),
                         ("Changelog", "project/CHANGELOG.html")]),
     ]
+    return groups
 
 
-def home() -> str:
-    return (ASSETS / "home.html.in").read_text(encoding="utf-8").replace("{{release}}", RELEASE).replace("{{release_path}}", RELEASE_PATH)
+def home(stable: bool) -> str:
+    template = "release-home.html.in" if stable else "home.html.in"
+    content = (ASSETS / template).read_text(encoding="utf-8")
+    # The source-only binding is consumed by repository admission. It is not
+    # part of the generated page and must not perturb prior presentation bytes.
+    content, count = _VSTD_TEMPLATE_BINDING.subn("", content, count=1)
+    if count != 1:
+        raise ValueError("documentation template binding missing or ambiguous")
+    if stable:
+        for section in ("docs/", "project/"):
+            content = content.replace('href="@/' + section, 'href="@/{{release_path}}' + section)
+    return content.replace("{{release}}", RELEASE).replace("{{release_path}}", RELEASE_PATH)
 
 
 def shell(content: str, *, route: str, title: str, outline: list[tuple[str, str]],
@@ -192,11 +267,11 @@ def shell(content: str, *, route: str, title: str, outline: list[tuple[str, str]
                       "".join(navlink(name, target) for name, target in entries) + "</section>"
                       for label, entries in groups)
     toc = "".join(f'<a href="#{anchor}">{html.escape(label)}</a>' for anchor, label in outline)
-    coordinate = "Released package " + RELEASE if stable else "Repository documentation"
+    coordinate = "Released package " + RELEASE if stable else "v2.0.0 candidate source"
     other = route.removeprefix(RELEASE_PATH) if stable else RELEASE_PATH + route
     if not (output / other).is_file():
         other = "index.html" if stable else RELEASE_PATH + "index.html"
-    version_links = navlink("Released " + RELEASE, route if stable else other) + navlink("Repository source", other if stable else route)
+    version_links = navlink("v2.0.0 candidate source", other if stable else route) + navlink("Released " + RELEASE + " archive", route if stable else other)
     source = REPOSITORY + "/tree/" + source_ref
     known = [target for _, entries in groups for _, target in entries if "#" not in target]
     next_link = ""
@@ -226,12 +301,12 @@ def shell(content: str, *, route: str, title: str, outline: list[tuple[str, str]
 <details class="version-picker"><summary><span class="version-dot"></span>{coordinate}<span aria-hidden="true">⌄</span></summary><div>{version_links}</div></details>
 {sidebar}<div class="sidebar-foot">Verifier Standard (VSTD)<br>Open source · Apache-2.0</div></aside>
 <main id="document" class="portal-main"><span id="top"></span><div class="page-context"><a href="{link('index.html')}">Documentation</a><span>/</span><span>{html.escape(title)}</span></div>
-<div class="edition-note {'stable' if stable else ''}"><span class="version-dot"></span><strong>{coordinate}</strong><span>{'Source pinned to ' + RELEASE_TAG if stable else 'May include additions beyond the released package'}</span></div>
+<div class="edition-note {'stable' if stable else ''}"><span class="version-dot"></span><strong>{coordinate}</strong><span>{'Source pinned to ' + RELEASE_TAG if stable else 'Unreleased source; inspect the source coordinate and open contradictions before use'}</span></div>
 <div class="portal-content">{content}</div>{next_link}
 <footer class="portal-footer"><span>Maintainer-led alpha · No standards-body endorsement claimed.</span><a href="{source}">Source coordinate ↗</a></footer></main>
 <aside class="portal-toc" aria-label="On this page"><p>On this page</p>{toc}<div class="toc-extra"><a href="{REPOSITORY}/issues/new/choose">Improve these docs ↗</a><a href="https://vstd-labs.com">About VSTD Labs ↗</a></div></aside></div>
-<dialog class="search-dialog" aria-label="Search documentation"><form method="dialog"><label class="sr-only" for="docs-search">Search documentation</label><input id="docs-search" type="search" placeholder="Search concepts, commands, Python exports…" autocomplete="off"><button aria-label="Close search">Esc</button></form><div class="search-options"><label for="search-edition">Search in</label><select id="search-edition"><option value="all">All documentation</option><option value="release">Released {RELEASE}</option><option value="repository">Repository source</option></select></div><p class="search-status" role="status" aria-live="polite">Type to search.</p><div class="search-results"></div></dialog>
-<noscript><p class="no-script">Search requires JavaScript. Browse the <a href="{link('guides.html')}">guide index</a> and <a href="{link(RELEASE_PATH + 'reference.html')}">package reference</a>.</p></noscript></body></html>'''
+<dialog class="search-dialog" aria-label="Search documentation"><form method="dialog"><label class="sr-only" for="docs-search">Search documentation</label><input id="docs-search" type="search" placeholder="Search concepts, commands, Python exports…" autocomplete="off"><button aria-label="Close search">Esc</button></form><div class="search-options"><label for="search-edition">Search in</label><select id="search-edition"><option value="repository"{'' if stable else ' selected'}>v2.0.0 candidate source</option><option value="release"{' selected' if stable else ''}>Released {RELEASE} archive</option><option value="all">All documentation</option></select></div><p class="search-status" role="status" aria-live="polite">Type to search.</p><div class="search-results"></div></dialog>
+<noscript><p class="no-script">Search requires JavaScript. Browse the <a href="{link(prefix + 'guides.html')}">guide index</a> and <a href="{link(prefix + 'reference.html')}">{'released package' if stable else 'v2.0.0 source'} reference</a>.</p></noscript></body></html>'''
 
 
 def search_entries(content: str, route: str, title: str) -> list[dict[str, str]]:
@@ -286,7 +361,7 @@ def build(output: Path, *, base_url: str = SITE) -> dict[str, object]:
                       lambda m: 'href="' + "../" * depth + prefix + m.group(1) + '"', page)
         content, title, outline = prepare_content(page)
         if route in ("index.html", RELEASE_PATH + "index.html"):
-            content = home()
+            content = home(bool(prefix))
             content = content.replace('href="@/', 'href="' + "../" * depth)
             title = "Introduction"
             outline = [("start-building", "Start building"), ("explore", "Explore the documentation"), ("claim-boundaries", "Know what a result means")]

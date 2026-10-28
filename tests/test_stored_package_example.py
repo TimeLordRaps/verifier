@@ -5,12 +5,12 @@ Adversarial source-inventory tests for the stored-component example.
 
 from __future__ import annotations
 
-import importlib.util
 from pathlib import Path
 import stat
 from types import SimpleNamespace
 
 import pytest
+from examples.stored_components import build_reference_package
 
 from verifier.interoperability.reference_catalog import reference_component_registry
 from verifier.interoperability.storage import load_component_package, save_component_package
@@ -35,11 +35,7 @@ def test_reference_example_documents_current_catalog_inventory() -> None:
 
 
 def _example():
-    spec = importlib.util.spec_from_file_location("vstd_stored_component_example", EXAMPLE)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return build_reference_package
 
 
 def _inventory(monkeypatch, tmp_path: Path, *, untracked: tuple[str, ...] = ()):

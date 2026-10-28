@@ -1,0 +1,464 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-polish-manifest-refresh-blocked-1.schema.json",
+  "title": "Verifier Standard (VSTD) polish command blocked by root-manifest refresh",
+  "description": "JavaScript Object Notation (JSON) report for a blocked manifest refresh.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "refresh_outcome_schema_version",
+    "refresh_outcome_status",
+    "status",
+    "blockers",
+    "requested_tier",
+    "assessment_execution_status",
+    "findings",
+    "refresh_is_admission",
+    "refresh_is_polish",
+    "polished",
+    "release_authorized",
+    "deployment_authorized",
+    "claim_boundary",
+    "report_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "verifier-polish-manifest-refresh-blocked-1"},
+    "refresh_outcome_schema_version": {"type": ["string", "null"]},
+    "refresh_outcome_status": {"type": ["string", "null"]},
+    "status": {"enum": ["FAIL", "UNKNOWN"]},
+    "blockers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "requested_tier": {"enum": [0, 1, 2, 3]},
+    "assessment_execution_status": {"const": "NOT_RUN"},
+    "package_graph": {"type": "null"},
+    "obligation_instances": {"type": "array", "maxItems": 0},
+    "tier_results": {"type": "array"},
+    "denominator_status": {"const": "NOT_RETAINED"},
+    "native_diagnostics": {"type": "object"},
+    "findings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/finding"}
+    },
+    "refresh_is_admission": {"const": false},
+    "refresh_is_polish": {"const": false},
+    "polished": {"const": false},
+    "release_authorized": {"const": false},
+    "deployment_authorized": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "report_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["refresh_outcome_status"],
+        "properties": {"refresh_outcome_status": {"const": "FAIL"}}
+      },
+      "then": {"properties": {"status": {"const": "FAIL"}}},
+      "else": {"properties": {"status": {"const": "UNKNOWN"}}}
+    },
+    {
+      "if": {
+        "required": ["requested_tier"],
+        "properties": {"requested_tier": {"const": 0}}
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {"required": ["package_graph"]},
+            {"required": ["obligation_instances"]},
+            {"required": ["tier_results"]},
+            {"required": ["denominator_status"]},
+            {"required": ["native_diagnostics"]}
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["requested_tier"],
+        "properties": {"requested_tier": {"const": 1}}
+      },
+      "then": {
+        "required": [
+          "package_graph",
+          "obligation_instances",
+          "tier_results",
+          "denominator_status",
+          "native_diagnostics"
+        ],
+        "properties": {
+          "tier_results": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "prefixItems": [{"$ref": "#/$defs/packageTier1"}]
+          },
+          "native_diagnostics": {"$ref": "#/$defs/nativeDiagnostics1"}
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["requested_tier"],
+        "properties": {"requested_tier": {"const": 2}}
+      },
+      "then": {
+        "required": [
+          "package_graph",
+          "obligation_instances",
+          "tier_results",
+          "denominator_status",
+          "native_diagnostics"
+        ],
+        "properties": {
+          "tier_results": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "prefixItems": [
+              {"$ref": "#/$defs/packageTier1"},
+              {"$ref": "#/$defs/packageTier2"}
+            ]
+          },
+          "native_diagnostics": {"$ref": "#/$defs/nativeDiagnostics2"}
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["requested_tier"],
+        "properties": {"requested_tier": {"const": 3}}
+      },
+      "then": {
+        "required": [
+          "package_graph",
+          "obligation_instances",
+          "tier_results",
+          "denominator_status",
+          "native_diagnostics"
+        ],
+        "properties": {
+          "tier_results": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "prefixItems": [
+              {"$ref": "#/$defs/packageTier1"},
+              {"$ref": "#/$defs/packageTier2"},
+              {"$ref": "#/$defs/packageTier3"}
+            ]
+          },
+          "native_diagnostics": {"$ref": "#/$defs/nativeDiagnostics3"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "nullableString": {"type": ["string", "null"]},
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "object_id",
+        "object_kind",
+        "coordinate",
+        "obligation_id",
+        "obligation_name",
+        "semantic_version",
+        "gate_id",
+        "status",
+        "code",
+        "reason",
+        "explanation",
+        "next_action",
+        "rerun_argv"
+      ],
+      "properties": {
+        "scope": {"type": "string", "minLength": 1},
+        "object_id": {"$ref": "#/$defs/nullableString"},
+        "object_kind": {"$ref": "#/$defs/nullableString"},
+        "coordinate": {"$ref": "#/$defs/nullableString"},
+        "obligation_id": {"$ref": "#/$defs/nullableString"},
+        "obligation_name": {"$ref": "#/$defs/nullableString"},
+        "semantic_version": {"$ref": "#/$defs/nullableString"},
+        "gate_id": {"const": "manifest-refresh"},
+        "status": {"const": "UNKNOWN"},
+        "code": {"type": "string", "minLength": 1},
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "description": "Stable human-facing alias of explanation. The command validator enforces exact equality because JSON Schema cannot compare sibling string values."
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Detailed diagnostic prose; must exactly equal reason under the command's semantic validator."
+        },
+        "next_action": {"type": "string", "minLength": 1},
+        "rerun_argv": {
+          "oneOf": [
+            {
+              "type": "array",
+              "minItems": 6,
+              "maxItems": 6,
+              "prefixItems": [
+                {"const": "vstd"},
+                {"const": "gate"},
+                {"const": "--object"},
+                {"type": "string", "minLength": 1},
+                {"const": "--obligation"},
+                {"type": "string", "minLength": 1}
+              ]
+            },
+            {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "prefixItems": [
+                {"const": "vstd"},
+                {"const": "polish"},
+                {"enum": ["0", "1", "2", "3"]},
+                {"const": "--json"}
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "packageTierBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "tier_name",
+        "instance_count",
+        "status_counts",
+        "status",
+        "checker_status_counts",
+        "prerequisite_tiers",
+        "execution_status",
+        "reason"
+      ],
+      "properties": {
+        "tier": {"enum": [1, 2, 3]},
+        "tier_name": {"enum": ["FACETS", "DYNAMICS", "STATICS"]},
+        "instance_count": {"const": 0},
+        "status_counts": {"type": "object", "maxProperties": 0},
+        "status": {"const": "UNKNOWN"},
+        "checker_status_counts": {"type": "object", "maxProperties": 0},
+        "prerequisite_tiers": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0, "maximum": 2},
+          "uniqueItems": true
+        },
+        "execution_status": {"const": "NOT_RUN"},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "packageTier1": {
+      "allOf": [
+        {"$ref": "#/$defs/packageTierBase"},
+        {
+          "properties": {
+            "tier": {"const": 1},
+            "tier_name": {"const": "FACETS"},
+            "prerequisite_tiers": {"const": [0]}
+          }
+        }
+      ]
+    },
+    "packageTier2": {
+      "allOf": [
+        {"$ref": "#/$defs/packageTierBase"},
+        {
+          "properties": {
+            "tier": {"const": 2},
+            "tier_name": {"const": "DYNAMICS"},
+            "prerequisite_tiers": {"const": [0, 1]}
+          }
+        }
+      ]
+    },
+    "packageTier3": {
+      "allOf": [
+        {"$ref": "#/$defs/packageTierBase"},
+        {
+          "properties": {
+            "tier": {"const": 3},
+            "tier_name": {"const": "STATICS"},
+            "prerequisite_tiers": {"const": [0, 1, 2]}
+          }
+        }
+      ]
+    },
+    "blockingPrerequisite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "tier_name",
+        "required_status",
+        "observed_status",
+        "failure_stage",
+        "exception_type",
+        "blockers",
+        "report_digest"
+      ],
+      "properties": {
+        "tier": {"const": 0},
+        "tier_name": {"const": "ADMISSION"},
+        "required_status": {"const": "PASS"},
+        "observed_status": {"const": "UNKNOWN"},
+        "failure_stage": {"const": "ROOT_MANIFEST_REFRESH"},
+        "exception_type": {"const": "PACKAGE_ASSESSMENT_INCOMPLETE"},
+        "blockers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "report_digest": {"type": "null"}
+      }
+    },
+    "nativeExecutionBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "tier",
+        "tier_name",
+        "execution_status",
+        "status",
+        "evidence_digest",
+        "reason",
+        "blocking_prerequisite",
+        "execution_record_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "verifier-self-polish-tier-execution-1"},
+        "tier": {"enum": [0, 1, 2, 3]},
+        "tier_name": {"enum": ["ADMISSION", "FACETS", "DYNAMICS", "STATICS"]},
+        "execution_status": {"const": "NOT_RUN"},
+        "status": {"const": "UNKNOWN"},
+        "evidence_digest": {"type": "null"},
+        "reason": {"type": "string", "minLength": 1},
+        "blocking_prerequisite": {"$ref": "#/$defs/blockingPrerequisite"},
+        "execution_record_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "nativeExecution0": {
+      "allOf": [
+        {"$ref": "#/$defs/nativeExecutionBase"},
+        {"properties": {"tier": {"const": 0}, "tier_name": {"const": "ADMISSION"}}}
+      ]
+    },
+    "nativeExecution1": {
+      "allOf": [
+        {"$ref": "#/$defs/nativeExecutionBase"},
+        {"properties": {"tier": {"const": 1}, "tier_name": {"const": "FACETS"}}}
+      ]
+    },
+    "nativeExecution2": {
+      "allOf": [
+        {"$ref": "#/$defs/nativeExecutionBase"},
+        {"properties": {"tier": {"const": 2}, "tier_name": {"const": "DYNAMICS"}}}
+      ]
+    },
+    "nativeExecution3": {
+      "allOf": [
+        {"$ref": "#/$defs/nativeExecutionBase"},
+        {"properties": {"tier": {"const": 3}, "tier_name": {"const": "STATICS"}}}
+      ]
+    },
+    "nativeDiagnosticsBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "claim_scope",
+        "transport",
+        "status",
+        "tier_execution",
+        "prerequisites",
+        "claim_boundary",
+        "report_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "verifier-native-diagnostic-reference-1"},
+        "claim_scope": {"const": "SOURCE_NATIVE_DIAGNOSTICS_NOT_PACKAGE_INSTANCES"},
+        "transport": {"const": "NOT_RUN_LEDGER"},
+        "status": {"const": "UNKNOWN"},
+        "tier_execution": {"type": "object"},
+        "prerequisites": {"type": "object", "maxProperties": 0},
+        "claim_boundary": {"type": "string", "minLength": 1},
+        "report_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "nativeDiagnostics1": {
+      "allOf": [
+        {"$ref": "#/$defs/nativeDiagnosticsBase"},
+        {
+          "properties": {
+            "tier_execution": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["0", "1"],
+              "properties": {
+                "0": {"$ref": "#/$defs/nativeExecution0"},
+                "1": {"$ref": "#/$defs/nativeExecution1"}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "nativeDiagnostics2": {
+      "allOf": [
+        {"$ref": "#/$defs/nativeDiagnosticsBase"},
+        {
+          "properties": {
+            "tier_execution": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["0", "1", "2"],
+              "properties": {
+                "0": {"$ref": "#/$defs/nativeExecution0"},
+                "1": {"$ref": "#/$defs/nativeExecution1"},
+                "2": {"$ref": "#/$defs/nativeExecution2"}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "nativeDiagnostics3": {
+      "allOf": [
+        {"$ref": "#/$defs/nativeDiagnosticsBase"},
+        {
+          "properties": {
+            "tier_execution": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["0", "1", "2", "3"],
+              "properties": {
+                "0": {"$ref": "#/$defs/nativeExecution0"},
+                "1": {"$ref": "#/$defs/nativeExecution1"},
+                "2": {"$ref": "#/$defs/nativeExecution2"},
+                "3": {"$ref": "#/$defs/nativeExecution3"}
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

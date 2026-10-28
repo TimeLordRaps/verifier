@@ -109,9 +109,26 @@ def check_mandatory_documentation_coverage(root: Path, target_version: str) -> l
     return errors
 
 
+def installation_documentation_version(root: Path, target_version: str) -> str:
+    """Select a documentation pin, not evidence of external publication."""
+    changelog_path = root / "CHANGELOG.md"
+    if changelog_path.is_file():
+        changelog = changelog_path.read_text(encoding="utf-8")
+        if re.search(rf"^## {re.escape(target_version)} - UNRELEASED$", changelog, re.MULTILINE):
+            previous = re.search(r"^## (\d+\.\d+\.\d+) - \d{4}-\d{2}-\d{2}$", changelog, re.MULTILINE)
+            if previous is None:
+                raise ValueError("Unreleased candidate has no dated release coordinate for install documentation")
+            return previous.group(1)
+    return target_version
+
+
 def check_documentation_version_references(root: Path, target_version: str) -> list[str]:
-    """Verify that all documentation files with pinned install/release/clone commands match target_version."""
+    """Check released install pins separately from an unreleased source version."""
     errors: list[str] = []
+    try:
+        target_version = installation_documentation_version(root, target_version)
+    except ValueError as exc:
+        return [str(exc)]
     pip_pat = re.compile(r'verifier-standard(?:\[[a-zA-Z0-9,._-]+\])?==([0-9a-zA-Z.-]+)')
     git_pat = re.compile(r'(?:--branch\s+v|checkout\s+v|origin\s+tag\s+v|tag\s+`v)([0-9a-zA-Z.-]+)')
     ver_pat = re.compile(r"verifier\.__version__\)?\s*(?:\n\s*)?#\s*'([^']+)'")
@@ -205,9 +222,13 @@ def inspect_vstd_labs(website_dir: Path) -> dict[str, Any]:
     index_file = website_dir / "index.html"
     app_file = website_dir / "app.js"
 
+    has_index = index_file.is_file()
+    has_app = app_file.is_file()
+
+    # A directory holding neither file observed nothing, so it is not reported as observed.
     result: dict[str, Any] = {
         "path": str(website_dir),
-        "status": "OBSERVED",
+        "status": "OBSERVED" if (has_index or has_app) else "NOT_FOUND",
         "hero_badge": None,
         "hero_badge_version": None,
         "metric_val": None,
@@ -216,7 +237,10 @@ def inspect_vstd_labs(website_dir: Path) -> dict[str, Any]:
         "app_captured_version": None,
     }
 
-    if index_file.is_file():
+    if not has_index and not has_app:
+        return result
+
+    if has_index:
         content = index_file.read_text(encoding="utf-8")
         badge_match = re.search(r'badge-accent">([^<]+)</span>', content)
         if badge_match:
@@ -238,7 +262,7 @@ def inspect_vstd_labs(website_dir: Path) -> dict[str, Any]:
         if session_match:
             result["session_pinned_version"] = session_match.group(1).strip()
 
-    if app_file.is_file():
+    if has_app:
         app_content = app_file.read_text(encoding="utf-8")
         app_match = re.search(r'verifier-standard==([0-9a-zA-Z._-]+)', app_content)
         if app_match:
@@ -252,14 +276,20 @@ def inspect_claimgarden(web_dir: Path) -> dict[str, Any]:
     index_file = web_dir / "index.html"
     catalog_file = web_dir / "catalog.html"
 
+    has_index = index_file.is_file()
+    has_catalog = catalog_file.is_file()
+
     result: dict[str, Any] = {
         "path": str(web_dir),
-        "status": "OBSERVED",
+        "status": "OBSERVED" if (has_index or has_catalog) else "NOT_FOUND",
         "index_vstd_version": None,
         "catalog_vstd_version": None,
     }
 
-    if index_file.is_file():
+    if not has_index and not has_catalog:
+        return result
+
+    if has_index:
         content = index_file.read_text(encoding="utf-8")
         match = re.search(
             r'vstd-labs/gdc-sat-kernel.*?<span>(v[0-9.]+)</span>',
@@ -269,7 +299,7 @@ def inspect_claimgarden(web_dir: Path) -> dict[str, Any]:
         if match:
             result["index_vstd_version"] = match.group(1)
 
-    if catalog_file.is_file():
+    if has_catalog:
         content = catalog_file.read_text(encoding="utf-8")
         match = re.search(
             r'vstd-labs%2Fgdc-sat-kernel.*?<span>(v[0-9.]+)</span>',
@@ -325,25 +355,35 @@ def evaluate_estate_sync(
             )
 
     if labs_data.get("status") == "OBSERVED":
-        hero_badge = labs_data.get("hero_badge", "")
-        if f"v{expected_version}" not in hero_badge:
+        # The inspected keys exist with value None when a page lacks the field, so a
+        # default passed to dict.get() is never used; absence is reported, not iterated.
+        hero_badge = labs_data.get("hero_badge") or ""
+        if hero_badge and f"v{expected_version}" not in hero_badge:
             action_items.append(
                 f"vstd-labs.com hero badge reads '{hero_badge}', expected 'v{expected_version} ON PYPI'"
             )
-        metric_val = labs_data.get("metric_val", "")
-        if f"v{expected_version}" != metric_val:
+        elif not hero_badge:
+            action_items.append(
+                f"vstd-labs.com hero badge missing version, expected 'v{expected_version} ON PYPI'"
+            )
+        metric_val = labs_data.get("metric_val") or ""
+        if metric_val and f"v{expected_version}" != metric_val:
             action_items.append(
                 f"vstd-labs.com metric card reads '{metric_val}', expected 'v{expected_version}'"
             )
-        session_pin = labs_data.get("session_pinned_version", "")
+        elif not metric_val:
+            action_items.append(
+                f"vstd-labs.com metric card missing version, expected 'v{expected_version}'"
+            )
+        session_pin = labs_data.get("session_pinned_version") or ""
         if session_pin and session_pin != expected_version:
             action_items.append(
                 f"vstd-labs.com demo session pins '{session_pin}' (outdated relative to v{expected_version}; re-capture required per RELEASE_UPDATE_CHECKLIST.md)"
             )
 
     if cg_data.get("status") == "OBSERVED":
-        idx_ver = cg_data.get("index_vstd_version", "")
-        cat_ver = cg_data.get("catalog_vstd_version", "")
+        idx_ver = cg_data.get("index_vstd_version") or ""
+        cat_ver = cg_data.get("catalog_vstd_version") or ""
         expected_v = f"v{expected_version}"
         if idx_ver and idx_ver != expected_v:
             action_items.append(
@@ -417,7 +457,22 @@ def format_report(eval_result: dict[str, Any]) -> str:
         for idx, item in enumerate(action_items, 1):
             lines.append(f"  {idx}. {item}")
     else:
-        lines.append("Estate Synchronization: CLEAN (No drift detected)")
+        # No drift can be claimed for a surface that was never compared.
+        unobserved = [
+            f"{label} ({eval_result.get(key, {}).get('status')})"
+            for key, label in (
+                ("pypi", "PyPI"),
+                ("vstd_labs", "Company Site"),
+                ("claimgarden", "ClaimGarden"),
+            )
+            if eval_result.get(key, {}).get("status") != "OBSERVED"
+        ]
+        if unobserved:
+            lines.append(
+                f"Estate Synchronization: CLEAN for observed surfaces (unobserved: {', '.join(unobserved)})"
+            )
+        else:
+            lines.append("Estate Synchronization: CLEAN (No drift detected)")
 
     lines.append("=================================================================")
     return "\n".join(lines)

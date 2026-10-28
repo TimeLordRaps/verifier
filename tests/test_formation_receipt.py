@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib
 import base64
 import json
 from pathlib import Path
@@ -10,6 +9,7 @@ from typing import Any
 
 import pytest
 
+from scripts import build_formation_receipt_corpus
 from verifier.interoperability import formation_receipt as receipt
 from verifier.interoperability.formation_wire import RESIDUAL_OBLIGATIONS, profile_digest
 from verifier.interoperability.network import canonical_bytes, digest_bytes
@@ -44,7 +44,7 @@ def error(code: str) -> Any:
 
 
 def test_portable_formation_receipt_interface_exists() -> None:
-    module = importlib.import_module("verifier.interoperability.formation_receipt")
+    module = receipt
     assert callable(module.build_formation_receipt)
     assert callable(module.recheck_formation_receipt)
 
@@ -305,10 +305,6 @@ def test_admission_errors_expose_exact_codes() -> None:
     assert caught.value.code == str(caught.value) == "FORMATION_RECEIPT_INVALID"
 
 
-def test_specification_has_an_exact_packaged_mirror() -> None:
-    assert (ROOT / "standard/FORMATION_RECEIPT.md").read_bytes() == (ROOT / "src/verifier/specifications/FORMATION_RECEIPT.md").read_bytes()
-
-
 @pytest.mark.parametrize("case", RECEIPT_CORPUS["cases"], ids=lambda case: case["case_id"])
 def test_dedicated_receipt_corpus_has_exact_bytes_and_fresh_inspection(case: dict[str, Any]) -> None:
     selection = raw(case["selection_bytes_base64url"])
@@ -362,20 +358,19 @@ def test_corpus_handwritten_identity_and_negative_outcomes() -> None:
 
 
 def test_corpus_generator_is_deterministic_fresh_and_supports_output_destination(tmp_path: Path) -> None:
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("formation_receipt_corpus_generator", ROOT / "scripts/build_formation_receipt_corpus.py")
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
     expected = RECEIPT_CORPUS_PATH.read_bytes()
-    assert len(expected) <= module.MAX_CORPUS_BYTES
-    assert module.build_corpus() == module.build_corpus() == expected
+    assert len(expected) <= build_formation_receipt_corpus.MAX_CORPUS_BYTES
+    assert (
+        build_formation_receipt_corpus.build_corpus()
+        == build_formation_receipt_corpus.build_corpus()
+        == expected
+    )
     target = tmp_path / "receipt-corpus.json"
-    assert module.main(["--output", str(target)]) == 0
+    assert build_formation_receipt_corpus.main(["--output", str(target)]) == 0
     assert target.read_bytes() == expected
-    assert module.main(["--check", "--output", str(target)]) == 0
+    assert build_formation_receipt_corpus.main(["--check", "--output", str(target)]) == 0
     target.write_bytes(b"stale")
-    assert module.main(["--check", "--output", str(target)]) == 1
+    assert build_formation_receipt_corpus.main(["--check", "--output", str(target)]) == 1
 
 
 @pytest.mark.parametrize("bound", ["observed_count", "observed_object", "observed_total", "commit_bytes"])

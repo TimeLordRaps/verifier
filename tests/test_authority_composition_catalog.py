@@ -6,7 +6,6 @@ dimensionless and source identity covers only the retained bytes.
 
 from __future__ import annotations
 
-from importlib import import_module
 import json
 from pathlib import Path
 from typing import Any
@@ -15,6 +14,7 @@ import pytest
 
 from verifier.core.geometry_io import load_verification_geometry
 from verifier.interoperability.catalog import ComponentKind, ComponentLifecycle, InteractionMode
+from verifier.interoperability import authority_composition as authority_composition_mechanism
 from verifier.interoperability.component_index import load_component_index
 from verifier.interoperability.control_surface import (
     CandidateStatus, ControlSurfaceContext, analyze_verification_surface, plan_validation,
@@ -37,10 +37,10 @@ def test_authority_composition_descriptor_preserves_exact_scope() -> None:
     assert component.kind is ComponentKind.CHECKER
     assert component.lifecycle is ComponentLifecycle.EXPERIMENTAL
     assert component.implementation_ref == "verifier.interoperability.authority_composition:assess_authority_composition"
-    assert component.accepted_schema_ids == ("VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",)
+    assert component.accepted_schema_ids == ("verifier-finite-authority-composition-1",)
     assert component.planning_surface_schema_ids == ("VSTD-2",)
     assert component.interaction_modes == (InteractionMode.OFFLINE_REPLAY,)
-    mechanism = import_module("verifier.interoperability.authority_composition")
+    mechanism = authority_composition_mechanism
     assert callable(mechanism.assess_authority_composition)
     assert f"EXACT_RULE_PROFILE:{mechanism.authority_composition_profile_digest()}" in component.execution_prerequisites
     for boundary in ("self-derivation", "completeness", "runtime", "six-axis"):
@@ -52,7 +52,7 @@ def test_authority_composition_package_detection_planning_and_readiness_are_iner
 ) -> None:
     from scripts.build_component_index import build
 
-    mechanism = import_module("verifier.interoperability.authority_composition")
+    mechanism = authority_composition_mechanism
 
     def forbidden(*args: Any, **kwargs: Any) -> Any:
         raise AssertionError("planning must not run finite authority checking")
@@ -68,7 +68,7 @@ def test_authority_composition_package_detection_planning_and_readiness_are_iner
     binding = next(item for item in package.implementations if item.component_id == COMPONENT)
     required = {
         "src/verifier/interoperability/authority_composition.py",
-        "src/verifier/specifications/FINITE_AUTHORITY_COMPOSITION.md",
+        "src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md",
     }
     assert required <= set(binding.artifact_paths)
     artifacts = {item.path: item for item in package.artifacts}

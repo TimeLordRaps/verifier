@@ -6,16 +6,16 @@ Base, unit, archive integration, and preventative resource checks remain distinc
 
 from __future__ import annotations
 
-import importlib.util
 import io
 import json
 from pathlib import Path
-import sys
 from types import ModuleType
 import tarfile
 import zipfile
 
 import pytest
+from scripts import check_presentation as presentation_checker
+from scripts import check_release_boundary
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,16 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.fixture
 def checker(monkeypatch: pytest.MonkeyPatch) -> ModuleType:
-    def load(name: str, filename: str) -> ModuleType:
-        spec = importlib.util.spec_from_file_location(name, ROOT / "scripts" / filename)
-        assert spec is not None and spec.loader is not None
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        return module
-
-    presentation = load("release_boundary_presentation_fixture", "check_presentation.py")
-    monkeypatch.setitem(sys.modules, "check_presentation", presentation)
-    return load("release_boundary_path_fixture", "check_release_boundary.py")
+    return check_release_boundary
 
 
 def _forms() -> dict[str, str]:
@@ -164,7 +155,7 @@ def test_malformed_diagnostics_do_not_echo_payload(checker: ModuleType, kind: st
 
 
 def test_updated_source_and_tests_do_not_contain_literal_coordinates(checker: ModuleType) -> None:
-    presentation = sys.modules["check_presentation"]
+    presentation = presentation_checker
     for path in (ROOT / "scripts/check_release_boundary.py", Path(__file__)):
         assert presentation.public_boundary_violations(path.read_text(encoding="utf-8")) == []
 
@@ -173,7 +164,7 @@ def test_split_drive_fixture_is_not_a_network_share(checker: ModuleType) -> None
     # A source-level escaped suffix after a colon is part of the drive fixture,
     # not a host and share. Complete drive paths still have their own detector.
     source = '"C" + ":' + chr(92) * 2 + 'private' + chr(92) * 2 + 'result.json"'
-    presentation = sys.modules["check_presentation"]
+    presentation = presentation_checker
     assert presentation.public_boundary_violations(source) == []
 
 

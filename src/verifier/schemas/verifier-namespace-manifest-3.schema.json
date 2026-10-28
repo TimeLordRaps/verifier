@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-namespace-manifest-3.schema.json",
+  "title": "Compact extensible repository admission declaration",
+  "description": "A transport-only namespace form. Runtime normalization resolves every evidence_set_digest to the exact ordered inline evidence array before semantic assessment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "registry_digest", "extensions", "objects"],
+  "properties": {
+    "schema_version": {"const": "verifier-namespace-manifest-3"},
+    "registry_digest": {"$ref": "#/$defs/digest"},
+    "extensions": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {"$ref": "verifier-objects-manifest-2.schema.json#/$defs/extension"}
+    },
+    "objects": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/object"}
+    },
+    "consequence_graph": {"$ref": "verifier-objects-manifest-2.schema.json#/$defs/consequence_graph"},
+    "instance_checks": {
+      "type": "array",
+      "maxItems": 4096,
+      "items": {"$ref": "verifier-objects-manifest-2.schema.json#/$defs/instance_check"}
+    },
+    "execution_checks": {
+      "type": "array",
+      "maxItems": 4096,
+      "items": {"$ref": "verifier-objects-manifest-2.schema.json#/$defs/execution_check"}
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/reference"}
+    },
+    "declaration": {
+      "type": "object",
+      "maxProperties": 32,
+      "propertyNames": {"maxLength": 64},
+      "additionalProperties": {"type": "string", "maxLength": 8192}
+    },
+    "inline_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "evidence"],
+      "properties": {
+        "reason": {"type": "string", "maxLength": 8192},
+        "evidence": {"$ref": "#/$defs/evidence"},
+        "declaration": {"$ref": "#/$defs/declaration"}
+      }
+    },
+    "referenced_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "evidence_set_digest"],
+      "properties": {
+        "reason": {"type": "string", "maxLength": 8192},
+        "evidence_set_digest": {"$ref": "#/$defs/digest"},
+        "declaration": {"$ref": "#/$defs/declaration"}
+      }
+    },
+    "binding": {
+      "oneOf": [
+        {"$ref": "#/$defs/inline_binding"},
+        {"$ref": "#/$defs/referenced_binding"}
+      ]
+    },
+    "inline_classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason", "evidence"],
+      "properties": {
+        "status": {"enum": ["APPLIES", "DOES_NOT_APPLY", "UNRESOLVED"]},
+        "reason": {"type": "string", "maxLength": 8192},
+        "evidence": {"$ref": "#/$defs/evidence"},
+        "refutation": {"$ref": "verifier-objects-manifest-2.schema.json#/$defs/refutation"}
+      },
+      "if": {"required": ["refutation"]},
+      "then": {"properties": {"status": {"const": "DOES_NOT_APPLY"}}}
+    },
+    "referenced_classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason", "evidence_set_digest"],
+      "properties": {
+        "status": {"enum": ["APPLIES", "DOES_NOT_APPLY", "UNRESOLVED"]},
+        "reason": {"type": "string", "maxLength": 8192},
+        "evidence_set_digest": {"$ref": "#/$defs/digest"},
+        "refutation": {"$ref": "verifier-objects-manifest-2.schema.json#/$defs/refutation"}
+      },
+      "if": {"required": ["refutation"]},
+      "then": {"properties": {"status": {"const": "DOES_NOT_APPLY"}}}
+    },
+    "classification": {
+      "oneOf": [
+        {"$ref": "#/$defs/inline_classification"},
+        {"$ref": "#/$defs/referenced_classification"}
+      ]
+    },
+    "object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_id", "kind", "specializations", "payload", "operands",
+        "surfaces", "reason", "classification", "obligations", "evidence_sets"
+      ],
+      "properties": {
+        "object_id": {"type": "string", "minLength": 1, "maxLength": 256},
+        "kind": {"type": "string"},
+        "specializations": {"$ref": "verifier-objects-manifest-2.schema.json#/$defs/strings"},
+        "payload": {"type": "object"},
+        "operands": {
+          "type": "object",
+          "additionalProperties": {"$ref": "verifier-objects-manifest-2.schema.json#/$defs/strings"}
+        },
+        "surfaces": {"$ref": "verifier-objects-manifest-2.schema.json#/$defs/strings"},
+        "reason": {"type": "string", "maxLength": 8192},
+        "classification": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/classification"}
+        },
+        "obligations": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/binding"}
+        },
+        "evidence_sets": {
+          "type": "object",
+          "maxProperties": 4096,
+          "propertyNames": {"pattern": "^sha256:[0-9a-f]{64}$"},
+          "additionalProperties": {"$ref": "#/$defs/evidence"}
+        }
+      }
+    }
+  }
+}

@@ -15,7 +15,7 @@ on the composition itself. A challenger reading it knows what to attack.
 This rung is simultaneously three things, which is why it sits at the top:
 
 * the structural top of the current VSTD-4 candidate;
-* a candidate input to VSTD-Graph condition 4 -- edges need evidence, not just
+* a candidate input to GRAPH condition 4 -- edges need evidence, not just
   nodes, because a graph is only as verified as its edges.
 
 The depths and certificate references accepted here are caller-supplied and are not
@@ -25,7 +25,7 @@ resolved by this module. Its accepted result is therefore a candidate with confo
 :meth:`RefutabilityClosure.closed_depth` is the load-bearing computation: the
 output is capped at the *minimum* depth across its inputs and its transformation.
 Not the average, and emphatically not the maximum -- an unevidenced edge between
-two profile-5 artifacts does not yield a Graph-5 collection.
+two profile-5 artifacts does not yield a GRAPH-5 collection.
 """
 
 from __future__ import annotations
@@ -223,7 +223,7 @@ def cap_output_depth(closure: RefutabilityClosure, claimed_depth: int) -> Closur
     """Refuse an output claiming more candidate depth than its closure supports.
 
     This is rung 4.13 acting across a transformation rather than across time,
-    and it is the specific check VSTD-Graph condition 4 calls into.
+    and it is the specific check GRAPH condition 4 calls into.
     """
     check = closure.validate()
     if not check.accepted:

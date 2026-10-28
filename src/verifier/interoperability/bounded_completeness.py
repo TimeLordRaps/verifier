@@ -25,11 +25,11 @@ from .source_grounding import (
 )
 
 
-DECLARATION_SCHEMA = "VSTD-BOUNDED-COMPLETENESS-0.1"
-DENOMINATOR_SCHEMA = "VSTD-BOUNDED-COMPLETENESS-DENOMINATOR-0.1"
-OBSERVATIONS_SCHEMA = "VSTD-BOUNDED-COMPLETENESS-OBSERVATIONS-0.1"
-RECEIPT_SCHEMA = "VSTD-BOUNDED-COMPLETENESS-RECEIPT-0.1"
-MECHANISM_PROFILE_SCHEMA = "VSTD-BOUNDED-COMPLETENESS-MECHANISM-PROFILE-0.1"
+DECLARATION_SCHEMA = "verifier-bounded-completeness-1"
+DENOMINATOR_SCHEMA = "verifier-bounded-completeness-denominator-1"
+OBSERVATIONS_SCHEMA = "verifier-bounded-completeness-observations-1"
+RECEIPT_SCHEMA = "verifier-bounded-completeness-receipt-1"
+MECHANISM_PROFILE_SCHEMA = "verifier-bounded-completeness-mechanism-profile-1"
 PROFILE_ID = "source-grounded-finite-disposition-coverage-v1"
 CHECKER_IMPLEMENTATION = "verifier.interoperability.bounded_completeness"
 CHECKER_VERSION = "0.1"

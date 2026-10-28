@@ -337,6 +337,52 @@ def test_wrong_predecessor_reset_transition_and_clock_rollback_fail() -> None:
     assert any("timestamp rolled backward" in error for error in clock_result.errors)
 
 
+@pytest.mark.parametrize("failure", ["anchor", "verify"])
+def test_failed_reset_preserves_active_execution_and_local_state(failure: str) -> None:
+    """A refused external anchor cannot partially end local device work."""
+    device = _populated_emulator()
+    active = ExecutionIdentity(
+        "execution-active",
+        WorkloadIdentity("workload-active", executable_digest="e" * 64),
+        ("logical:partition:virtual-0:a",),
+        device.current_topology_snapshot_id,
+        "2026-08-21T16:00:05Z",
+    )
+    device.submit_execution(active, timestamp="2026-08-21T16:00:05Z")
+    before = (
+        device.continuity_record(),
+        tuple(device._ends),
+        frozenset(device._active),
+        device.current_topology_snapshot_id,
+    )
+
+    class RefusingAnchor(LocalAnchorProvider):
+        def anchor(self, event, *, anchored_at):
+            if failure == "anchor":
+                raise AnchorError("controlled anchor failure")
+            return super().anchor(event, anchored_at=anchored_at)
+
+        def verify(self, anchor):
+            return failure != "verify" and super().verify(anchor)
+
+    provider = RefusingAnchor("refusing-anchor", "refusing-key", ANCHOR_KEY)
+    with pytest.raises((AnchorError, FirmwareContractError)):
+        device.reset(
+            boot_id="boot-refused",
+            reason="controlled reset refusal",
+            timestamp="2026-08-21T16:00:06Z",
+            anchor_provider=provider,
+        )
+
+    assert (
+        device.continuity_record(),
+        tuple(device._ends),
+        frozenset(device._active),
+        device.current_topology_snapshot_id,
+    ) == before
+    device.complete_execution(active.execution_id, timestamp="2026-08-21T16:00:07Z")
+
+
 def test_multiple_jobs_preserve_monotonic_authenticated_sequence() -> None:
     device = _populated_emulator()
     second = ExecutionIdentity(

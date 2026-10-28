@@ -1,0 +1,1139 @@
+Metadata-Version: 2.4
+Name: verifier-standard
+Version: 2.0.0
+Summary: Verification-domain language and reference implementation for bounded computational claims.
+Author: TimeLordRaps
+License-Expression: Apache-2.0
+Project-URL: Homepage, https://github.com/TimeLordRaps/verifier
+Project-URL: Documentation, https://timelordraps.github.io/verifier/
+Project-URL: API Policy, https://github.com/TimeLordRaps/verifier/blob/main/docs/API_STABILITY.md
+Project-URL: Issues, https://github.com/TimeLordRaps/verifier/issues
+Project-URL: Specification, https://github.com/TimeLordRaps/verifier/tree/main/src/verifier/standard
+Project-URL: Changelog, https://github.com/TimeLordRaps/verifier/blob/main/CHANGELOG.md
+Project-URL: Security, https://github.com/TimeLordRaps/verifier/security/policy
+Keywords: verification,evidence,provenance,refutability,reproducibility,software-supply-chain,artificial-intelligence
+Classifier: Development Status :: 3 - Alpha
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+License-File: NOTICE
+Requires-Dist: tomli>=2.0.1; python_version < "3.11"
+Provides-Extra: discovery-javascript
+Requires-Dist: tree-sitter==0.25.2; extra == "discovery-javascript"
+Requires-Dist: tree-sitter-javascript==0.25.0; extra == "discovery-javascript"
+Provides-Extra: discovery-workflows
+Requires-Dist: PyYAML==6.0.3; extra == "discovery-workflows"
+Provides-Extra: discovery-rust
+Requires-Dist: tree-sitter==0.25.2; extra == "discovery-rust"
+Requires-Dist: tree-sitter-rust==0.24.2; extra == "discovery-rust"
+Provides-Extra: discovery-shell
+Requires-Dist: tree-sitter==0.25.2; extra == "discovery-shell"
+Requires-Dist: tree-sitter-bash==0.25.1; extra == "discovery-shell"
+Provides-Extra: yaml
+Requires-Dist: pyyaml>=6.0; extra == "yaml"
+Provides-Extra: llguidance
+Requires-Dist: llguidance==1.8.0; extra == "llguidance"
+Provides-Extra: torch
+Requires-Dist: torch>=2.2; extra == "torch"
+Provides-Extra: constraints
+Requires-Dist: llguidance==1.8.0; extra == "constraints"
+Requires-Dist: torch>=2.2; extra == "constraints"
+Requires-Dist: transformers; extra == "constraints"
+Provides-Extra: jsonschema
+Requires-Dist: jsonschema>=4.18; extra == "jsonschema"
+Provides-Extra: seal
+Requires-Dist: cryptography==50.0.0; extra == "seal"
+Provides-Extra: scitt
+Requires-Dist: scitt-cose==0.2.2; extra == "scitt"
+Requires-Dist: cbor2==6.1.4; extra == "scitt"
+Requires-Dist: cryptography==50.0.0; extra == "scitt"
+Provides-Extra: scitt-requirements
+Requires-Dist: packaging==26.3; extra == "scitt-requirements"
+Provides-Extra: test
+Requires-Dist: pytest>=8.0; extra == "test"
+Requires-Dist: pytest-timeout==2.4.0; extra == "test"
+Requires-Dist: coverage==7.15.4; extra == "test"
+Requires-Dist: pyyaml>=6.0; extra == "test"
+Requires-Dist: jsonschema>=4.18; extra == "test"
+Requires-Dist: build==1.5.0; extra == "test"
+Requires-Dist: cryptography==50.0.0; extra == "test"
+Provides-Extra: release
+Requires-Dist: build==1.5.0; extra == "release"
+Requires-Dist: twine==7.0.0; extra == "release"
+Dynamic: license-file
+
+<div align="center">
+
+# Verifier Standard (VSTD)
+
+**Portable, bounded, refutable evidence for computational claims.**
+
+[![Repository checks](https://github.com/TimeLordRaps/verifier/actions/workflows/ci.yml/badge.svg)](https://github.com/TimeLordRaps/verifier/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/TimeLordRaps/verifier?display_name=tag&sort=semver)](https://github.com/TimeLordRaps/verifier/releases/latest)
+[![Python 3.10–3.13](https://img.shields.io/badge/python-3.10%E2%80%933.13-3776AB.svg)](https://www.python.org/)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-2f7d6d.svg)](LICENSE)
+[![Status: alpha](https://img.shields.io/badge/status-alpha-d97706.svg)](#current-maturity)
+
+</div>
+
+> **Acronyms used below:** accessible pointed graph (APG); Anti-Foundation Axiom (AFA);
+> abstract syntax tree (AST); application programming interface (API); artificial intelligence (AI);
+> Boolean satisfiability problem (SAT); central processing unit (CPU); command-line interface (CLI);
+> Concise Binary Object Representation (CBOR); continuous integration (CI); conjunctive normal form (CNF);
+> CBOR Object Signing and Encryption (COSE); deletion resolution asymmetric tautology (DRAT);
+> directed acyclic graph (DAG); grounded decision certificate (GDC); identifier (ID);
+> intermediate representation (IR); Internet Engineering Task Force (IETF);
+> JavaScript Object Notation (JSON); linear resolution asymmetric tautology (LRAT);
+> machine learning (ML); nondeterministic polynomial time (NP); operating system (OS);
+> Python Package Index (PyPI); reduced instruction set computer (RISC);
+> satisfiability modulo theories (SMT); Secure Hash Algorithm 256-bit (SHA-256);
+> Supply Chain Integrity, Transparency, and Trust (SCITT); unsatisfiable (UNSAT);
+> Verifier Standard (VSTD); YAML Ain't Markup Language (YAML); ZIP archive format (ZIP);
+> zero-identity/zero-knowledge (ZIZK).
+
+VSTD is a verification-domain language and Python reference implementation for turning a
+bare computational result into an inspectable package: **the exact claim, artifact,
+evidence, checking mechanism, limits, and conditions that could overturn it**. It does **not**
+replace native domain verifiers, proof systems, signatures, identity systems,
+transparency logs, or provenance formats.
+
+The shortest useful description is:
+
+```text
+result + exact claim + evidence + mechanism + bounds + provenance + refutation route
+```
+
+VSTD evaluates bounded validity propositions about computational processes represented by
+software and evidence-bearing artifacts. It does not decide whether an actor is good, bad,
+reputable, or trustworthy, and translating or storing a result never strengthens it.
+
+**Current boundary:** the repository contains usable reference paths for receipts, generic
+run capture, provenance Graphs, bounded certificate checking, artifact freezing and
+sealing, reproduction, and evidence-bound assessment. Some compatibility paths remain
+`NOT_ESTABLISHED`, and no real external witness, independent implementation, accreditation,
+or external adoption is claimed. See [current maturity](#current-maturity) and
+[claims and limits](docs/CLAIMS_AND_LIMITS.md) for the exact surface-by-surface boundary.
+
+[Normative specifications](src/verifier/standard/LADDER.md) ·
+[60-second quickstart](docs/QUICKSTART.md) ·
+[Implementation reference](https://timelordraps.github.io/verifier/reference.html) ·
+[Report an ambiguity or counterexample](https://github.com/TimeLordRaps/verifier/issues/new/choose) ·
+[Report a vulnerability privately](SECURITY.md)
+
+## Verification-Driven Development (VDD)
+
+Define the intended verification contracts, objectives, obligations, dependencies,
+evidence and interoperability before implementation. Implement against those
+contracts, then verify execution and assess the resulting artifact under separately
+selected acceptance requirements. Verification-Driven Development (VDD) extends
+test-driven development with exact claim boundaries, evidence and prerequisite closure.
+
+Preflight checks concern the declared plan and its closure, authority requirements
+and evidence expectations. They do not verify future execution or truth. Keep
+`PASS`, `FAIL` and `UNKNOWN` bound to exact revisions and checking mechanisms;
+runtime verification and artifact acceptance remain separate. Consumers build
+their orchestration around these project-agnostic contracts. See the
+[workflow and bounded worked example](docs/VERIFICATION_DRIVEN_DEVELOPMENT.md)
+for the current interfaces and their limits.
+
+## 30–60 second demonstration
+
+**Source candidate:** 2.0.0 is unreleased. Its experimental declarations and local
+checks are described in [candidate boundaries and migration](docs/V2_CANDIDATE.md).
+The published package installation below remains at 1.5.0.
+
+### Option 1: Instant Python inspection (from PyPI)
+
+```bash
+python -m pip install "verifier-standard==1.5.0"
+```
+
+```python
+import verifier
+
+print(verifier.__version__)        # '1.5.0'
+print(verifier.__standard__)       # 'VSTD-5'
+print(verifier.__standard_status__)# 'PROJECT SPECIFICATION; EVIDENCE-BOUND REFERENCE MECHANISM'
+```
+
+### Option 2: The defensive CLI demonstration
+
+```bash
+git clone https://github.com/TimeLordRaps/verifier.git
+cd verifier
+python -m pip install .
+vstd start   # the ordered path; runs nothing and writes nothing
+vstd demo
+```
+
+The side-effect-free demo runs four public adversarial specimens:
+
+```text
+VSTD flagship adversarial demo
+4/4 scenarios behaved as required.
+[DEMO OK] Valid-looking proof, wrong artifact          → REJECTED
+[DEMO OK] Bound exhausted without a false answer       → ACCEPTED/UNKNOWN
+[DEMO OK] Inflated verification-cost claim             → REJECTED
+[DEMO OK] Revoked ancestor behind valid descendants    → GRAPH-CANDIDATE-0
+```
+
+**What are these four scenarios showing in practice?**
+1. **Wrong artifact (`REJECTED`)**: An attacker or buggy script presents a valid mathematical proof, but binds it to the wrong data file. VSTD catches the cryptographic digest mismatch immediately.
+2. **Exhausted bounds (`UNKNOWN`)**: A complex calculation exceeds its allotted compute time or memory limits without finishing. Instead of guessing or falsely claiming success, VSTD cleanly preserves `UNKNOWN`.
+3. **Inflated cost (`REJECTED`)**: An actor claims a verification step required \$1,000,000 of compute when it actually took minimal work. The proof-carrying receipt refuses the ungrounded cost claim.
+4. **Revoked ancestor (`GRAPH-CANDIDATE-0`)**: A data pipeline produces seemingly valid outputs, but an upstream input or library version was later revoked. VSTD detects the corrupted lineage and alerts you.
+
+`[DEMO OK]` means the expected defensive outcome occurred; it is not a VSTD `PASS`.
+The scenarios establish bounded behavior of this reference implementation over the
+included specimens. They do not establish empirical truth, complete provenance,
+external adoption, independent implementation, or general artificial intelligence (AI)
+safety. Use `vstd demo --json` for JavaScript Object Notation (JSON) output or
+`vstd demo --emit-specimens PATH` to inspect the generated files.
+
+## The 90-second mental model
+
+A normal tool may report `PASS`. VSTD asks what that word is allowed to mean:
+
+```text
+claim ──checked against──> evidence
+  │                           │
+  └── bounded by ─────────────┤
+                              v
+                    named mechanism
+                              │
+                              v
+                 PASS / FAIL / UNKNOWN
+                    + limits + provenance
+                    + refutation conditions
+```
+
+The native verifier still performs the domain work. VSTD records the exact boundary of
+that work so another person or program can inspect, replay, challenge, or reject it without
+silently receiving a stronger claim.
+
+### The core intuition: itemized receipt vs. green checkmark
+
+When you buy groceries, you do not just want the cashier saying "Payment approved" with no paper. You want an itemized receipt showing:
+- Which items were scanned?
+- What was the price of each item?
+- What timestamp, register, and store processed it?
+- If there is an error, exactly which line item can be disputed?
+
+In software and artificial intelligence (AI), systems usually just give you a green checkmark or an exit code 0. But a green checkmark does not tell you:
+- What exact file or dataset was checked?
+- What tool did the checking, and under what memory or time limits?
+- Did a test timeout and pass by accident?
+- Can anyone else rerun it on another machine and get the exact same bytes?
+
+VSTD is the cryptographic "itemized receipt" for computational claims. It pairs:
+1. **The exact claim** (the precise proposition being made, without inflating its scope).
+2. **The cryptographic coordinates** (Secure Hash Algorithm 256-bit (SHA-256) digests of exact inputs and outputs).
+3. **The named mechanism** (the exact tool, solver, or rule used to check the claim).
+4. **The refutation conditions** (the exact recipe an adversary or third party can use to prove the claim wrong).
+5. **The honest verdict** (`PASS`, `FAIL`, or `UNKNOWN` if compute ran out or evidence was missing).
+
+### Seven domain lenses: how VSTD fits your field
+
+<details>
+<summary><strong>1. For undergraduates, high schoolers, and self-taught coders</strong></summary>
+
+Think of VSTD as a tamper-proof digital lab notebook. When you write a chemistry or physics lab report, you do not simply assert "the reaction succeeded." You record the initial mass, temperature, chemical purity, and measurement uncertainty. If your scale was uncalibrated or the thermometer went out of range, honest science requires recording "inconclusive" (`UNKNOWN`), not "success." Anyone grading your work can re-execute your code with `vstd reproduce` and mathematically prove the output files match the recorded fingerprints.
+
+**Tutorial & example:** [Your first receipt](docs/FIRST_RECEIPT.md) and runnable specimen [`examples/generic_run/`](examples/generic_run/manifest.json).
+</details>
+
+<details>
+<summary><strong>2. For Boolean satisfiability (SAT) and satisfiability modulo theories (SMT) solver experts</strong></summary>
+
+Modern SAT and SMT solvers output `SAT` or unsatisfiable (`UNSAT`). But in high-assurance formal verification, you never blindly trust the solver alone—you require an independently checkable proof witness, such as a deletion resolution asymmetric tautology (DRAT) or linear resolution asymmetric tautology (LRAT) certificate. VSTD standardizes how those proof certificates, conjunctive normal form (CNF) formula digests, variable bounds, and independent checker runs are packaged into an immutable JavaScript Object Notation (JSON) receipt that any external verifier can validate or dispute without repeating the nondeterministic polynomial time (NP) search.
+
+**Tutorial & example:** [Clausal proof precedents](docs/CONCEPTS_AND_PRECEDENTS.md#lrat-and-drat) and executable certificate test [`tests/test_gdc_certificate.py`](tests/test_gdc_certificate.py).
+</details>
+
+<details>
+<summary><strong>3. For compiler and systems engineers</strong></summary>
+
+When building optimizing compilers, linkers, or reproducible build systems, a transformation pass claims that an intermediate representation (IR) rewrite preserves program semantics. VSTD turns that claim into a verifiable contract: it binds the input IR digest, output IR digest, translation-validation tool, target central processing unit (CPU) architecture, and operating system (OS) environment constraints. If an optimization cannot be proven semantics-preserving within resource limits, it fails closed or preserves `UNKNOWN`, preventing silent miscompilations from being promoted.
+
+**Tutorial & example:** [Seal an artifact and detect a change](docs/tutorials/SEAL_AN_ARTIFACT.md) and [Publish a silo package](docs/tutorials/PUBLISH_A_SILO.md).
+</details>
+
+<details>
+<summary><strong>4. For AI safety researchers and transfinite mathematicians</strong></summary>
+
+When analyzing self-referential systems, ordinal bounds, non-well-founded belief graphs, or transfinite induction, claims operate at high levels of abstraction where subtle circular reasoning or silent domain upgrades can invalidate safety bounds. VSTD enforces strict stratified profiles (Profiles 1–5): a higher-profile result never supplies or repairs missing lower-profile evidence, self-attestation is never promoted to independent verification, and ungrounded induction steps fail closed.
+
+**Tutorial & example:** [Normative ladder](src/verifier/standard/LADDER.md) and runnable adversarial suite [`examples/flagship_demo/`](examples/flagship_demo/README.md).
+</details>
+
+<details>
+<summary><strong>5. For intellidynamics and AI benchmarkers</strong></summary>
+
+Automated agent evaluations and language model leaderboards are vulnerable to prompt leaking, test-set contamination, hallucinated citations, and stochastic scoring variance. VSTD transforms benchmark scores from unverifiable claims ("Model X scored 92%") into refutable evidence graphs: exact prompt digests, determinism bounds, random seed coordinates, frozen tool execution traces, and adversarial replay recipes that allow any third party to independently reproduce or falsify the evaluation claim.
+
+**Tutorial & example:** [Publishing a checkable benchmark number](docs/USE_CASES.md#1-publishing-a-benchmark-number-somebody-else-can-check) and [`examples/generic_run/`](examples/generic_run/manifest.json).
+</details>
+
+<details>
+<summary><strong>6. For deep mathematics and theorem provers (Lean 4, Metamath, and formal kernels)</strong></summary>
+
+In formal mathematical ecosystems—such as `hypermath` (algebraic kernel, Lean 4 bridge), `ordinatics` (ordinal arithmetic, Veblen hierarchies), `grounded-hyperset-theory` (Aczel's Anti-Foundation Axiom (AFA), accessible pointed graphs (APGs)), and `grounded-hypercalculi` (stratified semantic reflection)—mathematical claims span multiple formal representations. VSTD provides the meta-verification envelope: it explicitly enumerates axioms (refusing ungrounded axioms or `sorry` escapes), binds the exact prover kernel binary digest, and composes heterogeneous formal proofs into a single refutation graph.
+
+**Foundations, tutorial & example:** [Mathematical foundations and interoperability](docs/MATHEMATICAL_FOUNDATIONS.md), [Grounded decision certificates](docs/PYTHON_API_GUIDE.md#grounded-decision-certificates-gdc), and [Normative VSTD-4 specification](src/verifier/standard/VSTD-4.md).
+</details>
+
+<details>
+<summary><strong>7. For nanochemistry, molecular robotics, and mechanosynthesis (containment and anti-replication gates)</strong></summary>
+
+In molecular dynamics, chemical reaction networks, and autonomous nanoscale robotics, molecular self-assembly poses an acute existential containment challenge: preventing runaway autocatalytic self-replication. A molecular simulation or automated design agent may claim a nanomechanical system terminates cleanly, but without bounded verification, unmodeled parasitic pathways or catalytic loops can trigger unbounded assembly. VSTD acts as a computational containment seal and automated synthesis gate: it cryptographically binds atomic coordinates, force-field potential parameters, stoichiometric mass-action matrices, and temperature/solvent bounds into an immutable receipt. A claim of "bounded non-self-replicating assembly" is paired with a refutation condition (exhibiting any viable catalytic reaction trajectory that exceeds critical branching thresholds). Robotic synthesis hardware can then enforce receipt verification before initiating chemical printing.
+
+**Tutorial & example:** [Artifact control and sealed containment](docs/tutorials/SEAL_AN_ARTIFACT.md) and [Publishing checkable computational receipts](docs/USE_CASES.md#1-publishing-a-benchmark-number-somebody-else-can-check).
+</details>
+
+### The two independent axes
+
+VSTD has two independent axes:
+
+- **Object profiles** describe what is established about one computational claim.
+- **Graph profiles** describe what is established about a bounded collection of artifacts
+  and transformations.
+
+| Profile | One claim asks… | A collection asks… |
+|---:|---|---|
+| 1 | What was claimed and recorded? | What artifacts and lineage were recorded? |
+| 2 | What exact surface was checked? | What bounded collection surface was checked? |
+| 3 | What execution substrate is evidenced? | Which provenance paths have substrate evidence? |
+| 4 | How can the result be refuted? | Which transformations are refutable? |
+| 5 | Was an independent witness actually evidenced? | Is corroboration evidenced across the network? |
+
+Three rules prevent most misreadings:
+
+1. Each profile answers a different question and needs its own evidence.
+2. A later-profile result cannot repair missing evidence for an earlier profile.
+3. `UNKNOWN` is a correct result when the mechanism, evidence, or bound is insufficient.
+
+### How VSTD identifiers are named
+
+The current object hierarchy uses `<OBJECT>-<tier>.<m>`: an admitted object,
+a positive meta-tier from 1 through 9, and an objective index starting at 1.
+For example, `SIM-3.6` names objective six within simulation meta-tier three.
+Neither index is a software version, dependency depth, or a count of adapters.
+Indices are dimensionless.
+
+The retained native typed representation has 26 kinds: HUMAN, ACTOR, COLLECTIVE, ROLE, IDENTITY, OWNER,
+HARDWARE, RECEIPT, OBJECT, GRAPH, SPACE, TIME, EVENT, ENV, DATA, VERIFIER,
+BENCH, ARCH, TRAIN, HYPER, MODEL, HARNESS, AGENT, SIM, BOT and TOKEN.
+ARCH means computational model architecture. RECEIPT is the object name;
+Verifier Standard (VSTD) remains the standard's name. Current repository admission
+adds twelve refinements for 38 installed kinds; see
+[extensible admission](src/verifier/standard/EXTENSIBLE_NAMESPACE.md). Its additional
+roles do not reinterpret the native records or establish complete kind conformance.
+
+| Meta-tier | General meaning for each object |
+|---:|---|
+| 1 | Fundamental structural facets |
+| 2 | Dynamics of those facets |
+| 3 | Static external constraints and invariants |
+| 4 | Closure certificates |
+| 5 | Independence |
+| 6 | Privacy |
+| 7 | Consent |
+| 8 | Governance |
+| 9 | Security |
+
+An ACTOR represents HUMAN, AGENT or BOT with an explicit responsible HUMAN root.
+IDENTITY binds ACTOR to ROLE. The [finite object contract](src/verifier/standard/NAMESPACE_OBJECTS.md)
+specifies the composition and typed GRAPH substitutions. Its implemented checks
+establish bounded structural composition, finite-model isolation and declared
+hardware-ownership eligibility; they do not establish every object-tier objective.
+
+The numbered object and Graph profiles described above retain their original
+propositions. The [legacy domain catalogue](src/verifier/standard/DOMAIN_OBLIGATIONS.md)
+also retains its adaptation tier 5 and disclosure tier 6. Those results do not
+become current independence or privacy certificates by matching a number.
+The [nine-tier architecture](src/verifier/standard/META_TIERS.md) records the
+remaining semantic migration and unimplemented objectives explicitly.
+
+A coordinate names a proposition, not a verdict. A parsed address, catalogue row,
+or structural PASS does not establish a certificate. Computational claims and
+accountability contracts each require their own bound evidence and mechanism;
+missing evidence or mechanisms remain UNKNOWN.
+
+`vstd current-object catalog --json` lists the installed explicitly versioned
+native objectives; `vstd current-object check` replays one under a consumer-selected
+request and policy. Objective entries, the 234 kind/tier planning slots and actual
+certificate instances are different counts. A primary registered objective does
+not complete its tier. `vstd polish assess` checks declared wiring and available
+certificates, and `vstd polish check` recomputes a retained assessment. The
+[polished-artifact contract](src/verifier/standard/POLISHED_ARTIFACTS.md) defines the
+remaining closure gates: this implementation does not yet issue polished artifacts.
+
+[Signed namespace admission](src/verifier/standard/CURRENT_OBJECT_GOVERNANCE.md)
+selects `<kind>-8.1` for every admitted kind under external public-key, quorum and
+revocation policies. [Typed-subject receipt association](src/verifier/standard/CURRENT_SUBJECT_SECURITY.md)
+selects `<kind>-9.1`, except `RECEIPT-9.3`, for one exact retained subject and
+finite chain entry. These propositions do not establish legal authority, actual
+enforcement, issuer authenticity or complete governance and security tiers.
+
+`vstd polish coverage` compares a separately pinned
+[finite numbered inventory](src/verifier/standard/POLISH_REQUIREMENTS.md) and
+replays its selected evidence. The caller supplies the expected inventory digest
+independently. Declared coverage PASS remains separate from aggregate UNKNOWN,
+unestablished inventory authority, open required slots and polished issuance.
+
+The [declared structural-facet certificates](src/verifier/standard/CURRENT_TYPED_FACETS.md)
+check the kind-specific operand contracts of all 26 kinds against exact retained
+records and selected collections. These bounded structure checks do not complete
+the facets tiers, establish domain-specific payload truth or grant authority.
+The [identity scope certificate](src/verifier/standard/CURRENT_IDENTITY_SCOPE.md)
+adds `IDENTITY-3.1` for exact declared role membership and scope admission; actual
+occupancy and authority remain separate obligations.
+The [retained dataset certificates](src/verifier/standard/CURRENT_DATA_CHECKS.md)
+add five selected native inventory, schema, lineage, split and text-overlap checks;
+external origin, population quality and complete dataset coverage remain unestablished.
+The [retained environment certificates](src/verifier/standard/CURRENT_ENV_CHECKS.md)
+add four selected software, configuration, resource-observation and execution-record
+checks; live attestation, actual reruns and physical isolation remain unestablished.
+The [retained benchmark certificates](src/verifier/standard/CURRENT_BENCH_CHECKS.md)
+bind problems, execute selected built-in oracles, compare retained resource ceilings
+and recompute weighted scores; external validity and measurement authenticity remain
+unestablished. The [retained training certificates](src/verifier/standard/CURRENT_TRAIN_CHECKS.md)
+bind actual architecture, batch, loss and event operands and check configuration,
+checkpoint bytes, numerical replay, updates and lineage; actual execution and
+complete training history remain unestablished. The [retained model certificates](src/verifier/standard/CURRENT_MODEL_CHECKS.md)
+check bound artifacts, dense tensors, inference, metrics and finite probes with
+exact training-checkpoint and operand relationships; deployment, generalization
+and hardware authenticity remain unestablished. The [retained harness certificates](src/verifier/standard/CURRENT_HARNESS_CHECKS.md)
+check declared observation channels, messages, complete tool-record pairing, retained
+effects and transcript commitments; actual execution and recorder authenticity remain
+unestablished. The [retained agent certificates](src/verifier/standard/CURRENT_AGENT_CHECKS.md)
+check observation ceilings, declared decisions, actions, outcomes and support references
+with exact model, harness and environment context; internal deliberation and statement
+truth remain unestablished. The [retained BOT certificates](src/verifier/standard/CURRENT_BOT_CHECKS.md)
+check exact agent/simulation/environment bindings, attributed transitions, retained
+observations and actions, and declared environment separation; actual invocation
+and physical containment remain unestablished. The [full-record disclosure certificates](src/verifier/standard/CURRENT_PRIVACY_CHECKS.md)
+add one selected predicate per kind for complete namespace records under declared
+field bounds and observer facts. They do not authenticate observers or establish
+permission to publish their retained witnesses.
+
+Serialized receipt identifiers select a reader and schema under
+[WIRE_IDENTIFIERS.md](src/verifier/standard/WIRE_IDENTIFIERS.md). For example,
+`verifier-data-1` identifies historical GRAPH-1 receipts, while `VSTD-1` identifies
+a historical foundational receipt contract. These stored identifiers and bytes
+are not renamed to match the new object vocabulary. Repository releases are a
+separate coordinate. See [current maturity](#current-maturity) for bounded status.
+
+Choose the smallest useful starting point:
+
+| Goal | Start here |
+|---|---|
+| Be told what to run, in order, by the tool itself | Run `vstd start` |
+| Understand a receipt or certificate you already have | Run `vstd explain <file.json>` |
+| Start from scratch with a beginner walkthrough | [Newcomer guide](docs/NEWCOMER_GUIDE.md) |
+| See defensive behavior immediately | Run [`vstd demo`](#30-60-second-demonstration) |
+| Capture and reproduce one command | [Generic computation](#capture-a-generic-computation) |
+| Preserve and seal exact artifact bytes | [Artifact control](#freeze-seal-verify-and-thaw-an-artifact) |
+| Browse exact stored component declarations | [Component hub](docs/COMPONENT_HUB.md) |
+| Understand the formal profile composition | [Normative Ladder](src/verifier/standard/LADDER.md) |
+| Integrate or independently review the code | [Architecture map](docs/ARCHITECTURE.md) |
+| Challenge an overclaim or ambiguous rule | [Issue forms](https://github.com/TimeLordRaps/verifier/issues/new/choose) |
+
+## What a result means
+
+VSTD result terms remain tied to one exact proposition, mechanism, evidence set, and
+bound:
+
+| Result | Bounded meaning | It does not mean |
+|---|---|---|
+| `PASS` | The named mechanism established its declared proposition inside the stated coordinate and bounds. | The proposition is universally or permanently true. |
+| `FAIL` | The mechanism found a checked violation, rejected certificate, or counterexample at the named surface. | Every broader interpretation is false. |
+| `UNKNOWN` | Available evidence, capability, or resources did not establish `PASS` or `FAIL`. | False, safe, unsupported forever, or “probably PASS.” |
+| `CONFLICTED` | Incompatible evidence or assertions remain explicit. | The conflict was resolved by choosing one side. |
+| `NOT_ESTABLISHED` | The evaluated path did not establish conformance: it may be a compatibility candidate, or required evidence, exact binding, mechanism availability, mechanism result, prerequisite, or profile floor was missing or non-passing. | Conformance, readiness, or a weak form of `PASS`. |
+
+A VSTD `PASS` never means “true in the real world” without the exact real-world
+proposition and observation boundary being part of the checked claim.
+
+## Current maturity
+
+Use this summary before opening the exact matrix:
+
+| Category | Current meaning |
+|---|---|
+| Usable reference paths | Receipts, generic run capture and reproduction, Graph recording, grounded-certificate checks, evidence-bound assessment, and artifact freeze/seal/thaw mechanisms are implemented within their documented bounds. |
+| Mechanism-dependent paths | VSTD-4, VSTD-5, and Graph profiles above recorded lineage establish results only when their exact registered mechanisms rerun successfully over bound evidence. |
+| Compatibility candidates | Candidate depth/profile calculations remain `NOT_ESTABLISHED`; caller-supplied references or ratings cannot create conformance. |
+| Experimental integrations | The workflow and Supply Chain Integrity, Transparency, and Trust (SCITT) profiles plus interoperability catalog, planning, graph-topology, and composed-untraversability paths remain non-normative. Strict geometry loading, modeled-surface analysis, and bounded platform comparison are supported, but the experimental surfaces grant no VSTD verdict and do not enforce confidentiality. |
+| Not claimed | Accreditation, consensus-standard status, external adoption, a second implementation, a real independent witness, or third-party security review. |
+
+<details>
+<summary><strong>Exact surface-by-surface matrix for reviewers and integrators</strong></summary>
+
+“Implemented” applies only to the named reference surface. It does not imply adoption,
+external interoperability, certification, or a second implementation.
+
+| Surface | Normative status | Reference implementation | Evidence binding | Conformance status | Missing mechanism or evidence |
+|---|---|---|---|---|---|
+| VSTD-1 | Project specification with implemented reference subset | Claim receipts, checker reports, strict generic-run profile, inspection, and current-profile reads | Claim coordinates, stable digests, mechanism descriptors, and declared provenance; actor separation is not inferred | Implemented reference subset | External implementation and a validator binding distinct producer/checker actors and execution seams |
+| VSTD-2 | Additive experimental project specification | Typed verification geometry, residuals, closure checks, schema, and tests | Geometry and declared reconstruction evidence inside the receipt | Implemented vertical slice | Independent implementation and broader geometry interoperability |
+| Interoperability catalog and surface planning | Supported loading and analysis with experimental planning; not a receipt or numbered profile | Strict VSTD-2 geometry loader, stable modeled-hole analysis and command-line diagnostics, frozen component descriptors and registry, exact candidate matching, deterministic nonexecuting plans, structural cross-geometry conflict diagnostics, and execution-readiness preflight | Analysis binds the typed geometry digest; plans additionally bind registry version and digest; conflict witnesses bind explicit shared propositions and exact geometries; readiness binds native inputs, planned evidence mappings, prerequisites, caller-supplied authorization, and mandatory reassessment | Modeled diagnostics, plan-only candidate associations, declaration-bound structural conflicts, and preflight readiness only; no validation execution or new closure | Boolean satisfiability analysis over declared geometry constraints, authorized component execution, bound result evidence, post-execution reanalysis, and independent interoperability results |
+| Experimental graph topology and composed untraversability | Non-normative experimental direct-submodule interfaces; not receipts or numbered profiles | Exact-graph-bound topology interpretation and finite observer-relative knowledge-hypergraph analysis | Topology contracts bind graph structure, equations, temporal relations, and resource bounds; untraversability contracts additionally bind observer, interface, rule, completeness, evidence, and traversal coordinates | Bounded diagnostic results only; no physical-causation inference, universal non-inferability proof, runtime mediation, confidentiality enforcement, authorization, or conformance | Open-world inference completeness, independently qualified mechanisms, runtime observation and enforcement, and adversarial external interoperability evidence |
+| VSTD-3 | Implemented project specification | Typed accelerator model, strict validator, emulator, offline adapters, continuity, fleet, and claim evaluation | Conditional on source-specific signatures, nonces, reference values, topology, events, and trust roots; host inventory remains weak evidence | Implemented reference surface | Vendor firmware integration, production trust roots, and complete-mediation evidence outside the emulator boundary |
+| VSTD-4 | Project specification with implemented reference paths | grounded decision certificate (GDC) parser/kernel, compatibility candidate depth, and evidence-bound establishment/recheck | Exact VSTD-1/2/3 and fourteen-rung propositions, content-addressed evidence bytes, mechanism implementation digests, trust roots, and bounds | Candidate path `NOT_ESTABLISHED`; evidence-bound path can establish conformance | Independent implementation, external interoperability, and deployment-specific rung mechanisms/evidence |
+| VSTD-5 | Project specification with implemented reference mechanism | Evidence-bound entry gate, seven separation dimensions, exact admitted-certificate binding, corroboration checks, duplicate refusal, disagreement preservation, receipt build/recheck | Witness coordinate, exact negative separation propositions, VSTD-4 commitment/certificate, checker, observations, mechanisms, trust roots, bounds, and embedded evidence | Mechanism can establish a bounded result; a positive observation with unresolved independence remains overall `UNKNOWN`; no repository claim of a real independent witness | Real independent witnesses, second implementation, external attack, and operational interoperability |
+| GRAPH-1 | Project specification with implemented reference subset | Content-addressed artifacts, transformations, conflicts, policy queries, receipts, and recorded reachability | Binds recorded objects and edges; it does not establish real-world completeness or causality | Implemented reference subset | Independent implementation and external provenance-profile interoperability |
+| GRAPH-2 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Bounded Collection Surface computation/recheck | Registered mechanisms rerun exact member, ancestor, and edge ratings bound to the Graph bytes, deduplicated members, collection, and claim | Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot | External rating mechanisms, independent implementation, and interoperability |
+| GRAPH-3 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Accountable Provenance Closure computation/recheck | Same complete closure binding, including VSTD-3 rating propositions | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Production VSTD-3 rating evidence across a real collection |
+| GRAPH-4 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Refutable Transformation Closure computation/recheck | Same complete closure binding; an edge mechanism must actually check its refutability closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | External closure mechanisms and independent replay |
+| GRAPH-5 | Project specification with implemented reference paths | Compatibility candidate plus evidence-bound Corroborated Verification Network computation/recheck | Exact VSTD-5 object and transformation rating mechanisms across the complete closure | Candidate `NOT_ESTABLISHED`; evidence-bound path can establish | Real independently corroborated collection, second implementation, and interoperability |
+| Generic run | VSTD-1 generic-computation profile | Plan, execute, capture, inspect, strict shape/digest validation, declared-output rerun, and bounded cross-platform result comparison | Captures command, source state, outputs, environment, and manifest declarations; platform comparison requires complete declared coverage and matching non-platform bindings; generic validation is not native claim verification or VSTD-4 conformance | Implemented VSTD-1 profile plus an additive diagnostic comparator | Sandbox, generic external-evidence resolver, native-execution attestation, and actor/execution binder |
+| Artifact freeze, seal, and thaw | Normative artifact-control mechanism; not a numbered VSTD or receipt profile | Exact regular-file byte preservation, dual-digest artifact identity, read-only guards, finite self-closing Ed25519 seals, external anchor checks, and copy-on-write thaw status | Binds artifact bytes, paths, media type, freeze manifest, carried key, signature, and optional expected artifact/key coordinates | Implemented mechanism version 1 | Durable external archive, privileged-write prevention, trusted time, encryption, semantic correctness, and realm/continuity verification |
+| Experimental workflow | Non-normative experimental profile 0.1 | Strict validator, verdict-neutral GitHub event projector, allocation records, and command-line interface (CLI) | Preserves native platform results and explicit horizons with `verification_effect = NONE` | No VSTD conformance claim | Independent consumer, additional platform adapter, and evidence for allocation optimality |
+| Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability | Experimental, non-normative application profile and crosswalk | Real local Concise Binary Object Representation (CBOR) plus CBOR Object Signing and Encryption (COSE) signatures/receipt, loss-declared adapter, and adjacent native-result composition | Binds the exact payload under emitted test keys and local policy; registration never establishes payload truth | VSTD-4 remains `NOT_ESTABLISHED` | Public Transparency Service, external implementation/interoperability result, and Internet Engineering Task Force (IETF) review |
+| zero-identity/zero-knowledge (ZIZK) artifact-first TRUST | Governing VSTD architecture in `standard/LADDER.md` section 1.1; not a separate numbered profile | Hash-chained event serialization and offline replay, evidence-bound forward TRUST, typed ROT, challenge projection, reverse RUST, structural concentration, conflict resolution, explicit localization, and bounded diagnostic attribution | Exact Graph topology, proposition bindings, embedded evidence bytes, mechanisms, trust roots, bounds, and immutable history | Implemented reference mechanism; no universal support score or actor trust | Domain-specific transfer/localization mechanisms, independent cross-implementation replay, complete trichotomy derivation, and maturation of optional proof backends |
+| RISC Zero proof-carrying reference mechanism | Bounded non-normative mechanism example under the governing ZIZK architecture | Pinned prover/verifier source plus a tracked real receipt, public envelope, self-test result, and network-offline command that requires the tracked guest build and recorded proof to share one image identifier | Authenticates one fixed hidden-witness predicate and expected image identifier; it does not establish the witness's external truth | Native proof verified; no VSTD receipt mapping | Independent build host, external audit, complete VSTD trichotomy predicate, and additional proof backends |
+
+</details>
+
+The authoritative implementation-to-specification map is
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Normative meaning remains under
+[standard/](src/verifier/standard/).
+
+## Why VSTD exists
+
+Ordinary computational results often omit machine-readable answers to four questions:
+
+1. **What exactly was claimed?** Subject, predicate, parameters, scope, and limits.
+2. **Which evidence supports it?** Exact bytes, digests, mechanisms, provenance, and trust roots.
+3. **Where does the verdict stop?** Explicit coordinates, exclusions, and resource bounds.
+4. **How can it change?** Reproduction, counterexample, challenge, invalidation, and degradation rules.
+
+VSTD packages that review boundary in receipts and provenance hypergraphs. The core
+design rule is:
+
+> No assurance is gained from storage location, field name, repetition, graph
+> multiplicity, actor reputation, or propagation. Every increase must identify the
+> verification mechanism that earned it.
+
+## Architecture
+
+<img src="https://raw.githubusercontent.com/TimeLordRaps/verifier/main/docs/assets/vstd-overview.svg" alt="Verifier Standard object and Graph numbered profiles, each requiring separate evidence for its closure coordinate" width="920">
+
+The five profile numbers are cumulative verification questions, not software versions,
+interchangeable layers, or assurance scores. The object axis evaluates one claim; the
+Graph axis evaluates a bounded collection and its recorded transformations.
+
+A typical object traversal is:
+
+```text
+VSTD-1 claim record
+   → VSTD-2 bounded verification surface
+   → VSTD-3 execution-substrate evidence
+   → VSTD-4 portable refutation boundary
+   → VSTD-5 evidence-bound witness corroboration
+```
+
+A later-profile result does **not** supply, imply, upgrade, or repair a prerequisite
+coordinate. Object profile depth `N` requires separate passing evidence for every required
+coordinate from 1 through `N`.
+
+GRAPH is orthogonal. It records artifacts, transformations, conflicts, lifecycle
+changes, and deduplicated reachability across a bounded collection. The compatibility
+`graph_level` calculation remains a `NOT_ESTABLISHED` candidate. Evidence-bound Graph
+establishment must rerun every required rating mechanism over evidence bound to the exact
+Graph, member set, collection, and claim. Profile zero never becomes established conformance.
+
+### Artifact support and diagnostic traversal
+
+The formal names **TRUST**, **ROT**, and **RUST** are semantic terms, not acronyms, actor
+ratings, scalar scores, numbered-profile verdicts, or references to the Rust programming
+language:
+
+- TRUST is mechanism-earned artifact support moving forward through one exactly checked
+  transformation.
+- ROT is typed, time-indexed degradation of current admissibility without rewriting
+  historical evidence.
+- RUST is the inverse-TRUST diagnostic mechanic moving backward from a descendant deviation
+  toward recorded contributing ancestors.
+
+RUST identifies where reassessment should look; it does not by itself establish falsehood,
+causal localization, responsibility, BLAME, or GUILT. A separately registered localization
+mechanism must earn BLAME, and GUILT additionally requires an exact violated obligation.
+Neither result evaluates actor character. The replayable `verifier-graph-assurance-1` event log
+binds its historical Graph, evidence, mechanisms, event chain, and derived current view.
+
+### Zero identity and zero unevidenced knowledge
+
+The zero-identity/zero-knowledge (ZIZK) artifact-first orientation is **Governing VSTD
+architecture**, not an optional research profile. Zero identity means zero identity-derived verdict weight,
+not anonymity. Architectural zero knowledge means zero unevidenced knowledge is presumed:
+unsupported propositions remain `UNKNOWN`.
+
+When a witness must remain confidential, cryptographic zero knowledge can enclose that
+boundary only through a named proof system that binds the exact program, predicate, public
+commitments, output, parameters, and verifier without attaching TRUST to the prover's identity.
+A digest, encrypted file, or omitted input is not a zero-knowledge proof. The
+[RISC Zero reference mechanism](examples/zizk_artifact_first/) is one bounded optional
+backend under this governing architecture.
+
+For exact ownership, dispatch paths, schemas, compatibility surfaces, and unimplemented
+horizons, use the [architecture map](docs/ARCHITECTURE.md) and
+[normative Ladder](src/verifier/standard/LADDER.md).
+
+## Install and use
+
+The distribution name is `verifier-standard`. The published base package has no
+required third-party runtime dependencies.
+
+```bash
+python -m pip install "verifier-standard==1.5.0"  # exact published release
+python -m pip install .                            # current source checkout
+python -m pip install ".[yaml]"          # YAML Ain't Markup Language (YAML) manifests
+python -m pip install ".[jsonschema]"    # JSON Schema validation
+python -m pip install ".[seal]"          # optional Ed25519 artifact sealing
+python -m pip install ".[scitt]"         # optional SCITT/COSE experiment
+python -m pip install ".[constraints]"   # optional logits-level grammar constraints
+```
+
+`vstd` is the canonical cross-platform CLI name. `verifier` remains a compatibility
+alias but can resolve to Windows Driver Verifier. `verifiable` is a permanent legacy
+alias because historical receipts may bind it in falsification instructions.
+
+An unrelated PyPI distribution named `verifier` exports the same top-level Python
+import. Do not co-install it with `verifier-standard`.
+
+### Repository admission and object labeling
+
+After installing this source checkout into your development environment, run
+`vstd template` in a Git repository to create
+a draft `objects.vstd`, then `vstd polish 0` to see the next exact object,
+obligation, reason, and evidence requirement. `vstd template --json` previews the
+draft without writing; existing manifests are never overwritten.
+
+The current admission namespace contains 38 kinds: the retained 26 plus
+`LEDGER`, `TRANSACTION`, `ASSET`, `MARKET`, `MEASUREMENT`, `SENSOR`, `CONTROLLER`,
+`ACTUATOR`, `PROTOCOL`, `POLICY`, `ROBOT`, and `FINBOT`. Each addition has three
+reasoned Tier-0 admission declarations. Separately, all 38 kinds have explicit
+installed source-package variant profiles through Tiers 1--3: the core 26 bind
+113 behavioral and 78 source-adaptation coordinates, while the added 12 bind 54
+behavioral and 36 source-adaptation coordinates. Those 281 coordinates are a
+bounded contract for Verifier's installed package variant, not universal kind
+conformance. Local extensions and other unprofiled variants remain `UNKNOWN`.
+Labeling source-declared roles as `OBJECT` does not remove their necessary
+obligations. Name-based suggestions remain uncertain until reasoned applicability
+is supplied. Every obligation needs a standard reason, repository-specific reason,
+named contract answers, and current-source evidence. Admission or bounded profile
+PASS does not establish financial correctness, physical safety, simulation
+confinement, external authority, release or deployment.
+BOT, ROBOT and FINBOT roles can accumulate: a simulation label is not an exemption
+from physical or financial consequences. Discovery observes declarations, not
+actual effect reachability. Python definition and explicit export-alias discovery
+are implemented, including bounded literal lazy dispatch and local target bindings;
+unsupported languages remain `UNKNOWN`. Independent declaration reconciliation
+requires Node, while the Python package retains zero required dependencies.
+See [extensible admission and contributor boundaries](src/verifier/standard/EXTENSIBLE_NAMESPACE.md).
+
+Verifier's own root uses the version-5 manifest, preserving the version-4
+current-representation contract under the larger bounded transport and structure
+profile, with retained historical records. `vstd polish 0` checks
+both the retained package contract (26 core kinds, 234 kind-tier slots and 408
+route memberships) and exact namespace ownership/classification, through the
+declared `verifier-core-self` on `vstd-package-graph`. Neither check replaces the
+other. Tiers 1--3 select this same expanded graph and evaluate the 38 explicit
+installed variant profiles cumulatively. The historical 408 memberships are not
+the current 281-coordinate profile denominator; local or otherwise unprofiled
+variants remain `UNKNOWN` rather than inheriting a package-variant PASS.
+
+The local invocation `LEDGER`/`TRANSACTION` variant additionally has six bounded
+fresh-execution checks through tier 3: record identity, invocation accounting,
+read-only recovery, input preconditions, commit boundaries, and replay/epoch
+handling. An explicit `execution_checks` selection binds the object's owned source
+to the installed implementation before temporary-database execution. These checks
+do not establish full-kind coverage, monetary correctness or power-loss durability.
+See [selection and exact obligation identifiers](src/verifier/standard/PACKAGE_POLISH.md#selected-fresh-local-ledger-and-transaction-executions).
+
+The reviewed TOKEN implementation can be selected with `--select-token-asset`
+for three fresh `ASSET-1.1`, `ASSET-2.1`, and `ASSET-3.1` routes. They replay
+identity/units/precision, lifecycle boundaries, and finite encumbrance
+reconciliation. Issuer authority, signature validity, real custody, holding
+completeness, redemption, application enforcement, supply conservation and
+backing remain `NOT_ESTABLISHED`.
+
+The reviewed reference emulator can be selected with `--select-emulator-control`
+for six cumulative `CONTROLLER-1.1`--`3.1` and `ACTUATOR-1.1`--`3.1` routes. Fresh
+isolated workers exercise command/feedback binding, finite timing and capacity,
+rollback, simulated effects, saturation and input interlocks. This is simulated
+software evidence only; it proves no physical effect, physical stability,
+attestation or safe-state behavior.
+
+MARKET, ROBOT and FINBOT have nine retained routes, one per kind per tier, through
+the `verifier-retained-added-kind-behavioral-1` adapter. Exact manifest-selected
+request, policy, certificate and owned source bytes replay through their installed
+checkers, bound to the current object and collection. The replay never actuates
+hardware, submits an order or moves money, and does not establish venue or legal
+authority, physical safety, real settlement, real balances, external confinement
+or runtime correspondence. A missing selection or exact source-bound refutation
+remains `UNKNOWN`.
+
+Default root `vstd polish 0`, `1`, `2`, and `3` first inspect whether Verifier's
+own `objects.vstd` still represents the current exact source. When a recognized
+Verifier root has drifted, the installed refresh controller retains the prior
+bytes and transaction receipts outside the repository, refuses semantic
+weakening, atomically replaces the manifest, and only then starts the assessor.
+Reviewed applicability and obligation evidence is additionally bound by a
+manifest-owned source-semantic profile. Python and stub sources use a
+location-free standard-library AST digest, so comments, formatting and line
+movement can rebind automatically; other languages remain byte-exact until a
+selected language parser provides a narrower equivalence. A semantic change
+returns `MANIFEST_REFRESH_REVIEW_REQUIRED` with the exact path, object,
+classification and obligation identifiers instead of inheriting an old review.
+For the selected Verifier-self HARNESS denominator, this includes automatic
+comment/format/line-coordinate rebinding only when the complete launch set, each
+call AST, the whole-source AST, and all reviewed reasons and gaps remain unchanged.
+Semantic launch-source changes stop before publication for explicit review.
+The complete GRAPH payload also binds the non-manifest source-census coordinate;
+when it still matches, preflight validates the selected manifest bridge and skips
+the full remigration replay. Graph size therefore does not add a repeated replay
+cost to an unchanged checkout.
+For package-root GRAPH-3.1, polish validates the exact six-field current root,
+complete current collection and owned-source representation update, then
+deterministically projects only the registered four-field statics payload. It
+constructs and rechecks the native request, installed policy, evidence and
+certificate in memory instead of reusing retained GRAPH artifacts. The receipt
+binds the original and projected digests and states that this installed replay is
+not external authority, source authenticity or whole-tier conformance.
+Before returning `CURRENT`, the fast path recaptures the source coordinate and
+manifest bytes. The manifest remains a maintainer-authored declaration: a valid
+manual manifest-only edit is assessed by polish, not silently regenerated when
+the represented source coordinate itself is unchanged.
+Publication serializes cooperating `vstd` writers with an external exclusive
+lock, fsyncs the candidate before its final source/target recapture, preserves a
+competing target, and records `PUBLISHED_STALE` rather than claiming success if
+source changes after replacement. This is not an operating-system compare-and-
+swap against arbitrary uncooperative writers in the final replacement window.
+Use `--manifest-refresh check` for a read-only drift gate. Cancelled, native-
+specimen, legacy package-graph, and alternate Tier-0-manifest paths do not write.
+An explicit relative, absolute or same-file spelling of the root `objects.vstd`
+still selects refresh and assessment of the canonical root path.
+Refresh is a source-binding transaction, not admission or PASS.
+
+For explicit maintainer migration, `python scripts/migrate_package_manifest.py`
+still previews by default. `--write --backup <path-outside-repository>` preserves
+the prior bytes before replacement. `--select-harness-launch-profile` performs the
+one-time reviewed bootstrap into the HARNESS payload; ordinary later polish runs
+refresh its safe source coordinates without that flag.
+When an intentionally reviewed direct-launch call changes, update the exact
+source-owned frozen catalog and combine `--select-harness-launch-profile
+--refresh-reviewed --advance-harness-launch-profile`. The separate advance flag
+is never recovered by automatic refresh; without it, changed call semantics or
+a catalog that does not exactly match current source remain fail-closed.
+`--select-source-semantic-profile` is the explicit one-time review boundary for
+the current reviewed source meanings; automatic runs preserve but cannot create
+or semantically advance that selection. It produces a **draft**, not PASS: unsupported
+language or dynamic-interface discovery and unanswered applicability remain blockers.
+`--retire-package-graph-instance-check` is the separate explicit transition from
+the package root's historical GRAPH-3.1 artifact selection to the fresh
+source-bound adapter. Preview must report exactly that one transition. Retirement
+fails closed unless the enriched root payload, source bindings and refreshed
+owned-source representation update validate; it leaves the artifact files and all
+other selections untouched. The option is not an automatic refresh step or a
+generic GRAPH-selection replacement.
+
+### Runners and optional OpenShell sandbox
+
+Python is the default runner, not a restriction on the language-neutral standard.
+Optional source discovery is separate from process execution. Install
+`python -m pip install "verifier-standard[discovery-javascript]"` to add isolated
+Tree-sitter JavaScript declaration discovery to `vstd template` and admission.
+The base remains dependency-free. Unsupported dynamic interfaces remain explicit
+gaps; see [source coverage boundaries](src/verifier/standard/EXTENSIBLE_NAMESPACE.md#optional-javascript-syntax-coverage).
+Markup elements, attributes and embedded-code boundaries are inventoried without
+rendering; [template and browser limitations](src/verifier/standard/EXTENSIBLE_NAMESPACE.md#markup-and-embedded-code-coverage)
+remain explicit. Plain markup requires no additional dependency.
+Vector documents receive explicit source/embedded-script coverage too. Install
+`python -m pip install "verifier-standard[discovery-workflows]"` for isolated
+workflow declarations and bound command text; see [executable document limits](src/verifier/standard/EXTENSIBLE_NAMESPACE.md#vector-and-workflow-documents).
+Discovery never runs a workflow, downloads an action, or equates command ownership
+with complete interpreter or generated-interface coverage.
+For Rust or Bash/sh source, install the optional `discovery-rust` or
+`discovery-shell` extra. These inventory individual declarations, methods, fields,
+re-export names, shell functions and command sites without compiling or executing
+the subject. [Macro and dynamic-shell limits](src/verifier/standard/EXTENSIBLE_NAMESPACE.md#optional-rust-and-shell-syntax-coverage)
+remain explicit; source discovery is separate from process-runner support.
+The basic runner captures a trusted process; **it is not a sandbox**. Debuggers can
+supply observations, but cannot by themselves prove coverage, correctness or isolation.
+
+```bash
+vstd runner detect . --json
+vstd runner run main.py --trusted-local --json
+python -m pip install ./extensions/languages
+vstd runner run main.js --language javascript --trusted-local --json
+```
+
+The separately installable language package contains eleven native adapters:
+Node.js JavaScript, GCC C17/C++17, Java 11+ source launch, Rust 2021, Perl, SQLite,
+GNU Fortran 2018, PHP command-line scripts, Steel Bank Common Lisp (SBCL), and
+SWI-Prolog. Install the required toolchain separately. Other catalog targets
+remain unimplemented; an available adapter is not a qualified obligation checker.
+Compiled language specimens are opt-in in the repository test suite: set
+`VSTD_RUN_NATIVE_TOOLCHAINS=1` only when temporary compiler outputs are intended.
+
+**OpenShell is an optional extension**, not a base dependency. Install the local
+adapter with `python -m pip install ./extensions/openshell`; install NVIDIA OpenShell
+0.1.3 separately. The adapter requires an explicitly named gateway, a digest-pinned
+workload image, bounded resources, a scope reason, and a lifecycle policy. It never
+falls back to host execution. MODEL, AGENT, BOT and SIM live specimens have passed
+on one selected WSL 2/Docker configuration, including denial controls and owned
+cleanup. Rerun them on each selected host; this is not general isolation or object
+conformance. Contract tests with a simulated gateway are not sandbox evidence.
+Only this optional path emits an OpenShell execution environment (ENV) object,
+with its canonical digest, observed runtime/policy and source-bound `env` operand
+binding. ENV obligation conformance remains `UNKNOWN`; the basic runner neither
+loads this projection nor acquires an OpenShell requirement.
+
+```bash
+vstd runner run main.py --object-kind MODEL --sandbox openshell \
+  --sandbox-config openshell.json --json
+python -m vstd_openshell.live --config openshell.json --output openshell-results
+```
+
+For Windows, run the adapter **inside a working Windows Subsystem for Linux
+(WSL) 2 distribution with verified Docker Desktop access** (normal distro integration
+or the explicitly scoped shared-socket route documented below).
+NVIDIA marks this platform experimental. Follow the
+[setup, configuration, live tests and footprint instructions](src/verifier/standard/LANGUAGE_RUNNERS.md#openshell-setup-and-live-validation).
+The three OpenShell 0.1.3 Linux/amd64 images total about 78.3 MB of compressed
+layers before shared-layer deduplication; workload images, unpacked disk usage and
+runtime storage are additional. This is not an installed-size estimate.
+
+Containerization plus enforced filesystem, network, identity and resource policies
+is the intended boundary above trusted-local execution. A container alone is not
+that entire boundary. MODEL corrigibility, BOT/SIM bindings and SIM continuity need
+their own evidence; neither a debugger nor OpenShell automatically discharges them.
+
+### Freeze, seal, verify, and thaw an artifact
+
+Freezing preserves exact regular-file bytes and portable paths. Sealing is a separate,
+readable authentication and closure action; it is **not encryption**. Generate an
+Ed25519 key with a suitable local key tool, then run:
+
+```bash
+openssl genpkey -algorithm Ed25519 -out ed25519-private.pem
+vstd artifact freeze PATH ARTIFACT.vstd --media-type application/octet-stream
+vstd artifact verify ARTIFACT.vstd --freeze-only
+vstd artifact seal ARTIFACT.vstd --private-key ed25519-private.pem
+vstd artifact verify ARTIFACT.vstd --expected-artifact-id EXPECTED_ID
+vstd artifact thaw ARTIFACT.vstd MUTABLE_COPY
+vstd artifact status MUTABLE_COPY --parent-bundle ARTIFACT.vstd
+```
+
+The finite seal signs the complete envelope with its signature and identifier fields
+explicitly empty, then derives the seal identifier over the signature-bearing envelope
+with only its identifier empty. Verification recomputes both projections, avoiding an
+infinite seal-of-seal regress. The carried public key establishes internal consistency;
+an expected artifact identifier, expected key identifier, or separately verified
+manifest/log coordinate is still required to detect whole-bundle substitution.
+
+A freeze or seal establishes bounded integrity and closure only—not correctness,
+freshness, ownership, authorization, trusted time, external preservation, or actor trust.
+Thaw is copy-on-write: it creates a mutable descendant and leaves the sealed parent
+unchanged. Later `THAWED_CLEAN` or `THAWED_DIRTY` status requires that actual parent bundle,
+clean seal verification, and exact agreement with every sidecar parent coordinate. Without
+the parent, sidecar agreement remains `NOT_ESTABLISHED`. The sidecar's unkeyed hash does not
+prove that the historical copy occurred. A supplied parent establishes only internal
+consistency unless an expected artifact/key identifier or separately verified external log
+also supplies continuity. See the normative
+[artifact-control mechanism](src/verifier/standard/ARTIFACT_CONTROL.md) and the architectural
+[realm/time-capsule model](docs/REALMS_AND_TIME_CAPSULES.md).
+
+### Capture a generic computation
+
+A manifest contains an executable command. `vstd run` does not sandbox it. Inspect the
+plan first and execute only trusted manifests inside an appropriate operating-system or
+container boundary.
+
+```bash
+vstd plan examples/generic_run/manifest.json --json
+vstd run examples/generic_run/manifest.json --output /tmp/vstd-receipt
+vstd validate /tmp/vstd-receipt
+vstd inspect /tmp/vstd-receipt
+vstd reproduce /tmp/vstd-receipt --rerun
+```
+
+Generic `validate` checks the strict profile shape and stable-payload digest. It does
+not rehash external artifacts, resolve evidence references, rerun the command, or verify
+the recorded declaration as a native domain claim. `reproduce --rerun` separately
+executes the recorded command and compares declared output paths, digests, and execution
+outcome.
+
+When a manifest's open refutation surface declares compatible platforms and explicit
+result surfaces, compare one receipt from each declared operating system:
+
+```bash
+vstd compare-platforms receipts/Linux receipts/Windows receipts/Darwin --json
+```
+
+Python reports macOS as `Darwin`. Newly captured platform-comparable receipts bind their
+Python implementation and machine identity into the canonical digest. Historical receipts
+without that additive binding remain valid records but cannot establish comparison. The
+comparator returns `PASS` only when every declared platform appears exactly once, canonical
+receipt integrity passes, non-platform claim, source, command, Python, machine-family, and
+mechanism bindings agree, and every declared result projection agrees. Comparable result
+disagreement is `CONFLICTED`; missing or non-comparable evidence is `NOT_ESTABLISHED`;
+malformed or internally contradictory evidence is `INVALID`. This is a comparison of supplied recorded results—not proof of
+universal portability, semantic correctness, native execution, or independent actors.
+Matching outputs alone do not establish environment equivalence or truth outside that
+scope.
+
+### Use the Python application programming interface (API)
+
+```python
+from pathlib import Path
+
+from verifier.core.run import describe_run_plan, load_manifest
+
+manifest_path = Path("examples/generic_run/manifest.json")
+manifest = load_manifest(manifest_path)
+plan = describe_run_plan(manifest, manifest_path.parent)
+print(plan["command"], plan["executes_without_sandbox"])
+```
+
+The installed wheel contains byte-identical copies of every normative specification, so
+a verifier descriptor can retain its exact specification binding outside a source
+checkout. See the generated [CLI and API
+reference](https://timelordraps.github.io/verifier/reference.html).
+
+## Receipts, Graphs, and grounded certificates
+
+The unreleased 2.0.0 candidate adds [grounded certification across object profiles](docs/GROUNDED_CERTIFICATION.md):
+47 explicit `X.M` obligations, externally selected mechanism policies and portable
+replay. The guide separates native checker coverage from required domain mechanisms.
+
+Twelve [grounded domain adapters](src/verifier/standard/DOMAIN_GROUNDING.md) also execute retained
+dataset transformations, environment observation checks, benchmark oracles, training
+updates and gradients, model inference/evaluation, simulation transitions and
+relations, declared agent observation surfaces, agent trajectories bounded by one such
+surface, the closed loop between one bound agent and one bound simulation, a
+zero-identity token holding replayed from its birth commitment, and computational verifier
+engine integrity and bounds, and retained hardware inventories, containment, reservations
+and measurement envelopes. Their 57
+cumulative domain checks produce replayable certificates under
+an external request and policy. Domain depth does not confer object or Graph
+numbered-profile conformance. Run `PYTHONPATH=src python examples/domain_grounding.py`
+or inspect `vstd certification domain-catalog --json`.
+See [bounded VERIFIER admission](docs/VERIFIER_ADMISSION.md),
+[ENV contract and migration](docs/ENVIRONMENT_CONTRACT.md), and
+[mainstay coverage](docs/MAINSTAY_COVERAGE.md) for exact supported boundaries.
+The accountable `ACTOR` and `OWNER` routines are separately discoverable with
+`domain-catalog --accountable --json`; their public reachability does not establish
+numbered-profile conformance.
+
+
+- [VSTD-1 receipts](src/verifier/standard/VSTD-1.md) carry claim coordinates, evidence,
+  checker results, trust boundaries, and reproducibility information.
+- [GRAPH-1](src/verifier/standard/GRAPH-1.md) records content-addressed artifacts,
+  many-to-many transformations, conflicts, and bounded downstream reachability. Its frozen
+  reader preserves separate historical artifact/transformation namespaces; new construction
+  plus evidence-bound establishment and assurance propagation require global cross-kind
+  disjointness.
+- [`VSTD4-GDC-1`](src/verifier/standard/VSTD-4.md) binds a decision certificate to a formula,
+  grounding, claim coordinate, verifier descriptor, roots, and resource bounds.
+
+The grounded-certificate checker rejects over-budget headers before proof work, rejects
+cost-tier inflation, validates grounding before the decision block, and preserves
+`UNKNOWN` when a bound is exhausted. Kernel acceptance establishes only the bounded
+certificate result; it is not VSTD-4 conformance, evidence authenticity, external
+validation, or proof of the unobserved world.
+
+## Interoperability
+
+VSTD composes beside native systems rather than replacing them:
+
+```text
+native object ──native verifier──> native result
+      └──── exact bytes + identity ──> loss-declared adapter
+                                           └──> VSTD claim boundary
+```
+
+The interoperability path connects strict loading and stable modeled-hole detection to an
+experimental domain-neutral component catalog and planner:
+
+```text
+strict VSTD-2 JSON geometry
+  -> typed valid geometry
+  -> modeled-hole analysis
+  -> exact catalog candidates
+  -> nonexecuting validation plan
+  -> nonexecuting execution-readiness preflight
+```
+
+Analyze the checked-in non-critical formatter geometry without executing a checker:
+
+```bash
+vstd surface analyze examples/verification_geometry_residual/geometry.json --json
+vstd surface analyze examples/verification_geometry_residual/geometry.json --plan --json
+```
+
+The report is deterministic and bounded to the supplied geometry. A reported modeled
+closure state does not establish that the model includes every real-world obligation.
+
+Run its harmless sorted-grocery-list example:
+
+```bash
+python examples/interoperability_planning/demo.py
+```
+
+The example reports two exact candidates and three unmatched self-closure holes while
+keeping `plan_only = true`, `execution_performed = false`, and the checker invocation
+count at zero. Here, **validation** names the future process of attempting to discharge
+verification-surface holes with bound execution evidence and then reassessing the
+geometry. This example only detects and plans: it cannot establish checker availability
+at execution time, a native result, ordinary or self-closure, safety, authority to act,
+critical-domain readiness, or VSTD conformance. Its registry version and digest are bound
+into the plan. `--plan` uses the first-party catalog's 19 exact entry points across 12
+catalog grouping labels, but does not select or invoke them. Those labels
+organize first-party code; they are not 12 independent or native implementations and do
+not represent 12 demonstrated interoperability results. The experimental readiness
+preflight can reject missing or substituted native-input, evidence-output, prerequisite,
+authorization, and reassessment declarations, but it executes nothing and grants no
+authorization. Automatic execution and post-execution geometry reassessment remain
+unsupported. See the
+[example boundary and output](examples/interoperability_planning/).
+
+The experimental multi-geometry diagnostic compares only caller-declared shared
+propositions bound to exact geometry digests. It preserves explicit `VERIFIED` versus
+`FALSIFIED` disagreement and declared dependency cycles as reproducible structural
+conflict witnesses; absent identity or an indeterminate judgment remains
+`NOT_ESTABLISHED`, and malformed input is `INVALID`. It does not perform Boolean
+satisfiability analysis, infer that similarly named claims are equivalent, or establish
+physical truth, safety, conformance, or authority.
+
+The separate [experimental graph-topology checker](docs/GRAPH_TOPOLOGY.md) binds explicit
+simultaneous Boolean equations and clock-relative backward-time relations to existing graph
+ports. It reports structural features and bounded consistency separately, retains paradox
+candidates without inferring their truth, and does not bypass cyclic-assurance admission.
+The [non-critical specimen](examples/graph_topology/) exports matching inspection documents.
+
+The [experimental composed-untraversability interface](docs/ARTIFACT_AWARENESS.md) evaluates
+whether a declared protected fact is reachable by one finite observer through the complete
+set of interfaces and inference rules supplied in an exact VSTD Graph contract. A
+higher-order interface can expose enough structure to control a computation while still
+forbidding a declared path to lower-order protected knowledge, but that boundary is assessed
+over the composed Graph rather than inferred from any interface in isolation. A bounded
+result does not establish open-world non-inferability, continuous awareness tracking,
+runtime enforcement, authorization, actor attribution, or universal confidentiality.
+
+Operating-system evidence is tracked per component in the
+[platform interoperability matrix](docs/PLATFORM_INTEROPERABILITY.md); support for one
+portable Python path does not transfer to a native prover, verifier, solver, or adapter.
+The linked machine-readable contract records configured test intent, not a hosted pass;
+exact-run artifacts must bind its digest and the current catalog digest before a platform
+claim can be evaluated.
+
+Two executable non-critical relationship geometries are documented under
+[interoperability compositions](examples/interoperability_compositions/): a bounded
+proof-producing Boolean solver whose exact refutation bytes feed a separate proof checker,
+and the existing adjacent VSTD plus Supply Chain Integrity, Transparency, and Trust
+(SCITT) composition. Both retain native results and negative paths; neither establishes
+actor independence, external interoperability, or safety.
+
+The experimental SCITT profile uses
+real Concise Binary Object Representation (CBOR) and COSE
+signatures and a local inclusion receipt. It demonstrates exact payload carriage and
+adjacent verification under test keys. The example rejects drift from its three pinned
+runtime distributions and records the installed `scitt-cose` version and exact
+statement/receipt verification entry points, while explicitly leaving package
+authentication, producer provenance, and independent implementation unestablished.
+SCITT registration proves neither payload
+correctness nor VSTD conformance. See the [crosswalk](docs/standards/VSTD_SCITT_CROSSWALK.md),
+[semantic boundary](docs/standards/SCITT_SEMANTIC_BOUNDARY.md), and
+[runnable example](examples/scitt_interop/).
+
+The [ecosystem map](docs/ECOSYSTEM.md) separately covers adjacent provenance,
+software-supply-chain, signing, and transparency systems without implying endorsement or
+adoption.
+
+## Specifications and navigation
+
+Read authoritative material in this order:
+
+1. [Verification complex, terminology, and profile composition](src/verifier/standard/LADDER.md)
+2. [Object and Graph numbered-profile documents](src/verifier/standard/)
+3. [Serialized receipt identifiers](src/verifier/standard/WIRE_IDENTIFIERS.md)
+4. [Published schemas](receipts/schema/)
+5. [Implementation ownership](docs/ARCHITECTURE.md)
+6. [Claims and limits](docs/CLAIMS_AND_LIMITS.md)
+
+Additional entry points:
+
+| Goal | Document |
+|---|---|
+| Install and exercise the first-run path | [Quickstart](docs/QUICKSTART.md) |
+| Decide whether VSTD fits a situation | [Typical use cases](docs/USE_CASES.md) |
+| Seal a directory and detect a change to it | [Seal an artifact](docs/tutorials/SEAL_AN_ARTIFACT.md) |
+| Publish a rebuildable snapshot of a body of work | [Publish a silo](docs/tutorials/PUBLISH_A_SILO.md) |
+| Use the supported Python exports by task | [Python API guide](docs/PYTHON_API_GUIDE.md) |
+| Understand terminology and precedents | [Concepts and precedents](docs/CONCEPTS_AND_PRECEDENTS.md) |
+| Inspect abbreviated terms | [Acronyms](docs/ACRONYMS.md) |
+| Review experimental profiles | [Experiment index](experiments/INDEX.md) |
+| Understand human claim traversal | [Human operating guide](HUMANS.md) |
+| Inspect project direction and non-goals | [Roadmap](ROADMAP.md) |
+
+## Reproducibility and releases
+
+A release contains a canonical artifact set: ZIP archive format (ZIP), wheel, source
+distribution, and external manifest bound to the exact public Git commit and file
+members. At the version 2.0.0 source coordinate, the continuous integration (CI)
+workflow builds the artifact set on Linux, Windows, and macOS and rejects cross-platform
+byte differences. It also captures and reruns the portable generic example on three
+GitHub-hosted operating-system virtual machines, then requires a bounded `PASS` over the
+three receipts. GitHub
+artifact attestations bind uploaded bytes to the workflow; they do not establish source
+correctness, tag identity, or adoption.
+
+```bash
+gh attestation verify PATH_TO_DOWNLOADED_ASSET --repo TimeLordRaps/verifier
+```
+
+Use [RELEASING.md](RELEASING.md) to verify the manifest, tag, artifact attestations,
+package name, and historical compatibility. Version 1.5.0 is the current release,
+published on 2026-09-18; use its [versioned release page](https://github.com/TimeLordRaps/verifier/releases/tag/v1.5.0)
+for published citation and artifact coordinates.
+
+## Claims, security, and contribution
+
+Review [claims and limits](docs/CLAIMS_AND_LIMITS.md) before publishing a VSTD result.
+The reference implementation may improve auditability, reproducibility, incident
+analysis, and challenge routing over observable records. It cannot prove general AI
+safety, reveal hidden model state, establish physical-world completeness, or compensate
+for missing instrumentation.
+
+`vstd run` executes manifest commands without sandboxing. See the
+[security policy](SECURITY.md) and use GitHub private vulnerability reporting for
+sensitive findings.
+
+Contributors should start with [CONTRIBUTING.md](CONTRIBUTING.md), which identifies
+normative, implementation, schema, adapter, test, compatibility, and release pathways.
+Use the issue forms for a
+[specification ambiguity](https://github.com/TimeLordRaps/verifier/issues/new?template=specification-ambiguity.yml),
+[counterexample](https://github.com/TimeLordRaps/verifier/issues/new?template=counterexample.yml),
+or [implementation/interoperability report](https://github.com/TimeLordRaps/verifier/issues/new?template=implementation-report.yml).
+
+Project authority and centralization are documented in [GOVERNANCE.md](GOVERNANCE.md).
+Automated-contributor rules live in [AGENTS.md](AGENTS.md); the human operating model in
+[HUMANS.md](HUMANS.md); and live repository contradictions only in [TIME.md](TIME.md).
+
+## Citation and license
+
+Cite a published release from its versioned GitHub release metadata or
+`CITATION.cff` at that tagged coordinate. Do not cite unreleased candidate metadata as
+a published release.
+
+Licensed under the [Apache License 2.0](LICENSE); see [NOTICE](NOTICE). VSTD is not
+affiliated with or endorsed by the Apache Software Foundation.

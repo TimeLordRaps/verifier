@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 import hashlib
+from importlib.util import find_spec
 import json
 from pathlib import Path
 import sys
@@ -31,6 +32,21 @@ from verifier.interoperability.storage import (
 
 ISSUANCE = "relation:certificate-issuance"
 MECHANISM = "mechanism:test-certificate-issuer"
+
+
+class _RejectCertifierImport:
+    """Fail if planning tries to resolve the deliberately absent entrypoint."""
+
+    def find_spec(self, fullname: str, path: object = None,
+                  target: object = None) -> None:
+        if fullname == "uninstalled_test_certifier":
+            raise AssertionError("planning attempted to import the retained certifier")
+        return None
+
+
+def _reject_certifier_import(monkeypatch: pytest.MonkeyPatch) -> None:
+    assert find_spec("uninstalled_test_certifier") is None
+    monkeypatch.setattr(sys, "meta_path", [_RejectCertifierImport(), *sys.meta_path])
 
 
 def _descriptor(kind: ComponentKind = ComponentKind.WORKFLOW) -> InteroperabilityComponentDescriptor:
@@ -89,8 +105,9 @@ def _package(descriptor: InteroperabilityComponentDescriptor) -> StoredComponent
 
 @pytest.mark.parametrize("kind", [ComponentKind.WORKFLOW, ComponentKind.PROVER])
 def test_certifier_capability_survives_strict_catalog_and_package_roundtrip(
-    kind: ComponentKind, tmp_path: Path,
+    kind: ComponentKind, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    _reject_certifier_import(monkeypatch)
     descriptor = _descriptor(kind)
     package = _package(descriptor)
     registry = InteroperabilityComponentRegistry.from_dict(
@@ -98,8 +115,8 @@ def test_certifier_capability_survives_strict_catalog_and_package_roundtrip(
     )
     assert registry == package.registry
     assert registry.get(descriptor.component_id).to_dict() == descriptor.to_dict()
-    assert registry.schema_version == CATALOG_SCHEMA_VERSION == "VSTD-INTEROPERABILITY-CATALOG-1.1"
-    assert package.schema_version == COMPONENT_PACKAGE_SCHEMA_VERSION == "VSTD-COMPONENT-PACKAGE-1"
+    assert registry.schema_version == CATALOG_SCHEMA_VERSION == "verifier-interoperability-catalog-2"
+    assert package.schema_version == COMPONENT_PACKAGE_SCHEMA_VERSION == "verifier-component-package-1"
     path = tmp_path / "certifier.json"
     save_component_package(package, path)
     loaded = load_component_package(path, expected_digest=package.canonical_digest())
@@ -114,7 +131,6 @@ def test_certifier_capability_survives_strict_catalog_and_package_roundtrip(
     assert candidate.status is CandidateStatus.BLOCKED
     assert "component availability is NOT_CHECKED" in candidate.blockers
     assert not (tmp_path / "src").exists()
-    assert "uninstalled_test_certifier" not in sys.modules
 
 
 @pytest.mark.parametrize("changes", [
@@ -138,7 +154,10 @@ def test_prover_kind_and_certifier_metadata_cannot_replace_exact_capability(chan
     assert candidate.component_id is None
 
 
-def test_declared_availability_and_certificate_metadata_do_not_grant_authority() -> None:
+def test_declared_availability_and_certificate_metadata_do_not_grant_authority(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _reject_certifier_import(monkeypatch)
     descriptor = replace(_descriptor(), availability=ComponentAvailability.AVAILABLE)
     package = _package(descriptor)
     plan = plan_validation(_analysis(), package.registry, package=package)
@@ -153,7 +172,6 @@ def test_declared_availability_and_certificate_metadata_do_not_grant_authority()
     assert inspection["native_qualification"] == "NOT_ESTABLISHED"
     assert "unsigned declarations" in inspection["claim_boundary"]
     assert "authority" in plan.claim_boundary
-    assert "uninstalled_test_certifier" not in sys.modules
 
 
 def test_certifier_does_not_silently_extend_closed_kind_vocabulary() -> None:

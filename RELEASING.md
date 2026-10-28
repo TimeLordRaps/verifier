@@ -11,6 +11,17 @@ The release manifest is published beside the source ZIP rather than tracked insi
 source tree. This avoids a self-referential commit field and lets the manifest bind an
 exact, publicly resolvable commit.
 
+The [core version 2 release scope](src/verifier/standard/CORE_V2_RELEASE_SCOPE.md)
+allows the core `2.0.0` target to finalize before complete corrigibility. Retained
+corrigibility source ships as a work in progress (WIP) extension with distinct
+native semantics and an opt-in progression profile. The distribution verifier
+requires the declared WIP status, UNKNOWN completion and zero core gate credit
+for a final `2.0.0` artifact; packaged specifications remain byte-bound to source.
+Core polish, descriptions, required source explanation predicates and every
+applicable test and promotion requirement below still apply. Included WIP files
+remain subject to source and artifact checks. Do not delete required core
+obligations or alter existing ten-tier application gate meanings to finalize core.
+
 Development branches may record precise contradictions with [`TIME.md`](TIME.md) set to
 `Status: OPEN`; normal pull-request checks do not prohibit that state. Publication is
 different: the owner-dispatched release workflow runs `python scripts/check_time_status.py` against

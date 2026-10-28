@@ -10,14 +10,29 @@ Fail closed when public presentation surfaces drift from executable truth."""
 from __future__ import annotations
 
 from html.parser import HTMLParser
-import importlib.util
 import json
+import os
 from pathlib import Path
 import re
 import struct
 import sys
 from urllib.parse import unquote
 import xml.etree.ElementTree as ET
+
+try:
+    from scripts import build_docs as documentation_builder
+    from scripts import build_experiment_index as experiment_index_builder
+    from scripts import build_reference as reference_builder
+    from scripts import check_acronyms as acronym_checker
+    from scripts import check_public_estate_sync as estate_checker
+    from scripts import check_terminology as terminology_checker
+except ImportError:  # Direct ``python scripts/...`` execution.
+    import build_docs as documentation_builder
+    import build_experiment_index as experiment_index_builder
+    import build_reference as reference_builder
+    import check_acronyms as acronym_checker
+    import check_public_estate_sync as estate_checker
+    import check_terminology as terminology_checker
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -132,11 +147,11 @@ MATURITY_CONFORMANCE = {
     "VSTD-3": "Implemented reference surface",
     "VSTD-4": "Candidate path `NOT_ESTABLISHED`; evidence-bound path can establish conformance",
     "VSTD-5": "Mechanism can establish a bounded result; a positive observation with unresolved independence remains overall `UNKNOWN`; no repository claim of a real independent witness",
-    "VSTD-Graph-1": "Implemented reference subset",
-    "VSTD-Graph-2": "Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot",
-    "VSTD-Graph-3": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
-    "VSTD-Graph-4": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
-    "VSTD-Graph-5": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
+    "GRAPH-1": "Implemented reference subset",
+    "GRAPH-2": "Candidate `NOT_ESTABLISHED`; evidence-bound profile 1–5 path can establish; profile zero cannot",
+    "GRAPH-3": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
+    "GRAPH-4": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
+    "GRAPH-5": "Candidate `NOT_ESTABLISHED`; evidence-bound path can establish",
     "Generic run": "Implemented VSTD-1 profile",
     "Experimental workflow": "No VSTD conformance claim",
     "Supply Chain Integrity, Transparency, and Trust (SCITT) interoperability": (
@@ -194,13 +209,14 @@ class LinkCollector(HTMLParser):
 
 
 def _public_files() -> list[Path]:
-    return sorted(
-        path
-        for path in ROOT.rglob("*")
-        if path.is_file()
-        and not any(part in IGNORED_PARTS for part in path.relative_to(ROOT).parts)
-        and path.suffix.lower() in TEXT_SUFFIXES
-    )
+    files: list[Path] = []
+    for directory, subdirectories, names in os.walk(ROOT):
+        subdirectories[:] = [name for name in subdirectories if name not in IGNORED_PARTS]
+        for name in names:
+            path = Path(directory) / name
+            if name not in IGNORED_PARTS and path.suffix.lower() in TEXT_SUFFIXES and path.is_file():
+                files.append(path)
+    return sorted(files)
 
 
 def _local_target(source: Path, raw: str) -> Path | None:
@@ -214,19 +230,13 @@ def _local_target(source: Path, raw: str) -> Path | None:
 
 
 def _generated_documentation_routes() -> set[str]:
-    path = ROOT / "scripts/build_docs.py"
-    spec = importlib.util.spec_from_file_location("build_docs_links", path)
-    if spec is None or spec.loader is None:
-        return set()
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
     try:
-        spec.loader.exec_module(module)
-        return {document.route.as_posix() for document in module.documents()}
+        return {
+            document.route.as_posix()
+            for document in documentation_builder.documents()
+        }
     except Exception:
         return set()
-    finally:
-        sys.modules.pop(spec.name, None)
 
 
 def check_local_links(errors: list[str]) -> None:
@@ -420,7 +430,7 @@ def transient_time_status_violations(text: str) -> list[str]:
 def check_claim_boundaries(errors: list[str]) -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     roadmap = (ROOT / "ROADMAP.md").read_text(encoding="utf-8")
-    wire = (ROOT / "standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
+    wire = (ROOT / "src/verifier/standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
     reference = (ROOT / "docs/reference.html").read_text(encoding="utf-8")
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     scitt_demo = (ROOT / "examples/scitt_interop/demo.py").read_text(encoding="utf-8")
@@ -441,7 +451,7 @@ def check_claim_boundaries(errors: list[str]) -> None:
         "vstd demo",
         "A later-profile result does **not** supply",
         "It cannot prove general AI",
-        "[Normative specifications](standard/LADDER.md)",
+        "[Normative specifications](src/verifier/standard/LADDER.md)",
         "[Report an ambiguity or counterexample]",
         "[Report a vulnerability privately]",
         "SCITT registration proves neither payload",
@@ -627,15 +637,8 @@ def check_visual_assets(errors: list[str]) -> None:
 def check_generated_reference(errors: list[str]) -> None:
     """The published CLI/API reference must still match the importable package."""
 
-    path = ROOT / "scripts/build_reference.py"
-    spec = importlib.util.spec_from_file_location("build_reference", path)
-    if spec is None or spec.loader is None:
-        errors.append("cannot load scripts/build_reference.py")
-        return
-    module = importlib.util.module_from_spec(spec)
     try:
-        spec.loader.exec_module(module)
-        rendered = module.render()
+        rendered = reference_builder.render()
     except Exception as exc:  # noqa: BLE001 - any failure is a presentation failure
         errors.append(f"reference page cannot be generated: {exc}")
         return
@@ -657,21 +660,11 @@ def check_generated_reference(errors: list[str]) -> None:
 def check_generated_documentation(errors: list[str]) -> None:
     """Every maintained Markdown source must have one unambiguous site route."""
 
-    path = ROOT / "scripts/build_docs.py"
-    spec = importlib.util.spec_from_file_location("build_docs", path)
-    if spec is None or spec.loader is None:
-        errors.append("cannot load scripts/build_docs.py")
-        return
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
     try:
-        spec.loader.exec_module(module)
-        documents = module.documents()
+        documents = documentation_builder.documents()
     except Exception as exc:  # any generation failure blocks publication
         errors.append(f"documentation routes cannot be generated: {exc}")
         return
-    finally:
-        sys.modules.pop(spec.name, None)
     routes = [document.route.as_posix() for document in documents]
     if not routes:
         errors.append("documentation renderer declares no source pages")
@@ -699,22 +692,21 @@ def check_generated_documentation(errors: list[str]) -> None:
     guides = pages["docs/guides.html"]
     if "github.com/TimeLordRaps/verifier/blob/main/docs/" in guides:
         errors.append("docs/guides.html sends maintained guides to the GitHub file viewer")
-    if "github.com/TimeLordRaps/verifier/blob/main/standard/" in guides:
-        errors.append("docs/guides.html sends specifications to the GitHub file viewer")
+    for viewer in (
+        "github.com/TimeLordRaps/verifier/blob/main/standard/",
+        "github.com/TimeLordRaps/verifier/blob/main/src/verifier/standard/",
+    ):
+        if viewer in guides:
+            errors.append("docs/guides.html sends specifications to the GitHub file viewer")
 
 
 def check_experiment_index(errors: list[str]) -> None:
     """Profile manifests, bound repo artifacts, and the public index must agree."""
 
-    path = ROOT / "scripts/build_experiment_index.py"
-    spec = importlib.util.spec_from_file_location("build_experiment_index", path)
-    if spec is None or spec.loader is None:
-        errors.append("cannot load scripts/build_experiment_index.py")
-        return
-    module = importlib.util.module_from_spec(spec)
     try:
-        spec.loader.exec_module(module)
-        rendered = module.render(module.discover(ROOT))
+        rendered = experiment_index_builder.render(
+            experiment_index_builder.discover(ROOT)
+        )
     except Exception as exc:  # the gate reports any bounded generation failure
         errors.append(f"experiment index cannot be generated: {exc}")
         return
@@ -729,15 +721,8 @@ def check_experiment_index(errors: list[str]) -> None:
 def check_acronyms(errors: list[str]) -> None:
     """Require first-use expansion on every registered reader-facing surface."""
 
-    path = ROOT / "scripts/check_acronyms.py"
-    spec = importlib.util.spec_from_file_location("check_acronyms", path)
-    if spec is None or spec.loader is None:
-        errors.append("cannot load scripts/check_acronyms.py")
-        return
-    module = importlib.util.module_from_spec(spec)
     try:
-        spec.loader.exec_module(module)
-        errors.extend(module.validate_repo())
+        errors.extend(acronym_checker.validate_repo())
     except Exception as exc:  # any glossary or scan failure is a presentation failure
         errors.append(f"acronym presentation gate failed: {exc}")
 
@@ -745,15 +730,8 @@ def check_acronyms(errors: list[str]) -> None:
 def check_terminology(errors: list[str]) -> None:
     """Reject ambiguous structural terms on current public surfaces."""
 
-    path = ROOT / "scripts/check_terminology.py"
-    spec = importlib.util.spec_from_file_location("check_terminology", path)
-    if spec is None or spec.loader is None:
-        errors.append("cannot load scripts/check_terminology.py")
-        return
-    module = importlib.util.module_from_spec(spec)
     try:
-        spec.loader.exec_module(module)
-        errors.extend(module.validate_repo())
+        errors.extend(terminology_checker.validate_repo())
     except Exception as exc:  # any terminology scan failure is a presentation failure
         errors.append(f"terminology presentation gate failed: {exc}")
 
@@ -761,16 +739,11 @@ def check_terminology(errors: list[str]) -> None:
 def check_mandatory_documentation(errors: list[str]) -> None:
     """Every release must include its documentation, tutorials, and CLI/API references simultaneously."""
 
-    path = ROOT / "scripts/check_public_estate_sync.py"
-    spec = importlib.util.spec_from_file_location("check_public_estate_sync", path)
-    if spec is None or spec.loader is None:
-        errors.append("cannot load scripts/check_public_estate_sync.py")
-        return
-    module = importlib.util.module_from_spec(spec)
     try:
-        spec.loader.exec_module(module)
-        version = module.get_package_version(ROOT)
-        doc_errors = module.check_mandatory_documentation_coverage(ROOT, version)
+        version = estate_checker.get_package_version(ROOT)
+        doc_errors = estate_checker.check_mandatory_documentation_coverage(
+            ROOT, version
+        )
         errors.extend(doc_errors)
     except Exception as exc:
         errors.append(f"mandatory documentation coverage presentation gate failed: {exc}")

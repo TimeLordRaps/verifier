@@ -6,7 +6,6 @@ completeness, historical execution or authority axiom agency.
 
 from __future__ import annotations
 
-import importlib
 import ast
 from dataclasses import replace
 import json
@@ -22,6 +21,8 @@ from verifier.core.evidence import (
     MechanismOutcome,
     VerificationSession,
 )
+from verifier.interoperability import formation_checker as formation_checker_module
+from verifier.interoperability import formation_mechanism as formation_mechanism_module
 from verifier.interoperability import formation_wire as wire
 
 
@@ -32,7 +33,7 @@ PREDICATE = "vstd.typed_formation.checked.0.1"
 
 
 def _fixture() -> tuple[Any, EvidenceStore, VerificationSession, BoundProposition, tuple[bytes, bytes]]:
-    module = importlib.import_module("verifier.interoperability.formation_mechanism")
+    module = formation_mechanism_module
     mechanism = module.FormationPathCertificateMechanism()
     subject = wire.canonical_bytes({
         "schema_version": wire.SUBJECT_SCHEMA,
@@ -67,7 +68,7 @@ def test_formation_session_rechecks_exact_certificate_without_promoting_residual
     assert result.binding_digest == binding.digest()
     assert result.observed_evidence_bytes == sum(map(len, payloads))
     report = result.observations["formation_report"]
-    checker = importlib.import_module("verifier.interoperability.formation_checker")
+    checker = formation_checker_module
     assert report == checker.check_formation(*payloads)
     assert report["status"] == "CHECKED"
     assert report["subject_digest"] == binding.subject_id
@@ -236,7 +237,7 @@ def test_formation_direct_malformed_binding_is_unknown_before_execution(field: s
 
 def test_formation_unexpected_checker_exception_is_unknown(monkeypatch: pytest.MonkeyPatch) -> None:
     mechanism, _store, session, binding, payloads = _fixture()
-    module = importlib.import_module("verifier.interoperability.formation_mechanism")
+    module = formation_mechanism_module
 
     def broken(*args: Any) -> Any:
         raise RuntimeError("test-only broken checker")
@@ -250,7 +251,7 @@ def test_formation_unexpected_checker_exception_is_unknown(monkeypatch: pytest.M
 
 def test_formation_session_never_binds_pass_to_caller_mutation_during_check(monkeypatch: pytest.MonkeyPatch) -> None:
     _mechanism, _store, session, binding, _payloads = _fixture()
-    module = importlib.import_module("verifier.interoperability.formation_mechanism")
+    module = formation_mechanism_module
     real_checker = module.check_formation
     original_digest = binding.digest()
 
@@ -273,7 +274,7 @@ def test_formation_session_never_binds_pass_to_caller_mutation_during_check(monk
 
 def test_formation_direct_parameters_are_copied_before_semantic_validation(monkeypatch: pytest.MonkeyPatch) -> None:
     mechanism, _store, _session, binding, payloads = _fixture()
-    module = importlib.import_module("verifier.interoperability.formation_mechanism")
+    module = formation_mechanism_module
     real_is_digest = module._is_digest
 
     def mutate_during_validation(value: Any) -> bool:
@@ -291,7 +292,7 @@ def test_formation_direct_parameters_are_copied_before_semantic_validation(monke
 
 def test_formation_checker_exhaustion_keeps_pure_report_and_residuals(monkeypatch: pytest.MonkeyPatch) -> None:
     _mechanism, _store, session, binding, _payloads = _fixture()
-    checker = importlib.import_module("verifier.interoperability.formation_checker")
+    checker = formation_checker_module
     # Explicit test-only budget reduction; not production source identity evidence.
     monkeypatch.setattr(checker, "MAX_DEPTH", 0)
     result = session.evaluate(binding)
@@ -302,7 +303,7 @@ def test_formation_checker_exhaustion_keeps_pure_report_and_residuals(monkeypatc
 
 def test_formation_known_context_failure_precedes_later_inference_exhaustion(monkeypatch: pytest.MonkeyPatch) -> None:
     _mechanism, _store, session, binding, _payloads = _fixture()
-    checker = importlib.import_module("verifier.interoperability.formation_checker")
+    checker = formation_checker_module
     monkeypatch.setattr(checker, "MAX_DEPTH", 0)
     parameters = dict(binding.parameters, ground_artifact_digest=OTHER)
     binding = replace(binding, parameters=parameters, trust_roots=tuple(parameters.values()))
@@ -314,9 +315,9 @@ def test_formation_known_context_failure_precedes_later_inference_exhaustion(mon
 
 def test_formation_mechanism_has_exact_selected_source_identity() -> None:
     mechanism, _store, _session, _binding, _payloads = _fixture()
-    module = importlib.import_module("verifier.interoperability.formation_mechanism")
+    module = formation_mechanism_module
     root = Path(module.__file__).parent
-    inventory = {"schema_version": "VSTD-TYPED-FORMATION-SOURCE-IDENTITY-0.1",
+    inventory = {"schema_version": "verifier-typed-formation-source-identity-1",
         "profile_digest": wire.profile_digest(), "sources": [
             {"path": name, "digest": wire.digest_bytes((root / name).read_bytes())}
             for name in ("formation_mechanism.py", "formation_checker.py", "formation_wire.py", "network.py")
@@ -327,7 +328,7 @@ def test_formation_mechanism_has_exact_selected_source_identity() -> None:
 
 def test_formation_adapter_imports_no_producer_and_reads_no_evidence_paths(monkeypatch: pytest.MonkeyPatch) -> None:
     _mechanism, _store, session, binding, _payloads = _fixture()
-    module = importlib.import_module("verifier.interoperability.formation_mechanism")
+    module = formation_mechanism_module
     syntax = ast.parse(Path(module.__file__).read_text(encoding="utf-8"))
     for node in ast.walk(syntax):
         if isinstance(node, ast.Import):

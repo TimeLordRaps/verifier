@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 import os
 import sys
@@ -45,7 +47,7 @@ def _fixture(*, timeout_ms: int = 10_000, max_output_bytes: int = 4_096,
     if output is None:
         output = (
             json.dumps(
-                {"input_sha256": __import__("hashlib").sha256(stdin).hexdigest(), "status": "DERIVED"},
+                {"input_sha256": hashlib.sha256(stdin).hexdigest(), "status": "DERIVED"},
                 sort_keys=True,
                 separators=(",", ":"),
             )
@@ -140,7 +142,7 @@ def test_substituted_retained_output_is_invalid() -> None:
     receipt = record_deriver_session(declaration.to_bytes(), executable)
     wire = json.loads(receipt.to_bytes())
     substituted = b'{"status":"SUBSTITUTED"}\n'
-    wire["stdout_base64url"] = __import__("base64").urlsafe_b64encode(substituted).rstrip(b"=").decode()
+    wire["stdout_base64url"] = base64.urlsafe_b64encode(substituted).rstrip(b"=").decode()
     wire["stdout_digest"] = digest_bytes(substituted)
     assessment = recheck_deriver_self_status(
         declaration.to_bytes(), canonical_bytes(wire), executable,

@@ -50,6 +50,22 @@ publisher. Passing the fixture establishes encoding agreement only—not artifac
 correctness, semantic completeness, authorization, reputation, independent
 operation, or compatibility with a deployed service.
 
+## Malformed-wire rejection corpus
+
+`canonical-wire-negative-corpus.json` is the bounded companion fixture for
+public decoder rejection. It includes duplicate canonical relation records and
+every result token intentionally excluded from the narrow six-axis assessment
+vocabulary. Each case is derived from the positive specimen and binds only a
+local rejection expectation; it does not establish complete adversarial
+coverage or parity with an independent runtime.
+
+Rebuild or check it with:
+
+```console
+python scripts/build_artifact_network_negative_corpus.py --write
+python scripts/build_artifact_network_negative_corpus.py
+```
+
 ## Experimental proposition transfer
 
 `canonical-proposition-transfer-fixture.json` contains eighteen synthetic cases
@@ -58,7 +74,7 @@ The native `verifier.interoperability.proposition_transfer` module checks actual
 source sets, their declared bounds, exact target union, and target bounds
 separately. Its portable receipt is a recomputable semantic record, not an
 execution-identity or authority receipt. See
-[`PROPOSITION_TRANSFER.md`](../../standard/PROPOSITION_TRANSFER.md).
+[`PROPOSITION_TRANSFER.md`](../../src/verifier/standard/PROPOSITION_TRANSFER.md).
 
 ```console
 python scripts/build_proposition_transfer_fixture.py --write

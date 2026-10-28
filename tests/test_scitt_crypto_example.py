@@ -6,30 +6,26 @@ Optional real-COSE integration test for the self-contained example."""
 
 from __future__ import annotations
 
-import importlib.util
 import json
 from pathlib import Path
 
 import pytest
+from examples.scitt_interop import demo as scitt_demo
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
 
-cbor2 = pytest.importorskip("cbor2")
-scitt_cose = pytest.importorskip("scitt_cose")
-pytest.importorskip("cryptography")
-serialization = pytest.importorskip("cryptography.hazmat.primitives.serialization")
+cbor2 = pytest.importorskip("cbor2", reason="OPTIONAL_DEPENDENCY_ABSENT: cbor2 (scitt extra) is absent, so every test in this SCITT/COSE example module skips at collection, including its CBOR statement encoding; the scitt-crypto workflow job installs the scitt extra and runs this file")
+scitt_cose = pytest.importorskip("scitt_cose", reason="OPTIONAL_DEPENDENCY_ABSENT: scitt_cose (scitt extra) is absent, so every test in this SCITT/COSE example module skips at collection, including its real COSE statement and receipt path; the scitt-crypto workflow job installs the scitt extra and runs this file")
+pytest.importorskip("cryptography", reason="OPTIONAL_DEPENDENCY_ABSENT: cryptography (scitt extra) is absent, so every test in this SCITT/COSE example module skips at collection, including its key handling; the scitt-crypto workflow job installs the scitt extra and runs this file")
+serialization = pytest.importorskip("cryptography.hazmat.primitives.serialization", reason="OPTIONAL_DEPENDENCY_ABSENT: cryptography.hazmat.primitives.serialization (scitt extra) is absent, so every test in this SCITT/COSE example module skips at collection, including its key-encoding step; the scitt-crypto workflow job installs the scitt extra and runs this file")
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEMO = REPO_ROOT / "examples" / "scitt_interop" / "demo.py"
 
 
 def _load_demo():
-    spec = importlib.util.spec_from_file_location("vstd_scitt_demo", DEMO)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return scitt_demo
 
 
 def test_real_signed_statement_receipt_and_independent_consumption(tmp_path):
@@ -121,11 +117,10 @@ def test_scitt_runtime_rejects_distribution_metadata_name_disagreement(monkeypat
 
     class DistributionProxy:
         def __init__(self, wrapped):
-            self._wrapped = wrapped
             self.metadata = {"Name": "not-scitt-cose"}
-
-        def __getattr__(self, name):
-            return getattr(self._wrapped, name)
+            self.version = wrapped.version
+            self.files = wrapped.files
+            self.locate_file = wrapped.locate_file
 
     def mismatched_distribution(name):
         distribution = real_distribution(name)
@@ -268,3 +263,22 @@ def test_real_valid_scitt_registration_does_not_repair_rejected_vstd_claim(tmp_p
     assert result["vstd_kernel"]["outcome"] == "REJECTED"
     assert result["vstd_observation"]["state"] == "REJECTED"
     assert result["composition"]["status"] == "FAIL"
+
+
+def test_authentic_receipt_remains_valid_while_mutated_artifact_is_rejected(tmp_path):
+    demo = _load_demo()
+    demo.produce(tmp_path)
+    result = demo.boundary_demo(tmp_path)
+
+    assert result["checks"] == {
+        "scitt_signature_and_inclusion_receipt_original": "PASS",
+        "scitt_signature_and_inclusion_receipt_after_external_artifact_mutation": "PASS",
+        "scitt_evidence_bytes_identical": True,
+        "vstd_original_exact_artifact_composition": "PASS",
+        "vstd_mutated_artifact_composition": "FAIL",
+    }
+    assert result["original"]["artifact_sha256"] != result["mutated"][
+        "artifact_sha256"
+    ]
+    assert result["mutated"]["composition"]["reason"] == "artifact binding mismatch"
+    assert (tmp_path / "boundary_demo_result.json").exists()

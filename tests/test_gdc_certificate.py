@@ -49,6 +49,7 @@ from verifier.core.certificate import (
     certificate_from_canonical_bytes,
     normalize_clause,
 )
+from verifier.core.checker import VerificationVerdict
 from verifier.core.grounding import verify_grounding
 from verifier.core.kernel import (
     KernelOutcome,
@@ -595,7 +596,7 @@ def test_trusted_computing_base_is_hashes_not_a_literal_dict():
     assert descriptor.implementation_hash == expected
 
     expected_specification = "sha256:" + hashlib.sha256(
-        (Path(__file__).resolve().parents[1] / "standard" / "VSTD-1.md").read_bytes()
+        (Path(__file__).resolve().parents[1] / "src/verifier/standard" / "VSTD-1.md").read_bytes()
     ).hexdigest()
     assert descriptor.specification_hash == expected_specification
 
@@ -672,6 +673,105 @@ def test_policy_encoding_divergence_is_a_hard_error_with_a_certificate():
 def test_unrecognized_clause_shape_cannot_be_silently_grounded():
     with pytest.raises(PolicyEncodingError, match="matches no declared policy encoding"):
         ground_policy_cnf([[2, 3]], {"TARGET_ADMISSIBLE": 1, "A_x": 2, "A_y": 3}, TARGET)
+
+
+def test_a_cnf_that_leaves_a_variable_unbound_cannot_be_certified():
+    """Was: the first three certified PASS and the kernel ACCEPTED each one."""
+    var_map = {"TARGET_ADMISSIBLE": 1, "CLEAN_" + ANCESTOR: 2}
+    for clauses, satisfiable, count in (
+        ([[-1, 2], [1]], True, "fixed by 0 fact clauses"),
+        ([[-2], [1]], True, "required by 0 clauses"),
+        ([[-1, 2], [-2]], True, "asserted by 0 clauses"),
+        ([[-1, 2], [2], [-2], [1]], False, "fixed by 2 fact clauses"),
+    ):
+        with pytest.raises(PolicyEncodingError, match=count):
+            certify_policy_cnf(
+                satisfiable=satisfiable,
+                direct_result=satisfiable,
+                policy_id="POL-TEST",
+                target_artifact_id=TARGET,
+                clauses=clauses,
+                var_map=var_map,
+            )
+
+    # The shape every encoder emits is still certified.
+    passed, certificate = certify_policy_cnf(
+        satisfiable=True,
+        direct_result=True,
+        policy_id="POL-TEST",
+        target_artifact_id=TARGET,
+        clauses=[[-1, 2], [2], [1]],
+        var_map=var_map,
+    )
+    assert passed is True
+    assert check(certificate, budget=1000).outcome is KernelOutcome.ACCEPTED
+
+
+_POLICY_VERIFIERS = (
+    ProvenancePolicyVerifier.verify_no_revoked_ancestors,
+    ProvenancePolicyVerifier.verify_all_ancestors_valid,
+    ProvenancePolicyVerifier.verify_approved_licenses,
+)
+
+
+def _artifact(artifact_id: str, *, rights_id: str | None = None) -> ArtifactNode:
+    return ArtifactNode(
+        artifact_id=artifact_id,
+        label=artifact_id,
+        artifact_type=ArtifactType.RAW_SOURCE_FILE,
+        content_digest=canonical_digest(artifact_id),
+        status=ArtifactStatus.VALID,
+        rights_id=rights_id,
+    )
+
+
+def _derive(transformation_id: str, source: str, output: str) -> TransformationHyperedge:
+    return TransformationHyperedge(
+        transformation_id=transformation_id,
+        label=transformation_id,
+        transformation_type=TransformationType.NORMALIZATION,
+        inputs=(HyperedgePort(source, "INPUT"),),
+        outputs=(HyperedgePort(output, "OUTPUT"),),
+        software_provenance={},
+        parameters={},
+        execution_environment={},
+    )
+
+
+def test_a_target_the_graph_does_not_record_is_never_verified():
+    """Was: an empty graph VERIFIED the licences and no-revoked lineage of any id."""
+    for verifier in _POLICY_VERIFIERS:
+        result = verifier(ProvenanceHypergraph(), "artifact:not-in-graph")
+        assert result.verdict is VerificationVerdict.INDETERMINATE, result.policy_id
+        assert result.passed is False
+
+
+def test_a_lineage_through_an_unregistered_input_is_refused():
+    """Was: a model derived from an unregistered input VERIFIED on licences and revocation."""
+    graph = ProvenanceHypergraph()
+    graph.add_rights(RightsSpec("rights:mit", "MIT"))
+    graph.add_artifact(_artifact(TARGET, rights_id="rights:mit"))
+    graph.add_transformation(_derive("transform:train", "artifact:unregistered", TARGET))
+
+    for verifier in _POLICY_VERIFIERS:
+        with pytest.raises(PolicyEncodingError, match="missing artifact artifact:unregistered"):
+            verifier(graph, TARGET)
+
+
+def test_a_licence_policy_over_zero_root_sources_is_indeterminate():
+    """A cycle leaves every ancestor produced by another, so no source licence exists."""
+    graph = ProvenanceHypergraph()
+    graph.add_rights(RightsSpec("rights:mit", "MIT"))
+    for artifact_id in (ANCESTOR, TARGET):
+        graph.add_artifact(_artifact(artifact_id, rights_id="rights:mit"))
+    graph.add_transformation(_derive("transform:forward", ANCESTOR, TARGET))
+    graph.add_transformation(_derive("transform:back", TARGET, ANCESTOR))
+    assert graph.validate_structure() == []
+    assert graph.root_sources() == set()
+
+    result = ProvenancePolicyVerifier.verify_approved_licenses(graph, TARGET)
+    assert result.verdict is VerificationVerdict.INDETERMINATE
+    assert result.passed is False
 
 
 def test_every_policy_encoder_emits_horn_clauses_across_input_classes():

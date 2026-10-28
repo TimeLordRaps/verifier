@@ -1,0 +1,253 @@
+{
+  "schema_version": "verifier-prdel-native-v2-selection-1",
+  "candidate_status": "DEVELOPMENT_CANDIDATE",
+  "authority_scope": "VERIFIER_PRDEL_IMPLEMENTATION_METADATA",
+  "selection_scope": "EXACT_DECLARED_PATHS_ONLY",
+  "target_source_coordinate": {
+    "kind": "NON_GIT_SNAPSHOT_AGGREGATE",
+    "sha256": "2312413c8610fc0e4a7f8fd147e3af4ac8c5d6e557ea77bfaadbd3261e6ecade",
+    "scope": "EXACT_SELECTED_PATHS_PLUS_EXTERNAL_AGGREGATE",
+    "working_tree_completeness": "UNKNOWN"
+  },
+  "selected_specification": "src/verifier/standard/PRDEL_NATIVE_V2.md",
+  "legacy_compatibility": {
+    "path": "src/verifier/profiles/prdel-manifest-2-selection.json",
+    "sha256": "41a9387521882b91e736079172cc42d1570841cbb530165cb7939db237ec4875",
+    "meaning": "UNCHANGED_ORDER_PRESERVING_MANIFEST_V2_SUCCESSOR"
+  },
+  "inventory": [
+    {
+      "path": "scripts/check_prdel_v2_selection.py",
+      "origin": "selection",
+      "role": "source_selection_checker",
+      "admission_status": "SELECTED_BYTES",
+      "symbols": [
+        "check_selection"
+      ],
+      "limits": [
+        "Byte admission only; it does not execute or qualify PRDEL behavior."
+      ],
+      "bytes": 14742,
+      "sha256": "58f2a11755e9ad33b04cb5b7c096e411d65e8f2ef45b6bf524d50a8d8b57ad19"
+    },
+    {
+      "path": "src/verifier/profiles/prdel-manifest-2-selection.json",
+      "origin": "target",
+      "role": "legacy_manifest_v2_selection_boundary",
+      "admission_status": "COMPATIBILITY_BOUNDARY",
+      "symbols": [],
+      "limits": [
+        "Historical ordered-vector successor only; native-v2 meaning is excluded."
+      ],
+      "bytes": 3992,
+      "sha256": "41a9387521882b91e736079172cc42d1570841cbb530165cb7939db237ec4875"
+    },
+    {
+      "path": "src/verifier/runtime/gate.py",
+      "origin": "target",
+      "role": "native_v2_cli_dispatch",
+      "admission_status": "SELECTED_BYTES",
+      "symbols": [
+        "_handle_prdel_v2_command"
+      ],
+      "limits": [
+        "Unsupported version-two CLI capabilities remain UNKNOWN."
+      ],
+      "bytes": 101070,
+      "sha256": "ccb7391da8a8925c7b20f39744eee4321ef5258054b2d09922f8f603d8805462"
+    },
+    {
+      "path": "src/verifier/runtime/prdel.py",
+      "origin": "target",
+      "role": "native_v2_document",
+      "admission_status": "SELECTED_BYTES",
+      "symbols": [
+        "generate_prdel_v2",
+        "render_prdel_v2",
+        "validate_prdel_v2"
+      ],
+      "limits": [
+        "Document bytes <= 33554432; snapshot bytes <= 67108864.",
+        "Files and changed regions <= 10000; AST source bytes <= 524288."
+      ],
+      "bytes": 88474,
+      "sha256": "f469008504571d0572a4dc7cbb4cf8d447f3806a90a639450dce5001c98aeefa"
+    },
+    {
+      "path": "src/verifier/runtime/prdel_graph.py",
+      "origin": "target",
+      "role": "source_bound_impact_projection",
+      "admission_status": "SELECTED_BYTES",
+      "symbols": [
+        "build_source_bound_impact_graph"
+      ],
+      "limits": [
+        "Defaults: nodes 10000, edges 20000, operations 200000, output bytes 8388608.",
+        "Incomplete discovery, projection, condensation, or output remains UNKNOWN."
+      ],
+      "bytes": 57744,
+      "sha256": "5e18b7f2e5b0b9e47e211ae72ae2fc1cd68df6845d5610f03684beba1dcde4cc"
+    },
+    {
+      "path": "src/verifier/runtime/prdel_rules.py",
+      "origin": "target",
+      "role": "version_one_compiler_boundary",
+      "admission_status": "COMPATIBILITY_BOUNDARY",
+      "symbols": [
+        "compile_prdel",
+        "validate_compilation"
+      ],
+      "limits": [
+        "Version-one compiler only; it supplies no native-v2 compilation."
+      ],
+      "bytes": 34293,
+      "sha256": "f490a27dd4b2bf5da5c994199a77be17b3266e8e2428b0fad729dc2ba3bd8be2"
+    },
+    {
+      "path": "src/verifier/runtime/prdel_v2_shards.py",
+      "origin": "target",
+      "role": "private_native_v2_shard_transport",
+      "admission_status": "SELECTED_BYTES",
+      "symbols": [
+        "compile_prdel_v2_shards",
+        "partition_prdel_v2_document",
+        "reconstruct_prdel_v2_document",
+        "validate_prdel_v2_shards"
+      ],
+      "limits": [
+        "Private Python transport only; CLI shard selectors remain unsupported.",
+        "Packet bytes <= 67108864 and artifact bytes <= 33554432."
+      ],
+      "bytes": 26392,
+      "sha256": "1ac48d9cfae380f039b1de19bdc3a6f43becfb504a7445f49455baacc3466786"
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-2.schema.json",
+      "origin": "target",
+      "role": "native_v2_document_schema",
+      "admission_status": "SELECTED_BYTES",
+      "symbols": [],
+      "limits": [
+        "Structural validation alone supplies no semantic or release clearance."
+      ],
+      "bytes": 7787,
+      "sha256": "719cf226c053e4448ef2098b7314d14c4757ec516b4d8692029f6431afdae877"
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-cli-2.schema.json",
+      "origin": "target",
+      "role": "native_v2_cli_schema",
+      "admission_status": "SELECTED_BYTES",
+      "symbols": [],
+      "limits": [
+        "Structural validation alone supplies no semantic or release clearance."
+      ],
+      "bytes": 3750,
+      "sha256": "5aabec8efff97fa7b10450c06e71003ee8bae1ea2ea3afc3556b292ab7583355"
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-v2-document-shard-1.schema.json",
+      "origin": "target",
+      "role": "native_v2_document_shard_schema",
+      "admission_status": "SELECTED_BYTES",
+      "symbols": [],
+      "limits": [
+        "A shard has no independent verdict or completeness claim."
+      ],
+      "bytes": 1420,
+      "sha256": "a71bf08e46d85c5cb645ecea1b5b9f2752872f8a403c4a6409caeb753e693e33"
+    },
+    {
+      "path": "src/verifier/schemas/verifier-prdel-v2-shard-manifest-1.schema.json",
+      "origin": "target",
+      "role": "native_v2_shard_manifest_schema",
+      "admission_status": "SELECTED_BYTES",
+      "symbols": [],
+      "limits": [
+        "Transport integrity does not establish source truth or gate clearance."
+      ],
+      "bytes": 4374,
+      "sha256": "6836d67d191981d9fd523a82c09a1007dee97d0bc6ce48b6ffe0fec2f121e087"
+    },
+    {
+      "path": "src/verifier/standard/PRDEL_NATIVE_V2.md",
+      "origin": "selection",
+      "role": "native_v2_selection_specification",
+      "admission_status": "SELECTED_BYTES",
+      "symbols": [],
+      "limits": [
+        "Development-candidate contract; semantic completeness remains UNKNOWN."
+      ],
+      "bytes": 3750,
+      "sha256": "9f1086b04ea835faae381ed312672e91e2ab7041580558187a1708e2661eb01c"
+    },
+    {
+      "path": "src/verifier/standard/PRDEL_SHARDS.md",
+      "origin": "target",
+      "role": "legacy_manifest_v2_specification_boundary",
+      "admission_status": "COMPATIBILITY_BOUNDARY",
+      "symbols": [],
+      "limits": [
+        "Ordered-vector compatibility does not grant native-v2 meaning."
+      ],
+      "bytes": 6412,
+      "sha256": "ca43ee89bca606d06a8569ebad26768e691a1bb177761e94eca449e2fe410b5e"
+    },
+    {
+      "path": "tests/test_prdel_graph_budget.py",
+      "origin": "target",
+      "role": "frontier_budget_checker",
+      "admission_status": "QUALIFICATION_EVIDENCE_ONLY",
+      "symbols": [],
+      "limits": [
+        "Test bytes are a refutation surface, not authenticated execution evidence."
+      ],
+      "bytes": 5848,
+      "sha256": "58d3b5737800666220e4b350372fbe811335dfb1adb7b71ded476d50a4d705d6"
+    },
+    {
+      "path": "tests/test_prdel_graph_source_bound.py",
+      "origin": "target",
+      "role": "source_bound_graph_checker",
+      "admission_status": "QUALIFICATION_EVIDENCE_ONLY",
+      "symbols": [],
+      "limits": [
+        "Test bytes are a refutation surface, not authenticated execution evidence."
+      ],
+      "bytes": 9462,
+      "sha256": "f037598c81c96a1c546be6a449fcb5d0cbe44e936dffe5e3b90918570b63bfa8"
+    },
+    {
+      "path": "tests/test_prdel_v2_native.py",
+      "origin": "target",
+      "role": "native_v2_checker",
+      "admission_status": "QUALIFICATION_EVIDENCE_ONLY",
+      "symbols": [],
+      "limits": [
+        "Test bytes are a refutation surface, not authenticated execution evidence."
+      ],
+      "bytes": 18508,
+      "sha256": "aee1227b57efef45588203690d9e9b6aab4603ec237837737942362f1b95937e"
+    },
+    {
+      "path": "tests/test_prdel_v2_shards.py",
+      "origin": "target",
+      "role": "native_v2_shard_checker",
+      "admission_status": "QUALIFICATION_EVIDENCE_ONLY",
+      "symbols": [],
+      "limits": [
+        "Test bytes are a refutation surface, not authenticated execution evidence."
+      ],
+      "bytes": 15406,
+      "sha256": "f6b6658adaebb8f95ea092bd0488fcb5af1302b450cab32ddc718ec443e166e8"
+    }
+  ],
+  "semantic_completeness": "UNKNOWN",
+  "release_authorized": false,
+  "claim_boundary": "Exact selected development-candidate source-description bytes only; no execution authentication, requirement authority, whole-estate completeness, runtime correctness, human acceptance, release authorization, or overall safety claim.",
+  "release_dependencies": [
+    "PACKAGED_SCHEMA_INVENTORY_OWNER_ADMISSION_REQUIRED",
+    "FULL_APPLICABLE_TEST_AND_RELEASE_EVIDENCE_REQUIRED",
+    "HUMAN_ACCEPTANCE_AND_RELEASE_AUTHORITY_REQUIRED"
+  ]
+}

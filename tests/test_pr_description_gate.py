@@ -4,13 +4,13 @@ Exact-head and workflow trust controls.
 """
 from __future__ import annotations
 
-import importlib.util
 import ast
 import json
 from pathlib import Path
 import subprocess
 
 import pytest
+from scripts import check_pr_description as description_gate
 
 ROOT = Path(__file__).resolve().parents[1]
 HEAD = "a" * 40
@@ -19,11 +19,7 @@ BOOTSTRAP_BASE = "fc2a20c68d01920eda7e4e1bf14dfbcb334a7634"
 
 @pytest.fixture
 def gate():
-    path = ROOT / "scripts/check_pr_description.py"
-    spec = importlib.util.spec_from_file_location("description_contract", path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return description_gate
 
 
 @pytest.mark.parametrize("label", ["Current head", "Current signed head"])
@@ -113,7 +109,23 @@ def expression_value(expression, event, base):
     source = source.replace("&&", " and ").replace("||", " or ")
     parsed = ast.parse(source, mode="eval")
     assert all(isinstance(node, (ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.Compare, ast.Eq, ast.Constant)) for node in ast.walk(parsed))
-    return eval(compile(parsed, "workflow-expression", "eval"), {"__builtins__": {}})
+
+    def evaluate(node):
+        if isinstance(node, ast.Expression):
+            return evaluate(node.body)
+        if isinstance(node, ast.Constant):
+            return node.value
+        if isinstance(node, ast.BoolOp):
+            values = [evaluate(value) for value in node.values]
+            if isinstance(node.op, ast.And):
+                return next((value for value in values if not value), values[-1])
+            return next((value for value in values if value), values[-1])
+        if isinstance(node, ast.Compare):
+            values = [evaluate(node.left), *(evaluate(item) for item in node.comparators)]
+            return all(left == right for left, right in zip(values, values[1:]))
+        raise AssertionError(type(node).__name__)
+
+    return evaluate(parsed)
 
 
 @pytest.mark.parametrize("event,base,required,checkout", [

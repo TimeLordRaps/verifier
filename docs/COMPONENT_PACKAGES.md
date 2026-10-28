@@ -1,11 +1,11 @@
 # Stored interoperability components
 
 Verifier Standard (VSTD) version 1.3.0 introduces an **experimental stored component
-format**, `VSTD-COMPONENT-PACKAGE-1`. It is a local, self-contained JavaScript Object
+format**, `verifier-component-package-1`. It is a local, self-contained JavaScript Object
 Notation (JSON) document, not a receipt, installation archive, or conformance result.
 It retains component descriptions and exact artifact bytes so a catalog can be shared,
 inspected and used for verification-surface-hole planning without executing its contents.
-The [stored-document schema](../standard/schemas/vstd-component-package-1.schema.json)
+The [stored-document schema](../src/verifier/schemas/verifier-component-package-1.schema.json)
 describes its structural contract; runtime checks additionally enforce byte digests,
 canonical catalog form and reference bindings.
 
@@ -52,7 +52,7 @@ the checked assertion are distinct propositions.
 
 The current closed `kind` vocabulary has no `CERTIFIER` member or filter. Use the existing
 kind that accurately describes the algorithm role; do not silently map certifier to
-`PROVER`. Catalog 1.1 and `VSTD-COMPONENT-PACKAGE-1` already retain the capability:
+`PROVER`. Catalog 1.1 and `verifier-component-package-1` already retain the capability:
 
 | Existing descriptor fields | Explicit serialization meaning |
 |---|---|
@@ -177,3 +177,7 @@ Readers dispatch on its exact identifier and the exact embedded catalog version.
 incompatible future layout requires a distinct format identifier and explicit migration;
 readers must not reinterpret unknown formats as this one. This does not change any frozen
 receipt identifier or grant a new numbered-profile result.
+
+## Versioned reference-source capacity
+
+The reference exporter and component-index builder select `verifier-component-package-2`. It keeps every top-level native domain adapter, public schema/specification and declared entrypoint directly addressable; other source bytes remain exactly bound in the inert archive. Version 2 permits up to 512 artifacts and 512 paths per implementation binding. Other arrays remain limited to 256, decoded content to 16 mebibytes (MiB), and encoded packages to 32 MiB. These are separate bounds. Existing package-v1 constructors and its schema retain all 256-item limits and identical canonical bytes; old readers refuse version 2. The exporter can explicitly select version 1 and refuses a mandatory direct set that exceeds its limit. No truncation, silent downgrade or conformance admission occurs.

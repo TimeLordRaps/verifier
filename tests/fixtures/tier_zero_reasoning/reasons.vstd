@@ -1,0 +1,61 @@
+# reasons.vstd: what only the developer can state.  A contract between two methods of one class, an
+# annotation Python never checks, a named assumption.  Polish checks each one against the code; a
+# reason that cites an annotation or an assumption is DOCUMENTED at most and is bound (`bound`) to the
+# code it was written against, so any edit there makes it STALE until someone looks again.
+
+reason session-evaluate-contract
+  claim    contract src/verifier/core/evidence.py::VerificationSession.evaluate `mechanism.evaluate` supplier src/verifier/core/evidence.py::VerificationSession.register mechanism
+  basis    registry
+  falsify  plant fs-write in src/verifier/domains/contracts/actor_closure.py::_ActorClosureMechanism.evaluate expect named
+  falsify  mutate delete-basis expect reopen
+  note     evaluate runs only a mechanism some caller registered; each caller that builds its own
+  note     session and registers project classes reaches exactly what it registered
+
+reason session-compound-contract
+  claim    contract src/verifier/core/evidence.py::VerificationSession.evaluate_compound `evaluator` supplier src/verifier/core/evidence.py::VerificationSession.register mechanism
+  basis    registry
+  falsify  mutate delete-basis expect reopen
+  note     evaluator is getattr(mechanism, "evaluate_compound", None) behind a callable() guard; a
+  note     registered class without the method runs nothing there unless __getattr__ or an outside base supplies one
+
+reason bounds-stated
+  claim    attr src/verifier/core/evidence.py::BoundProposition bounds class:verifier.core.evidence.EvidenceBounds
+  basis    annotation src/verifier/core/evidence.py:90
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:ef34194d1c135df572acd6218c7eeb21479b8a70626b38ef0d2ff2f0896ccbe3
+  note     stated by the dataclass field.  proposition-bounds-sites cannot establish it: a subject
+  note     dataclasses.replace(..., **changes) at policy_enforcement_routes.py:412 rebuilds the object with
+  note     no visible call site, so this stated fact is what carries the attribute
+
+reason composition-objects-stated
+  claim    type src/verifier/core/namespace.py::composition_digest:254:21 `obj` class:verifier.core.namespace.NamespaceObject
+  basis    annotation src/verifier/core/namespace.py:251
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:b03bd0e17e5767a4e0731a33e94df3af32e47861a64fc83357522f6858cf0d8f
+  note     objects: Sequence[NamespaceObject]; each element is stated, not checked
+
+reason layout-item-payload-stated
+  claim    type src/verifier/core/namespace.py::validate_object_layout:238 `item.payload` json
+  basis    annotation src/verifier/core/namespace.py:225
+  basis    returns
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:393b734e5331948901e17fd985ddb2b6394cad2916d48ab3dcbd2b5537f0fa22
+  note     item: NamespaceObject is stated; payload's return type comes from object-payload-json
+
+reason evaluate-snapshot-stated
+  claim    type src/verifier/core/evidence.py::VerificationSession.evaluate:320 `execution_binding` class:verifier.core.evidence.BoundProposition
+  basis    annotation src/verifier/core/evidence.py:484
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:63048c86e3b161cfa3637761a14433b8f18973117443c5f9243a3c8a16da44fd
+  note     element 0 of _snapshot_binding's return annotation tuple[BoundProposition, str]
+
+reason text-value-assumed
+  claim    type src/verifier/domains/common.py::text:62:42 `value` str
+  basis    guard
+  assume   isinstance-means-exact
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:6ceb4de6f08c0721f16f8528762cdb0e4a49f3e347a4590a55ce808e40b7a797
+  note     isinstance admits subclasses of str: no subject subclass overrides strip, and values from outside
+  note     the subject are assumed exact.  The project's own tests break that assumption on purpose
+  note     (tests/test_retained_selection.py ArmedString overrides strip): a witness, listed, not refuting.
+  note     `type(value) is not str` would make this ESTABLISHED with no assumption

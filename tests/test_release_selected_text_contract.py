@@ -4,29 +4,20 @@ This native fixture binds both release scripts to the current repository.
 """
 from __future__ import annotations
 
-import importlib.util
 from io import BytesIO
 from pathlib import Path
-import sys
 import tarfile
 import zipfile
 
 import pytest
+from scripts import check_release_boundary
 
 RELEASE_ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture
 def release(monkeypatch):
-    def load(name, filename):
-        spec = importlib.util.spec_from_file_location(name, RELEASE_ROOT / 'scripts' / filename)
-        assert spec is not None and spec.loader is not None
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        assert Path(module.__file__).resolve() == RELEASE_ROOT / "scripts" / filename
-        return module
-    monkeypatch.setitem(sys.modules, 'check_presentation', load('acceptance_presentation', 'check_presentation.py'))
-    return load('acceptance_release', 'check_release_boundary.py')
+    return check_release_boundary
 
 
 def _marker():

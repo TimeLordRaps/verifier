@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-manifest-package-polish-publication-rejected-1.schema.json",
+  "title": "Fail-closed package-polish publication rejection receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "blockers",
+    "source_report_schema",
+    "selected_schema_digest",
+    "validator_mechanism_digest",
+    "source_report_status",
+    "requested_tier",
+    "source_report_encoding_status",
+    "source_report_digest",
+    "source_report_bytes",
+    "validation_error_count",
+    "validation_errors",
+    "validation_errors_at_limit",
+    "whole_package_conformance",
+    "polished",
+    "release_authorized",
+    "deployment_authorized",
+    "claim_boundary",
+    "report_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "verifier-manifest-package-polish-publication-rejected-1"
+    },
+    "status": {"const": "UNKNOWN"},
+    "blockers": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "PACKAGE_POLISH_REPORT_ENCODING_UNAVAILABLE",
+          "PACKAGE_POLISH_REPORT_SCHEMA_INVALID",
+          "PACKAGE_POLISH_REPORT_SCHEMA_UNSUPPORTED"
+        ]
+      }
+    },
+    "source_report_schema": {"type": ["string", "null"]},
+    "selected_schema_digest": {"$ref": "#/$defs/nullableDigest"},
+    "validator_mechanism_digest": {"$ref": "#/$defs/nullableDigest"},
+    "source_report_status": {
+      "enum": ["PASS", "FAIL", "UNKNOWN", null]
+    },
+    "requested_tier": {"type": "integer", "minimum": 1, "maximum": 3},
+    "source_report_encoding_status": {
+      "enum": ["AVAILABLE", "UNAVAILABLE"]
+    },
+    "source_report_digest": {"$ref": "#/$defs/nullableDigest"},
+    "source_report_bytes": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "validation_error_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32
+    },
+    "validation_errors": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "validation_errors_at_limit": {"type": "boolean"},
+    "whole_package_conformance": {"const": "NOT_ESTABLISHED"},
+    "polished": {"const": false},
+    "release_authorized": {"const": false},
+    "deployment_authorized": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "report_digest": {"$ref": "#/$defs/digest"}
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "blockers": {
+          "enum": [
+            ["PACKAGE_POLISH_REPORT_SCHEMA_INVALID"],
+            ["PACKAGE_POLISH_REPORT_SCHEMA_UNSUPPORTED"]
+          ]
+        },
+        "source_report_encoding_status": {"const": "AVAILABLE"},
+        "source_report_digest": {"$ref": "#/$defs/digest"},
+        "source_report_bytes": {"type": "integer", "minimum": 0}
+      }
+    },
+    {
+      "properties": {
+        "blockers": {
+          "const": ["PACKAGE_POLISH_REPORT_ENCODING_UNAVAILABLE"]
+        },
+        "source_report_encoding_status": {"const": "UNAVAILABLE"},
+        "source_report_digest": {"type": "null"},
+        "source_report_bytes": {"type": "null"}
+      }
+    }
+  ],
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "nullableDigest": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/digest"}
+      ]
+    }
+  }
+}

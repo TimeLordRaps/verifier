@@ -1,0 +1,98 @@
+# aimed.vstd: reasons aimed by the declaration curve, not by hub size.  One reason per pick of the
+# greedy curve's first ten objects (tier C, tests as witnesses, name rule off, every admitted reason
+# loaded): each pick needs exactly one definition with one to twelve open sites.  Each reason is what a
+# developer would answer to that pick's stub; `about` names the object the curve picked (carried in the
+# IR, not checked).  Some cannot be verified by this prototype: the checker's detail then names the
+# machine check it lacks.
+
+reason github-text-value-assumed
+  about    vstd-github-snapshot-event-adapter
+  claim    type src/verifier/experimental_workflow/github.py::_text:40:42 `value` str
+  basis    guard
+  assume   isinstance-means-exact
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:7aa17773c8216a17e786025cdc15e3ae70428b207fb2c7f01539523f11f16cc5
+  note     value.strip() runs only after `not isinstance(value, str) or` has failed; the same shape as
+  note     text-value-assumed, and the same one-line code change makes it ESTABLISHED: type(value) is not str
+
+reason projection-candidate-boundary
+  about    vstd-independence-projection-policy
+  claim    boundary src/verifier/domains/contracts/independence_projection.py::project_registration union_candidate
+  falsify  mutate delete-basis expect reopen
+  note     union_candidate is only read through .get(); a public entry point: its callers are outside the
+  note     project, so "project callers are all callers" moves its gap nowhere
+
+reason update-result-assigned
+  about    vstd-retained-model-training-arithmetic
+  claim    type src/verifier/domains/numerical.py::update:146 `result` list
+  basis    assigned
+  falsify  mutate delete-basis expect reopen
+  note     result, next_first, next_second = [], [], []: three lists; next_first and next_second are the same
+
+reason emulator-id-stated
+  about    vstd-temporal-comb-measurement
+  claim    attr src/verifier/hardware/time_comb.py::SoftwareTemporalCombEmulator emulator_id str
+  basis    assigned
+  basis    annotation src/verifier/hardware/time_comb.py:298
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:748039db7f0f873ae6f6b3799824cbfea543c4038d59ac55378c54ed3c67293a
+  note     __init__ assigns its parameter emulator_id: str and nothing else writes the attribute
+
+reason write-json-text
+  about    vstd-vgsat-canonical-artifact-io
+  claim    type experiments/verifier_guided_sat/verifier_guided_sat/canonical.py::write_json:44 `text` str
+  basis    assigned
+  basis    stdlib json.dumps
+  falsify  mutate delete-basis expect reopen
+  falsify  row expect holds
+  note     text = json.dumps(...) + "\n": str + str
+
+reason write-json-path-parent
+  about    vstd-vgsat-canonical-artifact-io
+  claim    type experiments/verifier_guided_sat/verifier_guided_sat/canonical.py::write_json:41 `path.parent` stdlib:pathlib.Path
+  basis    annotation experiments/verifier_guided_sat/verifier_guided_sat/canonical.py:38
+  basis    stdlib pathlib.Path.parent
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:70e8c418ccd94c8c40dc906cc7c64757c2f181c8f426eb57251aa15a370569a9
+  note     path: Path, and Path.parent is a Path
+
+reason token-key-stated
+  about    vstd-identity-token-records
+  claim    type src/verifier/identity/tokens.py::canonical_token_bytes:19:75 `k` str
+  basis    annotation src/verifier/identity/tokens.py:17
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:74f7d240ae86eb89ac36fc5659f53765189c3b9c652b4c7de17e02e2b57a3d3f
+  note     k is a key of payload: dict[str, Any]
+
+reason compute-text-assigned
+  about    vstd-generic-run-specimen
+  claim    type examples/generic_run/compute.py::main:28 `text` str
+  basis    assigned
+  basis    stdlib open.text io.TextIOBase.read
+  falsify  mutate delete-basis expect reopen
+  note     text = f.read() with f from open(input_path, "r", encoding="utf-8"): text mode reads str
+
+reason identity-actor-assigned
+  about    vstd-identity-policy-evaluator
+  claim    type src/verifier/identity/evaluator.py::evaluate_identity:59 `actor_info` dict
+  basis    assigned
+  falsify  mutate delete-basis expect reopen
+  note     actor_info = record.get("actor") or {}: a dict only if the caller's record holds one there
+
+reason audit-properties-stated
+  about    vstd-identity-adversarial-audit
+  claim    type src/verifier/identity/audit.py::audit_actor_slippage:48 `res1.properties` dict
+  basis    annotation src/verifier/identity/evaluator.py:21
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:f397f28aa930e3455219120731306838850c56c7a04f8a0d167e008795023254
+  note     res1 = evaluate_identity(...) -> IdentityEvaluation, whose field properties: dict[str, PropertyStatus];
+  note     res2, res5 and res6 at lines 66, 126 and 145 are the same
+
+reason event-digest-stated
+  about    vstd-agent-bot-ontology-architecture
+  claim    attr src/verifier/corrigibility/ontology.py::ComputationalEvent payload_digest str
+  basis    annotation src/verifier/corrigibility/ontology.py:214
+  falsify  mutate delete-basis expect reopen
+  bound    sha256:676d29969b6532c51dc6ec21c6d4ed37de5d34bbb2a70ca2139aefa552c0bf7a
+  note     a dataclass field Python never checks; __post_init__ calls startswith on it before anything
+  note     checks its type, and no project code constructs the class (no call site to establish it from)

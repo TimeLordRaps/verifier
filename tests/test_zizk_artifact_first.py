@@ -96,7 +96,7 @@ def test_experimental_scope_does_not_absorb_the_governing_architecture() -> None
 
 def test_zizk_preserves_memetic_causality_without_localization_overclaim() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    ladder = (ROOT / "standard" / "LADDER.md").read_text(encoding="utf-8")
+    ladder = (ROOT / "src/verifier/standard" / "LADDER.md").read_text(encoding="utf-8")
     mechanism = (MECHANISM / "README.md").read_text(encoding="utf-8")
 
     assert "Zero identity means zero identity-derived verdict weight" in readme

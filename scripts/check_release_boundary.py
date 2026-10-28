@@ -16,7 +16,14 @@ import tarfile
 import xml.etree.ElementTree as ET
 import zipfile
 
-from check_presentation import PUBLIC_BOUNDARY_PATTERNS, TEXT_SUFFIXES, public_boundary_violations
+if __package__:
+    from .check_presentation import (
+        PUBLIC_BOUNDARY_PATTERNS, TEXT_SUFFIXES, public_boundary_violations,
+    )
+else:
+    from check_presentation import (
+        PUBLIC_BOUNDARY_PATTERNS, TEXT_SUFFIXES, public_boundary_violations,
+    )
 
 
 METADATA_NAMES = {"metadata", "pkg-info", "entry_points.txt", "top_level.txt"}

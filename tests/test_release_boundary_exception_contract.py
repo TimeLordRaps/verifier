@@ -5,30 +5,19 @@ flag is set in both real headers; no exception is monkeypatched.
 """
 from __future__ import annotations
 
-import importlib.util
 from pathlib import Path
 import struct
-import sys
 import zipfile
 
 import pytest
+from scripts import check_release_boundary
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture
 def release(monkeypatch: pytest.MonkeyPatch):
-    root = ROOT
-    def load(name: str, filename: str):
-        path = root / "scripts" / filename
-        spec = importlib.util.spec_from_file_location(name, path)
-        assert spec is not None and spec.loader is not None
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        assert Path(module.__file__).resolve() == path
-        return module
-    monkeypatch.setitem(sys.modules, "check_presentation", load("exception_presentation", "check_presentation.py"))
-    return load("exception_release", "check_release_boundary.py")
+    return check_release_boundary
 
 
 def _zip(path: Path, member: str, *, encrypted_flag: bool) -> None:

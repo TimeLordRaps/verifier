@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 import copy
-import importlib.util
 import io
 import json
 from pathlib import Path
 import zipfile
 
 import pytest
+from scripts import check_pr_description_changed as history_gate
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = "Owner/verifier"
@@ -20,10 +20,7 @@ SECOND = "b" * 40
 def gate():
     path = ROOT / "scripts/check_pr_description_changed.py"
     assert path.is_file(), "The required push-history checker is absent"
-    spec = importlib.util.spec_from_file_location("history_contract", path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return history_gate
 
 
 def event(action="opened", head=FIRST, body="Original description", before=None):

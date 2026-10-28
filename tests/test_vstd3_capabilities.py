@@ -1,5 +1,5 @@
 """Terminology: Advanced Micro Devices (AMD); application-specific integrated circuit (ASIC);
-Verifier Standard (VSTD)."""
+command-line interface (CLI); universally unique identifier (UUID); Verifier Standard (VSTD)."""
 
 from __future__ import annotations
 
@@ -8,9 +8,15 @@ from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
+import subprocess
+import sys
+import time
+from typing import Any
 
 import pytest
 
+from verifier.hardware.adapters import amd as amd_module
+from verifier.hardware.adapters import nvidia as nvidia_module
 from verifier.hardware.adapters.amd import AmdAdapter
 from verifier.hardware.adapters.base import AdapterError, evidence_source_from_bytes
 from verifier.hardware.adapters.generic import GenericFixtureAdapter
@@ -420,3 +426,123 @@ def test_unsupported_adapter_records_a_gap_instead_of_guessing() -> None:
     assert result.evidence_sources == ()
     assert len(result.evidence_gaps) == 1
     assert result.evidence_gaps[0].gap_type == "UNSUPPORTED_HARDWARE_OR_COLLECTOR"
+
+
+@pytest.mark.parametrize(
+    ("module", "adapter_type", "executable", "profile_id"),
+    [
+        (nvidia_module, NvidiaAdapter, "nvidia-smi", "nvidia.future"),
+        (amd_module, AmdAdapter, "amd-smi", "amd.cdna-future"),
+    ],
+)
+def test_hung_vendor_discovery_command_is_bounded_and_recorded_as_a_gap(
+    monkeypatch: pytest.MonkeyPatch,
+    module: Any,
+    adapter_type: type[NvidiaAdapter] | type[AmdAdapter],
+    executable: str,
+    profile_id: str,
+) -> None:
+    launches: list[dict] = []
+
+    def hung_run(args: list[str], **kwargs: Any) -> None:
+        launches.append(kwargs)
+        if kwargs.get("timeout") is None:
+            raise AssertionError(f"{executable} was launched without a timeout")
+        raise subprocess.TimeoutExpired(args, kwargs["timeout"])  # simulated hang
+
+    monkeypatch.setattr(module.shutil, "which", lambda name: f"/fake/bin/{name}")
+    monkeypatch.setattr(module.subprocess, "run", hung_run)
+
+    result = adapter_type().discover()
+
+    assert len(launches) == 1
+    timeout = launches[0]["timeout"]
+    assert isinstance(timeout, (int, float)) and 0 < timeout <= 60
+    assert result.profile_id == profile_id
+    assert result.descriptors == ()
+    assert result.physical_identities == ()
+    assert result.evidence_sources == ()
+    assert len(result.evidence_gaps) == 1
+    assert result.evidence_gaps[0].gap_type == "UNSUPPORTED_HARDWARE_OR_COLLECTOR"
+    assert f"{executable} discovery timed out after {timeout:g} seconds" in result.evidence_gaps[0].explanation
+
+
+@pytest.mark.parametrize(
+    ("module", "adapter_type", "profile_id"),
+    [
+        (nvidia_module, NvidiaAdapter, "nvidia.future"),
+        (amd_module, AmdAdapter, "amd.cdna-future"),
+    ],
+)
+def test_vendor_discovery_stays_bounded_when_a_helper_keeps_the_output_open(
+    monkeypatch: pytest.MonkeyPatch,
+    module: Any,
+    adapter_type: type[NvidiaAdapter] | type[AmdAdapter],
+    profile_id: str,
+) -> None:
+    # Real child processes: the stand-in vendor CLI spawns a helper that inherits its output and
+    # outlives it. On Windows a pipe held by that helper blocks subprocess.run after its timeout kill.
+    real_run = subprocess.run
+    helper_src = "import subprocess,sys,time; subprocess.Popen([sys.executable,'-c','import time; time.sleep(20)']); time.sleep(20)"
+
+    def vendor_stand_in(args: list[str], **kwargs: Any) -> subprocess.CompletedProcess[bytes]:
+        return real_run([sys.executable, "-c", helper_src], **kwargs)
+
+    monkeypatch.setattr(module, "_DISCOVERY_TIMEOUT_SECONDS", 1.0)
+    monkeypatch.setattr(module.shutil, "which", lambda name: sys.executable)
+    monkeypatch.setattr(module.subprocess, "run", vendor_stand_in)
+
+    started = time.monotonic()
+    result = adapter_type().discover()
+    elapsed = time.monotonic() - started
+
+    assert elapsed < 10, f"discovery returned after {elapsed:.1f}s; the 1.0s bound did not hold"
+    assert result.profile_id == profile_id
+    assert result.evidence_sources == ()
+    assert len(result.evidence_gaps) == 1
+    assert "timed out after 1 seconds" in result.evidence_gaps[0].explanation
+
+
+@pytest.mark.parametrize(
+    ("module", "adapter_type", "vendor_output", "profile_id"),
+    [
+        (
+            nvidia_module,
+            NvidiaAdapter,
+            "GPU-1, NVIDIA H100 80GB HBM3, 00000000:01:00.0, 550.54.15, 96.00.89.00.01",
+            "nvidia.hopper",
+        ),
+        (
+            amd_module,
+            AmdAdapter,
+            '{"gpu0": {"ASIC Market Name": "AMD Instinct MI300X", "UUID": "amd-uuid-0"}}',
+            "amd.instinct-mi300",
+        ),
+    ],
+)
+def test_live_vendor_discovery_parses_the_exact_output_bytes(
+    monkeypatch: pytest.MonkeyPatch,
+    module: Any,
+    adapter_type: type[NvidiaAdapter] | type[AmdAdapter],
+    vendor_output: str,
+    profile_id: str,
+) -> None:
+    # Characterization of the live path: output is read back from a file and must reach the
+    # normalizer byte-for-byte, with the same identity and raw-evidence fields as before.
+    real_run = subprocess.run
+
+    def vendor_stand_in(args: list[str], **kwargs: Any) -> subprocess.CompletedProcess[bytes]:
+        return real_run([sys.executable, "-c", f"import sys; sys.stdout.write({vendor_output!r})"], **kwargs)
+
+    monkeypatch.setattr(module.shutil, "which", lambda name: sys.executable)
+    monkeypatch.setattr(module.subprocess, "run", vendor_stand_in)
+
+    result = adapter_type().discover()
+
+    assert result.profile_id == profile_id
+    assert result.evidence_gaps == ()
+    assert len(result.physical_identities) == 1
+    assert len(result.evidence_sources) == 1
+    source = result.evidence_sources[0]
+    assert base64.b64decode(source.raw_evidence_b64) == vendor_output.encode()
+    assert source.raw_evidence_digest == hashlib.sha256(vendor_output.encode()).hexdigest()

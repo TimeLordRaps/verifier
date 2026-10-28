@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-objects-manifest-5.schema.json",
+  "title": "Bounded complete package representations with retained historical records",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "profile_id", "profile_digest", "repository", "objects", "obligation_denominator", "surface_rules", "obligation_reason_provider", "node_reconciler", "claim_boundary", "namespace", "representation_updates"],
+  "properties": {
+    "schema_version": {"const": "verifier-objects-manifest-5"},
+    "profile_id": {"$ref": "verifier-objects-manifest-4.schema.json#/properties/profile_id"},
+    "profile_digest": {"$ref": "verifier-objects-manifest-4.schema.json#/properties/profile_digest"},
+    "repository": {"$ref": "verifier-objects-manifest-4.schema.json#/properties/repository"},
+    "objects": {"$ref": "verifier-objects-manifest-4.schema.json#/properties/objects"},
+    "obligation_denominator": {"$ref": "verifier-objects-manifest-4.schema.json#/properties/obligation_denominator"},
+    "surface_rules": {"$ref": "verifier-objects-manifest-4.schema.json#/properties/surface_rules"},
+    "obligation_reason_provider": {"$ref": "verifier-objects-manifest-4.schema.json#/properties/obligation_reason_provider"},
+    "node_reconciler": {"$ref": "verifier-objects-manifest-4.schema.json#/properties/node_reconciler"},
+    "claim_boundary": {"$ref": "verifier-objects-manifest-4.schema.json#/properties/claim_boundary"},
+    "namespace": {"$ref": "verifier-objects-manifest-2.schema.json"},
+    "representation_updates": {"$ref": "verifier-objects-manifest-4.schema.json#/properties/representation_updates"}
+  },
+  "description": "Version 5 preserves the exact version-4 semantic contract while selecting a larger finite transport and structure profile for a complete source-owned package graph. It does not weaken obligations, transfer prior evidence, or confer a verdict."
+}

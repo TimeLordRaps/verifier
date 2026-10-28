@@ -22,7 +22,7 @@ from verifier.interoperability.network import canonical_bytes, digest_bytes
 
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = "vstd-silo-formation-receipt-0.1.schema.json"
+NAME = "verifier-silo-formation-receipt-1.schema.json"
 CASES = json.loads((ROOT / "tests/fixtures/formation-interoperability-corpus.json").read_bytes())["silo_cases"]
 
 
@@ -32,14 +32,14 @@ def _bytes(value: str) -> bytes:
 
 def _inputs(case: dict[str, Any]) -> tuple[bytes, bytes, dict[str, bytes]]:
     commit = _bytes(case["commit_bytes_base64url"])
-    selection = canonical_bytes({"schema_version": "VSTD-SILO-FORMATION-SELECTION-0.1",
+    selection = canonical_bytes({"schema_version": "verifier-silo-formation-selection-1",
                                  "commit_digest": digest_bytes(commit), **case["paths"]})
     evidence = {entry["digest"]: _bytes(entry["bytes_base64url"]) for entry in case["evidence"]}
     return selection, commit, evidence
 
 
 def _validator() -> Draft202012Validator:
-    schema = json.loads((ROOT / "standard/schemas" / NAME).read_bytes())
+    schema = json.loads((ROOT / "src/verifier/schemas" / NAME).read_bytes())
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)
 
@@ -87,12 +87,10 @@ def test_formation_receipt_resources_are_packaged_registered_and_experimental() 
     from scripts.release_artifacts import PACKAGED_SCHEMA_NAMES
 
     assert NAME in PACKAGED_SCHEMA_NAMES
-    assert (ROOT / "standard/schemas" / NAME).read_bytes() == (ROOT / "src/verifier/schemas" / NAME).read_bytes()
-    assert (ROOT / "standard/FORMATION_RECEIPT.md").read_bytes() == (ROOT / "src/verifier/specifications/FORMATION_RECEIPT.md").read_bytes()
-    identifiers = (ROOT / "standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
-    assert "VSTD-SILO-FORMATION-SELECTION-0.1" in identifiers
-    assert "VSTD-SILO-FORMATION-RECEIPT-0.1" in identifiers
+    identifiers = (ROOT / "src/verifier/standard/WIRE_IDENTIFIERS.md").read_text(encoding="utf-8")
+    assert "verifier-silo-formation-selection-1" in identifiers
+    assert "verifier-silo-formation-receipt-1" in identifiers
     for path in ("src/verifier/interoperability/formation_receipt.py",
                  "src/verifier/schemas/" + NAME,
-                 "src/verifier/specifications/FORMATION_RECEIPT.md"):
+                 "src/verifier/standard/FORMATION_RECEIPT.md"):
         assert path in REVIEWED_CANDIDATE_SOURCE_PATHS

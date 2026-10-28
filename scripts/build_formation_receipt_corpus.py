@@ -93,7 +93,7 @@ def build_corpus() -> bytes:
     mismatch = json.loads(decode(valid["receipt_bytes_base64url"]))
     mismatch["inspection"]["formation_report"]["observation"]["denotation_digest"] = digest_bytes(b"carried false denotation")
     result = canonical_bytes({
-        "schema_version": "VSTD-FORMATION-RECEIPT-CORPUS-0.1",
+        "schema_version": "verifier-formation-receipt-corpus-1",
         "source_corpus_digest": digest_bytes(source_bytes), "rule_profile_digest": profile_digest(),
         "cases": cases,
         "recheck_cases": [

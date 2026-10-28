@@ -1,0 +1,1362 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-manifest-package-polish-capacity-2.schema.json",
+  "title": "Bounded actionable Verifier Standard (VSTD) package-polish capacity report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_report_schema",
+    "claim_scope",
+    "kind_denominators",
+    "requested_tier",
+    "status",
+    "blockers",
+    "manifest",
+    "reason_authority",
+    "reason_reconciliation",
+    "package_graph",
+    "obligation_instances",
+    "tier_results",
+    "source_coordinate_digest",
+    "mechanism_digest",
+    "package_graph_reference",
+    "native_diagnostics",
+    "source_instance_count",
+    "denominator_status",
+    "obligation_index",
+    "finding_count",
+    "findings",
+    "next_target",
+    "omitted_finding_count",
+    "source_report_encoding_status",
+    "source_report_digest",
+    "source_report_bytes",
+    "omitted_sections",
+    "whole_package_conformance",
+    "polished",
+    "release_authorized",
+    "deployment_authorized",
+    "claim_boundary",
+    "report_digest"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "required": ["denominator_status"],
+        "properties": {
+          "denominator_status": {"const": "COMPLETE"}
+        }
+      },
+      "then": {
+        "properties": {
+          "requested_tier": {"enum": [1, 2, 3]},
+          "source_report_schema": {
+            "enum": [
+              "verifier-manifest-package-polish-1",
+              "verifier-manifest-package-polish-2"
+            ]
+          },
+          "manifest": {
+            "$ref": "#/$defs/selectedManifestReference"
+          },
+          "package_graph_reference": {
+            "$ref": "#/$defs/packageGraphReference"
+          },
+          "source_report_encoding_status": {"const": "AVAILABLE"},
+          "source_coordinate_digest": {"$ref": "#/$defs/digest"},
+          "mechanism_digest": {"$ref": "#/$defs/digest"},
+          "source_instance_count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "obligation_index": {
+            "type": "object",
+            "properties": {
+              "instance_count": {"type": "integer", "minimum": 1},
+              "status_counts": {"type": "object", "minProperties": 1}
+            },
+            "anyOf": [
+              {
+                "properties": {
+                  "schema_version": {
+                    "const": "verifier-package-obligation-index-1"
+                  },
+                  "entries": {"type": "array", "minItems": 1}
+                }
+              },
+              {
+                "properties": {
+                  "schema_version": {
+                    "const": "verifier-package-obligation-index-2"
+                  },
+                  "entry_order": {"type": "array", "minItems": 1}
+                }
+              }
+            ]
+          },
+          "blockers": {
+            "not": {
+              "contains": {"const": "PACKAGE_REPORT_CAPACITY_EXHAUSTED"}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["requested_tier", "denominator_status"],
+        "properties": {
+          "requested_tier": {"const": 1},
+          "denominator_status": {"const": "COMPLETE"}
+        }
+      },
+      "then": {
+        "properties": {
+          "native_diagnostics": {
+            "$ref": "#/$defs/tierOneNativeDiagnostics"
+          },
+          "tier_results": {"$ref": "#/$defs/tierOneResults"}
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["requested_tier", "denominator_status"],
+        "properties": {
+          "requested_tier": {"const": 2},
+          "denominator_status": {"const": "COMPLETE"}
+        }
+      },
+      "then": {
+        "properties": {
+          "native_diagnostics": {
+            "$ref": "#/$defs/tierTwoNativeDiagnostics"
+          },
+          "tier_results": {"$ref": "#/$defs/tierTwoResults"}
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["requested_tier", "denominator_status"],
+        "properties": {
+          "requested_tier": {"const": 3},
+          "denominator_status": {"const": "COMPLETE"}
+        }
+      },
+      "then": {
+        "properties": {
+          "native_diagnostics": {
+            "$ref": "#/$defs/cumulativeNativeDiagnostics"
+          },
+          "tier_results": {"$ref": "#/$defs/cumulativeTierResults"}
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["source_report_encoding_status"],
+        "properties": {
+          "source_report_encoding_status": {"const": "AVAILABLE"}
+        }
+      },
+      "then": {
+        "properties": {
+          "source_report_digest": {"$ref": "#/$defs/digest"},
+          "source_report_bytes": {"type": "integer", "minimum": 0}
+        }
+      },
+      "else": {
+        "properties": {
+          "source_report_digest": {"type": "null"},
+          "source_report_bytes": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["denominator_status"],
+        "properties": {
+          "denominator_status": {"const": "NOT_RETAINED"}
+        }
+      },
+      "then": {
+        "properties": {
+          "blockers": {
+            "contains": {"const": "PACKAGE_REPORT_CAPACITY_EXHAUSTED"}
+          },
+          "polished": {"const": false},
+          "whole_package_conformance": {"const": "NOT_ESTABLISHED"},
+          "omitted_sections": {
+            "type": "array",
+            "contains": {
+              "enum": [
+                "cumulative_tier_evidence_unavailable",
+                "capacity_receipt_detail_unavailable"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status"],
+        "properties": {"status": {"const": "PASS"}}
+      },
+      "then": {
+        "properties": {
+          "denominator_status": {"const": "COMPLETE"},
+          "blockers": {"maxItems": 0},
+          "findings": {"maxItems": 0},
+          "whole_package_conformance": {"const": "PASS"},
+          "polished": {"const": true}
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status"],
+        "properties": {"status": {"enum": ["FAIL", "UNKNOWN"]}}
+      },
+      "then": {
+        "properties": {
+          "whole_package_conformance": {"const": "NOT_ESTABLISHED"},
+          "polished": {"const": false}
+        }
+      }
+    }
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "verifier-manifest-package-polish-capacity-2"
+    },
+    "source_report_schema": {"type": ["string", "null"]},
+    "claim_scope": {"const": "MANIFEST_PACKAGE_GRAPH"},
+    "kind_denominators": {"$ref": "#/$defs/kindDenominators"},
+    "requested_tier": {"type": ["integer", "null"]},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "blockers": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "manifest": {"type": ["object", "null"]},
+    "reason_authority": {"type": ["object", "null"]},
+    "reason_reconciliation": {"type": ["object", "null"]},
+    "package_graph": {"type": "null"},
+    "obligation_instances": {"type": "array", "maxItems": 0},
+    "tier_results": {"type": "array", "maxItems": 3},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "next_target": {"$ref": "#/$defs/nextTarget"},
+    "whole_package_conformance": {"enum": ["PASS", "NOT_ESTABLISHED"]},
+    "polished": {"type": "boolean"},
+    "release_authorized": {"const": false},
+    "deployment_authorized": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "source_coordinate_digest": {"$ref": "#/$defs/nullableDigest"},
+    "mechanism_digest": {"$ref": "#/$defs/nullableDigest"},
+    "package_graph_reference": {"type": ["object", "null"]},
+    "native_diagnostics": {"type": ["object", "null"]},
+    "source_instance_count": {"type": "integer", "minimum": 0},
+    "denominator_status": {"enum": ["COMPLETE", "NOT_RETAINED"]},
+    "obligation_index": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "instance_count", "status_counts", "index_digest"
+      ],
+      "properties": {
+        "schema_version": {
+          "enum": [
+            "verifier-package-obligation-index-1",
+            "verifier-package-obligation-index-2"
+          ]
+        },
+        "instance_count": {"type": "integer", "minimum": 0},
+        "status_counts": {"$ref": "#/$defs/statusCounts"},
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "object_id", "object_kind", "coordinate", "obligation_id",
+              "tier", "status", "checker_status", "instance_digest",
+              "blockers", "reason", "actions", "rerun_argv"
+            ],
+            "properties": {
+              "object_id": {"type": "string", "minLength": 1},
+              "object_kind": {"type": "string", "minLength": 1},
+              "coordinate": {"type": "string", "minLength": 1},
+              "obligation_id": {"type": "string", "minLength": 1},
+              "tier": {"enum": [1, 2, 3]},
+              "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+              "checker_status": {
+                "enum": ["PASS", "FAIL", "UNKNOWN", "NOT_RUN", "NOT_REQUIRED"]
+              },
+              "instance_digest": {"$ref": "#/$defs/digest"},
+              "blockers": {"type": "array", "items": {"type": "string"}},
+              "reason": {
+                "oneOf": [
+                  {"type": "null"},
+                  {"$ref": "#/$defs/nonblankString"}
+                ]
+              },
+              "actions": {
+                "type": "array",
+                "items": {"$ref": "#/$defs/finding"}
+              },
+              "rerun_argv": {
+                "type": ["array", "null"],
+                "items": {"type": "string"}
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "required": ["status"],
+                  "properties": {"status": {"const": "PASS"}}
+                },
+                "then": {
+                  "properties": {
+                    "checker_status": {"enum": ["PASS", "NOT_REQUIRED"]}
+                  }
+                }
+              },
+              {
+                "if": {
+                  "required": ["checker_status"],
+                  "properties": {"checker_status": {"const": "FAIL"}}
+                },
+                "then": {
+                  "properties": {"status": {"const": "FAIL"}}
+                }
+              },
+              {
+                "if": {
+                  "required": ["status"],
+                  "properties": {"status": {"const": "PASS"}}
+                },
+                "then": {
+                  "properties": {"reason": {"type": "null"}}
+                },
+                "else": {
+                  "properties": {
+                    "reason": {"$ref": "#/$defs/nonblankString"}
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "object_field_order": {
+          "const": ["object_id", "object_kind"]
+        },
+        "object_table": {
+          "type": "array",
+          "items": {
+            "type": "array", "minItems": 2, "maxItems": 2,
+            "prefixItems": [
+              {"type": "string", "minLength": 1},
+              {"type": "string", "minLength": 1}
+            ],
+            "items": false
+          }
+        },
+        "object_table_digest": {"$ref": "#/$defs/digest"},
+        "route_field_order": {
+          "const": ["coordinate", "obligation_id", "tier"]
+        },
+        "route_table": {
+          "type": "array",
+          "items": {
+            "type": "array", "minItems": 3, "maxItems": 3,
+            "prefixItems": [
+              {"type": "string", "minLength": 1},
+              {"type": "string", "minLength": 1},
+              {"enum": [1, 2, 3]}
+            ],
+            "items": false
+          }
+        },
+        "route_table_digest": {"$ref": "#/$defs/digest"},
+        "pass_entry_field_order": {
+          "const": [
+            "object_index", "route_index", "checker_status", "instance_digest"
+          ]
+        },
+        "pass_entries": {
+          "type": "array",
+          "items": {
+            "type": "array", "minItems": 4, "maxItems": 4,
+            "prefixItems": [
+              {"type": "integer", "minimum": 0},
+              {"type": "integer", "minimum": 0},
+              {"enum": ["PASS", "NOT_REQUIRED"]},
+              {"$ref": "#/$defs/digest"}
+            ],
+            "items": false
+          }
+        },
+        "pass_entries_digest": {"$ref": "#/$defs/digest"},
+        "nonpass_entries": {"type": "array", "items": {"type": "object"}},
+        "nonpass_entries_digest": {"$ref": "#/$defs/digest"},
+        "entry_order": {
+          "type": "array",
+          "items": {
+            "type": "array", "minItems": 2, "maxItems": 2,
+            "prefixItems": [
+              {"enum": [0, 1]},
+              {"type": "integer", "minimum": 0}
+            ],
+            "items": false
+          }
+        },
+        "entry_order_digest": {"$ref": "#/$defs/digest"},
+        "transport": {"const": "DIGEST_BOUND_PASS_TABLE_REFERENCES"},
+        "index_digest": {"$ref": "#/$defs/digest"}
+      },
+      "oneOf": [
+        {
+          "required": ["entries"],
+          "properties": {
+            "schema_version": {
+              "const": "verifier-package-obligation-index-1"
+            }
+          }
+        },
+        {
+          "required": [
+            "object_field_order", "object_table", "object_table_digest",
+            "route_field_order", "route_table", "route_table_digest",
+            "pass_entry_field_order", "pass_entries", "pass_entries_digest",
+            "nonpass_entries", "nonpass_entries_digest", "entry_order",
+            "entry_order_digest", "transport"
+          ],
+          "properties": {
+            "schema_version": {
+              "const": "verifier-package-obligation-index-2"
+            }
+          }
+        }
+      ]
+    },
+    "finding_count": {"type": "integer", "minimum": 0},
+    "omitted_finding_count": {"type": "integer", "minimum": 0},
+    "source_report_encoding_status": {
+      "enum": ["AVAILABLE", "UNAVAILABLE"]
+    },
+    "source_report_digest": {"$ref": "#/$defs/nullableDigest"},
+    "source_report_bytes": {"type": ["integer", "null"], "minimum": 0},
+    "omitted_sections": {"type": "array", "items": {"type": "string"}},
+    "report_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "nextTarget": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schema_version", "source_path", "requested_tier",
+            "obligation_tier", "status", "code", "object_id",
+            "obligation_id", "coordinate", "gate_id", "focus", "reason",
+            "next_action", "rerun_argv", "finding_index", "example_index",
+            "claim_boundary"
+          ],
+          "properties": {
+            "schema_version": {"const": "verifier-package-polish-next-target-1"},
+            "source_path": {"const": "objects.vstd"},
+            "requested_tier": {"type": "integer", "minimum": 1, "maximum": 3},
+            "obligation_tier": {"type": ["integer", "null"], "minimum": 0, "maximum": 3},
+            "status": {"enum": ["FAIL", "UNKNOWN"]},
+            "code": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            "object_id": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            "obligation_id": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            "coordinate": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            "gate_id": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            "focus": {
+              "oneOf": [
+                {"type": "null"},
+                {"type": "string", "minLength": 1, "pattern": "\\S"}
+              ]
+            },
+            "reason": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            "next_action": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            "rerun_argv": {
+              "type": "array", "minItems": 6, "maxItems": 6,
+              "items": {"type": "string", "minLength": 1, "pattern": "\\S"}
+            },
+            "finding_index": {"type": "integer", "minimum": 0},
+            "example_index": {"type": ["integer", "null"], "minimum": 0},
+            "claim_boundary": {"type": "string", "minLength": 1, "pattern": "\\S"}
+          }
+        }
+      ]
+    },
+    "kindDenominators": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "object_kind_count",
+        "object_kind_denominator_scope",
+        "installed_namespace_kind_count"
+      ],
+      "properties": {
+        "schema_version": {"const": "verifier-kind-denominators-1"},
+        "object_kind_count": {"type": "integer", "const": 26},
+        "object_kind_denominator_scope": {"const": "RETAINED_NATIVE_WIRE"},
+        "installed_namespace_kind_count": {"type": "integer", "const": 38}
+      }
+    },
+    "nonblankString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "scope", "object_id", "obligation_id", "gate_id", "status",
+        "code", "reason", "explanation", "next_action", "rerun_argv"
+      ],
+      "properties": {
+        "scope": {"$ref": "#/$defs/nonblankString"},
+        "object_id": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/nonblankString"}
+          ]
+        },
+        "obligation_id": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/nonblankString"}
+          ]
+        },
+        "gate_id": {"$ref": "#/$defs/nonblankString"},
+        "status": {"enum": ["FAIL", "UNKNOWN"]},
+        "code": {"$ref": "#/$defs/nonblankString"},
+        "reason": {"$ref": "#/$defs/nonblankString"},
+        "explanation": {"$ref": "#/$defs/nonblankString"},
+        "next_action": {"$ref": "#/$defs/nonblankString"},
+        "rerun_argv": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {"$ref": "#/$defs/nonblankString"}
+            }
+          ]
+        }
+      }
+    },
+    "selectedManifestReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "status", "digest"],
+      "properties": {
+        "path": {"const": "objects.vstd"},
+        "status": {"const": "SELECTED"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "packageGraphReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "root_id",
+        "root_kind",
+        "manifest_digest",
+        "collection_digest",
+        "object_count",
+        "objects"
+      ],
+      "properties": {
+        "status": {"const": "PASS"},
+        "root_id": {"type": "string", "minLength": 1},
+        "root_kind": {"const": "GRAPH"},
+        "manifest_digest": {"$ref": "#/$defs/digest"},
+        "collection_digest": {"$ref": "#/$defs/digest"},
+        "object_count": {
+          "type": "integer",
+          "minimum": 26,
+          "maximum": 4096
+        },
+        "objects": {
+          "type": "array",
+          "minItems": 26,
+          "maxItems": 4096,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["object_id", "kind", "object_digest", "specializations"],
+            "properties": {
+              "object_id": {"type": "string", "minLength": 1},
+              "kind": {"type": "string", "minLength": 1},
+              "object_digest": {"$ref": "#/$defs/digest"},
+              "specializations": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        },
+        "declaration_count": {"type": "integer", "minimum": 1, "maximum": 4096},
+        "declaration_digest": {"$ref": "#/$defs/digest"},
+        "object_payloads_transport": {"type": "string", "minLength": 1},
+        "self_polish_reference": {
+          "$ref": "#/$defs/selfPolishReference"
+        },
+        "obligation_denominator_commitment": {
+          "$ref": "#/$defs/denominatorCommitment"
+        }
+      }
+    },
+    "selfPolishReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "status", "aggregate_verifier_id",
+        "aggregate_verifier_digest", "verified_graph_id",
+        "verified_graph_digest", "requested_tier", "member_verifier_count",
+        "member_status_counts", "member_verifier_digest", "edge_count",
+        "edge_digest", "polish_system_subject_count", "polish_system_status",
+        "polish_system_subject_digest", "blockers",
+        "aggregate_result_is_member_evidence", "self_application_authority",
+        "graph_digest", "claim_boundary", "tier_results_digest",
+        "nonpass_member_count", "nonpass_members",
+        "nonpass_polish_system_subject_count",
+        "nonpass_polish_system_subjects"
+      ],
+      "properties": {
+        "schema_version": {"const": "verifier-package-self-polish-graph-1"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "aggregate_verifier_id": {"$ref": "#/$defs/nonblankString"},
+        "aggregate_verifier_digest": {"$ref": "#/$defs/digest"},
+        "verified_graph_id": {"$ref": "#/$defs/nonblankString"},
+        "verified_graph_digest": {"$ref": "#/$defs/digest"},
+        "requested_tier": {"enum": [1, 2, 3]},
+        "member_verifier_count": {"type": "integer", "minimum": 1},
+        "member_status_counts": {"$ref": "#/$defs/statusCounts"},
+        "member_verifier_digest": {"$ref": "#/$defs/digest"},
+        "edge_count": {"type": "integer", "minimum": 1},
+        "edge_digest": {"$ref": "#/$defs/digest"},
+        "polish_system_subject_count": {"type": "integer", "minimum": 1},
+        "polish_system_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "polish_system_subject_digest": {"$ref": "#/$defs/digest"},
+        "blockers": {"type": "array", "items": {"$ref": "#/$defs/nonblankString"}},
+        "aggregate_result_is_member_evidence": {"const": false},
+        "self_application_authority": {"const": "NOT_ESTABLISHED"},
+        "graph_digest": {"$ref": "#/$defs/digest"},
+        "claim_boundary": {"$ref": "#/$defs/nonblankString"},
+        "tier_results_digest": {"$ref": "#/$defs/digest"},
+        "nonpass_member_count": {"type": "integer", "minimum": 0},
+        "nonpass_members": {"type": "array", "items": {"type": "object"}},
+        "nonpass_polish_system_subject_count": {
+          "type": "integer", "minimum": 0
+        },
+        "nonpass_polish_system_subjects": {
+          "type": "array", "items": {"type": "object"}
+        }
+      }
+    },
+    "denominatorCommitment": {
+      "oneOf": [
+        {"$ref": "#/$defs/expandedDenominatorCommitment"},
+        {"$ref": "#/$defs/sourceReplayDenominatorCommitment"}
+      ]
+    },
+    "expandedDenominatorCommitment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "status",
+        "selected_instance_count",
+        "selected_instance_index_digest",
+        "conditional_refutation_count",
+        "conditional_refutations",
+        "conditional_refutations_digest",
+        "claim_boundary",
+        "commitment_digest"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "verifier-package-obligation-denominator-commitment-1"
+        },
+        "status": {"const": "COMMITTED"},
+        "selected_instance_count": {"type": "integer", "minimum": 1},
+        "selected_instance_index_digest": {"$ref": "#/$defs/digest"},
+        "conditional_refutation_count": {"type": "integer", "minimum": 0},
+        "conditional_refutations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/conditionalRefutation"}
+        },
+        "conditional_refutations_digest": {"$ref": "#/$defs/digest"},
+        "claim_boundary": {"type": "string", "minLength": 1},
+        "commitment_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "sourceReplayDenominatorCommitment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "status",
+        "selected_instance_count",
+        "selected_instance_index_digest",
+        "conditional_refutation_count",
+        "conditional_refutations_digest",
+        "conditional_refutations_transport",
+        "source_report_digest",
+        "claim_boundary",
+        "commitment_digest"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "verifier-package-obligation-denominator-commitment-3"
+        },
+        "status": {"const": "COMMITTED"},
+        "selected_instance_count": {"type": "integer", "minimum": 1},
+        "selected_instance_index_digest": {"$ref": "#/$defs/digest"},
+        "conditional_refutation_count": {"type": "integer", "minimum": 0},
+        "conditional_refutations_digest": {"$ref": "#/$defs/digest"},
+        "conditional_refutations_transport": {
+          "const": "REPLAY_FROM_DIGEST_BOUND_SOURCE_REPORT"
+        },
+        "source_report_digest": {"$ref": "#/$defs/digest"},
+        "claim_boundary": {"type": "string", "minLength": 1},
+        "commitment_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "conditionalRefutation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_id", "object_kind", "coordinate", "tier",
+        "instance_digest", "status", "checker_status", "reason",
+        "evidence_digest"
+      ],
+      "properties": {
+        "object_id": {"type": "string", "minLength": 1},
+        "object_kind": {"type": "string", "minLength": 1},
+        "coordinate": {"type": "string", "minLength": 1},
+        "tier": {"enum": [1, 2, 3]},
+        "instance_digest": {"$ref": "#/$defs/digest"},
+        "status": {"const": "PASS"},
+        "checker_status": {"const": "NOT_REQUIRED"},
+        "reason": {"type": "string", "minLength": 1},
+        "evidence_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "statusCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "PASS": {"type": "integer", "minimum": 0},
+        "FAIL": {"type": "integer", "minimum": 0},
+        "UNKNOWN": {"type": "integer", "minimum": 0}
+      }
+    },
+    "checkerStatusCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "PASS": {"type": "integer", "minimum": 0},
+        "FAIL": {"type": "integer", "minimum": 0},
+        "UNKNOWN": {"type": "integer", "minimum": 0},
+        "NOT_RUN": {"type": "integer", "minimum": 0},
+        "NOT_REQUIRED": {"type": "integer", "minimum": 0}
+      }
+    },
+    "tierOneNativeDiagnostics": {
+      "type": "object",
+      "required": ["status", "report_digest", "prerequisites", "tier_execution"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "report_digest": {"$ref": "#/$defs/digest"},
+        "prerequisites": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "0": {"$ref": "#/$defs/tierZeroPrerequisiteReference"},
+            "1": {"$ref": "#/$defs/nativePrerequisiteReference1"}
+          }
+        },
+        "tier_execution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["0", "1"],
+          "properties": {
+            "0": {"allOf": [{"$ref": "#/$defs/tierExecutionRecord"}, {"properties": {"tier": {"const": 0}, "tier_name": {"const": "ADMISSION"}}}]},
+            "1": {"allOf": [{"$ref": "#/$defs/tierExecutionRecord"}, {"properties": {"tier": {"const": 1}, "tier_name": {"const": "FACETS"}}}]}
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"tier_execution": {"properties": {"0": {"properties": {"execution_status": {"const": "EXECUTED"}}}}}}},
+          "then": {"properties": {"prerequisites": {"required": ["0"]}}},
+          "else": {"properties": {"prerequisites": {"properties": {"0": false}}}}
+        },
+        {
+          "if": {"properties": {"tier_execution": {"properties": {"1": {"properties": {"execution_status": {"const": "EXECUTED"}}}}}}},
+          "then": {"properties": {"prerequisites": {"required": ["1"]}}},
+          "else": {"properties": {"prerequisites": {"properties": {"1": false}}}}
+        },
+        {
+          "if": {"properties": {"status": {"const": "PASS"}}},
+          "then": {
+            "properties": {
+              "prerequisites": {
+                "required": ["0", "1"],
+                "properties": {
+                  "0": {"properties": {"status": {"const": "PASS"}}},
+                  "1": {"properties": {"status": {"const": "PASS"}}}
+                }
+              },
+              "tier_execution": {
+                "properties": {
+                  "0": {"properties": {"execution_status": {"const": "EXECUTED"}, "status": {"const": "PASS"}}},
+                  "1": {"properties": {"execution_status": {"const": "EXECUTED"}, "status": {"const": "PASS"}}}
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "tierTwoNativeDiagnostics": {
+      "type": "object",
+      "required": ["status", "report_digest", "prerequisites", "tier_execution"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "report_digest": {"$ref": "#/$defs/digest"},
+        "prerequisites": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "0": {"$ref": "#/$defs/tierZeroPrerequisiteReference"},
+            "1": {"$ref": "#/$defs/nativePrerequisiteReference1"},
+            "2": {"$ref": "#/$defs/nativePrerequisiteReference2"}
+          }
+        },
+        "tier_execution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["0", "1", "2"],
+          "properties": {
+            "0": {"allOf": [{"$ref": "#/$defs/tierExecutionRecord"}, {"properties": {"tier": {"const": 0}, "tier_name": {"const": "ADMISSION"}}}]},
+            "1": {"allOf": [{"$ref": "#/$defs/tierExecutionRecord"}, {"properties": {"tier": {"const": 1}, "tier_name": {"const": "FACETS"}}}]},
+            "2": {"allOf": [{"$ref": "#/$defs/tierExecutionRecord"}, {"properties": {"tier": {"const": 2}, "tier_name": {"const": "DYNAMICS"}}}]}
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"tier_execution": {"properties": {"0": {"properties": {"execution_status": {"const": "EXECUTED"}}}}}}},
+          "then": {"properties": {"prerequisites": {"required": ["0"]}}},
+          "else": {"properties": {"prerequisites": {"properties": {"0": false}}}}
+        },
+        {
+          "if": {"properties": {"tier_execution": {"properties": {"1": {"properties": {"execution_status": {"const": "EXECUTED"}}}}}}},
+          "then": {"properties": {"prerequisites": {"required": ["1"]}}},
+          "else": {"properties": {"prerequisites": {"properties": {"1": false}}}}
+        },
+        {
+          "if": {"properties": {"tier_execution": {"properties": {"2": {"properties": {"execution_status": {"const": "EXECUTED"}}}}}}},
+          "then": {"properties": {"prerequisites": {"required": ["2"]}}},
+          "else": {"properties": {"prerequisites": {"properties": {"2": false}}}}
+        },
+        {
+          "if": {"properties": {"status": {"const": "PASS"}}},
+          "then": {
+            "properties": {
+              "prerequisites": {
+                "required": ["0", "1", "2"],
+                "properties": {
+                  "0": {"properties": {"status": {"const": "PASS"}}},
+                  "1": {"properties": {"status": {"const": "PASS"}}},
+                  "2": {"properties": {"status": {"const": "PASS"}}}
+                }
+              },
+              "tier_execution": {
+                "properties": {
+                  "0": {"properties": {"execution_status": {"const": "EXECUTED"}, "status": {"const": "PASS"}}},
+                  "1": {"properties": {"execution_status": {"const": "EXECUTED"}, "status": {"const": "PASS"}}},
+                  "2": {"properties": {"execution_status": {"const": "EXECUTED"}, "status": {"const": "PASS"}}}
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "cumulativeNativeDiagnostics": {
+      "type": "object",
+      "required": [
+        "status",
+        "report_digest",
+        "prerequisites",
+        "tier_execution"
+      ],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "report_digest": {"$ref": "#/$defs/digest"},
+        "prerequisites": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "0": {"$ref": "#/$defs/tierZeroPrerequisiteReference"},
+            "1": {"$ref": "#/$defs/nativePrerequisiteReference1"},
+            "2": {"$ref": "#/$defs/nativePrerequisiteReference2"}
+          }
+        },
+        "tier_execution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["0", "1", "2", "3"],
+          "properties": {
+            "0": {
+              "allOf": [
+                {"$ref": "#/$defs/tierExecutionRecord"},
+                {
+                  "properties": {
+                    "tier": {"const": 0},
+                    "tier_name": {"const": "ADMISSION"}
+                  }
+                }
+              ]
+            },
+            "1": {
+              "allOf": [
+                {"$ref": "#/$defs/tierExecutionRecord"},
+                {
+                  "properties": {
+                    "tier": {"const": 1},
+                    "tier_name": {"const": "FACETS"}
+                  }
+                }
+              ]
+            },
+            "2": {
+              "allOf": [
+                {"$ref": "#/$defs/tierExecutionRecord"},
+                {
+                  "properties": {
+                    "tier": {"const": 2},
+                    "tier_name": {"const": "DYNAMICS"}
+                  }
+                }
+              ]
+            },
+            "3": {
+              "allOf": [
+                {"$ref": "#/$defs/tierExecutionRecord"},
+                {
+                  "properties": {
+                    "tier": {"const": 3},
+                    "tier_name": {"const": "STATICS"}
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["status"],
+            "properties": {"status": {"const": "PASS"}}
+          },
+          "then": {
+            "properties": {
+              "prerequisites": {
+                "required": ["0", "1", "2"],
+                "properties": {
+                  "0": {"properties": {"status": {"const": "PASS"}}},
+                  "1": {"properties": {"status": {"const": "PASS"}}},
+                  "2": {"properties": {"status": {"const": "PASS"}}}
+                }
+              },
+              "tier_execution": {
+                "properties": {
+                  "0": {"properties": {"execution_status": {"const": "EXECUTED"}, "status": {"const": "PASS"}}},
+                  "1": {"properties": {"execution_status": {"const": "EXECUTED"}, "status": {"const": "PASS"}}},
+                  "2": {"properties": {"execution_status": {"const": "EXECUTED"}, "status": {"const": "PASS"}}},
+                  "3": {"properties": {"execution_status": {"const": "EXECUTED"}, "status": {"const": "PASS"}}}
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier_execution": {
+                "properties": {
+                  "0": {
+                    "required": ["execution_status"],
+                    "properties": {
+                      "execution_status": {"const": "EXECUTED"}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {"prerequisites": {"required": ["0"]}}
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier_execution": {
+                "properties": {
+                  "1": {
+                    "required": ["execution_status"],
+                    "properties": {
+                      "execution_status": {"const": "EXECUTED"}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {"prerequisites": {"required": ["1"]}}
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier_execution": {
+                "properties": {
+                  "2": {
+                    "required": ["execution_status"],
+                    "properties": {
+                      "execution_status": {"const": "EXECUTED"}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {"prerequisites": {"required": ["2"]}}
+          }
+        }
+      ]
+    },
+    "nativePrerequisiteReference": {
+      "type": "object",
+      "required": ["status", "report_digest"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "report_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "nativePrerequisiteReference1": {
+      "allOf": [
+        {"$ref": "#/$defs/nativePrerequisiteReference"},
+        {"$ref": "#/$defs/sourceBoundNativePrerequisiteReference"},
+        {
+          "required": ["schema_version", "tier"],
+          "properties": {
+            "schema_version": {
+              "const": "verifier-self-polish-tier-assessment-7"
+            },
+            "tier": {"const": 1}
+          }
+        }
+      ]
+    },
+    "nativePrerequisiteReference2": {
+      "allOf": [
+        {"$ref": "#/$defs/nativePrerequisiteReference"},
+        {"$ref": "#/$defs/sourceBoundNativePrerequisiteReference"},
+        {
+          "required": ["schema_version", "tier"],
+          "properties": {
+            "schema_version": {
+              "const": "verifier-self-polish-tier-assessment-7"
+            },
+            "tier": {"const": 2}
+          }
+        }
+      ]
+    },
+    "sourceBoundNativePrerequisiteReference": {
+      "type": "object",
+      "required": ["source_coordinate_digest"],
+      "properties": {
+        "source_coordinate_digest": {"$ref": "#/$defs/digest"},
+        "post_replay_full_source_recapture": {
+          "enum": ["PASS", "FAIL", "UNKNOWN"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["status"],
+            "properties": {"status": {"const": "PASS"}}
+          },
+          "then": {
+            "required": ["post_replay_full_source_recapture"],
+            "properties": {
+              "post_replay_full_source_recapture": {"const": "PASS"}
+            }
+          }
+        }
+      ]
+    },
+    "tierZeroPrerequisiteReference": {
+      "allOf": [
+        {"$ref": "#/$defs/nativePrerequisiteReference"},
+        {
+          "type": "object",
+          "required": [
+            "manifest_digest",
+            "obligation_count",
+            "obligation_status_counts",
+            "obligations"
+          ],
+          "properties": {
+            "manifest_digest": {"$ref": "#/$defs/digest"},
+            "obligation_count": {"const": 9},
+            "obligation_status_counts": {"type": "object"},
+            "obligations": {
+              "type": "array",
+              "minItems": 9,
+              "maxItems": 9,
+              "prefixItems": [
+                {"$ref": "#/$defs/tierZeroObligation1"},
+                {"$ref": "#/$defs/tierZeroObligation2"},
+                {"$ref": "#/$defs/tierZeroObligation3"},
+                {"$ref": "#/$defs/tierZeroObligation4"},
+                {"$ref": "#/$defs/tierZeroObligation5"},
+                {"$ref": "#/$defs/tierZeroObligation6"},
+                {"$ref": "#/$defs/tierZeroObligation7"},
+                {"$ref": "#/$defs/tierZeroObligation8"},
+                {"$ref": "#/$defs/tierZeroObligation9"}
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["status"],
+            "properties": {"status": {"const": "PASS"}}
+          },
+          "then": {
+            "properties": {
+              "obligation_status_counts": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["PASS", "FAIL", "UNKNOWN"],
+                "properties": {
+                  "PASS": {"const": 9},
+                  "FAIL": {"const": 0},
+                  "UNKNOWN": {"const": 0}
+                }
+              },
+              "obligations": {
+                "items": {
+                  "allOf": [
+                    {"$ref": "#/$defs/tierZeroObligation"},
+                    {"properties": {"status": {"const": "PASS"}}}
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "tierZeroObligation": {
+      "type": "object",
+      "required": ["coordinate", "status", "assessment_reason"],
+      "properties": {
+        "coordinate": {"type": "string"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "assessment_reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "tierZeroObligation1": {"allOf": [{"$ref": "#/$defs/tierZeroObligation"}, {"properties": {"coordinate": {"const": "VSTD-T0.1"}}}]},
+    "tierZeroObligation2": {"allOf": [{"$ref": "#/$defs/tierZeroObligation"}, {"properties": {"coordinate": {"const": "VSTD-T0.2"}}}]},
+    "tierZeroObligation3": {"allOf": [{"$ref": "#/$defs/tierZeroObligation"}, {"properties": {"coordinate": {"const": "VSTD-T0.3"}}}]},
+    "tierZeroObligation4": {"allOf": [{"$ref": "#/$defs/tierZeroObligation"}, {"properties": {"coordinate": {"const": "VSTD-T0.4"}}}]},
+    "tierZeroObligation5": {"allOf": [{"$ref": "#/$defs/tierZeroObligation"}, {"properties": {"coordinate": {"const": "VSTD-T0.5"}}}]},
+    "tierZeroObligation6": {"allOf": [{"$ref": "#/$defs/tierZeroObligation"}, {"properties": {"coordinate": {"const": "VSTD-T0.6"}}}]},
+    "tierZeroObligation7": {"allOf": [{"$ref": "#/$defs/tierZeroObligation"}, {"properties": {"coordinate": {"const": "VSTD-T0.7"}}}]},
+    "tierZeroObligation8": {"allOf": [{"$ref": "#/$defs/tierZeroObligation"}, {"properties": {"coordinate": {"const": "VSTD-T0.8"}}}]},
+    "tierZeroObligation9": {"allOf": [{"$ref": "#/$defs/tierZeroObligation"}, {"properties": {"coordinate": {"const": "VSTD-T0.9"}}}]},
+    "blockingPrerequisite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "tier_name",
+        "required_status",
+        "observed_status",
+        "report_digest",
+        "blockers"
+      ],
+      "properties": {
+        "tier": {"type": "integer", "minimum": 0, "maximum": 3},
+        "tier_name": {
+          "enum": ["ADMISSION", "FACETS", "DYNAMICS", "STATICS"]
+        },
+        "required_status": {"const": "PASS"},
+        "observed_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "report_digest": {"$ref": "#/$defs/nullableDigest"},
+        "blockers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "failure_stage": {"type": "string", "minLength": 1},
+        "exception_type": {"type": "string", "minLength": 1}
+      }
+    },
+    "tierExecutionRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "tier",
+        "tier_name",
+        "execution_status",
+        "status",
+        "reason",
+        "evidence_digest",
+        "blocking_prerequisite",
+        "execution_record_digest"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "verifier-self-polish-tier-execution-1"
+        },
+        "tier": {"type": "integer", "minimum": 0, "maximum": 3},
+        "tier_name": {
+          "enum": ["ADMISSION", "FACETS", "DYNAMICS", "STATICS"]
+        },
+        "execution_status": {"enum": ["EXECUTED", "NOT_RUN"]},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "reason": {"type": "string", "minLength": 1},
+        "evidence_digest": {"$ref": "#/$defs/nullableDigest"},
+        "blocking_prerequisite": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/blockingPrerequisite"}
+          ]
+        },
+        "execution_record_digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"execution_status": {"const": "EXECUTED"}}
+          },
+          "then": {
+            "properties": {
+              "evidence_digest": {"$ref": "#/$defs/digest"},
+              "blocking_prerequisite": {"type": "null"}
+            }
+          },
+          "else": {
+            "properties": {
+              "status": {"const": "UNKNOWN"},
+              "evidence_digest": {"type": "null"},
+              "blocking_prerequisite": {
+                "$ref": "#/$defs/blockingPrerequisite"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "tierOneResults": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "prefixItems": [
+        {"$ref": "#/$defs/tierResult1"}
+      ],
+      "items": false
+    },
+    "tierTwoResults": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {"$ref": "#/$defs/tierResult1"},
+        {"$ref": "#/$defs/tierResult2"}
+      ],
+      "items": false
+    },
+    "cumulativeTierResults": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {"$ref": "#/$defs/tierResult1"},
+        {"$ref": "#/$defs/tierResult2"},
+        {"$ref": "#/$defs/tierResult3"}
+      ],
+      "items": false
+    },
+    "tierResult": {
+      "type": "object",
+      "required": [
+        "tier", "instance_count", "status_counts", "status",
+        "checker_status_counts", "prerequisite_tiers"
+      ],
+      "properties": {
+        "tier": {"enum": [1, 2, 3]},
+        "instance_count": {"type": "integer", "minimum": 1},
+        "status_counts": {"$ref": "#/$defs/statusCounts"},
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "checker_status_counts": {"$ref": "#/$defs/checkerStatusCounts"},
+        "prerequisite_tiers": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0, "maximum": 2},
+          "uniqueItems": true
+        },
+        "execution_status": {"enum": ["NOT_RUN"]},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "tierResult1": {
+      "allOf": [
+        {"$ref": "#/$defs/tierResult"},
+        {"properties": {"tier": {"const": 1}, "prerequisite_tiers": {"const": [0]}}}
+      ]
+    },
+    "tierResult2": {
+      "allOf": [
+        {"$ref": "#/$defs/tierResult"},
+        {"properties": {"tier": {"const": 2}, "prerequisite_tiers": {"const": [0, 1]}}}
+      ]
+    },
+    "tierResult3": {
+      "allOf": [
+        {"$ref": "#/$defs/tierResult"},
+        {"properties": {"tier": {"const": 3}, "prerequisite_tiers": {"const": [0, 1, 2]}}}
+      ]
+    },
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "nullableDigest": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]
+    }
+  }
+}

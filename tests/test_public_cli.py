@@ -8,7 +8,10 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 from verifier.runtime.public_cli import build_parser, main
+from verifier.runtime.self_polish_estate import EstateError
 
 
 def _manifest(project: Path) -> Path:
@@ -71,7 +74,7 @@ def test_public_cli_flagship_demo_is_side_effect_free_and_machine_readable(
 ) -> None:
     assert main(["demo", "--json"]) == 0
     report = json.loads(capsys.readouterr().out)
-    assert report["demo"] == "VSTD-FLAGSHIP-1"
+    assert report["demo"] == "verifier-flagship-1"
     assert report["status"] == "OK"
     assert report["scenario_count"] == 4
     assert report["successful_scenarios"] == 4
@@ -233,3 +236,115 @@ def test_public_cli_rejects_unknown_receipt(tmp_path: Path) -> None:
     path = tmp_path / "receipt.json"
     path.write_text('{"schema_version": "UNKNOWN"}', encoding="utf-8")
     assert main(["validate", str(path)]) == 1
+
+
+@pytest.mark.parametrize(
+    ("exception_factory", "expected_status", "expected_exit", "expected_gate"),
+    (
+        (lambda: ValueError("SYNTHETIC_GATE_CONTRACT_REJECTED"),
+         "FAIL", 1, "command-dispatch"),
+        (lambda: EstateError("CANDIDATE_SOURCE_MUTATED"),
+         "UNKNOWN", 2, "source-freshness"),
+    ),
+)
+def test_outer_json_exception_boundary_is_structured(
+        exception_factory, expected_status, expected_exit, expected_gate,
+        monkeypatch, capsys):
+    from verifier.runtime import gate
+
+    def rejected(_args):
+        raise exception_factory()
+
+    monkeypatch.setattr(gate, "handle_gate_command", rejected)
+    argv = [
+        "gate", "--object", "vstd-amd-live-sensor", "--obligation",
+        "VSTD-T0.7-source-and-mechanism-freshness", "--json",
+    ]
+
+    assert main(argv) == expected_exit
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    report = json.loads(captured.out)
+    assert report["status"] == expected_status
+    finding = report["findings"][0]
+    assert finding["status"] == expected_status
+    assert finding["gate_id"] == expected_gate
+    assert finding["object_id"] == "vstd-amd-live-sensor"
+    assert finding["obligation_id"] == (
+        "VSTD-T0.7-source-and-mechanism-freshness"
+    )
+    assert finding["reason"] == finding["explanation"]
+    assert finding["next_action"].strip()
+    assert finding["rerun_argv"] == [
+        "vstd", "gate", "--object", "vstd-amd-live-sensor",
+        "--obligation", "VSTD-T0.7-source-and-mechanism-freshness",
+    ]
+
+
+def test_polish_outer_exception_preserves_safe_partition_locus(
+        monkeypatch, capsys):
+    from verifier.runtime import self_polish_tiers
+
+    def rejected(_argv):
+        raise ValueError(
+            "PARTITION_ORIGINAL_KIND_SOURCE_PATH_DRIFT:"
+            "vstd-test-runtime-execution-regressions"
+        )
+
+    monkeypatch.setattr(
+        self_polish_tiers, "handle_self_polish_tier_argv", rejected,
+    )
+
+    assert main(["polish", "3", "--json"]) == 1
+    report = json.loads(capsys.readouterr().out)
+    finding = report["findings"][0]
+    assert report["blockers"] == [
+        "PARTITION_ORIGINAL_KIND_SOURCE_PATH_DRIFT"
+    ]
+    assert finding["gate_id"] == "original-kind-source-binding"
+    assert finding["object_id"] == "vstd-test-runtime-execution-regressions"
+    assert finding["obligation_id"] == (
+        "PACKAGE-PREREQUISITE-original-kind-catalog-source-binding"
+    )
+    assert finding["reason"] == finding["explanation"]
+    assert finding["next_action"].strip()
+    assert finding["rerun_argv"] == ["vstd", "polish", "3", "--json"]
+
+
+@pytest.mark.parametrize(
+    "unsafe",
+    (
+        pytest.param(
+            "PARTITION_ORIGINAL_KIND_SOURCE_PATH_DRIFT:../outside",
+            id="parent-segment",
+        ),
+        pytest.param(
+            "PARTITION_ORIGINAL_KIND_SOURCE_PATH_DRIFT:row\nforged",
+            id="newline",
+        ),
+        pytest.param(
+            "PARTITION_ORIGINAL_KIND_SOURCE_PATH_DRIFT:C:" "\\outside",
+            id="drive-path",
+        ),
+        pytest.param(
+            "PARTITION_ORIGINAL_KIND_SOURCE_PATH_DRIFT:row:extra",
+            id="extra-separator",
+        ),
+    ),
+)
+def test_polish_outer_exception_does_not_expose_unsafe_partition_locus(
+        unsafe, monkeypatch, capsys):
+    from verifier.runtime import self_polish_tiers
+
+    def rejected(_argv):
+        raise ValueError(unsafe)
+
+    monkeypatch.setattr(
+        self_polish_tiers, "handle_self_polish_tier_argv", rejected,
+    )
+
+    assert main(["polish", "3", "--json"]) == 1
+    report = json.loads(capsys.readouterr().out)
+    assert report["blockers"] == ["PUBLIC_CLI_COMMAND_REJECTED"]
+    assert report["object_id"] == "repository-root"
+    assert unsafe not in json.dumps(report)

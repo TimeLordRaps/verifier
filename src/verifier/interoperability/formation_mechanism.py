@@ -51,7 +51,7 @@ _SOURCE_NAMES = (
 def _implementation_digest() -> str:
     root = Path(__file__).parent
     inventory = {
-        "schema_version": "VSTD-TYPED-FORMATION-SOURCE-IDENTITY-0.1",
+        "schema_version": "verifier-typed-formation-source-identity-1",
         "profile_digest": _PROFILE_DIGEST,
         "sources": [
             {"path": name, "digest": digest_bytes((root / name).read_bytes())}

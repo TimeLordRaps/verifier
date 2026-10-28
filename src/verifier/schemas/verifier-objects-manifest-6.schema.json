@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-objects-manifest-6.schema.json",
+  "title": "Compact current package representations with retained historical records",
+  "description": "The exact version-5 package contract with a compact version-3 namespace transport. Runtime normalization restores the version-2 inline namespace before semantic assessment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "profile_id", "profile_digest", "repository", "objects",
+    "obligation_denominator", "surface_rules", "obligation_reason_provider",
+    "node_reconciler", "claim_boundary", "namespace", "representation_updates"
+  ],
+  "properties": {
+    "schema_version": {"const": "verifier-objects-manifest-6"},
+    "profile_id": {"$ref": "verifier-objects-manifest-5.schema.json#/properties/profile_id"},
+    "profile_digest": {"$ref": "verifier-objects-manifest-5.schema.json#/properties/profile_digest"},
+    "repository": {"$ref": "verifier-objects-manifest-5.schema.json#/properties/repository"},
+    "objects": {"$ref": "verifier-objects-manifest-5.schema.json#/properties/objects"},
+    "obligation_denominator": {"$ref": "verifier-objects-manifest-5.schema.json#/properties/obligation_denominator"},
+    "surface_rules": {"$ref": "verifier-objects-manifest-5.schema.json#/properties/surface_rules"},
+    "obligation_reason_provider": {"$ref": "verifier-objects-manifest-5.schema.json#/properties/obligation_reason_provider"},
+    "node_reconciler": {"$ref": "verifier-objects-manifest-5.schema.json#/properties/node_reconciler"},
+    "claim_boundary": {"$ref": "verifier-objects-manifest-5.schema.json#/properties/claim_boundary"},
+    "namespace": {"$ref": "verifier-namespace-manifest-3.schema.json"},
+    "representation_updates": {"$ref": "verifier-objects-manifest-5.schema.json#/properties/representation_updates"}
+  }
+}

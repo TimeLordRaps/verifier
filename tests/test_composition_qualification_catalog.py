@@ -7,7 +7,6 @@ correctness, custody, or an atomic filesystem snapshot.
 
 from __future__ import annotations
 
-from importlib import import_module
 import json
 from pathlib import Path
 from typing import Any
@@ -25,6 +24,7 @@ from verifier.interoperability.catalog import (
     InteractionMode,
 )
 from verifier.interoperability.component_index import load_component_index
+from verifier.interoperability import composition_qualification
 from verifier.interoperability.control_surface import (
     CandidateStatus,
     ControlSurfaceContext,
@@ -50,7 +50,7 @@ RAW_COMPONENT = "component:artifact-network-authority-composition-assessor"
 RELATION = "relation:qualifies-selected-finite-silo-composition"
 MECHANISM = "mechanism:artifact-network-finite-composition-qualification"
 NATIVE_INPUTS = tuple(sorted((
-    "local path to VSTD-FINITE-AUTHORITY-COMPOSITION-0.1 canonical bytes",
+    "local path to verifier-finite-authority-composition-1 canonical bytes",
     "ordered local (ContentAddressedStore root, silo-commit path) member pairs",
     "local composite ContentAddressedStore root",
     "local composite silo-commit path",
@@ -58,12 +58,14 @@ NATIVE_INPUTS = tuple(sorted((
 NATIVE_OUTPUT = (
     "unversioned composition qualification report retaining legacy and finite assessments"
 )
+_IMPLEMENTATIONS = {
+    "verifier.interoperability.composition_qualification:qualify_silo_composition":
+        composition_qualification.qualify_silo_composition,
+}
 
 
 def _resolve(reference: str) -> object:
-    module_name, separator, attribute = reference.partition(":")
-    assert separator and module_name and attribute
-    return getattr(import_module(module_name), attribute)
+    return _IMPLEMENTATIONS[reference]
 
 
 def _native_inputs(tmp_path: Path) -> tuple[
@@ -100,8 +102,8 @@ def test_qualifier_descriptor_matches_the_native_callable_and_real_result(
         "verifier.interoperability.composition_qualification:qualify_silo_composition"
     )
     assert component.accepted_schema_ids == (
-        "VSTD-FINITE-AUTHORITY-COMPOSITION-0.1",
-        "VSTD-SILO-COMMIT-0.1",
+        "verifier-finite-authority-composition-1",
+        "verifier-silo-commit-1",
     )
     assert component.planning_surface_schema_ids == ("VSTD-2",)
     assert component.native_inputs == NATIVE_INPUTS
@@ -176,8 +178,6 @@ def test_qualifier_package_detection_planning_and_readiness_remain_nonexecuting(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from scripts.build_component_index import build
-    from verifier.interoperability import composition_qualification
-
     def forbidden(*args: Any, **kwargs: Any) -> Any:
         raise AssertionError("catalog integration must not execute qualification")
 
@@ -199,7 +199,7 @@ def test_qualifier_package_detection_planning_and_readiness_remain_nonexecuting(
         "src/verifier/interoperability/composition_qualification.py",
         "src/verifier/interoperability/authority_composition.py",
         "src/verifier/interoperability/network.py",
-        "src/verifier/specifications/FINITE_AUTHORITY_COMPOSITION.md",
+        "src/verifier/standard/FINITE_AUTHORITY_COMPOSITION.md",
     }
     assert required <= set(binding.artifact_paths)
     artifacts = {item.path: item for item in package.artifacts}

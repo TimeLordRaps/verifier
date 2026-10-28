@@ -15,6 +15,8 @@ authorization, or actor reputation.
 
 from __future__ import annotations
 
+from verifier.core.signature_keys import admit_ed25519_public_key
+
 import base64
 import hashlib
 import json
@@ -28,11 +30,11 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 
-FREEZE_SCHEMA = "VSTD-ARTIFACT-FREEZE-1"
-SEAL_SCHEMA = "VSTD-ARTIFACT-SEAL-1"
-SEAL_PAYLOAD_SCHEMA = "VSTD-ARTIFACT-SEAL-CLOSURE-1"
-THAW_SCHEMA = "VSTD-ARTIFACT-THAW-1"
-CANONICALIZATION = "VSTD-ARTIFACT-CANONICAL-1"
+FREEZE_SCHEMA = "verifier-artifact-freeze-1"
+SEAL_SCHEMA = "verifier-artifact-seal-1"
+SEAL_PAYLOAD_SCHEMA = "verifier-artifact-seal-closure-1"
+THAW_SCHEMA = "verifier-artifact-thaw-1"
+CANONICALIZATION = "verifier-artifact-canonical-1"
 SIGNATURE_ALGORITHM = "Ed25519"
 _DIGEST_NAMES = ("sha256", "sha3-256")
 _HEX_256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -810,10 +812,10 @@ def _verify_seal(
     ):
         raise ArtifactControlError("seal identity does not close the signature-bearing envelope")
     try:
-        Ed25519PublicKey.from_public_bytes(public_raw).verify(
+        Ed25519PublicKey.from_public_bytes(admit_ed25519_public_key(public_raw)).verify(
             signature, _canonical_bytes(_seal_projection(seal))
         )
-    except InvalidSignature as exc:
+    except (InvalidSignature, ValueError) as exc:
         raise ArtifactControlError("self-closing seal signature did not verify") from exc
     return seal_id, key_id
 

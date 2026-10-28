@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-self-polish-native-replay-manifest-2.schema.json",
+  "title": "Verifier Self-Polish Native Replay Manifest v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tier", "source_coordinate_digest", "registry_digest", "cases"],
+  "properties": {
+    "schema_version": {"const": "verifier-self-polish-native-replay-manifest-2"},
+    "tier": {"enum": [1, 2]},
+    "source_coordinate_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "registry_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "cases": {
+      "type": "array",
+      "minItems": 111,
+      "maxItems": 135,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["obligation_id", "case_kind", "checking_mechanism", "certificate_base64", "expected_request", "policy"],
+        "properties": {
+          "obligation_id": {"type": "string", "minLength": 1},
+          "case_kind": {"enum": ["POSITIVE", "NEGATIVE", "UNKNOWN"]},
+          "checking_mechanism": {"type": "string", "minLength": 1},
+          "certificate_base64": {"type": "string"},
+          "expected_request": {"type": "object"},
+          "policy": {"type": "object"}
+        }
+      }
+    }
+  }
+}

@@ -119,7 +119,7 @@ def attach_vstd3_receipt(
             added_transformations.append(transform.transformation_id)
 
     common_software = {
-        "standard": "VSTD-3.0",
+        "standard": "VSTD-3",
         "implementation": "vstd",
     }
     source_artifact_ids: list[str] = []

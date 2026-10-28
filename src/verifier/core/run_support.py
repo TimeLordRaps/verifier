@@ -8,7 +8,7 @@ from enum import Enum
 RUN_SCHEMA_VERSION = "VSTD-1"
 RUN_RECEIPT_KIND = "generic_computational_run"
 PLATFORM_COMPARISON_ENVIRONMENT_BINDING_VERSION = (
-    "VSTD-PLATFORM-COMPARISON-ENVIRONMENT-1"
+    "verifier-platform-comparison-environment-1"
 )
 
 
@@ -23,6 +23,9 @@ class RunOutcome(str, Enum):
     MISSING_OUTPUT = "MISSING_OUTPUT"
     TIMEOUT = "TIMEOUT"
     EXCEPTION = "EXCEPTION"
+    OUTPUT_CAP_EXCEEDED = "OUTPUT_CAP_EXCEEDED"
+    CLEANUP_NOT_ESTABLISHED = "CLEANUP_NOT_ESTABLISHED"
+    EXIT_STATUS_UNKNOWN = "EXIT_STATUS_UNKNOWN"
 
 
 class DeterminismDeclaration(str, Enum):

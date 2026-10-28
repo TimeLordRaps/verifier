@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-manifest-package-polish-1.schema.json",
+  "title": "Manifest-driven package GRAPH polish assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "claim_scope", "requested_tier", "status", "blockers", "findings", "manifest", "reason_authority", "reason_reconciliation", "source_coordinate", "source_coordinate_digest", "mechanism_digest", "package_graph", "verifier_execution", "native_diagnostics", "package_facet_replay", "obligation_instances", "tier_results", "post_replay_source_recapture", "post_replay_manifest_recapture", "whole_package_conformance", "polished", "release_authorized", "deployment_authorized", "claim_boundary", "report_digest"],
+  "properties": {
+    "execution_observations": {"type": "array", "items": {"type": "object", "required": ["schema_version", "observation_digest"]}},
+    "schema_version": {"const": "verifier-manifest-package-polish-1"},
+    "claim_scope": {"const": "MANIFEST_PACKAGE_GRAPH"},
+    "requested_tier": {"enum": [1, 2, 3]},
+    "status": {"enum": ["FAIL", "UNKNOWN"]},
+    "blockers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "findings": {"type": "array", "items": {"type": "object", "required": ["scope", "object_id", "obligation_id", "gate_id", "status", "code", "reason", "explanation", "next_action", "rerun_argv"], "properties": {"status": {"enum": ["FAIL", "UNKNOWN"]}, "reason": {"type": "string", "minLength": 1, "pattern": "\\S"}}}},
+    "manifest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "status", "digest"],
+      "properties": {
+        "path": {"const": "objects.vstd"},
+        "status": {"enum": ["SELECTED", "NOT_SELECTED"]},
+        "digest": {"$ref": "#/$defs/nullableDigest"},
+        "validation": {"type": "object", "required": ["schema_version", "status", "graph_digest"], "properties": {"status": {"const": "PASS"}}}
+      }
+    },
+    "reason_authority": {"anyOf": [
+      {"type": "null"},
+      {"type": "object", "additionalProperties": false,
+       "required": ["schema_version", "path", "sha256", "authored_input_count", "objects_registry_path", "only_authored_reason_input"],
+       "properties": {
+         "schema_version": {"const": "verifier-package-root-reason-authority-1"},
+         "path": {"const": "reasons.vstd"},
+         "sha256": {"$ref": "#/$defs/digest"},
+         "authored_input_count": {"const": 1},
+         "objects_registry_path": {"const": "objects.vstd"},
+         "only_authored_reason_input": {"const": true}
+       }}
+    ]},
+    "reason_reconciliation": {"type": ["object", "null"]},
+    "source_coordinate": {"type": ["object", "null"]},
+    "source_coordinate_digest": {"$ref": "#/$defs/nullableDigest"},
+    "mechanism_digest": {"$ref": "#/$defs/nullableDigest"},
+    "package_graph": {
+      "oneOf": [{"type": "null"}, {
+        "type": "object", "additionalProperties": false,
+        "required": ["status", "root_id", "root_kind", "manifest_digest", "collection_digest", "object_count", "objects", "declarations", "claim_boundary"],
+        "properties": {
+          "status": {"const": "PASS"}, "root_id": {"type": "string", "minLength": 1},
+          "root_kind": {"const": "GRAPH"}, "manifest_digest": {"$ref": "#/$defs/digest"},
+          "collection_digest": {"$ref": "#/$defs/digest"}, "object_count": {"const": 26},
+          "objects": {"type": "array", "minItems": 26, "maxItems": 26, "items": {"type": "object", "required": ["object_id", "kind", "payload", "operands"]}},
+          "declarations": {"type": "array", "minItems": 26, "maxItems": 26, "items": {"type": "object", "required": ["object_id", "object_kind", "role", "edges"]}},
+          "claim_boundary": {"type": "string", "minLength": 1}
+        }
+      }]
+    },
+    "verifier_execution": {"type": ["object", "null"], "required": ["object_id", "object_digest", "subject_id", "subject_collection_digest", "manifest_digest", "assignment", "checking_mechanism", "mechanism_digest", "requested_tier", "self_application", "self_application_authority"]},
+    "native_diagnostics": {"type": ["object", "null"], "required": ["status", "report_digest"]},
+    "package_facet_replay": {"type": ["object", "null"], "required": ["status", "results", "replay_digest"]},
+    "obligation_instances": {"type": "array", "maxItems": 113, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["object_id", "object_digest", "coordinate", "tier", "proposition_digest", "instance_digest", "object_kind", "verifier_id", "checking_mechanism", "scope", "reason", "repository_realization", "applicability", "selected_package_check", "checker_status", "status", "blockers", "native_specimen_is_instance_evidence"],
+      "properties": {
+        "object_id": {"type": "string", "minLength": 1}, "object_digest": {"$ref": "#/$defs/digest"},
+        "coordinate": {"type": "string", "minLength": 1}, "tier": {"enum": [1, 2, 3]},
+        "proposition_digest": {"$ref": "#/$defs/digest"}, "instance_digest": {"$ref": "#/$defs/digest"},
+        "object_kind": {"type": "string", "minLength": 1}, "verifier_id": {"type": "string", "minLength": 1},
+        "checking_mechanism": {"type": "string", "minLength": 1}, "scope": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1}, "repository_realization": {"type": "object"},
+        "applicability": {"type": "object", "additionalProperties": false,
+          "required": ["status", "classification", "assessment_required", "reason"],
+          "properties": {"status": {"const": "UNKNOWN"}, "classification": {"const": "UNDETERMINED"}, "assessment_required": {"const": true}, "reason": {"type": "string", "minLength": 1}}},
+        "selected_package_check": {"type": ["object", "null"]},
+        "checker_status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_RUN"]},
+        "status": {"enum": ["FAIL", "UNKNOWN"]},
+        "blockers": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "native_specimen_is_instance_evidence": {"const": false}
+      }
+    }},
+    "tier_results": {"type": "array", "maxItems": 3, "items": {"type": "object", "required": ["tier", "instance_count", "status_counts", "status", "checker_status_counts", "prerequisite_tiers"]}},
+    "post_replay_source_recapture": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+    "post_replay_manifest_recapture": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_ESTABLISHED"]},
+    "whole_package_conformance": {"const": "NOT_ESTABLISHED"},
+    "polished": {"const": false}, "release_authorized": {"const": false}, "deployment_authorized": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1}, "report_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "nullableDigest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+  }
+}

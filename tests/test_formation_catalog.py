@@ -6,8 +6,7 @@ Terminology: JavaScript Object Notation (JSON); Secure Hash Algorithm 256-bit
 
 from __future__ import annotations
 
-from importlib import import_module
-import importlib.resources
+from importlib.resources import files
 from dataclasses import replace
 from inspect import signature
 import json
@@ -16,6 +15,13 @@ from typing import Any
 
 import pytest
 
+from verifier.interoperability import (
+    formation_checker,
+    formation_mechanism,
+    formation_producer,
+    formation_receipt,
+    formation_wire,
+)
 from verifier.interoperability.catalog import ComponentKind, ComponentLifecycle, InteractionMode
 from verifier.interoperability.reference_catalog import reference_component_registry
 from verifier.core.evidence import BoundProposition, EvidenceBounds, EvidenceStore, MechanismOutcome, VerificationSession
@@ -34,17 +40,17 @@ from verifier.interoperability.storage import load_component_package
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PROFILE_DIGEST = "sha256:271760d604e1ade55cba4974c658b92263bd3ee8ae343677dd91d0e713fb677f"
-PROFILE_PATH = "src/verifier/profiles/typed-formation-0.1.json"
-SUBJECT_SCHEMA = "VSTD-TYPED-FORMATION-0.1"
-CERTIFICATE_SCHEMA = "VSTD-TYPED-FORMATION-CERTIFICATE-0.1"
+PROFILE_DIGEST = "sha256:770f948d29900a63a6ba55f2bbc61bdd18fec1a73769c8e1e524d664c40f6e06"
+PROFILE_PATH = "src/verifier/profiles/typed-formation-1.json"
+SUBJECT_SCHEMA = "verifier-typed-formation-1"
+CERTIFICATE_SCHEMA = "verifier-typed-formation-certificate-1"
 COMPONENTS = (
     ("producer", "formation_producer:produce_formation_certificate", ComponentKind.PROVER,
      InteractionMode.STATIC, (SUBJECT_SCHEMA,), (CERTIFICATE_SCHEMA,)),
     ("checker", "formation_checker:check_formation", ComponentKind.CHECKER,
      InteractionMode.OFFLINE_REPLAY, tuple(sorted((SUBJECT_SCHEMA, CERTIFICATE_SCHEMA))), ()),
     ("receipt-rechecker", "formation_receipt:recheck_formation_receipt", ComponentKind.CHECKER,
-     InteractionMode.OFFLINE_REPLAY, ("VSTD-SILO-COMMIT-0.1", "VSTD-SILO-FORMATION-RECEIPT-0.1", "VSTD-SILO-FORMATION-SELECTION-0.1"), ()),
+     InteractionMode.OFFLINE_REPLAY, ("verifier-silo-commit-1", "verifier-silo-formation-receipt-1", "verifier-silo-formation-selection-1"), ()),
     ("session-mechanism", "formation_mechanism:FormationPathCertificateMechanism.evaluate", ComponentKind.ADAPTER,
      InteractionMode.OFFLINE_REPLAY, (), ()),
 )
@@ -55,11 +61,20 @@ def _component_id(role: str) -> str:
 
 
 def _resolve(reference: str) -> Any:
-    module_name, attribute_path = reference.split(":")
-    value = import_module(module_name)
-    for attribute in attribute_path.split("."):
-        value = getattr(value, attribute)
-    return value
+    if reference == "verifier.interoperability.formation_producer:produce_formation_certificate":
+        return formation_producer.produce_formation_certificate
+    if reference == "verifier.interoperability.formation_checker:check_formation":
+        return formation_checker.check_formation
+    if reference == "verifier.interoperability.formation_receipt:recheck_formation_receipt":
+        return formation_receipt.recheck_formation_receipt
+    if reference == "verifier.interoperability.formation_mechanism:FormationPathCertificateMechanism":
+        return formation_mechanism.FormationPathCertificateMechanism
+    if reference == (
+        "verifier.interoperability.formation_mechanism:"
+        "FormationPathCertificateMechanism.evaluate"
+    ):
+        return formation_mechanism.FormationPathCertificateMechanism.evaluate
+    raise KeyError(reference)
 
 
 def _native_pair() -> tuple[bytes, bytes]:
@@ -109,15 +124,9 @@ def test_formation_catalog_names_exact_native_roles_and_profile(
 
 
 def test_formation_profile_and_packaged_contract_are_exact_inert_resources() -> None:
-    wire = import_module("verifier.interoperability.formation_wire")
-    artifact = importlib.resources.files("verifier").joinpath("profiles/typed-formation-0.1.json")
-    assert artifact.read_bytes() == wire.profile_bytes()
+    artifact = files("verifier").joinpath("profiles/typed-formation-1.json")
+    assert artifact.read_bytes() == formation_wire.profile_bytes()
     assert digest_bytes(artifact.read_bytes()) == PROFILE_DIGEST
-    for source, packaged in (
-        ("standard/TYPED_FORMATION.md", "specifications/TYPED_FORMATION.md"),
-        ("standard/schemas/vstd-typed-formation-0.1.schema.json", "schemas/vstd-typed-formation-0.1.schema.json"),
-    ):
-        assert (ROOT / source).read_bytes() == importlib.resources.files("verifier").joinpath(packaged).read_bytes()
 
 
 def test_formation_catalog_entrypoints_execute_only_explicitly_and_retain_residuals() -> None:
@@ -153,8 +162,7 @@ def test_formation_catalog_entrypoints_execute_only_explicitly_and_retain_residu
     evaluated = session.evaluate(binding)
     assert evaluated.outcome is MechanismOutcome.PASS
     assert evaluated.observations["formation_report"] == checked
-    wire = import_module("verifier.interoperability.formation_wire")
-    assert checked["residual_obligations"] == list(wire.RESIDUAL_OBLIGATIONS)
+    assert checked["residual_obligations"] == list(formation_wire.RESIDUAL_OBLIGATIONS)
     assert {"COMPLETENESS_NOT_ESTABLISHED", "AGENCY_NOT_CHECKED", "SELF_STATUS_NOT_ESTABLISHED"} <= set(checked["residual_obligations"])
     assert registry.canonical_digest() == reference_component_registry().canonical_digest()
 
@@ -170,10 +178,10 @@ def test_formation_package_index_detection_plan_and_readiness_remain_nonexecutin
     def forbidden(*args: Any, **kwargs: Any) -> Any:
         raise AssertionError("catalog pipeline must not execute or instantiate formation code")
 
-    monkeypatch.setattr(import_module("verifier.interoperability.formation_producer"), "produce_formation_certificate", forbidden)
-    monkeypatch.setattr(import_module("verifier.interoperability.formation_checker"), "check_formation", forbidden)
-    monkeypatch.setattr(import_module("verifier.interoperability.formation_mechanism"), "FormationPathCertificateMechanism", forbidden)
-    monkeypatch.setattr(import_module("verifier.interoperability.formation_receipt"), "recheck_formation_receipt", forbidden)
+    monkeypatch.setattr(formation_producer, "produce_formation_certificate", forbidden)
+    monkeypatch.setattr(formation_checker, "check_formation", forbidden)
+    monkeypatch.setattr(formation_mechanism, "FormationPathCertificateMechanism", forbidden)
+    monkeypatch.setattr(formation_receipt, "recheck_formation_receipt", forbidden)
     output = tmp_path / "components"
     build(output, source_ref="WORKTREE")
     index = load_component_index(output / "index.json")
@@ -183,12 +191,12 @@ def test_formation_package_index_detection_plan_and_readiness_remain_nonexecutin
     component = package.registry.get(_component_id(role))
     assert component == reference_component_registry().get(component.component_id)
     artifacts = {artifact.path: artifact for artifact in package.artifacts}
-    required = {PROFILE_PATH, "src/verifier/specifications/TYPED_FORMATION.md",
-                "src/verifier/schemas/vstd-typed-formation-0.1.schema.json",
+    required = {PROFILE_PATH, "src/verifier/standard/TYPED_FORMATION.md",
+                "src/verifier/schemas/verifier-typed-formation-1.schema.json",
                 "src/verifier/interoperability/" + reference.split(":")[0] + ".py"}
     if role == "receipt-rechecker":
-        required.update({"src/verifier/specifications/FORMATION_RECEIPT.md",
-                         "src/verifier/schemas/vstd-silo-formation-receipt-0.1.schema.json"})
+        required.update({"src/verifier/standard/FORMATION_RECEIPT.md",
+                         "src/verifier/schemas/verifier-silo-formation-receipt-1.schema.json"})
     implementation = next(item for item in package.implementations if item.component_id == component.component_id)
     assert required <= set(implementation.artifact_paths)
     for path in required:

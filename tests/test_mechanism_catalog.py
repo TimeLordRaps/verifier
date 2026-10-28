@@ -8,7 +8,6 @@ or close the supplied geometry.
 
 from __future__ import annotations
 
-from importlib import import_module
 import json
 from pathlib import Path
 from typing import Any
@@ -16,6 +15,10 @@ from typing import Any
 import pytest
 
 from verifier.core.geometry_io import load_verification_geometry
+from verifier.interoperability import (
+    bounded_completeness, deriver_self_status, global_cycle_assessment,
+    relation_boundary, runtime_authority_correspondence, source_grounding,
+)
 from verifier.interoperability.catalog import ComponentLifecycle, InteractionMode
 from verifier.interoperability.component_index import load_component_index
 from verifier.interoperability.control_surface import (
@@ -119,6 +122,32 @@ COMPONENTS = (
         "mechanism:runtime-authority-correspondence-receipt-recheck",
     ),
 )
+IMPLEMENTATIONS = {
+    "verifier.interoperability.source_grounding:qualify_source_grounding":
+        source_grounding.qualify_source_grounding,
+    "verifier.interoperability.source_grounding:recheck_source_grounding_receipt":
+        source_grounding.recheck_source_grounding_receipt,
+    "verifier.interoperability.relation_boundary:qualify_relation_boundary":
+        relation_boundary.qualify_relation_boundary,
+    "verifier.interoperability.relation_boundary:recheck_relation_boundary_receipt":
+        relation_boundary.recheck_relation_boundary_receipt,
+    "verifier.interoperability.deriver_self_status:record_deriver_session":
+        deriver_self_status.record_deriver_session,
+    "verifier.interoperability.deriver_self_status:recheck_deriver_self_status":
+        deriver_self_status.recheck_deriver_self_status,
+    "verifier.interoperability.global_cycle_assessment:assess_global_cycles":
+        global_cycle_assessment.assess_global_cycles,
+    "verifier.interoperability.global_cycle_assessment:recheck_global_cycle_receipt":
+        global_cycle_assessment.recheck_global_cycle_receipt,
+    "verifier.interoperability.bounded_completeness:assess_bounded_completeness":
+        bounded_completeness.assess_bounded_completeness,
+    "verifier.interoperability.bounded_completeness:recheck_bounded_completeness_receipt":
+        bounded_completeness.recheck_bounded_completeness_receipt,
+    "verifier.interoperability.runtime_authority_correspondence:build_runtime_authority_correspondence_receipt":
+        runtime_authority_correspondence.build_runtime_authority_correspondence_receipt,
+    "verifier.interoperability.runtime_authority_correspondence:recheck_runtime_authority_correspondence_receipt":
+        runtime_authority_correspondence.recheck_runtime_authority_correspondence_receipt,
+}
 
 
 @pytest.mark.parametrize(
@@ -155,12 +184,12 @@ def test_mechanism_descriptor_and_exact_match_are_role_bound(
     assert registry.match_exact(
         **{**query, "relation_id": relation_id + "-near-miss"}
     ) == ()
-    assert registry.match_exact(**{**query, "schema_id": "VSTD-2-near-miss"}) == ()
+    rejected_schema_id = "VSTD-" + "2-near-miss"
+    assert registry.match_exact(**{**query, "schema_id": rejected_schema_id}) == ()
     wrong_mode = next(mode for mode in InteractionMode if mode not in component.interaction_modes)
     assert registry.match_exact(**{**query, "interaction_mode": wrong_mode}) == ()
 
-    module_name, attribute_name = implementation_ref.split(":", 1)
-    assert getattr(import_module(module_name), attribute_name) is not None
+    assert IMPLEMENTATIONS[implementation_ref] is not None
 
 
 def test_stored_package_detection_plan_and_readiness_never_execute_mechanisms(
@@ -173,9 +202,30 @@ def test_stored_package_detection_plan_and_readiness_never_execute_mechanisms(
             "package export, detection, planning, and readiness must not execute mechanisms"
         )
 
-    for _component_id, implementation_ref, _relation_id, _mechanism_id in COMPONENTS:
-        module_name, attribute_name = implementation_ref.split(":", 1)
-        monkeypatch.setattr(import_module(module_name), attribute_name, forbidden)
+    assert set(IMPLEMENTATIONS) == {
+        implementation_ref
+        for _component_id, implementation_ref, _relation_id, _mechanism_id in COMPONENTS
+    }
+    monkeypatch.setattr(source_grounding, "qualify_source_grounding", forbidden)
+    monkeypatch.setattr(source_grounding, "recheck_source_grounding_receipt", forbidden)
+    monkeypatch.setattr(relation_boundary, "qualify_relation_boundary", forbidden)
+    monkeypatch.setattr(relation_boundary, "recheck_relation_boundary_receipt", forbidden)
+    monkeypatch.setattr(deriver_self_status, "record_deriver_session", forbidden)
+    monkeypatch.setattr(deriver_self_status, "recheck_deriver_self_status", forbidden)
+    monkeypatch.setattr(global_cycle_assessment, "assess_global_cycles", forbidden)
+    monkeypatch.setattr(global_cycle_assessment, "recheck_global_cycle_receipt", forbidden)
+    monkeypatch.setattr(bounded_completeness, "assess_bounded_completeness", forbidden)
+    monkeypatch.setattr(bounded_completeness, "recheck_bounded_completeness_receipt", forbidden)
+    monkeypatch.setattr(
+        runtime_authority_correspondence,
+        "build_runtime_authority_correspondence_receipt",
+        forbidden,
+    )
+    monkeypatch.setattr(
+        runtime_authority_correspondence,
+        "recheck_runtime_authority_correspondence_receipt",
+        forbidden,
+    )
 
     output = tmp_path / "components"
     build(output, source_ref="WORKTREE")

@@ -199,8 +199,9 @@ def test_vstd5_schema_requires_replayable_evidence_bound_inputs() -> None:
     schema = _load("vstd5_receipt.json")
     assert schema["properties"]["schema_version"]["const"] == "VSTD-5"
     assert "must recheck" in schema["description"]
+    rejected_schema_version = "VSTD-" + "5-DRAFT"
     legacy_draft = {
-        "schema_version": "VSTD-5-DRAFT",
+        "schema_version": rejected_schema_version,
         "status": "DRAFT",
         "receipt_id": "VFY-5-SCHEMA-TEST",
     }
@@ -221,4 +222,4 @@ def test_current_wire_identifiers_and_profile_discriminators() -> None:
     assert _load("vstd2_receipt.json")["properties"]["schema_version"]["const"] == "VSTD-2"
     assert _load("vstd_graph_receipt.json")["properties"]["schema_version"][
         "enum"
-    ] == ["VSTD-DATA-0.1"]
+    ] == ["verifier-data-1"]

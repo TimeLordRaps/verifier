@@ -7,6 +7,7 @@ Adversarial tests for evidence-bound object, Graph, lifecycle, and witness paths
 from __future__ import annotations
 
 import copy
+from collections.abc import Callable
 from dataclasses import replace
 import hashlib
 import json
@@ -386,7 +387,7 @@ def _vstd5_schema_validator() -> Draft202012Validator:
         (root / "receipts/schema/vstd4_receipt.json").read_text()
     )
     assurance_schema = json.loads(
-        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+        (root / "src/verifier/schemas/verifier-graph-assurance-1.schema.json").read_text()
     )
     registry = Registry().with_resource(
         vstd4_schema["$id"], Resource.from_contents(vstd4_schema)
@@ -614,7 +615,7 @@ def test_graph_profile_can_be_established_from_mechanism_evaluated_ratings() -> 
     )
     vstd4_schema = json.loads((root / "receipts/schema/vstd4_receipt.json").read_text())
     assurance_schema = json.loads(
-        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+        (root / "src/verifier/schemas/verifier-graph-assurance-1.schema.json").read_text()
     )
     registry = Registry()
     registry = registry.with_resource(vstd4_schema["$id"], Resource.from_contents(vstd4_schema))
@@ -1089,7 +1090,7 @@ def test_non_status_resolution_does_not_manufacture_current_trust(
         )
     root = Path(__file__).resolve().parents[1]
     schema = json.loads(
-        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+        (root / "src/verifier/schemas/verifier-graph-assurance-1.schema.json").read_text()
     )
     graph_schema = json.loads(
         (root / "receipts/schema/vstd_graph_receipt.json").read_text()
@@ -1490,7 +1491,7 @@ def test_assurance_event_log_is_portable_strict_and_evidence_complete() -> None:
 
     root = Path(__file__).resolve().parents[1]
     schema = json.loads(
-        (root / "standard/schemas/vstd-graph-assurance-1.schema.json").read_text()
+        (root / "src/verifier/schemas/verifier-graph-assurance-1.schema.json").read_text()
     )
     graph_schema = json.loads(
         (root / "receipts/schema/vstd_graph_receipt.json").read_text()
@@ -2192,4 +2193,184 @@ def test_vstd5_rechecker_refuses_schema_valid_cross_field_contradictions() -> No
     assert relabeled_result.conformance_status == "NOT_ESTABLISHED"
     assert relabeled_result.corroboration_errors == (
         "corroboration corroboration:witness:one is not exactly bound",
+    )
+
+
+def _spy_session_evaluations(
+    session: VerificationSession, monkeypatch: pytest.MonkeyPatch
+) -> list[BoundProposition]:
+    evaluated: list[BoundProposition] = []
+    original_evaluate = session.evaluate
+
+    def evaluate(proposition: BoundProposition) -> EvaluatedProposition:
+        evaluated.append(proposition)
+        return original_evaluate(proposition)
+
+    monkeypatch.setattr(session, "evaluate", evaluate)
+    return evaluated
+
+
+def _add_late_edge(
+    graph: ProvenanceHypergraph,
+    source_id: str,
+    target_id: str,
+    transformation_id: str,
+) -> None:
+    for artifact_id in (source_id, target_id):
+        if artifact_id not in graph.artifacts:
+            graph.add_artifact(
+                ArtifactNode(
+                    artifact_id,
+                    artifact_id,
+                    ArtifactType.MODEL,
+                    hashlib.sha256(artifact_id.encode()).hexdigest(),
+                    status=ArtifactStatus.VALID,
+                )
+            )
+    graph.add_transformation(
+        TransformationHyperedge(
+            transformation_id,
+            transformation_id,
+            TransformationType.EXTRACTION,
+            (HyperedgePort(source_id, "INPUT"),),
+            (HyperedgePort(target_id, "OUTPUT"),),
+            {},
+            {},
+            {},
+        )
+    )
+
+
+def _assert_mutated_graph_refused(
+    ledger: AssuranceLedger,
+    events_before: tuple[object, ...],
+    evaluated: list[BoundProposition],
+    action: Callable[[], object],
+) -> None:
+    refusal: AssuranceFlowError | None = None
+    action_result: object = None
+    try:
+        action_result = action()
+    except AssuranceFlowError as exc:
+        refusal = exc
+    assert refusal is not None, (
+        "expected the historical-Graph guard; "
+        f"evaluate_count={len(evaluated)}, "
+        f"appended_event_count={len(ledger.events()) - len(events_before)}, "
+        f"action_result={action_result!r}"
+    )
+    assert str(refusal) == "historical Graph changed after ledger creation"
+    assert evaluated == []
+    assert ledger.events() == events_before
+
+
+def test_record_rust_refuses_late_graph_ancestor_before_evaluation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ledger = AssuranceLedger(_graph())
+    store, session = _session()
+    deviation = _proposition(store, "result", "vstd.graph.descendant_deviation", True)
+    events_before = ledger.events()
+    evaluated = _spy_session_evaluations(session, monkeypatch)
+    _add_late_edge(ledger.graph, "late-source", "result", "late-rust-edge")
+
+    _assert_mutated_graph_refused(
+        ledger,
+        events_before,
+        evaluated,
+        lambda: ledger.record_rust(
+            "result", deviation, session=session, recorded_at="2026-08-29T00:00:00Z"
+        ),
+    )
+
+
+def test_record_rot_refuses_late_graph_artifact_before_evaluation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ledger = AssuranceLedger(_graph())
+    store, session = _session()
+    artifact_id = "late-rot-subject"
+    ledger.graph.add_artifact(
+        ArtifactNode(
+            artifact_id,
+            artifact_id,
+            ArtifactType.MODEL,
+            hashlib.sha256(artifact_id.encode()).hexdigest(),
+            status=ArtifactStatus.VALID,
+        )
+    )
+    events_before = ledger.events()
+    evaluated = _spy_session_evaluations(session, monkeypatch)
+    status = _proposition(
+        store, artifact_id, "vstd.graph.current_status", ArtifactStatus.REVOKED.value
+    )
+
+    _assert_mutated_graph_refused(
+        ledger,
+        events_before,
+        evaluated,
+        lambda: ledger.record_rot(
+            artifact_id,
+            ArtifactStatus.REVOKED,
+            status,
+            session=session,
+            recorded_at="2026-08-29T00:00:00Z",
+        ),
+    )
+
+
+def test_localize_cause_refuses_late_graph_ancestor_before_evaluation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ledger = AssuranceLedger(_graph())
+    store, session = _session()
+    deviation = _proposition(store, "result", "vstd.graph.descendant_deviation", True)
+    rust_event = ledger.record_rust(
+        "result", deviation, session=session, recorded_at="2026-08-29T00:00:00Z"
+    )
+    localization = _proposition(
+        store,
+        "result",
+        "vstd.graph.causal_localization",
+        {
+            "ancestor": "source",
+            "descendant": "result",
+            "rust_event_digest": rust_event.digest(),
+            "deviation_binding_digest": deviation.digest(),
+        },
+    )
+    events_before = ledger.events()
+    evaluated = _spy_session_evaluations(session, monkeypatch)
+    _add_late_edge(
+        ledger.graph,
+        "late-unrelated-source",
+        "late-unrelated-target",
+        "late-unrelated-edge",
+    )
+
+    _assert_mutated_graph_refused(
+        ledger,
+        events_before,
+        evaluated,
+        lambda: ledger.localize_cause(
+            "source",
+            "result",
+            localization,
+            rust_event_digest=rust_event.digest(),
+            session=session,
+            recorded_at="2026-08-29T00:01:00Z",
+        ),
+    )
+
+
+def test_impacted_descendants_refuses_late_graph_edge_without_event_append() -> None:
+    ledger = AssuranceLedger(_graph())
+    events_before = ledger.events()
+    _add_late_edge(ledger.graph, "source", "late-descendant", "late-impact-edge")
+
+    _assert_mutated_graph_refused(
+        ledger,
+        events_before,
+        [],
+        lambda: ledger.impacted_descendants("source"),
     )

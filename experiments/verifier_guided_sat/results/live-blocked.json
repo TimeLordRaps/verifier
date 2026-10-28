@@ -1,0 +1,42 @@
+{
+  "base_sha": "598c545be3833d6d81bb7e252ca5837f3bb2a449",
+  "blocker": {
+    "category": [
+      "technical",
+      "packaging"
+    ],
+    "description": "The first pinned runtime stopped at its released GGUF plugin and native source-build toolchain boundary. A second pinned runtime reached its GGUF model loader after explicit tokenizer and adjacent configuration. Loading from the Windows-mounted filesystem exceeded the available 32 GiB WSL host-memory envelope, and a bounded temporary-swap retry caused an unclean WSL restart. A final byte-identical copy on native WSL storage removed that filesystem variable but still caused an unclean WSL restart during model load. All temporary runtime files were removed. No endpoint or real LM completion was produced. On the final recheck, no LM listener existed and unrelated workloads left only 389 MiB of 24,564 MiB GPU memory free; they were not interrupted.",
+    "scope": "current-state"
+  },
+  "branch": "codex/verifier-guided-sat",
+  "claims_prohibited": [
+    "verifier-guided SAT speedup",
+    "easier LM-proposed SAT routes",
+    "held-out domain generalization",
+    "global UNSAT",
+    "fully reproducible model benchmark"
+  ],
+  "claims_supported": [
+    "real SAT and native-verifier baseline infrastructure executed",
+    "baseline bindings independently validated",
+    "live LM runtime is blocked at the pinned packaging, host-memory, and WSL runtime boundaries"
+  ],
+  "counts": {
+    "accepted": "NOT_MEASURED",
+    "false_acceptances": "NOT_MEASURED",
+    "unknown": "NOT_MEASURED"
+  },
+  "freeze_digest": "sha256:d1ea211530c5c13568b155630d2db32e9f9fa5ee43fc223773fa204dbab81056",
+  "hypotheses": {
+    "domain_generalization": "NOT_MEASURED",
+    "end_to_end_speed": "NOT_MEASURED",
+    "primary": "NOT_TESTED",
+    "solver_hardness": "NOT_MEASURED",
+    "vstd_operational_advantage": "NOT_MEASURED"
+  },
+  "live_trial_count": 0,
+  "public_reproducibility": "Infrastructure, instances, verifiers, prompts, baselines, and validators are public. Private model and endpoint coordinates are withheld; no public model benchmark is claimed.",
+  "result_version": "vgsat-result-0.1",
+  "status": "BLOCKED_NO_REAL_LM_RUNTIME",
+  "trials": []
+}

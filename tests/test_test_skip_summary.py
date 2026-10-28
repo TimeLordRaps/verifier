@@ -2,22 +2,17 @@
 
 from __future__ import annotations
 
-import importlib.util
 from pathlib import Path
 
 import pytest
+from scripts import summarize_test_skips
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def _module():
-    path = ROOT / "scripts" / "summarize_test_skips.py"
-    spec = importlib.util.spec_from_file_location("summarize_test_skips", path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return summarize_test_skips
 
 
 def test_skip_summary_preserves_test_and_reason(tmp_path: Path) -> None:
@@ -57,18 +52,20 @@ def test_skip_summary_escapes_markdown_and_newlines(tmp_path: Path) -> None:
     assert "\\[link\\]\\(https://evil\\.example\\)" in rendered
 
 
-def test_skip_summary_rejects_oversized_report(tmp_path: Path) -> None:
+def test_skip_summary_rejects_oversized_report(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     module = _module()
-    module.MAX_REPORT_BYTES = 8
+    monkeypatch.setattr(module, "MAX_REPORT_BYTES", 8)
     report = tmp_path / "report.xml"
     report.write_text("<testsuite />", encoding="utf-8")
     with pytest.raises(ValueError, match="report exceeds"):
         module.render(report, coordinate="linux")
 
 
-def test_skip_summary_rejects_excessive_rows(tmp_path: Path) -> None:
+def test_skip_summary_rejects_excessive_rows(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     module = _module()
-    module.MAX_SKIPPED_ROWS = 1
+    monkeypatch.setattr(module, "MAX_SKIPPED_ROWS", 1)
     report = tmp_path / "report.xml"
     report.write_text(
         "<testsuite>"

@@ -20,11 +20,11 @@ import re
 from typing import Any, Mapping
 
 
-DECLARATION_SCHEMA = "VSTD-SOURCE-GROUNDING-0.1"
-CERTIFICATE_SCHEMA = "VSTD-SOURCE-GROUNDING-CERTIFICATE-0.1"
-RECEIPT_SCHEMA = "VSTD-SOURCE-GROUNDING-RECEIPT-0.1"
-MECHANISM_PROFILE_SCHEMA = "VSTD-SOURCE-GROUNDING-MECHANISM-PROFILE-0.1"
-INTERPRETATION_PROFILE = "VSTD-CANONICAL-JSON-INTERPRETATION-0.1"
+DECLARATION_SCHEMA = "verifier-source-grounding-1"
+CERTIFICATE_SCHEMA = "verifier-source-grounding-certificate-1"
+RECEIPT_SCHEMA = "verifier-source-grounding-receipt-1"
+MECHANISM_PROFILE_SCHEMA = "verifier-source-grounding-mechanism-profile-1"
+INTERPRETATION_PROFILE = "verifier-canonical-json-interpretation-1"
 MECHANISM_ID = "canonical-json-pointer-equality-v1"
 CHECKER_IMPLEMENTATION = "verifier.interoperability.source_grounding"
 CHECKER_VERSION = "0.1"

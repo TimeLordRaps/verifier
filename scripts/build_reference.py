@@ -6,35 +6,144 @@ Verifier Standard (VSTD); YAML Ain't Markup Language (YAML).
 
 Generate the public CLI and top-level API reference page from the live implementation.
 
-Nothing on the generated page is hand-written prose about behaviour: every command,
-option, top-level export, signature, and listed pipeline edge is read out of the
-importable package at build time. `scripts/check_presentation.py` and
+CLI names and options come from the argument parser; top-level Python names and
+signatures come from the importable package. The pipeline map is a selected,
+manually described set of import-checked dispatch targets, and summaries come
+from source docstrings or a reviewed map of undocumented public members.
+`scripts/check_presentation.py` and
 `tests/test_presentation_surface.py` regenerate this file and fail closed when the
 committed page drifts from the code."""
 
 from __future__ import annotations
 
 import argparse
+import ast
 import enum
 import html
-import importlib
 import inspect
+import json
+import os
 from pathlib import Path
 import re
 import sys
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = ROOT / "src"
 if str(SOURCE_ROOT) not in sys.path:
     sys.path.insert(0, str(SOURCE_ROOT))
+import verifier as verifier_package
 OUTPUT = ROOT / "docs/reference.html"
+MEMBER_SUMMARIES = ROOT / "docs/API_MEMBER_SUMMARIES.json"
 SOURCE_BASE = "https://github.com/TimeLordRaps/verifier/blob/main/"
 
+
+def _preparation_summary() -> str:
+    from verifier.runtime.polish_workflow import STAGES
+
+    return (
+        "Runs the installed preparation stage catalogue with "
+        "separately pinned policy and optional quality checks; "
+        "explicit local apply has a recovery plan. Publication "
+        "and polished status remain separate. "
+    ) + " ".join(row["id"] + ": " + row["description"] for row in STAGES)
+
 # command -> the declared implementation stages it dispatches into. Every target is
-# imported during generation, so a rename or removal breaks the build rather than
-# silently publishing a stale pipeline map.
+# checked against its selected source declaration during generation, so a rename
+# or removal breaks the build without executing every internal pipeline module.
 PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+    (
+        "vstd gates",
+        "Replays applicable installed gates and exact preparation. Workflow reports "
+        "require a separately pinned contract; local clearance grants no publication authority.",
+        (
+            "verifier.runtime.gates:run_gates",
+            "verifier.runtime.gates:validate_clearance",
+            "verifier.runtime.polish_workflow_replay:validate_workflow_preparation",
+        ),
+    ),
+    (
+        "vstd polish report",
+        "Displays carried bounded findings, TIME contradictions, explicitly selected report-family and stage omissions, and comparable primary workflow attempt differences. Source and evaluator bindings are required for observed fixes; foreign related reports cannot fulfil candidate requirements. No replay, completeness guarantee or gate clearance.",
+        ("verifier.runtime.polish_findings:project_reports", "verifier.runtime.polish_findings:render_findings"),
+    ),
+    (
+        "vstd polish prepare",
+        _preparation_summary(),
+        (
+            "verifier.runtime.polish_workflow:prepare_workflow",
+            "verifier.runtime.polish_prepare:prepare_artifact",
+        ),
+    ),
+    (
+        "vstd current-object check",
+        (
+            "Replays one externally selected current-object "
+            "certificate without whole-profile promotion."
+        ),
+        (
+            "verifier.domains.contracts.current_object_routes:replay_current_object_certificate",
+        ),
+    ),
+    (
+        "vstd polish assess / check",
+        (
+            "Assesses declared wiring and registered objective "
+            "evidence, or recomputes a stored assessment; complete "
+            "polished-artifact closure remains unestablished."
+        ),
+        (
+            "verifier.runtime.polish:assess_polish",
+            "verifier.runtime.polish:recheck_polish",
+        ),
+    ),
+    (
+        "vstd polish coverage",
+        (
+            "Compares a separately pinned finite numbered "
+            "requirements inventory and replays selected native "
+            "evidence; exhaustive closure and polished issuance "
+            "remain unestablished."
+        ),
+        ("verifier.runtime.polish_requirements:assess_polish_inventory",),
+    ),
+    (
+        "vstd start",
+        "Prints the ordered, copy-pasteable path from an installed package to a "
+        "checked result; runs nothing and writes nothing.",
+        ("verifier.runtime.accessibility_cli:start_report",),
+    ),
+    (
+        "vstd explain",
+        "Restates a stored receipt or certificate in plain language, naming what "
+        "was established, what was not and why; never re-evaluates evidence.",
+        ("verifier.runtime.accessibility_cli:explain_report",),
+    ),
+    (
+        "vstd certification catalog",
+        (
+            "Lists the object-profile obligation catalogue and "
+            "bounded native checker coverage."
+        ),
+        ("verifier.core.profile_obligations:obligation_catalog",),
+    ),
+    (
+        "vstd certification assess",
+        (
+            "Executes externally admitted native obligation "
+            "mechanisms and emits a new grounded certificate."
+        ),
+        ("verifier.core.grounded_certification:build_grounded_certificate",),
+    ),
+    (
+        "vstd certification check",
+        (
+            "Rehashes and reruns a certificate against the "
+            "consumer's expected request and admission policy."
+        ),
+        ("verifier.core.grounded_certification:recheck_grounded_certificate",),
+    ),
     (
         "vstd demo",
         "Runs the four adversarial specimens in-process and reports whether each "
@@ -92,10 +201,13 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ),
     (
         "vstd validate",
-        "Dispatches on the receipt's serialized `schema_version` identifier and runs its implemented "
-        "checks. Generic-run validation enforces its required structure and stable "
-        "digest; other receipt kinds enforce their separately documented structure "
-        "and evidence rules.",
+        (
+            "Dispatches on the receipt's serialized `schema_version` "
+            "identifier and runs its implemented checks. Generic-run "
+            "validation enforces its required structure and stable "
+            "digest; other receipt kinds enforce their separately "
+            "documented structure and evidence rules."
+        ),
         (
             "verifier.core.run_validation:validate_run_receipt",
             "verifier.data.receipt:validate_data_receipt",
@@ -128,7 +240,7 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     (
         "vstd data",
         "Traces, renders, or exports the provenance hypergraph carried by a "
-        "VSTD-Graph receipt.",
+        "GRAPH receipt.",
         ("verifier.data.models:ProvenanceHypergraph",),
     ),
     (
@@ -161,6 +273,14 @@ PIPELINE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
             "verifier.hardware.validation:validate_vstd3_receipt",
         ),
     ),
+    (
+        "vstd publish",
+        (
+            "Checks local inputs and submits a claim and receipt for "
+            "authenticated storage pending human review."
+        ),
+        ("verifier.interoperability.claim_garden:publish_claim",),
+    ),
 )
 
 
@@ -168,15 +288,41 @@ class ReferenceBuildError(RuntimeError):
     pass
 
 
-def _resolve(target: str) -> tuple[object, str]:
+def _resolve(target: str) -> tuple[str, str]:
     module_name, _, attribute = target.partition(":")
+    if not module_name.startswith("verifier.") or not attribute.isidentifier():
+        raise ReferenceBuildError(f"invalid pipeline target: {target}")
+    relative = Path(*module_name.split("."))
+    candidates = (
+        SOURCE_ROOT / relative.with_suffix(".py"),
+        SOURCE_ROOT / relative / "__init__.py",
+    )
+    sources = [path for path in candidates if path.is_file()]
+    if len(sources) != 1:
+        raise ReferenceBuildError(f"pipeline target is not source-bound: {target}")
     try:
-        module = importlib.import_module(module_name)
-    except ImportError as exc:
-        raise ReferenceBuildError(f"pipeline target is not importable: {target}: {exc}") from exc
-    if not hasattr(module, attribute):
+        tree = ast.parse(sources[0].read_bytes(), filename=str(sources[0]))
+    except (OSError, SyntaxError, UnicodeError, ValueError) as exc:
+        raise ReferenceBuildError(
+            f"pipeline target source is unavailable: {target}: {exc}"
+        ) from exc
+    declarations = set()
+    for statement in tree.body:
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            declarations.add(statement.name)
+        elif isinstance(statement, (ast.Assign, ast.AnnAssign)):
+            targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+            declarations.update(
+                item.id for item in targets if isinstance(item, ast.Name)
+            )
+        elif isinstance(statement, (ast.Import, ast.ImportFrom)):
+            declarations.update(
+                alias.asname or alias.name.split(".")[0]
+                for alias in statement.names
+            )
+    if attribute not in declarations:
         raise ReferenceBuildError(f"pipeline target no longer exists: {target}")
-    return getattr(module, attribute), module_name
+    return attribute, module_name
 
 
 def _source_link(module_name: str) -> str:
@@ -192,6 +338,38 @@ def _source_link(module_name: str) -> str:
 def _summary(obj: object) -> str:
     doc = inspect.getdoc(obj) or ""
     return doc.split("\n\n", 1)[0].strip().replace("\n", " ")
+
+
+def _member_summaries() -> dict[tuple[str, str], str]:
+    try:
+        payload = json.loads(MEMBER_SUMMARIES.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ReferenceBuildError(f"cannot load reviewed member summaries: {exc}") from exc
+    if not isinstance(payload, dict) or set(payload) != {"schema_version", "source_files"}:
+        raise ReferenceBuildError("member summary map has unexpected top-level fields")
+    if payload["schema_version"] != 1 or not isinstance(payload["source_files"], dict):
+        raise ReferenceBuildError("member summary map has an unsupported schema")
+    summaries: dict[tuple[str, str], str] = {}
+    for source, members in payload["source_files"].items():
+        if (not isinstance(source, str) or not source.startswith("src/verifier/")
+                or not (ROOT / source).is_file() or not isinstance(members, dict)):
+            raise ReferenceBuildError(f"invalid member summary source: {source!r}")
+        for name, summary in members.items():
+            if not isinstance(name, str) or not isinstance(summary, str) or not summary.strip():
+                raise ReferenceBuildError(f"invalid member summary: {source}:{name}")
+            summaries[(source, name)] = summary.strip()
+    return summaries
+
+
+def _member_source(member: object) -> str:
+    target = member.fget if isinstance(member, property) else member
+    source = inspect.getsourcefile(target)
+    if source is None:
+        raise ReferenceBuildError(f"cannot locate source for public member {member!r}")
+    try:
+        return Path(source).resolve().relative_to(ROOT).as_posix()
+    except ValueError as exc:
+        raise ReferenceBuildError(f"public member source is outside repository: {source}") from exc
 
 
 def _esc(text: str) -> str:
@@ -244,11 +422,81 @@ def _walk(parser: argparse.ArgumentParser, help_text: str = "") -> list[dict[str
     return commands
 
 
-def _cli_section() -> str:
-    from verifier.runtime.public_cli import build_parser
+_NUMERIC_POLISH_PROGS = tuple(f"vstd polish {tier}" for tier in range(4))
 
+
+def _replace_numeric_polish_stubs(
+    commands: list[dict[str, object]],
+    tier_commands: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Replace only the public parser's numeric polish help stubs."""
+
+    targets = set(_NUMERIC_POLISH_PROGS)
+    public_indexes: dict[str, int] = {}
+    for index, command in enumerate(commands):
+        prog = str(command["prog"])
+        if prog not in targets:
+            continue
+        if prog in public_indexes:
+            raise ReferenceBuildError(f"duplicate public command target: {prog}")
+        if command["arguments"]:
+            raise ReferenceBuildError(f"numeric polish target is not a help-only stub: {prog}")
+        public_indexes[prog] = index
+    if set(public_indexes) != targets:
+        missing = sorted(targets - set(public_indexes))
+        raise ReferenceBuildError(f"missing public command targets: {missing}")
+
+    projected: dict[str, dict[str, object]] = {}
+    for command in tier_commands:
+        prog = str(command["prog"])
+        if prog not in targets:
+            continue
+        if prog in projected:
+            raise ReferenceBuildError(f"duplicate tier parser target: {prog}")
+        if not command["arguments"]:
+            raise ReferenceBuildError(f"numeric polish parser has no arguments: {prog}")
+        projected[prog] = command
+    if set(projected) != targets:
+        missing = sorted(targets - set(projected))
+        raise ReferenceBuildError(f"missing tier parser targets: {missing}")
+
+    result = list(commands)
+    for prog in _NUMERIC_POLISH_PROGS:
+        public_command = commands[public_indexes[prog]]
+        result[public_indexes[prog]] = {
+            **projected[prog],
+            # The ordinary public parser owns the reviewed presentation text;
+            # the separately dispatched parser owns the real argument rows.
+            "help": public_command["help"],
+        }
+    progs = [str(command["prog"]) for command in result]
+    if len(progs) != len(set(progs)):
+        raise ReferenceBuildError("duplicate command programs after numeric polish projection")
+    return result
+
+
+def _cli_commands() -> list[dict[str, object]]:
+    from verifier.runtime.public_cli import build_parser
+    from verifier.runtime.self_polish_tiers import build_self_polish_tier_parser
+
+    # The gate-attestation parser deliberately reads GitHub's live run metadata.
+    # A published reference must show the fallback defaults, not the identity of
+    # whichever runner happened to build it. Restore the caller's environment
+    # immediately after constructing this read-only parser snapshot.
+    without_github = {key: value for key, value in os.environ.items()
+                      if not key.startswith("GITHUB_")}
+    with patch.dict(os.environ, without_github, clear=True):
+        commands = _walk(build_parser())
+    return _replace_numeric_polish_stubs(
+        commands,
+        _walk(build_self_polish_tier_parser()),
+    )
+
+
+def _cli_section() -> str:
     blocks: list[str] = []
-    for command in _walk(build_parser()):
+    commands = _cli_commands()
+    for command in commands:
         prog = str(command["prog"])
         anchor = "cli-" + prog.replace(" ", "-")
         rows = ""
@@ -284,10 +532,16 @@ def _cli_section() -> str:
 
 
 def _api_section() -> str:
-    package = importlib.import_module("verifier")
+    package = verifier_package
     blocks: list[str] = []
+    member_summaries = _member_summaries()
+    used_summaries: set[tuple[str, str]] = set()
     for name in sorted(package.__all__):
-        value = getattr(package, name)
+        # ``verifier`` deliberately exposes a statically checked lazy table.
+        # Asking that exact dispatcher for names from its finite ``__all__``
+        # materializes the public API without opening a general import route.
+        value = (package.__dict__[name] if name in package.__dict__
+                 else package.__getattr__(name))
         module_name = value.__module__
         if inspect.isclass(value):
             kind = "enum" if issubclass(value, enum.Enum) else "class"
@@ -307,16 +561,31 @@ def _api_section() -> str:
             members = f'<p class="ref-help">Members: <code>{_esc(values)}</code></p>'
         elif kind == "class":
             rows = ""
-            for member_name, member in sorted(inspect.getmembers(value, inspect.isfunction)):
+            for member_name, member in inspect.getmembers(value):
                 if member_name.startswith("_"):
                     continue
-                try:
-                    member_signature = f"{member_name}{inspect.signature(member)}"
-                except (TypeError, ValueError):
-                    member_signature = member_name
+                if isinstance(member, property):
+                    member_signature = f"{member_name} (property)"
+                elif inspect.isfunction(member) or inspect.ismethod(member):
+                    try:
+                        member_signature = f"{member_name}{inspect.signature(member)}"
+                    except (TypeError, ValueError):
+                        member_signature = member_name
+                else:
+                    continue
+                member_summary = _summary(member)
+                if not member_summary:
+                    key = (_member_source(member), f"{name}.{member_name}")
+                    member_summary = member_summaries.get(key, "")
+                    if not member_summary:
+                        raise ReferenceBuildError(
+                            f"public member has no reviewed summary: {key[0]}:{key[1]}"
+                        )
+                    used_summaries.add(key)
                 rows += (
-                    f"<tr><td><code>{_esc(member_signature)}</code></td>"
-                    f"<td>{_esc(_summary(member))}</td></tr>\n"
+                    f'<tr id="api-{_esc(name)}.{_esc(member_name)}">'
+                    f"<td><code>{_esc(member_signature)}</code></td>"
+                    f"<td>{_esc(member_summary)}</td></tr>\n"
                 )
             if rows:
                 members = (
@@ -351,6 +620,9 @@ def _api_section() -> str:
             f"<code>{_esc(module_name)}</code></a></p>\n"
             f"{members}\n</article>"
         )
+    stale = set(member_summaries) - used_summaries
+    if stale:
+        raise ReferenceBuildError(f"unused member summaries: {sorted(stale)}")
     return "\n".join(blocks)
 
 
@@ -390,7 +662,7 @@ def _source_coordinate(version: str, changelog: str) -> str:
 
 
 def render() -> str:
-    package = importlib.import_module("verifier")
+    package = verifier_package
     version = package.__version__
     standard = package.__standard__
     standard_status = package.__standard_status__
@@ -436,19 +708,21 @@ def render() -> str:
   <main id="top">
     <div class="wrap ref-hero">
       <div class="eyebrow">Reference &middot; {_esc(source_coordinate)} &middot; {_esc(standard)} {_esc(standard_status)}</div>
-      <h1>Inspect the whole pipeline.</h1>
+      <h1>Inspect the supported surface.</h1>
       <p class="terms"><strong>Terms used below:</strong> hash-based message authentication
       code (HMAC); International Organization for Standardization (ISO); JavaScript Object
       Notation (JSON); Secure Hash Algorithm 256-bit (SHA-256); and YAML Ain't Markup Language
       (YAML).</p>
-      <p class="lead">Every command, argument, top-level export, and listed dispatch edge below
-      is read out of the installed package when this page is built, by
-      <code>scripts/build_reference.py</code>, and the presentation tests fail closed when the
-      committed page drifts &mdash; so it cannot describe behaviour the implementation no
-      longer has.</p>
+      <p class="lead">The command and argument inventory comes from the parser; the Python
+      export inventory and signatures come from <code>verifier.__all__</code> at build time.
+      The pipeline map selects import-checked implementation targets. Summaries come from
+      source docstrings or the reviewed public-member summary map. Presentation tests detect generated
+      page drift from these sources; they do not prove the described behaviour correct.</p>
       <p class="status">This page states the declared public surface of one implementation. It
-      does not establish that any individual claim checked by these commands is true, nor that
-      an external implementation exists.</p>
+      does not cover experimental direct submodule imports. Public instance methods,
+      class methods, and properties of exported classes are listed here. The page
+      does not establish that an individual claim checked by these commands is true, nor
+      that an external implementation exists.</p>
       <div class="actions">
         <a class="button primary" href="#pipeline">Pipeline map</a>
         <a class="button" href="#cli">CLI reference</a>
@@ -460,7 +734,7 @@ def render() -> str:
     <section id="pipeline">
       <div class="wrap">
         <div class="eyebrow">Pipeline</div>
-        <h2>Command to implementation, without a gap.</h2>
+        <h2>Selected command-to-implementation paths.</h2>
         <p class="section-lead">Each entry point below is imported while this page is built. A
         rename, move, or deletion fails the build instead of publishing a stale map.</p>
         <div class="ref-table">{_pipeline_section()}</div>
@@ -474,7 +748,9 @@ def render() -> str:
         <p class="section-lead">Extracted from the live argument parser in
         <a href="{SOURCE_BASE}src/verifier/runtime/public_cli.py"><code>verifier.runtime.public_cli</code></a>.
         <code>vstd</code> is the canonical cross-platform command; <code>verifier</code> is
-        retained as an alias only on platforms where it is unambiguous.</p>
+        retained as an alias only on platforms where it is unambiguous. Defaults below
+        show a run without GitHub environment variables; <code>vstd gate attest</code>
+        reads those variables at execution when present.</p>
         <div class="ref-list">{_cli_section()}</div>
       </div>
     </section>

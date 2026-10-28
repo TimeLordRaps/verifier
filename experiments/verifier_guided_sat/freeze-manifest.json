@@ -1,0 +1,73 @@
+{
+  "files": {
+    "AlgoTuneTasks/__init__.py": "sha256:d1a44f20bce0a4db0964124013f887d8d1bf97453f6a5087f893d7b7429c0441",
+    "AlgoTuneTasks/base.py": "sha256:67dd27baff0ce7e215886c7be12b00f3b17f8d051114ad35409ae03236ce9775",
+    "PREREGISTRATION.md": "sha256:df70019c80f267a49c964aeb7fde460e3424e49e26f65afc13f9fbb25267c0a4",
+    "RESEARCH.md": "sha256:2f38e0169d5d307c46e744ecb139871c6c8b9145b0806ef9eeef6fe53b9d9078",
+    "development-noise.json": "sha256:b8299ba370673f29523c7b58401d80201a434fbe5162e7ce7acb66783ab84632",
+    "instances/manifest.json": "sha256:8c263da9b2e9618728d3e09abd69379cac84f008a9b9de855be5341683327ad6",
+    "metrics.schema.json": "sha256:b6df7c6413ea1c68cdb731a53381dba1e723c0f16be0e52c0414aa39bfbb7767",
+    "prompts/arm_b.txt": "sha256:ce3ab64ca10264bebd21ec74e46dfee78b9e708c9e9823e47465031000714c6c",
+    "prompts/arm_c.txt": "sha256:cb8d35be1479a67194aea1a3b1ce1cf69c5d89b074ec86086c854d1e0789c302",
+    "prompts/system.txt": "sha256:c971c8a98780fe79194001fd0a9ad0b291d1f4c2cb1f23afb879c3fc7e791f58",
+    "requirements-experiment.txt": "sha256:a15feeb32b718b95225a18fa5d5b8044bf4bacf636e29915376ea0e9654f2da4",
+    "selected-tools.lock": "sha256:c6ff85f3d65f06cf82d72812b0599dcb554c4a7715be45c3bad76bce1d276489",
+    "verifier_guided_sat/analysis.py": "sha256:1dc64d7565c0323c4647e63863f50465056c3102f54ea3319adf6f93685fd28a",
+    "verifier_guided_sat/baselines.py": "sha256:b361a3dad813d7e4c2f94c7db18d448d26f97bbf127ac21a0dcefa286a13218c",
+    "verifier_guided_sat/benchmark.py": "sha256:c2676ee3a61ded6fd18475fee769077289cb6ddff2efeeabb7328baadbf12048",
+    "verifier_guided_sat/canonical.py": "sha256:241fdd1d836046383521d1ce868d9753687df1aa42745a80de1f60ff12fc7186",
+    "verifier_guided_sat/contracts.py": "sha256:dd106dfcce0ea0c9a7e86393e4c21dacc4df02c191d189fef65e794f36f72928",
+    "verifier_guided_sat/external_verifiers.py": "sha256:7b3e9a95713a698c63654e2197fa6709c1d748611ef104bc6c1f94fedc0df460",
+    "verifier_guided_sat/freeze.py": "sha256:51bee8cfbfa7e5c4ec7ff0356f02df5a7b59c433061e7397773afa2afcc1a4a3",
+    "verifier_guided_sat/harness.py": "sha256:0e0fd2bc6055a80e85cc2f8d9279962168e7850661b7142cda78ec47901d7677",
+    "verifier_guided_sat/independent_validation.py": "sha256:d56bb8fd4bcc9041f59020a705dd9dd36532403e7e470cb990245992e92957a3",
+    "verifier_guided_sat/instances.py": "sha256:77b6ecddc7b2988233b45d7be0cb8c91fa93ccd814c7581edd9262ccbdeaebec",
+    "verifier_guided_sat/lm_backend.py": "sha256:65fc54faf518e40eb1a0ec817189a396acd68c6699e8462f3f03f3eaace71eb4",
+    "verifier_guided_sat/metrics.py": "sha256:51e9dfac10a9071a356c96a4ccf25ba7462b07d14bff409ba5c8a4b167e0ce3c",
+    "verifier_guided_sat/noise.py": "sha256:04e455f533c77565b5922aac1578290af0e9e76b9fb39ff6dbe27955840810f3",
+    "verifier_guided_sat/prompts.py": "sha256:3d08ccb15da9c72b267899069afa356fae82736b9de25bd022ad51436611600a",
+    "verifier_guided_sat/reserve_verifiers.py": "sha256:5e61cd6157b660632af425928d7c2371e27bdb7a50595b43e09a1f3dce796358",
+    "verifier_guided_sat/result_validator.py": "sha256:54539fb0caad6a8ee218e9e05ed12795a70ca25c4159aa6177edb6f237cba3ad",
+    "verifier_guided_sat/route.py": "sha256:c877ce889baed24c1b676d99a997660d00c24a0828ad39eb9a44115f20f0851d",
+    "verifier_guided_sat/sat_backend.py": "sha256:96ec2984917af36e85783f7e0a738e116a5cc751f70de7ed947fc68de33684ae",
+    "verifier_guided_sat/vstd_binding.py": "sha256:b0484a2bc039be55560247bd88ab51cb72d228d1b0aae4453ae17c16769b92a3"
+  },
+  "freeze_date_utc": "2026-10-14",
+  "freeze_digest": "sha256:d1ea211530c5c13568b155630d2db32e9f9fa5ee43fc223773fa204dbab81056",
+  "freeze_state": "FROZEN_BEFORE_HELD_OUT",
+  "freeze_version": "vgsat-freeze-0.1",
+  "generic_code_changed_after_live_held_out_start": 0,
+  "held_out_live_evaluation_started": false,
+  "solver_configuration": {
+    "binding": "python-sat==1.9.dev15",
+    "clause_order": "compiler-deterministic",
+    "conflict_budget": null,
+    "engine": "CaDiCaL",
+    "engine_version": "3.0.0",
+    "phase_configuration": "binding-default",
+    "solver_name": "cadical300",
+    "unsat_certificate": "unavailable-through-selected-binding"
+  },
+  "solver_configuration_digest": "sha256:50c07335ed45f08f93c942a278cf2f19cb7c59891f40bd760e5fa759af796e10",
+  "success_threshold": 0.1,
+  "timing_procedure": {
+    "clock": "perf_counter_ns",
+    "noise_rule": "max(0.10, 3 * median per-instance relative MAD)",
+    "threshold": 0.1,
+    "total_components": [
+      "lm_generation",
+      "harness",
+      "sat",
+      "native_verifier",
+      "orchestration_unattributed",
+      "vstd_creation_probe",
+      "vstd_reverification_probe"
+    ],
+    "total_metric": "total_system_probe"
+  },
+  "verifier_contract_digests": {
+    "graph_isomorphism": "sha256:501c8c9e6d7c8be6055cf7c46844e504f04d1c8a0de9c679b21f074ce1447ee9",
+    "integer_factorization": "sha256:a39bf7e115629a674e192430d30359a85217afec5b9c1ad4ab85de026f11fe66",
+    "stable_matching": "sha256:75cc5ce5df220bcbcff3221656a833844dc615a50e2afd1e3759dfac6585de5b"
+  }
+}

@@ -6,7 +6,7 @@ Formal Policy Verification Engine for Dataset & Computational Provenance."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Mapping, Optional, Sequence
 
 from verifier.core.certificate import (
@@ -18,7 +18,9 @@ from verifier.core.certificate import (
     GroundedFact,
     Grounding,
     ResourceBounds,
+    Verdict,
     VariableGrounding,
+    certificate_from_dict,
     normalize_clause,
 )
 from verifier.core.checker import MinimalIndependentDPLL, VerificationVerdict
@@ -28,9 +30,13 @@ from verifier.data.models import ArtifactStatus, ProvenanceHypergraph
 
 
 class PolicyEncodingError(RuntimeError):
-    """The CNF encoding and the direct computation disagree about a policy.
+    """A policy cannot be safely encoded, or its CNF and direct computation disagree.
 
-    This used to be impossible to observe. Each verifier below computed
+    It is raised before any verdict when the graph is structurally invalid or a
+    CNF leaves a variable it declares unbound: both let a policy PASS on
+    nothing.
+
+    Disagreement used to be impossible to observe. Each verifier below computed
     ``passed = bool(sat and not violations)`` -- hedging the SAT result against
     a Python list comprehension, so the operative verdict came from the list and
     the certificate was decoration. If the encoding and the list ever diverged,
@@ -85,9 +91,24 @@ POLICY_RULES = (
 def _policy_subjects(
     var_map: Mapping[str, int], target_artifact_id: str
 ) -> dict[int, tuple[str, str]]:
-    """Index -> (subject, predicate), read out of the variable map."""
+    """Index -> (subject, predicate), read out of the variable map.
+
+    Two names on one index would leave the earlier one ungrounded and invisible
+    in the certificate, so each index names at most one variable.
+    """
     subjects: dict[int, tuple[str, str]] = {}
+    names: dict[int, str] = {}
     for name, index in var_map.items():
+        if type(index) is not int or index < 1:
+            raise PolicyEncodingError(
+                f"variable {name!r} has index {index!r}, not a positive integer"
+            )
+        if index in names:
+            raise PolicyEncodingError(
+                f"variables {names[index]!r} and {name!r} share index {index}, so one of "
+                "them would vanish from the grounding"
+            )
+        names[index] = name
         if index == 1:
             subjects[index] = (target_artifact_id, name.lower())
             continue
@@ -107,9 +128,21 @@ def ground_policy_cnf(
     *,
     member_value: Optional[Mapping[str, str]] = None,
 ) -> Grounding:
-    """Bind every variable to a content-addressed fact and every clause to a rule."""
+    """Bind every variable to a (subject, predicate, value) fact and every clause to a rule.
+
+    Facts are named, not digested: the grounding records what the direct computation
+    said about each member, and :func:`check_policy_decision` re-grounds the same
+    facts to compare them with the certificate.
+    """
     subjects = _policy_subjects(var_map, target_artifact_id)
     values = dict(member_value or {})
+    members = {subject for index, (subject, _) in subjects.items() if index != 1}
+    unrecorded = sorted(set(values) - members)
+    if unrecorded:
+        raise PolicyEncodingError(
+            f"member facts for {unrecorded} name no variable, so they would be "
+            "evidence the certificate never checks"
+        )
 
     variables = tuple(
         VariableGrounding(
@@ -123,6 +156,12 @@ def ground_policy_cnf(
     groundings: list[ClauseGrounding] = []
     for position, clause in enumerate(clauses):
         literals = normalize_clause(clause)
+        undeclared = sorted({abs(literal) for literal in literals} - set(subjects))
+        if undeclared:
+            raise PolicyEncodingError(
+                f"clause {position} uses undeclared variable {undeclared[0]}, so nothing "
+                "grounds it and its meaning is unstated"
+            )
         if literals == (1,):
             rule, bindings = RULE_ASSERT_TARGET, {"target": 1}
         elif len(literals) == 2 and literals[0] == -1 and literals[1] > 1:
@@ -142,12 +181,58 @@ def ground_policy_cnf(
         }
         groundings.append(ClauseGrounding(position, rule.rule_id, bindings, clause_subjects))
 
+    _require_every_variable_bound(groundings, subjects)
     return Grounding(variables, tuple(groundings), POLICY_RULES)
+
+
+_FACT_RULES = (RULE_MEMBER_SATISFIES.rule_id, RULE_MEMBER_VIOLATES.rule_id)
+
+
+def _require_every_variable_bound(
+    groundings: Sequence[ClauseGrounding], subjects: Mapping[int, tuple[str, str]]
+) -> None:
+    """Refuse a CNF that says less than its variable map.
+
+    Every clause shape above is sound on its own, and a CNF missing one still
+    certifies PASS: an unasserted target is satisfied by making it false, and a
+    member with no fact clause, or one the target never requires, takes
+    whatever value passes. The encoders emit the target once and each member
+    once per rule, so any other count is an encoding bug.
+    """
+    asserted = sum(1 for g in groundings if g.rule_id == RULE_ASSERT_TARGET.rule_id)
+    if asserted != 1:
+        raise PolicyEncodingError(
+            f"the target is asserted by {asserted} clauses, not exactly one, so a "
+            "PASS would not be a statement about the target"
+        )
+    for index, (subject, predicate) in sorted(subjects.items()):
+        if index == 1:
+            continue
+        required = sum(
+            1
+            for g in groundings
+            if g.rule_id == RULE_TARGET_REQUIRES.rule_id and g.bindings["member"] == index
+        )
+        facts = sum(
+            1 for g in groundings if g.rule_id in _FACT_RULES and g.bindings["member"] == index
+        )
+        if required != 1 or facts != 1:
+            raise PolicyEncodingError(
+                f"variable {index} ({predicate} of {subject}) is required by {required} "
+                f"clauses and fixed by {facts} fact clauses; each must be exactly one, "
+                "or the policy can PASS without deciding that member"
+            )
 
 
 def _policy_binding(
     policy_id: str, target_artifact_id: str, clauses: Sequence[Sequence[int]]
 ) -> ClaimBinding:
+    """The claim binding for one CNF over one target.
+
+    ``evidence_root`` commits only to the policy and target identifiers. The
+    member facts are not in the binding; they are bound by the certificate's
+    grounding, which :func:`check_policy_decision` compares exactly.
+    """
     from verifier.core.certificate import canonical_digest
 
     return ClaimBinding(
@@ -220,8 +305,144 @@ def certify_policy_cnf(
     return cnf_passed, certificate
 
 
+_EVIDENCE_FIELDS = frozenset(
+    {
+        "policy_id",
+        "target_artifact_id",
+        "passed",
+        "clauses",
+        "variable_map",
+        "member_values",
+        "certificate",
+    }
+)
+
+
+def _str_int_mapping(value: Any) -> bool:
+    return isinstance(value, dict) and all(
+        type(key) is str and type(item) is int for key, item in value.items()
+    )
+
+
+def _str_str_mapping(value: Any) -> bool:
+    return isinstance(value, dict) and all(
+        type(key) is str and type(item) is str for key, item in value.items()
+    )
+
+
+@dataclass(frozen=True)
+class PolicyDecisionEvidence:
+    """The exact CNF, grounding and kernel certificate behind one certified decision.
+
+    Immutable and self-contained: every collection is a tuple copy, so no list
+    the caller still holds can change what was certified. It records the
+    inputs the decision used -- clauses, variable grounding and the member facts
+    the direct computation supplied -- not the provenance graph those facts were
+    read from. Its claim is that this certificate proves this CNF over these
+    facts with this verdict; it does not establish that the facts are true.
+    """
+
+    policy_id: str
+    target_artifact_id: str
+    passed: bool
+    clauses: tuple[tuple[int, ...], ...]
+    variable_map: tuple[tuple[str, int], ...]
+    member_values: tuple[tuple[str, str], ...]
+    certificate: DecisionCertificate
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "policy_id": self.policy_id,
+            "target_artifact_id": self.target_artifact_id,
+            "passed": self.passed,
+            "clauses": [list(clause) for clause in self.clauses],
+            "variable_map": dict(self.variable_map),
+            "member_values": dict(self.member_values),
+            "certificate": self.certificate.to_dict(),
+        }
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "PolicyDecisionEvidence":
+        """Parse the closed form. Unknown, missing or mistyped fields are refused."""
+        if not isinstance(value, Mapping) or set(value) != _EVIDENCE_FIELDS:
+            raise ValueError(
+                "policy decision evidence must have exactly the fields "
+                + ", ".join(sorted(_EVIDENCE_FIELDS))
+            )
+        clauses = value["clauses"]
+        certificate = value["certificate"]
+        if (
+            type(value["policy_id"]) is not str
+            or type(value["target_artifact_id"]) is not str
+            or type(value["passed"]) is not bool
+            or type(clauses) is not list
+            or not all(
+                type(clause) is list and all(type(literal) is int for literal in clause)
+                for clause in clauses
+            )
+            or not _str_int_mapping(value["variable_map"])
+            or not _str_str_mapping(value["member_values"])
+            or not isinstance(certificate, dict)
+        ):
+            raise ValueError("policy decision evidence has a field of the wrong type")
+        return cls(
+            policy_id=value["policy_id"],
+            target_artifact_id=value["target_artifact_id"],
+            passed=value["passed"],
+            clauses=tuple(tuple(clause) for clause in clauses),
+            variable_map=tuple(sorted(value["variable_map"].items())),
+            member_values=tuple(sorted(value["member_values"].items())),
+            certificate=certificate_from_dict(certificate),
+        )
+
+
+def check_policy_decision(evidence: PolicyDecisionEvidence) -> bool:
+    """Re-ground, re-bind and re-check one decision from its evidence alone.
+
+    True only when the kernel accepts the certificate against the claim binding
+    rebuilt from these fields, the certificate's grounding is exactly what these
+    variables and member facts ground to, and its verdict is this decision's
+    verdict. Substituted, stale, reordered, cross-policy, aliased or
+    under-grounded evidence is False. Nothing here re-reads a provenance graph.
+    """
+    try:
+        clauses = [list(clause) for clause in evidence.clauses]
+        grounding = ground_policy_cnf(
+            clauses,
+            dict(evidence.variable_map),
+            evidence.target_artifact_id,
+            member_value=dict(evidence.member_values),
+        )
+        binding = _policy_binding(evidence.policy_id, evidence.target_artifact_id, clauses)
+    except (PolicyEncodingError, TypeError, ValueError):
+        return False
+    certificate = evidence.certificate
+    expected = Verdict.PASS if evidence.passed else Verdict.FAIL
+    return (
+        certificate.grounding == grounding
+        and certificate.formula == tuple(tuple(clause) for clause in clauses)
+        and certificate.header.verdict is expected
+        and kernel_check(certificate, binding=binding).accepted
+    )
+
+
 @dataclass(frozen=True)
 class PolicyEvaluationResult:
+    """A policy decision and, where one exists, the kernel certificate that proves it.
+
+    ``certificate`` is the certificate ``certify_policy_cnf`` checked for this
+    exact CNF. It is None for INDETERMINATE results, which certify nothing and
+    synthesize no evidence. ``member_values`` holds the non-default member facts
+    that grounded it. :meth:`decision_evidence` and :func:`check_policy_decision`
+    re-check the decision. ``to_dict`` deliberately omits both, so the serialized
+    wire form is unchanged.
+
+    Revision and activation: the policy id names the rule family, the binding
+    commits to the exact CNF, and the grounding commits the encoding rule ids.
+    No policy version, exception, activation time or enforcement point is
+    recorded here.
+    """
+
     policy_id: str
     policy_name: str
     target_artifact_id: str
@@ -230,6 +451,22 @@ class PolicyEvaluationResult:
     clauses: list[list[int]]
     variable_map: dict[str, int]
     explanation: str
+    certificate: Optional[DecisionCertificate] = field(default=None, repr=False)
+    member_values: dict[str, str] = field(default_factory=dict, repr=False)
+
+    def decision_evidence(self) -> Optional[PolicyDecisionEvidence]:
+        """An immutable copy of this decision's evidence, or None if nothing was certified."""
+        if self.certificate is None:
+            return None
+        return PolicyDecisionEvidence(
+            policy_id=self.policy_id,
+            target_artifact_id=self.target_artifact_id,
+            passed=self.passed,
+            clauses=tuple(tuple(clause) for clause in self.clauses),
+            variable_map=tuple(sorted(self.variable_map.items())),
+            member_values=tuple(sorted(self.member_values.items())),
+            certificate=self.certificate,
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -244,6 +481,49 @@ class PolicyEvaluationResult:
         }
 
 
+def _refuse_undecidable(
+    graph: ProvenanceHypergraph, target_artifact_id: str, policy_id: str, policy_name: str
+) -> Optional[PolicyEvaluationResult]:
+    """Stop a policy from certifying a lineage the graph does not record.
+
+    An empty or dangling lineage makes every policy below vacuously true. A
+    structurally invalid graph raises, mirroring
+    ``verifier.data.graph_level._require_valid_graph_structure`` rather than
+    calling it, for the rung 4.7 reason that module gives. A target the graph
+    does not contain is INDETERMINATE: the question is well formed, but the
+    graph holds nothing to decide it with.
+    """
+    errors = graph.validate_structure()
+    if errors:
+        raise PolicyEncodingError(
+            f"{policy_id} requires a structurally valid provenance graph: " + "; ".join(errors)
+        )
+    if target_artifact_id in graph.artifacts:
+        return None
+    return _indeterminate(
+        policy_id,
+        policy_name,
+        target_artifact_id,
+        f"{target_artifact_id} is not an artifact of this graph, so no lineage is "
+        "recorded for it and the policy has nothing to decide.",
+    )
+
+
+def _indeterminate(
+    policy_id: str, policy_name: str, target_artifact_id: str, reason: str
+) -> PolicyEvaluationResult:
+    return PolicyEvaluationResult(
+        policy_id=policy_id,
+        policy_name=policy_name,
+        target_artifact_id=target_artifact_id,
+        passed=False,
+        verdict=VerificationVerdict.INDETERMINATE,
+        clauses=[],
+        variable_map={},
+        explanation=f"Indeterminate: {reason}",
+    )
+
+
 class ProvenancePolicyVerifier:
     """Encodes provenance graph invariants into SAT formulas and verifies them using MinimalIndependentDPLL."""
 
@@ -252,6 +532,11 @@ class ProvenancePolicyVerifier:
         graph: ProvenanceHypergraph,
         target_artifact_id: str,
     ) -> PolicyEvaluationResult:
+        refused = _refuse_undecidable(
+            graph, target_artifact_id, "POL-NO-REVOKED-ANCESTORS", "Zero Revoked Ancestors Invariant"
+        )
+        if refused is not None:
+            return refused
         ancestors = graph.ancestors([target_artifact_id])
         revoked_nodes = []
 
@@ -284,14 +569,15 @@ class ProvenancePolicyVerifier:
         solver = MinimalIndependentDPLL(n_vars=idx - 1, clauses=test_clauses)
         sat, model = solver.solve()
 
-        passed, _certificate = certify_policy_cnf(
+        member_value = {a_id: "REVOKED" for a_id in revoked_nodes}
+        passed, certificate = certify_policy_cnf(
             satisfiable=sat,
             direct_result=not revoked_nodes,
             policy_id="POL-NO-REVOKED-ANCESTORS",
             target_artifact_id=target_artifact_id,
             clauses=test_clauses,
             var_map=var_map,
-            member_value={a_id: "REVOKED" for a_id in revoked_nodes},
+            member_value=member_value,
         )
         verdict = VerificationVerdict.VERIFIED if passed else VerificationVerdict.FALSIFIED
 
@@ -316,6 +602,8 @@ class ProvenancePolicyVerifier:
             clauses=test_clauses,
             variable_map=var_map,
             explanation=expl,
+            certificate=certificate,
+            member_values=member_value,
         )
 
     @staticmethod
@@ -324,6 +612,14 @@ class ProvenancePolicyVerifier:
         target_artifact_id: str,
     ) -> PolicyEvaluationResult:
         """Fail closed unless every recorded ancestor is explicitly ``VALID``."""
+        refused = _refuse_undecidable(
+            graph,
+            target_artifact_id,
+            "POL-ALL-ANCESTORS-VALID",
+            "All Recorded Ancestors Explicitly Valid",
+        )
+        if refused is not None:
+            return refused
         ancestors = graph.ancestors([target_artifact_id])
         inadmissible = [
             artifact_id
@@ -345,14 +641,15 @@ class ProvenancePolicyVerifier:
             clauses=test_clauses,
         )
         sat, _ = solver.solve()
-        passed, _certificate = certify_policy_cnf(
+        member_value = {artifact_id: "NOT_VALID" for artifact_id in inadmissible}
+        passed, certificate = certify_policy_cnf(
             satisfiable=sat,
             direct_result=not inadmissible,
             policy_id="POL-ALL-ANCESTORS-VALID",
             target_artifact_id=target_artifact_id,
             clauses=test_clauses,
             var_map=var_map,
-            member_value={artifact_id: "NOT_VALID" for artifact_id in inadmissible},
+            member_value=member_value,
         )
         verdict = VerificationVerdict.VERIFIED if passed else VerificationVerdict.FALSIFIED
         if passed:
@@ -375,6 +672,8 @@ class ProvenancePolicyVerifier:
             clauses=test_clauses,
             variable_map=var_map,
             explanation=explanation,
+            certificate=certificate,
+            member_values=member_value,
         )
 
     @staticmethod
@@ -383,8 +682,23 @@ class ProvenancePolicyVerifier:
         target_artifact_id: str,
         approved_spdx_licenses: Sequence[str] = ("CC-BY-4.0", "CC-BY-NC-4.0", "MIT", "Apache-2.0"),
     ) -> PolicyEvaluationResult:
+        refused = _refuse_undecidable(
+            graph, target_artifact_id, "POL-APPROVED-LICENSES", "Approved Source Licenses Invariant"
+        )
+        if refused is not None:
+            return refused
         ancestors = graph.ancestors([target_artifact_id])
         roots = [a_id for a_id in ancestors if a_id in graph.root_sources()]
+        if not roots:
+            # Reachable on a valid graph only through a cycle: every ancestor is
+            # some transformation's output, so no source licence is recorded.
+            return _indeterminate(
+                "POL-APPROVED-LICENSES",
+                "Approved Source Licenses Invariant",
+                target_artifact_id,
+                f"no ancestor of {target_artifact_id} is a root source, so no source "
+                "licence is recorded and approval cannot follow from zero sources.",
+            )
         unapproved = []
 
         for r_id in roots:
@@ -409,14 +723,15 @@ class ProvenancePolicyVerifier:
         solver = MinimalIndependentDPLL(n_vars=idx - 1, clauses=test_clauses)
         sat, _ = solver.solve()
 
-        passed, _certificate = certify_policy_cnf(
+        member_value = {r_id: "UNAPPROVED" for r_id in unapproved}
+        passed, certificate = certify_policy_cnf(
             satisfiable=sat,
             direct_result=not unapproved,
             policy_id="POL-APPROVED-LICENSES",
             target_artifact_id=target_artifact_id,
             clauses=test_clauses,
             var_map=var_map,
-            member_value={r_id: "UNAPPROVED" for r_id in unapproved},
+            member_value=member_value,
         )
         verdict = VerificationVerdict.VERIFIED if passed else VerificationVerdict.FALSIFIED
 
@@ -438,4 +753,6 @@ class ProvenancePolicyVerifier:
             clauses=test_clauses,
             variable_map=var_map,
             explanation=expl,
+            certificate=certificate,
+            member_values=member_value,
         )

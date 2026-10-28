@@ -7,7 +7,6 @@ Validate assembled navigation, release boundaries and source-preserving presenta
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import re
 from html.parser import HTMLParser
@@ -15,12 +14,25 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 import pytest
+import verifier as verifier_package
+from scripts import build_docs_portal as PORTAL
 
 ROOT = Path(__file__).resolve().parents[1]
-SPEC = importlib.util.spec_from_file_location("docs_portal_test", ROOT / "scripts/build_docs_portal.py")
-assert SPEC and SPEC.loader
-PORTAL = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(PORTAL)
+
+
+def test_home_renderer_consumes_exact_source_binding_and_all_tokens() -> None:
+    for stable in (False, True):
+        rendered = PORTAL.home(stable)
+        assert "vstd-template-binding" not in rendered
+        assert "{{" not in rendered and "{%" not in rendered and "<%" not in rendered
+
+
+def test_repository_checks_fetch_the_pinned_documentation_release() -> None:
+    workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    fetches = re.findall(r"git fetch --no-tags --depth=1 origin (\S+)", workflow)
+    assert fetches, "Shallow hosted checkouts need the pinned documentation release"
+    expected = f"refs/tags/{PORTAL.RELEASE_TAG}:refs/tags/{PORTAL.RELEASE_TAG}"
+    assert all(refspec == expected for refspec in fetches)
 
 
 class Page(HTMLParser):
@@ -80,12 +92,12 @@ def test_release_and_repository_editions_remain_distinct(site: Path) -> None:
     released = (site / PORTAL.RELEASE_PATH / "reference.html").read_text(encoding="utf-8")
     released_commands = set(re.findall(r'id="(cli-[a-z0-9-]+)"', released))
     assert released_commands and released_commands <= set(re.findall(r'id="(cli-[a-z0-9-]+)"', current))
-    repository_version = importlib.import_module("verifier").__version__
+    repository_version = verifier_package.__version__
     assert f"package version {repository_version}" in current
     assert f"package version {PORTAL.RELEASE}" in released
     assert "UNRELEASED SOURCE" not in released
     coordinate = json.loads((site / "portal-coordinate.json").read_text(encoding="utf-8"))
-    assert coordinate["release_version"] == "1.4.0"
+    assert coordinate["release_version"] == "1.5.0"
     assert coordinate["release_commit"] in released
     assert PORTAL.REPOSITORY + "/blob/main/" not in released
     for prefix in ("", PORTAL.RELEASE_PATH):
@@ -109,9 +121,8 @@ def test_search_results_bind_to_real_sections_and_correct_edition(site: Path) ->
 def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path) -> None:
     """Bind the onboarding guides to real routes and to the correct edition.
 
-    The pinned release predates these pages, so the release edition must send a
-    reader back to the repository edition rather than advertise a route its own
-    commit never contained.
+    The pinned 1.5.0 release includes these pages. Its navigation must retain
+    the release coordinate rather than silently routing to newer source.
     """
 
     guides = (
@@ -122,19 +133,37 @@ def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path)
     )
     for route in guides:
         assert (site / route).is_file()
-        assert not (site / PORTAL.RELEASE_PATH / route).exists()
+        assert (site / PORTAL.RELEASE_PATH / route).is_file()
 
     groups = dict(PORTAL.navigation("", site))
-    assert [target for _, target in groups["Tutorials"]] == [
-        "docs/tutorials/SEAL_AN_ARTIFACT.html",
-        "docs/tutorials/PUBLISH_A_SILO.html",
-        "docs/PYTHON_API_GUIDE.html",
+    assert groups["v2.0.0 source reference"][:2] == [
+        ("Commands", "reference.html#cli"),
+        ("Python exports", "reference.html#api"),
     ]
+    assert ("Python API guide", "docs/PYTHON_API_GUIDE.html") in groups["v2.0.0 source reference"]
     assert ("Typical use cases", "docs/USE_CASES.html") in groups["Start here"]
+    assert groups["Published archive · 1.5.0"][0] == ("Release introduction", PORTAL.RELEASE_PATH + "index.html")
+
+    candidate = groups["Version 2.0.0 candidate"]
+    assert ("Candidate scope and migration", "docs/V2_CANDIDATE.html") in candidate
+    assert ("Open contradictions", "project/TIME.html") in candidate
+    assert "Version 2.0.0 candidate" not in dict(PORTAL.navigation(PORTAL.RELEASE_PATH, site))
+    current_home = (site / "index.html").read_text(encoding="utf-8")
+    release_home = (site / PORTAL.RELEASE_PATH / "index.html").read_text(encoding="utf-8")
+    assert "v2.0.0 candidate source" in current_home
+    assert 'href="reference.html#api"' in current_home
+    assert 'href="releases/1.5.0/reference.html#api"' not in current_home.split('<div class="portal-content">', 1)[1]
+    assert 'value="repository" selected' in current_home
+    assert 'python -m pip install .' in current_home
+    assert "verifier-standard==1.5.0" not in current_home
+    assert "Version 2.0.0 candidate" not in release_home
+    assert 'value="release" selected' in release_home
+    assert 'verifier-standard==1.5.0' in release_home
+    assert 'href="../../releases/1.5.0/docs/INSTALLATION.html"' in release_home
 
     released = dict(PORTAL.navigation(PORTAL.RELEASE_PATH, site))
-    for _, target in released["Tutorials"] + [released["Start here"][-1]]:
-        assert not target.startswith(PORTAL.RELEASE_PATH)
+    for _, target in released["Tutorials"] + released["Start here"][1:]:
+        assert target.startswith(PORTAL.RELEASE_PATH)
 
     entries = json.loads((site / "search-index.json").read_text(encoding="utf-8"))
     titles = {item["title"] for item in entries if item["edition"] == "repository"}
@@ -143,7 +172,7 @@ def test_task_guides_are_navigable_and_do_not_claim_release_coverage(site: Path)
 
 
 def test_schema_bytes_and_existing_identifier_origin_are_preserved(site: Path) -> None:
-    for folder in (ROOT / "receipts/schema", ROOT / "standard/schemas"):
+    for folder in (ROOT / "receipts/schema", ROOT / "src/verifier/schemas"):
         for source in folder.glob("*.json"):
             assert (site / "schemas" / source.name).read_bytes() == source.read_bytes()
             payload = json.loads(source.read_text(encoding="utf-8"))
@@ -181,3 +210,84 @@ def test_release_tag_must_match_pinned_commit(tmp_path: Path, monkeypatch: pytes
     with pytest.raises(ValueError, match="pinned documentation commit"):
         PORTAL.export_release(tmp_path / "changed-release")
     assert not (tmp_path / "changed-release").exists()
+
+# Deliberately invalid dummy values: these fixtures never use real credentials.
+DUMMY_BUILD_SECRETS = {
+    "ANTHROPIC_API_KEY": "DUMMY_DOCS_ANTHROPIC_VALUE",
+    "OPENAI_API_KEY": "DUMMY_DOCS_OPENAI_VALUE",
+    "HF_CLI_TOKEN": "DUMMY_DOCS_HF_VALUE",
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "DUMMY_DOCS_GITHUB_VALUE",
+    "AWS_SECRET_ACCESS_KEY": "DUMMY_DOCS_AWS_VALUE",
+    "OPAQUE_SETTING": "DUMMY_DOCS_UNNAMED_VALUE",
+}
+
+
+def test_portal_environment_selects_build_settings_without_credentials(monkeypatch, tmp_path):
+    inherited = dict(DUMMY_BUILD_SECRETS, PATH="selected-local-tools", TEMP="selected-temp",
+        PYTHONPATH="unselected-source", HTTPS_PROXY="unselected-proxy")
+    monkeypatch.setattr(PORTAL.os, "environ", inherited)
+    selected = PORTAL.build_environment(tmp_path)
+    assert selected["PATH"] == "selected-local-tools"
+    assert selected["TEMP"] == "selected-temp"
+    assert selected["PYTHONPATH"] == str(tmp_path / "src")
+    assert selected["PYTHONNOUSERSITE"] == selected["PIP_NO_INDEX"] == "1"
+    assert not set(DUMMY_BUILD_SECRETS) & set(selected)
+    assert "HTTPS_PROXY" not in selected
+    assert inherited == dict(DUMMY_BUILD_SECRETS, PATH="selected-local-tools", TEMP="selected-temp",
+        PYTHONPATH="unselected-source", HTTPS_PROXY="unselected-proxy")
+
+
+def test_both_portal_assemblers_receive_only_selected_environment(monkeypatch, tmp_path):
+    monkeypatch.setattr(PORTAL.os, "environ", dict(DUMMY_BUILD_SECRETS, PATH="local-tools"))
+    calls = []
+    def child(arguments, **kwargs):
+        calls.append((arguments, kwargs))
+    monkeypatch.setattr(PORTAL.subprocess, "run", child)
+    PORTAL.assemble(tmp_path, tmp_path / "site", "WORKTREE")
+    assert len(calls) == 2
+    assert [call[0][3] for call in calls] == ["--check", "--output"]
+    assert all(call[1]["cwd"] == tmp_path for call in calls)
+    assert all(not set(DUMMY_BUILD_SECRETS) & set(call[1]["env"]) for call in calls)
+    assert all(call[1]["env"]["PYTHONPATH"] == str(tmp_path / "src") for call in calls)
+
+
+def test_local_git_helper_does_not_inherit_credentials(monkeypatch, tmp_path):
+    from types import SimpleNamespace
+    monkeypatch.setattr(PORTAL.os, "environ", dict(DUMMY_BUILD_SECRETS, PATH="local-tools"))
+    calls = []
+    def child(arguments, **kwargs):
+        calls.append(kwargs)
+        return SimpleNamespace(stdout=" local-object-id ")
+    monkeypatch.setattr(PORTAL.subprocess, "run", child)
+    assert PORTAL.run(["git", "rev-parse", "HEAD"], cwd=tmp_path) == "local-object-id"
+    assert not set(DUMMY_BUILD_SECRETS) & set(calls[0]["env"])
+
+
+def test_failed_assembler_pytest_locals_do_not_disclose_dummy_secrets(tmp_path):
+    """Reproduce the original traceback path in a subprocess using dummy secrets."""
+    import subprocess
+    import sys
+    portal_path = ROOT / "scripts/build_docs_portal.py"
+    probe = tmp_path / "test_failed_portal_probe.py"
+    probe.write_text(
+        "import importlib.util, subprocess\n"
+        "from pathlib import Path\n"
+        f"spec = importlib.util.spec_from_file_location('probe_portal', {str(portal_path)!r})\n"
+        "portal = importlib.util.module_from_spec(spec)\n"
+        "spec.loader.exec_module(portal)\n"
+        "def fail_child(arguments, **kwargs):\n"
+        "    raise subprocess.CalledProcessError(1, arguments)\n"
+        "def test_assembler_failure(monkeypatch, tmp_path):\n"
+        "    monkeypatch.setattr(portal.subprocess, 'run', fail_child)\n"
+        "    portal.assemble(tmp_path, tmp_path / 'site', 'WORKTREE')\n",
+        encoding="utf-8")
+    environment = PORTAL.build_environment(ROOT)
+    environment.update(DUMMY_BUILD_SECRETS)
+    environment["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
+    result = subprocess.run([sys.executable, "-B", "-m", "pytest", str(probe), "-q",
+        "--showlocals", "--tb=long", "-o", "addopts=", "-o", "pythonpath=",
+        "-p", "no:cacheprovider"], cwd=tmp_path, env=environment,
+        capture_output=True, text=True, encoding="utf-8", timeout=20)
+    assert result.returncode == 1
+    assert "CalledProcessError" in result.stdout and "kwargs" in result.stdout
+    assert all(value not in result.stdout + result.stderr for value in DUMMY_BUILD_SECRETS.values())

@@ -1,0 +1,124 @@
+{
+  "schema_version": "verifier-explanation-definitions-1",
+  "definitions": [
+    {
+      "id": "prdel.self.prdel",
+      "target": {
+        "path": "src/verifier/runtime/prdel.py",
+        "symbol": "validate_prdel"
+      },
+      "intent": "Check exact retained source explanations while preserving missing evidence and unresolved analysis.",
+      "requirement_ids": [
+        "bounded-source-description"
+      ],
+      "invariants": [
+        "Known unmet required obligations remain FAIL; unsupported observations remain UNKNOWN."
+      ],
+      "limits": [
+        "A passing source fact cannot establish complete behavioral qualification."
+      ]
+    },
+    {
+      "id": "prdel.self.prdel-rules",
+      "target": {
+        "path": "src/verifier/runtime/prdel_rules.py",
+        "symbol": "compile_prdel"
+      },
+      "intent": "Generate inspectable explanations using fixed bounded rules and authored associations.",
+      "requirement_ids": [
+        "bounded-source-description"
+      ],
+      "invariants": [
+        "Known unmet required obligations remain FAIL; unsupported observations remain UNKNOWN."
+      ],
+      "limits": [
+        "Compilation success is an authoring result, not gate clearance."
+      ]
+    },
+    {
+      "id": "prdel.self.prdel-graph",
+      "target": {
+        "path": "src/verifier/runtime/prdel_graph.py",
+        "symbol": "build_impact_graph"
+      },
+      "intent": "Retain syntactic relationships and unresolved consumers for the exact selected changes.",
+      "requirement_ids": [
+        "bounded-source-description"
+      ],
+      "invariants": [
+        "Known unmet required obligations remain FAIL; unsupported observations remain UNKNOWN."
+      ],
+      "limits": [
+        "Resolved syntax does not establish runtime compatibility or complete consumer discovery."
+      ]
+    },
+    {
+      "id": "prdel.self.prdel-coverage",
+      "target": {
+        "path": "src/verifier/runtime/prdel_coverage.py",
+        "symbol": "assess_coverage"
+      },
+      "intent": "Distinguish required absent checks, reported outcomes and authenticated execution.",
+      "requirement_ids": [
+        "bounded-source-description"
+      ],
+      "invariants": [
+        "Known unmet required obligations remain FAIL; unsupported observations remain UNKNOWN."
+      ],
+      "limits": [
+        "A result digest and reported pass do not authenticate test execution."
+      ]
+    },
+    {
+      "id": "prdel.self.explanation-projection",
+      "target": {
+        "path": "src/verifier/runtime/explanation_projection.py",
+        "symbol": "project_comments"
+      },
+      "intent": "Project canonical authored intent into only explicitly managed comment blocks.",
+      "requirement_ids": [
+        "bounded-source-description"
+      ],
+      "invariants": [
+        "Known unmet required obligations remain FAIL; unsupported observations remain UNKNOWN."
+      ],
+      "limits": [
+        "Authored explanations do not prove implementation correspondence or historical authorship."
+      ]
+    },
+    {
+      "id": "prdel.self.quality-checks",
+      "target": {
+        "path": "src/verifier/runtime/quality_checks.py",
+        "symbol": "run_quality_profile"
+      },
+      "intent": "Run explicitly selected pinned comment, lint and formatting checks without source fixes.",
+      "requirement_ids": [
+        "bounded-source-description"
+      ],
+      "invariants": [
+        "Known unmet required obligations remain FAIL; unsupported observations remain UNKNOWN."
+      ],
+      "limits": [
+        "Check results establish only their selected policy and exact source scope."
+      ]
+    },
+    {
+      "id": "prdel.self.polish-workflow",
+      "target": {
+        "path": "src/verifier/runtime/polish_workflow.py",
+        "symbol": "prepare_workflow"
+      },
+      "intent": "Retain final selected source bytes and check outcomes before any separately authorized promotion.",
+      "requirement_ids": [
+        "bounded-source-description"
+      ],
+      "invariants": [
+        "Known unmet required obligations remain FAIL; unsupported observations remain UNKNOWN."
+      ],
+      "limits": [
+        "Preparation success cannot issue polished status, human acceptance or publication authority."
+      ]
+    }
+  ]
+}

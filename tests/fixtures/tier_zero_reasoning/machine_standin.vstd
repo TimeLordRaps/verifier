@@ -1,0 +1,83 @@
+# Machine stand-ins: reasons whose every basis is a machine check (guard, assigned, returns, stdlib
+# rows, literal, call-sites, boundary).  Polish would derive these itself; written out here so the
+# checker can show each one's status, falsifier and payoff on the real hubs before polish learns to.
+# Tier: a fact resting only on A0 (no outside rebinding) is loadable at every tier; one resting on
+# A1 (project callers are all callers: call-sites, boundary, contract) only at tier I and above.
+
+reason payload-part-dict
+  claim    type src/verifier/core/namespace.py::_payload_bytes:119:60 `part` dict
+  basis    guard
+  falsify  mutate delete-basis expect reopen
+  note     the dict branch of the exact-type chain: `if type(part) is dict:` dominates part.values()
+
+reason payload-part-int
+  claim    type src/verifier/core/namespace.py::_payload_bytes:126:36 `part` int
+  basis    guard
+  falsify  mutate delete-basis expect reopen
+  note     column 36 is the receiver of bit_length(); the occurrence at column 19 is inside the guard itself
+
+reason normalize-pattern
+  claim    type src/verifier/core/evidence.py::_normalize_ref:202:15 `_DIGEST` stdlib:re.Pattern
+  basis    assigned
+  basis    stdlib re.compile
+  falsify  mutate delete-basis expect reopen
+  falsify  row expect holds
+  note     true, and the machine already knows _DIGEST is a standard-library object: its own line closes
+  note     nothing new at tiers T and C; it bears load only if normalize-matched is built on it
+
+reason normalize-matched
+  claim    type src/verifier/core/evidence.py::_normalize_ref:205:24 `matched` stdlib:re.Match
+  basis    assigned
+  basis    guard
+  basis    stdlib re.compile re.Pattern.fullmatch
+  falsify  mutate delete-basis expect reopen
+  falsify  row expect holds
+  note     fullmatch gives re.Match or None; the exit guard at 203 removes None
+
+reason store-payloads-dict
+  claim    attr src/verifier/core/evidence.py::EvidenceStore _payloads dict
+  basis    assigned
+  falsify  mutate delete-basis expect reopen
+
+reason session-mechanisms-dict
+  claim    attr src/verifier/core/evidence.py::VerificationSession _mechanisms dict
+  basis    assigned
+  falsify  mutate delete-basis expect reopen
+
+reason object-payload-json
+  claim    returns src/verifier/core/namespace.py::NamespaceObject.payload json
+  basis    returns
+  basis    stdlib json.loads
+  falsify  mutate delete-basis expect reopen
+  falsify  row expect holds
+
+reason surface-children-dispatch
+  claim    dispatch src/verifier/domains/contracts/sim_surface_partition.py::mechanism_digest:95 `module.mechanism_digest` to src/verifier/domains/contracts/sim_dynamics.py::mechanism_digest src/verifier/domains/contracts/sim_shard_coverage.py::mechanism_digest src/verifier/domains/contracts/sim_shard_relations.py::mechanism_digest src/verifier/domains/contracts/sim_shard_signatures.py::mechanism_digest
+  basis    literal
+  falsify  mutate delete-basis expect reopen
+
+reason proposition-bounds-sites
+  claim    attr src/verifier/core/evidence.py::BoundProposition bounds class:verifier.core.evidence.EvidenceBounds
+  basis    call-sites
+  falsify  mutate delete-basis expect reopen
+
+reason proposition-parameters-sites
+  claim    type src/verifier/core/evidence.py::BoundProposition.__post_init__:111:60 `self.parameters` dict
+  basis    call-sites
+  falsify  mutate delete-basis expect reopen
+  note     read before line 111 rebinds it through object.__setattr__ to an exact dict
+
+reason create-operands-boundary
+  claim    boundary src/verifier/core/namespace.py::NamespaceObject.create operands
+  basis    stdlib json.loads
+  falsify  mutate delete-basis expect reopen
+  falsify  row expect holds
+  note     callers that pass a json.loads value are discharged through that row, so it is cited
+
+reason import-payloads-boundary
+  claim    boundary src/verifier/core/evidence.py::EvidenceStore.import_base64 payloads
+  falsify  mutate delete-basis expect reopen
+
+reason limits-ceilings-boundary
+  claim    boundary src/verifier/domains/contracts/retained_selection.py::limits ceilings
+  falsify  mutate delete-basis expect reopen

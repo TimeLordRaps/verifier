@@ -116,6 +116,71 @@ def test_certificate_round_trips_through_serialization():
     assert RefutationChecker.check(FOUR_CORNER_UNSAT, restored).accepted
 
 
+@pytest.mark.parametrize(
+    ("field", "falsified"),
+    [
+        ("n_vars", 0),
+        ("source_clause_count", 0),
+        ("max_proof_steps", 0),
+        ("step_count", 999_999),
+    ],
+)
+def test_falsified_refutation_metadata_cannot_reuse_a_genuine_proof(
+    field: str, falsified: int
+) -> None:
+    result = refute(1, TRIVIAL_UNSAT)
+    assert result.certificate is not None
+    carried = result.certificate.to_dict()
+    carried[field] = falsified
+
+    try:
+        restored = RefutationCertificate.from_dict(carried)
+    except (TypeError, ValueError):
+        return
+
+    checked = RefutationChecker.check(TRIVIAL_UNSAT, restored)
+    assert not checked.accepted
+
+
+@pytest.mark.parametrize(
+    ("field", "coerced"),
+    [
+        ("n_vars", "1"),
+        ("source_clause_count", True),
+        ("max_proof_steps", "4096"),
+        ("step_count", 1.0),
+    ],
+)
+def test_refutation_certificate_metadata_types_are_not_coerced(
+    field: str, coerced: object
+) -> None:
+    result = refute(1, TRIVIAL_UNSAT)
+    assert result.certificate is not None
+    carried = result.certificate.to_dict()
+    carried[field] = coerced
+
+    with pytest.raises(ValueError):
+        RefutationCertificate.from_dict(carried)
+
+
+def test_checker_can_bind_n_vars_to_an_external_selection() -> None:
+    result = refute(1, TRIVIAL_UNSAT)
+    assert result.certificate is not None
+    inflated = RefutationCertificate(
+        proof=result.certificate.proof,
+        n_vars=999,
+        source_clause_count=result.certificate.source_clause_count,
+        max_proof_steps=result.certificate.max_proof_steps,
+    )
+
+    checked = RefutationChecker.check(
+        TRIVIAL_UNSAT, inflated, expected_n_vars=1
+    )
+
+    assert not checked.accepted
+    assert "externally selected count" in checked.details
+
+
 def test_exceeding_the_proof_bound_yields_unknown_never_a_pass():
     solver = ProofProducingDPLL(2, FOUR_CORNER_UNSAT, max_proof_steps=1)
     result = solver.solve()

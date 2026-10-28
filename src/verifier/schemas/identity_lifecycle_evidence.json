@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/identity_lifecycle_evidence.json",
+  "title": "Selected declared identity lifecycle evidence structure",
+  "$comment": "Structural-only admission description. The installed native evaluator is authoritative for plain types, protocol versions/kinds, commitments, chronology, transitions, child replay and UNKNOWN versus FAIL. Array ceilings describe admitted work; exceeding a checking ceiling is unavailable, not a semantic refutation. This schema neither authenticates records nor certifies lifecycle consistency.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "binding", "events", "presentations", "identity_scope_certificate"],
+  "properties": {
+    "schema_version": {"const": "verifier-current-identity-declared-lifecycle-evidence-1"},
+    "binding": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
+    "events": {"anyOf": [{"type": "null"}, {"type": "array", "maxItems": 1024, "items": {"$ref": "#/$defs/event"}}]},
+    "presentations": {"anyOf": [{"type": "null"}, {"type": "array", "maxItems": 1024, "items": {"$ref": "#/$defs/presentation"}}]},
+    "identity_scope_certificate": {"type": ["object", "null"], "description": "Complete canonical installed IDENTITY-3.1 certificate or absent support; exact request/policy/bytes and native reproduction are separate checks."}
+  },
+  "$defs": {
+    "binding": {
+      "description": "Closed retained field layout. Version-specific value grammar is enforced by native replay; an unsupported protocol version supplies no grammar acceptance.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "identity_id", "identity_record_digest", "actor_id", "representation_id", "represented_kind", "root_human_id", "role_id", "collective_id", "scope", "clock_id", "valid_from", "valid_until", "simulation_id", "simulation_record_digest", "assurance_requirement_id", "relied_attribute_ids", "revocation_policy_id", "human_exit_policy_id"],
+      "properties": {
+        "schema_version": {}, "identity_id": {}, "identity_record_digest": {}, "actor_id": {},
+        "representation_id": {}, "represented_kind": {}, "root_human_id": {}, "role_id": {},
+        "collective_id": {}, "scope": {}, "clock_id": {}, "valid_from": {}, "valid_until": {},
+        "simulation_id": {}, "simulation_record_digest": {}, "assurance_requirement_id": {},
+        "relied_attribute_ids": {}, "revocation_policy_id": {}, "human_exit_policy_id": {}
+      }
+    },
+    "event": {
+      "description": "Closed retained event field layout; payload remains unconstrained here to avoid inventing unsupported event meaning. Native replay checks exact supported kind-specific payload fields.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "event_id", "position", "binding_digest", "previous_event_digest", "kind", "at", "payload", "authority_evidence_ref"],
+      "properties": {
+        "schema_version": {}, "event_id": {}, "position": {}, "binding_digest": {},
+        "previous_event_digest": {}, "kind": {}, "at": {}, "payload": {}, "authority_evidence_ref": {}
+      }
+    },
+    "presentation": {
+      "description": "Closed retained presentation field layout; native replay checks supported plain identifier/digest/time grammar and exact event/binding relationships.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "presentation_id", "event_id", "binding_digest", "enrollment_id", "at", "clock_id", "scope", "simulation_id", "context_digest", "disclosed_field_inventory_digest", "linkability_claim", "linkability_support_requirement_id"],
+      "properties": {
+        "schema_version": {}, "presentation_id": {}, "event_id": {}, "binding_digest": {},
+        "enrollment_id": {}, "at": {}, "clock_id": {}, "scope": {}, "simulation_id": {},
+        "context_digest": {}, "disclosed_field_inventory_digest": {}, "linkability_claim": {},
+        "linkability_support_requirement_id": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "external_verifier_suite": {
+    "commit": "dff9914c10800c7a031c9e8c3d4d1c8cd1b38906",
+    "license": "MIT",
+    "name": "AlgoTune",
+    "source": "https://github.com/oripress/AlgoTune",
+    "vendored_files": {
+      "LICENSE": "sha256:466da4df62706a2da07f63aa037da8245e625bbb0349e676cb008c77084bf3e4",
+      "graph_isomorphism/graph_isomorphism.py": "sha256:1d4f87f6d77388aeed776aa7eef78e870d81cfc1b4367ae98e3d2c763f080e50",
+      "integer_factorization/integer_factorization.py": "sha256:278590723d48b09edc02766e7fc8453d167ec74ea998f2b1ac038c0e494000d5",
+      "stable_matching/stable_matching.py": "sha256:57ff7206757f355bbd9bf4541cbccfd4fc20e5d30fe03ed6246b6849e4eab524"
+    }
+  },
+  "lm_runtime_attempts": [
+    {
+      "backend_interface": "local OpenAI-compatible chat completions",
+      "model_identity": "withheld",
+      "platform": "WSL2 Linux with NVIDIA CUDA; exact private artifact and launcher coordinates withheld",
+      "released_gguf_plugin": "vllm-gguf-plugin==0.0.5",
+      "runtime": "vLLM==0.27.1",
+      "source": "https://github.com/vllm-project/vllm-gguf-plugin",
+      "source_plugin_commit": "fb973ad784f38b98b054e136bec3414b7cd8494d",
+      "status": "BLOCKED_SOURCE_BUILD_NATIVE_TOOLCHAIN"
+    },
+    {
+      "backend_interface": "local OpenAI-compatible chat completions",
+      "gguf": "0.19.0",
+      "model_identity": "withheld",
+      "observed_boundary": "A separately configured tokenizer and adjacent configuration allowed the released GGUF path to reach the model loader. Loading from the Windows-mounted filesystem exceeded the available 32 GiB WSL memory envelope before serving. A bounded temporary-swap retry caused an unclean WSL restart. A final byte-identical copy on native WSL storage removed the Windows-filesystem mapping variable but still caused an unclean WSL restart during model load. All temporary runtime files were removed. No endpoint or completion was produced.",
+      "platform": "WSL2 Linux with NVIDIA CUDA; exact private artifact and launcher coordinates withheld",
+      "runtime": "SGLang==0.5.18",
+      "source": "https://github.com/sgl-project/sglang",
+      "status": "BLOCKED_WSL_RUNTIME_FAILURE_DURING_GGUF_LOAD",
+      "torch": "2.13.0+cu130",
+      "transformers": "5.12.1"
+    },
+    {
+      "backend_interface": "local OpenAI-compatible chat completions",
+      "model_identity": "withheld",
+      "observed_boundary": "The pinned native Windows server loaded the selected private GGUF and returned a real structured JSON completion through the configured loopback interface. CPU-only qualification avoided contention with an unrelated concurrent GPU workload. This qualifies the runtime boundary but is not held-out evaluation or model-performance evidence.",
+      "platform": "native Windows; exact private artifact, endpoint, and launcher coordinates withheld",
+      "runtime": "llama.cpp build 10584 (commit 2fb989b9e)",
+      "source": "https://github.com/ggml-org/llama.cpp/commit/2fb989b9e",
+      "status": "QUALIFIED_REAL_COMPLETION"
+    }
+  ],
+  "python": "3.12",
+  "sat_engine": {
+    "binding": "python-sat==1.9.dev15",
+    "engine": "CaDiCaL",
+    "engine_version": "3.0.0",
+    "license": "MIT",
+    "solver_name": "cadical300",
+    "source": "https://github.com/arminbiere/cadical"
+  },
+  "verifier_dependencies": {
+    "matching": {
+      "license": "MIT",
+      "source": "https://github.com/daffidwilde/matching",
+      "version": "1.4.3"
+    },
+    "networkx": {
+      "license": "BSD-3-Clause",
+      "source": "https://github.com/networkx/networkx",
+      "version": "3.5"
+    },
+    "numpy": {
+      "license": "BSD-3-Clause",
+      "source": "https://github.com/numpy/numpy",
+      "version": "2.3.2"
+    },
+    "sympy": {
+      "license": "BSD-3-Clause",
+      "source": "https://github.com/sympy/sympy",
+      "version": "1.14.0"
+    }
+  }
+}

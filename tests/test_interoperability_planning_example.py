@@ -5,7 +5,6 @@ Characterization tests for the experimental interoperability planning example.
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import os
 from pathlib import Path
@@ -14,6 +13,7 @@ import sys
 
 import verifier
 import verifier.interoperability as interoperability
+from examples.interoperability_planning import demo as planning_demo
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +25,7 @@ EXPECTED_FACADE = [
     "CandidateExecutionDeclaration",
     "CatalogError",
     "COMPONENT_PACKAGE_SCHEMA_VERSION",
+    "COMPONENT_PACKAGE_V2_SCHEMA_VERSION",
     "ComponentAvailability",
     "ComponentKind",
     "ComponentLifecycle",
@@ -77,11 +78,7 @@ STABLE_ANALYSIS_EXPORTS = {
 
 
 def _load_demo():
-    spec = importlib.util.spec_from_file_location("vstd_interoperability_demo", DEMO)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return planning_demo
 
 
 def test_facade_is_exact_and_only_analysis_subset_is_stable_top_level() -> None:

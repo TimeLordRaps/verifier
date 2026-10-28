@@ -7,16 +7,16 @@ copy, and then changes that copy so the runtime reports a different verdict. The
 steps matter most: a mechanism that never reports a negative result has not been shown to
 detect anything.
 
-Every command below belongs to the published `vstd artifact` surface, and none of them
+Every command below belongs to the `vstd artifact` surface, and none of them
 executes the artifact's contents. It requires the
-[released package installation](../INSTALLATION.md).
+[v2.0.0 candidate source installation](../INSTALLATION.md).
 
 ## Install the sealing extra
 
 Sealing uses Ed25519 signatures, which come from the optional `seal` dependency:
 
 ```bash
-python -m pip install "verifier-standard[seal]==1.5.0"
+python -m pip install ".[seal]"
 vstd artifact --help
 ```
 
@@ -156,7 +156,7 @@ You did **not** establish that the number in `results.txt` is correct, that the 
 to any particular person or organization, that the freeze happened at a claimed time, or
 that any external party retained a copy. A freeze binds bytes; it does not make them true.
 For the boundary in normative form, read the
-[artifact-control mechanism](../../standard/ARTIFACT_CONTROL.md), and for the
+[artifact-control mechanism](../../src/verifier/standard/ARTIFACT_CONTROL.md), and for the
 surrounding model read [realms and time capsules](../REALMS_AND_TIME_CAPSULES.md) and
 [claims and limits](../CLAIMS_AND_LIMITS.md).
 

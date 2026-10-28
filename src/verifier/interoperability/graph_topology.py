@@ -26,8 +26,8 @@ from verifier.data import models as _models
 from verifier.data.models import ProvenanceHypergraph
 
 
-GRAPH_TOPOLOGY_SCHEMA_VERSION = "VSTD-GRAPH-TOPOLOGY-EXPERIMENTAL-0.1"
-GRAPH_TOPOLOGY_REPORT_SCHEMA_VERSION = "VSTD-GRAPH-TOPOLOGY-REPORT-EXPERIMENTAL-0.1"
+GRAPH_TOPOLOGY_SCHEMA_VERSION = "verifier-graph-topology-experimental-1"
+GRAPH_TOPOLOGY_REPORT_SCHEMA_VERSION = "verifier-graph-topology-report-experimental-1"
 SUPPORTED_CONSTRAINT_LOGIC = "classical-boolean-equations-v1"
 MAX_GRAPH_NODES = 4096
 MAX_GRAPH_TRANSFORMATIONS = 4096
@@ -499,7 +499,24 @@ def analyze_graph_topology(
         data = GraphTopologyContract.from_dict(contract.to_dict()).to_dict()
     except (TypeError, ValueError, UnicodeError, RecursionError) as exc:
         raise GraphTopologyError("malformed topology contract") from exc
-    limits = {name: value for name, value in globals().items() if name.startswith("MAX_")}
+    # Keep the reported resource contract explicit. Runtime namespace scanning
+    # would make an added module global silently enter the evidence boundary.
+    limits = {
+        "MAX_GRAPH_NODES": MAX_GRAPH_NODES,
+        "MAX_GRAPH_TRANSFORMATIONS": MAX_GRAPH_TRANSFORMATIONS,
+        "MAX_GRAPH_PORTS": MAX_GRAPH_PORTS,
+        "MAX_PROJECTED_PAIRS": MAX_PROJECTED_PAIRS,
+        "MAX_BINDINGS": MAX_BINDINGS,
+        "MAX_EQUATIONS": MAX_EQUATIONS,
+        "MAX_TEMPORAL_RELATIONS": MAX_TEMPORAL_RELATIONS,
+        "MAX_PARADOX_CANDIDATES": MAX_PARADOX_CANDIDATES,
+        "MAX_BOOLEAN_VARIABLES": MAX_BOOLEAN_VARIABLES,
+        "MAX_ASSIGNMENTS": MAX_ASSIGNMENTS,
+        "MAX_ABS_OFFSET": MAX_ABS_OFFSET,
+        "MAX_DOCUMENT_BYTES": MAX_DOCUMENT_BYTES,
+        "MAX_DOCUMENT_DEPTH": MAX_DOCUMENT_DEPTH,
+        "MAX_DOCUMENT_VALUES": MAX_DOCUMENT_VALUES,
+    }
     limits["max_assignments"] = max_assignments
     sources = {"verifier.interoperability.graph_topology": Path(__file__),
                "verifier.data.models": Path(_models.__file__)}

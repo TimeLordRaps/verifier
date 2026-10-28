@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelordraps.github.io/verifier/schemas/verifier-prdel-2.schema.json",
+  "title": "Pull Request Domain Explanation Language (PRDEL), version 2",
+  "description": "Development-candidate structural contract for the changed-source-bound projection. Exact independent source recomputation remains required; omitted whole-estate diagnostics, schema validity and bounded passage grant no correctness or release clearance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "binding", "requirements", "source_obligations", "impact_graph", "records", "evidence"],
+  "properties": {
+    "schema_version": {"const": "verifier-prdel-2"},
+    "binding": {"$ref": "#/$defs/binding"},
+    "requirements": {"$ref": "#/$defs/requirements"},
+    "source_obligations": {"type": "array", "minItems": 1, "maxItems": 40000, "items": {"type": "object", "required": ["id", "kind", "path", "question"], "properties": {"id": {"type": "string"}, "kind": {"enum": ["source", "contract", "frontier"]}, "path": {"type": "string"}, "question": {"type": "string"}, "source_obligations": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}}}},
+    "impact_graph": {
+      "type": "object",
+      "description": "Changed-reachable materialization plus counted and digested whole-estate omissions. It must equal independent recomputation.",
+      "required": ["schema_version", "projection", "status", "snapshot_digests", "source_obligation_sets", "nodes", "edges", "obligations", "frontier", "components", "dag_edges", "whole_estate_diagnostics", "bounds", "counters", "limits", "binding", "selected_predicates"],
+      "properties": {
+        "schema_version": {"const": "verifier-prdel-impact-2"},
+        "projection": {"const": "changed_source_bound"},
+        "status": {"enum": ["BOUNDED_ANALYSIS_COMPLETE", "UNKNOWN"]},
+        "snapshot_digests": {"type": "object", "required": ["before", "after"], "properties": {"before": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "after": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+        "source_obligation_sets": {"type": "array", "maxItems": 40000, "items": {"type": "object", "additionalProperties": false, "required": ["id", "source_obligations"], "properties": {"id": {"type": "string", "pattern": "^source-set:[0-9a-f]{24}$"}, "source_obligations": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}}}},
+        "nodes": {"type": "array", "maxItems": 40000, "items": {"$ref": "#/$defs/impactRow"}},
+        "edges": {"type": "array", "maxItems": 40000, "items": {"$ref": "#/$defs/impactRow"}},
+        "obligations": {"type": "array", "maxItems": 40000, "items": {"$ref": "#/$defs/impactRow"}},
+        "frontier": {"type": "array", "maxItems": 40000, "items": {"$ref": "#/$defs/impactRow"}},
+        "components": {"type": "array", "maxItems": 40000},
+        "dag_edges": {"type": "array", "maxItems": 40000},
+        "whole_estate_diagnostics": {"type": "object", "required": ["status", "discovered_nodes", "discovered_edges", "discovered_frontiers", "omitted_nodes", "omitted_edges", "omitted_frontiers", "omitted_frontier_kinds", "omitted_frontier_digest"]},
+        "bounds": {"type": "object", "required": ["max_nodes", "max_edges", "max_operations", "max_output_bytes"]},
+        "counters": {"type": "object", "required": ["operations", "nodes", "edges", "discovered_nodes", "discovered_edges", "discovered_frontiers", "materialized_bytes"], "properties": {"materialized_bytes": {"type": "integer", "minimum": 1}}},
+        "limits": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "binding": {"$ref": "#/$defs/binding"},
+        "selected_predicates": {"type": "object"}
+      }
+    },
+    "records": {"type": "array", "maxItems": 40000, "items": {"$ref": "#/$defs/record"}},
+    "evidence": {"type": "array", "description": "Reported observations never authenticate their own execution.", "items": {"type": "object"}}
+  },
+  "$defs": {
+    "binding": {
+      "type": "object", "additionalProperties": false, "required": ["base", "head", "source_digest", "requirements_digest"],
+      "properties": {"base": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"}, "head": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"}, "source_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "requirements_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+    },
+    "requirements": {
+      "type": "object", "additionalProperties": false, "required": ["schema_version", "items"],
+      "properties": {"schema_version": {"const": "verifier-prdel-requirements-1"}, "items": {"type": "array", "minItems": 1, "maxItems": 10000, "items": {"type": "object", "additionalProperties": false, "required": ["id", "text"], "properties": {"id": {"type": "string", "minLength": 1, "maxLength": 256}, "text": {"type": "string", "minLength": 1, "maxLength": 16384}, "predicate": {"$ref": "#/$defs/finitePredicate"}}}}}
+    },
+    "finitePredicate": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "path", "symbol", "cases"],
+      "properties": {"kind": {"const": "finite_python_function"}, "path": {"type": "string", "minLength": 1}, "symbol": {"type": "string", "minLength": 1}, "cases": {"type": "array", "minItems": 1, "maxItems": 128, "items": {"type": "object", "additionalProperties": false, "required": ["arguments", "expected"], "properties": {"arguments": {"type": "array", "maxItems": 16, "items": {"type": "integer", "minimum": -1000000000, "maximum": 1000000000}}, "expected": {"type": "integer", "minimum": -1000000000, "maximum": 1000000000}}}}}
+    },
+    "impactRow": {"type": "object", "required": ["id", "source_obligation_set_id"], "properties": {"id": {"type": "string"}, "source_obligation_set_id": {"type": "string", "pattern": "^source-set:[0-9a-f]{24}$"}}},
+    "record": {
+      "type": "object", "additionalProperties": false, "required": ["id", "requirement_ids", "why", "claims", "summary", "limits", "coverage"],
+      "properties": {"id": {"type": "string"}, "requirement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}, "why": {"type": "object", "additionalProperties": false, "required": ["requirement_id", "quote"], "properties": {"requirement_id": {"type": ["string", "null"]}, "quote": {"type": "string"}}}, "claims": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/claim"}}, "summary": {"type": "string"}, "limits": {"type": "array", "uniqueItems": true, "maxItems": 5, "items": {"enum": ["NO_RUNTIME_CORRECTNESS", "NO_EXECUTION_PROVENANCE", "NO_REQUIREMENT_AUTHORITY", "NO_COMPLETE_OBJECTIVE_CLOSURE", "EXACT_COMMIT_SCOPE"]}}, "coverage": {"type": "object", "additionalProperties": {"type": "object"}, "propertyNames": {"enum": ["base", "unit", "integration", "regression", "preventative"]}}}
+    },
+    "claim": {"oneOf": [
+      {"type": "object", "additionalProperties": false, "required": ["kind", "obligation_id"], "properties": {"kind": {"enum": ["source_delta", "no_source_changes"]}, "obligation_id": {"type": "string"}}},
+      {"type": "object", "additionalProperties": false, "required": ["kind", "edge_id"], "properties": {"kind": {"const": "ast_relationship"}, "edge_id": {"type": "string"}}},
+      {"type": "object", "additionalProperties": false, "required": ["kind", "requirement_id", "quote"], "properties": {"kind": {"const": "requirement_quote"}, "requirement_id": {"type": "string"}, "quote": {"type": "string"}}},
+      {"type": "object", "additionalProperties": false, "required": ["kind", "requirement_id"], "properties": {"kind": {"const": "finite_function_contract"}, "requirement_id": {"type": "string"}}},
+      {"type": "object", "additionalProperties": false, "required": ["kind", "frontier_id", "mechanism_id"], "properties": {"kind": {"const": "frontier_resolution"}, "frontier_id": {"type": "string"}, "mechanism_id": {"enum": ["exact-json-plus-replay-1", "exact-utf8-plus-replay-1", "selected-replay-1"]}}}
+    ]}
+  }
+}

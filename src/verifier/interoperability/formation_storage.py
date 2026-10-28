@@ -33,7 +33,7 @@ MAX_COMMIT_JSON_DEPTH = 16
 MAX_COMMIT_JSON_CONTAINERS = 8192
 MAX_EVIDENCE_ENTRIES = MAX_ENTRIES
 MAX_SNAPSHOT_BYTES = 16 * 1024 * 1024
-PROFILE_SCHEMA = "VSTD-TYPED-FORMATION-PROFILE-0.1"
+PROFILE_SCHEMA = "verifier-typed-formation-profile-1"
 _ROLES = {
     "subject": ("typed-formation-subject", SUBJECT_SCHEMA),
     "certificate": ("typed-formation-certificate", CERTIFICATE_SCHEMA),
