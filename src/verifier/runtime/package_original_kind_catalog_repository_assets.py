@@ -82,7 +82,7 @@ _EXPECTED_OWNED_CONTENT_DIGESTS = {
     "vstd-documentation-claim-boundary-policy": "sha256:e6f33e93a20c836c1e9d5030e696d511cec3a31678828c0a6dc9c79bd4a7bfc0",
     "vstd-documentation-control-domain-candidates": "sha256:b2ffe45908cd26e31078a879b893d821ac949a68605e1ca4c49546418f2c92a3",
     "vstd-documentation-core-architecture": "sha256:9368221858875b42175327b6f56e7514b24df7a8c47964f378812b58715483cc",
-    "vstd-documentation-derived-metadata": "sha256:fa6b4fdcc5871a97624ca2b121c100248665796d194404e68ee61edd88148cc2",
+    "vstd-documentation-derived-metadata": "sha256:f07723e60059782608e0f8166bc3be678bcb0a5a9b7fc7bf03926f8085b87a59",
     "vstd-documentation-environment-graph-architecture": "sha256:d1cbdf64b6cda7cbca8bcf177d25b040a11f50f39b272864ecfc6a48b6d7f8b4",
     "vstd-documentation-hosting-protocol": "sha256:823325026b58ad9427e8e7e9e49e20b209b8fef92b5aeee7b90c2dc99420fb66",
     "vstd-documentation-local-tool-protocols": "sha256:3eb478bb6512dd162a6328408cc71e50b7a57b4252ec7b480b7189f0a9ea935f",
