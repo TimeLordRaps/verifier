@@ -15,7 +15,7 @@ from pathlib import Path, PurePosixPath
 import stat
 import subprocess
 from typing import Sequence
-from zipfile import ZIP_STORED, ZipFile, ZipInfo
+from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from verifier.interoperability import catalog as catalog_module
 from verifier.interoperability import reference_catalog as reference_module
@@ -65,11 +65,12 @@ def _source_archive(captured: dict[str, bytes], archived_paths: set[str]) -> byt
         {"schema_version": "verifier-reference-source-archive-1", "files": manifest},
         sort_keys=True, separators=(",", ":"), ensure_ascii=True,
     ).encode("ascii")
-    with ZipFile(output, "w", compression=ZIP_STORED, allowZip64=False) as archive:
+    with ZipFile(output, "w", compression=ZIP_DEFLATED, compresslevel=9, allowZip64=False) as archive:
         for name, content in [("source-inventory.json", manifest_bytes),
                               *((path, captured[path]) for path in sorted(archived_paths))]:
             entry = ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
-            entry.compress_type = ZIP_STORED
+            entry.compress_type = ZIP_DEFLATED
+            entry._compresslevel = 9
             entry.create_system = 3
             entry.external_attr = 0o100644 << 16
             archive.writestr(entry, content)

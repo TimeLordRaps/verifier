@@ -72,6 +72,21 @@ def test_archived_domain_remainder_and_full_inventory_are_exact() -> None:
             assert row["sha256"] == exporter.hashlib.sha256(retained).hexdigest()
 
 
+def test_large_compressible_archive_keeps_every_byte_within_existing_limit() -> None:
+    exporter = _exporter()
+    name = "src/verifier/runtime/large_fixture.py"
+    payload = b"source line\n" * 1_600_000
+    captured = {name: payload}
+    archive_bytes = exporter._source_archive(captured, {name})
+    assert len(payload) > 16 * 1024 * 1024
+    assert len(archive_bytes) <= 16 * 1024 * 1024
+    assert archive_bytes == exporter._source_archive(captured, {name})
+    with zipfile.ZipFile(io.BytesIO(archive_bytes)) as archive:
+        assert archive.read(name) == payload
+        inventory = json.loads(archive.read("source-inventory.json"))
+        assert inventory["files"][0]["sha256"] == exporter.hashlib.sha256(payload).hexdigest()
+
+
 def test_missing_declared_entrypoint_is_refused() -> None:
     exporter = _exporter()
     captured, registry, _required, _unrelated = _capture()

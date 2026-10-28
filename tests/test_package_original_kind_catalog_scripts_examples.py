@@ -529,7 +529,7 @@ def test_five_reviewed_sources_have_exact_per_path_current_byte_pins() -> None:
         (
             "vstd-package-manifest-migration-controller",
             "src/verifier/runtime/package_manifest_migration.py",
-            "sha256:fe5ddebcdcfb74646c34c70a921db627ab9ee441250040ca67098ef9b914504e",
+            "sha256:71d4cdaa2b883ddb5351075c77b115fc5e5ec84b120f7e9f289ad22b0dae4d99",
         ),
         (
             "vstd-package-manifest-migration-controller",

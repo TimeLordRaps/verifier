@@ -126,6 +126,19 @@ def test_unsupported_interpretations_remain_explicit_gaps(tmp_path: Path, source
     assert any(row["code"] == "NAMESPACE_HTML_" + code for row in result["gaps"])
 
 
+@pytest.mark.parametrize(("source", "comment", "code"), [
+    ("<!--><script>hidden()</script>", "", "NAMESPACE_HTML_PARSE_UNRESOLVED"),
+    ("<![bogus]><script>hidden()</script>", "[bogus]", "NAMESPACE_HTML_PARSE_UNAVAILABLE"),
+])
+def test_recovered_malformed_comment_still_reports_gap(source: str, comment: str, code: str) -> None:
+    # Newer HTMLParser versions may recover both forms as comments rather than
+    # reporting an error; exercise that callback independent of interpreter version.
+    from verifier.runtime.namespace_html import _Census
+    parser = _Census("fixture.html", source, {})
+    parser.handle_comment(comment)
+    assert any(row["code"] == code for row in parser.gaps)
+
+
 def test_literal_template_tokens_are_not_rendered_coverage(tmp_path: Path) -> None:
     root = repository(tmp_path, '<div>static source</div>', "home.html.in")
     manifest = build_template(root)["manifest"]

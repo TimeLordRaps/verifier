@@ -783,6 +783,23 @@ _PACKAGE_HARNESS_PRDEL_LARGE_ARTIFACT_TRANSITION = {
         "src/verifier/runtime/prdel.py|scope=<module>.<locals>._git|callee=subprocess.run|ordinal=1": "sha256:4558dd1bd17e34bec8a37d82917494ba88d0d24cb02c303730e46275c2a42d1d",
     },
 }
+# Retaining an authored APPLIES reason after the registry adopts the same
+# classification changes tier_zero.py's source-wide AST.  The Node launch call,
+# complete launch denominator and review annotations are unchanged.  Bind this
+# exact predecessor and reviewed successor rather than accepting general AST drift.
+_PACKAGE_HARNESS_ADOPTED_REASON_TRANSITION = {
+    "prior": "sha256:3b737c2addce229838959b55184754f5ea32577e3612ad222b5a776ba395be94",
+    "catalog": "sha256:9a776b64935f2dc4f734d800b7024745743efa0a514ba0786e959cc9a88ed434",
+    "observed": "sha256:054282d3db639ffe68b857dd19f34fa6d2845ec7b96abf354b61b8e72a31810f",
+    "refreshed": "sha256:9a776b64935f2dc4f734d800b7024745743efa0a514ba0786e959cc9a88ed434",
+    "removed": {},
+    "added": {},
+    "call_changed": {},
+    "annotation_changed": {},
+    "source_only": {
+        "src/verifier/runtime/tier_zero.py|scope=<module>.<locals>._node_structural_reconciliation|callee=subprocess.run|ordinal=1": "sha256:afa546b95d121ab730fc3c21798663ac95e7f6ba6bdcca7c8a8a4655fedc919d",
+    },
+}
 _PACKAGE_HARNESS_SCOPE_TRANSITIONS = (
     _PACKAGE_HARNESS_SCOPE_TRANSITION,
     _PACKAGE_HARNESS_REASONING_SCOPE_TRANSITION,
@@ -801,6 +818,7 @@ _PACKAGE_HARNESS_SCOPE_TRANSITIONS = (
     _PACKAGE_HARNESS_WORKER_PROTOCOL_TIMEOUT_TRANSITION,
     _PACKAGE_HARNESS_MANIFEST_RETRY_LIMIT_TRANSITION,
     _PACKAGE_HARNESS_PRDEL_LARGE_ARTIFACT_TRANSITION,
+    _PACKAGE_HARNESS_ADOPTED_REASON_TRANSITION,
 )
 
 

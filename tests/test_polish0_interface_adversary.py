@@ -52,7 +52,7 @@ def _init_repo(root: Path) -> Path:
 
 
 def _write(path: Path, text: str) -> None:
-    path.write_text(text, encoding="utf-8")
+    path.write_text(text, encoding="utf-8", newline="\n")
 
 
 def _save_manifest(root: Path, manifest: dict[str, Any]) -> None:
@@ -312,9 +312,9 @@ def test_rust_reexport_gap_or_parser_unavailability_is_explicit(tmp_path: Path) 
 
     assert after["source_coordinate"]["source_census_digest"] != base_coordinate
     _assert_isolated_coverage_change(base, after, [
-        ("FAIL", _UNCOVERED, "rust:lib.rs:<use_declaration@20>", None),
-        ("FAIL", _UNCOVERED, "rust:lib.rs:<use_declaration@20>.<export:Alpha@46>", None),
-        ("FAIL", _UNCOVERED, "rust:lib.rs:<use_declaration@20>.<export:Sub@53>", None),
+        ("FAIL", _UNCOVERED, "rust:lib.rs:<use_declaration@19>", None),
+        ("FAIL", _UNCOVERED, "rust:lib.rs:<use_declaration@19>.<export:Alpha@45>", None),
+        ("FAIL", _UNCOVERED, "rust:lib.rs:<use_declaration@19>.<export:Sub@52>", None),
         ("UNKNOWN", "NAMESPACE_RUST_EXPORTS_UNRESOLVED", "file:lib.rs", "lib.rs"),
     ])
 
@@ -401,7 +401,7 @@ def test_shell_function_and_command_omissions_are_independently_refuted_or_unava
     _assert_isolated_coverage_change(base, after, [
         ("FAIL", _UNCOVERED, "bash:entry.sh:unrepresented_fn", None),
         ("FAIL", _UNCOVERED, "bash:entry.sh:unrepresented_fn.echo", None),
-        ("FAIL", _UNCOVERED, "bash:entry.sh:unrepresented_fn@85", None),
+        ("FAIL", _UNCOVERED, "bash:entry.sh:unrepresented_fn@82", None),
     ])
 
 

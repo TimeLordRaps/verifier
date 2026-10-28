@@ -275,11 +275,24 @@ def _reason_closure(root: Path, estate: dict[str, Any],
         for kind, cell in row.get("classification", {}).items()
         if cell.get("status") == "DOES_NOT_APPLY"
     }
+    applies_keys = {
+        (row["object_id"], kind)
+        for row in namespace["objects"]
+        for kind, cell in row.get("classification", {}).items()
+        if cell.get("status") == "APPLIES"
+    }
     decisions = {
         (row["object_id"], row["object_kind"]): row
         for row in selection.classification_decisions
     }
-    answerable_keys = open_keys | denial_keys
+    # An authored reason remains meaningful once the compiler adopts its
+    # APPLIES decision. A denial that conflicts with compiled applicability is
+    # still orphaned and cannot remove an obligation.
+    matching_applies = {
+        key for key, decision in decisions.items()
+        if key in applies_keys and decision["decision"] == "APPLIES"
+    }
+    answerable_keys = open_keys | denial_keys | matching_applies
     missing = sorted(open_keys - decisions.keys())
     orphaned = sorted(decisions.keys() - answerable_keys)
     conservative_overrides = sorted(decisions.keys() & denial_keys)
@@ -321,8 +334,9 @@ def _reason_closure(root: Path, estate: dict[str, Any],
         ),
         "decision_authority": (
             "The sole root reasons.vstd answers every current compiled open "
-            "object-kind cell and may conservatively supersede a compiled denial "
-            "only by retaining obligations. A DOCUMENTED reason does not edit "
+            "object-kind cell, may retain a matching compiled applicability reason, "
+            "and may conservatively supersede a compiled denial only by retaining "
+            "obligations. A DOCUMENTED reason does not edit "
             "objects.vstd, establish source truth, supply a route checker result, "
             "or authorize release or deployment."
         ),

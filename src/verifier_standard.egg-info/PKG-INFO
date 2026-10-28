@@ -60,6 +60,7 @@ Requires-Dist: coverage==7.15.4; extra == "test"
 Requires-Dist: pyyaml>=6.0; extra == "test"
 Requires-Dist: jsonschema>=4.18; extra == "test"
 Requires-Dist: build==1.5.0; extra == "test"
+Requires-Dist: cryptography==50.0.0; extra == "test"
 Provides-Extra: release
 Requires-Dist: build==1.5.0; extra == "release"
 Requires-Dist: twine==7.0.0; extra == "release"

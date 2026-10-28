@@ -312,7 +312,7 @@ def test_worktree_package_archive_retains_every_public_source_byte(tmp_path: Pat
             ],
         }
         for item in bundled.infolist():
-            assert item.compress_type == zipfile.ZIP_STORED
+            assert item.compress_type == zipfile.ZIP_DEFLATED
             assert item.date_time == (1980, 1, 1, 0, 0, 0)
             assert ".." not in Path(item.filename).parts
             if item.filename != "source-inventory.json":

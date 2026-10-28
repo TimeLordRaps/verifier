@@ -44,6 +44,7 @@ def test_reason_closure_accepts_optional_conservative_denial_override(
                 "classification": {
                     "ACTOR": {"status": "UNRESOLVED"},
                     "ACTUATOR": {"status": "DOES_NOT_APPLY"},
+                    "EVENT": {"status": "APPLIES"},
                 },
             }],
         },
@@ -52,6 +53,12 @@ def test_reason_closure_accepts_optional_conservative_denial_override(
         "reason_id": "retain-actor",
         "object_id": "selected-object",
         "object_kind": "ACTOR",
+        "decision": "APPLIES",
+    },)
+    selection.classification_decisions += ({
+        "reason_id": "retain-event",
+        "object_id": "selected-object",
+        "object_kind": "EVENT",
         "decision": "APPLIES",
     },)
 
@@ -78,8 +85,19 @@ def test_reason_closure_accepts_optional_conservative_denial_override(
     assert result["reconciled_classification_count"] == 1
     assert result["denial_override_eligible_count"] == 1
     assert result["conservative_override_count"] == 1
-    assert result["reconciled_total_classification_count"] == 2
+    assert result["reconciled_total_classification_count"] == 3
     assert result["orphaned_classification_count"] == 0
+
+    selection.classification_decisions = tuple(
+        {**decision, "decision": "DOES_NOT_APPLY"}
+        if decision["object_kind"] == "EVENT" else decision
+        for decision in selection.classification_decisions
+    )
+    conflict = tier_zero._reason_closure(
+        tmp_path, {}, {"obligation_reason_provider": {"path": "reasons.vstd"}},
+    )
+    assert conflict["status"] == "UNKNOWN"
+    assert conflict["orphaned_classifications"] == [{"object_id": "selected-object", "kind": "EVENT"}]
 
 
 def _passing_package_admission_report() -> dict:

@@ -137,13 +137,13 @@ REVIEWED_CONTENT_REFRESH = {
         },
     },
     "vstd-generated-distribution-metadata": {
-        "digest": "sha256:eb1232c3844cf85000e8c0d66a595643d6cf462eae365186a339e034292a333f",
+        "digest": "sha256:ebe9410b2153ea617dfcfbb4a7b8a55dab0b7ec23c3471d36775044054ca0409",
         "applies": (("DATA", "primary"),),
         "files": {
             "src/verifier_standard.egg-info/PKG-INFO": (
-                80721,
-                "93081843eea0bfd25da856f90977bc4256b84369dffcb19e50c7dceafa9105d6",
-                ("Metadata-Version: 2.4", "Name: verifier-standard"),
+                79637,
+                "935a25523923764ed90f3dcadb6cef4952988839557a308b13ecee133bb56334",
+                ("Metadata-Version: 2.4", "Name: verifier-standard", 'Requires-Dist: cryptography==50.0.0; extra == "test"'),
             ),
             "src/verifier_standard.egg-info/SOURCES.txt": (
                 68161,
@@ -151,8 +151,8 @@ REVIEWED_CONTENT_REFRESH = {
                 ("src/verifier/runtime/package_semantic_ownership_repository_assets.py",),
             ),
             "src/verifier_standard.egg-info/requires.txt": (
-                665,
-                "3201b970487a679e72f77bd19290c88a3d65e45c4da3cbe031e9b5741258a2f0",
+                686,
+                "7b2d1431734bbbb76a92bfa3e930fe5ebb206b748d5b83d42332bb25fb370eae",
                 (
                     "[discovery-javascript]",
                     "[discovery-rust]",
@@ -163,12 +163,12 @@ REVIEWED_CONTENT_REFRESH = {
         },
     },
     "vstd-github-verification-workflow-protocols": {
-        "digest": "sha256:d1b5372072b3667d3dfd5a363138616699fac356f17c8fffcc89e15ac6a9d4bf",
+        "digest": "sha256:f18b06663888bf5353cdc879fde4af09103ab88733e8f85b16278bb96af3783d",
         "applies": (),
         "files": {
             ".github/workflows/ci.yml": (
-                40422,
-                "57dc0dc41e1d6cb45ba17fb16193017f597031e7ded574a0fdbc74f89436ff56",
+                40420,
+                "4de94dd7e3ee1268ec065a5eb60be96ad3c186dfc4db18707032139fe4e9d360",
                 ("  optional-discovery:", "tests/test_namespace_javascript.py"),
             ),
         },

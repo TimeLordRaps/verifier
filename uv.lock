@@ -2815,6 +2815,7 @@ seal = [
 test = [
     { name = "build" },
     { name = "coverage" },
+    { name = "cryptography" },
     { name = "jsonschema" },
     { name = "pytest" },
     { name = "pytest-timeout" },
@@ -2835,6 +2836,7 @@ requires-dist = [
     { name = "coverage", marker = "extra == 'test'", specifier = "==7.15.4" },
     { name = "cryptography", marker = "extra == 'scitt'", specifier = "==50.0.0" },
     { name = "cryptography", marker = "extra == 'seal'", specifier = "==50.0.0" },
+    { name = "cryptography", marker = "extra == 'test'", specifier = "==50.0.0" },
     { name = "jsonschema", marker = "extra == 'jsonschema'", specifier = ">=4.18" },
     { name = "jsonschema", marker = "extra == 'test'", specifier = ">=4.18" },
     { name = "llguidance", marker = "extra == 'constraints'", specifier = "==1.8.0" },

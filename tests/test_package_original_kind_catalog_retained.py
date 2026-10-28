@@ -35,8 +35,8 @@ from verifier.runtime.package_semantic_ownership import SEMANTIC_OWNERSHIP_SPECS
 
 
 ROOT = Path(__file__).parents[1]
-PINNED_APPLIES = 652
-PINNED_DOES_NOT_APPLY = 23
+PINNED_APPLIES = 655
+PINNED_DOES_NOT_APPLY = 20
 PINNED_UNRESOLVED = 0
 # A cited line that is only a label, comment or import carries no semantics of the kind.
 REFERENT_ONLY_LINE = re.compile(
@@ -97,18 +97,23 @@ def test_primary_kind_is_never_refuted_and_event_primary_is_conservatively_retai
     assert "reasons.vstd retains EVENT" in event.reason
 
 
-def test_architecture_event_keeps_its_source_review_refutation():
+@pytest.mark.parametrize(("kind", "boundary"), [
+    ("EVENT", "no real-world event occurrence is claimed"),
+    ("MODEL", "no model inference or execution is claimed"),
+    ("SIM", "no simulation execution is claimed"),
+])
+def test_architecture_retains_obligations_for_unclosed_evaluation(kind, boundary):
     event = next(
         question
         for question in _rows_by_id()["vstd-architecture"].questions
-        if question.kind == "EVENT"
+        if question.kind == kind
     )
 
-    assert event.status == DOES_NOT_APPLY
-    assert event.path == "src/verifier/domains/contracts/arch_schedule.py"
-    assert event.line == 64
-    assert "Execution positions over nodes are ordinal" in event.reason
-    assert "scheduler order are excluded" in event.reason
+    assert event.status == APPLIES
+    assert event.path == "src/verifier/domains/contracts/arch_resolution.py"
+    assert event.line == 624
+    assert "VerificationSession.evaluate" in event.reason
+    assert boundary in event.reason
 
 
 def test_every_source_bound_cell_cites_an_owned_nonblank_line():

@@ -827,6 +827,8 @@ def build_installed_sources() -> dict[str, bytes]:
 
 _CASES_TEMPLATE = '''"""Versioned installed specimens for native self-polish replay.
 
+Terminology: line feed (LF); Transparency Service (TS).
+
 The compressed payload is generated from the contract builders at the selected
 source revision. Runtime decoding does not import tests and no stored outcome
 or PASS string is trusted: every certificate is rebuilt and rechecked.

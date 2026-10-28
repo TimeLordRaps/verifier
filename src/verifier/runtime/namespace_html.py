@@ -74,6 +74,8 @@ class _Census(html.parser.HTMLParser):
     def __init__(self, path: str, source: str, files: dict[str, str]) -> None:
         super().__init__(convert_charrefs=False)
         self.path, self.source, self.files = path, source, files
+        self.line_offsets = [0]
+        self.line_offsets.extend(index + 1 for index, char in enumerate(source) if char == "\n")
         self.surfaces: list[dict[str, Any]] = []
         self.gaps: list[dict[str, str]] = []
         self.fragments: list[dict[str, Any]] = []
@@ -192,6 +194,15 @@ class _Census(html.parser.HTMLParser):
             self.gap("NAMESPACE_HTML_PARSE_UNRESOLVED", "Unparsed markup delimiters cannot establish complete source tokenization.")
 
     def handle_comment(self, data: str) -> None:
+        # Recent standard-library versions may recover malformed declarations
+        # as comments. Check the exact source opener at the parser's position,
+        # rather than allowing recovery to erase the discovery gap.
+        line, column = self.getpos()
+        offset = self.line_offsets[line - 1] + column
+        if self.source.startswith("<!-->", offset):
+            self.gap("NAMESPACE_HTML_PARSE_UNRESOLVED", "A prematurely closed comment requires explicit parser-recovery evidence.")
+        elif self.source.startswith("<![", offset):
+            self.gap("NAMESPACE_HTML_PARSE_UNAVAILABLE", "An unsupported markup declaration cannot establish complete source tokenization.")
         if data.strip().startswith(_TEMPLATE_PREFIX):
             if self.template_binding is not None:
                 self.gap("NAMESPACE_HTML_TEMPLATE_UNRESOLVED", "A template must select exactly one renderer and token grammar.")
